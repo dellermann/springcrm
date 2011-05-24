@@ -3,6 +3,7 @@ package org.amcworld.springcrm
 import grails.test.*
 
 class RatingTests extends GrailsUnitTestCase {
+	
     protected void setUp() {
         super.setUp()
     }

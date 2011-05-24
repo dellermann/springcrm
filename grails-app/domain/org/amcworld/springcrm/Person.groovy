@@ -124,6 +124,16 @@ class Person {
 	}
 
     String toString() {
-        return lastName + ", " + firstName
+		String s = ""
+		if (lastName) {
+			s += lastName ?: ""
+		}
+		if (lastName && firstName) {
+			s += ", "
+		}
+		if (firstName) {
+			s += firstName ?: ""
+		}
+        return s
     }
 }

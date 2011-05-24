@@ -218,4 +218,24 @@ class PersonTests extends GrailsUnitTestCase {
 		p = new Person()
 		assertEquals "", p.otherAddr
 	}
+	
+	void testToString() {
+        Organization org = new Organization(number:20000, name:"AMC World")
+        Person p = new Person(
+            number:10000, organization:org,
+            salutation:new Salutation(name:"Mr."),
+            firstName:"Daniel", lastName:"Ellermann",
+            phone:"030 8321475-0"
+        )
+		assertEquals "Ellermann, Daniel", p.toString()
+		
+		p = new Person(lastName:"Ellermann")
+		assertEquals "Ellermann", p.toString()
+		
+		p = new Person(firstName:"Daniel")
+		assertEquals "Daniel", p.toString()
+
+		p = new Person()
+		assertEquals "", p.toString()
+	}
 }

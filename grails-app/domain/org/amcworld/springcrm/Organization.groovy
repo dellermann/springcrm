@@ -121,6 +121,6 @@ class Organization {
     }
 
     String toString() {
-        return name
+        return name ?: ""
     }
 }

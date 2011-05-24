@@ -3,6 +3,7 @@ package org.amcworld.springcrm
 import grails.test.*
 
 class OrganizationTests extends GrailsUnitTestCase {
+	
     protected void setUp() {
         super.setUp()
     }
@@ -269,5 +270,16 @@ class OrganizationTests extends GrailsUnitTestCase {
 		assertEquals "Fischerinsel 1", org.shippingAddr
 		org = new Organization()
 		assertEquals "", org.shippingAddr
+	}
+	
+	void testToString() {
+        Organization org = new Organization(
+            number:10000, name:"AMC World", email1:"info@amc-world.de",
+            website:"http://www.amc-world.de"
+        )
+		assertEquals "AMC World", org.toString()
+		
+		org = new Organization()
+		assertEquals "", org.toString()
 	}
 }

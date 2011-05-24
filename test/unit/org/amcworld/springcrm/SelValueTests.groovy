@@ -34,4 +34,12 @@ class SelValueTests extends GrailsUnitTestCase {
 		assertEquals "nullable", sv.errors["name"]
 		assertNull sv.errors["orderId"]
 	}
+	
+	void testToString() {
+        SelValue sv = new SelValue(name:"foo", orderId:10)
+		assertEquals "foo", sv.toString()
+		
+		sv = new SelValue()
+		assertEquals "", sv.toString()
+	}
 }
