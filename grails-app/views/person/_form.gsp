@@ -103,7 +103,9 @@
           <label for="birthday"><g:message code="person.birthday.label" default="Birthday" /></label>
         </div>
         <div class="field${hasErrors(bean: personInstance, field: 'birthday', ' error')}">
-          <g:datePicker name="birthday" precision="day" value="${personInstance?.birthday}" /><br />
+          <g:hiddenField name="birthday" value="${formatDate(date: personInstance?.birthday, type: 'date')}" />
+          <g:textField name="birthday-date" value="${formatDate(date: personInstance?.birthday, type: 'date')}" size="10" class="date-input" /><br />
+          <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${personInstance}" field="birthday">
             <span class="error-msg"><g:eachError bean="${personInstance}" field="birthday"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

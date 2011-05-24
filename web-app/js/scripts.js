@@ -29,7 +29,28 @@ pkg.Bootstrap.prototype = {
 		$("#quick-access").change(this.onChangeQuickAccess);
 		$("#main-menu > li").hover(this.onMainMenuHover);
 		$(".header-with-menu .menu").hover(this.onOptionMenuHover);
+		$(".date-input").change(this.onChangeDateInput);
 		this._renderFontSizeSel();
+	},
+	
+	onChangeDateInput: function() {
+		var $this = $(this);
+		var id = $this.attr("id");
+		if (id.match(/^([\w-]+)-(date|time)$/)) {
+			var baseId = RegExp.$1;
+			var partId = RegExp.$2;
+			var $otherPartField = 
+				$("#" + baseId + "-" + ((partId == "date") ? "time" : "date"));
+			var val = "";
+			if (partId == "date") {
+				val += $this.val();
+				if ($otherPartField.length) val += " " + $otherPartField.val();
+			} else {
+				if ($otherPartField.length) val += $otherPartField.val() + " ";
+				val += $this.val();
+			}
+			$("#" + baseId).val(val);
+		}
 	},
 	
 	onChangeFontSize: function(e) {

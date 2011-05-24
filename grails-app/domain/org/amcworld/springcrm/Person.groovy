@@ -73,7 +73,7 @@ class Person {
     String jobTitle
     String department
     String assistant
-    Calendar birthday
+    Date birthday
     // TODO image
     String notes
 	Date dateCreated
