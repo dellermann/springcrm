@@ -47,7 +47,7 @@
     <li>
       <a href="#">Bestand</a>
       <ul>
-        <li><a href="#">Produkte</a></li>
+        <li><g:link controller="product"><g:message code="product.plural" /></g:link></li>
         <li><g:link controller="service"><g:message code="service.plural" /></g:link></li>
         <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
         <li><a href="#">Lieferanten</a></li>

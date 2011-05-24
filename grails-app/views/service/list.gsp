@@ -41,7 +41,7 @@
         <tr>
           <td><input type="checkbox" id="service-multop-${serviceInstance.id}" class="multop-sel-item" /></td>
           <td style="text-align: center;"><g:link action="show" id="${serviceInstance.id}">${fieldValue(bean: serviceInstance, field: "fullNumber")}</g:link></td>
-          <td>${fieldValue(bean: serviceInstance, field: "name")}</td>
+          <td><g:link action="show" id="${serviceInstance.id}">${fieldValue(bean: serviceInstance, field: "name")}</g:link></td>
           <td>${fieldValue(bean: serviceInstance, field: "category")}</td>
           <td style="text-align: right;">${fieldValue(bean: serviceInstance, field: "quantity")}</td>
           <td>${fieldValue(bean: serviceInstance, field: "unit")}</td>
