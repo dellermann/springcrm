@@ -27,7 +27,7 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="organization-multop-sel" class="multop-sel" /></th>
-          <g:sortableColumn property="fullNumber" title="${message(code: 'organization.number.label', default: 'Number')}" />
+          <g:sortableColumn property="number" title="${message(code: 'organization.number.label', default: 'Number')}" />
           <g:sortableColumn property="name" title="${message(code: 'organization.name.label', default: 'Name')}" />
           <g:sortableColumn property="billingAddr" title="${message(code: 'organization.billingAddr.label', default: 'Billing address')}" />
           <g:sortableColumn property="phone" title="${message(code: 'organization.phone.label', default: 'Phone')}" />

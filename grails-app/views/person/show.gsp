@@ -219,6 +219,7 @@
           </div>
         </div>
       </div>
+      <g:if test="${personInstance?.notes}">
       <div class="fieldset">
         <h4><g:message code="person.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
@@ -228,6 +229,7 @@
           </div>
         </div>
       </div>
+      </g:if>
 
       <div class="fieldset">
         <div class="header-with-menu">
