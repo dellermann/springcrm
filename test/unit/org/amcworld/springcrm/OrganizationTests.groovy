@@ -89,6 +89,9 @@ class OrganizationTests extends GrailsUnitTestCase {
 		org = new Organization(name:"")
 		assertFalse org.validate(validationFields)
 		assertEquals "blank", org.errors["name"]
+		
+		org = new Organization(name:"AMC World")
+		assertTrue org.validate(validationFields)
 	}
 	
 	void testSizeConstraints() {

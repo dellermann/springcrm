@@ -59,6 +59,9 @@ class PersonTests extends GrailsUnitTestCase {
 		assertFalse p.validate(validationFields)
 		assertEquals "blank", p.errors["firstName"]
 		assertEquals "blank", p.errors["lastName"]
+		
+		p = new Person(firstName:"Daniel", lastName:"Ellermann")
+		assertTrue p.validate(validationFields)
 	}
 	
 	void testSizeConstraints() {

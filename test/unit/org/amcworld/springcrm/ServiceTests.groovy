@@ -61,6 +61,9 @@ class ServiceTests extends GrailsUnitTestCase {
 		sv = new Service(name:"")
 		assertFalse sv.validate(validationFields)
 		assertEquals "blank", sv.errors["name"]
+		
+		sv = new Service(name:"TYPO3 Installation")
+		assertTrue sv.validate(validationFields)
 	}
 	
 	void testMinConstraints() {

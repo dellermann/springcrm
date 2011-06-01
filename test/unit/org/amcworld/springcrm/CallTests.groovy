@@ -56,6 +56,9 @@ class CallTests extends GrailsUnitTestCase {
 		call = new Call(subject:"")
 		assertFalse call.validate(validationFields)
 		assertEquals "blank", call.errors["subject"]
+		
+		call = new Call(subject:"AMC World")
+		assertTrue call.validate(validationFields)
 	}
 	
 	void testSizeConstraints() {
