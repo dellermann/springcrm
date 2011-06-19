@@ -275,6 +275,13 @@ class OrganizationTests extends GrailsUnitTestCase {
 		assertEquals "", org.shippingAddr
 	}
 	
+	void testShortName() {
+		Organization org = new Organization(
+			number:10000, name:'1234567890' * 5
+		)
+		assertEquals(('1234567890' * 4) + '...', org.shortName)
+	}
+	
 	void testToString() {
         Organization org = new Organization(
             number:10000, name:"AMC World", email1:"info@amc-world.de",

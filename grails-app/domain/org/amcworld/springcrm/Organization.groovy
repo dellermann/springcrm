@@ -3,7 +3,7 @@ package org.amcworld.springcrm
 class Organization {
 
     static constraints = {
-        number(blank:false, unique:true)
+        number(unique:true)
         name(blank:false)
         billingAddrStreet(widget:"textarea")
         billingAddrPoBox()
@@ -37,7 +37,9 @@ class Organization {
 	static mapping = {
 		calls column:"Organization"
 	}
-	static transients = ["fullNumber", "billingAddr", "shippingAddr"]
+	static transients = [
+		"fullNumber", "shortName", "billingAddr", "shippingAddr"
+	]
 
     int number
     String name
@@ -71,6 +73,14 @@ class Organization {
 	
 	String getFullNumber() {
 		return "ORG-" + number
+	}
+	
+	String getShortName() {
+		String res = name ?: ""
+		if (res.length() > 40) {
+			res = name.substring(0, 40) + "..."
+		}
+		return res
 	}
 	
 	String getBillingAddr() {
