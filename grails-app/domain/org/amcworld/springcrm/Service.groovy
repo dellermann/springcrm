@@ -17,6 +17,9 @@ class Service {
 		dateCreated()
 		lastUpdated()
     }
+	static mapping = {
+		sort "number"
+    }
 	static transients = ["fullNumber"]
 	
 	int number
