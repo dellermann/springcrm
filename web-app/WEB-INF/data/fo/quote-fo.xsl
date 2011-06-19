@@ -117,7 +117,11 @@
               <fo:block>Ansprechpartner:</fo:block>
             </fo:table-cell>
             <fo:table-cell padding-after="2mm" text-align="right">
-              <fo:block>Daniel Ellermann</fo:block>
+              <fo:block>
+                <xsl:value-of select="key('entries', 'user')/firstName"/>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="key('entries', 'user')/lastName"/>
+              </fo:block>
             </fo:table-cell>
           </fo:table-row>
           <fo:table-row>
@@ -125,7 +129,9 @@
               <fo:block>Hotlines:</fo:block>
             </fo:table-cell>
             <fo:table-cell padding-after="2mm" text-align="right">
-              <fo:block>0172 3952663</fo:block>
+              <fo:block>
+                <xsl:value-of select="key('entries', 'user')/mobile"/>
+              </fo:block>
               <fo:block>030 8321475-0</fo:block>
             </fo:table-cell>
           </fo:table-row>
@@ -223,7 +229,11 @@
         den oben angegebenen Hotline-Nummern.</xsl:text>
       </fo:block>
       <fo:block space-after="5mm">Vielen Dank für Ihr Interesse.</fo:block>
-      <fo:block>Name des Bearbeiters</fo:block>
+      <fo:block>
+        <xsl:value-of select="key('entries', 'user')/firstName"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="key('entries', 'user')/lastName"/>
+      </fo:block>
       <fo:block>AMC World Technologies</fo:block>
     </fo:block-container>
   </xsl:template>

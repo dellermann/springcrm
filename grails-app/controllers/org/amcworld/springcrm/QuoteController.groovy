@@ -103,6 +103,7 @@ class QuoteController {
 				quote:quoteInstance, items:quoteInstance.items,
 				organization:quoteInstance.organization,
 				person:quoteInstance.person,
+				user:session.user,
 				fullNumber:quoteInstance.fullNumber,
 				taxRates:quoteInstance.taxRateSums,
 				values:[
@@ -112,7 +113,7 @@ class QuoteController {
 				]
 			]
 			String xml = (data as XML).toString()
-//			println xml
+			println xml
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(

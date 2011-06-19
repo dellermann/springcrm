@@ -923,8 +923,8 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
 }
 
 /* form controls */
-button, input[type=button], input[type=reset], input[type=submit],
-  input[type=text], select, textarea
+button, input[type=button], input[type=password], input[type=reset], 
+  input[type=submit], input[type=text], select, textarea
 {
   background: #F0F0F0;
   border: .1em solid #6C8F18;
@@ -932,10 +932,12 @@ button, input[type=button], input[type=reset], input[type=submit],
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
 }
-input[type=text], textarea {
+input[type=text], input[type=password], textarea {
   padding: .1em .2em;
 }
-input[type=text]:focus, select:focus, textarea:focus {
+input[type=text]:focus, input[type=password]:focus, select:focus, 
+  textarea:focus
+{
   background: #DDD;
 }
 label, .data-sheet .label {
@@ -950,7 +952,9 @@ label.empty-label:after, .data-sheet .label.empty-label:after {
 fieldset, .fieldset {
   margin-bottom: 1.5em;
 }
-.error input[type=text], .error select, .error textarea {
+.error input[type=text], .error input[type=password], .error select, 
+  .error textarea
+{
   border: .1em solid #B51419;
 }
 .info-msg {

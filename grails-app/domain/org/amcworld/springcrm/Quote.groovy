@@ -23,6 +23,6 @@ class Quote extends InvoicingTransaction {
 	Date shippingDate
 
 	String getFullNumber() {
-		return "A-" + super.fullNumber;
+		return "A-${super.fullNumber}";
 	}
 }
