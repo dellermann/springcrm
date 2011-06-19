@@ -274,7 +274,7 @@
           
           <div class="row">
             <div class="label"><g:message code="quote.termsAndConditions.label" default="Terms And Conditions" /></div>
-            <div class="field">${quoteInstance?.termsAndConditions?.name}</div>
+            <div class="field">${quoteInstance?.termsAndConditions?.name.join(', ')}</div>
           </div>
         </div>
       </div>

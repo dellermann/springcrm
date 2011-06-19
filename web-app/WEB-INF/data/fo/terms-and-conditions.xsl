@@ -4,11 +4,12 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format">
 	<xsl:template name="terms-and-conditions">
-		<xsl:call-template name="terms-and-conditions-services"/>
-		<xsl:call-template name="terms-and-conditions-wares"/>
+    <xsl:apply-templates select="key('entries', 'quote')/termsAndConditions/termsAndConditions">
+      <xsl:sort select="@id" data-type="number"/>
+    </xsl:apply-templates>
 	</xsl:template>
   
-  <xsl:template name="terms-and-conditions-services">
+  <xsl:template match="termsAndConditions[@id=700]">
     <fo:page-sequence master-reference="terms-and-conditions" language="de"
                       hyphenate="true">
       <fo:static-content flow-name="xsl-region-before"
@@ -325,7 +326,7 @@
     </fo:page-sequence>
   </xsl:template>
   
-  <xsl:template name="terms-and-conditions-wares">
+  <xsl:template match="termsAndConditions[@id=701]">
     <fo:page-sequence master-reference="terms-and-conditions" language="de"
                       hyphenate="true">
       <fo:static-content flow-name="xsl-region-before"

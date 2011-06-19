@@ -10,8 +10,8 @@ class Quote extends InvoicingTransaction {
 		validUntil(nullable:true)
 		carrier(nullable:true)
 		shippingDate(nullable:true)
-		termsAndConditions(nullable:true)
     }
+    static hasMany = [termsAndConditions:TermsAndConditions]
 	static mapping = {
 		items column:"Quote"
 	}
@@ -21,7 +21,6 @@ class Quote extends InvoicingTransaction {
 	Date validUntil
 	Carrier carrier
 	Date shippingDate
-	TermsAndConditions termsAndConditions
 
 	String getFullNumber() {
 		return "A-" + super.fullNumber;

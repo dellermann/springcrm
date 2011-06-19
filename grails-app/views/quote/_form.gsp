@@ -455,10 +455,10 @@
     
     <div class="row">
       <div class="label">
-        <label for="termsAndConditions.id"><g:message code="quote.termsAndConditions.label" default="Terms And Conditions" /></label>
+        <label for="termsAndConditions"><g:message code="quote.termsAndConditions.label" default="Terms And Conditions" /></label>
       </div>
       <div class="field${hasErrors(bean: quoteInstance, field: 'termsAndConditions', ' error')}">
-        <g:select name="termsAndConditions.id" from="${org.amcworld.springcrm.TermsAndConditions.list()}" optionKey="id" value="${quoteInstance?.termsAndConditions?.id}" noSelection="['null': '']" /><br />
+        <g:select name="termsAndConditions" from="${org.amcworld.springcrm.TermsAndConditions.list()}" optionKey="id" value="${quoteInstance?.termsAndConditions*.id}" multiple="true" /><br />
         <g:hasErrors bean="${quoteInstance}" field="termsAndConditions">
           <span class="error-msg"><g:eachError bean="${quoteInstance}" field="termsAndConditions"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
