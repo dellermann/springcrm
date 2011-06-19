@@ -17,8 +17,13 @@ pkg.Bootstrap = function Bootstrap() {
 	this.$toolbar = $("#toolbar-container");
 	this.initialSearchText = this.$search.val();
 	if (this.$toolbar.size()) this.toolbarOffset = this.$toolbar.offset().top;
-};
+	this.$spinner = $("#spinner");
+	this.timeValues = this._computeTimeValues();
+}
 pkg.Bootstrap.prototype = {
+		
+	//-- Public methods ------------------------
+
 	initPage: function() {
 		if (this.$toolbar != null) {
 			this.$document.scroll(this, this.onScrollDocument);
@@ -29,8 +34,15 @@ pkg.Bootstrap.prototype = {
 		$("#quick-access").change(this.onChangeQuickAccess);
 		$("#main-menu > li").hover(this.onMainMenuHover);
 		$(".header-with-menu .menu").hover(this.onOptionMenuHover);
-		$(".date-input").change(this.onChangeDateInput);
+		$(".date-input-date").change(this.onChangeDateInput)
+			.datepicker({
+				changeMonth: true, changeYear: true, gotoCurrent: true,
+				selectOtherMonths: true, showButtonPanel: true, 
+				showOtherMonths: true
+			});
+		$(".date-input-time").autocomplete({ source: this.timeValues });
 		this._renderFontSizeSel();
+		this._initAjaxEvents();
 	},
 	
 	onChangeDateInput: function() {
@@ -89,6 +101,33 @@ pkg.Bootstrap.prototype = {
 	    }
 	},
 	
+	swapSearchText: function(e, dir) {
+		var value1 = dir ? this.initialSearchText : "";
+		var value2 = dir ? "" : this.initialSearchText;
+        var $input = $(e.currentTarget);
+        if ($input.val() == value1) $input.val(value2);
+	},
+	
+	
+	//-- Non-public methods ---------------------
+	
+	_computeTimeValues: function() {
+		var res = [];
+		for (var h = -1; ++h < 24; ) {
+			var hh = h + "";
+			if (hh.length < 2) hh = "0" + hh;
+			res.push(hh + ":00");
+			res.push(hh + ":30");
+		}
+		return res;
+	},
+	
+	_initAjaxEvents: function() {
+		this.$spinner
+			.ajaxSend(function() { $(this).show(); })
+			.ajaxComplete(function() { $(this).hide(); });
+	},
+
 	_renderFontSizeSel: function() {
 		var offset = Math.floor(pkg.NUM_FONT_SIZES / 2);
 		var currentSize = parseInt(this.$body.css("font-size"));
@@ -101,15 +140,8 @@ pkg.Bootstrap.prototype = {
 		}
 		$("#app-version").after(s + '</ul>');
 		$("#font-size-sel").click(this, this.onChangeFontSize);
-	},
-	
-	swapSearchText: function(e, dir) {
-		var value1 = dir ? this.initialSearchText : "";
-		var value2 = dir ? "" : this.initialSearchText;
-        var $input = $(e.currentTarget);
-        if ($input.val() == value1) $input.val(value2);
 	}
-};
+}
 
 /* static functions */
 pkg.copyAddress = function(from, to) {
@@ -123,11 +155,11 @@ pkg.copyAddress = function(from, to) {
 			p._getAddressField(to, f).val(p._getAddressField(from, f).val());
 		}
 	}
-};
+}
 
 pkg.onClickSubmit = function(formId) {
 	$("#" + formId).submit();
-};
+}
 
 pkg.retrieveAddrFromOrganization = function(prefix, orgPrefix, url) {
 	$.ajax({
@@ -149,12 +181,12 @@ pkg.retrieveAddrFromOrganization = function(prefix, orgPrefix, url) {
 			}
 		}
 	});
-};
+}
 
 /* private static functions */
 pkg._getAddressField = function(prefix, name) {
 	return $("#" + prefix + name);
-};
+}
 
 pkg._doesAddressExists = function(prefix) {
 	var p = pkg;
@@ -164,7 +196,31 @@ pkg._doesAddressExists = function(prefix) {
 		res |= p._getAddressField(prefix, addrFields[i]).val() != "";
 	}
 	return res;
-};
+}
+
+/* jQuery extensions */
+$.extend({
+	formatCurrency: function(x) {
+		return $.formatNumber(x, 2);
+	},
+	
+	formatNumber: function(x, n) {
+		x *= 1;
+		var s = (n == null) ? x.toString() : x.toFixed(n);
+		s = s.replace(/\./, ",");
+		var i = s.lastIndexOf(",") - 3;
+		while (i > 0) {
+			s = s.substring(0, i) + "." + s.substring(i);
+			i -= 3;
+		}
+		return s;
+	},
+	
+	parseNumber: function(s) {
+		return (s == "") ? 0 
+				: parseFloat(s.replace(/\./, "").replace(/,/, "."));
+	}
+});
 
 /* main */
 pkg.bootstrap = new pkg.Bootstrap();

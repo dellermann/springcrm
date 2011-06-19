@@ -45,7 +45,7 @@
           <td>${fieldValue(bean: personInstance, field: "firstName")}</td>
           <td><g:link controller="organization" action="show" id="${personInstance.organization.id}">${fieldValue(bean: personInstance, field: "organization.name")}</g:link></td>
           <td>${fieldValue(bean: personInstance, field: "phone")}</td>
-          <td>${fieldValue(bean: personInstance, field: "email1")}</td>
+          <td><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></td>
           <td>
             <g:link action="edit" id="${personInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${personInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>

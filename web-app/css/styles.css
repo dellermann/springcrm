@@ -985,6 +985,10 @@ fieldset, .fieldset {
   background: #CCC;
   border-bottom: 1px solid white;
 }
+.content-table tfoot tr {
+  background: #CCC;
+  border-top: 1px solid white;
+}
 .content-table td, .content-table th {
   border-right: 1px solid white;
 }
@@ -995,6 +999,45 @@ fieldset, .fieldset {
   border-right: none;
   text-align: right;
   white-space: nowrap;
+}
+.invoicing-items td {
+  vertical-align: top;
+}
+.invoicing-items-pos {
+  padding-top: .7em;
+  text-align: right;
+}
+.invoicing-items-number {
+  text-align: center;
+}
+.content-table td.invoicing-items-pos, .invoicing-items-quantity,
+  .invoicing-items-unit-price, .invoicing-items-total, .invoicing-items-tax,
+  .invoicing-items-buttons, .content-table td.invoicing-items-label,
+  .invoicing-items-quantity input, .invoicing-items-unit-price input,
+  .invoicing-items-total input, .invoicing-items-tax input
+{
+  text-align: right;
+}
+.invoicing-items-name textarea {
+  margin-top: .5em;
+}
+.invoicing-items-buttons a {
+  padding-left: .3em;
+}
+.invoicing-items-buttons a:first-child {
+  padding-left: 0;
+}
+.invoicing-items tbody tr:first-child .up-btn {
+  display: none;
+}
+.invoicing-items tbody tr:last-child .down-btn {
+  display: none;
+}
+.invoicing-items .value {
+  padding-top: .3em;
+}
+.invoicing-items .total {
+  font-weight: bold;
 }
 .empty-list {
   background: #DDD;
@@ -1015,6 +1058,32 @@ fieldset, .fieldset {
   font-size: 108%;
   margin-bottom: 2em;
   text-align: center;
+}
+.paginator {
+  margin-top: .5em;
+  text-align: center;
+}
+.paginator a, .paginator span {
+  border: .1em solid #888;
+  color: #444;
+  margin-left: .5em;
+  padding: .2em 1em .275em;
+  -moz-border-radius: 5px;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+.paginator .currentStep {
+  background: #DDD;
+  font-weight: bold;
+}
+.paginator a:hover {
+  background: #DDD;
+}
+.paginator a:first-child, .paginator span:first-child {
+  margin-left: 0;
+}
+.table-actions {
+  padding: .5em;
+  text-align: right;
 }
 
 /* dialogs, windows, boxes */
@@ -1069,6 +1138,11 @@ fieldset, .fieldset {
   font-style: italic;
 }
 
+/* override jQuery styles */
+.ui-menu-item {
+  list-style: none;
+}
+
 
 /*-----------------------------------
  *
@@ -1079,6 +1153,13 @@ fieldset, .fieldset {
 /* clickable items */
 .clickable {
   cursor: pointer;
+}
+
+/* the spinner */
+.spinner {
+  padding: .5em;
+  position: absolute;
+  right: 0;
 }
 
 /* clearance */

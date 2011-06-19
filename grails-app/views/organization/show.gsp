@@ -243,7 +243,7 @@
                 <td><g:link controller="person" action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
                 <td>${fieldValue(bean: personInstance, field: "firstName")}</td>
                 <td>${fieldValue(bean: personInstance, field: "phone")}</td>
-                <td>${fieldValue(bean: personInstance, field: "email1")}</td>
+                <td><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></td>
                 <td>
                   <g:link controller="person" action="edit" id="${personInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="person" action="delete" id="${personInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -289,14 +289,14 @@
             <g:each in="${organizationInstance.calls}" status="i" var="callInstance">
               <tr>
                 <td><input type="checkbox" id="call-multop-${callInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link action="show" id="${callInstance.id}">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
+                <td><g:link controller="call" action="show" id="${callInstance.id}">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: callInstance, field: "person")}</td>
                 <td><g:formatDate date="${callInstance.start}" style="SHORT" /></td>
                 <td><g:message code="call.type.${callInstance?.type}" /></td>
                 <td><g:message code="call.status.${callInstance?.status}" /></td>
                 <td>
-                  <g:link action="edit" id="${callInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link action="delete" id="${callInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                  <g:link controller="call" action="edit" id="${callInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="call" action="delete" id="${callInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
                 </td>
               </tr>
             </g:each>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fop version="1.0">
+  <default-page-settings width="210mm" height="297mm" />
+  <renderers>
+    <renderer mime="application/pdf">
+      <fonts>
+        <font kerning="yes" embed-url="servlet-context:/WEB-INF/data/fo/fonts/frutigerb.ttf">
+          <font-triplet name="Frutiger LT 57 Cn" style="normal" weight="bold"/>
+        </font>
+        <auto-detect/>
+      </fonts>
+    </renderer>
+  </renderers>
+</fop>

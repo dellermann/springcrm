@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import grails.converters.JSON
+
 class ServiceController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
@@ -12,6 +14,11 @@ class ServiceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [serviceInstanceList: Service.list(params), serviceInstanceTotal: Service.count()]
     }
+	
+	def selectorList = {
+		params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        [serviceInstanceList: Service.list(params), serviceInstanceTotal: Service.count()]
+	}
 
     def create = {
 		def res = Service.executeQuery("select max(s.number)+1 from Service s")
@@ -91,4 +98,18 @@ class ServiceController {
             redirect(action: "list")
         }
     }
+	
+	def get = {
+        def serviceInstance = Service.get(params.id)
+        if (!serviceInstance) {
+			render(status: 404)
+        } else {
+			JSON.use("deep") {
+				render(contentType:"text/json") {
+					fullNumber = serviceInstance.fullNumber
+					inventoryItem = serviceInstance
+				}
+			}
+        }
+	}
 }

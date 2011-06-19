@@ -28,7 +28,7 @@
         <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
         <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
         <li><a href="#">Verkaufspotentiale</a></li>
-        <li><a href="#">Angebote</a></li>
+        <li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li>
         <li><a href="#">Verkaufsbestellungen</a></li>
         <li><a href="#">Rechnungen</a></li>
       </ul>
@@ -53,7 +53,7 @@
         <li><a href="#">Lieferanten</a></li>
         <li><a href="#">Preislisten</a></li>
         <li><a href="#">Einkaufsbestellungen</a></li>
-        <li><a href="#">Angebote</a></li>
+        <li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li>
         <li><a href="#">Verkaufsbestellungen</a></li>
         <li><a href="#">Rechnungen</a></li>
       </ul>

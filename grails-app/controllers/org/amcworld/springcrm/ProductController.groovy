@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import grails.converters.JSON
+
 class ProductController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
@@ -12,6 +14,11 @@ class ProductController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [productInstanceList: Product.list(params), productInstanceTotal: Product.count()]
     }
+	
+	def selectorList = {
+		params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		[productInstanceList: Product.list(params), productInstanceTotal: Product.count()]
+	}
 
     def create = {
 		def res = Product.executeQuery("select max(p.number)+1 from Product p")
@@ -91,4 +98,18 @@ class ProductController {
             redirect(action: "list")
         }
     }
+	
+	def get = {
+        def productInstance = Product.get(params.id)
+        if (!productInstance) {
+			render(status: 404)
+        } else {
+			JSON.use("deep") {
+				render(contentType:"text/json") {
+					fullNumber = productInstance.fullNumber
+					inventoryItem = productInstance
+				}
+			}
+        }
+	}
 }
