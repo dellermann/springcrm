@@ -32,8 +32,8 @@
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'start', ' error')}">
           <g:hiddenField name="start" value="${formatDate(date: callInstance?.start, type: 'datetime')}" />
-          <g:textField name="start-date" value="${formatDate(date: callInstance?.start, type: 'date')}" size="10" class="date-input" />
-          <g:textField name="start-time" value="${formatDate(date: callInstance?.start, type: 'time')}" size="5" class="date-input" /><br />
+          <g:textField name="start-date" value="${formatDate(date: callInstance?.start, type: 'date')}" size="10" class="date-input date-input-date" />
+          <g:textField name="start-time" value="${formatDate(date: callInstance?.start, type: 'time')}" size="5" class="date-input date-input-time" /><br />
           <span class="info-msg"><g:message code="default.format.datetime.label" /></span>
           <g:hasErrors bean="${callInstance}" field="start">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="start"><g:message error="${it}" /> </g:eachError></span>

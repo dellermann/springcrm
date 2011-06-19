@@ -104,7 +104,7 @@
         </div>
         <div class="field${hasErrors(bean: personInstance, field: 'birthday', ' error')}">
           <g:hiddenField name="birthday" value="${formatDate(date: personInstance?.birthday, type: 'date')}" />
-          <g:textField name="birthday-date" value="${formatDate(date: personInstance?.birthday, type: 'date')}" size="10" class="date-input" /><br />
+          <g:textField name="birthday-date" value="${formatDate(date: personInstance?.birthday, type: 'date')}" size="10" class="date-input date-input-date" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${personInstance}" field="birthday">
             <span class="error-msg"><g:eachError bean="${personInstance}" field="birthday"><g:message error="${it}" /> </g:eachError></span>
