@@ -73,6 +73,10 @@ INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
 (604, 0, 'abgelehnt', 50, 'org.amcworld.springcrm.QuoteStage');
 
 INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+(700, 0, 'Dienstleistungen', 10, 'org.amcworld.springcrm.TermsAndConditions'),
+(701, 0, 'Waren', 20, 'org.amcworld.springcrm.TermsAndConditions');
+
+INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
 (1000, 0, 'Bekleidungsindustrie', 0, 'org.amcworld.springcrm.Industry'),
 (1001, 0, 'Banken', 0, 'org.amcworld.springcrm.Industry'),
 (1002, 0, 'Biotechnologie', 0, 'org.amcworld.springcrm.Industry'),
