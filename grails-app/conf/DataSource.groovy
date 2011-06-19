@@ -1,8 +1,9 @@
 dataSource {
     pooled = true
-    driverClassName = "org.hsqldb.jdbcDriver"
-    username = "sa"
-    password = ""
+    //driverClassName = "org.hsqldb.jdbcDriver"
+	driverClassName = "com.mysql.jdbc.Driver"
+    username = "projects"
+    password = "haluni21"
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -13,8 +14,9 @@ hibernate {
 environments {
     development {
         dataSource {
-            dbCreate = "create-drop" // one of 'create', 'create-drop','update'
-            url = "jdbc:hsqldb:mem:devDB"
+            dbCreate = "update" // one of 'create', 'create-drop','update'
+            //url = "jdbc:hsqldb:mem:devDB"
+			url = "jdbc:mysql://localhost/springcrm?autoreconnect=true"
         }
     }
     test {
