@@ -2,8 +2,11 @@
 
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format">
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                xmlns:barcode="http://barcode4j.krysalis.org/ns">
   <xsl:template name="footer-berlin">
+    <xsl:param name="barcode"/>
+    
     <fo:static-content flow-name="first-page-footer">
       <fo:table table-layout="fixed" width="158mm"
                 font-family="Frutiger LT 57 Cn" font-size="7pt"
@@ -16,7 +19,22 @@
         <fo:table-column column-number="6" column-width="17mm"/>
         <fo:table-body>
           <fo:table-row>
-            <fo:table-cell><fo:block></fo:block></fo:table-cell>
+            <fo:table-cell number-rows-spanned="3">
+              <fo:block>
+                <xsl:if test="$barcode != ''">
+                  <fo:instream-foreign-object>
+                    <barcode:barcode message="{$barcode}">
+                      <barcode:code128>
+                        <barcode:height>12mm</barcode:height>
+                        <barcode:human-readable>
+                          <barcode:placement>none</barcode:placement>
+                        </barcode:human-readable>
+                      </barcode:code128>
+                    </barcode:barcode>
+                  </fo:instream-foreign-object>
+                </xsl:if>
+              </fo:block>
+            </fo:table-cell>
             <fo:table-cell>
               <fo:block color="#39F" font-weight="bold">
                 Geschäftsführer
@@ -31,7 +49,6 @@
             <fo:table-cell><fo:block>30/190/00706</fo:block></fo:table-cell>
           </fo:table-row>
           <fo:table-row>
-            <fo:table-cell><fo:block></fo:block></fo:table-cell>
             <fo:table-cell>
               <fo:block>Daniel Ellermann</fo:block>
             </fo:table-cell>
@@ -41,7 +58,6 @@
             <fo:table-cell><fo:block>HRB 111687 B</fo:block></fo:table-cell>
           </fo:table-row>
           <fo:table-row>
-            <fo:table-cell><fo:block></fo:block></fo:table-cell>
             <fo:table-cell>
               <fo:block>Robert Kirchner</fo:block>
             </fo:table-cell>

@@ -52,7 +52,11 @@
       <fo:page-sequence master-reference="default" language="de"
                         hyphenate="true">
         <xsl:call-template name="header-berlin"/>
-        <xsl:call-template name="footer-berlin"/>
+        <xsl:call-template name="footer-berlin">
+          <xsl:with-param name="barcode">
+            <xsl:value-of select="key('entries', 'fullNumber')"/>
+          </xsl:with-param>
+        </xsl:call-template>
         <fo:static-content flow-name="rest-page-footer"
                            font-family="Frutiger LT 57 Cn" font-size="7pt"
                            color="#5F6A72">
@@ -207,10 +211,16 @@
                         color="#5F6A72" line-height="140%"
                         keep-together.within-page="always">
       <fo:block space-after="5mm">
-        Unser Angebot ist freibleibend. Es gelten unsere Allgemeinen
-        Geschäftsbedingungen. Für weitere Fragen stehen wir jederzeit gern zur
-        Verfügung. Sie erreichen uns unter den oben angegebenen
-        Hotline-Nummern.
+        <xsl:text>Unser Angebot ist freibleibend</xsl:text>
+        <xsl:if test="validUntil != ''">
+          <xsl:text> und gilt bis einschließlich </xsl:text>
+          <xsl:call-template name="format-date-long">
+            <xsl:with-param name="date" select="validUntil"/>
+          </xsl:call-template>
+        </xsl:if>
+        <xsl:text>. Es gelten unsere Allgemeinen Geschäftsbedingungen. Für
+        weitere Fragen stehen wir gern zur Verfügung. Sie erreichen uns unter
+        den oben angegebenen Hotline-Nummern.</xsl:text>
       </fo:block>
       <fo:block space-after="5mm">Vielen Dank für Ihr Interesse.</fo:block>
       <fo:block>Name des Bearbeiters</fo:block>
