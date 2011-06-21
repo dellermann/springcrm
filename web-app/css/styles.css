@@ -1147,6 +1147,76 @@ fieldset, .fieldset {
   list-style: none;
 }
 
+/* login page */
+#login {
+  display: table;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+#login body {
+  display: table-cell;
+  margin: 0;
+  padding: 0;
+  vertical-align: center;
+}
+#login aside {
+  background: #EEE;
+  border-bottom: .1em solid #6C8F18;
+  padding: 2em 5em;
+}
+#login aside div {
+  font-size: 108%;
+  margin: 0 auto;
+  text-align: center;
+  width: 40em;
+}
+#login #outer-container {
+  display: table;
+  margin: 8em auto 0;
+}
+#login #inner-container {
+  display: table-cell;
+}
+#login #login-form-container {
+  border: .1em solid #6C8F18;
+  padding: 2em 6em;
+}
+#login #logo {
+  background: url("../img/logo.png") no-repeat;
+  height: 91px;
+  margin: 0 0 3em;
+  min-width: 92px;
+}
+#login #logo strong {
+  padding-left: 120px;
+}
+#login fieldset, #login .row:last-child .label, #login .row:last-child .field {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+#login .label {
+  padding-bottom: 1em;
+  width: 120px;
+}
+#login .field {
+  padding-bottom: 1em;
+}
+#login input {
+  width: 120px;
+}
+#login .button {
+  margin: 0;
+}
+#login footer {
+  border-top: none;
+  padding-top: .7em;
+}
+#login footer div {
+  padding: 0;
+}
+
 
 /*-----------------------------------
  *

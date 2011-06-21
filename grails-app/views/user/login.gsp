@@ -1,64 +1,61 @@
-
-
 <%@ page import="org.amcworld.springcrm.User" %>
-<html>
+<!DOCTYPE html>
+
+<html id="login">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta name="layout" content="main" />
+  <meta charset="utf-8" />
+  <title><g:message code="default.login.title" /></title>
+  <link rel="stylesheet" href="${resource(dir:'css', file:'styles.css')}" />
+  <link rel="stylesheet" href="${resource(dir:'css/jquery/default', file:'jquery-ui-1.8.13.custom.css')}" />
+  <link rel="shortcut icon" href="${resource(dir:'img', file:'favicon.ico')}" type="image/x-icon" />
   <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
   <g:set var="entitiesName" value="${message(code: 'user.plural', default: 'Users')}" />
-  <title><g:message code="default.create.label" args="[entityName]" /></title>
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><a href="javascript:void 0;" class="green" onclick="springcrm.onClickSubmit('user-form');"><g:message code="default.button.save.label" /></a></li>
-        <li><g:link action="list" class="red"><g:message code="default.button.cancel.label" /></g:link></li>
-      </ul>
-    </nav>
-  </div>
-  <section id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message">${flash.message}</div>
-    </g:if>
-    <g:hasErrors bean="${userInstance}">
-    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
-    </g:hasErrors>
-    <h3><g:message code="user.login.label" default="Login" /></h3>
-    <g:form name="user-form" action="authenticate" >
-      <fieldset>
-        <div class="multicol-content">
-          <div class="col col-l">
+<section>
+  <g:if test="${flash.message}">
+  <aside>
+    <div class="message">${flash.message}</div>
+  </aside>
+  </g:if>
+  <div id="outer-container">
+    <div id="inner-container">
+      <div id="login-form-container">
+        <header>
+          <h1 id="logo"><strong>SpringCRM</strong></h1>
+        </header>
+        <g:form name="login-form" action="authenticate" >
+          <fieldset>
             <div class="row">
               <div class="label">
                 <label for="userName"><g:message code="user.userName.label" default="User Name" /></label>
               </div>
-              <div class="field${hasErrors(bean: userInstance, field: 'userName', ' error')}">
-                <g:textField name="userName" value="${userInstance?.userName}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
-                <g:hasErrors bean="${userInstance}" field="userName">
-                  <span class="error-msg"><g:eachError bean="${userInstance}" field="userName"><g:message error="${it}" /> </g:eachError></span>
-                </g:hasErrors>
+              <div class="field">
+                <g:textField name="userName" value="${userInstance?.userName}" size="20" />
               </div>
             </div>
-            
             <div class="row">
               <div class="label">
                 <label for="password"><g:message code="user.password.label" default="Password" /></label>
               </div>
-              <div class="field${hasErrors(bean: userInstance, field: 'password', ' error')}">
-                <g:passwordField name="password" value="${userInstance?.password}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
-                <g:hasErrors bean="${userInstance}" field="password">
-                  <span class="error-msg"><g:eachError bean="${userInstance}" field="password"><g:message error="${it}" /> </g:eachError></span>
-                </g:hasErrors>
+              <div class="field">
+                <g:passwordField name="password" value="${userInstance?.password}" size="20" />
               </div>
             </div>
-          </div>
-        </div>
-      </fieldset>
-    </g:form>
-  </section>
+            <div class="row">
+              <div class="label"></div>
+              <div class="field">
+                <g:submitButton class="button green" name="submit" value="${message(code:'default.button.login.label')}"/>
+              </div>
+            </div>
+          </fieldset>
+        </g:form>
+      </div>
+      <g:render template="/layouts/footer" />
+    </div>
+  </div>
+</section>
+<script type="text/javascript" src="${resource(dir:'js', file:'jquery-1.6.1.min.js')}"></script>
 </body>
 </html>

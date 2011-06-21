@@ -97,16 +97,15 @@ class UserController {
 		def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
 		if (userInstance) {
 			session.user = userInstance
-			flash.message = "Hello ${userInstance.userName}."
-			redirect(controller: 'organization', action: 'list')
+			redirect(uri: '/')
 		} else {
-			flash.message = "Invalid user name or password."
+			flash.message = "${message(code: 'user.authenticate.failed.message', default: 'Invalid user name or password. Please retry.')}"
 			redirect(action: 'login')
 		}
 	}
 	
 	def logout = {
-		//flash.message = "Good bye ${session.user.userName}"
+		flash.message = "${message(code: 'user.logout.message', default: 'You were logged out.')}"
 		session.user = null
 		redirect(action: 'login')
 	}
