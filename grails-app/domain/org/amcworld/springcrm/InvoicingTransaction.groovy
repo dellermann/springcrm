@@ -9,20 +9,20 @@ class InvoicingTransaction {
 		subject()
 		organization()
 		person(nullable:true)
-        billingAddrStreet(widget:"textarea")
+        billingAddrStreet(widget:'textarea')
         billingAddrPoBox()
         billingAddrPostalCode()
         billingAddrLocation()
         billingAddrState()
         billingAddrCountry()
-        shippingAddrStreet(widget:"textarea")
+        shippingAddrStreet(widget:'textarea')
         shippingAddrPoBox()
         shippingAddrPostalCode()
         shippingAddrLocation()
         shippingAddrState()
         shippingAddrCountry()
-		headerText(widget:"textarea")
-		footerText(widget:"textarea")
+		headerText(widget:'textarea')
+		footerText(widget:'textarea')
 		discountPercent(scale:2, min:0.0d)
 		discountAmount(scale:2, min:0.0d)
 		shippingCosts(scale:2, min:0.0d)
@@ -33,8 +33,8 @@ class InvoicingTransaction {
     }
 	static hasMany = [items:InvoicingItem]
 	static transients = [
-		"fullNumber", "billingAddr", "shippingAddr", "subTotal", 
-		"discountPercentAmount", "total", "taxRateSums"
+		'fullNumber', 'billingAddr', 'shippingAddr', 'subTotal', 
+		'discountPercentAmount', 'total', 'taxRateSums'
 	]
 	
 	int number
@@ -66,47 +66,47 @@ class InvoicingTransaction {
 	String getFullNumber() {
 		String s = number.toString()
 		if (organization) {
-			s += "-" + organization.number
+			s += '-' + organization.number
 		}
 		return s
 	}
 	
 	String getBillingAddr() {
-		String s = billingAddrStreet ?: ""
+		String s = billingAddrStreet ?: ''
 		if (billingAddrLocation) {
 			if (s) {
-				s += ","
+				s += ','
 			}
 			if (billingAddrPostalCode) {
 				if (s) {
-					s += " "
+					s += ' '
 				}
-				s += billingAddrPostalCode ?: ""
+				s += billingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += " "
+				s += ' '
 			}
-			s += billingAddrLocation ?: ""
+			s += billingAddrLocation ?: ''
 		}
 		return s
 	}
 	
 	String getShippingAddr() {
-		String s = shippingAddrStreet ?: ""
+		String s = shippingAddrStreet ?: ''
 		if (shippingAddrLocation) {
 			if (s) {
-				s += ","
+				s += ','
 			}
 			if (shippingAddrPostalCode) {
 				if (s) {
-					s += " "
+					s += ' '
 				}
-				s += shippingAddrPostalCode ?: ""
+				s += shippingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += " "
+				s += ' '
 			}
-			s += shippingAddrLocation ?: ""
+			s += shippingAddrLocation ?: ''
 		}
 		return s
 	}

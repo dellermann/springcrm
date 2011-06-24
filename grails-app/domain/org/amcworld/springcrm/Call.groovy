@@ -6,18 +6,18 @@ class Call {
 
     static constraints = {
 		subject(blank:false)
-		notes(widget:"textarea")
+		notes(widget:'textarea')
 		organization(nullable:true)
 		person(nullable:true)
 		phone(maxSize:40)
 		start()
-		type(inList:["incoming", "outgoing"])
-		status(inList:["planned", "completed", "acknowledged", "cancelled"])
+		type(inList:['incoming', 'outgoing'])
+		status(inList:['planned', 'completed', 'acknowledged', 'cancelled'])
 		dateCreated()
 		lastUpdated()
     }
 	static mapping = {
-		table "phone_call"
+		table 'phone_call'
     }
 	
 	String subject

@@ -5,40 +5,40 @@ class Organization {
     static constraints = {
         number(unique:true)
         name(blank:false)
-        billingAddrStreet(widget:"textarea")
-        billingAddrPoBox()
-        billingAddrPostalCode()
-        billingAddrLocation()
-        billingAddrState()
-        billingAddrCountry()
-        shippingAddrStreet(widget:"textarea")
-        shippingAddrPoBox()
-        shippingAddrPostalCode()
-        shippingAddrLocation()
-        shippingAddrState()
-        shippingAddrCountry()
-        phone(maxSize:40)
-        fax(maxSize:40)
-        phoneOther(maxSize:40)
-        email1(email:true)
-        email2(email:true)
-        website(url:/\s*/)
-		legalForm()
+        billingAddrStreet(widget:'textarea', nullable:true)
+        billingAddrPoBox(nullable:true)
+        billingAddrPostalCode(nullable:true)
+        billingAddrLocation(nullable:true)
+        billingAddrState(nullable:true)
+        billingAddrCountry(nullable:true)
+        shippingAddrStreet(widget:'textarea', nullable:true)
+        shippingAddrPoBox(nullable:true)
+        shippingAddrPostalCode(nullable:true)
+        shippingAddrLocation(nullable:true)
+        shippingAddrState(nullable:true)
+        shippingAddrCountry(nullable:true)
+        phone(maxSize:40, nullable:true)
+        fax(maxSize:40, nullable:true)
+        phoneOther(maxSize:40, nullable:true)
+        email1(email:true, nullable:true)
+        email2(email:true, nullable:true)
+        website(url:/\s*/, nullable:true)
+		legalForm(nullable:true)
         type(nullable:true)
         industry(nullable:true)
-        owner()
-        numEmployees()
+        owner(nullable:true)
+        numEmployees(nullable:true)
         rating(nullable:true)
-        notes(widget:"textarea")
+        notes(widget:'textarea', nullable:true)
 		dateCreated()
 		lastUpdated()
     }
     static hasMany = [persons:Person, calls:Call]
 	static mapping = {
-		calls column:"Organization"
+		calls column:'Organization'
 	}
 	static transients = [
-		"fullNumber", "shortName", "billingAddr", "shippingAddr"
+		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr'
 	]
 
     int number
@@ -72,65 +72,65 @@ class Organization {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "ORG-" + number
+		return "ORG-${number}"
 	}
 	
 	String getShortName() {
-		String res = name ?: ""
+		String res = name ?: ''
 		if (res.length() > 40) {
-			res = name.substring(0, 40) + "..."
+			res = name.substring(0, 40) + '...'
 		}
 		return res
 	}
 	
 	String getBillingAddr() {
-		String s = billingAddrStreet ?: ""
+		String s = billingAddrStreet ?: ''
 		if (billingAddrLocation) {
 			if (s) {
-				s += ","
+				s += ','
 			}
 			if (billingAddrPostalCode) {
 				if (s) {
-					s += " "
+					s += ' '
 				}
-				s += billingAddrPostalCode ?: ""
+				s += billingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += " "
+				s += ' '
 			}
-			s += billingAddrLocation ?: ""
+			s += billingAddrLocation ?: ''
 		}
 		return s
 	}
 	
 	String getShippingAddr() {
-		String s = shippingAddrStreet ?: ""
+		String s = shippingAddrStreet ?: ''
 		if (shippingAddrLocation) {
 			if (s) {
-				s += ","
+				s += ','
 			}
 			if (shippingAddrPostalCode) {
 				if (s) {
-					s += " "
+					s += ' '
 				}
-				s += shippingAddrPostalCode ?: ""
+				s += shippingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += " "
+				s += ' '
 			}
-			s += shippingAddrLocation ?: ""
+			s += shippingAddrLocation ?: ''
 		}
 		return s
 	}
 
     void setWebsite(String website) {
-        if ((website.size() > 0) && !(website =~ "^https?://")) {
-			website = "http://" + website
+        if ((website.size() > 0) && !(website =~ '^https?://')) {
+			website = "http://${website}"
         }
         this.website = website
     }
 
     String toString() {
-        return name ?: ""
+        return name ?: ''
     }
 }

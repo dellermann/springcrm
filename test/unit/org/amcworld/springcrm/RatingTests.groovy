@@ -13,8 +13,8 @@ class RatingTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        Rating rating = new Rating(name:"Active", orderId:30)
-        assertEquals "Active", rating.name
+        Rating rating = new Rating(name:'Active', orderId:30)
+        assertEquals 'Active', rating.name
         assertEquals 30, rating.orderId
     }
 }

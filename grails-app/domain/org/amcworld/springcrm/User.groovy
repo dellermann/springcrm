@@ -9,15 +9,15 @@ class User {
 		password(blank:false, password:true)
 		firstName(blank:false)
 		lastName(blank:false)
-        phone(maxSize:40)
-        phoneHome(maxSize:40)
-        mobile(maxSize:40)
-        fax(maxSize:40)
-        email(email:true)
+        phone(maxSize:40, nullable:true)
+        phoneHome(maxSize:40, nullable:true)
+        mobile(maxSize:40, nullable:true)
+        fax(maxSize:40, nullable:true)
+        email(blank:false, nullable:false, email:true)
 		dateCreated()
 		lastUpdated()
     }
-	static transients = ["fullName"]
+	static transients = ['fullName']
 	
 	String userName
 	String password
@@ -32,10 +32,10 @@ class User {
 	Date lastUpdated
 	
 	String getFullName() {
-		return "${firstName} ${lastName}"
+		return "${firstName ?: ''} ${lastName ?: ''}"
 	}
 
 	String toString() {
-		return userName
+		return userName ?: ''
 	}
 }

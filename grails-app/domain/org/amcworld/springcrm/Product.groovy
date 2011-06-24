@@ -5,11 +5,11 @@ import java.util.Date;
 class Product {
 
     static constraints = {
-		number(blank:false, unique:true)
+		number(unique:true)
 		name(blank:false)
 		category(nullable:true)
-		manufacturer()
-		retailer()
+		manufacturer(nullable:true)
+		retailer(nullable:true)
 		quantity(min:0.0d)
 		unit(nullable:true)
 		unitPrice(scale:2, min:0.01d)
@@ -18,14 +18,14 @@ class Product {
 		commission(min:0.0d)
 		salesStart(nullable:true)
 		salesEnd(nullable:true)
-        description(widget:"textarea")
+        description(widget:'textarea', nullable:true)
 		dateCreated()
 		lastUpdated()
     }
 	static mapping = {
-		sort "number"
+		sort 'number'
     }
-	static transients = ["fullNumber"]
+	static transients = ['fullNumber']
 	
 	int number
 	String name
@@ -45,10 +45,10 @@ class Product {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "PRD-" + number
+		return "PRD-${number}"
 	}
 	
 	String toString() {
-		return name ?: ""
+		return name ?: ''
 	}
 }

@@ -12,8 +12,8 @@ class OrgTypeTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        OrgType orgType = new OrgType(name:"Customer", orderId:10)
-        assertEquals "Customer", orgType.name
+        def orgType = new OrgType(name:'Customer', orderId:10)
+        assertEquals 'Customer', orgType.name
         assertEquals 10, orgType.orderId
     }
 }

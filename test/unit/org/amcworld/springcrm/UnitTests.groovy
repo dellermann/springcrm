@@ -13,8 +13,8 @@ class UnitTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        Unit unit = new Unit(name:"Meter", orderId:70)
-        assertEquals "Meter", unit.name
+        Unit unit = new Unit(name:'Meter', orderId:70)
+        assertEquals 'Meter', unit.name
         assertEquals 70, unit.orderId
     }
 }

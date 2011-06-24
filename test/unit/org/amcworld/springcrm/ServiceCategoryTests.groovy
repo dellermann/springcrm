@@ -14,8 +14,8 @@ class ServiceCategoryTests extends GrailsUnitTestCase {
 
     void testConstruct() {
         ServiceCategory cat = 
-			new ServiceCategory(name:"Development", orderId:60)
-        assertEquals "Development", cat.name
+			new ServiceCategory(name:'Development', orderId:60)
+        assertEquals 'Development', cat.name
         assertEquals 60, cat.orderId
     }
 }

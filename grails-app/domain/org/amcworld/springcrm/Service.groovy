@@ -3,7 +3,7 @@ package org.amcworld.springcrm
 class Service {
 
     static constraints = {
-		number(blank:false, unique:true)
+		number(unique:true)
 		name(blank:false)
 		category(nullable:true)
 		quantity(min:0.0d)
@@ -13,14 +13,14 @@ class Service {
 		commission(min:0.0d)
 		salesStart(nullable:true)
 		salesEnd(nullable:true)
-        description(widget:"textarea")
+        description(widget:'textarea', nullable:true)
 		dateCreated()
 		lastUpdated()
     }
 	static mapping = {
-		sort "number"
+		sort 'number'
     }
-	static transients = ["fullNumber"]
+	static transients = ['fullNumber']
 	
 	int number
 	String name
@@ -37,10 +37,10 @@ class Service {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "SRV-" + number
+		return "SRV-${number}"
 	}
 	
 	String toString() {
-		return name ?: ""
+		return name ?: ''
 	}
 }

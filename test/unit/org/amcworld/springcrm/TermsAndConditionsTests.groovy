@@ -14,8 +14,8 @@ class TermsAndConditionsTests extends GrailsUnitTestCase {
 
     void testConstruct() {
         TermsAndConditions tac =
-            new TermsAndConditions(name:"wares", orderId:120)
-        assertEquals "wares", tac.name
+            new TermsAndConditions(name:'wares', orderId:120)
+        assertEquals 'wares', tac.name
         assertEquals 120, tac.orderId
     }
 }

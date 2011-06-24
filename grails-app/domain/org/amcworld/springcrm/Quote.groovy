@@ -13,7 +13,7 @@ class Quote extends InvoicingTransaction {
     }
     static hasMany = [termsAndConditions:TermsAndConditions]
 	static mapping = {
-		items column:"Quote"
+		items column:'Quote'
 	}
 	
 	QuoteStage stage

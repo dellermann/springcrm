@@ -12,8 +12,8 @@ class IndustryTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        Industry industry = new Industry(name:"Energy", orderId:20)
-        assertEquals "Energy", industry.name
+        Industry industry = new Industry(name:'Energy', orderId:20)
+        assertEquals 'Energy', industry.name
         assertEquals 20, industry.orderId
     }
 }

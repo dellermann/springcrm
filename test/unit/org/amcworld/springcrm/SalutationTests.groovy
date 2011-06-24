@@ -12,8 +12,8 @@ class SalutationTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        Salutation salutation = new Salutation(name:"Mr.", orderId:40)
-        assertEquals "Mr.", salutation.name
+        Salutation salutation = new Salutation(name:'Mr.', orderId:40)
+        assertEquals 'Mr.', salutation.name
         assertEquals 40, salutation.orderId
     }
 }

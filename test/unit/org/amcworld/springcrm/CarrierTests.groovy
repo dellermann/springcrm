@@ -13,8 +13,8 @@ class CarrierTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        Carrier c = new Carrier(name:"DHL", orderId:110)
-        assertEquals "DHL", c.name
+        Carrier c = new Carrier(name:'DHL', orderId:110)
+        assertEquals 'DHL', c.name
         assertEquals 110, c.orderId
     }
 }

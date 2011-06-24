@@ -11,6 +11,6 @@ class SelValue {
     int orderId = 0
 
     String toString() {
-        return name ?: ""
+        return name ?: ''
     }
 }

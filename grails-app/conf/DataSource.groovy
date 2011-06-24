@@ -1,6 +1,5 @@
 dataSource {
     pooled = true
-    //driverClassName = "org.hsqldb.jdbcDriver"
 	driverClassName = "com.mysql.jdbc.Driver"
     username = "projects"
     password = "haluni21"
@@ -21,8 +20,11 @@ environments {
     }
     test {
         dataSource {
+			driverClassName = "org.hsqldb.jdbcDriver"
             dbCreate = "update"
             url = "jdbc:hsqldb:mem:testDb"
+			username = "sa"
+			password = ""
         }
     }
     production {

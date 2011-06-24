@@ -10,40 +10,40 @@ class Person {
         salutation(nullable:true)
         firstName(blank:false)
         lastName(blank:false)
-        mailingAddrStreet(widget:"textarea")
-        mailingAddrPoBox()
-        mailingAddrPostalCode()
-        mailingAddrLocation()
-        mailingAddrState()
-        mailingAddrCountry()
-        otherAddrStreet(widget:"textarea")
-        otherAddrPoBox()
-        otherAddrPostalCode()
-        otherAddrLocation()
-        otherAddrState()
-        otherAddrCountry()
-        phone(maxSize:40)
-        phoneHome(maxSize:40)
-        mobile(maxSize:40)
-        fax(maxSize:40)
-        phoneAssistant(maxSize:40)
-        phoneOther(maxSize:40)
-        email1(email:true)
-        email2(email:true)
-        jobTitle()
-        department()
-        assistant()
+        mailingAddrStreet(widget:'textarea', nullable:true)
+        mailingAddrPoBox(nullable:true)
+        mailingAddrPostalCode(nullable:true)
+        mailingAddrLocation(nullable:true)
+        mailingAddrState(nullable:true)
+        mailingAddrCountry(nullable:true)
+        otherAddrStreet(widget:'textarea', nullable:true)
+        otherAddrPoBox(nullable:true)
+        otherAddrPostalCode(nullable:true)
+        otherAddrLocation(nullable:true)
+        otherAddrState(nullable:true)
+        otherAddrCountry(nullable:true)
+        phone(maxSize:40, nullable:true)
+        phoneHome(maxSize:40, nullable:true)
+        mobile(maxSize:40, nullable:true)
+        fax(maxSize:40, nullable:true)
+        phoneAssistant(maxSize:40, nullable:true)
+        phoneOther(maxSize:40, nullable:true)
+        email1(email:true, nullable:true)
+        email2(email:true, nullable:true)
+        jobTitle(nullable:true)
+        department(nullable:true)
+        assistant(nullable:true)
         birthday(nullable:true)
-        notes(widget:"textarea")
+        notes(widget:'textarea', nullable:true)
 		dateCreated()
 		lastUpdated()
     }
     static belongsTo = [organization:Organization]
     static hasMany = [calls:Call]
 	static mapping = {
-		calls column:"Person"
+		calls column:'Person'
 	}
-	static transients = ["fullNumber", "mailingAddr", "otherAddr"]
+	static transients = ['fullNumber', 'mailingAddr', 'otherAddr']
 	
     int number
     Organization organization
@@ -80,59 +80,59 @@ class Person {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "PER-" + number
+		return "PER-${number}"
 	}
 	
 	String getMailingAddr() {
-		String s = mailingAddrStreet ?: ""
+		String s = mailingAddrStreet ?: ''
 		if (mailingAddrLocation) {
 			if (s) {
-				s += ","
+				s += ','
 			}
 			if (mailingAddrPostalCode) {
 				if (s) {
-					s += " "
+					s += ' '
 				}
-				s += mailingAddrPostalCode ?: ""
+				s += mailingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += " "
+				s += ' '
 			}
-			s += mailingAddrLocation ?: ""
+			s += mailingAddrLocation ?: ''
 		}
 		return s
 	}
 	
 	String getOtherAddr() {
-		String s = otherAddrStreet ?: ""
+		String s = otherAddrStreet ?: ''
 		if (otherAddrLocation) {
 			if (s) {
-				s += ","
+				s += ','
 			}
 			if (otherAddrPostalCode) {
 				if (s) {
-					s += " "
+					s += ' '
 				}
-				s += otherAddrPostalCode ?: ""
+				s += otherAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += " "
+				s += ' '
 			}
-			s += otherAddrLocation ?: ""
+			s += otherAddrLocation ?: ''
 		}
 		return s
 	}
 
     String toString() {
-		String s = ""
+		String s = ''
 		if (lastName) {
-			s += lastName ?: ""
+			s += lastName ?: ''
 		}
 		if (lastName && firstName) {
-			s += ", "
+			s += ', '
 		}
 		if (firstName) {
-			s += firstName ?: ""
+			s += firstName ?: ''
 		}
         return s
     }

@@ -3,11 +3,11 @@ package org.amcworld.springcrm
 class InvoicingItem {
 
     static constraints = {
-		number(blank:false)
+		number(unique:true)
 		quantity(min:0.0d)
 		unit()
 		name(blank:false)
-		description()
+		description(nullable:true)
 		unitPrice(scale:2, min:0.01d)
 		discountPercent(scale:2, min:0.0d)
 		discountAmount(scale:2, min:0.0d)
@@ -18,11 +18,11 @@ class InvoicingItem {
 		//invoice(nullable:true)
     }
 	static mapping = {
-		sort "orderId"
+		sort 'orderId'
 	}
-	static transients = ["total"]
+	static transients = ['total']
 	
-	String number
+	int number
 	double quantity
 	String unit
 	String name

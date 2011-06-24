@@ -56,7 +56,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		DateFormat format;
 		if (text.isLong()) {
 			format = new SimpleDateFormat(
-				(text.length() > 6) ? "ddMMyyyy" : "ddMMyy"
+				(text.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
 			)
 		} else {
 			format = DateFormat.getDateInstance(DateFormat.SHORT)
@@ -71,7 +71,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 	protected void parseTime(Date d, String text) {
 		DateFormat format;
 		if (text.isLong()) {
-			format = new SimpleDateFormat("HHmm")
+			format = new SimpleDateFormat('HHmm')
 		} else {
 			format = DateFormat.getTimeInstance(DateFormat.SHORT)
 		}

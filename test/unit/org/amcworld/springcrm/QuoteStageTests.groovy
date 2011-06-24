@@ -13,8 +13,8 @@ class QuoteStageTests extends GrailsUnitTestCase {
     }
 
     void testConstruct() {
-        QuoteStage qs = new QuoteStage(name:"sent", orderId:100)
-        assertEquals "sent", qs.name
+        QuoteStage qs = new QuoteStage(name:'sent', orderId:100)
+        assertEquals 'sent', qs.name
         assertEquals 100, qs.orderId
     }
 }
