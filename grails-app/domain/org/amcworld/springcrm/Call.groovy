@@ -9,7 +9,7 @@ class Call {
 		notes(widget:'textarea')
 		organization(nullable:true)
 		person(nullable:true)
-		phone(maxSize:40)
+		phone(maxSize:40, nullable:true)
 		start()
 		type(inList:['incoming', 'outgoing'])
 		status(inList:['planned', 'completed', 'acknowledged', 'cancelled'])

@@ -4,10 +4,10 @@ import grails.converters.JSON
 
 class OrganizationController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
+    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: 'list', params: params)
     }
 
     def list = {
@@ -16,7 +16,7 @@ class OrganizationController {
     }
 
     def create = {
-		def res = Organization.executeQuery("select max(o.number)+1 from Organization o")
+		def res = Organization.executeQuery('select max(o.number)+1 from Organization o')
         def organizationInstance = new Organization(number:res[0] ?: 10000)
         organizationInstance.properties = params
         return [organizationInstance: organizationInstance]
@@ -26,9 +26,9 @@ class OrganizationController {
         def organizationInstance = new Organization(params)
         if (organizationInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
-            redirect(action: "show", id: organizationInstance.id)
+            redirect(action: 'show', id: organizationInstance.id)
         } else {
-            render(view: "create", model: [organizationInstance: organizationInstance])
+            render(view: 'create', model: [organizationInstance: organizationInstance])
         }
     }
 
@@ -36,7 +36,7 @@ class OrganizationController {
         def organizationInstance = Organization.get(params.id)
         if (!organizationInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         } else {
             [organizationInstance: organizationInstance]
         }
@@ -46,7 +46,7 @@ class OrganizationController {
         def organizationInstance = Organization.get(params.id)
         if (!organizationInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         } else {
             return [organizationInstance: organizationInstance]
         }
@@ -59,21 +59,21 @@ class OrganizationController {
                 def version = params.version.toLong()
                 if (organizationInstance.version > version) {
                     
-                    organizationInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'organization.label', default: 'Organization')] as Object[], "Another user has updated this Organization while you were editing")
-                    render(view: "edit", model: [organizationInstance: organizationInstance])
+                    organizationInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'organization.label', default: 'Organization')] as Object[], 'Another user has updated this Organization while you were editing')
+                    render(view: 'edit', model: [organizationInstance: organizationInstance])
                     return
                 }
             }
             organizationInstance.properties = params
             if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
-                redirect(action: "show", id: organizationInstance.id)
+                redirect(action: 'show', id: organizationInstance.id)
             } else {
-                render(view: "edit", model: [organizationInstance: organizationInstance])
+                render(view: 'edit', model: [organizationInstance: organizationInstance])
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         }
     }
 
@@ -83,14 +83,14 @@ class OrganizationController {
             try {
                 organizationInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
-                redirect(action: "list")
+                redirect(action: 'list')
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
-                redirect(action: "show", id: params.id)
+                redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         }
     }
 	

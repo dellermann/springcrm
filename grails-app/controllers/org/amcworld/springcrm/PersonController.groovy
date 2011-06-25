@@ -2,10 +2,10 @@ package org.amcworld.springcrm
 
 class PersonController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
+    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
     def index = {
-        redirect(action: "list", params: params)
+        redirect(action: 'list', params: params)
     }
 
     def list = {
@@ -14,7 +14,7 @@ class PersonController {
     }
 
     def create = {
-		def res = Person.executeQuery("select max(p.number)+1 from Person p")
+		def res = Person.executeQuery('select max(p.number)+1 from Person p')
         def personInstance = new Person(number:res[0] ?: 10000)
         personInstance.properties = params
         return [personInstance: personInstance]
@@ -24,9 +24,9 @@ class PersonController {
         def personInstance = new Person(params)
         if (personInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
-            redirect(action: "show", id: personInstance.id)
+            redirect(action: 'show', id: personInstance.id)
         } else {
-            render(view: "create", model: [personInstance: personInstance])
+            render(view: 'create', model: [personInstance: personInstance])
         }
     }
 
@@ -34,7 +34,7 @@ class PersonController {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         } else {
             [personInstance: personInstance]
         }
@@ -44,7 +44,7 @@ class PersonController {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         } else {
             return [personInstance: personInstance]
         }
@@ -57,21 +57,21 @@ class PersonController {
                 def version = params.version.toLong()
                 if (personInstance.version > version) {
                     
-                    personInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'person.label', default: 'Person')] as Object[], "Another user has updated this Person while you were editing")
-                    render(view: "edit", model: [personInstance: personInstance])
+                    personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
+                    render(view: 'edit', model: [personInstance: personInstance])
                     return
                 }
             }
             personInstance.properties = params
             if (!personInstance.hasErrors() && personInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
-                redirect(action: "show", id: personInstance.id)
+                redirect(action: 'show', id: personInstance.id)
             } else {
-                render(view: "edit", model: [personInstance: personInstance])
+                render(view: 'edit', model: [personInstance: personInstance])
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         }
     }
 
@@ -81,14 +81,14 @@ class PersonController {
             try {
                 personInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])}"
-                redirect(action: "list")
+                redirect(action: 'list')
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])}"
-                redirect(action: "show", id: params.id)
+                redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
-            redirect(action: "list")
+            redirect(action: 'list')
         }
     }
 }
