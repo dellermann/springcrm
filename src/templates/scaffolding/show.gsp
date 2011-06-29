@@ -65,8 +65,8 @@
                 <%  } else if(!p.type.isArray()) { %>
                 \${fieldValue(bean: ${propertyName}, field: "${p.name}")}
                 <%  } %>
-			  </div>
-			</div>
+      			  </div>
+      			</div>
             <%  } %>
           </div>
           <div class="col col-r">
