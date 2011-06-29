@@ -14,9 +14,10 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS sel_value (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   version bigint(20) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  order_id int(11) NOT NULL,
   class varchar(255) NOT NULL,
+  name varchar(255) NOT NULL,
+  order_id int(11) NOT NULL,
+  tax_value double DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42 ;
 
