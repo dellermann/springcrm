@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.amcworld.springcrm</groupId>
+  <artifactId>springcrm</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>SpringCRM</name>
+  <description>SpringCRM is a full-featured customer relationship management system.</description>
+  <url>http://www.amc-world.de/springcrm</url>
+  
+  <organization>
+    <name>AMC World Technologies GmbH</name>
+    <url>http://www.amc-world.de</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>dellermann</id>
+      <name>Daniel Ellermann</name>
+      <email>d.ellermann@amc-world.de</email>
+      <organization>AMC World Technologies GmbH</organization>
+      <roles>
+        <role>manager</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <reporting>
+     <plugins>
+        <plugin>
+           <groupId>gr.abiss.mvn.plugins</groupId>
+           <artifactId>maven-jstools-plugin</artifactId>
+           <version>0.6</version>
+           <inherited>false</inherited>
+           <configuration>
+              <!-- the default is src/main/js -->
+              <jsDir>${basedir}/web-app/js</jsDir>
+              <!-- this is actually the default -->
+              <includes>**/*.js</includes>
+              <!-- maybe you need to exclude compressed JS files -->
+              <excludes>**/jquery*.js **/*.min.js</excludes>
+              <!-- this is actually the default -->
+              <caseSensitive>true</caseSensitive>
+              <!--
+              <jslintJsFilePath>${basedir}/scripts/javascript/jslint.js</jslintJsFilePath>
+              -->
+              <!-- for more configuration properties, see the goals documentation -->
+           </configuration>
+           <reportSets>
+              <reportSet>
+                 <reports>
+                    <!-- include the desired reports -->
+                    <report>jslint</report>
+                    <report>jsdoc</report>
+                 </reports>
+              </reportSet>
+           </reportSets>
+        </plugin>
+     </plugins>
+  </reporting>
+</project>
