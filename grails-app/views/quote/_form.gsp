@@ -314,6 +314,9 @@
 <fieldset>
   <h4><g:message code="quote.fieldset.items.label" /></h4>
   <div class="fieldset-content">
+    <g:each in="${quoteInstance.items}" status="i" var="item">
+    <input type="hidden" name="items[${i}].id" value="${item.id}" />
+    </g:each>
     <table id="quote-items" class="invoicing-items content-table">
       <thead>
         <tr>
@@ -330,9 +333,16 @@
       </thead>
       <tfoot>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.subTotal.label" default="Subtotal" /></label></td>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.subTotalNet.label" default="Subtotal excl. VAT" /></label></td>
           <td headers="quote-items-unitPrice"></td>
-          <td headers="quote-items-total" class="invoicing-items-total"><span id="invoicing-items-subtotal" class="value">0,00</span> €</td>
+          <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-net" class="value">0,00</span>&nbsp;€</strong></td>
+          <td headers="quote-items-tax"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.subTotalGross.label" default="Subtotal incl. VAT" /></label></td>
+          <td headers="quote-items-unitPrice"></td>
+          <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;€</strong></td>
           <td headers="quote-items-tax"></td>
           <td></td>
         </tr>
@@ -361,23 +371,6 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="quote.shippingCosts.label" default="Shipping Costs" /></label></td>
-          <td headers="quote-items-unitPrice"></td>
-          <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'shippingCosts', ' error')}">
-            <g:textField name="shippingCosts" value="${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;€<br />
-            <g:hasErrors bean="${quoteInstance}" field="shippingCosts">
-              <span class="error-msg"><g:eachError bean="${quoteInstance}" field="shippingCosts"><g:message error="${it}" /> </g:eachError></span>
-            </g:hasErrors>
-          </td>
-          <td headers="quote-items-tax" class="invoicing-items-tax${hasErrors(bean: quoteInstance, field: 'shippingTax', ' error')}">
-            <g:textField name="shippingTax" value="${fieldValue(bean: quoteInstance, field: 'shippingTax')}" size="4" />&nbsp;%<br />
-            <g:hasErrors bean="${quoteInstance}" field="shippingTax">
-              <span class="error-msg"><g:eachError bean="${quoteInstance}" field="shippingTax"><g:message error="${it}" /> </g:eachError></span>
-            </g:hasErrors>
-          </td>
-          <td></td>
-        </tr>
-        <tr>
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="quote.adjustment.label" default="Adjustment" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'adjustment', ' error')}">
@@ -398,7 +391,7 @@
         </tr>
       </tfoot>
       <tbody id="invoicing-items">
-      <g:each in="${quoteInstance.items}" status="i" var="item">
+        <g:each in="${quoteInstance.items}" status="i" var="item">
         <tr>
           <td headers="quote-items-pos" class="invoicing-items-pos">${i + 1}.</td>
           <td headers="quote-items-number" class="invoicing-items-number">
@@ -428,7 +421,26 @@
             <a href="javascript:void 0;" class="remove-btn"><img src="${resource(dir: 'img', file: 'remove.png')}" alt="${message(code: 'default.btn.remove')}" title="${message(code: 'default.btn.remove')}" width="16" height="16" /></a>
           </td>
         </tr>
-      </g:each>
+        </g:each>
+      </tbody>
+      <tbody>
+        <tr>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="quote.shippingCosts.label" default="Shipping Costs" /></label></td>
+          <td headers="quote-items-unitPrice"></td>
+          <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'shippingCosts', ' error')}">
+            <g:textField name="shippingCosts" value="${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;€<br />
+            <g:hasErrors bean="${quoteInstance}" field="shippingCosts">
+              <span class="error-msg"><g:eachError bean="${quoteInstance}" field="shippingCosts"><g:message error="${it}" /> </g:eachError></span>
+            </g:hasErrors>
+          </td>
+          <td headers="quote-items-tax" class="invoicing-items-tax${hasErrors(bean: quoteInstance, field: 'shippingTax', ' error')}">
+            <g:textField name="shippingTax" value="${formatNumber(number: quoteInstance?.shippingTax, minFractionDigits: 1)}" size="4" />&nbsp;%<br />
+            <g:hasErrors bean="${quoteInstance}" field="shippingTax">
+              <span class="error-msg"><g:eachError bean="${quoteInstance}" field="shippingTax"><g:message error="${it}" /> </g:eachError></span>
+            </g:hasErrors>
+          </td>
+          <td></td>
+        </tr>
       </tbody>
     </table>
     <div class="table-actions">

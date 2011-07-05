@@ -43,26 +43,26 @@
             <div class="row">
               <div class="label"><g:message code="quote.number.label" default="Number" /></div>
               <div class="field">${quoteInstance?.fullNumber}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="quote.subject.label" default="Subject" /></div>
               <div class="field">${fieldValue(bean: quoteInstance, field: "subject")}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="quote.organization.label" default="Organization" /></div>
               <div class="field">
                 <g:link controller="organization" action="show" id="${quoteInstance?.organization?.id}">${quoteInstance?.organization?.encodeAsHTML()}</g:link>
-			  </div>
-			</div>
+      			  </div>
+      			</div>
             
             <div class="row">
               <div class="label"><g:message code="quote.person.label" default="Person" /></div>
               <div class="field">
                 <g:link controller="person" action="show" id="${quoteInstance?.person?.id}">${quoteInstance?.person?.encodeAsHTML()}</g:link>
-			  </div>
-			</div>
+      			  </div>
+      			</div>
                         
             <div class="row">
               <div class="label"><g:message code="quote.carrier.label" default="Carrier" /></div>
@@ -210,44 +210,60 @@
             </thead>
             <tfoot>
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.subTotal.label" default="Subtotal" /></label></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="quote.subTotalNet.label" default="Subtotal excl. VAT" /></strong></td>
                 <td headers="quote-items-unitPrice"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: quoteInstance?.subTotal, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatNumber(number: quoteInstance?.subTotalNet, minFractionDigits: 2)}&nbsp;€</strong></td>
                 <td headers="quote-items-tax"></td>
               </tr>
+              <g:each in="${quoteInstance.taxRateSums}" var="item">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.discountPercent.label" default="Discount Percent" /></label></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="quote.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
+                <td headers="quote-items-unitPrice"></td>
+                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: item.value, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-tax"></td>
+              </tr>
+              </g:each>
+              <g:if test="${quoteInstance?.discountPercent != 0 || quoteInstance?.discountAmount != 0 || quoteInstance?.adjustment != 0}">
+              <tr>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="quote.subTotalGross.label" default="Subtotal incl. VAT" /></strong></td>
+                <td headers="quote-items-unitPrice"></td>
+                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatNumber(number: quoteInstance?.subTotalGross, minFractionDigits: 2)}&nbsp;€</strong></td>
+                <td headers="quote-items-tax"></td>
+              </tr>
+              </g:if>
+              <g:if test="${quoteInstance?.discountPercent != 0}">
+              <tr>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="quote.discountPercent.label" default="Discount Percent" /></td>
                 <td headers="quote-items-unitPrice" class="invoicing-items-unit-price">${formatNumber(number: quoteInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: quoteInstance?.discountPercentAmount, minFractionDigits: 2)}&nbsp;€</td>
                 <td headers="quote-items-tax"></td>
               </tr>
+              </g:if>
+              <g:if test="${quoteInstance?.discountAmount != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.discountAmount.label" default="Discount Amount" /></label></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="quote.discountAmount.label" default="Discount Amount" /></td>
                 <td headers="quote-items-unitPrice"></td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: quoteInstance?.discountAmount, minFractionDigits: 2)}&nbsp;€</td>
                 <td headers="quote-items-tax"></td>
               </tr>
+              </g:if>
+              <g:if test="${quoteInstance?.adjustment != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.shippingCosts.label" default="Shipping Costs" /></label></td>
-                <td headers="quote-items-unitPrice"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}&nbsp;€</td>
-                <td headers="quote-items-tax" class="invoicing-items-tax">${fieldValue(bean: quoteInstance, field: 'shippingTax')}&nbsp;%</td>
-              </tr>
-              <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.adjustment.label" default="Adjustment" /></label></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="quote.adjustment.label" default="Adjustment" /></td>
                 <td headers="quote-items-unitPrice"></td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: quoteInstance?.adjustment, minFractionDigits: 2)}&nbsp;€</td>
                 <td headers="quote-items-tax"></td>
               </tr>
+              </g:if>
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.total.label" default="Total" /></label></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="quote.total.label" default="Total" /></strong></td>
                 <td headers="quote-items-unitPrice"></td>
                 <td headers="quote-items-total" class="invoicing-items-total total">${formatNumber(number: quoteInstance?.total, minFractionDigits: 2)}&nbsp;€</td>
                 <td headers="quote-items-tax"></td>
               </tr>
             </tfoot>
             <tbody id="invoicing-items">
-            <g:each in="${quoteInstance.items}" status="i" var="item">
+              <g:each in="${quoteInstance.items}" status="i" var="item">
               <tr>
                 <td headers="quote-items-pos" class="invoicing-items-pos">${i + 1}.</td>
                 <td headers="quote-items-number" class="invoicing-items-number">${item.number}</td>
@@ -258,7 +274,16 @@
                 <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: item.total, minFractionDigits: 2)}</span>&nbsp;€</td>
                 <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>
-            </g:each>
+              </g:each>
+            </tbody>
+            <tbody>
+              <tr>
+                <td headers="quote-items-pos" class="invoicing-items-pos" colspan="4"></td>
+                <td headers="quote-items-name" class="invoicing-items-name"><g:message code="quote.shippingCosts.label" default="Shipping Costs" /></td>
+                <td headers="quote-items-unit-price" class="invoicing-items-unit-price"></td> 
+                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: quoteInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
+              </tr>
             </tbody>
           </table>
         </div>

@@ -456,11 +456,11 @@ body {
   line-height: 16px;
   padding: .2em 2em .25em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
-  -khtml-border-radius: 5px;
+  -khtml-border-radius: .5em;
   -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -moz-border-radius: 5px;
+  -moz-border-radius: .5em;
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -webkit-border-radius: 5px;
+  -webkit-border-radius: .5em;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 }
 
@@ -615,11 +615,11 @@ footer {
   text-align: center;
   text-decoration: none;
   text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
-  -khtml-border-radius: 5px;
+  -khtml-border-radius: .5em;
   -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -moz-border-radius: 5px;
+  -moz-border-radius: .5em;
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -webkit-border-radius: 5px;
+  -webkit-border-radius: .5em;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 }
 .button:active {
@@ -928,9 +928,9 @@ button, input[type=button], input[type=password], input[type=reset],
 {
   background: #F0F0F0;
   border: .1em solid #6C8F18;
-  border-radius: 2px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
+  border-radius: .2em;
+  -moz-border-radius: .2em;
+  -webkit-border-radius: .2em;
 }
 input[type=text], input[type=password], textarea {
   padding: .1em .2em;
@@ -993,6 +993,9 @@ fieldset, .fieldset {
   background: #CCC;
   border-top: 1px solid white;
 }
+.content-table tbody tr:last-child {
+  border-bottom: 1px solid white;
+}
 .content-table td, .content-table th {
   border-right: 1px solid white;
 }
@@ -1008,8 +1011,10 @@ fieldset, .fieldset {
   vertical-align: top;
 }
 .invoicing-items-pos {
-  padding-top: .7em;
   text-align: right;
+}
+form .invoicing-items-pos {
+  padding-top: .7em;
 }
 .invoicing-items-number {
   text-align: center;
@@ -1046,16 +1051,16 @@ fieldset, .fieldset {
 .empty-list {
   background: #DDD;
   border: .1em solid #6C8F18;
-  border-radius: 5px;
+  border-radius: .5em;
   box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
   margin: 7em auto 0;
   padding: 2em;
   width: 50%;
-  -khtml-border-radius: 5px;
+  -khtml-border-radius: .5em;
   -khtml-box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
-  -moz-border-radius: 5px;
+  -moz-border-radius: .5em;
   -moz-box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
-  -webkit-border-radius: 5px;
+  -webkit-border-radius: .5em;
   -webkit-box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
 }
 .empty-list p {
@@ -1072,8 +1077,12 @@ fieldset, .fieldset {
   color: #444;
   margin-left: .5em;
   padding: .2em 1em .275em;
-  -moz-border-radius: 5px;
+  -khtml-border-radius: .5em;
+  -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  -moz-border-radius: .5em;
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  -webkit-border-radius: .5em;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 }
 .paginator .currentStep {
   background: #DDD;
@@ -1094,16 +1103,16 @@ fieldset, .fieldset {
 .flash-message {
   background: #DDD;
   border: .1em solid;
-  border-radius: 3px;
+  border-radius: .3em;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
   margin-bottom: 2em;
   padding: .5em 1em;
   width: 50%;
-  -khtml-border-radius: 3px;
+  -khtml-border-radius: .3em;
   -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
-  -moz-border-radius: 3px;
+  -moz-border-radius: .3em;
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
-  -webkit-border-radius: 3px;
+  -webkit-border-radius: .3em;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
 }
 .message {
@@ -1181,7 +1190,11 @@ fieldset, .fieldset {
 }
 #login #login-form-container {
   border: .1em solid #6C8F18;
+  border-radius: .5em;
   padding: 2em 6em;
+  -khtml-border-radius: .5em;
+  -moz-border-radius: .5em;
+  -webkit-border-radius: .5em;
 }
 #login #logo {
   background: url("../img/logo.png") no-repeat;

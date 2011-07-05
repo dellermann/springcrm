@@ -35,6 +35,7 @@
     </g:form>
   </section>
   <content tag="jsTexts">
+  taxRateLabel: "${message(code: 'quote.taxRate.label')}",
   productSel: "${message(code: 'invoicingItem.selector.products.title')}",
   serviceSel: "${message(code: 'invoicingItem.selector.services.title')}",
   upBtn: "${message(code: 'default.btn.up')}",

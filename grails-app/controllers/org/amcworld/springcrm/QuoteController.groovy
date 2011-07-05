@@ -107,13 +107,14 @@ class QuoteController {
 				fullNumber:quoteInstance.fullNumber,
 				taxRates:quoteInstance.taxRateSums,
 				values:[
-					subTotal:quoteInstance.subTotal,
+			        subtotalNet:quoteInstance.subTotalNet,
+					subtotalGross:quoteInstance.subTotalGross,
 					discountPercentAmount:quoteInstance.discountPercentAmount,
 					total:quoteInstance.total
 				]
 			]
 			String xml = (data as XML).toString()
-			println xml
+//			println xml
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(

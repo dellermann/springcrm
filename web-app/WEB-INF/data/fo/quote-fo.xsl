@@ -192,23 +192,19 @@
         </fo:table-row>
       </fo:table-header>
       <fo:table-footer>
-        <xsl:apply-templates select="key('values', 'subTotal')"/>
-        <xsl:apply-templates select="discountPercent"/>
-        <xsl:apply-templates select="discountAmount"/>
-        <xsl:apply-templates select="shippingCosts"/>
-        <xsl:if test="count(//entry[@key='taxRates']/entry) = 0">
-          <xsl:apply-templates select="shippingTax"/>
-        </xsl:if>
-        <xsl:apply-templates select="adjustment"/>
-        <xsl:apply-templates select="key('values', 'total')" mode="excl-vat"/>
+        <xsl:apply-templates select="key('values', 'subtotalNet')"/>
         <xsl:apply-templates select="key('entries', 'taxRates')"/>
-        <xsl:if test="count(//entry[@key='taxRates']/entry) != 0">
-          <xsl:apply-templates select="shippingTax"/>
+        <xsl:if test="discountPercent != 0 or discountAmount != 0 or adjustment != 0">
+          <xsl:apply-templates select="key('values', 'subtotalGross')"/>
+          <xsl:apply-templates select="discountPercent"/>
+          <xsl:apply-templates select="discountAmount"/>
+          <xsl:apply-templates select="adjustment"/>
         </xsl:if>
-        <xsl:apply-templates select="key('values', 'total')" mode="incl-vat"/>
+        <xsl:apply-templates select="key('values', 'total')"/>
       </fo:table-footer>
       <fo:table-body>
         <xsl:apply-templates select="items"/>
+        <xsl:apply-templates select="shippingCosts"/>
       </fo:table-body>
     </fo:table>
 
@@ -311,14 +307,33 @@
     </fo:table-cell>
   </xsl:template>
 
-  <xsl:template match="entry[@key='subTotal']">
+  <xsl:template match="entry[@key='subtotalNet']">
     <fo:table-row border-before-color="#5F6A72" border-before-style="solid"
                   border-before-width="0.5pt">
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
       </fo:table-cell>
       <fo:table-cell padding="0.5mm 1mm">
-        <fo:block font-weight="bold">Zwischensumme</fo:block>
+        <fo:block font-weight="bold">Angebotssumme zzgl. MwSt.</fo:block>
+      </fo:table-cell>
+      <fo:table-cell><fo:block></fo:block></fo:table-cell>
+      <fo:table-cell padding="0.5mm 1mm" text-align="right">
+        <fo:block font-weight="bold">
+          <xsl:value-of select="format-number(number(), '#.##0,00')"/>
+          <xsl:text> €</xsl:text>
+        </fo:block>
+      </fo:table-cell>
+    </fo:table-row>
+  </xsl:template>
+
+  <xsl:template match="entry[@key='subtotalGross']">
+    <fo:table-row border-before-color="#5F6A72" border-before-style="solid"
+                  border-before-width="0.5pt">
+      <fo:table-cell number-columns-spanned="2">
+        <fo:block></fo:block>
+      </fo:table-cell>
+      <fo:table-cell padding="0.5mm 1mm">
+        <fo:block font-weight="bold">Zwischensumme einschl. MwSt.</fo:block>
       </fo:table-cell>
       <fo:table-cell><fo:block></fo:block></fo:table-cell>
       <fo:table-cell padding="0.5mm 1mm" text-align="right">
@@ -395,30 +410,6 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="shippingTax">
-    <xsl:if test="number() != 0 and number(../shippingCosts) != 0">
-      <fo:table-row>
-        <fo:table-cell number-columns-spanned="2">
-          <fo:block></fo:block>
-        </fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm">
-          <fo:block>
-            <xsl:text>Versandkosten </xsl:text>
-            <xsl:value-of select="format-number(number(), '0,##')"/>
-            <xsl:text> % MwSt.</xsl:text>
-          </fo:block>
-        </fo:table-cell>
-        <fo:table-cell><fo:block></fo:block></fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm" text-align="right">
-          <fo:block>
-            <xsl:value-of select="format-number(round(number(../shippingCosts) * number()) div 100, '#.##0,00')"/>
-            <xsl:text> €</xsl:text>
-          </fo:block>
-        </fo:table-cell>
-      </fo:table-row>
-    </xsl:if>
-  </xsl:template>
-
   <xsl:template match="adjustment">
     <xsl:if test="number() != 0">
       <fo:table-row>
@@ -439,26 +430,7 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="entry[@key='total']" mode="excl-vat">
-    <fo:table-row border-before-color="#5F6A72" border-before-style="solid"
-                  border-before-width="0.5pt">
-      <fo:table-cell number-columns-spanned="2">
-        <fo:block></fo:block>
-      </fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm">
-        <fo:block font-weight="bold">Angebotssumme zzgl. MwSt.</fo:block>
-      </fo:table-cell>
-      <fo:table-cell><fo:block></fo:block></fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm" text-align="right">
-        <fo:block font-weight="bold">
-          <xsl:value-of select="format-number(number(), '#.##0,00')"/>
-          <xsl:text> €</xsl:text>
-        </fo:block>
-      </fo:table-cell>
-    </fo:table-row>
-  </xsl:template>
-
-  <xsl:template match="entry[@key='total']" mode="incl-vat">
+  <xsl:template match="entry[@key='total']">
     <fo:table-row>
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
