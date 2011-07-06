@@ -153,12 +153,7 @@
         <xsl:text>Angebot </xsl:text>
         <xsl:value-of select="subject"/>
       </fo:block>
-      <fo:block space-after="5mm">
-        Sehr geehrte Damen und Herren,
-      </fo:block>
-      <fo:block space-after="5mm">
-        <xsl:value-of select="headerText"/>
-      </fo:block>
+      <xsl:apply-templates select="headerText"/>
     </fo:block-container>
 
     <!-- quote items -->
@@ -212,6 +207,7 @@
     <fo:block-container font-family="Frutiger LT 57 Cn" font-size="9pt"
                         color="#5F6A72" line-height="140%"
                         keep-together.within-page="always">
+      <xsl:apply-templates select="footerText"/>
       <fo:block space-after="5mm">
         <xsl:text>Unser Angebot ist freibleibend</xsl:text>
         <xsl:if test="validUntil != ''">
@@ -232,6 +228,17 @@
       </fo:block>
       <fo:block>AMC World Technologies</fo:block>
     </fo:block-container>
+  </xsl:template>
+  
+  <xsl:template match="headerText">
+    <xsl:if test="string() != ''">
+      <fo:block space-after="5mm">
+        Sehr geehrte Damen und Herren,
+      </fo:block>
+      <fo:block space-after="5mm">
+        <xsl:value-of select="."/>
+      </fo:block>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="entry[@key='organization']">
@@ -471,5 +478,13 @@
         </fo:block>
       </fo:table-cell>
     </fo:table-row>
+  </xsl:template>
+  
+  <xsl:template match="footerText">
+    <xsl:if test="string() != ''">
+      <fo:block space-after="5mm">
+        <xsl:value-of select="."/>
+      </fo:block>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>
