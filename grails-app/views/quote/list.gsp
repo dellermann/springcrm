@@ -27,11 +27,11 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="quote-multop-sel" class="multop-sel" /></th>
-          <g:sortableColumn property="number" title="${message(code: 'quote.number.label', default: 'Number')}" />
-          <g:sortableColumn property="subject" title="${message(code: 'quote.subject.label', default: 'Subject')}" />
-          <th><g:message code="quote.organization.label" default="Organization" /></th>
+          <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
+          <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
+          <th><g:message code="invoicingItem.organization.label" default="Organization" /></th>
           <th><g:message code="quote.stage.label" default="Stage" /></th>
-          <g:sortableColumn property="quoteDate" title="${message(code: 'quote.quoteDate.label', default: 'Date')}" />
+          <g:sortableColumn property="docDate" title="${message(code: 'quote.docDate.label', default: 'Date')}" />
           <g:sortableColumn property="shippingDate" title="${message(code: 'quote.shippingDate.label', default: 'Shipping date')}" />
           <th></th>
         </tr>
@@ -44,7 +44,7 @@
           <td>${fieldValue(bean: quoteInstance, field: "subject")}</td>
           <td>${fieldValue(bean: quoteInstance, field: "organization")}</td>
           <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
-          <td>${formatDate(date: quoteInstance?.quoteDate, type: 'date')}</td>
+          <td>${formatDate(date: quoteInstance?.docDate, type: 'date')}</td>
           <td>${formatDate(date: quoteInstance?.shippingDate, type: 'date')}</td>
           <td>
             <g:link action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

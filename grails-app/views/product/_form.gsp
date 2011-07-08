@@ -7,7 +7,7 @@
           <label for="number"><g:message code="product.number.label" default="Number" /></label>
         </div>
         <div class="field${hasErrors(bean: productInstance, field: 'number', ' error')}">
-          PRD-<g:textField name="number" value="${fieldValue(bean: productInstance, field: 'number')}" size="10" /><br />
+          ${seqNumberPrefix}-<g:textField name="number" value="${productInstance?.number}" size="10" /><br />
           <g:hasErrors bean="${productInstance}" field="number">
             <span class="error-msg"><g:eachError bean="${productInstance}" field="number"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

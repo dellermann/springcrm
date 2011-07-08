@@ -6,6 +6,8 @@ class ServiceController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
 
+	def seqNumberService
+	
     def index = {
         redirect(action: "list", params: params)
     }
@@ -21,19 +23,27 @@ class ServiceController {
 	}
 
     def create = {
-		def res = Service.executeQuery("select max(s.number)+1 from Service s")
-        def serviceInstance = new Service(number:res[0] ?: 10000)
+		def seqNumber = seqNumberService.loadSeqNumber(Service.class)
+        def serviceInstance = new Service(number:seqNumber.nextNumber)
         serviceInstance.properties = params
-        return [serviceInstance: serviceInstance]
+        return [serviceInstance: serviceInstance, seqNumberPrefix: seqNumber.prefix]
     }
 
     def save = {
         def serviceInstance = new Service(params)
-        if (serviceInstance.save(flush: true)) {
+		Service.withTransaction { status ->
+			try {
+				seqNumberService.stepFurther(Service.class)
+				serviceInstance.save(failOnError:true)
+			} catch (Exception) {
+				status.setRollbackOnly()
+			}
+		}
+        if (serviceInstance.hasErrors()) {
+            render(view: "create", model: [serviceInstance: serviceInstance])
+        } else {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])}"
             redirect(action: "show", id: serviceInstance.id)
-        } else {
-            render(view: "create", model: [serviceInstance: serviceInstance])
         }
     }
 

@@ -7,7 +7,7 @@
           <label for="number"><g:message code="service.number.label" default="Number" /></label>
         </div>
         <div class="field${hasErrors(bean: serviceInstance, field: 'number', ' error')}">
-          SRV-<g:textField name="number" value="${fieldValue(bean: serviceInstance, field: 'number')}" size="10" /><br />
+          ${seqNumberPrefix}-<g:textField name="number" value="${serviceInstance?.number}" size="10" /><br />
           <g:hasErrors bean="${serviceInstance}" field="number">
             <span class="error-msg"><g:eachError bean="${serviceInstance}" field="number"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

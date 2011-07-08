@@ -12,18 +12,31 @@ class InvoicingItem {
 		unitPrice(scale:2, min:0.01)
 		tax(scale:1, min:0.0)
     }
-	static mapping = {
-    	total formula:'quantity * unit_price'
-	}
-	
+	static transients = ['total']
+		
 	String number
 	BigDecimal quantity
 	String unit
 	String name
 	String description
 	BigDecimal unitPrice
-	BigDecimal total
 	BigDecimal tax
+	
+	InvoicingItem() {}
+	
+	InvoicingItem(InvoicingItem i) {
+		number = i.number
+		quantity = i.quantity
+		unit = i.unit
+		name = i.name
+		description = i.description
+		unitPrice = i.unitPrice
+		tax = i.tax
+	}
+	
+	BigDecimal getTotal() {
+		return quantity * unitPrice
+	}
 	
 	String toString() {
 		return name

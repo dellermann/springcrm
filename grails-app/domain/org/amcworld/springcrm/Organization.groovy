@@ -40,6 +40,8 @@ class Organization {
 	static transients = [
 		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr'
 	]
+	
+	def seqNumberService
 
     int number
     String name
@@ -72,7 +74,7 @@ class Organization {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "ORG-${number}"
+		return seqNumberService.format(getClass(), number)
 	}
 	
 	String getShortName() {
@@ -124,6 +126,7 @@ class Organization {
 	}
 
     void setWebsite(String website) {
+		website = website ?: ''
         if ((website.size() > 0) && !(website =~ '^https?://')) {
 			website = "http://${website}"
         }

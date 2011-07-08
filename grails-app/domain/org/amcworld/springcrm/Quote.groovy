@@ -6,23 +6,16 @@ class Quote extends InvoicingTransaction {
 
     static constraints = {
 		stage()
-		quoteDate()
 		validUntil(nullable:true)
-		carrier(nullable:true)
-		shippingDate(nullable:true)
     }
-    static hasMany = [termsAndConditions:TermsAndConditions]
 	static mapping = {
-		items column:'Quote'
+		stage column:'quote_stage_id'
 	}
-	
-	QuoteStage stage
-	Date quoteDate = new Date()
-	Date validUntil
-	Carrier carrier
-	Date shippingDate
 
-	String getFullNumber() {
-		return "A-${super.fullNumber}";
+	QuoteStage stage
+	Date validUntil
+	
+	{
+		type = 'Q'
 	}
 }

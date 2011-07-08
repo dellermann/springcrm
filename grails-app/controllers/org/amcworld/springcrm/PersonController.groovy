@@ -4,6 +4,8 @@ class PersonController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
+	def seqNumberService
+
     def index = {
         redirect(action: 'list', params: params)
     }
@@ -14,19 +16,27 @@ class PersonController {
     }
 
     def create = {
-		def res = Person.executeQuery('select max(p.number)+1 from Person p')
-        def personInstance = new Person(number:res[0] ?: 10000)
+		def seqNumber = seqNumberService.loadSeqNumber(Person.class)
+        def personInstance = new Person(number:seqNumber.nextNumber)
         personInstance.properties = params
-        return [personInstance: personInstance]
+        return [personInstance: personInstance, seqNumberPrefix: seqNumber.prefix]
     }
 
     def save = {
         def personInstance = new Person(params)
-        if (personInstance.save(flush: true)) {
+		Person.withTransaction { status ->
+			try {
+				seqNumberService.stepFurther(Person.class)
+				personInstance.save(failOnError:true)
+			} catch (Exception) {
+				status.setRollbackOnly()
+			}
+		}
+        if (personInstance.hasErrors()) {
+            render(view: 'create', model: [personInstance: personInstance])
+        } else {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
             redirect(action: 'show', id: personInstance.id)
-        } else {
-            render(view: 'create', model: [personInstance: personInstance])
         }
     }
 

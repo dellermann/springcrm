@@ -6,10 +6,14 @@ import java.util.Date
 class InvoicingTransaction {
 
     static constraints = {
-		number(nullable:false, unique:true)
+		number(unique:'type')
+		type(blank:false, nullable:false, maxSize:1)
 		subject(blank:false)
 		organization()
 		person(nullable:true)
+		docDate()
+		carrier(nullable:true)
+		shippingDate(nullable:true)
         billingAddrStreet(widget:'textarea', nullable:true)
         billingAddrPoBox(nullable:true)
         billingAddrPostalCode(nullable:true)
@@ -23,6 +27,7 @@ class InvoicingTransaction {
         shippingAddrState(nullable:true)
         shippingAddrCountry(nullable:true)
 		headerText(widget:'textarea', nullable:true)
+		items(minSize:1)
 		footerText(widget:'textarea', nullable:true)
 		discountPercent(scale:2, min:0.0, nullable:true)
 		discountAmount(scale:2, min:0.0, nullable:true)
@@ -32,19 +37,28 @@ class InvoicingTransaction {
 		dateCreated()
 		lastUpdated()
     }
-	static hasMany = [items:InvoicingItem]
+	static hasMany = [
+		items:InvoicingItem,
+		termsAndConditions:TermsAndConditions
+	]
 	static mapping = {
 		items cascade:'all-delete-orphan'
 	}
 	static transients = [
-		'fullNumber', 'billingAddr', 'shippingAddr', 'subTotalNet',
-		'subTotalGross', 'discountPercentAmount', 'total', 'taxRateSums'
+		'fullNumber', 'fullName', 'billingAddr', 'shippingAddr', 'subtotalNet',
+		'subtotalGross', 'discountPercentAmount', 'total', 'taxRateSums'
 	]
 	
-	BigInteger number
+	def seqNumberService
+	
+	int number
+	String type
 	String subject
 	Organization organization
 	Person person
+	Date docDate = new Date()
+	Carrier carrier
+	Date shippingDate
     String billingAddrStreet
     String billingAddrPoBox
     String billingAddrPostalCode
@@ -67,13 +81,47 @@ class InvoicingTransaction {
 	BigDecimal adjustment
 	Date dateCreated
 	Date lastUpdated
+	
+	InvoicingTransaction() {}
+	
+	InvoicingTransaction(InvoicingTransaction i) {
+		subject = i.subject
+		organization = i.organization
+		person = i.person
+		carrier = i.carrier
+		billingAddrStreet = i.billingAddrStreet
+		billingAddrPoBox = i.billingAddrPoBox
+		billingAddrPostalCode = i.billingAddrPostalCode
+		billingAddrLocation = i.billingAddrLocation
+		billingAddrState = i.billingAddrState
+		billingAddrCountry = i.billingAddrCountry
+		shippingAddrStreet = i.shippingAddrStreet
+		shippingAddrPoBox = i.shippingAddrPoBox
+		shippingAddrPostalCode = i.shippingAddrPostalCode
+		shippingAddrLocation = i.shippingAddrLocation
+		shippingAddrState = i.shippingAddrState
+		shippingAddrCountry = i.shippingAddrCountry
+		headerText = i.headerText
+		items = new ArrayList(i.items.size())
+		i.items.each { items << new InvoicingItem(it) }
+		footerText = i.footerText
+		discountPercent = i.discountPercent
+		discountAmount = i.discountAmount
+		shippingCosts = i.shippingCosts
+		shippingTax = i.shippingTax
+		adjustment = i.adjustment
+	}
 
 	String getFullNumber() {
-		String s = number.toString()
+		String s = seqNumberService.formatWithPrefix(getClass(), number)
 		if (organization) {
 			s += '-' + organization.number
 		}
 		return s
+	}
+	
+	String getFullName() {
+		return "${fullNumber} ${subject}"
 	}
 	
 	String getBillingAddr() {
@@ -136,20 +184,20 @@ class InvoicingTransaction {
 		return adjustment ?: 0
 	}
 
-	BigDecimal getSubTotalNet() {
+	BigDecimal getSubtotalNet() {
 		return items.total.sum() + shippingCosts
 	}
 	
-	BigDecimal getSubTotalGross() {
-		return subTotalNet + taxRateSums.values().sum()
+	BigDecimal getSubtotalGross() {
+		return subtotalNet + taxRateSums.values().sum()
 	}
 	
 	BigDecimal getDiscountPercentAmount() {
-		return (subTotalGross * discountPercent).divide(100.0, 2, HALF_UP)
+		return (subtotalGross * discountPercent).divide(100.0, 2, HALF_UP)
 	}
 	
 	BigDecimal getTotal() {
-		return subTotalGross - discountPercentAmount - discountAmount +
+		return subtotalGross - discountPercentAmount - discountAmount +
 			adjustment
 	}
 	

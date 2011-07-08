@@ -6,6 +6,8 @@ class ProductController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "GET"]
 
+	def seqNumberService
+
     def index = {
         redirect(action: "list", params: params)
     }
@@ -21,19 +23,27 @@ class ProductController {
 	}
 
     def create = {
-		def res = Product.executeQuery("select max(p.number)+1 from Product p")
-        def productInstance = new Product(number:res[0] ?: 10000)
+		def seqNumber = seqNumberService.loadSeqNumber(Product.class)
+        def productInstance = new Product(number:seqNumber.nextNumber)
         productInstance.properties = params
-        return [productInstance: productInstance]
+        return [productInstance: productInstance, seqNumberPrefix: seqNumber.prefix]
     }
 
     def save = {
         def productInstance = new Product(params)
-        if (productInstance.save(flush: true)) {
+		Product.withTransaction { status ->
+			try {
+				seqNumberService.stepFurther(Product.class)
+				productInstance.save(failOnError:true)
+			} catch (Exception) {
+				status.setRollbackOnly()
+			}
+		}
+        if (productInstance.hasErrors()) {
+            render(view: "create", model: [productInstance: productInstance])
+        } else {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])}"
             redirect(action: "show", id: productInstance.id)
-        } else {
-            render(view: "create", model: [productInstance: productInstance])
         }
     }
 

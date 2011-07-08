@@ -45,6 +45,8 @@ class Person {
 	}
 	static transients = ['fullNumber', 'mailingAddr', 'otherAddr']
 	
+	def seqNumberService
+	
     int number
     Organization organization
     Salutation salutation
@@ -80,7 +82,7 @@ class Person {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "PER-${number}"
+		return seqNumberService.format(getClass(), number)
 	}
 	
 	String getMailingAddr() {

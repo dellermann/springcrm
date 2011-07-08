@@ -7,7 +7,7 @@
           <label for="number"><g:message code="organization.number.label" default="Number" /></label>
         </div>
         <div class="field${hasErrors(bean: organizationInstance, field: 'number', ' error')}">
-          ORG-<g:textField name="number" value="${fieldValue(bean: organizationInstance, field: 'number')}" size="10" /><br />
+          ${seqNumberPrefix}-<g:textField name="number" value="${organizationInstance?.number}" size="10" /><br />
           <g:hasErrors bean="${organizationInstance}" field="number">
             <span class="error-msg"><g:eachError bean="${organizationInstance}" field="number"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

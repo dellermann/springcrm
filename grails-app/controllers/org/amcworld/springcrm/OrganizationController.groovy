@@ -6,6 +6,8 @@ class OrganizationController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
+	def seqNumberService
+
     def index = {
         redirect(action: 'list', params: params)
     }
@@ -16,19 +18,27 @@ class OrganizationController {
     }
 
     def create = {
-		def res = Organization.executeQuery('select max(o.number)+1 from Organization o')
-        def organizationInstance = new Organization(number:res[0] ?: 10000)
+		def seqNumber = seqNumberService.loadSeqNumber(Organization.class)
+        def organizationInstance = new Organization(number:seqNumber.nextNumber)
         organizationInstance.properties = params
-        return [organizationInstance: organizationInstance]
+        return [organizationInstance: organizationInstance, seqNumberPrefix: seqNumber.prefix]
     }
 
     def save = {
         def organizationInstance = new Organization(params)
-        if (organizationInstance.save(flush: true)) {
+		Organization.withTransaction { status ->
+			try {
+				seqNumberService.stepFurther(Organization.class)
+				organizationInstance.save(failOnError:true)
+			} catch (Exception) {
+				status.setRollbackOnly()
+			}
+        }
+        if (organizationInstance.hasErrors()) {
+            render(view: 'create', model: [organizationInstance: organizationInstance])
+        } else {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
             redirect(action: 'show', id: organizationInstance.id)
-        } else {
-            render(view: 'create', model: [organizationInstance: organizationInstance])
         }
     }
 

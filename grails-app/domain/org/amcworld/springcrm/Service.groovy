@@ -22,6 +22,8 @@ class Service {
     }
 	static transients = ['fullNumber']
 	
+	def seqNumberService
+	
 	int number
 	String name
 	ServiceCategory category
@@ -37,7 +39,7 @@ class Service {
 	Date lastUpdated
 	
 	String getFullNumber() {
-		return "SRV-${number}"
+		return seqNumberService.format(getClass(), number)
 	}
 	
 	String toString() {

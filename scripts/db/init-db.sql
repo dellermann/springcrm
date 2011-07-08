@@ -19,18 +19,18 @@ CREATE TABLE IF NOT EXISTS sel_value (
   order_id int(11) NOT NULL,
   tax_value double DEFAULT NULL,
   PRIMARY KEY (id)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=42 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Daten für Tabelle 'sel_value'
 --
 
 TRUNCATE TABLE sel_value;
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (1, 0, 'Herr', 10, 'org.amcworld.springcrm.Salutation'),
 (2, 0, 'Frau', 20, 'org.amcworld.springcrm.Salutation');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (100, 0, 'Kunde', 10, 'org.amcworld.springcrm.OrgType'),
 (101, 0, 'Wettbewerber', 20, 'org.amcworld.springcrm.OrgType'),
 (102, 0, 'Partner', 30, 'org.amcworld.springcrm.OrgType'),
@@ -39,14 +39,14 @@ INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
 (105, 0, 'Investor', 60, 'org.amcworld.springcrm.OrgType'),
 (106, 0, 'sonstiges', 9000, 'org.amcworld.springcrm.OrgType');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (200, 0, 'akquiriert', 10, 'org.amcworld.springcrm.Rating'),
 (201, 0, 'aktiv', 20, 'org.amcworld.springcrm.Rating'),
 (202, 0, 'Markt verfehlt', 30, 'org.amcworld.springcrm.Rating'),
 (203, 0, 'kein Interesse', 40, 'org.amcworld.springcrm.Rating'),
 (204, 0, 'stillgelegt', 50, 'org.amcworld.springcrm.Rating');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (300, 0, 'Stück', 10, 'org.amcworld.springcrm.Unit'),
 (301, 0, 'Einheiten', 20, 'org.amcworld.springcrm.Unit'),
 (302, 0, 'Karton', 30, 'org.amcworld.springcrm.Unit'),
@@ -55,29 +55,36 @@ INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
 (305, 0, 'm', 60, 'org.amcworld.springcrm.Unit'),
 (306, 0, 'kg', 70, 'org.amcworld.springcrm.Unit');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class, tax_value) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class, tax_value) VALUES
 (400, 0, '19 %', 10, 'org.amcworld.springcrm.TaxClass', 0.19),
 (401, 0, '7 %', 20, 'org.amcworld.springcrm.TaxClass', 0.07);
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (500, 0, 'Abholung', 10, 'org.amcworld.springcrm.Carrier'),
 (501, 0, 'elektronisch', 20, 'org.amcworld.springcrm.Carrier'),
 (502, 0, 'DHL', 30, 'org.amcworld.springcrm.Carrier'),
 (503, 0, 'DPD', 40, 'org.amcworld.springcrm.Carrier'),
 (504, 0, 'UPS', 50, 'org.amcworld.springcrm.Carrier');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (600, 0, 'erstellt', 10, 'org.amcworld.springcrm.QuoteStage'),
 (601, 0, 'durchgesehen', 20, 'org.amcworld.springcrm.QuoteStage'),
 (602, 0, 'versendet', 30, 'org.amcworld.springcrm.QuoteStage'),
 (603, 0, 'akzeptiert', 40, 'org.amcworld.springcrm.QuoteStage'),
 (604, 0, 'abgelehnt', 50, 'org.amcworld.springcrm.QuoteStage');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (700, 0, 'Dienstleistungen', 10, 'org.amcworld.springcrm.TermsAndConditions'),
 (701, 0, 'Waren', 20, 'org.amcworld.springcrm.TermsAndConditions');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
+(800, 0, 'erstellt', 10, 'org.amcworld.springcrm.SalesOrderStage'),
+(801, 0, 'durchgesehen', 20, 'org.amcworld.springcrm.SalesOrderStage'),
+(802, 0, 'versendet', 30, 'org.amcworld.springcrm.SalesOrderStage'),
+(803, 0, 'abgeschlossen', 40, 'org.amcworld.springcrm.SalesOrderStage'),
+(804, 0, 'storniert', 50, 'org.amcworld.springcrm.SalesOrderStage');
+
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (1000, 0, 'Bekleidungsindustrie', 0, 'org.amcworld.springcrm.Industry'),
 (1001, 0, 'Banken', 0, 'org.amcworld.springcrm.Industry'),
 (1002, 0, 'Biotechnologie', 0, 'org.amcworld.springcrm.Industry'),
@@ -114,7 +121,7 @@ INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
 (1033, 0, 'Handwerk', 0, 'org.amcworld.springcrm.Industry'),
 (1034, 0, 'sonstiges', 9000, 'org.amcworld.springcrm.Industry');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (2000, 0, 'Unterstützung', 0, 'org.amcworld.springcrm.ServiceCategory'),
 (2001, 0, 'Installation/Konfiguration', 0, 'org.amcworld.springcrm.ServiceCategory'),
 (2002, 0, 'Umstellung', 0, 'org.amcworld.springcrm.ServiceCategory'),
@@ -125,7 +132,38 @@ INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
 (2007, 0, 'Grafik und Design', 0, 'org.amcworld.springcrm.ServiceCategory'),
 (2008, 0, 'Datenverarbeitung', 0, 'org.amcworld.springcrm.ServiceCategory');
 
-INSERT INTO sel_value (id, version, `name`, order_id, class) VALUES
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory'),
 (3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory');
 
+
+--
+-- Tabellenstruktur für Tabelle 'seq_number'
+--
+
+CREATE TABLE IF NOT EXISTS seq_number (
+  id bigint(20) NOT NULL AUTO_INCREMENT,
+  version bigint(20) NOT NULL,
+  class_name varchar(255) NOT NULL,
+  next_number int(11) NOT NULL,
+  prefix varchar(5) NOT NULL,
+  start_number int(11) NOT NULL,
+  suffix varchar(5) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle 'seq_number'
+--
+
+TRUNCATE TABLE seq_number;
+INSERT INTO seq_number (id, version, class_name, next_number, prefix, 
+  start_number, suffix) 
+VALUES
+(1, 0, 'org.amcworld.springcrm.Quote', 10000, 'A', 10000, ''),
+(2, 0, 'org.amcworld.springcrm.SalesOrder', 10000, 'B', 10000, ''),
+(3, 0, 'org.amcworld.springcrm.Invoice', 10000, 'R', 10000, ''),
+(4, 0, 'org.amcworld.springcrm.Service', 10000, 'S', 10000, ''),
+(5, 0, 'org.amcworld.springcrm.Product', 10000, 'P', 10000, ''),
+(6, 0, 'org.amcworld.springcrm.Organization', 10000, 'O', 10000, ''),
+(7, 0, 'org.amcworld.springcrm.Person', 10000, 'E', 10000, '');

@@ -146,7 +146,7 @@
       <fo:block text-align="right">
         <xsl:text>Berlin, den </xsl:text>
         <xsl:call-template name="format-date-long">
-          <xsl:with-param name="date" select="quoteDate"/>
+          <xsl:with-param name="date" select="docDate"/>
         </xsl:call-template>
       </fo:block>
       <fo:block space-before="6mm" space-after="10mm" font-weight="bold">
@@ -448,7 +448,7 @@
       <fo:table-cell><fo:block></fo:block></fo:table-cell>
       <fo:table-cell padding="0.5mm 1mm" text-align="right">
         <fo:block font-weight="bold">
-          <xsl:value-of select="format-number(number() + sum(key('entries', 'taxRates')/entry) + round(number(key('entries', 'quote')/shippingCosts) * number(key('entries', 'quote')/shippingTax)) div 100, '#.##0,00')"/>
+          <xsl:value-of select="format-number(number(), '#.##0,00')"/>
           <xsl:text> €</xsl:text>
         </fo:block>
       </fo:table-cell>
