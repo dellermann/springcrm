@@ -2,18 +2,28 @@ package org.amcworld.springcrm
 
 import grails.test.*
 
+import org.springframework.transaction.TransactionStatus
+
 class QuoteControllerTests extends ControllerUnitTestCase {
 	
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
         super.setUp()
+
 		controller.metaClass.message = { Map map -> return ERROR_MSG }
-		Quote.metaClass.static.executeQuery = { String sql -> return [10002] }
+		def ts = mockFor(TransactionStatus, true)
+		ts.demand.setRollbackOnly { -> }
+		Quote.metaClass.static.withTransaction = { Closure c -> c(ts.createMock()) }
 
 		def q1 = new Quote(number:10000, subject:'Quote 1')
 		def q2 = new Quote(number:10001, subject:'Quote 2')
 		mockDomain(Quote, [q1, q2])
+		
+		def seqNumber = new SeqNumber(className:Quote.class.name, nextNumber:10002, prefix:'Q', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
+		controller.seqNumberService = new SeqNumberService()
     }
 
     protected void tearDown() {
@@ -38,6 +48,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertNotNull map.quoteInstance
 		assertEquals 10002, map.quoteInstance.number
 		assertNull map.quoteInstance.subject
+		assertEquals 'Q', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -50,6 +61,8 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Quote.count()
 		assertEquals 'show', controller.redirectArgs['action']
+		SeqNumber seqNumber = SeqNumber.findByClassName(Quote.class.name)
+		assertEquals 10003, seqNumber.nextNumber
 	}
 	
 	void testSaveFailed() {
@@ -98,6 +111,8 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Quote.count()
+		SeqNumber seqNumber = SeqNumber.findByClassName(Quote.class.name)
+		assertEquals 10002, seqNumber.nextNumber
 		def org = Quote.get(1)
 		assertEquals 10000, org.number
 		assertEquals 'Quote 3', org.subject

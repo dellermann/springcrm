@@ -2,18 +2,28 @@ package org.amcworld.springcrm
 
 import grails.test.*
 
+import org.springframework.transaction.TransactionStatus
+
 class ServiceControllerTests extends ControllerUnitTestCase {
 	
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
         super.setUp()
+
 		controller.metaClass.message = { Map map -> return ERROR_MSG }
-		Service.metaClass.static.executeQuery = { String sql -> return [10002] }
+		def ts = mockFor(TransactionStatus, true)
+		ts.demand.setRollbackOnly { -> }
+		Service.metaClass.static.withTransaction = { Closure c -> c(ts.createMock()) }
 
 		def s1 = new Service(number:10000, name:'Service 1')
 		def s2 = new Service(number:10001, name:'Service 2')
 		mockDomain(Service, [s1, s2])
+		
+		def seqNumber = new SeqNumber(className:Service.class.name, nextNumber:10002, prefix:'S', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
+		controller.seqNumberService = new SeqNumberService()
     }
 
     protected void tearDown() {
@@ -38,6 +48,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		assertNotNull map.serviceInstance
 		assertEquals 10002, map.serviceInstance.number
 		assertNull map.serviceInstance.name
+		assertEquals 'S', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -48,6 +59,8 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Service.count()
 		assertEquals 'show', controller.redirectArgs['action']
+		SeqNumber seqNumber = SeqNumber.findByClassName(Service.class.name)
+		assertEquals 10003, seqNumber.nextNumber
 	}
 	
 	void testSaveFailed() {
@@ -92,6 +105,8 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Service.count()
+		SeqNumber seqNumber = SeqNumber.findByClassName(Service.class.name)
+		assertEquals 10002, seqNumber.nextNumber
 		def p = Service.get(1)
 		assertEquals 10000, p.number
 		assertEquals 'Service 3', p.name

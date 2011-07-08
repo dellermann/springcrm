@@ -98,15 +98,19 @@ class ServiceTests extends GrailsUnitTestCase {
 	}
 	
 	void testFullNumber() {
+		def seqNumber = new SeqNumber(className:Service.class.name, nextNumber:10002, prefix:'S', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
         Service sv = new Service(number:10000, name:'Installation of TYPO3')
-		assertEquals 'SRV-10000', sv.fullNumber
+		sv.seqNumberService = new SeqNumberService()
+		assertEquals 'S-10000', sv.fullNumber
 	}
 	
 	void testToString() {
         Service sv = new Service(number:10000, name:'Installation of TYPO3')
-		assertEquals 'Installation of TYPO3', sv.toString()
+		assertToString sv, 'Installation of TYPO3'
 		
 		sv = new Service()
-		assertEquals '', sv.toString()
+		assertToString sv, ''
 	}
 }

@@ -2,18 +2,28 @@ package org.amcworld.springcrm
 
 import grails.test.*
 
+import org.springframework.transaction.TransactionStatus
+
 class PersonControllerTests extends ControllerUnitTestCase {
 	
 	private static final String ERROR_MSG = 'error message'
-
+	
     protected void setUp() {
         super.setUp()
+		
 		controller.metaClass.message = { Map map -> return ERROR_MSG }
-		Person.metaClass.static.executeQuery = { String sql -> return [10002] }
-
+		def ts = mockFor(TransactionStatus, true)
+		ts.demand.setRollbackOnly { -> }
+		Person.metaClass.static.withTransaction = { Closure c -> c(ts.createMock()) }
+		
 		def p1 = new Person(number:10000, firstName:'Daniel', lastName:'Ellermann')
 		def p2 = new Person(number:10001, firstName:'Robert', lastName:'Smith')
 		mockDomain(Person, [p1, p2])
+		
+		def seqNumber = new SeqNumber(className:Person.class.name, nextNumber:10002, prefix:'E', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
+		controller.seqNumberService = new SeqNumberService()
     }
 
     protected void tearDown() {
@@ -41,6 +51,7 @@ class PersonControllerTests extends ControllerUnitTestCase {
 		assertEquals 10002, map.personInstance.number
 		assertNull map.personInstance.firstName
 		assertNull map.personInstance.lastName
+		assertEquals 'E', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -53,6 +64,8 @@ class PersonControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Person.count()
 		assertEquals 'show', controller.redirectArgs['action']
+		SeqNumber seqNumber = SeqNumber.findByClassName(Person.class.name)
+		assertEquals 10003, seqNumber.nextNumber
 	}
 	
 	void testSaveFailed() {
@@ -103,6 +116,8 @@ class PersonControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Person.count()
+		SeqNumber seqNumber = SeqNumber.findByClassName(Person.class.name)
+		assertEquals 10002, seqNumber.nextNumber
 		def p = Person.get(1)
 		assertEquals 10000, p.number
 		assertEquals 'Erika', p.firstName

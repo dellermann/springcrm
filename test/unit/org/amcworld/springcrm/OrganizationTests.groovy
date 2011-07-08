@@ -197,12 +197,18 @@ class OrganizationTests extends GrailsUnitTestCase {
 	}
 	
 	void testFullNumber() {
+		def seqNumber = new SeqNumber(className:Organization.class.name, nextNumber:10002, prefix:'O', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
 		def org = new Organization(number:10000)
-		assertEquals 'ORG-10000', org.fullNumber
+		org.seqNumberService = new SeqNumberService()
+		assertEquals 'O-10000', org.fullNumber
 		org = new Organization(number:10)
-		assertEquals 'ORG-10', org.fullNumber
+		org.seqNumberService = new SeqNumberService()
+		assertEquals 'O-10', org.fullNumber
 		org = new Organization(number:100000)
-		assertEquals 'ORG-100000', org.fullNumber
+		org.seqNumberService = new SeqNumberService()
+		assertEquals 'O-100000', org.fullNumber
 	}
 	
 	void testBillingAddr() {
@@ -293,9 +299,9 @@ class OrganizationTests extends GrailsUnitTestCase {
             number:10000, name:'AMC World', email1:'info@amc-world.de',
             website:'http://www.amc-world.de'
         )
-		assertEquals 'AMC World', org.toString()
+		assertToString org, 'AMC World'
 		
 		org = new Organization()
-		assertEquals '', org.toString()
+		assertToString org, ''
 	}
 }

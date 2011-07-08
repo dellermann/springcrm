@@ -2,18 +2,28 @@ package org.amcworld.springcrm
 
 import grails.test.*
 
+import org.springframework.transaction.TransactionStatus
+
 class OrganizationControllerTests extends ControllerUnitTestCase {
 	
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
         super.setUp()
+
 		controller.metaClass.message = { Map map -> return ERROR_MSG }
-		Organization.metaClass.static.executeQuery = { String sql -> return [10002] }
+		def ts = mockFor(TransactionStatus, true)
+		ts.demand.setRollbackOnly { -> }
+		Organization.metaClass.static.withTransaction = { Closure c -> c(ts.createMock()) }
 
 		def org1 = new Organization(number:10000, name:'Organization 1')
 		def org2 = new Organization(number:10001, name:'Organization 2')
 		mockDomain(Organization, [org1, org2])
+		
+		def seqNumber = new SeqNumber(className:Organization.class.name, nextNumber:10002, prefix:'O', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
+		controller.seqNumberService = new SeqNumberService()
     }
 
     protected void tearDown() {
@@ -38,6 +48,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		assertNotNull map.organizationInstance
 		assertEquals 10002, map.organizationInstance.number
 		assertNull map.organizationInstance.name
+		assertEquals 'O', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -48,6 +59,8 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Organization.count()
 		assertEquals 'show', controller.redirectArgs['action']
+		SeqNumber seqNumber = SeqNumber.findByClassName(Organization.class.name)
+		assertEquals 10003, seqNumber.nextNumber
 	}
 	
 	void testSaveFailed() {
@@ -92,6 +105,8 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Organization.count()
+		SeqNumber seqNumber = SeqNumber.findByClassName(Organization.class.name)
+		assertEquals 10002, seqNumber.nextNumber
 		def org = Organization.get(1)
 		assertEquals 10000, org.number
 		assertEquals 'Organization 3', org.name

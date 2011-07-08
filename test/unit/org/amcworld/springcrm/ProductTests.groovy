@@ -103,15 +103,19 @@ class ProductTests extends GrailsUnitTestCase {
 	}
 	
 	void testFullNumber() {
+		def seqNumber = new SeqNumber(className:Product.class.name, nextNumber:10002, prefix:'P', suffix:'')
+		mockDomain(SeqNumber, [seqNumber])
+		
         Product p = new Product(number:10000, name:'Netzwerkkabel')
-		assertEquals 'PRD-10000', p.fullNumber
+		p.seqNumberService = new SeqNumberService()
+		assertEquals 'P-10000', p.fullNumber
 	}
 	
 	void testToString() {
         Product p = new Product(number:10000, name:'Netzwerkkabel')
-		assertEquals 'Netzwerkkabel', p.toString()
+		assertToString p, 'Netzwerkkabel'
 		
 		p = new Product()
-		assertEquals '', p.toString()
+		assertToString p, ''
 	}
 }
