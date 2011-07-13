@@ -28,10 +28,11 @@
       
       <div class="row">
         <div class="label">
-          <label for="organization.id"><g:message code="invoicingItem.organization.label" default="Organization" /></label>
+          <label for="organization"><g:message code="invoicingItem.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'organization', ' error')}">
-          <g:select name="organization.id" id="organization-sel" from="${org.amcworld.springcrm.Organization.list()}" optionKey="id" optionValue="shortName" value="${quoteInstance?.organization?.id}"  /><br />
+          <input type="text" id="organization" value="${quoteInstance?.organization?.name}" size="40" />
+          <input type="hidden" name="organization.id" id="organization-id" value="${quoteInstance?.organization?.id}" />
           <g:hasErrors bean="${quoteInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -120,16 +121,12 @@
   </div>
 </fieldset>
 <div class="multicol-content">
-  <div class="col col-l">
+  <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
         <h4><g:message code="invoicingItem.fieldset.billingAddr.label" /></h4>
         <div class="menu">
           <span class="button small white"><span><g:message code="default.options.label" /></span></span>
-          <ul>
-            <li><a href="javascript:void 0;" onclick="springcrm.copyAddress('shippingAddr', 'billingAddr');"><g:message code="invoicingItem.billingAddr.copy" /></a></li>
-            <li><a href="javascript:void 0;" onclick="springcrm.retrieveAddrFromOrganization('billingAddr', 'billingAddr', '${createLink(controller: 'organization', action: 'get')}');"><g:message code="invoicingItem.addr.fromOrgBillingAddr" /></a></li>
-          </ul>
         </div>
       </div>
       <div class="fieldset-content form-fragment">
@@ -207,16 +204,12 @@
       </div>
     </fieldset>
   </div>
-  <div class="col col-r">
+  <div class="col col-r right-address">
     <fieldset>
       <div class="header-with-menu">
         <h4><g:message code="invoicingItem.fieldset.shippingAddr.label" /></h4>
         <div class="menu">
           <span class="button small white"><span><g:message code="default.options.label" /></span></span>
-          <ul>
-            <li><a href="javascript:void 0;" onclick="springcrm.copyAddress('billingAddr', 'shippingAddr');"><g:message code="invoicingItem.shippingAddr.copy" /></a></li>
-            <li><a href="javascript:void 0;" onclick="springcrm.retrieveAddrFromOrganization('shippingAddr', 'shippingAddr', '${createLink(controller: 'organization', action: 'get')}');"><g:message code="invoicingItem.addr.fromOrgShippingAddr" /></a></li>
-          </ul>
         </div>
       </div>
       <div class="fieldset-content form-fragment">
@@ -487,11 +480,39 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
 <script type="text/javascript">
 //<![CDATA[
-var invoicingItems = new springcrm.InvoicingItems(
-    "quote-items", "quote-form", "${resource(dir: 'img')}",
-    "${createLink(controller:'product', action:'selectorList')}",
-    "${createLink(controller:'service', action:'selectorList')}"
-);
-invoicingItems.init();
+(function(SPRINGCRM) {
+    var addrFields;
+
+    new SPRINGCRM.FixedSelAutocomplete({
+            baseId: "organization",
+            findUrl: "${createLink(controller:'organization', action:'find')}"
+        })
+        .init();
+    new SPRINGCRM.InvoicingItems({
+            baseName: "quote", imgPath: "${resource(dir: 'img')}",
+            productListUrl: "${createLink(controller:'product', action:'selectorList')}",
+            serviceListUrl: "${createLink(controller:'service', action:'selectorList')}"
+        })
+        .init();
+
+    addrFields = new SPRINGCRM.AddrFields({
+        leftPrefix: "billingAddr", rightPrefix: "shippingAddr",
+        retrieveOrgUrl: "${createLink(controller: 'organization', action: 'get')}"
+    });
+    addrFields.addMenuItemCopy(
+        true, '${message(code: "invoicingItem.billingAddr.copy")}'
+    );
+    addrFields.addMenuItemLoadFromOrganization(
+        true, '${message(code: "invoicingItem.addr.fromOrgBillingAddr")}',
+        "billingAddr"
+    );
+    addrFields.addMenuItemCopy(
+        false, '${message(code: "invoicingItem.shippingAddr.copy")}'
+    );
+    addrFields.addMenuItemLoadFromOrganization(
+        false, '${message(code: "invoicingItem.addr.fromOrgShippingAddr")}',
+        "shippingAddr"
+    );
+}(SPRINGCRM));
 //]]></script>
 </content>

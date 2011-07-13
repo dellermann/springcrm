@@ -585,20 +585,17 @@ footer {
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
 }
 .header-with-menu li {
+  cursor: pointer;
+  font-size: 85%;
   list-style: none;
   margin-bottom: .3em;
+  padding: .2em 1.5em .2em 1em;
+  white-space: nowrap;
 }
 .header-with-menu li:last-child {
   margin-bottom: 0;
 }
-.header-with-menu li a {
-  color: #444;
-  display: block;
-  font-size: 85%;
-  padding: .2em 1.5em .2em 1em;
-  white-space: nowrap;
-}
-.header-with-menu li a:hover {
+.header-with-menu li:hover {
   background: #DDD;
 }
 

@@ -15,7 +15,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="javascript:void 0;" class="green" onclick="springcrm.onClickSubmit('sales-order-form');"><g:message code="default.button.save.label" /></a></li>
+        <li><a href="#" class="green" onclick="SPRINGCRM.submitForm('sales-order-form'); return false;"><g:message code="default.button.save.label" /></a></li>
         <li><g:link action="list" class="red"><g:message code="default.button.cancel.label" /></g:link></li>
       </ul>
     </nav>
@@ -33,6 +33,8 @@
     </g:form>
   </section>
   <content tag="jsTexts">
+  copyAddressWarning_billingAddr: "${message(code: 'invoicingItem.billingAddr.exists')}",
+  copyAddressWarning_shippingAddr: "${message(code: 'invoicingItem.shippingAddr.exists')}",
   taxRateLabel: "${message(code: 'invoicingItem.taxRate.label')}",
   productSel: "${message(code: 'invoicingItem.selector.products.title')}",
   serviceSel: "${message(code: 'invoicingItem.selector.services.title')}",

@@ -47,7 +47,8 @@
           <label for="organization"><g:message code="call.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'organization', ' error')}">
-          <g:select name="organization.id" from="${org.amcworld.springcrm.Organization.list()}" optionKey="id" value="${callInstance?.organization?.id}" noSelection="['null': '']" /><br />
+          <input type="text" id="organization" value="${callInstance?.organization?.name}" size="40" />
+          <input type="hidden" name="organization.id" id="organization-id" value="${callInstance?.organization?.id}" />
           <g:hasErrors bean="${callInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -104,3 +105,15 @@
     </div>
   </div>
 </fieldset>
+<content tag="additionalJavaScript">
+<script type="text/javascript">
+//<![CDATA[
+(function(SPRINGCRM) {
+    new SPRINGCRM.FixedSelAutocomplete({
+            baseId: "organization",
+            findUrl: "${createLink(controller:'organization', action:'find')}"
+        })
+        .init();
+}(SPRINGCRM));
+//]]></script>
+</content>

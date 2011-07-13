@@ -174,15 +174,12 @@
   </div>
 </fieldset>
 <div class="multicol-content">
-  <div class="col col-l">
+  <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
         <h4><g:message code="organization.fieldset.billingAddr.label" /></h4>
         <div class="menu">
           <span class="button small white"><span><g:message code="default.options.label" /></span></span>
-          <ul>
-            <li><a href="javascript:void 0;" onclick="springcrm.copyAddress('shippingAddr', 'billingAddr');"><g:message code="organization.billingAddr.copy" /></a></li>
-          </ul>
         </div>
       </div>
       <div class="fieldset-content form-fragment">
@@ -260,15 +257,12 @@
       </div>
     </fieldset>
   </div>
-  <div class="col col-r">
+  <div class="col col-r right-address">
     <fieldset>
       <div class="header-with-menu">
         <h4><g:message code="organization.fieldset.shippingAddr.label" /></h4>
         <div class="menu">
           <span class="button small white"><span><g:message code="default.options.label" /></span></span>
-          <ul>
-            <li><a href="javascript:void 0;" onclick="springcrm.copyAddress('billingAddr', 'shippingAddr');"><g:message code="organization.shippingAddr.copy" /></a></li>
-          </ul>
         </div>
       </div>
       <div class="fieldset-content form-fragment">
@@ -363,3 +357,21 @@
     </div>
   </div>
 </fieldset>
+<content tag="additionalJavaScript">
+<script type="text/javascript">
+//<![CDATA[
+(function(SPRINGCRM) {
+    var addrFields;
+
+    addrFields = new SPRINGCRM.AddrFields({
+        leftPrefix: "billingAddr", rightPrefix: "shippingAddr"
+    });
+    addrFields.addMenuItemCopy(
+        true, '${message(code: "organization.billingAddr.copy")}'
+    );
+    addrFields.addMenuItemCopy(
+        false, '${message(code: "organization.shippingAddr.copy")}'
+    );
+}(SPRINGCRM));
+//]]></script>
+</content>

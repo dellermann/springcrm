@@ -104,12 +104,21 @@ class OrganizationController {
         }
     }
 	
+	def find = {
+		def list = Organization.findAllByNameLike("%${params.name}%", [sort:'name'])
+		if (list) {
+			render list as JSON
+		} else {
+			render(status:404)
+		}
+	}
+	
 	def get = {
         def organizationInstance = Organization.get(params.id)
-        if (!organizationInstance) {
-			render(status: 404)
-        } else {
+        if (organizationInstance) {
             render organizationInstance as JSON
+        } else {
+			render(status:404)
         }
 	}
 }

@@ -26,13 +26,12 @@
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery-1.6.1.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery-ui-1.8.13.custom.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery.ui.datepicker-de.js')}"></script>
+<script type="text/javascript" src="${resource(dir:'js', file:'init.js')}"></script>
 <script type="text/javascript">
 //<![CDATA[
-var springcrm = {};
-
-springcrm.messages = {
+SPRINGCRM.addMessages({
 	<g:pageProperty name="page.jsTexts" />
-};
+});
 //]]></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'scripts.js')}"></script>
 <g:pageProperty name="page.additionalJavaScript" />

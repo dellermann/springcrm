@@ -15,114 +15,245 @@
  */
 
 
-(function (window, pkg, $) {
+/**
+ * @fileOverview    Contains a class to handle invoicing items in quotes,
+ *                  sales order, invoices etc.
+ * @author          Daniel Ellermann
+ * @version         0.9
+ */
+
+
+(function (window, SPRINGCRM, $) {
 
     "use strict";
 
     var InvoicingItems;
 
 
-    /*== Classes ==============================*/
+    //== Classes ================================
 
     /**
      * Creates a new invoicing item list.
      * 
-     * @class                           Represents a list of invoicing items
-     *                                  used in quotes, orders, or invoices.
+     * @class                                   Represents a list of invoicing 
+     *                                          items used in quotes, orders, 
+     *                                          or invoices.
      * @constructor
-     * @param {String} tableId                  the ID of the table containing
-     *                                          the invoicing items
-     * @param {String} formName                 the name of the form containing
-     *                                          the invoicing items
-     * @param {String} imgPath                  the base path to the folder 
+     * @param {Object} config                   configuration data for this
+     *                                          invoicing items list
+     * @param {String} config.baseName          the base name used to generate
+     *                                          the table ID and form name
+     * @param {String} config.tableId           the ID of the table containing
+     *                                          the invoicing items; defaults
+     *                                          to "{baseName}-items"
+     * @param {String} config.formName          the name of the form containing
+     *                                          the invoicing items; defaults
+     *                                          to "{baseName}-form"
+     * @param {String} config.imgPath           the base path to the folder 
      *                                          containing the images which are
      *                                          used for rendering the
      *                                          invoicing items
-     * @param {String} productListUrl           the URL used to retrieve the
+     * @param {String} config.productListUrl    the URL used to retrieve the
      *                                          products of the CRM
-     * @param {String} serviceListUrl           the URL used to retrieve the
+     * @param {String} config.serviceListUrl    the URL used to retrieve the
      *                                          services of the CRM
-     * @property {String} tableId               the ID of the table containing
-     *                                          the invoicing items
-     * @property {String} imgPath               the base path to the folder 
-     *                                          containing the images which are
-     *                                          used for rendering the 
-     *                                          invoicing items
-     * @property {String} productListUrl        the URL used to retrieve the
-     *                                          products of the CRM
-     * @property {String} serviceListUrl        the URL used to retrieve the
-     *                                          services of the CRM
-     * @property {Object} form                  the form containing the
-     *                                          invoicing items
-     * @property {Object} $table                the table containing the 
-     *                                          invoicing items
-     * @property {Object} $subtotalNet          the field containing the 
-     *                                          subtotal net value
-     * @property {Object} $subtotalGross        the field containing the 
-     *                                          subtotal gross value
-     * @property {Object} $discountPercent      the field containing the 
-     *                                          discount percentage value
-     * @property {Object} $discountFromPercent  the field containing the 
-     *                                          discount value computed from
-     *                                          the discount percentage value
-     * @property {Object} $discountAmount       the field containing the 
-     *                                          fixed discount amount value
-     * @property {Object} $shippingCosts        the field containing the 
-     *                                          shippings costs value
-     * @property {Object} $shippingTax          the field containing the 
-     *                                          shipping tax value
-     * @property {Object} $adjustment           the field containing the 
-     *                                          adjustment value
-     * @property {Number} subtotalNet           the currently computed subtotal
-     *                                          net value
-     * @property {Number} subtotalGross         the currently computed subtotal
-     *                                          gross value
-     * @property {Number} taxTotal              the currently computed total
-     *                                          taxes
-     * @property {Number} subtotalNet           the currently computed total
-     *                                          (gross) value
      */
-    InvoicingItems = function InvoicingItems(tableId, formName, imgPath,
-                                             productListUrl, serviceListUrl) {
-        
-        this.tableId = tableId;
-        this.imgPath = imgPath;
-        this.productListUrl = productListUrl;
-        this.serviceListUrl = serviceListUrl;
+    InvoicingItems = function InvoicingItems(config) {
+        var formName = config.formName || config.baseName + "-form";
 
-        this.form = window.document.forms[formName];
-        this.$table = $("#" + tableId);
-        this.$subtotalNet = $("#invoicing-items-subtotal-net");
-        this.$subtotalGross = $("#invoicing-items-subtotal-gross");
-        this.$discountPercent = $("#discountPercent");
-        this.$discountFromPercent = $("#invoicing-items-discount-from-percent");
-        this.$discountAmount = $("#discountAmount");
-        this.$shippingCosts = $("#shippingCosts");
-        this.$shippingTax = $("#shippingTax");
-        this.$adjustment = $("#adjustment");
-        this.$total = $("#invoicing-items-total");
-        this.subtotalNet = 0.0;
-        this.subtotalGross = 0.0;
-        this.taxTotal = 0.0;
-        this.total = 0.0;
+        /* handle function call without new */
+        if (!(this instanceof InvoicingItems)) {
+            return new InvoicingItems(config);
+        }
+
+
+        //-- Instance variables -----------------
+
+        /**
+         * The ID of the table containing the invoicing items.
+         * 
+         * @type String
+         * @default "{baseName}-items"
+         */
+        this._tableId = config.tableId || config.baseName + "-items";
+        
+        /**
+         * The base path to the folder containing the images which are used for
+         * rendering the invoicing items.
+         * 
+         * @type String
+         */
+        this._imgPath = config.imgPath;
+        
+        /**
+         * The URL used to retrieve the products of the CRM.
+         * 
+         * @type String
+         */
+        this._productListUrl = config.productListUrl;
+        
+        /**
+         * The URL used to retrieve the services of the CRM.
+         * 
+         * @type String
+         */
+        this._serviceListUrl = config.serviceListUrl;
+
+        /**
+         * The form containing the invoicing items.
+         * 
+         * @type Object
+         */
+        this._form = window.document.forms[formName];
+        
+        /**
+         * The table containing the invoicing items.
+         * 
+         * @type JQueryObject
+         */
+        this._$table = $("#" + this.tableId);
+        
+        /**
+         * The table body containing the invoicing items.
+         * 
+         * @type JQueryObject
+         */
+        this._$tbodyItems = $("#invoicing-items");
+        
+        /**
+         * The field containing the subtotal net value.
+         * 
+         * @type JQueryObject
+         */
+        this._$subtotalNet = $("#invoicing-items-subtotal-net");
+        
+        /**
+         * The field containing the subtotal gross value.
+         * 
+         * @type JQueryObject
+         */
+        this._$subtotalGross = $("#invoicing-items-subtotal-gross");
+        
+        /**
+         * The field containing the discount percentage value.
+         * 
+         * @type JQueryObject
+         */
+        this._$discountPercent = $("#discountPercent");
+        
+        /**
+         * The field containing the discount value computed from the discount
+         * percentage value.
+         * 
+         * @type JQueryObject
+         */
+        this._$discountFromPercent = $("#invoicing-items-discount-from-percent");
+        
+        /**
+         * The field containing the fixed discount amount value.
+         * 
+         * @type JQueryObject
+         */
+        this._$discountAmount = $("#discountAmount");
+        
+        /**
+         * The field containing the shipping costs value.
+         * 
+         * @type JQueryObject
+         */
+        this._$shippingCosts = $("#shippingCosts");
+        
+        /**
+         * The field containing the shipping tax value.
+         * 
+         * @type JQueryObject
+         */
+        this._$shippingTax = $("#shippingTax");
+        
+        /**
+         * The field containing the adjustment value.
+         * 
+         * @type JQueryObject
+         */
+        this._$adjustment = $("#adjustment");
+        
+        /**
+         * The field containing the total value.
+         * 
+         * @type JQueryObject
+         */
+        this._$total = $("#invoicing-items-total");
+        
+        /**
+         * The currently computed subtotal net value.
+         * 
+         * @type Number
+         * @default 0.0
+         */
+        this._subtotalNet = 0.0;
+        
+        /**
+         * The currently computed subtotal gross value.
+         * 
+         * @type Number
+         * @default 0.0
+         */
+        this._subtotalGross = 0.0;
+        
+        /**
+         * The currently computed total taxes.
+         * 
+         * @type Number
+         * @default 0.0
+         */
+        this._taxTotal = 0.0;
+        
+        /**
+         * The currently computed total (gross) value.
+         * 
+         * @type Number
+         * @default 0.0
+         */
+        this._total = 0.0;
     };
     InvoicingItems.prototype = {
+
+        //-- Public methods ---------------------
+
+        /**
+         * Initializes the invoicing items table.
+         */
+        init: function () {
+            this._$table
+                .click($.proxy(this._onClick, this))
+                .change($.proxy(this._onChange, this))
+                .focusin($.proxy(this._onFocusIn, this))
+                .focusout($.proxy(this._onFocusOut, this));
+            $("#add-invoicing-item-btn")
+                .click($.proxy(this._addInvoicingItem, this));
+            this._computeFooterValues();
+        },
+
+
+        //-- Non-public methods -----------------
 
         /**
          * Adds a table row for a new invoicing item and appends it to the end
          * of the table body.
+         * 
+         * @protected
          */
-        addInvoicingItem: function () {
-            var $tbody = $("#invoicing-items"),
+        _addInvoicingItem: function () {
+            var $tbody = this._$tbodyItems,
+                gm = SPRINGCRM.getMessage,
                 imgPath,
-                msgs = pkg.messages,
                 pos,
                 s,
                 sPos,
                 table;
 
-            table = this.tableId;
-            imgPath = this.imgPath;
+            table = this._tableId;
+            imgPath = this._imgPath;
             pos = $tbody.find("tr")
                 .length;
             sPos = String(pos);
@@ -142,12 +273,12 @@
                 '<input type="text" name="items[' + sPos + 
                 '].name" size="28" />&nbsp;<a href="javascript:void 0;" ' +
                 'class="select-btn-products"><img src="' + imgPath + 
-                '/products.png" alt="' + msgs.productSel + '" title="' + 
-                msgs.productSel + 
+                '/products.png" alt="' + gm("productSel") + '" title="' + 
+                gm("productSel") + 
                 '" width="16" height="16" style="vertical-align: middle;" /></a>' +
                 '&nbsp;<a href="javascript:void 0;" class="select-btn-services">' +
                 '<img src="' + imgPath + '/services.png" alt="' + 
-                msgs.serviceSel + '" title="' + msgs.serviceSel +
+                gm("serviceSel") + '" title="' + gm("serviceSel") +
                 '" width="16" height="16" style="vertical-align: middle;" /></a>' +
                 '<br /><textarea name="items[' + sPos +
                 '].description" cols="30" rows="3"></textarea></td><td headers="' + 
@@ -161,22 +292,24 @@
                 '].tax" size="4" />&nbsp;%</td>' +
                 '<td class="invoicing-items-buttons">' +
                 '<a href="javascript:void 0;" class="up-btn"><img src="' + 
-                imgPath + '/up.png" alt="' + msgs.upBtn + '" title="' + 
-                msgs.upBtn + '" width="16" height="16" /></a>' +
+                imgPath + '/up.png" alt="' + gm("upBtn") + '" title="' + 
+                gm("upBtn") + '" width="16" height="16" /></a>' +
                 '<a href="javascript:void 0;" class="down-btn"><img src="' + 
-                imgPath + '/down.png" alt="' + msgs.downBtn + '" title="' + 
-                msgs.downBtn + '" width="16" height="16" /></a>' +
+                imgPath + '/down.png" alt="' + gm("downBtn") + '" title="' + 
+                gm("downBtn") + '" width="16" height="16" /></a>' +
                 '<a href="javascript:void 0;" class="remove-btn"><img src="' + 
-                imgPath + '/remove.png" alt="' + msgs.removeBtn + '" title="' + 
-                msgs.removeBtn + '" width="16" height="16" /></a></td></tr>';
+                imgPath + '/remove.png" alt="' + gm("removeBtn") + '" title="' + 
+                gm("removeBtn") + '" width="16" height="16" /></a></td></tr>';
             $tbody.append(s);
         },
 
         /**
          * Computes the values in the table footer such as subtotal, taxes,
          * total etc. and prints the values in the table footer.
+         * 
+         * @protected
          */
-        computeFooterValues: function () {
+        _computeFooterValues: function () {
             var adjustment,
                 discount,
                 discountPercent,
@@ -184,32 +317,35 @@
                 subtotalNet = 0,
                 total;
 
-            $("#invoicing-items .invoicing-items-total .value")
+            $(".invoicing-items-total .value", this._$tbodyItems)
                 .each(function () {
                     subtotalNet += $.parseNumber($(this).text());
                 });
-            shippingCosts = $.parseNumber(this.$shippingCosts.val());
-            this.subtotalNet = subtotalNet + shippingCosts;
-            this.$subtotalNet.text($.formatCurrency(this.subtotalNet));
+            shippingCosts = $.parseNumber(this._$shippingCosts.val());
+            this._subtotalNet = subtotalNet + shippingCosts;
+            this._$subtotalNet.text($.formatCurrency(this._subtotalNet));
 
-            this.computeTaxValues();
+            this._computeTaxValues();
 
-            discountPercent = $.parseNumber(this.$discountPercent.val());
-            discount = this.subtotalGross * discountPercent / 100;
-            this.$discountFromPercent.text($.formatCurrency(discount));
-            discount += $.parseNumber(this.$discountAmount.val());
+            discountPercent = $.parseNumber(this._$discountPercent.val());
+            discount = this._subtotalGross * discountPercent / 100;
+            this._$discountFromPercent.text($.formatCurrency(discount));
+            discount += $.parseNumber(this._$discountAmount.val());
 
-            adjustment = $.parseNumber(this.$adjustment.val());
-            total = this.subtotalGross - discount + adjustment;
-            this.total = total;
-            this.$total.text($.formatCurrency(total));
+            adjustment = $.parseNumber(this._$adjustment.val());
+            total = this._subtotalGross - discount + adjustment;
+            this._total = total;
+            this._$total.text($.formatCurrency(total));
         },
 
         /**
          * Computes the tax classes and the tax values.
+         * 
+         * @returns {Number}    the computed subtotal gross value
+         * @protected
          */
-        computeTaxValues: function () {
-            var $subtotalNetRow,
+        _computeTaxValues: function () {
+            var gm = SPRINGCRM.getMessage,
                 i,
                 n,
                 s = "",
@@ -220,6 +356,7 @@
                 taxTotal = 0,
                 tr;
 
+            /* compute a map of tax rates */
             $("input:text[name$='.tax']").each(function () {
                     var els,
                         form = this.form,
@@ -238,25 +375,30 @@
                     taxRate = $.parseNumber(this.value);
                     if (taxRate !== 0) {
                         tax = qty * unitPrice * taxRate / 100.0;
-                        pkg.InvoicingItems._addTaxRate(tr, taxRate, tax);
+                        InvoicingItems._addTaxRate(tr, taxRate, tax);
                     }
                 });
-            shippingCosts = $.parseNumber(this.$shippingCosts.val());
-            shippingTax = $.parseNumber(this.$shippingTax.val());
+
+            /* add the shipping tax to the tax rate map */
+            shippingCosts = $.parseNumber(this._$shippingCosts.val());
+            shippingTax = $.parseNumber(this._$shippingTax.val());
             if (shippingCosts !== 0 && shippingTax !== 0) {
-                pkg.InvoicingItems._addTaxRate(
+                InvoicingItems._addTaxRate(
                     taxRates, shippingTax, shippingCosts * shippingTax / 100.0
                 );
             }
+
             taxRates.sort(function (a, b) { return a.taxRate - b.taxRate; });
 
-            $subtotalNetRow = $("tfoot tr:first");
+            /* display the tax rates */
             for (i = -1, n = taxRates.length; ++i < n; ) {
                 tr = taxRates[i];
                 taxTotal += tr.tax;
                 s += '<tr class="tax-rate-sum"><td headers="quote-items-name" ' +
                     'colspan="5" class="invoicing-items-label"><label>' + 
-                    pkg.messages.taxRateLabel.replace(/\{0\}/, $.formatNumber(tr.taxRate, 1)) + 
+                    gm("taxRateLabel").replace(
+                        /\{0\}/, $.formatNumber(tr.taxRate, 1)
+                    ) + 
                     '</label></td>' +
                     '<td headers="quote-items-unitPrice"></td>' +
                     '<td headers="quote-items-total" class="invoicing-items-total">' + 
@@ -266,36 +408,74 @@
                     '</tr>';
             }
             $(".tax-rate-sum").remove();
-            $subtotalNetRow.after(s);
-            this.taxTotal = taxTotal;
-            subtotalGross = this.subtotalNet + taxTotal;
-            this.subtotalGross = subtotalGross;
-            this.$subtotalGross.text($.formatCurrency(subtotalGross));
+            $("tfoot tr:first").after(s);
+
+            /* compute values */
+            this._taxTotal = taxTotal;
+            subtotalGross = this._subtotalNet + taxTotal;
+            this._subtotalGross = subtotalGross;
+            this._$subtotalGross.text($.formatCurrency(subtotalGross));
             return subtotalGross;
         },
 
         /**
-         * Initializes the invoicing items.
+         * Displays a dialog window and load inventory items such as products
+         * or services for display within the dialog.
+         * 
+         * @param {String} type the type of inventory items which are to load;
+         *                      possible values are "products" and "services"
+         * @param {String} url  the URL used to load the inventory items
+         * @param {Number} pos  the zero-based index of the row in which the
+         *                      selected inventory item is to place
+         * @private
          */
-        init: function () {
-            this.$table
-                .click($.proxy(this.onClick, this))
-                .change($.proxy(this.onChange, this))
-                .focusin($.proxy(this.onFocusIn, this))
-                .focusout($.proxy(this.onFocusOut, this));
-            $("#add-invoicing-item-btn")
-                .click($.proxy(this.addInvoicingItem, this));
-            this.computeFooterValues();
+        _loadInventorySelector: function (type, url, pos) {
+            $.ajax({
+                url: url,
+                context: { invoicingItems: this, type: type, pos: pos },
+                success: function (html) {
+                    var pos = this.pos,
+                        type = this.type;
+
+                    $("#inventory-selector-" + type).html(html)
+                        .unbind("click")
+                        .click($.proxy(
+                            function (e) {
+                                var $target,
+                                    target;
+    
+                                target = e.target;
+                                if (target.tagName.toLowerCase() !== "a") {
+                                    return true;
+                                }
+                                $target = $(target);
+                                if ($target.hasClass("select-link")) {
+                                    this._retrieveInventoryItem(
+                                        type, $target.attr("href"), pos
+                                    );
+                                } else {
+                                    this._loadInventorySelector(
+                                        type, $target.attr("href"), pos
+                                    );
+                                }
+                                return false;
+                            },
+                            this.invoicingItems
+                        ))
+                        .dialog({ minWidth: 700, minHeight: 400, modal: true });
+                }
+            });
         },
 
         /**
          * Moves the invoicing item belonging to the given up or down link.
          * 
-         * @param {Object} $a   the link to move the item
-         * @param {Number} dir  the direction to move the item; -1 indicates
-         *                      movement upwards, 1 movement downwards
+         * @param {JQueryObject} $a the link to move the item
+         * @param {Number} dir      the direction to move the item; -1 indicates
+         *                          movement upwards, 1 movement downwards
+         * @private
          */
-        moveInvoicingItem: function ($a, dir) {
+        _moveInvoicingItem: function ($a, dir) {
             var $allTrs,
                 $destTr,
                 $tr,
@@ -324,9 +504,10 @@
         /**
          * Called if the user changes the value of an input field.
          * 
-         * @param {Object} e    the event object 
+         * @param {Object} e    the event object
+         * @private
          */
-        onChange: function (e) {
+        _onChange: function (e) {
             var $input,
                 $tr,
                 els,
@@ -366,34 +547,48 @@
                 } 
             }
 
-            this.computeFooterValues();
+            this._computeFooterValues();
         },
 
-        onClick: function (e) {
+        /**
+         * Called if the user clicks a link.
+         * 
+         * @param {Object} e    the event object
+         * @returns {Boolean}   always <code>true</code>
+         * @private
+         */
+        _onClick: function (e) {
             var $a = $(e.target).closest("a");
 
             switch ($a.attr("class")) {
             case "up-btn":
-                this.moveInvoicingItem($a, -1);
+                this._moveInvoicingItem($a, -1);
                 return true;
             case "down-btn":
-                this.moveInvoicingItem($a, 1);
+                this._moveInvoicingItem($a, 1);
                 return true;
             case "remove-btn":
-                this.removeInvoicingItem($a);
+                this._removeInvoicingItem($a);
                 return true;
             case "select-btn-products":
-                this.showInventorySelector($a, "products");
+                this._showInventorySelector($a, "products");
                 return true;
             case "select-btn-services":
-                this.showInventorySelector($a, "services");
+                this._showInventorySelector($a, "services");
                 return true;
             default:
                 return true;
             }
         },
 
-        onFocusIn: function (e) {
+        /**
+         * Called if an input control gets the focus. The method clears the
+         * content of the control if the numeric value is zero.
+         * 
+         * @param {Object} e    the event object
+         * @private
+         */
+        _onFocusIn: function (e) {
             var $target = $(e.target),
                 val;
 
@@ -403,7 +598,14 @@
             }
         },
 
-        onFocusOut: function (e) {
+        /**
+         * Called if an input control loses the focus. The method formats the
+         * entered numeric value.
+         * 
+         * @param {Object} e    the event object
+         * @private
+         */
+        _onFocusOut: function (e) {
             var $target = $(e.target);
 
             if ($target.hasClass("currency")) {
@@ -414,11 +616,12 @@
         /**
          * Removes the invoicing item which belongs to the given anchor.
          * 
-         * @param {Object} $a   the jQuery object representing the link anchor
-         *                      which was clicked to remove the invoicing item
+         * @param {JQueryObject} $a the link anchor which was clicked to remove
+         *                          the invoicing item
+         * @private
          */
-        removeInvoicingItem: function ($a) {
-            var ii = this;
+        _removeInvoicingItem: function ($a) {
+            var instance = this;
 
             $a.parents("tr")
                 .each(function () {
@@ -432,7 +635,8 @@
                         .index($this);
 
                     /* unset the ID value to cause Grails delete the record */
-                    el = ii.form.elements["items[" + String(pos) + "].id"];
+                    el = instance.form
+                        .elements["items[" + String(pos) + "].id"];
                     if (el) {
                         el.value = "null";
                     }
@@ -447,62 +651,17 @@
                 .remove();
         },
 
-        showInventorySelector: function ($a, type, url) {
-            var $tr,
-                pos;
-
-            $tr = $a.parents("tr");
-            pos = $tr.parent()
-                .children()
-                .index($tr);
-            if (!url) {
-                url = (type === "products") ? this.productListUrl 
-                        : this.serviceListUrl;
-            }
-            this._loadInventorySelector(type, url, pos);
-        },
-
-
-        //-- Non-public methods ---------------------
-
-        _loadInventorySelector: function (type, url, pos) {
-            $.ajax({
-                url: url,
-                context: { invoicingItems: this, type: type, pos: pos },
-                success: function (html) {
-                    var pos = this.pos,
-                        type = this.type;
-
-                    $("#inventory-selector-" + type).html(html)
-                        .unbind("click")
-                        .click($.proxy(
-                            function (e) {
-                                var $target,
-                                    target;
-    
-                                target = e.target;
-                                if (target.tagName.toLowerCase() !== "a") {
-                                    return true;
-                                }
-                                $target = $(target);
-                                if ($target.hasClass("select-link")) {
-                                    this._retrieveInventoryItem(
-                                        type, $target.attr("href"), pos
-                                    );
-                                } else {
-                                    this._loadInventorySelector(
-                                        type, $target.attr("href"), pos
-                                    );
-                                }
-                                return false;
-                            },
-                            this.invoicingItems
-                        ))
-                        .dialog({ minWidth: 700, minHeight: 400, modal: true });
-                }
-            });
-        },
-
+        /**
+         * Retrieves an inventory item (product, service etc.) from the server
+         * and places it in the table row with the given position.
+         * 
+         * @param {String} type the type of inventory item which is to load;
+         *                      possible values are "products" and "services"
+         * @param {String} url  the URL used to load the inventory item
+         * @param {Number} pos  the zero-based index of the row in which the
+         *                      selected inventory item is to place
+         * @private
+         */
         _retrieveInventoryItem: function (type, url, pos) {
             $.ajax({
                 url: url,
@@ -510,8 +669,8 @@
                 dataType: "json",
                 success: function (data) {
                     var els,
+                        instance = this.invoicingItems,
                         item,
-                        items = this.invoicingItems,
                         prefix,
                         pos = this.pos,
                         qty,
@@ -520,7 +679,7 @@
                         unitPriceInput;
 
                     prefix = "items[" + pos + "].";
-                    els = items.form.elements;
+                    els = instance._form.elements;
                     els[prefix + "number"].value = data.fullNumber;
                     item = data.inventoryItem;
                     qty = item.quantity;
@@ -536,15 +695,51 @@
                             .text($.formatCurrency(qty * unitPrice));
                     els[prefix + "tax"].value = 
                         $.formatNumber(item.taxClass.taxValue * 100.0, 1);
-                    items.computeFooterValues();
+                    instance._computeFooterValues();
                     $("#inventory-selector-" + type).dialog("close");
                 }
             });
+        },
+
+        /**
+         * Shows a dialog window to select products or services.
+         * 
+         * @param {JQueryObject} $a the link which is clicked to load the
+         *                          items; it is used to determine in which
+         *                          table row the selected item is to store
+         * @param {String} type     the type of inventory items which are to
+         *                          load; possible values are "products" and
+         *                          "services"
+         * @param {String} [url]    the URL which is called to load the
+         *                          inventory items
+         * @protected
+         */
+        _showInventorySelector: function ($a, type, url) {
+            var $tr,
+                pos;
+
+            $tr = $a.parents("tr");
+            pos = $tr.parent()
+                .children()
+                .index($tr);
+            if (!url) {
+                url = (type === "products") ? this._productListUrl 
+                        : this._serviceListUrl;
+            }
+            this._loadInventorySelector(type, url, pos);
         }
     };
 
-    /* static methods */
-    InvoicingItems._addTaxRate = function (taxRates, taxRate, tax) {
+    /**
+     * Adds the given tax rate to the map of tax rates. The method handles
+     * duplicates.
+     *
+     * @param {Array} taxRates  the list of tax rates
+     * @param {Number} taxRate  the tax rate to add
+     * @param {Number} tax      the tax value to add
+     * @protected
+     */
+    InvoicingItems._addTaxRate = function _addTaxRate(taxRates, taxRate, tax) {
         var found = false,
             i = -1,
             n = taxRates.length;
@@ -566,16 +761,16 @@
      * given position and the preceding or following row, depending on the
      * given direction.
      * 
-     * @method              _swapInputItemPos
-     * @class               InvoicingItems
+     * @name                InvoicingItems#_swapInputItemPos
      * @param {Number} pos  the zero-based position of the item to move
      * @param {Number} dir  the direction to move the item; must be either -1
      *                      or 1
      * @protected
-     * @static
      */
     InvoicingItems._swapInputItemPos = function(pos, dir) {
         var destPos = pos + dir,
+        
+            /** @ignore */
             f = function (el, name, pos) {
                 var $el = $(el),
                     parts;
@@ -602,14 +797,10 @@
      * one of the given destination table row. The position label is stored
      * in the first cell of the table rows.
      * 
-     * @method                  _swapItemPos
-     * @class                   InvoicingItems
-     * @param {Object} $tr      jQuery object representing the table row to
-     *                          swap
-     * @param {Object} $destTr  jQuery object representing the table row to
-     *                          swap with
+     * @name                            InvoicingItems#_swapItemPos
+     * @param {JQueryObject} $tr        the table row to swap
+     * @param {JQueryObject} $destTr    the table row to swap with
      * @protected
-     * @static
      */
     InvoicingItems._swapItemPos = function ($tr, $destTr) {
         var $destTd,
@@ -623,5 +814,5 @@
         $destTd.text(s);
     };
 
-    pkg.InvoicingItems = InvoicingItems;
-}(this, springcrm, jQuery));
+    SPRINGCRM.InvoicingItems = InvoicingItems;
+}(this, SPRINGCRM, jQuery));
