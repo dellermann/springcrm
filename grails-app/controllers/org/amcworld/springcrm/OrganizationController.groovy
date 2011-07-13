@@ -106,10 +106,12 @@ class OrganizationController {
 	
 	def find = {
 		def list = Organization.findAllByNameLike("%${params.name}%", [sort:'name'])
-		if (list) {
-			render list as JSON
-		} else {
-			render(status:404)
+		render(contentType:"text/json") {
+			array {
+				for (org in list) {
+					organization id:org.id, name:org.name
+				}
+			}
 		}
 	}
 	
