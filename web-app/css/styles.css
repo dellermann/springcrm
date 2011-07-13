@@ -949,6 +949,30 @@ label.empty-label:after, .data-sheet .label.empty-label:after {
 fieldset, .fieldset {
   margin-bottom: 1.5em;
 }
+input.combobox {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  -khtml-border-radius-bottomright: 0;
+  -khtml-border-radius-topright: 0;
+  -moz-border-radius-bottomright: 0;
+  -moz-border-radius-topright: 0;
+  -webkit-border-radius-bottomright: 0;
+  -webkit-border-radius-topright: 0;
+}
+button.combobox {
+  background: url("../img/menu-arrow.png") no-repeat center center;
+  border-bottom-left-radius: 0;
+  border-left: none;
+  border-top-left-radius: 0;
+  text-indent: -9999px;
+  width: 2em;
+  -khtml-border-radius-bottomleft: 0;
+  -khtml-border-radius-topleft: 0;
+  -moz-border-radius-bottomleft: 0;
+  -moz-border-radius-topleft: 0;
+  -webkit-border-radius-bottomleft: 0;
+  -webkit-border-radius-topleft: 0;
+}
 .error input[type=text], .error input[type=password], .error select, 
   .error textarea
 {
@@ -1151,6 +1175,24 @@ form .invoicing-items-pos {
 /* override jQuery styles */
 .ui-menu-item {
   list-style: none;
+}
+.ui-autocomplete {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
+  max-height: 150px;
+  max-width: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 20px;
+  -khtml-border-radius-topleft: 0 !important;
+  -khtml-border-radius-topright: 0 !important;
+  -moz-border-radius-topleft: 0 !important;
+  -moz-border-radius-topright: 0 !important;
+  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
+  -webkit-border-radius-topleft: 0 !important;
+  -webkit-border-radius-topright: 0 !important;
+  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
 }
 
 /* login page */

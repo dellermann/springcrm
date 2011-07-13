@@ -43,7 +43,7 @@ class Person {
 	static mapping = {
 		calls column:'Person'
 	}
-	static transients = ['fullNumber', 'mailingAddr', 'otherAddr']
+	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']
 	
 	def seqNumberService
 	
@@ -83,6 +83,10 @@ class Person {
 	
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
+	}
+	
+	String getFullName() {
+		return "${firstName} ${lastName}"
 	}
 	
 	String getMailingAddr() {

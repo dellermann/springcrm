@@ -55,7 +55,7 @@
           <label for="organization"><g:message code="person.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: personInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${personInstance?.organization?.name}" size="40" />
+          <input type="text" id="organization" value="${personInstance?.organization?.name}" size="35" />
           <input type="hidden" name="organization.id" id="organization-id" value="${personInstance?.organization?.id}" />
           <g:hasErrors bean="${personInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${personInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>

@@ -336,14 +336,24 @@
      * @param {String} config.valueInputId  the ID of the (usually hidden) input
      *                                      field where the value of the
      *                                      selected item is stored
+     * @param {Boolean} [config.combobox]   whether or not the autocomplete 
+     *                                      field is displayed as combobox. In
+     *                                      this case an additional button is
+     *                                      rendered beside the autocomplete 
+     *                                      input field.
      * @param {String} config.findUrl       the URL used to query for the
      *                                      entered search term
-     * @param {String} config.labelProp     the name of the property in the
+     * @param {String} [config.labelProp]   the name of the property in the
      *                                      returned JSON data where the labels
      *                                      of the selector items are stored
-     * @param {String} config.valueProp     the name of the property in the
+     * @param {String} [config.valueProp]   the name of the property in the
      *                                      returned JSON data where the values
      *                                      of the selector items are stored
+     * @param {Object|Function} [config.parameters]
+     *                                      any additional parameters which are
+     *                                      sent to the server. If this is a
+     *                                      function it will be called to
+     *                                      produce additional parameters.
      * @returns {Object}                    the generated autocomplete field
      *                                      object
      */
@@ -375,6 +385,16 @@
          * @default "{baseId}-id"
          */
         this._$valueInput = $("#" + (config.valueInputId || baseId + "-id"));
+        
+        /**
+         * Determines whether or not the autocomplete field is displayed as
+         * combobox. In this case an additional button is rendered beside the
+         * autocomplete input field.
+         * 
+         * @type Boolean
+         * @default true
+         */
+        this._combobox = config.combobox || true;
 
         /**
          * The URL used to query for the entered search term.
@@ -420,18 +440,16 @@
          * @see FixedSelAutocomplete#_onBlur
          */
         this._oldLabel = "";
+        
+        /**
+         * Any additional parameters which are sent to the server. If this is a
+         * function it will be called to produce additional parameters.
+         * 
+         * @type Object|Function
+         * @default {}
+         */
+        this._parameters = config.parameters || {};
     };
-
-    /**
-     * An AJAX object which is used as cache when sending AJAX requests to the
-     * server.
-     *
-     * @name FixedSelAutocomplete#_ajaxCache
-     * @type Object
-     * @private
-     * @see FixedSelAutocomplete#_sendFindRequest
-     */
-    FixedSelAutocomplete._ajaxCache = null;
 
     FixedSelAutocomplete.prototype = {
 
@@ -449,6 +467,16 @@
                     select: $.proxy(this._onSelect, this),
                     source: $.proxy(this._sendFindRequest, this)
                 });
+            if (this._combobox) {
+                this._$labelInput
+                    .addClass("combobox")
+                    .after($('<button/>', {
+                        "class": "combobox",
+                        click: $.proxy(this._onClickComboboxBtn, this),
+                        text: "...",
+                        type: "button"
+                    }));
+            }
         },
 
 
@@ -482,6 +510,29 @@
         _onBlur: function () {
             this._$valueInput.val(this._oldValue);
             this._$labelInput.val(this._oldLabel);
+        },
+        
+        /**
+         * Called if the combobox button beside the autocomplete field was
+         * clicked. The method starts a search for all entries.
+         * 
+         * @param {Object} event    the event data
+         * @private
+         */
+        _onClickComboboxBtn: function (event) {
+            var $input = this._$labelInput;
+
+            if ($input.autocomplete("widget").is(":visible")) {
+                $input.autocomplete("close");
+                return;
+            }
+
+            /* work around a bug (likely same cause as #5265) */
+            $(event.target).blur();
+
+            /* pass wildcard as value to search for, displaying all results */
+            $input.autocomplete("search", "%");
+            $input.focus();
         },
 
         /**
@@ -555,25 +606,22 @@
          * @private
          */
         _sendFindRequest: function (request, response) {
-            var conf,
-                f = FixedSelAutocomplete;
+            var p = this._parameters,
+                params = {};
 
-            if (f._ajaxCache === null) {
-                f._ajaxCache = {
-                    context: this,
-                    dataType: "json",
-
-                    /** @ignore */
-                    success: function (data) {
-                        this._handleResponse(response, data);
-                    },
-                    url: this._findUrl
-                };
+            if (p) {
+                params = $.isFunction(p) ? p.call(this) : p;
             }
-
-            conf = f._ajaxCache;
-            conf.data = { name: request.term };
-            $.ajax(conf);
+            $.extend(params, { name: request.term });
+            
+            $.ajax({
+                context: this, data: params, dataType: "json",
+                /** @ignore */
+                success: function (data) {
+                    this._handleResponse(response, data);
+                },
+                url: this._findUrl
+            });
         }
     };
     SPRINGCRM.FixedSelAutocomplete = FixedSelAutocomplete;

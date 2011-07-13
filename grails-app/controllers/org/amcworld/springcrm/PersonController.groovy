@@ -101,4 +101,18 @@ class PersonController {
             redirect(action: 'list')
         }
     }
+	
+	def find = {
+		def organizationInstance = Organization.findById(params.organization)
+		def list = Person.findAllByOrganizationAndLastNameLike(
+			organizationInstance, "${params.name}%", [sort:'lastName']
+		)
+		render(contentType:"text/json") {
+			array {
+				for (p in list) {
+					person id:p.id, name:p.fullName
+				}
+			}
+		}
+	}
 }

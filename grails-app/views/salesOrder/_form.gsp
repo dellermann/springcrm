@@ -31,7 +31,7 @@
           <label for="organization"><g:message code="invoicingItem.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${salesOrderInstance?.organization?.name}" size="40" />
+          <input type="text" id="organization" value="${salesOrderInstance?.organization?.name}" size="35" />
           <input type="hidden" name="organization.id" id="organization-id" value="${salesOrderInstance?.organization?.id}" />
           <g:hasErrors bean="${salesOrderInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
@@ -41,10 +41,11 @@
       
       <div class="row">
         <div class="label">
-          <label for="person.id"><g:message code="invoicingItem.person.label" default="Person" /></label>
+          <label for="person"><g:message code="invoicingItem.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'person', ' error')}">
-          <g:select name="person.id" from="${org.amcworld.springcrm.Person.list()}" optionKey="id" value="${salesOrderInstance?.person?.id}" noSelection="['null': '']" /><br />
+          <input type="text" id="person" value="${salesOrderInstance?.person?.name}" size="35" />
+          <input type="hidden" name="person.id" id="person-id" value="${salesOrderInstance?.person?.id}" />
           <g:hasErrors bean="${salesOrderInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -512,6 +513,14 @@
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
             findUrl: "${createLink(controller:'organization', action:'find')}"
+        })
+        .init();
+    new SPRINGCRM.FixedSelAutocomplete({
+            baseId: "person",
+            findUrl: "${createLink(controller:'person', action:'find')}",
+            parameters: function () {
+                return { organization: $("#organization-id").val() };
+            }
         })
         .init();
     new SPRINGCRM.InvoicingItems({
