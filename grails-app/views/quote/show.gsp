@@ -43,19 +43,19 @@
             <div class="row">
               <div class="label"><g:message code="invoicingItem.number.label" default="Number" /></div>
               <div class="field">${quoteInstance?.fullNumber}</div>
-			      </div>
+	        </div>
             
             <div class="row">
               <div class="label"><g:message code="invoicingItem.subject.label" default="Subject" /></div>
               <div class="field">${fieldValue(bean: quoteInstance, field: "subject")}</div>
-			      </div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="invoicingItem.organization.label" default="Organization" /></div>
               <div class="field">
                 <g:link controller="organization" action="show" id="${quoteInstance?.organization?.id}">${quoteInstance?.organization?.encodeAsHTML()}</g:link>
-      			  </div>
-      			</div>
+      	      </div>
+      	    </div>
             
             <div class="row">
               <div class="label"><g:message code="invoicingItem.person.label" default="Person" /></div>

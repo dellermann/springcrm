@@ -25,7 +25,8 @@ class SalesOrder extends InvoicingTransaction {
 
 	SalesOrder() {}
 
-	SalesOrder(InvoicingTransaction i) {
-		super(i)
+	SalesOrder(Quote q) {
+		super(q)
+		this.quote = q
 	}
 }

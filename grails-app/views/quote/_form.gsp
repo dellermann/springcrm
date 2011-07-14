@@ -481,7 +481,10 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
 <script type="text/javascript">
 //<![CDATA[
-(function(SPRINGCRM) {
+(function(SPRINGCRM, $) {
+
+    "use strict";
+
     var addrFields;
 
     new SPRINGCRM.FixedSelAutocomplete({
@@ -522,6 +525,14 @@
         false, '${message(code: "invoicingItem.addr.fromOrgShippingAddr")}',
         "shippingAddr"
     );
-}(SPRINGCRM));
+    
+    $("#stage\\.id").change(function () {
+        switch ($(this).val()) {
+        case "602":
+            $("#shippingDate-date").val($.formatDate());
+            break;
+        }
+    });
+}(SPRINGCRM, jQuery));
 //]]></script>
 </content>

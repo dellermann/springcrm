@@ -24,7 +24,7 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
+      <li><g:link action="print" id="${salesOrderInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
@@ -43,27 +43,34 @@
             <div class="row">
               <div class="label"><g:message code="invoicingItem.number.label" default="Number" /></div>
               <div class="field">${salesOrderInstance?.fullNumber}</div>
-                  </div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="invoicingItem.subject.label" default="Subject" /></div>
               <div class="field">${fieldValue(bean: salesOrderInstance, field: "subject")}</div>
-                  </div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="invoicingItem.organization.label" default="Organization" /></div>
               <div class="field">
                 <g:link controller="organization" action="show" id="${salesOrderInstance?.organization?.id}">${salesOrderInstance?.organization?.encodeAsHTML()}</g:link>
-                  </div>
-                </div>
-            
+              </div>
+            </div>
+
             <div class="row">
               <div class="label"><g:message code="invoicingItem.person.label" default="Person" /></div>
               <div class="field">
                 <g:link controller="person" action="show" id="${salesOrderInstance?.person?.id}">${salesOrderInstance?.person?.encodeAsHTML()}</g:link>
-                  </div>
-                </div>
-                        
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="label"><g:message code="salesOrder.quote.label" default="Quote" /></div>
+              <div class="field">
+                <g:link controller="quote" action="show" id="${salesOrderInstance?.quote?.id}">${salesOrderInstance?.quote?.fullName?.encodeAsHTML()}</g:link>
+              </div>
+            </div>
+
             <div class="row">
               <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
               <div class="field">${salesOrderInstance?.carrier?.encodeAsHTML()}</div>
@@ -83,6 +90,11 @@
             <div class="row">
               <div class="label"><g:message code="salesOrder.shippingDate.label" default="Shipping Date" /></div>
               <div class="field"><g:formatDate date="${salesOrderInstance?.shippingDate}" type="date" /></div>
+            </div>
+            
+            <div class="row">
+              <div class="label"><g:message code="salesOrder.deliveryDate.label" default="Delivery Date" /></div>
+              <div class="field"><g:formatDate date="${salesOrderInstance?.deliveryDate}" type="date" /></div>
             </div>
             
             <div class="row">

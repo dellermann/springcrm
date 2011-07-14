@@ -105,6 +105,23 @@ class QuoteController {
         }
     }
 	
+	def find = {
+		Integer number = null
+		try {
+			number = params.name as Integer
+		} catch (NumberFormatException) { /* ignored */ }
+		def list = Quote.findAllByNumberOrSubjectLike(
+			number, "%${params.name}%", [sort:'number']
+		)
+		render(contentType:"text/json") {
+			array {
+				for (q in list) {
+					quote id:q.id, name:q.fullName
+				}
+			}
+		}
+	}
+
 	def print = {
         def quoteInstance = Quote.get(params.id)
         if (quoteInstance) {

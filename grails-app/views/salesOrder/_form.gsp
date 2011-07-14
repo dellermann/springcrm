@@ -44,7 +44,7 @@
           <label for="person"><g:message code="invoicingItem.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${salesOrderInstance?.person?.name}" size="35" />
+          <input type="text" id="person" value="${salesOrderInstance?.person?.fullName}" size="35" />
           <input type="hidden" name="person.id" id="person-id" value="${salesOrderInstance?.person?.id}" />
           <g:hasErrors bean="${salesOrderInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -54,10 +54,11 @@
       
       <div class="row">
         <div class="label">
-          <label for="quote.id"><g:message code="salesOrder.quote.label" default="Quote" /></label>
+          <label for="quote"><g:message code="salesOrder.quote.label" default="Quote" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'quote', ' error')}">
-          <g:select name="quote.id" id="quote-sel" from="${org.amcworld.springcrm.Quote.list()}" optionKey="id" optionValue="fullName" value="${salesOrderInstance?.quote?.id}" noSelection="['null': '']"  /><br />
+          <input type="text" id="quote" value="${salesOrderInstance?.quote?.fullName}" size="35" />
+          <input type="hidden" name="quote.id" id="quote-id" value="${salesOrderInstance?.quote?.id}" />
           <g:hasErrors bean="${salesOrderInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="quote"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -507,7 +508,10 @@
 <script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
 <script type="text/javascript">
 //<![CDATA[
-(function (SPRINGCRM) {
+(function (SPRINGCRM, $) {
+
+    "use strict";
+
     var addrFields;
 
     new SPRINGCRM.FixedSelAutocomplete({
@@ -521,6 +525,11 @@
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }
+        })
+        .init();
+    new SPRINGCRM.FixedSelAutocomplete({
+            baseId: "quote",
+            findUrl: "${createLink(controller:'quote', action:'find')}"
         })
         .init();
     new SPRINGCRM.InvoicingItems({
@@ -549,6 +558,17 @@
         false, '${message(code: "invoicingItem.addr.fromOrgShippingAddr")}',
         "shippingAddr"
     );
-}(SPRINGCRM));
+    
+    $("#stage\\.id").change(function () {
+        switch ($(this).val()) {
+        case "802":
+            $("#shippingDate-date").val($.formatDate());
+            break;
+        case "803":
+            $("#deliveryDate-date").val($.formatDate());
+            break;
+        }
+    });
+}(SPRINGCRM, jQuery));
 //]]></script>
 </content>

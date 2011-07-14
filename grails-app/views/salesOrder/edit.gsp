@@ -28,7 +28,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${salesOrderInstance?.toString()}</h3>
-    <g:form name="salesOrder-form" action="update" method="post" >
+    <g:form name="sales-order-form" action="update" method="post" >
       <g:hiddenField name="id" value="${salesOrderInstance?.id}" />
       <g:hiddenField name="version" value="${salesOrderInstance?.version}" />
       <g:render template="/salesOrder/form" />

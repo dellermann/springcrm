@@ -27,13 +27,12 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="salesOrder-multop-sel" class="multop-sel" /></th>
-          <g:sortableColumn property="fullNumber" title="${message(code: 'salesOrder.number.label', default: 'Number')}" />
-          <g:sortableColumn property="subject" title="${message(code: 'salesOrder.subject.label', default: 'Subject')}" />
-          <th><g:message code="salesOrder.organization.label" default="Organization" /></th>
-          <th><g:message code="salesOrder.person.label" default="Person" /></th>
-          <g:sortableColumn property="billingAddrStreet" title="${message(code: 'salesOrder.billingAddrStreet.label', default: 'Billing Addr Street')}" />
-          <g:sortableColumn property="billingAddrPoBox" title="${message(code: 'salesOrder.billingAddrPoBox.label', default: 'Billing Addr Po Box')}" />
-        
+          <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
+          <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
+          <th><g:message code="invoicingItem.organization.label" default="Organization" /></th>
+          <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label', default: 'Stage')}" />
+          <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label', default: 'Date')}" />
+          <g:sortableColumn property="dueDate" title="${message(code: 'salesOrder.dueDate.label', default: 'Due date')}" />
           <th></th>
         </tr>
       </thead>
@@ -41,19 +40,12 @@
       <g:each in="${salesOrderInstanceList}" status="i" var="salesOrderInstance">
         <tr>
           <td><input type="checkbox" id="salesOrder-multop-${salesOrderInstance.id}" class="multop-sel-item" /></td>
-        
-          <td><g:link action="show" id="${salesOrderInstance.id}">${salesOrderInstance?.fullNumber}</g:link></td>
-        
+          <td><g:link action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
           <td>${fieldValue(bean: salesOrderInstance, field: "subject")}</td>
-        
           <td>${fieldValue(bean: salesOrderInstance, field: "organization")}</td>
-        
-          <td>${fieldValue(bean: salesOrderInstance, field: "person")}</td>
-        
-          <td>${fieldValue(bean: salesOrderInstance, field: "billingAddrStreet")}</td>
-        
-          <td>${fieldValue(bean: salesOrderInstance, field: "billingAddrPoBox")}</td>
-        
+          <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
+          <td>${formatDate(date: salesOrderInstance?.docDate, type: 'date')}</td>
+          <td>${formatDate(date: salesOrderInstance?.dueDate, type: 'date')}</td>
           <td>
             <g:link action="edit" id="${salesOrderInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${salesOrderInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>

@@ -943,6 +943,28 @@
         },
 
         /**
+         * Formats the given date in the form "DD.MM.YYYY".
+         * 
+         * @name                jQuery#formatDate
+         * @param {Date} d      the given date
+         * @returns {String}    the formatted date
+         * @function
+         */
+        formatDate: function (d) {
+            var f = function (x) {
+                    var s = x.toFixed();
+                    if (s.length < 2) {
+                        s = "0" + s;
+                    }
+                    return s;
+                };
+
+            d = d || new Date();
+            return f(d.getDate()) + "." + f(d.getMonth()) + "." +
+                String(d.getFullYear());
+        },
+
+        /**
          * Formats the given number with the given precision.
          * 
          * @name                jQuery#formatNumber

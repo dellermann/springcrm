@@ -1,9 +1,12 @@
 package org.amcworld.springcrm
 
+import grails.converters.XML
+
 class SalesOrderController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
+	def fopService
 	def seqNumberService
 
 	def index = {
@@ -63,7 +66,8 @@ class SalesOrderController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
             redirect(action: 'list')
         } else {
-            return [salesOrderInstance: salesOrderInstance]
+			def seqNumber = seqNumberService.loadSeqNumber(SalesOrder.class)
+            return [salesOrderInstance: salesOrderInstance, seqNumberPrefix: seqNumber.prefix]
         }
     }
 
@@ -108,4 +112,40 @@ class SalesOrderController {
             redirect(action: 'list')
         }
     }
+	
+	def print = {
+        def salesOrderInstance = SalesOrder.get(params.id)
+        if (salesOrderInstance) {
+			def data = [
+				salesOrder:salesOrderInstance, items:salesOrderInstance.items,
+				organization:salesOrderInstance.organization,
+				person:salesOrderInstance.person,
+				user:session.user,
+				fullNumber:salesOrderInstance.fullNumber,
+				taxRates:salesOrderInstance.taxRateSums,
+				values:[
+			        subtotalNet:salesOrderInstance.subtotalNet,
+					subtotalGross:salesOrderInstance.subtotalGross,
+					discountPercentAmount:salesOrderInstance.discountPercentAmount,
+					total:salesOrderInstance.total
+				]
+			]
+			String xml = (data as XML).toString()
+//			println xml
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream()
+			fopService.generatePdf(
+				new StringReader(xml), '/WEB-INF/data/fo/sales-order-fo.xsl',
+				baos
+			)
+			response.contentType = 'application/pdf'
+			response.addHeader 'Content-Disposition', 
+				"attachment; filename=\"${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}.pdf\""
+			response.contentLength = baos.size()
+			response.outputStream.write(baos.toByteArray())
+			response.outputStream.flush()
+		} else {
+			render(status: 404)
+		}
+	}
 }
