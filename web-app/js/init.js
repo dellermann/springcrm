@@ -84,7 +84,7 @@ var SPRINGCRM = SPRINGCRM || (function ($) {
          * @static
          */
         addMessages: function (msgs) {
-            $.extend(this._messages, msgs);
+            $.extend(SPRINGCRM._messages, msgs);
         },
     
         /**
@@ -99,7 +99,7 @@ var SPRINGCRM = SPRINGCRM || (function ($) {
          * @static
          */
         getMessage: function (key) {
-            return this._messages[key];
+            return SPRINGCRM._messages[key];
         },
         
         /**
