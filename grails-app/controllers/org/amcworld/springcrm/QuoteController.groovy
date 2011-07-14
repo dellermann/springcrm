@@ -59,7 +59,8 @@ class QuoteController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
             redirect(action: 'list')
         } else {
-            return [quoteInstance: quoteInstance]
+			def seqNumber = seqNumberService.loadSeqNumber(Quote.class)
+            return [quoteInstance: quoteInstance, seqNumberPrefix: seqNumber.prefix]
         }
     }
 

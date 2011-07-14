@@ -63,7 +63,8 @@ class ServiceController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])}"
             redirect(action: "list")
         } else {
-            return [serviceInstance: serviceInstance]
+			def seqNumber = seqNumberService.loadSeqNumber(Service.class)
+            return [serviceInstance: serviceInstance, seqNumberPrefix: seqNumber.prefix]
         }
     }
 

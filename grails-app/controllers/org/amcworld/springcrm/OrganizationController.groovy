@@ -58,7 +58,8 @@ class OrganizationController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
             redirect(action: 'list')
         } else {
-            return [organizationInstance: organizationInstance]
+			def seqNumber = seqNumberService.loadSeqNumber(Organization.class)
+            return [organizationInstance: organizationInstance, seqNumberPrefix: seqNumber.prefix]
         }
     }
 

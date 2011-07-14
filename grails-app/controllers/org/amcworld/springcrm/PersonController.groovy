@@ -56,7 +56,8 @@ class PersonController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
             redirect(action: 'list')
         } else {
-            return [personInstance: personInstance]
+			def seqNumber = seqNumberService.loadSeqNumber(Person.class)
+            return [personInstance: personInstance, seqNumberPrefix: seqNumber.prefix]
         }
     }
 

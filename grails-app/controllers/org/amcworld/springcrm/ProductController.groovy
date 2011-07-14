@@ -63,7 +63,8 @@ class ProductController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])}"
             redirect(action: "list")
         } else {
-            return [productInstance: productInstance]
+			def seqNumber = seqNumberService.loadSeqNumber(Product.class)
+            return [productInstance: productInstance, seqNumberPrefix: seqNumber.prefix]
         }
     }
 
