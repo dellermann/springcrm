@@ -30,7 +30,7 @@
         <li><a href="#">Verkaufspotentiale</a></li>
         <li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li>
         <li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li>
-        <li><a href="#">Rechnungen</a></li>
+        <li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li>
       </ul>
     </li>
     <li>
@@ -55,7 +55,7 @@
         <li><a href="#">Einkaufsbestellungen</a></li>
         <li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li>
         <li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li>
-        <li><a href="#">Rechnungen</a></li>
+        <li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li>
       </ul>
     </li>
     <li>

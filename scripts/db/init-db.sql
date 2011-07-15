@@ -85,6 +85,16 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (804, 0, 'storniert', 50, 'org.amcworld.springcrm.SalesOrderStage');
 
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES
+(900, 0, 'erstellt', 10, 'org.amcworld.springcrm.InvoiceStage'),
+(901, 0, 'durchgesehen', 20, 'org.amcworld.springcrm.InvoiceStage'),
+(902, 0, 'versendet', 30, 'org.amcworld.springcrm.InvoiceStage'),
+(903, 0, 'bezahlt', 40, 'org.amcworld.springcrm.InvoiceStage'),
+(904, 0, 'gemahnt', 50, 'org.amcworld.springcrm.InvoiceStage'),
+(905, 0, 'inkasso', 60, 'org.amcworld.springcrm.InvoiceStage'),
+(906, 0, 'abgeschrieben', 70, 'org.amcworld.springcrm.InvoiceStage'),
+(907, 0, 'storniert', 80, 'org.amcworld.springcrm.InvoiceStage');
+
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (1000, 0, 'Bekleidungsindustrie', 0, 'org.amcworld.springcrm.Industry'),
 (1001, 0, 'Banken', 0, 'org.amcworld.springcrm.Industry'),
 (1002, 0, 'Biotechnologie', 0, 'org.amcworld.springcrm.Industry'),

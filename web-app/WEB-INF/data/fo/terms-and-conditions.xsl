@@ -3,11 +3,11 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format">
-	<xsl:template name="terms-and-conditions">
-    <xsl:apply-templates select="key('entries', 'quote')/termsAndConditions/termsAndConditions">
+  <xsl:template name="terms-and-conditions">
+    <xsl:apply-templates select="key('entries', 'transaction')/termsAndConditions/termsAndConditions">
       <xsl:sort select="@id" data-type="number"/>
     </xsl:apply-templates>
-	</xsl:template>
+  </xsl:template>
   
   <xsl:template match="termsAndConditions[@id=700]">
     <fo:page-sequence master-reference="terms-and-conditions" language="de"

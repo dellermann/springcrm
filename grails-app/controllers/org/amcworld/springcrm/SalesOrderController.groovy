@@ -113,11 +113,28 @@ class SalesOrderController {
         }
     }
 	
+	def find = {
+		Integer number = null
+		try {
+			number = params.name as Integer
+		} catch (NumberFormatException) { /* ignored */ }
+		def list = SalesOrder.findAllByNumberOrSubjectLike(
+			number, "%${params.name}%", [sort:'number']
+		)
+		render(contentType:"text/json") {
+			array {
+				for (so in list) {
+					salesOrder id:so.id, name:so.fullName
+				}
+			}
+		}
+	}
+
 	def print = {
         def salesOrderInstance = SalesOrder.get(params.id)
         if (salesOrderInstance) {
 			def data = [
-				salesOrder:salesOrderInstance, items:salesOrderInstance.items,
+				transaction:salesOrderInstance, items:salesOrderInstance.items,
 				organization:salesOrderInstance.organization,
 				person:salesOrderInstance.person,
 				user:session.user,

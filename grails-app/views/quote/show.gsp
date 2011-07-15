@@ -26,8 +26,7 @@
     <ul>
       <li><g:link action="print" id="${quoteInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
       <li><g:link controller="salesOrder" action="create" params="[quote:quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createSalesOrder" /></g:link></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
+      <li><g:link controller="invoice" action="create" params="[quote:quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createInvoice" /></g:link></li>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">

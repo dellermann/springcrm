@@ -110,6 +110,7 @@ class InvoicingTransaction {
 		shippingCosts = i.shippingCosts
 		shippingTax = i.shippingTax
 		adjustment = i.adjustment
+		termsAndConditions = i.termsAndConditions
 	}
 
 	String getFullNumber() {

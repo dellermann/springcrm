@@ -127,7 +127,7 @@ class QuoteController {
         def quoteInstance = Quote.get(params.id)
         if (quoteInstance) {
 			def data = [
-				quote:quoteInstance, items:quoteInstance.items,
+				transaction:quoteInstance, items:quoteInstance.items,
 				organization:quoteInstance.organization,
 				person:quoteInstance.person,
 				user:session.user,
