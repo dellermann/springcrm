@@ -4,6 +4,9 @@
   <renderers>
     <renderer mime="application/pdf">
       <fonts>
+        <font kerning="yes" embed-url="servlet-context:/WEB-INF/data/fo/fonts/frutiger.ttf">
+          <font-triplet name="Frutiger LT 57 Cn" style="normal" weight="normal"/>
+        </font>
         <font kerning="yes" embed-url="servlet-context:/WEB-INF/data/fo/fonts/frutigerb.ttf">
           <font-triplet name="Frutiger LT 57 Cn" style="normal" weight="bold"/>
         </font>
