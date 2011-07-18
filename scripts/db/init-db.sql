@@ -14,9 +14,9 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS sel_value (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   version bigint(20) NOT NULL,
-  class varchar(255) NOT NULL,
-  name varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
   order_id int(11) NOT NULL,
+  class varchar(255) NOT NULL,
   tax_value double DEFAULT NULL,
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -49,7 +49,7 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (300, 0, 'Stück', 10, 'org.amcworld.springcrm.Unit'),
 (301, 0, 'Einheiten', 20, 'org.amcworld.springcrm.Unit'),
-(302, 0, 'Karton', 30, 'org.amcworld.springcrm.Unit'),
+(302, 0, 'Kartons', 30, 'org.amcworld.springcrm.Unit'),
 (303, 0, 'Stunden', 40, 'org.amcworld.springcrm.Unit'),
 (304, 0, 'Minuten', 50, 'org.amcworld.springcrm.Unit'),
 (305, 0, 'm', 60, 'org.amcworld.springcrm.Unit'),
