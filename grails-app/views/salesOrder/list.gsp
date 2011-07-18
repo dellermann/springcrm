@@ -29,7 +29,7 @@
           <th><input type="checkbox" id="salesOrder-multop-sel" class="multop-sel" /></th>
           <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
           <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-          <th><g:message code="invoicingItem.organization.label" default="Organization" /></th>
+          <g:sortableColumn property="organization.name" title="${message(code: 'invoicingItem.organization.label', default: 'Organization')}" />
           <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label', default: 'Stage')}" />
           <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label', default: 'Date')}" />
           <g:sortableColumn property="dueDate" title="${message(code: 'salesOrder.dueDate.label', default: 'Due date')}" />

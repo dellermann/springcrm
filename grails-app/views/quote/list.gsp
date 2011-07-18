@@ -29,8 +29,8 @@
           <th><input type="checkbox" id="quote-multop-sel" class="multop-sel" /></th>
           <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
           <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-          <th><g:message code="invoicingItem.organization.label" default="Organization" /></th>
-          <th><g:message code="quote.stage.label" default="Stage" /></th>
+          <g:sortableColumn property="organization.name" title="${message(code: 'invoicingItem.organization.label', default: 'Organization')}" />
+          <g:sortableColumn property="stage" title="${message(code: 'quote.stage.label', default: 'Stage')}" />
           <g:sortableColumn property="docDate" title="${message(code: 'quote.docDate.label', default: 'Date')}" />
           <g:sortableColumn property="shippingDate" title="${message(code: 'quote.shippingDate.label', default: 'Shipping date')}" />
           <th></th>

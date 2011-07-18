@@ -29,9 +29,9 @@
           <th><input type="checkbox" id="product-multop-sel" class="multop-sel" /></th>
           <g:sortableColumn property="number" title="${message(code: 'product.number.label', default: 'Number')}" />
           <g:sortableColumn property="name" title="${message(code: 'product.name.label', default: 'Name')}" />
-          <th><g:message code="product.category.label" default="Category" /></th>
+          <g:sortableColumn property="category.name" title="${message(code: 'product.category.label', default: 'Category')}" />
           <g:sortableColumn property="quantity" title="${message(code: 'product.quantity.label', default: 'Quantity')}" />
-          <th><g:message code="product.unit.label" default="Unit" /></th>
+          <g:sortableColumn property="unit.name" title="${message(code: 'product.unit.label', default: 'Unit')}" />
           <g:sortableColumn property="unitPrice" title="${message(code: 'product.unitPrice.label', default: 'Unit Price')}" />
           <th></th>
         </tr>
