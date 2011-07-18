@@ -111,7 +111,7 @@
          * 
          * @type JQueryObject
          */
-        this._$table = $("#" + this.tableId);
+        this._$table = $("#" + this._tableId);
         
         /**
          * The table body containing the invoicing items.
@@ -231,6 +231,9 @@
                 .focusout($.proxy(this._onFocusOut, this));
             $("#add-invoicing-item-btn")
                 .click($.proxy(this._addInvoicingItem, this));
+            if (this._$tbodyItems.find("tr").length == 0) {
+                this._addInvoicingItem();
+            }
             this._computeFooterValues();
         },
 
