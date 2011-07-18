@@ -140,7 +140,12 @@
                 ))
                 .blur($.proxy(
                     function (e) { this._swapSearchText(e, false); }, this
-                ));
+                ))
+                .next("a")
+                    .click(function () {
+                        window.document.forms.searchableForm.submit();
+                        return false;
+                    });
             $("#quick-access").change(this._onChangeQuickAccess);
             $("#main-menu > li").hover(this._onMenuHover);
             $(".header-with-menu .menu").hover(this._onMenuHover);

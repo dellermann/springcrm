@@ -43,6 +43,7 @@ class Person {
 	static mapping = {
 		calls column:'Person'
 	}
+	static searchable = true
 	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']
 	
 	def seqNumberService

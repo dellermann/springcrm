@@ -20,6 +20,7 @@ class Service {
 	static mapping = {
 		sort 'number'
     }
+	static searchable = true
 	static transients = ['fullNumber']
 	
 	def seqNumberService

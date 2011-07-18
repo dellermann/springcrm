@@ -13,6 +13,7 @@ class SalesOrder extends InvoicingTransaction {
 	static mapping = {
 		stage column:'so_stage_id'
 	}
+	static searchable = true
 	
 	SalesOrderStage stage
 	Date dueDate

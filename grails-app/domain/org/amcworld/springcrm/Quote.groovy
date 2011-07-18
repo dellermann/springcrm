@@ -11,7 +11,8 @@ class Quote extends InvoicingTransaction {
 	static mapping = {
 		stage column:'quote_stage_id'
 	}
-
+	static searchable = true
+	
 	QuoteStage stage
 	Date validUntil
 	

@@ -1269,6 +1269,11 @@ form .invoicing-items-pos {
   padding: 0;
 }
 
+/* search results */
+.searchresults-number {
+  margin-bottom: 2em;
+}
+
 
 /*-----------------------------------
  *

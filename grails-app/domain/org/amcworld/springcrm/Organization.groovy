@@ -37,6 +37,7 @@ class Organization {
 	static mapping = {
 		calls column:'Organization'
 	}
+	static searchable = true
 	static transients = [
 		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr'
 	]

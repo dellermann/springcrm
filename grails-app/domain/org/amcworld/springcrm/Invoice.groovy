@@ -13,7 +13,8 @@ class Invoice extends InvoicingTransaction {
 	static mapping = {
 		stage column:'invoice_stage_id'
 	}
-
+	static searchable = true
+	
 	InvoiceStage stage
 	Date dueDatePayment
 	Date paymentDate

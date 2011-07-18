@@ -19,6 +19,7 @@ class Call {
 	static mapping = {
 		table 'phone_call'
     }
+	static searchable = true
 	
 	String subject
 	String notes
