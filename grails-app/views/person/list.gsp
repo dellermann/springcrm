@@ -49,7 +49,7 @@
           <td><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></td>
           <td>
             <g:link action="edit" id="${personInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="${personInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+            <g:link action="delete" id="${personInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>
           </td>
         </tr>
       </g:each>
