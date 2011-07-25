@@ -53,7 +53,8 @@ SELECT
       ON asa.accountaddressid = a.accountid
     NATURAL JOIN vtiger_accountscf AS acf
     JOIN vtiger_crmentity AS e
-      ON e.crmid = a.accountid AND e.setype = 'Accounts';
+      ON e.crmid = a.accountid AND e.setype = 'Accounts'
+  WHERE e.deleted = 0;
 
 --
 -- Persons
@@ -103,7 +104,8 @@ SELECT
     JOIN vtiger_contactaddress AS ca
       ON ca.contactaddressid = c.contactid
     JOIN vtiger_crmentity AS e
-      ON e.crmid = c.contactid AND e.setype = 'Contacts';
+      ON e.crmid = c.contactid AND e.setype = 'Contacts'
+  WHERE e.deleted = 0;
 
 --
 -- Services
@@ -161,7 +163,8 @@ SELECT
     s.unit_price
   FROM vtiger_service AS s
     JOIN vtiger_crmentity AS e
-      ON e.crmid = s.serviceid AND e.setype = 'Services';
+      ON e.crmid = s.serviceid AND e.setype = 'Services'
+  WHERE e.deleted = 0;
 
 --
 -- Products
@@ -200,7 +203,8 @@ SELECT
   FROM vtiger_products AS p
     LEFT JOIN vtiger_vendor AS v ON p.vendor_id = v.vendorid
     JOIN vtiger_crmentity AS e
-      ON e.crmid = p.productid AND e.setype = 'Products';
+      ON e.crmid = p.productid AND e.setype = 'Products'
+  WHERE e.deleted = 0;
 
 --
 -- Calls
@@ -234,7 +238,8 @@ SELECT
       ON a.activityid = sa.activityid 
     JOIN vtiger_crmentity AS e2
       ON e2.crmid = sa.crmid AND e2.setype = 'Accounts'
-  WHERE a.activitytype = 'Call';
+  WHERE a.activitytype = 'Call'
+  WHERE e1.deleted = 0;
 
 --
 -- Quotes
@@ -308,7 +313,8 @@ SELECT
     JOIN vtiger_quotesshipads AS qsa
       ON qsa.quoteshipaddressid = q.quoteid
     JOIN vtiger_crmentity AS e
-      ON e.crmid = q.quoteid AND e.setype = 'Quotes';
+      ON e.crmid = q.quoteid AND e.setype = 'Quotes'
+  WHERE e.deleted = 0;
 
 --
 -- Sales orders
@@ -370,7 +376,8 @@ SELECT
     JOIN vtiger_soshipads AS sosa
       ON sosa.soshipaddressid = so.salesorderid
     JOIN vtiger_crmentity AS e
-      ON e.crmid = so.salesorderid AND e.setype = 'SalesOrder';
+      ON e.crmid = so.salesorderid AND e.setype = 'SalesOrder'
+  WHERE e.deleted = 0;
 
 --
 -- Invoices
@@ -429,7 +436,8 @@ SELECT
       ON isa.invoiceshipaddressid = i.invoiceid
     JOIN vtiger_crmentity AS e
       ON e.crmid = i.invoiceid AND e.setype = 'Invoice'
-  WHERE i.invoicestatus <> 'Credit Invoice';
+  WHERE i.invoicestatus <> 'Credit Invoice'
+    AND e.deleted = 0;
 
 --
 -- Invoicing items

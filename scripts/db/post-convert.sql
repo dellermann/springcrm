@@ -1,5 +1,5 @@
 --
--- in the destination database execute the following commands
+-- fix selector values and invalid entries
 UPDATE service
   SET
     category_id = category_id + 1999,
@@ -20,12 +20,16 @@ UPDATE invoicing_transaction
   SET person_id = NULL
   WHERE person_id = 0;
 
+--
+-- Fix units
 UPDATE invoicing_item SET items_idx = items_idx - 1;
 UPDATE invoicing_item SET unit = 'Stunden' WHERE unit = 'Hours';
 UPDATE invoicing_item SET unit = 'Einheiten' WHERE unit = 'Incidents';
 UPDATE invoicing_item SET unit = 'Karton' WHERE unit = 'Box';
 UPDATE invoicing_item SET unit = 'm' WHERE unit = 'M';
 
+--
+-- compute terms and conditions entries
 INSERT INTO invoicing_transaction_terms_and_conditions (
     invoicing_transaction_terms_and_conditions_id, terms_and_conditions_id
   )
@@ -41,6 +45,8 @@ INSERT INTO invoicing_transaction_terms_and_conditions (
     WHERE LEFT(number, 1) = 'P'
     GROUP BY invoicing_transaction_id;
 
+--
+-- update sequence numbers
 UPDATE seq_number
   SET next_number = (
       SELECT MAX(number) + 1 FROM invoicing_transaction WHERE type = 'Q'
@@ -72,3 +78,14 @@ UPDATE seq_number
 UPDATE seq_number
   SET next_number = (SELECT MAX(number) + 1 FROM person)
   WHERE class_name = 'org.amcworld.springcrm.Person';
+
+--
+-- entries which are to fix manually
+SELECT
+    'Bitte Organisation zuordnen.' AS action,
+    p.id,
+    p.last_name,
+    p.first_name
+  FROM person AS p
+  WHERE organization_id = 0
+  ORDER BY last_name, first_name;
