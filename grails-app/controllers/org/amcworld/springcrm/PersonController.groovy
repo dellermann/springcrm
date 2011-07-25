@@ -1,10 +1,16 @@
 package org.amcworld.springcrm
 
+import com.google.gdata.client.contacts.ContactsService
+import com.google.gdata.client.http.AuthSubUtil
+import com.google.gdata.data.contacts.ContactEntry
+import com.google.gdata.data.extensions.*
+
 class PersonController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 	def seqNumberService
+	def googleDataContactService
 
     def index = {
         redirect(action: 'list', params: params)
@@ -115,5 +121,22 @@ class PersonController {
 				}
 			}
 		}
+	}
+	
+	def gdatasync = {
+		if (params.id) {
+			def personInstance = Person.get(params.id)
+			if (personInstance) {
+				googleDataContactService.sync(personInstance)
+				flash.message = "${message(code: 'default.gdata.sync.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
+	        } else {
+				flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
+			}
+		} else {
+			def personInstanceList = Person.list()
+			personInstanceList.each { googleDataContactService.sync(it) }
+			flash.message = "${message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])}"
+		}
+        redirect(action: 'list')
 	}
 }

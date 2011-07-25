@@ -26,9 +26,7 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><g:link controller="call" action="create" params="['person.id':personInstance?.id]" class="button medium white"><g:message code="person.action.createCall.label" /></g:link></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
+      <li><g:link action="gdatasync" params="[id:personInstance?.id]" class="button medium white"><g:message code="person.action.gdataExport.label"/></g:link></li>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -239,7 +237,7 @@
           </div>
         </div>
         <div class="fieldset-content">
-          <g:if test="${personInstance.calls}">
+          <g:if test="${personInstance?.calls}">
           <table class="content-table">
             <thead>
               <tr>
@@ -252,7 +250,7 @@
               </tr>
             </thead>
             <tbody>
-            <g:each in="${organizationInstance.calls}" status="i" var="callInstance">
+            <g:each in="${personInstance.calls}" status="i" var="callInstance">
               <tr>
                 <td><input type="checkbox" id="call-multop-${callInstance.id}" class="multop-sel-item" /></td>
                 <td><g:link action="show" id="${callInstance.id}">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
@@ -268,7 +266,7 @@
             </tbody>
           </table>
           <div class="paginator">
-            <g:paginate total="${organizationInstance.calls.size()}" />
+            <g:paginate total="${personInstance.calls.size()}" />
           </div>
           </g:if>
           <g:else>

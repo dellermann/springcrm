@@ -49,5 +49,7 @@
 			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/gdata-contacts-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/gdata-core-1.0.jar"/>
 	<classpathentry kind="output" path="web-app/WEB-INF/classes"/>
 </classpath>

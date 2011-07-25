@@ -14,6 +14,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
+        <li><g:link action="gdatasync" class="white"><g:message code="person.action.gdataExport.label"/></g:link></li>
         <li><g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </nav>
