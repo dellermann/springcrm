@@ -14,6 +14,7 @@ class User {
         mobile(maxSize:40, nullable:true)
         fax(maxSize:40, nullable:true)
         email(blank:false, nullable:false, email:true)
+		settings()
 		dateCreated()
 		lastUpdated()
     }
@@ -28,6 +29,7 @@ class User {
 	String mobile
 	String fax
 	String email
+	Map settings
 	Date dateCreated
 	Date lastUpdated
 	
