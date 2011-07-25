@@ -10,4 +10,5 @@ class GoogleDataSyncStatus {
 	Long itemId
 	String url
 	Date lastSync = new Date()
+	boolean deleted
 }

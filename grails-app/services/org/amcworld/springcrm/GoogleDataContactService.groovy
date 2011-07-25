@@ -2,32 +2,37 @@ package org.amcworld.springcrm
 
 import javax.servlet.http.HttpSession
 
-import org.springframework.web.context.request.RequestContextHolder
-
+import com.google.gdata.client.GoogleService
 import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.data.contacts.*
 import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.extensions.*
 import com.google.gdata.data.extensions.Organization as GDataOrg
-import com.google.gdata.util.ResourceNotFoundException
 
 class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
+	//-- Class variables ------------------------
+
 	static scope = 'session'
     static transactional = true
-	
+
+
+	//-- Instance variables ---------------------
+
 	private ContactsService contactsService
 	
-	/**
-	 * Converts the given person instance to a Google Data contact object.
-	 *
-	 * @param p			the given person instance
-	 * @param contact	a contact object which is to fill with the property
-	 * 					values; if <code>null</code> a new contact entry is
-	 * 					created
-	 * @return			the converted contact object
-	 */
-	ContactEntry convertToContact(Person p, ContactEntry contact = null) {
+
+	//-- Class initializer ----------------------
+
+	{
+		entryClass = ContactEntry
+		feedUrl = new URL('https://www.google.com/m8/feeds/contacts/default/full')
+	}
+
+
+	//-- Public methods -------------------------
+
+	ContactEntry convertToGoogle(Person p, ContactEntry contact = null) {
 		if (contact == null) {
 			contact = new ContactEntry()
 		}
@@ -183,86 +188,17 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 		}
 		return contact
 	}
-	
-	/**
-	 * Inserts the given Google Data contact into the remote repository.
-	 * 
-	 * @param contact	the contact to insert
-	 * @return			the inserted contact with additional data such as ID
-	 */
-	ContactEntry insert(ContactEntry contact) {
-		return getContactsService().insert(
-			new URL('https://www.google.com/m8/feeds/contacts/default/full'), 
-			contact
-		)
-	}
-	
-	/**
-	 * Retrieves the Google Data contact with the given URL.
-	 * 
-	 * @param url	the given URL
-	 * @return		the contact; <code>null</code> if no contact with the given
-	 * 				URL is available
-	 */
-	ContactEntry retrieve(String url) {
-		def res = null
-		try {
-			res = getContactsService().getEntry(new URL(url), ContactEntry)
-		} catch (ResourceNotFoundException) {
-			/* already handled -> res = null */
-		}
-		return res
-	}
-	
-	/**
-	 * Synchronizes the given person with Google Data. If an associated Google
-	 * data contact is set already it is updated. Otherwise, an new contact is
-	 * created.
-	 * 
-	 * @param p	the person to synchronize
-	 */
-	void sync(Person p) {
-		def status = findSyncStatus(p)
-		if (status) {
-			def contact = retrieve(status.url)
-			if (contact) {
-				contact = convertToContact(p, contact)
-				update(contact)
-			} else {
-				contact = convertToContact(p)
-				contact = insert(contact)
-				status.url = contact.selfLink.href
-			}
-			afterUpdate(status)
-		} else {
-			def contact = convertToContact(p)
-			contact = insert(contact)
-			afterInsert(p, contact)
-		}
-	}
-	
-	/**
-	 * Updates the given Google Data contact.
-	 * 
-	 * @param contact	the contact to update
-	 * @param url		an optional different URL used for update; if
-	 * 					<code>null</code> the update URL is obtained from the
-	 * 					given contact
-	 */
-	void update(ContactEntry contact, String url = null) {
-		if (url == null) {
-			url = contact.editLink.href
-		}
-		getContactsService().update(new URL(url), contact)
-	}
-	
+
+
+	//-- Non-public methods ---------------------
+
 	/**
 	 * Initializes and returns the Google Data service for contacts. The method
 	 * expects the session variable <code>gdataToken</code> to be set.
 	 * 
 	 * @return	the Google Data contacts service
 	 */
-	protected ContactsService getContactsService() {
+	protected GoogleService getService() {
 		if (!this.contactsService) {
 			this.contactsService = new ContactsService(APPLICATION_NAME)
 			this.contactsService.setAuthSubToken(session.gdataToken, null)

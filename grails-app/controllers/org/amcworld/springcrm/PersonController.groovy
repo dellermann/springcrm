@@ -97,6 +97,7 @@ class PersonController {
         if (personInstance) {
             try {
                 personInstance.delete(flush: true)
+				googleDataContactService.markDeleted(personInstance)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])}"
                 redirect(action: 'list')
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
@@ -137,6 +138,7 @@ class PersonController {
 			personInstanceList.each { googleDataContactService.sync(it) }
 			flash.message = "${message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])}"
 		}
+		googleDataContactService.deleteMarkedEntries()
         redirect(action: 'list')
 	}
 }
