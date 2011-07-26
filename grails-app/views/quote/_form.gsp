@@ -19,7 +19,7 @@
           <label for="subject"><g:message code="invoicingItem.subject.label" default="Subject" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'subject', ' error')}">
-          <g:textField name="subject" value="${quoteInstance?.subject}" size="40" /><br />
+          <g:textField name="subject" value="${quoteInstance?.subject}" size="40" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${quoteInstance}" field="subject">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="subject"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -32,7 +32,7 @@
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${quoteInstance?.organization?.name}" size="35" />
-          <input type="hidden" name="organization.id" id="organization-id" value="${quoteInstance?.organization?.id}" />
+          <input type="hidden" name="organization.id" id="organization-id" value="${quoteInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${quoteInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
