@@ -91,7 +91,7 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES
 (903, 0, 'bezahlt', 40, 'org.amcworld.springcrm.InvoiceStage'),
 (904, 0, 'gemahnt', 50, 'org.amcworld.springcrm.InvoiceStage'),
 (905, 0, 'inkasso', 60, 'org.amcworld.springcrm.InvoiceStage'),
-(906, 0, 'abgeschrieben', 70, 'org.amcworld.springcrm.InvoiceStage'),
+(906, 0, 'ausgebucht', 70, 'org.amcworld.springcrm.InvoiceStage'),
 (907, 0, 'storniert', 80, 'org.amcworld.springcrm.InvoiceStage');
 
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES
