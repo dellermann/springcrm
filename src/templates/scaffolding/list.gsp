@@ -58,7 +58,7 @@
         <%  }   }   } %>
           <td>
             <g:link action="edit" id="\${${propertyName}.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="\${${propertyName}?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+            <g:link action="delete" id="\${${propertyName}?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>
           </td>
         </tr>
       </g:each>
