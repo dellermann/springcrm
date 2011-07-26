@@ -18,7 +18,7 @@ class OrganizationController {
     }
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Organization.class)
+		def seqNumber = seqNumberService.loadSeqNumber(Organization)
         def organizationInstance = new Organization(number:seqNumber.nextNumber)
         organizationInstance.properties = params
         return [organizationInstance: organizationInstance, seqNumberPrefix: seqNumber.prefix]
@@ -26,19 +26,13 @@ class OrganizationController {
 
     def save = {
         def organizationInstance = new Organization(params)
-		Organization.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(Organization.class)
-				organizationInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-        }
-        if (organizationInstance.hasErrors()) {
-            render(view: 'create', model: [organizationInstance: organizationInstance])
-        } else {
+        if (organizationInstance.save(flush:true)) {
+			seqNumberService.stepFurther(Organization)
+			organizationInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
             redirect(action: 'show', id: organizationInstance.id)
+        } else {
+            render(view: 'create', model: [organizationInstance: organizationInstance])
         }
     }
 
@@ -69,7 +63,6 @@ class OrganizationController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (organizationInstance.version > version) {
-                    
                     organizationInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'organization.label', default: 'Organization')] as Object[], 'Another user has updated this Organization while you were editing')
                     render(view: 'edit', model: [organizationInstance: organizationInstance])
                     return
@@ -77,6 +70,7 @@ class OrganizationController {
             }
             organizationInstance.properties = params
             if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
+				organizationInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
                 redirect(action: 'show', id: organizationInstance.id)
             } else {

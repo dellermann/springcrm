@@ -27,6 +27,7 @@ class CallController {
     def save = {
         def callInstance = new Call(params)
         if (callInstance.save(flush: true)) {
+			callInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])}"
             redirect(action: 'show', id: callInstance.id)
         } else {
@@ -60,7 +61,6 @@ class CallController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (callInstance.version > version) {
-                    
                     callInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'call.label', default: 'Call')] as Object[], 'Another user has updated this Call while you were editing')
                     render(view: 'edit', model: [callInstance: callInstance])
                     return
@@ -68,6 +68,7 @@ class CallController {
             }
             callInstance.properties = params
             if (!callInstance.hasErrors() && callInstance.save(flush: true)) {
+				callInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])}"
                 redirect(action: 'show', id: callInstance.id)
             } else {

@@ -19,7 +19,7 @@ class QuoteController {
     }
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Quote.class)
+		def seqNumber = seqNumberService.loadSeqNumber(Quote)
         def quoteInstance = new Quote(number:seqNumber.nextNumber)
         quoteInstance.properties = params
         return [quoteInstance: quoteInstance, seqNumberPrefix: seqNumber.prefix]
@@ -27,19 +27,13 @@ class QuoteController {
 
     def save = {
         def quoteInstance = new Quote(params)
-		Quote.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(Quote.class)
-				quoteInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-        }
-        if (quoteInstance.hasErrors()) {
-            render(view: 'create', model: [quoteInstance: quoteInstance])
-        } else {
+        if (quoteInstance.save(flush:true)) {
+			seqNumberService.stepFurther(Quote)
+			quoteInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
             redirect(action: 'show', id: quoteInstance.id)
+        } else {
+            render(view: 'create', model: [quoteInstance: quoteInstance])
         }
     }
 
@@ -70,7 +64,6 @@ class QuoteController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (quoteInstance.version > version) {
-                    
                     quoteInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'quote.label', default: 'Quote')] as Object[], 'Another user has updated this Quote while you were editing')
                     render(view: 'edit', model: [quoteInstance: quoteInstance])
                     return
@@ -78,6 +71,7 @@ class QuoteController {
             }
             quoteInstance.properties = params
             if (!quoteInstance.hasErrors() && quoteInstance.save(flush: true)) {
+				quoteInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
                 redirect(action: 'show', id: quoteInstance.id)
             } else {

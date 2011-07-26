@@ -27,26 +27,20 @@ class SalesOrderController {
 			salesOrderInstance = new SalesOrder()
 			salesOrderInstance.properties = params
 		}
-		def seqNumber = seqNumberService.loadSeqNumber(SalesOrder.class)
+		def seqNumber = seqNumberService.loadSeqNumber(SalesOrder)
 		salesOrderInstance.number = seqNumber.nextNumber
         return [salesOrderInstance: salesOrderInstance, seqNumberPrefix: seqNumber.prefix]
     }
 
     def save = {
         def salesOrderInstance = new SalesOrder(params)
-		SalesOrder.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(SalesOrder.class)
-				salesOrderInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-        }
-        if (salesOrderInstance.hasErrors()) {
-            render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
-        } else {
+        if (salesOrderInstance.save(flush:true)) {
+			seqNumberService.stepFurther(SalesOrder)
+			salesOrderInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
             redirect(action: 'show', id: salesOrderInstance.id)
+        } else {
+            render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
         }
     }
 
@@ -77,7 +71,6 @@ class SalesOrderController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (salesOrderInstance.version > version) {
-                    
                     salesOrderInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'salesOrder.label', default: 'SalesOrder')] as Object[], "Another user has updated this SalesOrder while you were editing")
                     render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
                     return
@@ -85,6 +78,7 @@ class SalesOrderController {
             }
             salesOrderInstance.properties = params
             if (!salesOrderInstance.hasErrors() && salesOrderInstance.save(flush: true)) {
+				salesOrderInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
                 redirect(action: 'show', id: salesOrderInstance.id)
             } else {

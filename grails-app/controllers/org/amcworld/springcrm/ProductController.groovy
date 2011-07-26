@@ -23,7 +23,7 @@ class ProductController {
 	}
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Product.class)
+		def seqNumber = seqNumberService.loadSeqNumber(Product)
         def productInstance = new Product(number:seqNumber.nextNumber)
         productInstance.properties = params
         return [productInstance: productInstance, seqNumberPrefix: seqNumber.prefix]
@@ -31,19 +31,13 @@ class ProductController {
 
     def save = {
         def productInstance = new Product(params)
-		Product.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(Product.class)
-				productInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-		}
-        if (productInstance.hasErrors()) {
-            render(view: "create", model: [productInstance: productInstance])
-        } else {
+        if (productInstance.save(flush:true)) {
+			seqNumberService.stepFurther(Product)
+			productInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])}"
             redirect(action: "show", id: productInstance.id)
+        } else {
+            render(view: "create", model: [productInstance: productInstance])
         }
     }
 
@@ -74,7 +68,6 @@ class ProductController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (productInstance.version > version) {
-                    
                     productInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'product.label', default: 'Product')] as Object[], "Another user has updated this Product while you were editing")
                     render(view: "edit", model: [productInstance: productInstance])
                     return
@@ -82,6 +75,7 @@ class ProductController {
             }
             productInstance.properties = params
             if (!productInstance.hasErrors() && productInstance.save(flush: true)) {
+				productInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])}"
                 redirect(action: "show", id: productInstance.id)
             } else {

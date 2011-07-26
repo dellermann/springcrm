@@ -23,7 +23,7 @@ class ServiceController {
 	}
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Service.class)
+		def seqNumber = seqNumberService.loadSeqNumber(Service)
         def serviceInstance = new Service(number:seqNumber.nextNumber)
         serviceInstance.properties = params
         return [serviceInstance: serviceInstance, seqNumberPrefix: seqNumber.prefix]
@@ -31,19 +31,13 @@ class ServiceController {
 
     def save = {
         def serviceInstance = new Service(params)
-		Service.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(Service.class)
-				serviceInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-		}
-        if (serviceInstance.hasErrors()) {
-            render(view: "create", model: [serviceInstance: serviceInstance])
-        } else {
+        if (serviceInstance.save(flush:true)) {
+			seqNumberService.stepFurther(Service)
+			serviceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])}"
             redirect(action: "show", id: serviceInstance.id)
+        } else {
+            render(view: "create", model: [serviceInstance: serviceInstance])
         }
     }
 
@@ -74,7 +68,6 @@ class ServiceController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (serviceInstance.version > version) {
-                    
                     serviceInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'service.label', default: 'Service')] as Object[], "Another user has updated this Service while you were editing")
                     render(view: "edit", model: [serviceInstance: serviceInstance])
                     return
@@ -82,6 +75,7 @@ class ServiceController {
             }
             serviceInstance.properties = params
             if (!serviceInstance.hasErrors() && serviceInstance.save(flush: true)) {
+				serviceInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])}"
                 redirect(action: "show", id: serviceInstance.id)
             } else {

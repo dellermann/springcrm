@@ -22,7 +22,7 @@ class PersonController {
     }
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Person.class)
+		def seqNumber = seqNumberService.loadSeqNumber(Person)
         def personInstance = new Person(number:seqNumber.nextNumber)
         personInstance.properties = params
         return [personInstance: personInstance, seqNumberPrefix: seqNumber.prefix]
@@ -30,19 +30,13 @@ class PersonController {
 
     def save = {
         def personInstance = new Person(params)
-		Person.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(Person.class)
-				personInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-		}
-        if (personInstance.hasErrors()) {
-            render(view: 'create', model: [personInstance: personInstance])
-        } else {
+        if (personInstance.save(flush:true)) {
+			seqNumberService.stepFurther(Person)
+			personInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
             redirect(action: 'show', id: personInstance.id)
+        } else {
+            render(view: 'create', model: [personInstance: personInstance])
         }
     }
 
@@ -73,7 +67,6 @@ class PersonController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (personInstance.version > version) {
-                    
                     personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
                     render(view: 'edit', model: [personInstance: personInstance])
                     return
@@ -81,6 +74,7 @@ class PersonController {
             }
             personInstance.properties = params
             if (!personInstance.hasErrors() && personInstance.save(flush: true)) {
+				personInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
                 redirect(action: 'show', id: personInstance.id)
             } else {

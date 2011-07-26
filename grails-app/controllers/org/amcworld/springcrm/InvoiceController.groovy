@@ -31,26 +31,21 @@ class InvoiceController {
 			invoiceInstance = new Invoice()
 			invoiceInstance.properties = params
 		}
-		def seqNumber = seqNumberService.loadSeqNumber(Invoice.class)
+		def seqNumber = seqNumberService.loadSeqNumber(Invoice)
 		invoiceInstance.number = seqNumber.nextNumber
         return [invoiceInstance: invoiceInstance, seqNumberPrefix: seqNumber.prefix]
     }
 
     def save = {
         def invoiceInstance = new Invoice(params)
-		Invoice.withTransaction { status ->
-			try {
-				seqNumberService.stepFurther(Invoice.class)
-				invoiceInstance.save(failOnError:true)
-			} catch (Exception) {
-				status.setRollbackOnly()
-			}
-        }
-        if (invoiceInstance.hasErrors()) {
-            render(view: 'create', model: [invoiceInstance: invoiceInstance])
-        } else {
+		if (invoiceInstance.save(flush:true)) {
+			seqNumberService.stepFurther(Invoice)
+			invoiceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])}"
             redirect(action: 'show', id: invoiceInstance.id)
+        } else {
+			def seqNumber = seqNumberService.loadSeqNumber(Invoice)
+            render(view: 'create', model: [invoiceInstance: invoiceInstance, seqNumberPrefix: seqNumber.prefix])
         }
     }
 
@@ -81,7 +76,6 @@ class InvoiceController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (invoiceInstance.version > version) {
-                    
                     invoiceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'invoice.label', default: 'Invoice')] as Object[], "Another user has updated this Invoice while you were editing")
                     render(view: 'edit', model: [invoiceInstance: invoiceInstance])
                     return
@@ -89,6 +83,7 @@ class InvoiceController {
             }
             invoiceInstance.properties = params
             if (!invoiceInstance.hasErrors() && invoiceInstance.save(flush: true)) {
+				invoiceInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])}"
                 redirect(action: 'show', id: invoiceInstance.id)
             } else {

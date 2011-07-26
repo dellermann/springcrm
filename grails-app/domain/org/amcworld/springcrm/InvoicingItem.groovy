@@ -12,6 +12,7 @@ class InvoicingItem {
 		unitPrice(scale:2, min:0.01)
 		tax(scale:1, min:0.0)
     }
+	static searchable = [only:['number', 'name', 'description']]
 	static transients = ['total']
 		
 	String number
@@ -34,8 +35,16 @@ class InvoicingItem {
 		tax = i.tax
 	}
 	
+	BigDecimal getQuantity() {
+		return quantity ?: 0
+	}
+	
+	BigDecimal getUnitPrice() {
+		return unitPrice ?: 0
+	}
+	
 	BigDecimal getTotal() {
-		return quantity * unitPrice
+		return getQuantity() * getUnitPrice()
 	}
 	
 	String toString() {
