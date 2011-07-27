@@ -18,10 +18,9 @@ class OrganizationController {
     }
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Organization)
-        def organizationInstance = new Organization(number:seqNumber.nextNumber)
+        def organizationInstance = new Organization()
         organizationInstance.properties = params
-        return [organizationInstance: organizationInstance, seqNumberPrefix: seqNumber.prefix]
+        return [organizationInstance: organizationInstance]
     }
 
     def save = {
@@ -52,8 +51,7 @@ class OrganizationController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
             redirect(action: 'list')
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(Organization.class)
-            return [organizationInstance: organizationInstance, seqNumberPrefix: seqNumber.prefix]
+            return [organizationInstance: organizationInstance]
         }
     }
 

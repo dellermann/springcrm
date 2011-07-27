@@ -23,10 +23,9 @@ class ProductController {
 	}
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Product)
-        def productInstance = new Product(number:seqNumber.nextNumber)
+        def productInstance = new Product()
         productInstance.properties = params
-        return [productInstance: productInstance, seqNumberPrefix: seqNumber.prefix]
+        return [productInstance: productInstance]
     }
 
     def save = {
@@ -57,8 +56,7 @@ class ProductController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])}"
             redirect(action: "list")
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(Product.class)
-            return [productInstance: productInstance, seqNumberPrefix: seqNumber.prefix]
+            return [productInstance: productInstance]
         }
     }
 

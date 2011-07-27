@@ -31,9 +31,7 @@ class InvoiceController {
 			invoiceInstance = new Invoice()
 			invoiceInstance.properties = params
 		}
-		def seqNumber = seqNumberService.loadSeqNumber(Invoice)
-		invoiceInstance.number = seqNumber.nextNumber
-        return [invoiceInstance: invoiceInstance, seqNumberPrefix: seqNumber.prefix]
+        return [invoiceInstance: invoiceInstance]
     }
 
     def save = {
@@ -44,8 +42,7 @@ class InvoiceController {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])}"
             redirect(action: 'show', id: invoiceInstance.id)
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(Invoice)
-            render(view: 'create', model: [invoiceInstance: invoiceInstance, seqNumberPrefix: seqNumber.prefix])
+            render(view: 'create', model: [invoiceInstance: invoiceInstance])
         }
     }
 
@@ -65,8 +62,7 @@ class InvoiceController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
             redirect(action: 'list')
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(Invoice.class)
-            return [invoiceInstance: invoiceInstance, seqNumberPrefix: seqNumber.prefix]
+            return [invoiceInstance: invoiceInstance]
         }
     }
 

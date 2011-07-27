@@ -27,9 +27,7 @@ class SalesOrderController {
 			salesOrderInstance = new SalesOrder()
 			salesOrderInstance.properties = params
 		}
-		def seqNumber = seqNumberService.loadSeqNumber(SalesOrder)
-		salesOrderInstance.number = seqNumber.nextNumber
-        return [salesOrderInstance: salesOrderInstance, seqNumberPrefix: seqNumber.prefix]
+        return [salesOrderInstance: salesOrderInstance]
     }
 
     def save = {
@@ -60,8 +58,7 @@ class SalesOrderController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
             redirect(action: 'list')
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(SalesOrder.class)
-            return [salesOrderInstance: salesOrderInstance, seqNumberPrefix: seqNumber.prefix]
+            return [salesOrderInstance: salesOrderInstance]
         }
     }
 

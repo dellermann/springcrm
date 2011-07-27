@@ -15,11 +15,7 @@ class GDataFilters {
 							AuthSubUtil.exchangeForSessionToken(token, null)
 						session.gdataToken = sessionToken
 					} else {
-						def next = request.scheme << '://' << request.serverName
-						if (request.serverPort != 80) {
-							next << ':' << request.serverPort
-						}
-						next << request.forwardURI
+						def next = request.request.requestURL.toString()
 						def queryString = request.queryString
 						if (queryString) {
 							next << '?' << queryString

@@ -23,10 +23,9 @@ class ServiceController {
 	}
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Service)
-        def serviceInstance = new Service(number:seqNumber.nextNumber)
+        def serviceInstance = new Service()
         serviceInstance.properties = params
-        return [serviceInstance: serviceInstance, seqNumberPrefix: seqNumber.prefix]
+        return [serviceInstance: serviceInstance]
     }
 
     def save = {
@@ -57,8 +56,7 @@ class ServiceController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])}"
             redirect(action: "list")
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(Service.class)
-            return [serviceInstance: serviceInstance, seqNumberPrefix: seqNumber.prefix]
+            return [serviceInstance: serviceInstance]
         }
     }
 

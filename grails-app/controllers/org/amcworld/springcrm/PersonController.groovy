@@ -22,10 +22,9 @@ class PersonController {
     }
 
     def create = {
-		def seqNumber = seqNumberService.loadSeqNumber(Person)
-        def personInstance = new Person(number:seqNumber.nextNumber)
+        def personInstance = new Person()
         personInstance.properties = params
-        return [personInstance: personInstance, seqNumberPrefix: seqNumber.prefix]
+        return [personInstance: personInstance]
     }
 
     def save = {
@@ -56,8 +55,7 @@ class PersonController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
             redirect(action: 'list')
         } else {
-			def seqNumber = seqNumberService.loadSeqNumber(Person.class)
-            return [personInstance: personInstance, seqNumberPrefix: seqNumber.prefix]
+            return [personInstance: personInstance]
         }
     }
 
