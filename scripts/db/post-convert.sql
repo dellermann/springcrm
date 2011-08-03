@@ -112,33 +112,33 @@ UPDATE seq_number
   SET next_number = (
       SELECT MAX(number) + 1 FROM invoicing_transaction WHERE type = 'Q'
     )
-  WHERE class_name = 'org.amcworld.springcrm.Quote';
+  WHERE controller_name = 'quote';
 UPDATE seq_number
   SET next_number = (
       SELECT MAX(number) + 1 FROM invoicing_transaction WHERE type = 'O'
     )
-  WHERE class_name = 'org.amcworld.springcrm.SalesOrder';
+  WHERE controller_name = 'salesOrder';
 UPDATE seq_number
   SET next_number = (
       SELECT MAX(number) + 1 FROM invoicing_transaction WHERE type = 'I'
     )
-  WHERE class_name = 'org.amcworld.springcrm.Invoice';
+  WHERE controller_name = 'invoice';
 UPDATE seq_number
   SET next_number = (SELECT MAX(number) + 1 FROM product)
-  WHERE class_name = 'org.amcworld.springcrm.Product';
+  WHERE controller_name = 'product';
 UPDATE seq_number
   SET next_number = (
       SELECT MAX(number) + 1 FROM service WHERE number < 10500
     )
-  WHERE class_name = 'org.amcworld.springcrm.Service';
+  WHERE controller_name = 'service';
 UPDATE seq_number
   SET next_number = (
       SELECT MAX(number) + 1 FROM organization WHERE number < 90000
     )
-  WHERE class_name = 'org.amcworld.springcrm.Organization';
+  WHERE controller_name = 'organization';
 UPDATE seq_number
   SET next_number = (SELECT MAX(number) + 1 FROM person)
-  WHERE class_name = 'org.amcworld.springcrm.Person';
+  WHERE controller_name = 'person';
 
 --
 -- entries which are to fix manually
