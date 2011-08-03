@@ -33,6 +33,9 @@ class PersonController {
         if (personInstance.save(flush:true)) {
 			seqNumberService.stepFurther(Person)
 			personInstance.index()
+			if (ldapService) {
+				ldapService.save(personInstance)
+			}
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
             redirect(action: 'show', id: personInstance.id)
         } else {
@@ -74,6 +77,9 @@ class PersonController {
             personInstance.properties = params
             if (!personInstance.hasErrors() && personInstance.save(flush: true)) {
 				personInstance.reindex()
+				if (ldapService) {
+					ldapService.save(personInstance)
+				}
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
                 redirect(action: 'show', id: personInstance.id)
             } else {
