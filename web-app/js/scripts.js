@@ -148,7 +148,7 @@
                     });
             $("#quick-access").change(this._onChangeQuickAccess);
             $("#main-menu > li").hover(this._onMenuHover);
-            $(".header-with-menu .menu").hover(this._onMenuHover);
+            $(".menu").hover(this._onMenuHover);
             $(".date-input-date").change(this._onChangeDateInput)
                 .datepicker({
                     changeMonth: true, changeYear: true, gotoCurrent: true,
@@ -341,10 +341,10 @@
      * @param {String} config.valueInputId  the ID of the (usually hidden) input
      *                                      field where the value of the
      *                                      selected item is stored
-     * @param {Boolean} [config.combobox]   whether or not the autocomplete 
+     * @param {Boolean} [config.combobox]   whether or not the autocomplete
      *                                      field is displayed as combobox. In
      *                                      this case an additional button is
-     *                                      rendered beside the autocomplete 
+     *                                      rendered beside the autocomplete
      *                                      input field.
      * @param {String} config.findUrl       the URL used to query for the
      *                                      entered search term
@@ -390,12 +390,12 @@
          * @default "{baseId}-id"
          */
         this._$valueInput = $("#" + (config.valueInputId || baseId + "-id"));
-        
+
         /**
          * Determines whether or not the autocomplete field is displayed as
          * combobox. In this case an additional button is rendered beside the
          * autocomplete input field.
-         * 
+         *
          * @type Boolean
          * @default true
          */
@@ -445,11 +445,11 @@
          * @see FixedSelAutocomplete#_onBlur
          */
         this._oldLabel = "";
-        
+
         /**
          * Any additional parameters which are sent to the server. If this is a
          * function it will be called to produce additional parameters.
-         * 
+         *
          * @type Object|Function
          * @default {}
          */
@@ -516,11 +516,11 @@
             this._$valueInput.val(this._oldValue);
             this._$labelInput.val(this._oldLabel);
         },
-        
+
         /**
          * Called if the combobox button beside the autocomplete field was
          * clicked. The method starts a search for all entries.
-         * 
+         *
          * @param {Object} event    the event data
          * @private
          */
@@ -551,7 +551,7 @@
             this._oldValue = this._$valueInput.val();
             this._oldLabel = this._$labelInput.val();
         },
-        
+
         /**
          * Called if an item from the autocomplete selector was focused, but
          * not selected. The method displays the label of the item instead of
@@ -618,7 +618,7 @@
                 params = $.isFunction(p) ? p.call(this) : p;
             }
             $.extend(params, { name: request.term });
-            
+
             $.ajax({
                 context: this, data: params, dataType: "json",
                 /** @ignore */
@@ -685,25 +685,25 @@
          * @type String
          */
         this._retrieveOrgUrl = config.retrieveOrgUrl;
-        
+
         /**
          * The ID of the field used to obtain the selected organization.
-         * 
+         *
          * @type String
          * @default "organization-id"
          */
         this._orgFieldId = config.orgFieldId || "organization-id";
-        
+
         /**
          * The menu which belongs to the left address block.
-         * 
+         *
          * @type JQueryObject
          */
         this._$leftMenu = $(".left-address .menu");
-        
+
         /**
          * The menu which belongs to the right address block.
-         * 
+         *
          * @type JQueryObject
          */
         this._$rightMenu = $(".right-address .menu");
@@ -723,7 +723,7 @@
     AddrFields.prototype = {
 
         //-- Public methods ---------------------
-            
+
         addMenuItemCopy: function (left, text) {
             var f = left ? this.copyToLeft : this.copyToRight;
 
@@ -731,7 +731,7 @@
                     text: text,
                     click: $.proxy(f, this)
                 })
-                .appendTo(this._getMenu(left));            
+                .appendTo(this._getMenu(left));
         },
 
         addMenuItemLoadFromOrganization: function (left, text, orgPrefix) {
@@ -765,7 +765,7 @@
         /**
          * Retrieves the address with the given prefix from the organization
          * and fills the left address block.
-         * 
+         *
          * @param {String} orgPrefix    the prefix in the JSON data object
          *                              containing the address of the
          *                              organization which will be filled into
@@ -777,7 +777,7 @@
         /**
          * Retrieves the address with the given prefix from the organization
          * and fills the right address block.
-         * 
+         *
          * @param {String} orgPrefix    the prefix in the JSON data object
          *                              containing the address of the
          *                              organization which will be filled into
@@ -876,7 +876,7 @@
 
         /**
          * Gets the <code>&lt;ul></code> of either the left or right menu.
-         * 
+         *
          * @param {Boolean} left    <code>true</code> if the left menu is to
          *                          return; <code>false</code> otherwise
          * @return {JQueryObject}   the menu unordered list
@@ -906,7 +906,7 @@
          */
         _loadFromOrganization: function (prefix, orgPrefix) {
             var url = this._retrieveOrgUrl;
-            
+
             if (url) {
                 $.ajax({
                     url: url, dataType: "json",
@@ -933,11 +933,11 @@
      * @class       Extends the jQuery class.
      */
     $.extend({
-        
+
         /**
          * Formats the given number as currency, that is with two decimal
          * digits. For example, the number 1423 is formatted as "1.423,00".
-         * 
+         *
          * @name                jQuery#formatCurrency
          * @param {Number} x    the given number
          * @returns {String}    the formatted number
@@ -949,7 +949,7 @@
 
         /**
          * Formats the given date in the form "DD.MM.YYYY".
-         * 
+         *
          * @name                jQuery#formatDate
          * @param {Date} d      the given date
          * @returns {String}    the formatted date
@@ -971,7 +971,7 @@
 
         /**
          * Formats the given number with the given precision.
-         * 
+         *
          * @name                jQuery#formatNumber
          * @param {Number} x    the given number
          * @param {Number} n    the precision
@@ -995,12 +995,12 @@
 
         /**
          * Parses the given localized number string.
-         * 
+         *
          * @name                jQuery#parseNumber
          * @param {String} s    the given string
          * @returns {Number}    the parsed number; <code>NaN</code> if the
          *                      given string is not a number
-         * @function                     
+         * @function
          */
         parseNumber: function (s) {
             return (s === "") ? 0

@@ -218,7 +218,7 @@
       <div class="header-with-menu">
         <h4><g:message code="person.fieldset.mailingAddr.label" /></h4>
         <div class="menu">
-          <span class="button small white"><span><g:message code="default.options.label" /></span></span>
+          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
         </div>
       </div>
       <div class="fieldset-content form-fragment">
@@ -301,7 +301,7 @@
       <div class="header-with-menu">
         <h4><g:message code="person.fieldset.otherAddr.label" /></h4>
         <div class="menu">
-          <span class="button small white"><span><g:message code="default.options.label" /></span></span>
+          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
         </div>
       </div>
       <div class="fieldset-content form-fragment">
