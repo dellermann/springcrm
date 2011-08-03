@@ -23,10 +23,12 @@ class SeqNumberFilters {
 		
 		save(controller:'*', action:'(save|edit|update)') {
 			after = { model ->
-				SeqNumber seqNumber =
-					seqNumberService.loadSeqNumber(controllerName)
-				if (seqNumber) {
-					model.seqNumberPrefix = seqNumber.prefix
+				if (model != null) {
+					SeqNumber seqNumber =
+						seqNumberService.loadSeqNumber(controllerName)
+					if (seqNumber) {
+						model.seqNumberPrefix = seqNumber.prefix
+					}
 				}
 			}
 		}
