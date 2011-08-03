@@ -11,6 +11,7 @@ class PersonController {
 
 	def seqNumberService
 	def googleDataContactService
+	def ldapService
 
     def index = {
         redirect(action: 'list', params: params)
@@ -89,7 +90,12 @@ class PersonController {
         if (personInstance) {
             try {
                 personInstance.delete(flush: true)
-				googleDataContactService.markDeleted(personInstance)
+				if (googleDataContactService) {
+					googleDataContactService.markDeleted(personInstance)
+				}
+				if (ldapService) {
+					ldapService.delete(personInstance)
+				}
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])}"
                 redirect(action: 'list')
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
@@ -117,20 +123,43 @@ class PersonController {
 	}
 	
 	def gdatasync = {
-		if (params.id) {
-			def personInstance = Person.get(params.id)
-			if (personInstance) {
-				googleDataContactService.sync(personInstance)
-				flash.message = "${message(code: 'default.gdata.sync.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
-	        } else {
-				flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
+		if (googleDataContactService) {
+			if (params.id) {
+				def personInstance = Person.get(params.id)
+				if (personInstance) {
+					googleDataContactService.sync(personInstance)
+					flash.message = "${message(code: 'default.gdata.sync.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
+		        } else {
+					flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
+				}
+				redirect(action:'show', id:params.id)
+			} else {
+				def personInstanceList = Person.list()
+				personInstanceList.each { googleDataContactService.sync(it) }
+				flash.message = "${message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])}"
 			}
-		} else {
-			def personInstanceList = Person.list()
-			personInstanceList.each { googleDataContactService.sync(it) }
-			flash.message = "${message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])}"
+			googleDataContactService.deleteMarkedEntries()
 		}
-		googleDataContactService.deleteMarkedEntries()
-        redirect(action: 'list')
+        redirect(action:'list')
+	}
+	
+	def ldapexport = {
+		if (ldapService) {
+			if (params.id) {
+				def personInstance = Person.get(params.id)
+				if (personInstance) {
+					ldapService.save(personInstance)
+					flash.message = "${message(code: 'default.ldap.export.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
+		        } else {
+					flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
+				}
+				redirect(action:'show', id:params.id)
+			} else {
+				def personInstanceList = Person.list()
+				personInstanceList.each { ldapService.save(it) }
+				flash.message = "${message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])}"
+			}
+		}
+        redirect(action:'list')
 	}
 }

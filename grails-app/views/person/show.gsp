@@ -27,6 +27,7 @@
     <ul>
       <li><g:link controller="call" action="create" params="['person.id':personInstance?.id]" class="button medium white"><g:message code="person.action.createCall.label" /></g:link></li>
       <li><g:link action="gdatasync" params="[id:personInstance?.id]" class="button medium white"><g:message code="person.action.gdataExport.label"/></g:link></li>
+      <li><g:link action="ldapexport" params="[id:personInstance?.id]" class="button medium white"><g:message code="person.action.ldapExport.label"/></g:link></li>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
