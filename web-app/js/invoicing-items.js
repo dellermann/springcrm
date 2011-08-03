@@ -34,9 +34,9 @@
 
     /**
      * Creates a new invoicing item list.
-     * 
-     * @class                                   Represents a list of invoicing 
-     *                                          items used in quotes, orders, 
+     *
+     * @class                                   Represents a list of invoicing
+     *                                          items used in quotes, orders,
      *                                          or invoices.
      * @constructor
      * @param {Object} config                   configuration data for this
@@ -49,7 +49,7 @@
      * @param {String} config.formName          the name of the form containing
      *                                          the invoicing items; defaults
      *                                          to "{baseName}-form"
-     * @param {String} config.imgPath           the base path to the folder 
+     * @param {String} config.imgPath           the base path to the folder
      *                                          containing the images which are
      *                                          used for rendering the
      *                                          invoicing items
@@ -71,146 +71,146 @@
 
         /**
          * The ID of the table containing the invoicing items.
-         * 
+         *
          * @type String
          * @default "{baseName}-items"
          */
         this._tableId = config.tableId || config.baseName + "-items";
-        
+
         /**
          * The base path to the folder containing the images which are used for
          * rendering the invoicing items.
-         * 
+         *
          * @type String
          */
         this._imgPath = config.imgPath;
-        
+
         /**
          * The URL used to retrieve the products of the CRM.
-         * 
+         *
          * @type String
          */
         this._productListUrl = config.productListUrl;
-        
+
         /**
          * The URL used to retrieve the services of the CRM.
-         * 
+         *
          * @type String
          */
         this._serviceListUrl = config.serviceListUrl;
 
         /**
          * The form containing the invoicing items.
-         * 
+         *
          * @type Object
          */
         this._form = window.document.forms[formName];
-        
+
         /**
          * The table containing the invoicing items.
-         * 
+         *
          * @type JQueryObject
          */
         this._$table = $("#" + this._tableId);
-        
+
         /**
          * The table body containing the invoicing items.
-         * 
+         *
          * @type JQueryObject
          */
         this._$tbodyItems = $("#invoicing-items");
-        
+
         /**
          * The field containing the subtotal net value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$subtotalNet = $("#invoicing-items-subtotal-net");
-        
+
         /**
          * The field containing the subtotal gross value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$subtotalGross = $("#invoicing-items-subtotal-gross");
-        
+
         /**
          * The field containing the discount percentage value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$discountPercent = $("#discountPercent");
-        
+
         /**
          * The field containing the discount value computed from the discount
          * percentage value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$discountFromPercent = $("#invoicing-items-discount-from-percent");
-        
+
         /**
          * The field containing the fixed discount amount value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$discountAmount = $("#discountAmount");
-        
+
         /**
          * The field containing the shipping costs value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$shippingCosts = $("#shippingCosts");
-        
+
         /**
          * The field containing the shipping tax value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$shippingTax = $("#shippingTax");
-        
+
         /**
          * The field containing the adjustment value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$adjustment = $("#adjustment");
-        
+
         /**
          * The field containing the total value.
-         * 
+         *
          * @type JQueryObject
          */
         this._$total = $("#invoicing-items-total");
-        
+
         /**
          * The currently computed subtotal net value.
-         * 
+         *
          * @type Number
          * @default 0.0
          */
         this._subtotalNet = 0.0;
-        
+
         /**
          * The currently computed subtotal gross value.
-         * 
+         *
          * @type Number
          * @default 0.0
          */
         this._subtotalGross = 0.0;
-        
+
         /**
          * The currently computed total taxes.
-         * 
+         *
          * @type Number
          * @default 0.0
          */
         this._taxTotal = 0.0;
-        
+
         /**
          * The currently computed total (gross) value.
-         * 
+         *
          * @type Number
          * @default 0.0
          */
@@ -243,7 +243,7 @@
         /**
          * Adds a table row for a new invoicing item and appends it to the end
          * of the table body.
-         * 
+         *
          * @protected
          */
         _addInvoicingItem: function () {
@@ -260,48 +260,48 @@
             pos = $tbody.find("tr")
                 .length;
             sPos = String(pos);
-            s = '<tr><td headers="' + table + 
-                '-pos" class="invoicing-items-pos">' + String(pos + 1) + 
-                '.</td><td headers="' + table + 
+            s = '<tr><td headers="' + table +
+                '-pos" class="invoicing-items-pos">' + String(pos + 1) +
+                '.</td><td headers="' + table +
                 '-number" class="invoicing-items-number">' +
-                '<input type="text" name="items[' + sPos + 
-                '].number" size="10" /></td><td headers="' + table + 
+                '<input type="text" name="items[' + sPos +
+                '].number" size="10" /></td><td headers="' + table +
                 '-quantity" class="invoicing-items-quantity">' +
-                '<input type="text" name="items[' + sPos + 
-                '].quantity" size="4" /></td><td headers="' + table + 
+                '<input type="text" name="items[' + sPos +
+                '].quantity" size="4" /></td><td headers="' + table +
                 '-unit" class="invoicing-items-unit">' +
-                '<input type="text" name="items[' + sPos + 
+                '<input type="text" name="items[' + sPos +
                 '].unit" size="5" /></td><td headers="' + table +
                 '-name" class="invoicing-items-name">' +
-                '<input type="text" name="items[' + sPos + 
+                '<input type="text" name="items[' + sPos +
                 '].name" size="28" />&nbsp;<a href="javascript:void 0;" ' +
-                'class="select-btn-products"><img src="' + imgPath + 
-                '/products.png" alt="' + gm("productSel") + '" title="' + 
-                gm("productSel") + 
+                'class="select-btn-products"><img src="' + imgPath +
+                '/products.png" alt="' + gm("productSel") + '" title="' +
+                gm("productSel") +
                 '" width="16" height="16" style="vertical-align: middle;" /></a>' +
                 '&nbsp;<a href="javascript:void 0;" class="select-btn-services">' +
-                '<img src="' + imgPath + '/services.png" alt="' + 
+                '<img src="' + imgPath + '/services.png" alt="' +
                 gm("serviceSel") + '" title="' + gm("serviceSel") +
                 '" width="16" height="16" style="vertical-align: middle;" /></a>' +
                 '<br /><textarea name="items[' + sPos +
-                '].description" cols="30" rows="3"></textarea></td><td headers="' + 
+                '].description" cols="30" rows="3"></textarea></td><td headers="' +
                 table + '-unit-price" class="invoicing-items-unit-price">' +
-                '<input type="text" name="items[' + sPos + 
-                '].unitPrice" size="8" value="0,00" class="currency" />&nbsp;€</td>' + 
+                '<input type="text" name="items[' + sPos +
+                '].unitPrice" size="8" value="0,00" class="currency" />&nbsp;€</td>' +
                 '<td headers="' + table + '-total" class="invoicing-items-total">' +
-                '<span class="value">0,00</span>&nbsp;€</td>' + 
+                '<span class="value">0,00</span>&nbsp;€</td>' +
                 '<td headers="' + table + '-tax" class="invoicing-items-tax">' +
                 '<input type="text" name="items[' + sPos +
                 '].tax" size="4" />&nbsp;%</td>' +
                 '<td class="invoicing-items-buttons">' +
-                '<a href="javascript:void 0;" class="up-btn"><img src="' + 
-                imgPath + '/up.png" alt="' + gm("upBtn") + '" title="' + 
+                '<a href="javascript:void 0;" class="up-btn"><img src="' +
+                imgPath + '/up.png" alt="' + gm("upBtn") + '" title="' +
                 gm("upBtn") + '" width="16" height="16" /></a>' +
-                '<a href="javascript:void 0;" class="down-btn"><img src="' + 
-                imgPath + '/down.png" alt="' + gm("downBtn") + '" title="' + 
+                '<a href="javascript:void 0;" class="down-btn"><img src="' +
+                imgPath + '/down.png" alt="' + gm("downBtn") + '" title="' +
                 gm("downBtn") + '" width="16" height="16" /></a>' +
-                '<a href="javascript:void 0;" class="remove-btn"><img src="' + 
-                imgPath + '/remove.png" alt="' + gm("removeBtn") + '" title="' + 
+                '<a href="javascript:void 0;" class="remove-btn"><img src="' +
+                imgPath + '/remove.png" alt="' + gm("removeBtn") + '" title="' +
                 gm("removeBtn") + '" width="16" height="16" /></a></td></tr>';
             $tbody.append(s);
         },
@@ -309,7 +309,7 @@
         /**
          * Computes the values in the table footer such as subtotal, taxes,
          * total etc. and prints the values in the table footer.
-         * 
+         *
          * @protected
          */
         _computeFooterValues: function () {
@@ -343,7 +343,7 @@
 
         /**
          * Computes the tax classes and the tax values.
-         * 
+         *
          * @returns {Number}    the computed subtotal gross value
          * @protected
          */
@@ -398,13 +398,13 @@
                 tr = taxRates[i];
                 taxTotal += tr.tax;
                 s += '<tr class="tax-rate-sum"><td headers="quote-items-name" ' +
-                    'colspan="5" class="invoicing-items-label"><label>' + 
+                    'colspan="5" class="invoicing-items-label"><label>' +
                     gm("taxRateLabel").replace(
                         /\{0\}/, $.formatNumber(tr.taxRate, 1)
-                    ) + 
+                    ) +
                     '</label></td>' +
                     '<td headers="quote-items-unitPrice"></td>' +
-                    '<td headers="quote-items-total" class="invoicing-items-total">' + 
+                    '<td headers="quote-items-total" class="invoicing-items-total">' +
                     $.formatCurrency(tr.tax) + '&nbsp;€</td>' +
                     '<td headers="quote-items-tax"></td>' +
                     '<td></td>' +
@@ -424,7 +424,7 @@
         /**
          * Displays a dialog window and load inventory items such as products
          * or services for display within the dialog.
-         * 
+         *
          * @param {String} type the type of inventory items which are to load;
          *                      possible values are "products" and "services"
          * @param {String} url  the URL used to load the inventory items
@@ -446,7 +446,7 @@
                             function (e) {
                                 var $target,
                                     target;
-    
+
                                 target = e.target;
                                 if (target.tagName.toLowerCase() !== "a") {
                                     return true;
@@ -472,7 +472,7 @@
 
         /**
          * Moves the invoicing item belonging to the given up or down link.
-         * 
+         *
          * @param {JQueryObject} $a the link to move the item
          * @param {Number} dir      the direction to move the item; -1 indicates
          *                          movement upwards, 1 movement downwards
@@ -480,7 +480,7 @@
          */
         _moveInvoicingItem: function ($a, dir) {
             var $allTrs,
-                $destTr,
+                $destTr = null,
                 $tr,
                 pos;
 
@@ -498,15 +498,17 @@
                 $destTr = $tr.next();
                 $destTr.after($tr);
             }
-            
+
             /* swap input name positions and item positions */
-            InvoicingItems._swapInputItemPos(pos, dir);
-            InvoicingItems._swapItemPos($tr, $destTr);
+            if ($destTr) {
+                InvoicingItems._swapInputItemPos(pos, dir);
+                InvoicingItems._swapItemPos($tr, $destTr);
+            }
         },
 
         /**
          * Called if the user changes the value of an input field.
-         * 
+         *
          * @param {Object} e    the event object
          * @private
          */
@@ -527,7 +529,7 @@
             els = input.form.elements;
             parts = name.match(/^items\[(\d+)\]\.(\w+)$/);
             if (parts) {
-                pos = parts[1];            
+                pos = parts[1];
                 field = parts[2];
                 $tr = $input.parents("tr");
                 switch (field) {
@@ -547,7 +549,7 @@
                     $tr.find(".invoicing-items-total .value")
                         .text($.formatCurrency(qty * unitPrice));
                     break;
-                } 
+                }
             }
 
             this._computeFooterValues();
@@ -555,7 +557,7 @@
 
         /**
          * Called if the user clicks a link.
-         * 
+         *
          * @param {Object} e    the event object
          * @returns {Boolean}   always <code>true</code>
          * @private
@@ -587,7 +589,7 @@
         /**
          * Called if an input control gets the focus. The method clears the
          * content of the control if the numeric value is zero.
-         * 
+         *
          * @param {Object} e    the event object
          * @private
          */
@@ -604,7 +606,7 @@
         /**
          * Called if an input control loses the focus. The method formats the
          * entered numeric value.
-         * 
+         *
          * @param {Object} e    the event object
          * @private
          */
@@ -618,7 +620,7 @@
 
         /**
          * Removes the invoicing item which belongs to the given anchor.
-         * 
+         *
          * @param {JQueryObject} $a the link anchor which was clicked to remove
          *                          the invoicing item
          * @private
@@ -657,7 +659,7 @@
         /**
          * Retrieves an inventory item (product, service etc.) from the server
          * and places it in the table row with the given position.
-         * 
+         *
          * @param {String} type the type of inventory item which is to load;
          *                      possible values are "products" and "services"
          * @param {String} url  the URL used to load the inventory item
@@ -696,7 +698,7 @@
                     $(unitPriceInput).parents("tr")
                         .find(".invoicing-items-total .value")
                             .text($.formatCurrency(qty * unitPrice));
-                    els[prefix + "tax"].value = 
+                    els[prefix + "tax"].value =
                         $.formatNumber(item.taxClass.taxValue * 100.0, 1);
                     instance._computeFooterValues();
                     $("#inventory-selector-" + type).dialog("close");
@@ -706,7 +708,7 @@
 
         /**
          * Shows a dialog window to select products or services.
-         * 
+         *
          * @param {JQueryObject} $a the link which is clicked to load the
          *                          items; it is used to determine in which
          *                          table row the selected item is to store
@@ -726,7 +728,7 @@
                 .children()
                 .index($tr);
             if (!url) {
-                url = (type === "products") ? this._productListUrl 
+                url = (type === "products") ? this._productListUrl
                         : this._serviceListUrl;
             }
             this._loadInventorySelector(type, url, pos);
@@ -758,12 +760,12 @@
             taxRates.push({ taxRate: taxRate, tax: tax });
         }
     };
-    
+
     /**
      * Swaps the positional names of the input controls of the row with the
      * given position and the preceding or following row, depending on the
      * given direction.
-     * 
+     *
      * @name                InvoicingItems#_swapInputItemPos
      * @param {Number} pos  the zero-based position of the item to move
      * @param {Number} dir  the direction to move the item; must be either -1
@@ -772,12 +774,12 @@
      */
     InvoicingItems._swapInputItemPos = function(pos, dir) {
         var destPos = pos + dir,
-        
+
             /** @ignore */
             f = function (el, name, pos) {
                 var $el = $(el),
                     parts;
-        
+
                 parts = $el.attr("name")
                     .match(/^items(?:-dest)?\[\d+\]\.(\w+)$/);
                 $el.attr("name", name + "[" + String(pos) + "]." + parts[1]);
@@ -794,12 +796,12 @@
                 f(this, "items", destPos);
             });
     };
-    
+
     /**
      * Swaps the position label of the item in the given table row with the
      * one of the given destination table row. The position label is stored
      * in the first cell of the table rows.
-     * 
+     *
      * @name                            InvoicingItems#_swapItemPos
      * @param {JQueryObject} $tr        the table row to swap
      * @param {JQueryObject} $destTr    the table row to swap with
