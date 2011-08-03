@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import javax.naming.NameAlreadyBoundException;
+
 import org.apache.directory.groovyldap.LDAP;
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 
@@ -23,6 +25,7 @@ class LdapService {
 			LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
 			if (status) {
 				if (ldap.exists(status.dn)) {
+					log.debug "Deleting DN ${status.dn} from LDAP..."
 					ldap.delete(status.dn)
 				}
 				status.delete(flush:true)
@@ -39,18 +42,34 @@ class LdapService {
 	void save(Person p) {
 		def ldap = getLdap()
 		if (ldap) {
+			log.debug "Exporting person ${p} to LDAP..."
 			LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
 			if (status) {
 				if (ldap.exists(status.dn)) {
+					log.debug "DN ${status.dn} already exists -> deleting it."
 					ldap.delete(status.dn)
 				}
 			} else {
 				status = new LdapSyncStatus(itemId:p.id)
 			}
 			def attrs = convertPersonToAttrs(p)
-			status.dn = "cn=${attrs.cn},${config['ldapContactDn']}"
-		    ldap.add(status.dn, attrs)
-			status.save(flush:true)
+			StringBuilder cn
+			for (int i = 1; i < 10000; i++) {	// 10000 => emergency abort
+				cn = new StringBuilder('cn=')
+				cn << attrs.cn
+				if (i > 1) {
+					cn << ' ' << i
+				}
+				cn << ',' << config['ldapContactDn']
+				try {
+					log.debug "Trying to save DN ${cn} to LDAP..."
+					ldap.add(cn.toString(), attrs)
+					status.dn = cn.toString()
+					status.save(flush:true)
+					break
+				} catch (NameAlreadyBoundException e) { /* ignored */ }
+			}
+			log.debug "Successfully exported person ${p} to LDAP."
 		}
 	}
 
