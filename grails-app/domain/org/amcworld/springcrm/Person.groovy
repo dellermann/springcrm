@@ -42,6 +42,7 @@ class Person {
     static hasMany = [calls:Call]
 	static mapping = {
 		calls column:'Person'
+		sort 'lastName'
 	}
 	static searchable = true
 	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']

@@ -17,6 +17,7 @@ class Call {
 		lastUpdated()
     }
 	static mapping = {
+		sort start:'desc'
 		table 'phone_call'
     }
 	static searchable = true

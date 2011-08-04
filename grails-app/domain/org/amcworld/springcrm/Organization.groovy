@@ -36,6 +36,7 @@ class Organization {
     static hasMany = [persons:Person, calls:Call]
 	static mapping = {
 		calls column:'Organization'
+		sort 'name'
 	}
 	static searchable = true
 	static transients = [
