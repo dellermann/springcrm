@@ -52,9 +52,9 @@
               </div>
               <div class="field\${hasErrors(bean: ${propertyName}, field: '${p.name}', ' error')}">
                 ${renderEditor(p)}
-				<g:hasErrors bean="\${${propertyName}}" field="${p.name}">
-				  <span class="error-msg"><g:eachError bean="\${${propertyName}}" field="${p.name}"><g:message error="\${it}" /> </g:eachError></span>
-				</g:hasErrors>
+                <g:hasErrors bean="\${${propertyName}}" field="${p.name}">
+                  <span class="error-msg"><g:eachError bean="\${${propertyName}}" field="${p.name}"><g:message error="\${it}" /> </g:eachError></span>
+                </g:hasErrors>
               </div>
             </div>
             <%  }   }   } %>
