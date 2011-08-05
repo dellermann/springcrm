@@ -55,13 +55,16 @@ class UserController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (userInstance.version > version) {
-                    
                     userInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'user.label', default: 'User')] as Object[], "Another user has updated this User while you were editing")
                     render(view: "edit", model: [userInstance: userInstance])
                     return
                 }
             }
+			String passwd = userInstance.password
             userInstance.properties = params
+			if (!params.password) {
+				userInstance.password = passwd
+			}
             if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])}"
                 redirect(action: "show", id: userInstance.id)

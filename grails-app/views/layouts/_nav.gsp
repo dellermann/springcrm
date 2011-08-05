@@ -59,6 +59,12 @@
       </ul>
     </li>
     <li>
+      <a href="#">Einstellungen</a>
+      <ul>
+        <li><g:link controller="user"><g:message code="user.plural" /></g:link></li>
+      </ul>
+    </li>
+    <li>
       <select id="quick-access">
         <option value=""><g:message code="default.quickMenu" /></option>
         <option value="${createLink(controller: 'organization', action: 'create')}"><g:message code="default.quickMenu.organization" /></option>

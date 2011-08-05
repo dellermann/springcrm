@@ -27,19 +27,12 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="user-multop-sel" class="multop-sel" /></th>
-        
           <g:sortableColumn property="userName" title="${message(code: 'user.userName.label', default: 'User Name')}" />
-        
-          <g:sortableColumn property="password" title="${message(code: 'user.password.label', default: 'Password')}" />
-        
-          <g:sortableColumn property="firstName" title="${message(code: 'user.firstName.label', default: 'First Name')}" />
-        
           <g:sortableColumn property="lastName" title="${message(code: 'user.lastName.label', default: 'Last Name')}" />
-        
+          <g:sortableColumn property="firstName" title="${message(code: 'user.firstName.label', default: 'First Name')}" />
           <g:sortableColumn property="phone" title="${message(code: 'user.phone.label', default: 'Phone')}" />
-        
-          <g:sortableColumn property="phoneHome" title="${message(code: 'user.phoneHome.label', default: 'Phone Home')}" />
-        
+          <g:sortableColumn property="mobile" title="${message(code: 'user.mobile.label', default: 'Mobile')}" />
+          <g:sortableColumn property="email" title="${message(code: 'user.email.label', default: 'E-mail')}" />
           <th></th>
         </tr>
       </thead>
@@ -47,19 +40,12 @@
       <g:each in="${userInstanceList}" status="i" var="userInstance">
         <tr>
           <td><input type="checkbox" id="user-multop-${userInstance.id}" class="multop-sel-item" /></td>
-        
           <td><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "userName")}</g:link></td>
-        
-          <td>${fieldValue(bean: userInstance, field: "password")}</td>
-        
-          <td>${fieldValue(bean: userInstance, field: "firstName")}</td>
-        
           <td>${fieldValue(bean: userInstance, field: "lastName")}</td>
-        
+          <td>${fieldValue(bean: userInstance, field: "firstName")}</td>
           <td>${fieldValue(bean: userInstance, field: "phone")}</td>
-        
-          <td>${fieldValue(bean: userInstance, field: "phoneHome")}</td>
-        
+          <td>${fieldValue(bean: userInstance, field: "mobile")}</td>
+          <td>${fieldValue(bean: userInstance, field: "email")}</td>
           <td>
             <g:link action="edit" id="${userInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${userInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>

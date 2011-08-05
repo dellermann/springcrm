@@ -34,116 +34,50 @@
     <g:if test="${flash.message}">
     <div class="flash-message message">${flash.message}</div>
     </g:if>
-    <h3>${userInstance?.toString()}</h3>
+    <h3>${userInstance?.toString()} (${userInstance?.userName})</h3>
     <div class="data-sheet">
       <div class="fieldset">
         <h4><g:message code="user.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            
             <div class="row">
               <div class="label"><g:message code="user.userName.label" default="User Name" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "userName")}
-                
-			  </div>
-			</div>
-            
+              <div class="field">${fieldValue(bean: userInstance, field: "userName")}</div>
+			      </div>
             <div class="row">
               <div class="label"><g:message code="user.password.label" default="Password" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "password")}
-                
-			  </div>
-			</div>
-            
+              <div class="field">**********</div>
+			      </div>
             <div class="row">
               <div class="label"><g:message code="user.firstName.label" default="First Name" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "firstName")}
-                
-			  </div>
-			</div>
-            
+              <div class="field">${fieldValue(bean: userInstance, field: "firstName")}</div>
+			      </div>
             <div class="row">
               <div class="label"><g:message code="user.lastName.label" default="Last Name" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "lastName")}
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.phone.label" default="Phone" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "phone")}
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.phoneHome.label" default="Phone Home" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "phoneHome")}
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.mobile.label" default="Mobile" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "mobile")}
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.fax.label" default="Fax" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "fax")}
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.email.label" default="Email" /></div>
-              <div class="field">
-                
-                ${fieldValue(bean: userInstance, field: "email")}
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.dateCreated.label" default="Date Created" /></div>
-              <div class="field">
-                
-                <g:formatDate date="${userInstance?.dateCreated}" />
-                
-			  </div>
-			</div>
-            
-            <div class="row">
-              <div class="label"><g:message code="user.lastUpdated.label" default="Last Updated" /></div>
-              <div class="field">
-                
-                <g:formatDate date="${userInstance?.lastUpdated}" />
-                
-			  </div>
-			</div>
-            
+              <div class="field">${fieldValue(bean: userInstance, field: "lastName")}</div>
+			      </div>
           </div>
           <div class="col col-r">
-            <!-- TODO add content for right column here... -->
-            &nbsp;
+            <div class="row">
+              <div class="label"><g:message code="user.phone.label" default="Phone" /></div>
+              <div class="field">${fieldValue(bean: userInstance, field: "phone")}</div>
+            </div>
+            <div class="row">
+              <div class="label"><g:message code="user.phoneHome.label" default="Phone Home" /></div>
+              <div class="field">${fieldValue(bean: userInstance, field: "phoneHome")}</div>
+            </div>
+            <div class="row">
+              <div class="label"><g:message code="user.mobile.label" default="Mobile" /></div>
+              <div class="field">${fieldValue(bean: userInstance, field: "mobile")}</div>
+            </div>
+            <div class="row">
+              <div class="label"><g:message code="user.fax.label" default="Fax" /></div>
+              <div class="field">${fieldValue(bean: userInstance, field: "fax")}</div>
+            </div>
+            <div class="row">
+              <div class="label"><g:message code="user.email.label" default="Email" /></div>
+              <div class="field">${fieldValue(bean: userInstance, field: "email")}</div>
+            </div>
           </div>
         </div>
       </div>

@@ -38,6 +38,6 @@ class User {
 	}
 
 	String toString() {
-		return userName ?: ''
+		return fullName
 	}
 }
