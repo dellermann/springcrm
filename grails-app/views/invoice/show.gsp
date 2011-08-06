@@ -25,9 +25,6 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><g:link action="print" id="${invoiceInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -64,19 +61,23 @@
               </div>
             </div>
 
+            <g:ifModuleAllowed modules="quote">
             <div class="row">
               <div class="label"><g:message code="invoice.quote.label" default="Quote" /></div>
               <div class="field">
                 <g:link controller="quote" action="show" id="${invoiceInstance?.quote?.id}">${invoiceInstance?.quote?.fullName?.encodeAsHTML()}</g:link>
               </div>
             </div>
+            </g:ifModuleAllowed>
 
+            <g:ifModuleAllowed modules="salesOrder">
             <div class="row">
               <div class="label"><g:message code="invoice.salesOrder.label" default="Sales order" /></div>
               <div class="field">
                 <g:link controller="salesOrder" action="show" id="${invoiceInstance?.salesOrder?.id}">${invoiceInstance?.salesOrder?.fullName?.encodeAsHTML()}</g:link>
               </div>
             </div>
+            </g:ifModuleAllowed>
 
             <div class="row">
               <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>

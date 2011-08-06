@@ -26,9 +26,6 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><g:link controller="call" action="create" params="['organization.id':organizationInstance?.id]" class="button medium white"><g:message code="organization.action.createCall.label" /></g:link></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -44,12 +41,12 @@
             <div class="row">
               <div class="label"><g:message code="organization.number.label" default="Number" /></div>
               <div class="field">${fieldValue(bean: organizationInstance, field: "fullNumber")}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="organization.name.label" default="Name" /></div>
               <div class="field">${fieldValue(bean: organizationInstance, field: "name")}</div>
-			</div>
+			      </div>
                         
             <div class="row">
               <div class="label"><g:message code="organization.legalForm.label" default="Legal Form" /></div>
@@ -59,27 +56,27 @@
             <div class="row">
               <div class="label"><g:message code="organization.type.label" default="Type" /></div>
               <div class="field">${organizationInstance?.type?.encodeAsHTML()}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="organization.industry.label" default="Industry" /></div>
               <div class="field">${organizationInstance?.industry?.encodeAsHTML()}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="organization.owner.label" default="Owner" /></div>
               <div class="field">${fieldValue(bean: organizationInstance, field: "owner")}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="organization.numEmployees.label" default="Num Employees" /></div>
               <div class="field">${fieldValue(bean: organizationInstance, field: "numEmployees")}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="organization.rating.label" default="Rating" /></div>
               <div class="field">${organizationInstance?.rating?.encodeAsHTML()}</div>
-			</div>
+			      </div>
           </div>
           <div class="col col-r">
             <div class="row">
@@ -214,6 +211,7 @@
       </div>
       </g:if>
 
+      <g:ifModuleAllowed modules="person">
       <div class="fieldset">
         <div class="header-with-menu">
           <h4><g:message code="person.plural" /></h4>
@@ -263,7 +261,9 @@
           </g:else>
         </div>
       </div>
+      </g:ifModuleAllowed>
 
+      <g:ifModuleAllowed modules="call">
       <div class="fieldset">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
@@ -313,6 +313,7 @@
           </g:else>
         </div>
       </div>
+      </g:ifModuleAllowed>
     </div>
 
     <p class="record-timestamps">

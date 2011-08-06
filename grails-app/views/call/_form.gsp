@@ -42,6 +42,7 @@
       </div>
     </div>
     <div class="col col-r">
+      <g:ifModuleAllowed modules="organization">
       <div class="row">
         <div class="label">
           <label for="organization"><g:message code="call.organization.label" default="Organization" /></label>
@@ -54,7 +55,9 @@
           </g:hasErrors>
         </div>
       </div>
+      </g:ifModuleAllowed>
       
+      <g:ifModuleAllowed modules="person">
       <div class="row">
         <div class="label">
           <label for="person"><g:message code="call.person.label" default="Person" /></label>
@@ -67,6 +70,7 @@
           </g:hasErrors>
         </div>
       </div>
+      </g:ifModuleAllowed>
       
       <div class="row">
         <div class="label">

@@ -113,3 +113,35 @@
     </div>
   </div>
 </fieldset>
+
+<fieldset>
+  <h4><g:message code="user.fieldset.permissions.label" /></h4>
+  <div class="fieldset-content">
+    <div class="row">
+      <div class="label">
+        <label for="admin"><g:message code="user.admin.label" default="Administrator" /></label>
+      </div>
+      <div class="field${hasErrors(bean: userInstance, field: 'admin', ' error')}">
+        <g:checkBox name="admin" value="${userInstance?.admin}"/><br />
+        <g:hasErrors bean="${userInstance}" field="admin">
+          <span class="error-msg"><g:eachError bean="${userInstance}" field="admin"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">
+        <label for="allowedModulesAsList"><g:message code="user.allowedModules.label" default="Allowed modules" /></label>
+      </div>
+      <div class="field${hasErrors(bean: userInstance, field: 'allowedModulesAsList', ' error')}">
+        <g:select name="allowedModulesAsList" 
+                  from="${grailsApplication.controllerClasses.logicalPropertyName - 'searchable'}"
+                  optionValue="${ { message(code:it + '.plural') } }"
+                  value="${userInstance?.allowedModulesAsList}"
+                  multiple="true" size="7"/><br />
+        <g:hasErrors bean="${userInstance}" field="allowedModulesAsList">
+          <span class="error-msg"><g:eachError bean="${userInstance}" field="allowedModulesAsList"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
+      </div>
+    </div>
+  </div>
+</fieldset>

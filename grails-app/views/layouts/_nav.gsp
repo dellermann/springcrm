@@ -5,7 +5,7 @@
       <ul>
         <li><a href="${createLink(uri: '/')}">Startseite</a></li>
         <!--<li><a href="#">Kalender</a></li>-->
-        <li><g:link controller="call"><g:message code="call.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="call"><li><g:link controller="call"><g:message code="call.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>
     </li>
@@ -13,8 +13,8 @@
       <a href="#">Marketing</a>
       <ul>
         <!--<li><a href="#">Kampagnen</a></li>-->
-        <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
-        <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Leads</a></li>
         <li><a href="#">Kalender</a></li>
         <li><a href="#">Postfach</a></li>
@@ -25,12 +25,12 @@
       <a href="#">Vertrieb</a>
       <ul>
         <!--<li><a href="#">Leads</a></li>-->
-        <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
-        <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Verkaufspotentiale</a></li>-->
-        <li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li>
-        <li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li>
-        <li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="['organization', 'quote']"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'salesOrder']"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'invoice']"><li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li></g:ifModuleAllowed>
       </ul>
     </li>
     <li>
@@ -38,8 +38,8 @@
       <ul>
         <!--<li><a href="#">Trouble Tickets</a></li>
         <li><a href="#">Wissensbasis</a></li>-->
-        <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
-        <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Dokumente</a></li>
         <li><a href="#">Postfach</a></li>-->
       </ul>
@@ -47,32 +47,34 @@
     <li>
       <a href="#">Bestand</a>
       <ul>
-        <li><g:link controller="product"><g:message code="product.plural" /></g:link></li>
-        <li><g:link controller="service"><g:message code="service.plural" /></g:link></li>
-        <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="product"><li><g:link controller="product"><g:message code="product.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="service"><li><g:link controller="service"><g:message code="service.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'person']"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Lieferanten</a></li>
         <li><a href="#">Preislisten</a></li>
         <li><a href="#">Einkaufsbestellungen</a></li>-->
-        <li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li>
-        <li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li>
-        <li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li>
+        <g:ifModuleAllowed modules="['organization', 'quote']"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'salesOrder']"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'invoice']"><li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li></g:ifModuleAllowed>
       </ul>
     </li>
+    <g:ifAdmin>
     <li>
       <a href="#">Einstellungen</a>
       <ul>
         <li><g:link controller="user"><g:message code="user.plural" /></g:link></li>
       </ul>
     </li>
+    </g:ifAdmin>
     <li>
       <select id="quick-access">
         <option value=""><g:message code="default.quickMenu" /></option>
-        <option value="${createLink(controller: 'organization', action: 'create')}"><g:message code="default.quickMenu.organization" /></option>
-        <option value="${createLink(controller: 'person', action: 'create')}"><g:message code="default.quickMenu.person" /></option>
-        <option value="${createLink(controller: 'call', action: 'create')}"><g:message code="default.quickMenu.call" /></option>
-        <option value="${createLink(controller: 'quote', action: 'create')}"><g:message code="default.quickMenu.quote" /></option>
-        <option value="${createLink(controller: 'salesOrder', action: 'create')}"><g:message code="default.quickMenu.salesOrder" /></option>
-        <option value="${createLink(controller: 'invoice', action: 'create')}"><g:message code="default.quickMenu.invoice" /></option>
+        <g:ifModuleAllowed modules="['organization', 'person']"><option value="${createLink(controller: 'organization', action: 'create')}"><g:message code="default.quickMenu.organization" /></option></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'person']"><option value="${createLink(controller: 'person', action: 'create')}"><g:message code="default.quickMenu.person" /></option></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="call"><option value="${createLink(controller: 'call', action: 'create')}"><g:message code="default.quickMenu.call" /></option></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'quote']"><option value="${createLink(controller: 'quote', action: 'create')}"><g:message code="default.quickMenu.quote" /></option></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'salesOrder']"><option value="${createLink(controller: 'salesOrder', action: 'create')}"><g:message code="default.quickMenu.salesOrder" /></option></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="['organization', 'invoice']"><option value="${createLink(controller: 'invoice', action: 'create')}"><g:message code="default.quickMenu.invoice" /></option></g:ifModuleAllowed>
         <!--<option>Neue Aufgabe</option>
         <option>Neues Dokument</option>-->
       </select>

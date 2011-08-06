@@ -62,12 +62,14 @@
               </div>
             </div>
 
+            <g:ifModuleAllowed modules="quote">
             <div class="row">
               <div class="label"><g:message code="salesOrder.quote.label" default="Quote" /></div>
               <div class="field">
                 <g:link controller="quote" action="show" id="${salesOrderInstance?.quote?.id}">${salesOrderInstance?.quote?.fullName?.encodeAsHTML()}</g:link>
               </div>
             </div>
+            </g:ifModuleAllowed>
 
             <div class="row">
               <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>

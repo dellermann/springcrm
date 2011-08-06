@@ -12,10 +12,12 @@
   <section id="content">
     <p>Willkommen bei SpringCRM. Dieses Projekt befindet sich im Aufbau.</p>
     <ul style="margin-left: 0;">
-    <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.logicalPropertyName } }">
+    <g:each var="c" in="${grailsApplication.controllerClasses.logicalPropertyName.sort() }">
+      <g:ifModuleAllowed modules="${c}">
       <li style="list-style: none;">
-        <g:link controller="${c.logicalPropertyName}" class="button white" style="width: 25em;"><g:message code="${c.logicalPropertyName}.plural" default="${c.fullName}"/></g:link>
+        <g:link controller="${c}" class="button white" style="width: 25em;"><g:message code="${c}.plural" default="${c}"/></g:link>
       </li>
+      </g:ifModuleAllowed>
     </g:each>
     </ul>
   </section>

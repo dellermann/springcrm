@@ -230,6 +230,7 @@
       </div>
       </g:if>
 
+      <g:ifModuleAllowed modules="call">
       <div class="fieldset">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
@@ -277,6 +278,7 @@
           </g:else>
         </div>
       </div>
+      </g:ifModuleAllowed>
     </div>
 
     <p class="record-timestamps">

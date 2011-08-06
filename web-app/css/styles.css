@@ -407,6 +407,7 @@ body {
   position: fixed;
   top: 0;
   width: 100%;
+  z-index: 2;
 }
 #toolbar {
   margin: 0;
@@ -909,6 +910,15 @@ footer {
 }
 .col-r {
   float: right;
+}
+
+/* lists */
+.compact-list {
+  margin-top: 0;
+}
+.compact-list li {
+  line-height: normal;
+  margin-bottom: .2em;
 }
 
 /* form layout */

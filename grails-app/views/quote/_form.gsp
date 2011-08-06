@@ -400,7 +400,7 @@
             <input type="text" name="items[${i}].unit" size="5" value="${item.unit}" />
           </td>
           <td headers="quote-items-name" class="invoicing-items-name">
-            <input type="text" name="items[${i}].name" size="28" value="${item.name}" />&nbsp;<a href="javascript:void 0;" class="select-btn-products"><img src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingItem.selector.products.title')}" title="${message(code: 'invoicingItem.selector.products.title')}" width="16" height="16" style="vertical-align: middle;" /></a>&nbsp;<a href="javascript:void 0;" class="select-btn-services"><img src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingItem.selector.services.title')}" title="${message(code: 'invoicingItem.selector.services.title')}" width="16" height="16" style="vertical-align: middle;" /></a><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
+            <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<a href="javascript:void 0;" class="select-btn-products"><img src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingItem.selector.products.title')}" title="${message(code: 'invoicingItem.selector.products.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<a href="javascript:void 0;" class="select-btn-services"><img src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingItem.selector.services.title')}" title="${message(code: 'invoicingItem.selector.services.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
           </td>
           <td headers="quote-items-unit-price" class="invoicing-items-unit-price">
             <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" class="currency" />&nbsp;€
@@ -502,8 +502,8 @@
         .init();
     new SPRINGCRM.InvoicingItems({
             baseName: "quote", imgPath: "${resource(dir: 'img')}",
-            productListUrl: "${createLink(controller:'product', action:'selectorList')}",
-            serviceListUrl: "${createLink(controller:'service', action:'selectorList')}"
+            productListUrl: "${createModuleLink(controller:'product', action:'selectorList')}",
+            serviceListUrl: "${createModuleLink(controller:'service', action:'selectorList')}"
         })
         .init();
 

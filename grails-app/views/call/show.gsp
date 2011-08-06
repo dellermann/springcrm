@@ -43,32 +43,36 @@
             <div class="row">
               <div class="label"><g:message code="call.subject.label" default="Subject" /></div>
               <div class="field">${fieldValue(bean: callInstance, field: "subject")}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="call.notes.label" default="Notes" /></div>
               <div class="field">${fieldValue(bean: callInstance, field: "notes")}</div>
-			</div>
+			      </div>
             
             <div class="row">
               <div class="label"><g:message code="call.start.label" default="Start" /></div>
               <div class="field"><g:formatDate date="${callInstance?.start}" style="SHORT" /></div>
-			</div>
+			      </div>
           </div>
           <div class="col col-r">
+            <g:ifModuleAllowed modules="organization">
             <div class="row">
               <div class="label"><g:message code="call.organization.label" default="Organization" /></div>
               <div class="field">
                 <g:link controller="organization" action="show" id="${callInstance?.organization?.id}">${callInstance?.organization?.encodeAsHTML()}</g:link>
               </div>
             </div>
+            </g:ifModuleAllowed>
             
+            <g:ifModuleAllowed modules="person">
             <div class="row">
               <div class="label"><g:message code="call.person.label" default="Person" /></div>
               <div class="field">
                 <g:link controller="person" action="show" id="${callInstance?.person?.id}">${callInstance?.person?.encodeAsHTML()}</g:link>
               </div>
             </div>
+            </g:ifModuleAllowed>
             
             <div class="row">
               <div class="label"><g:message code="call.phone.label" default="Phone" /></div>

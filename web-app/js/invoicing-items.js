@@ -54,9 +54,11 @@
      *                                          used for rendering the
      *                                          invoicing items
      * @param {String} config.productListUrl    the URL used to retrieve the
-     *                                          products of the CRM
+     *                                          products of the CRM; if unset
+     *                                          no link is displayed
      * @param {String} config.serviceListUrl    the URL used to retrieve the
-     *                                          services of the CRM
+     *                                          services of the CRM; if unset
+     *                                          no link is displayed
      */
     InvoicingItems = function InvoicingItems(config) {
         var formName = config.formName || config.baseName + "-form";
@@ -274,15 +276,25 @@
                 '].unit" size="5" /></td><td headers="' + table +
                 '-name" class="invoicing-items-name">' +
                 '<input type="text" name="items[' + sPos +
-                '].name" size="28" />&nbsp;<a href="javascript:void 0;" ' +
-                'class="select-btn-products"><img src="' + imgPath +
-                '/products.png" alt="' + gm("productSel") + '" title="' +
-                gm("productSel") +
-                '" width="16" height="16" style="vertical-align: middle;" /></a>' +
-                '&nbsp;<a href="javascript:void 0;" class="select-btn-services">' +
-                '<img src="' + imgPath + '/services.png" alt="' +
-                gm("serviceSel") + '" title="' + gm("serviceSel") +
-                '" width="16" height="16" style="vertical-align: middle;" /></a>' +
+                '].name" size="28" />';
+            if (this._productListUrl) {
+                s +=
+                    '&nbsp;<a href="javascript:void 0;" ' +
+                    'class="select-btn-products"><img src="' + imgPath +
+                    '/products.png" alt="' + gm("productSel") + '" title="' +
+                    gm("productSel") + '" width="16" height="16" ' +
+                    'style="vertical-align: middle;" /></a>';
+            }
+            if (this._serviceListUrl) {
+                s +=
+                    '&nbsp;<a href="javascript:void 0;" ' +
+                    'class="select-btn-services">' +
+                    '<img src="' + imgPath + '/services.png" alt="' +
+                    gm("serviceSel") + '" title="' + gm("serviceSel") +
+                    '" width="16" height="16" ' +
+                    'style="vertical-align: middle;" /></a>';
+            }
+            s +=
                 '<br /><textarea name="items[' + sPos +
                 '].description" cols="30" rows="3"></textarea></td><td headers="' +
                 table + '-unit-price" class="invoicing-items-unit-price">' +
@@ -731,7 +743,9 @@
                 url = (type === "products") ? this._productListUrl
                         : this._serviceListUrl;
             }
-            this._loadInventorySelector(type, url, pos);
+            if (url) {
+                this._loadInventorySelector(type, url, pos);
+            }
         }
     };
 

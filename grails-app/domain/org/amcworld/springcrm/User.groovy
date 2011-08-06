@@ -14,11 +14,13 @@ class User {
         mobile(maxSize:40, nullable:true)
         fax(maxSize:40, nullable:true)
         email(blank:false, nullable:false, email:true)
+		admin()
+		allowedModules()
 		settings()
 		dateCreated()
 		lastUpdated()
     }
-	static transients = ['fullName']
+	static transients = ['fullName', 'allowedModulesAsList']
 	
 	String userName
 	String password
@@ -29,12 +31,22 @@ class User {
 	String mobile
 	String fax
 	String email
+	boolean admin
+	String allowedModules
 	Map settings
 	Date dateCreated
 	Date lastUpdated
 	
 	String getFullName() {
 		return "${firstName ?: ''} ${lastName ?: ''}"
+	}
+	
+	List<String> getAllowedModulesAsList() {
+		return allowedModules ? allowedModules.split(',') : null
+	}
+	
+	void setAllowedModulesAsList(List<String> l) {
+		allowedModules = l.join(',')
 	}
 
 	String toString() {

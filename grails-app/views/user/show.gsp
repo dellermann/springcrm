@@ -81,6 +81,27 @@
           </div>
         </div>
       </div>
+      <div class="fieldset">
+        <h4><g:message code="user.fieldset.permissions.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="user.admin.label" default="Administrator" /></div>
+            <div class="field"><g:formatBoolean boolean="${userInstance?.admin}"/></div>
+          </div>
+          <div class="row">
+            <div class="label"><g:message code="user.allowedModules.label" default="Allowed modules" /></div>
+            <div class="field">
+            <g:if test="${userInstance?.allowedModulesAsList}">
+              <ul class="compact-list">
+              <g:each in="${userInstance?.allowedModulesAsList}">
+                <li><g:message code="${it}.plural"/></li>
+              </g:each>
+              </ul>
+            </g:if>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <p class="record-timestamps">
