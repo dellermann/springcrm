@@ -20,7 +20,9 @@ class User {
 		dateCreated()
 		lastUpdated()
     }
-	static transients = ['fullName', 'allowedModulesAsList']
+	static transients = [
+		'fullName', 'allowedModulesAsList', 'allowedControllers'
+	]
 	
 	String userName
 	String password
@@ -36,17 +38,27 @@ class User {
 	Map settings
 	Date dateCreated
 	Date lastUpdated
+	private Set<String> allowedControllers
 	
 	String getFullName() {
 		return "${firstName ?: ''} ${lastName ?: ''}"
 	}
 	
 	List<String> getAllowedModulesAsList() {
-		return allowedModules ? allowedModules.split(',') : null
+		return allowedModules?.split(',')
 	}
 	
 	void setAllowedModulesAsList(List<String> l) {
 		allowedModules = l.join(',')
+	}
+	
+	Set<String> getAllowedControllers() {
+		if (allowedControllers == null) {
+			List<String> moduleNames = allowedModulesAsList
+			allowedControllers =
+				moduleNames ? Modules.resolveModules(moduleNames) : null
+		}
+		return allowedControllers
 	}
 
 	String toString() {

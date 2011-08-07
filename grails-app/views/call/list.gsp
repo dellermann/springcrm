@@ -28,8 +28,8 @@
         <tr>
           <th><input type="checkbox" id="call-multop-sel" class="multop-sel" /></th>
           <g:sortableColumn property="subject" title="${message(code: 'call.subject.label', default: 'Subject')}" />
-          <g:ifModuleAllowed modules="organization"><g:sortableColumn property="organization.name" title="${message(code: 'call.organization.label', default: 'Organization')}" /></g:ifModuleAllowed>
-          <g:ifModuleAllowed modules="person"><g:sortableColumn property="person.lastName" title="${message(code: 'call.person.label', default: 'Person')}" /></g:ifModuleAllowed>
+          <g:ifModuleAllowed modules="contact"><g:sortableColumn property="organization.name" title="${message(code: 'call.organization.label', default: 'Organization')}" /></g:ifModuleAllowed>
+          <g:ifModuleAllowed modules="contact"><g:sortableColumn property="person.lastName" title="${message(code: 'call.person.label', default: 'Person')}" /></g:ifModuleAllowed>
           <g:sortableColumn property="start" title="${message(code: 'call.start.label', default: 'Start')}" />
           <g:sortableColumn property="type" title="${message(code: 'call.type.label', default: 'Type')}" />
           <g:sortableColumn property="status" title="${message(code: 'call.status.label', default: 'Status')}" />
@@ -41,8 +41,8 @@
         <tr>
           <td><input type="checkbox" id="call-multop-${callInstance.id}" class="multop-sel-item" /></td>
           <td><g:link action="show" id="${callInstance.id}">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
-          <g:ifModuleAllowed modules="organization"><td>${fieldValue(bean: callInstance, field: "organization")}</td></g:ifModuleAllowed>
-          <g:ifModuleAllowed modules="person"><td>${fieldValue(bean: callInstance, field: "person")}</td></g:ifModuleAllowed>
+          <g:ifModuleAllowed modules="contact"><td>${fieldValue(bean: callInstance, field: "organization")}</td></g:ifModuleAllowed>
+          <g:ifModuleAllowed modules="contact"><td>${fieldValue(bean: callInstance, field: "person")}</td></g:ifModuleAllowed>
           <td><g:formatDate date="${callInstance.start}" style="SHORT" /></td>
           <td><g:message code="call.type.${callInstance?.type}" /></td>
           <td><g:message code="call.status.${callInstance?.status}" /></td>

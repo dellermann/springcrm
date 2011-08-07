@@ -94,7 +94,7 @@
             <g:if test="${userInstance?.allowedModulesAsList}">
               <ul class="compact-list">
               <g:each in="${userInstance?.allowedModulesAsList}">
-                <li><g:message code="${it}.plural"/></li>
+                <li><g:message code="module.${it}"/></li>
               </g:each>
               </ul>
             </g:if>

@@ -56,16 +56,14 @@
 			      </div>
           </div>
           <div class="col col-r">
-            <g:ifModuleAllowed modules="organization">
+            <g:ifModuleAllowed modules="contact">
             <div class="row">
               <div class="label"><g:message code="call.organization.label" default="Organization" /></div>
               <div class="field">
                 <g:link controller="organization" action="show" id="${callInstance?.organization?.id}">${callInstance?.organization?.encodeAsHTML()}</g:link>
               </div>
             </div>
-            </g:ifModuleAllowed>
             
-            <g:ifModuleAllowed modules="person">
             <div class="row">
               <div class="label"><g:message code="call.person.label" default="Person" /></div>
               <div class="field">

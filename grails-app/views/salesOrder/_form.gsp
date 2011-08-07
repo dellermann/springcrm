@@ -536,8 +536,8 @@
         .init();
     new SPRINGCRM.InvoicingItems({
             baseName: "sales-order", imgPath: "${resource(dir: 'img')}",
-            productListUrl: "${createModuleLink(controller:'product', action:'selectorList')}",
-            serviceListUrl: "${createModuleLink(controller:'service', action:'selectorList')}"
+            productListUrl: "${createControllerLink(controller:'product', action:'selectorList')}",
+            serviceListUrl: "${createControllerLink(controller:'service', action:'selectorList')}"
         })
         .init();
 

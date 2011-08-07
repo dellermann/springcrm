@@ -211,7 +211,6 @@
       </div>
       </g:if>
 
-      <g:ifModuleAllowed modules="person">
       <div class="fieldset">
         <div class="header-with-menu">
           <h4><g:message code="person.plural" /></h4>
@@ -261,7 +260,6 @@
           </g:else>
         </div>
       </div>
-      </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="call">
       <div class="fieldset">

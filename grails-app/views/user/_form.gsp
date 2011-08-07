@@ -1,3 +1,4 @@
+<%@ page import="org.amcworld.springcrm.Modules" %>
 <fieldset>
   <h4><g:message code="user.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -134,8 +135,8 @@
       </div>
       <div class="field${hasErrors(bean: userInstance, field: 'allowedModulesAsList', ' error')}">
         <g:select name="allowedModulesAsList" 
-                  from="${grailsApplication.controllerClasses.logicalPropertyName - 'searchable'}"
-                  optionValue="${ { message(code:it + '.plural') } }"
+                  from="${Modules.moduleNames}"
+                  valueMessagePrefix="module"
                   value="${userInstance?.allowedModulesAsList}"
                   multiple="true" size="7"/><br />
         <g:hasErrors bean="${userInstance}" field="allowedModulesAsList">
