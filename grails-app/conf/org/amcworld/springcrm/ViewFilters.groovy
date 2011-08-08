@@ -4,6 +4,8 @@ import org.codehaus.groovy.grails.commons.GrailsClass;
 
 class ViewFilters {
 
+	def dependsOn = [LoginFilters]
+
 	def filters = {
 		pagination(controller:'*', action:'list') {
 			before = {

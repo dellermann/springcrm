@@ -1,6 +1,6 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
+import java.util.Date
 
 class User {
 
@@ -51,7 +51,12 @@ class User {
 	void setAllowedModulesAsList(List<String> l) {
 		allowedModules = l.join(',')
 	}
-	
+
+	/**
+	 * Gets a set of controllers the user is permitted to access.
+	 * 
+	 * @return	the names of the controllers the user may access
+	 */
 	Set<String> getAllowedControllers() {
 		if (allowedControllers == null) {
 			List<String> moduleNames = allowedModulesAsList
@@ -59,6 +64,30 @@ class User {
 				moduleNames ? Modules.resolveModules(moduleNames) : null
 		}
 		return allowedControllers
+	}
+
+	/**
+	 * Checks whether or not the user has permission to access the given
+	 * controllers.
+	 *  
+	 * @param controllers	the names of the controllers to check
+	 * @return				<code>true</code> if the user can access all the
+	 * 						given controllers; <code>false</code> otherwise
+	 */
+	boolean checkAllowedControllers(List<String> controllers) {
+		return admin || controllers?.intersect(getAllowedControllers())
+	}
+
+	/**
+	 * Checks whether or not the user has permission to access the given
+	 * modules.
+	 *  
+	 * @param modules	the names of the modules to check
+	 * @return			<code>true</code> if the user can access all the given
+	 * 					modules; <code>false</code> otherwise
+	 */
+	boolean checkAllowedModules(List<String> modules) {
+		return admin || modules?.intersect(getAllowedModulesAsList())
 	}
 
 	String toString() {

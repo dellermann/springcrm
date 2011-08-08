@@ -88,3 +88,12 @@ log4j = {
 
     warn   'org.mortbay.log'
 }
+
+// mail configuration
+grails {
+	mail {
+		host = '192.168.0.1'
+		port = 25
+		props = ['mail.smtp.auth':'false']
+	}
+}

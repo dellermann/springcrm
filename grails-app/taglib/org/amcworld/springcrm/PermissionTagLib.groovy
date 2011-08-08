@@ -11,10 +11,7 @@ class PermissionTagLib {
 	 * @attr action					the action to link to
 	 */
 	def createControllerLink = { attrs, body ->
-		User user = session.user
-		if (user?.admin
-			|| ",${user?.allowedControllers},".contains(",${attrs.controller},"))
-		{
+		if (session.user.checkAllowedControllers([attrs.controller])) {
 			out << createLink(attrs)
 		}
 	}
@@ -42,8 +39,7 @@ class PermissionTagLib {
 		if (!(controllers instanceof List)) {
 			controllers = [controllers]
 		}
-		User user = session.user
-		if (user?.admin || controllers.intersect(user?.allowedControllers)) {
+		if (session.user.checkAllowedControllers(controllers)) {
 			out << body()
 		}
 	}
@@ -61,15 +57,7 @@ class PermissionTagLib {
 		if (!(modules instanceof List)) {
 			modules = [modules]
 		}
-		User user = session.user
-		boolean success = user?.admin
-		if (!success) {
-			success = true
-			for (def module in modules) {
-				success &= ",${user?.allowedModules},".contains(",${module},")
-			}
-		}
-		if (success) {
+		if (session.user.checkAllowedModules(modules)) {
 			out << body()
 		}
 	}

@@ -1046,6 +1046,9 @@ button.combobox {
 }
 
 /* tables */
+tbody tr th:first-child {
+  text-align: left;
+}
 .content-table {
   width: 100%;
 }
@@ -1242,6 +1245,9 @@ form .invoicing-items-pos {
   -webkit-border-radius-topleft: 0 !important;
   -webkit-border-radius-topright: 0 !important;
   -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
+}
+.ui-accordion .ui-accordion-header {
+  margin-bottom: 0 !important;
 }
 
 /* login page */

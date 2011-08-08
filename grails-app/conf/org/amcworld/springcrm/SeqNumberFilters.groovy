@@ -2,6 +2,7 @@ package org.amcworld.springcrm
 
 class SeqNumberFilters {
 	
+	def dependsOn = [LoginFilters]
 	def seqNumberService
 
 	def filters = {

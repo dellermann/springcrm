@@ -4,6 +4,8 @@ import com.google.gdata.client.http.AuthSubUtil
 
 class GDataFilters {
 	
+	def dependsOn = [LoginFilters]
+
 	def filters = {
 		gdataSync(controller:'*', action:'gdatasync') {
 			before = {
