@@ -254,6 +254,7 @@
          */
         _onMenuHover: function () {
             $(this).find("ul")
+                .stop(true, true)
                 .slideToggle();
         },
 
