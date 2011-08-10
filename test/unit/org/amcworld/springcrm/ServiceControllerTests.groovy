@@ -19,8 +19,10 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		def s1 = new Service(number:10000, name:'Service 1')
 		def s2 = new Service(number:10001, name:'Service 2')
 		mockDomain(Service, [s1, s2])
+		Service.metaClass.index = { -> }
+		Service.metaClass.reindex = { -> }
 		
-		def seqNumber = new SeqNumber(className:Service.class.name, nextNumber:10002, prefix:'S', suffix:'')
+		def seqNumber = new SeqNumber(controllerName:'service', nextNumber:10002, prefix:'S', suffix:'')
 		mockDomain(SeqNumber, [seqNumber])
 		
 		controller.seqNumberService = new SeqNumberService()
@@ -46,9 +48,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.serviceInstance
-		assertEquals 10002, map.serviceInstance.number
 		assertNull map.serviceInstance.name
-		assertEquals 'S', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -59,7 +59,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Service.count()
 		assertEquals 'show', controller.redirectArgs['action']
-		SeqNumber seqNumber = SeqNumber.findByClassName(Service.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('service')
 		assertEquals 10003, seqNumber.nextNumber
 	}
 	
@@ -105,7 +105,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Service.count()
-		SeqNumber seqNumber = SeqNumber.findByClassName(Service.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('service')
 		assertEquals 10002, seqNumber.nextNumber
 		def p = Service.get(1)
 		assertEquals 10000, p.number

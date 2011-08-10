@@ -25,6 +25,9 @@ class UserTests extends GrailsUnitTestCase {
 		assertNull user.phoneHome
 		assertNull user.mobile
 		assertNull user.fax
+		assertFalse user.admin
+		assertNull user.allowedModules
+		assertNull user.settings
 		assertEquals 'd.ellermann@amc-world.de', user.email
     }
 	
@@ -146,7 +149,7 @@ class UserTests extends GrailsUnitTestCase {
 		assertEquals 'Daniel Ellermann', u.fullName
 
 		u = new User()
-		assertEquals ' ', u.fullName
+		assertEquals '', u.fullName
 	}
 	
 	void testToString() {
@@ -154,7 +157,7 @@ class UserTests extends GrailsUnitTestCase {
 			userName:'danny', password:'test', firstName:'Daniel',
 			lastName:'Ellermann', email:'d.ellermann@amc-world.de'
 		)
-		assertEquals 'danny', u.toString()
+		assertEquals 'Daniel Ellermann', u.toString()
 
 		u = new User()
 		assertEquals '', u.toString()

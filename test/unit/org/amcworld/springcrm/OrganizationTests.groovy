@@ -197,7 +197,7 @@ class OrganizationTests extends GrailsUnitTestCase {
 	}
 	
 	void testFullNumber() {
-		def seqNumber = new SeqNumber(className:Organization.class.name, nextNumber:10002, prefix:'O', suffix:'')
+		def seqNumber = new SeqNumber(controllerName:'organization', nextNumber:10002, prefix:'O', suffix:'')
 		mockDomain(SeqNumber, [seqNumber])
 		
 		def org = new Organization(number:10000)

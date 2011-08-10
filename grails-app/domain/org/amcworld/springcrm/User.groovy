@@ -15,7 +15,7 @@ class User {
         fax(maxSize:40, nullable:true)
         email(blank:false, nullable:false, email:true)
 		admin()
-		allowedModules()
+		allowedModules(nullable:true)
 		settings()
 		dateCreated()
 		lastUpdated()
@@ -41,7 +41,7 @@ class User {
 	private Set<String> allowedControllers
 	
 	String getFullName() {
-		return "${firstName ?: ''} ${lastName ?: ''}"
+		return "${firstName ?: ''} ${lastName ?: ''}".trim()
 	}
 	
 	List<String> getAllowedModulesAsList() {

@@ -19,8 +19,10 @@ class ProductControllerTests extends ControllerUnitTestCase {
 		def p1 = new Product(number:10000, name:'Product 1')
 		def p2 = new Product(number:10001, name:'Product 2')
 		mockDomain(Product, [p1, p2])
+		Product.metaClass.index = { -> }
+		Product.metaClass.reindex = { -> }
 		
-		def seqNumber = new SeqNumber(className:Product.class.name, nextNumber:10002, prefix:'P', suffix:'')
+		def seqNumber = new SeqNumber(controllerName:'product', nextNumber:10002, prefix:'P', suffix:'')
 		mockDomain(SeqNumber, [seqNumber])
 		
 		controller.seqNumberService = new SeqNumberService()
@@ -46,9 +48,7 @@ class ProductControllerTests extends ControllerUnitTestCase {
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.productInstance
-		assertEquals 10002, map.productInstance.number
 		assertNull map.productInstance.name
-		assertEquals 'P', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -60,7 +60,7 @@ class ProductControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Product.count()
 		assertEquals 'show', controller.redirectArgs['action']
-		SeqNumber seqNumber = SeqNumber.findByClassName(Product.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('product')
 		assertEquals 10003, seqNumber.nextNumber
 	}
 	
@@ -108,7 +108,7 @@ class ProductControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Product.count()
-		SeqNumber seqNumber = SeqNumber.findByClassName(Product.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('product')
 		assertEquals 10002, seqNumber.nextNumber
 		def p = Product.get(1)
 		assertEquals 10000, p.number

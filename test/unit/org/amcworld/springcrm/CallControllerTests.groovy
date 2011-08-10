@@ -13,6 +13,8 @@ class CallControllerTests extends ControllerUnitTestCase {
 		def call1 = new Call(subject:'Call 1')
 		def call2 = new Call(subject:'Call 2')
 		mockDomain(Call, [call1, call2])
+        Call.metaClass.index = { -> }
+		Call.metaClass.reindex = { -> }
 	}
 
     protected void tearDown() {

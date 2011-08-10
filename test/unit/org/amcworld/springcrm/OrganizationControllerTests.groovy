@@ -19,8 +19,10 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		def org1 = new Organization(number:10000, name:'Organization 1')
 		def org2 = new Organization(number:10001, name:'Organization 2')
 		mockDomain(Organization, [org1, org2])
+		Organization.metaClass.index = { -> }
+		Organization.metaClass.reindex = { -> }
 		
-		def seqNumber = new SeqNumber(className:Organization.class.name, nextNumber:10002, prefix:'O', suffix:'')
+		def seqNumber = new SeqNumber(controllerName:'organization', nextNumber:10002, prefix:'O', suffix:'')
 		mockDomain(SeqNumber, [seqNumber])
 		
 		controller.seqNumberService = new SeqNumberService()
@@ -46,9 +48,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.organizationInstance
-		assertEquals 10002, map.organizationInstance.number
 		assertNull map.organizationInstance.name
-		assertEquals 'O', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -59,7 +59,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Organization.count()
 		assertEquals 'show', controller.redirectArgs['action']
-		SeqNumber seqNumber = SeqNumber.findByClassName(Organization.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('organization')
 		assertEquals 10003, seqNumber.nextNumber
 	}
 	
@@ -105,7 +105,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Organization.count()
-		SeqNumber seqNumber = SeqNumber.findByClassName(Organization.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('organization')
 		assertEquals 10002, seqNumber.nextNumber
 		def org = Organization.get(1)
 		assertEquals 10000, org.number

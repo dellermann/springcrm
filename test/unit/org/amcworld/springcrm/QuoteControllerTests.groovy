@@ -19,8 +19,10 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		def q1 = new Quote(number:10000, subject:'Quote 1')
 		def q2 = new Quote(number:10001, subject:'Quote 2')
 		mockDomain(Quote, [q1, q2])
+		Quote.metaClass.index = { -> }
+		Quote.metaClass.reindex = { -> }
 		
-		def seqNumber = new SeqNumber(className:Quote.class.name, nextNumber:10002, prefix:'Q', suffix:'')
+		def seqNumber = new SeqNumber(controllerName:'quote', nextNumber:10002, prefix:'Q', suffix:'')
 		mockDomain(SeqNumber, [seqNumber])
 		
 		controller.seqNumberService = new SeqNumberService()
@@ -46,9 +48,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.quoteInstance
-		assertEquals 10002, map.quoteInstance.number
 		assertNull map.quoteInstance.subject
-		assertEquals 'Q', map.seqNumberPrefix
 	}
 
 	void testSaveSuccessfully() {
@@ -61,7 +61,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.save()
 		assertEquals 3, Quote.count()
 		assertEquals 'show', controller.redirectArgs['action']
-		SeqNumber seqNumber = SeqNumber.findByClassName(Quote.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('quote')
 		assertEquals 10003, seqNumber.nextNumber
 	}
 	
@@ -111,7 +111,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.update()
 		assertEquals 'show', controller.redirectArgs['action']
 		assertEquals 2, Quote.count()
-		SeqNumber seqNumber = SeqNumber.findByClassName(Quote.class.name)
+		SeqNumber seqNumber = SeqNumber.findByControllerName('quote')
 		assertEquals 10002, seqNumber.nextNumber
 		def org = Quote.get(1)
 		assertEquals 10000, org.number
