@@ -185,6 +185,17 @@ class SeqNumberService {
 		}
 		seqNumberInstance.save(flush:true)
 	}
+	
+	/**
+	 * Increments the sequence number for the controller which is associated to
+	 * the given class and stores it in the database. If no entry for the
+	 * controller exists a new one with a sequence number of 2 is created.
+	 * 
+	 * @param cls	the given class
+	 */
+	void stepFurther(Class cls) {
+		stepFurther(classToControllerName(cls))
+	}
 
 
 	//-- Non-public methods ---------------------
