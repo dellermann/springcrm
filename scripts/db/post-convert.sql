@@ -76,7 +76,7 @@ UPDATE invoicing_transaction
   SET carrier_id = carrier_id + 499,
     quote_stage_id = quote_stage_id + 599,
     so_stage_id = so_stage_id + 799,
-    invoice_stage_id = invoice_stage_id + 899
+    invoice_stage_id = invoice_stage_id + 899;
 UPDATE invoicing_transaction
   SET person_id = NULL
   WHERE person_id = 0;
@@ -139,6 +139,9 @@ UPDATE seq_number
 UPDATE seq_number
   SET next_number = (SELECT MAX(number) + 1 FROM person)
   WHERE controller_name = 'person';
+UPDATE seq_number
+  SET next_number = (SELECT MAX(number) + 1 FROM note)
+  WHERE controller_name = 'note';
 
 --
 -- entries which are to fix manually

@@ -302,6 +302,110 @@
           </div>
         </div>
       </div>
+
+      <g:ifModuleAllowed modules="salesOrder">
+      <div class="fieldset">
+        <div class="header-with-menu">
+          <h4><g:message code="salesOrder.plural" /></h4>
+          <div class="menu">
+            <g:link controller="salesOrder" action="create" params="['quote.id':quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content">
+          <g:if test="${quoteInstance.salesOrders}">
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="salesOrder-multop-sel" class="multop-sel" /></th>
+                <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
+                <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
+                <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label', default: 'Stage')}" />
+                <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label', default: 'Date')}" />
+                <g:sortableColumn property="dueDate" title="${message(code: 'salesOrder.dueDate.label', default: 'Due date')}" />
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            <g:each in="${quoteInstance.salesOrders}" status="i" var="salesOrderInstance">
+              <tr>
+                <td><input type="checkbox" id="salesOrder-multop-${salesOrderInstance.id}" class="multop-sel-item" /></td>
+                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
+                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
+                <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
+                <td>${formatDate(date: salesOrderInstance?.docDate, type: 'date')}</td>
+                <td>${formatDate(date: salesOrderInstance?.dueDate, type: 'date')}</td>
+                <td>
+                  <g:link controller="salesOrder" action="edit" id="${salesOrderInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="salesOrder" action="delete" id="${salesOrderInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                </td>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+          <div class="paginator">
+            <g:paginate total="${quoteInstance.salesOrders.size()}" />
+          </div>
+          </g:if>
+          <g:else>
+            <div class="empty-list-inline">
+              <p><g:message code="default.list.empty" /></p>
+            </div>
+          </g:else>
+        </div>
+      </div>
+      </g:ifModuleAllowed>
+
+      <g:ifModuleAllowed modules="invoice">
+      <div class="fieldset">
+        <div class="header-with-menu">
+          <h4><g:message code="invoice.plural" /></h4>
+          <div class="menu">
+            <g:link controller="invoice" action="create" params="['quote.id':quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content">
+          <g:if test="${quoteInstance.invoices}">
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="invoice-multop-sel" class="multop-sel" /></th>
+                <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
+                <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
+                <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label', default: 'Stage')}" />
+                <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label', default: 'Date')}" />
+                <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label', default: 'Due date of payment')}" />
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            <g:each in="${quoteInstance.invoices}" status="i" var="invoiceInstance">
+              <tr>
+                <td><input type="checkbox" id="invoice-multop-${invoiceInstance.id}" class="multop-sel-item" /></td>
+                <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
+                <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
+                <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
+                <td>${formatDate(date: invoiceInstance?.docDate, type: 'date')}</td>
+                <td>${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}</td>
+                <td>
+                  <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                </td>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+          <div class="paginator">
+            <g:paginate total="${quoteInstance.invoices.size()}" />
+          </div>
+          </g:if>
+          <g:else>
+            <div class="empty-list-inline">
+              <p><g:message code="default.list.empty" /></p>
+            </div>
+          </g:else>
+        </div>
+      </div>
+      </g:ifModuleAllowed>
     </div>
 
     <p class="record-timestamps">

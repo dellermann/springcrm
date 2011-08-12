@@ -39,7 +39,10 @@ class Person {
 		lastUpdated()
     }
     static belongsTo = [organization:Organization]
-    static hasMany = [calls:Call]
+    static hasMany = [
+		calls:Call, noteEntries:Note, quotes:Quote, salesOrders:SalesOrder,
+		invoices:Invoice
+	]
 	static mapping = {
 		calls column:'Person'
 		sort 'lastName'

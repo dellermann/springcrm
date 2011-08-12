@@ -8,6 +8,7 @@ class Quote extends InvoicingTransaction {
 		stage()
 		validUntil(nullable:true)
     }
+    static hasMany = [salesOrders:SalesOrder, invoices:Invoice]
 	static mapping = {
 		stage column:'quote_stage_id'
 	}

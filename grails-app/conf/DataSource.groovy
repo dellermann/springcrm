@@ -1,8 +1,8 @@
 dataSource {
     pooled = true
-	driverClassName = "com.mysql.jdbc.Driver"
-    username = "projects"
-    password = "haluni21"
+	driverClassName = 'com.mysql.jdbc.Driver'
+    username = 'projects'
+    password = 'haluni21'
 }
 hibernate {
     cache.use_second_level_cache = true
@@ -13,24 +13,30 @@ hibernate {
 environments {
     development {
         dataSource {
-            dbCreate = "update" // one of 'create', 'create-drop','update'
-            //url = "jdbc:hsqldb:mem:devDB"
-			url = "jdbc:mysql://localhost/springcrm?autoreconnect=true"
+            dbCreate = 'update' // one of 'create', 'create-drop','update'
+            //url = 'jdbc:hsqldb:mem:devDB'
+			url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
         }
     }
     test {
         dataSource {
-			driverClassName = "org.hsqldb.jdbcDriver"
-            dbCreate = "update"
-            url = "jdbc:hsqldb:mem:testDb"
-			username = "sa"
-			password = ""
+			driverClassName = 'org.hsqldb.jdbcDriver'
+            dbCreate = 'update'
+            url = 'jdbc:hsqldb:mem:testDb'
+			username = 'sa'
+			password = ''
         }
     }
     production {
         dataSource {
-            dbCreate = "update"
-			url = "jdbc:mysql://localhost/springcrm?autoreconnect=true"
+            dbCreate = 'update'
+			url = 'jdbc:mysql://localhost/springcrm'
+//			dialect = org.hibernate.dialect.MySQLInnoDBDialect
+			properties {
+				validationQuery = 'select 1'
+				testWhileIdle = true
+				timeBetweenEvictionRunsMillis = 60000
+			}
         }
     }
 }

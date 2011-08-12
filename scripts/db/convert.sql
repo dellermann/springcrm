@@ -239,7 +239,7 @@ SELECT
     JOIN vtiger_crmentity AS e2
       ON e2.crmid = sa.crmid AND e2.setype = 'Accounts'
   WHERE a.activitytype = 'Call'
-  WHERE e1.deleted = 0;
+    AND e1.deleted = 0;
 
 --
 -- Quotes
@@ -481,5 +481,33 @@ SELECT
     NATURAL LEFT JOIN vtiger_products AS p
     LEFT JOIN vtiger_service AS s
       ON i.productid = s.serviceid;
+
+--
+-- Notes
+SELECT
+    n.notesid AS id,
+    0 AS version,
+    n.notecontent AS content,
+    e.createdtime AS date_created,
+    e.modifiedtime AS last_updated,
+    SUBSTRING(n.note_no, 5) AS number,
+    n.title
+  FROM vtiger_notes AS n
+    JOIN vtiger_crmentity AS e
+      ON e.crmid = n.notesid AND e.setype = 'Documents'
+  WHERE n.filename = ''
+    AND e.deleted = 0;
+SELECT
+    r.notesid AS id,
+    e.crmid AS organization_id
+  FROM vtiger_senotesrel AS r
+    NATURAL JOIN vtiger_crmentity AS e
+  WHERE e.setype = 'Accounts';
+SELECT
+    r.notesid AS id,
+    e.crmid AS person_id
+  FROM vtiger_senotesrel AS r
+    NATURAL JOIN vtiger_crmentity AS e
+  WHERE e.setype = 'Contacts';
 
 -- vim:set ts=2 sw=2 sts=2:

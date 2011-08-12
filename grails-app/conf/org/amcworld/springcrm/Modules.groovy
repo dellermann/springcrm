@@ -23,6 +23,7 @@ class Modules {
 		call: ['call'],
 		contact: ['organization', 'person'],
 		invoice: ['organization', 'invoice'],
+		note: ['note'],
 		product: ['product'],
 		quote: ['organization', 'quote'],
 		salesOrder: ['organization', 'salesOrder'],

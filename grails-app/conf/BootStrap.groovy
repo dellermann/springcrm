@@ -1,10 +1,13 @@
 import org.amcworld.springcrm.ConfigHolder
-import org.amcworld.springcrm.util.DataSourceUtils
 
 class BootStrap {
 
+	def exceptionHandler
+
     def init = { servletContext ->
-		DataSourceUtils.tune(servletContext)
+		exceptionHandler.exceptionMappings = [
+			'java.lang.Exception': '/error'
+		]
 
 		def configHolder = new ConfigHolder()
 		servletContext.config = configHolder

@@ -33,7 +33,10 @@ class Organization {
 		dateCreated()
 		lastUpdated()
     }
-    static hasMany = [persons:Person, calls:Call]
+    static hasMany = [
+		persons:Person, calls:Call, noteEntries:Note, quotes:Quote,
+		salesOrders:SalesOrder, invoices:Invoice
+	]
 	static mapping = {
 		calls column:'Organization'
 		sort 'name'

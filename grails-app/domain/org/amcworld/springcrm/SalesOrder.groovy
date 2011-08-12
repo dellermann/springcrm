@@ -10,6 +10,7 @@ class SalesOrder extends InvoicingTransaction {
 		deliveryDate(nullable:true)
 		quote(nullable:true)
     }
+    static hasMany = [invoices:Invoice]
 	static mapping = {
 		stage column:'so_stage_id'
 	}
