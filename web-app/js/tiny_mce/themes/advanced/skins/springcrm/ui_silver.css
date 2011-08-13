@@ -1,0 +1,5 @@
+/* Silver */
+.springcrmSkinSilver .mceToolbar .mceToolbarStart span, .springcrmSkinSilver .mceButton, .springcrmSkinSilver .mceSplitButton, .springcrmSkinSilver .mceSeparator, .springcrmSkinSilver .mceSplitButton a.mceOpen, .springcrmSkinSilver .mceListBox a.mceOpen {background-image:url(img/button_bg_silver.png)}
+.springcrmSkinSilver td.mceToolbar, .springcrmSkinSilver td.mceStatusbar, .springcrmSkinSilver .mceMenuItemTitle a {background:#eee}
+.springcrmSkinSilver .mceListBox .mceText {background:#FFF}
+.springcrmSkinSilver .mceExternalToolbar, .springcrmSkinSilver .mceListBox .mceText, .springcrmSkinSilver div.mceMenu, .springcrmSkinSilver table.mceLayout, .springcrmSkinSilver .mceMenuItemTitle a, .springcrmSkinSilver table.mceLayout tr.mceFirst td, .springcrmSkinSilver table.mceLayout, .springcrmSkinSilver .mceMenuItemTitle a, .springcrmSkinSilver table.mceLayout tr.mceLast td, .springcrmSkinSilver .mceIframeContainer {border-color: #bbb}
