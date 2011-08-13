@@ -489,7 +489,7 @@
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find')}"
+            findUrl: "${createLink(controller:'organization', action:'find', params:[type:1])}"
         })
         .init();
     new SPRINGCRM.FixedSelAutocomplete({

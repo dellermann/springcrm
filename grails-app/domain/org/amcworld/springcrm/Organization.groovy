@@ -3,7 +3,8 @@ package org.amcworld.springcrm
 class Organization {
 
     static constraints = {
-        number(unique:true)
+        number(unique:'recType')
+		recType(range:1..3)
         name(blank:false)
         billingAddrStreet(widget:'textarea', nullable:true)
         billingAddrPoBox(nullable:true)
@@ -45,10 +46,11 @@ class Organization {
 	static transients = [
 		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr'
 	]
-	
+
 	def seqNumberService
 
     int number
+	byte recType
     String name
     String billingAddrStreet
     String billingAddrPoBox
@@ -77,11 +79,11 @@ class Organization {
     String notes
 	Date dateCreated
 	Date lastUpdated
-	
+
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
 	}
-	
+
 	String getShortName() {
 		String res = name ?: ''
 		if (res.length() > 40) {
@@ -89,7 +91,7 @@ class Organization {
 		}
 		return res
 	}
-	
+
 	String getBillingAddr() {
 		String s = billingAddrStreet ?: ''
 		if (billingAddrLocation) {
@@ -109,7 +111,7 @@ class Organization {
 		}
 		return s
 	}
-	
+
 	String getShippingAddr() {
 		String s = shippingAddrStreet ?: ''
 		if (shippingAddrLocation) {

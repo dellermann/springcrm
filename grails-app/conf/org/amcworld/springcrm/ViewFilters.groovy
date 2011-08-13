@@ -17,6 +17,9 @@ class ViewFilters {
 
 				/* store or restore offset */
 				String key = "offset${name}".toString()
+				if (params.type) {
+					key += params.type
+				}
 				f('offset', session, key)
 
 				/* compute number of entries of the associated domain */

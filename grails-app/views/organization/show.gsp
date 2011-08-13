@@ -5,7 +5,15 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'organization.label', default: 'Organization')}" />
+  <g:if test="${(params.type ?: 0) as int & 1}">
+  <g:set var="entitiesName" value="${message(code: 'organization.customers', default: 'Customers')}" />
+  </g:if>
+  <g:elseif test="${(params.type ?: 0) as int & 2}">
+  <g:set var="entitiesName" value="${message(code: 'organization.vendors', default: 'Vendors')}" />
+  </g:elseif>
+  <g:else>
   <g:set var="entitiesName" value="${message(code: 'organization.plural', default: 'Organizations')}" />
+  </g:else>
   <title><g:message code="default.show.label" args="[entityName]" /></title>
 </head>
 
@@ -14,7 +22,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
+        <li><g:link action="list" class="white" params="[type:params.type]"><g:message code="default.button.list.label" /></g:link></li>
         <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <li><g:link action="edit" id="${organizationInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${organizationInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
@@ -42,6 +50,13 @@
               <div class="label"><g:message code="organization.number.label" default="Number" /></div>
               <div class="field">${fieldValue(bean: organizationInstance, field: "fullNumber")}</div>
 			      </div>
+            
+            <div class="row">
+              <div class="label"><g:message code="organization.recType.label" default="Record type" /></div>
+              <div class="field">
+                <g:if test="${organizationInstance?.recType & 1}"><g:message code="organization.recType.customer.label" default="Customer" /></g:if><g:if test="${!(organizationInstance?.recType ^ 3)}">, </g:if><g:if test="${organizationInstance?.recType & 2}"><g:message code="organization.recType.vendor.label" default="Vendor" /></g:if>
+              </div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="organization.name.label" default="Name" /></div>

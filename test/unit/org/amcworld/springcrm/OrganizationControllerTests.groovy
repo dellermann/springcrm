@@ -16,8 +16,8 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 		ts.demand.setRollbackOnly { -> }
 		Organization.metaClass.static.withTransaction = { Closure c -> c(ts.createMock()) }
 
-		def org1 = new Organization(number:10000, name:'Organization 1')
-		def org2 = new Organization(number:10001, name:'Organization 2')
+		def org1 = new Organization(number:10000, recType:1, name:'Organization 1')
+		def org2 = new Organization(number:10001, recType:1, name:'Organization 2')
 		mockDomain(Organization, [org1, org2])
 		Organization.metaClass.index = { -> }
 		Organization.metaClass.reindex = { -> }
@@ -53,6 +53,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 
 	void testSaveSuccessfully() {
 		controller.params.number = 10010
+		controller.params.recType = 1
 		controller.params.name = 'Organization 3'
 		controller.params.phone = '030 1234567'
 		controller.params.email = 'info@example.com'
@@ -65,6 +66,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 	
 	void testSaveFailed() {
 		controller.params.number = 10001
+		controller.params.recType = 1
 		controller.params.name = ''
 		controller.params.phone = '030 1234567'
 		controller.params.email = 'info@example.com'
@@ -98,6 +100,7 @@ class OrganizationControllerTests extends ControllerUnitTestCase {
 	
 	void testUpdate() {
 		controller.params.id = 1
+		controller.params.recType = 1
 		controller.params.number = 10000
 		controller.params.name = 'Organization 3'
 		controller.params.phone = '030 7654321'

@@ -20,19 +20,23 @@ UPDATE person
 --
 -- fix abbreviations and malformed data in organization and person records
 UPDATE organization
-  SET billing_addr_street = REPLACE(
+  SET billing_addr_country = REPLACE(billing_addr_country, 'DE', 'Deutschland'),
+    billing_addr_street = REPLACE(
       REPLACE(billing_addr_street, 'str.', 'straße'),
       'Str.', 'Straße'
     ),
+    shipping_addr_country = REPLACE(shipping_addr_country, 'DE', 'Deutschland'),
     shipping_addr_street = REPLACE(
       REPLACE(shipping_addr_street, 'str.', 'straße'),
       'Str.', 'Straße'
     );
 UPDATE person
-  SET mailing_addr_street = REPLACE(
+  SET mailing_addr_country = REPLACE(mailing_addr_country, 'DE', 'Deutschland'),
+    mailing_addr_street = REPLACE(
       REPLACE(mailing_addr_street, 'str.', 'straße'),
       'Str.', 'Straße'
     ),
+    other_addr_country = REPLACE(other_addr_country, 'DE', 'Deutschland'),
     other_addr_street = REPLACE(
       REPLACE(other_addr_street, 'str.', 'straße'),
       'Str.', 'Straße'
@@ -61,25 +65,6 @@ UPDATE person
       other_addr_street, CHAR_LENGTH(other_addr_street) - 1
     )
   WHERE RIGHT(other_addr_street, 1) = ',';
-
---
--- fix selector values and invalid entries
-UPDATE service
-  SET category_id = category_id + 1999,
-    unit_id = unit_id + 299;
-
-UPDATE product
-  SET category_id = category_id + 2999,
-    unit_id = unit_id + 299;
-
-UPDATE invoicing_transaction
-  SET carrier_id = carrier_id + 499,
-    quote_stage_id = quote_stage_id + 599,
-    so_stage_id = so_stage_id + 799,
-    invoice_stage_id = invoice_stage_id + 899;
-UPDATE invoicing_transaction
-  SET person_id = NULL
-  WHERE person_id = 0;
 
 --
 -- Fix units

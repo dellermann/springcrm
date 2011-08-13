@@ -14,10 +14,11 @@ class OrganizationTests extends GrailsUnitTestCase {
 
     void testConstruct() {
         def org = new Organization(
-            number:10000, name:'AMC World', email1:'info@amc-world.de',
-            website:'http://www.amc-world.de'
+            number:10000, recType:1, name:'AMC World', 
+			email1:'info@amc-world.de', website:'http://www.amc-world.de'
         )
         assertEquals 10000, org.number
+		assertEquals 1, org.recType
         assertEquals 'AMC World', org.name
         assertNull org.billingAddrStreet
         assertNull org.billingAddrPoBox
@@ -95,19 +96,37 @@ class OrganizationTests extends GrailsUnitTestCase {
 	}
 	
 	void testUniqueConstraints() {
-		def org1 = new Organization(number:10000, name:'Organization 1')
-		def org2 = new Organization(number:10010, name:'Organization 2')
+		def org1 = new Organization(number:10000, recType:1, name:'Organization 1')
+		def org2 = new Organization(number:10010, recType:1, name:'Organization 2')
 		mockDomain(Organization, [org1, org2])
 		
-		def badOrg = new Organization(number:10000, name:'Organization 3')
+		def badOrg = new Organization(number:10000, recType:1, name:'Organization 3')
 		assertNull badOrg.save()
 		assertEquals 2, Organization.count()
 		assertEquals 'unique', badOrg.errors['number']
 		assertNull badOrg.errors['name']
 		
-		def goodOrg = new Organization(number:10020, name:'Organization 4')
+		def goodOrg = new Organization(number:10020, recType:1, name:'Organization 4')
 		assertNotNull goodOrg.save()
 		assertEquals 3, Organization.count()
+		
+		goodOrg = new Organization(number:10010, recType:2, name:'Organization 5')
+		assertNotNull goodOrg.save()
+		assertEquals 4, Organization.count()
+	}
+
+	void testRangeConstraints() {
+		mockForConstraintsTests Organization
+		def org = new Organization(recType:0)
+		assertFalse org.validate(['recType'])
+		assertEquals 'range', org.errors['recType']
+
+		org = new Organization(recType:4)
+		assertFalse org.validate(['recType'])
+		assertEquals 'range', org.errors['recType']
+
+		org = new Organization(recType:2)
+		assertTrue org.validate(['recType'])
 	}
 
 	void testSizeConstraints() {

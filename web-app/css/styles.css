@@ -961,6 +961,14 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
 .fieldset-content {
   padding: 0 1em;
 }
+.checkbox-area {
+  margin: 0;
+}
+.checkbox-area li {
+  line-height: normal;
+  list-style: none;
+  margin-bottom: .2em;
+}
 .buttons {
   border-top: .1em dotted #888;
   margin: 1em 0 0;
@@ -993,6 +1001,16 @@ label:after, .data-sheet .label:after {
   content: ":";
 }
 label.empty-label:after, .data-sheet .label.empty-label:after {
+  content: "";
+}
+input[type=checkbox] ~ label, input[type=radio] ~ label {
+  display: inline;
+  font-weight: normal;
+  padding: 0 0 0 .5em;
+  position: relative;
+  top: -.2em;
+}
+input[type=checkbox] ~ label:after, input[type=radio] ~ label:after {
   content: "";
 }
 fieldset, .fieldset {

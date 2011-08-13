@@ -10,5 +10,6 @@
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.baseBrowserLibrary"/>
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.USER_LIBRARY/jQuery"/>
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.USER_LIBRARY/jQuery UI"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.USER_LIBRARY/TinyMCE"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

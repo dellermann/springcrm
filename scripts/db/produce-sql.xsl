@@ -36,6 +36,12 @@
     </xsl:call-template>
   </xsl:template>
 
+  <xsl:template match="table[@name = 'vtiger_vendor']">
+    <xsl:call-template name="render-inserts">
+      <xsl:with-param name="table">organization</xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+
   <xsl:template match="table[@name = 'vtiger_contactdetails']">
     <xsl:call-template name="render-inserts">
       <xsl:with-param name="table">person</xsl:with-param>

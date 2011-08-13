@@ -16,6 +16,23 @@
       
       <div class="row">
         <div class="label">
+          <label for="rec-type-1"><g:message code="organization.recType.label" default="Record type" /></label>
+        </div>
+        <div class="field${hasErrors(bean: organizationInstance, field: 'rec_type', ' error')}">
+          <g:hiddenField name="recType" value="${organizationInstance?.recType}"/>
+          <ul class="checkbox-area">
+            <li><input type="checkbox" id="rec-type-1" class="rec-type" value="1" /><label for="rec-type-1"><g:message code="organization.recType.customer.label" default="Customer" /></label></li>
+            <li><input type="checkbox" id="rec-type-2" class="rec-type" value="2" /><label for="rec-type-2"><g:message code="organization.recType.vendor.label" default="Vendor" /></label></li>
+          </ul>
+          <span class="info-msg"><g:message code="default.required" default="required" /></span>
+          <g:hasErrors bean="${organizationInstance}" field="recType">
+            <span class="error-msg"><g:eachError bean="${organizationInstance}" field="recType"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="label">
           <label for="name"><g:message code="organization.name.label" default="Name" /></label>
         </div>
         <div class="field${hasErrors(bean: organizationInstance, field: 'name', ' error')}">
@@ -361,7 +378,8 @@
 <script type="text/javascript">
 //<![CDATA[
 (function(SPRINGCRM) {
-    var addrFields;
+    var $recType = $("#recType"),
+        addrFields;
 
     addrFields = new SPRINGCRM.AddrFields({
         leftPrefix: "billingAddr", rightPrefix: "shippingAddr"
@@ -372,6 +390,22 @@
     addrFields.addMenuItemCopy(
         false, '${message(code: "organization.shippingAddr.copy")}'
     );
+
+    $(".rec-type").click(function () {
+            var $this = $(this);
+
+            if (this.checked) {
+                $recType.val($recType.val() | $this.val());
+            } else {
+                $recType.val($recType.val() & ~$this.val());
+            }
+        }).each(function () {
+            var $this = $(this);
+
+            if ($recType.val() & $this.val()) {
+                $this.attr("checked", "checked");
+            }
+        });
 }(SPRINGCRM));
 //]]></script>
 </content>

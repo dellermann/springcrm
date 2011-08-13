@@ -1,4 +1,10 @@
 --
+-- General hints
+--
+-- The formulas of type "... - (-x)" are a fix for the phpMyAdmin bug which
+-- prevents + signs in SQL statements from exporting successfully.
+
+--
 -- Organizations
 SELECT
     a.accountid AS id,
@@ -32,6 +38,7 @@ SELECT
         NULL,
         FIND_IN_SET(a.rating, 'Acquired,Active,Market Failed,kein Interesse,Shutdown') + 199
       ) AS rating_id,
+    1 AS rec_type,
     asa.ship_country AS shipping_addr_country,
     asa.ship_city AS shipping_addr_location,
     asa.ship_pobox AS shipping_addr_po_box,
@@ -54,6 +61,51 @@ SELECT
     NATURAL JOIN vtiger_accountscf AS acf
     JOIN vtiger_crmentity AS e
       ON e.crmid = a.accountid AND e.setype = 'Accounts'
+  WHERE e.deleted = 0;
+
+--
+-- Vendors
+SELECT
+    v.vendorid - (-(SELECT MAX(accountid) FROM vtiger_account) - 1) AS id,
+    0 AS version,
+    v.country AS billing_addr_country,
+    v.city AS billing_addr_location,
+    v.pobox AS billing_addr_po_box,
+    v.postalcode AS billing_addr_postal_code,
+    v.state AS billing_addr_state,
+    v.street AS billing_addr_street,
+    e.createdtime AS date_created,
+    v.email AS email1,
+    NULL AS email2,
+    NULL AS fax,
+    NULL AS industry_id,
+    e.modifiedtime AS last_updated,
+    NULL AS legal_form,
+    v.vendorname AS name,
+    e.description AS notes,
+    NULL AS num_employees,
+    CONVERT(SUBSTRING(v.vendor_no, 5), UNSIGNED) - 10000 -
+      (-(
+        SELECT MAX(CONVERT(SUBSTRING(account_no, 5), UNSIGNED))
+          FROM vtiger_account
+          WHERE CONVERT(SUBSTRING(account_no, 5), UNSIGNED) < 90000
+      ) - 1) AS number,
+    NULL AS owner,
+    v.phone,
+    NULL AS phone_other,
+    NULL AS rating_id,
+    2 AS rec_type,
+    NULL AS shipping_addr_country,
+    NULL AS shipping_addr_location,
+    NULL AS shipping_addr_po_box,
+    NULL AS shipping_addr_postal_code,
+    NULL AS shipping_addr_state,
+    NULL AS shipping_addr_street,
+    NULL AS type_id,
+    v.website
+  FROM vtiger_vendor AS v
+    JOIN vtiger_crmentity AS e
+      ON e.crmid = v.vendorid AND e.setype = 'Vendors'
   WHERE e.deleted = 0;
 
 --
@@ -109,36 +161,6 @@ SELECT
 
 --
 -- Services
---
--- The following original SELECT command produces an error in phpMyAdmin
--- during export. You must use the uncommented one.
-/*
-SELECT
-    s.serviceid AS id,
-    0 AS version,
-    IF(
-        s.servicecategory = '--None--',
-        NULL,
-        FIND_IN_SET(s.servicecategory, 'Unterstützung,Installation/Konfiguration,Umstellung,Anpassung,Schulung,Programmierung,Beratung,Grafik und Design,Datenverarbeitung') + 1999
-      ) AS category_id,
-    s.commissionrate AS commission,
-    NOW() AS date_created,
-    e.description,
-    NOW() AS last_updated,
-    s.servicename AS name,
-    SUBSTRING(s.service_no, 5) AS number,
-    s.qty_per_unit AS quantity,
-    NULL AS sales_end,
-    NULL AS sales_start,
-    400 AS tax_class_id,
-    FIND_IN_SET(
-        s.service_usageunit, 'Stück,Incidents,Box,Hours'
-      ) + 299 AS unit_id,
-    s.unit_price
-  FROM vtiger_service AS s
-    JOIN vtiger_crmentity AS e
-      ON e.crmid = s.serviceid AND e.setype = 'Services';
-*/
 SELECT
     s.serviceid AS id,
     0 AS version,
@@ -146,7 +168,7 @@ SELECT
         s.servicecategory = '--None--',
         NULL,
         FIND_IN_SET(s.servicecategory, 'Unterstützung,Installation/Konfiguration,Umstellung,Anpassung,Schulung,Programmierung,Beratung,Grafik und Design,Datenverarbeitung')
-      ) AS category_id,
+      ) - (-1999) AS category_id,
     s.commissionrate AS commission,
     e.createdtime AS date_created,
     e.description,
@@ -159,7 +181,7 @@ SELECT
     400 AS tax_class_id,
     FIND_IN_SET(
         s.service_usageunit, 'Stück,Incidents,Box,Hours'
-      ) AS unit_id,
+      ) - (-299) AS unit_id,
     s.unit_price
   FROM vtiger_service AS s
     JOIN vtiger_crmentity AS e
@@ -178,7 +200,7 @@ SELECT
         p.productcategory = '--None--',
         NULL,
         FIND_IN_SET(p.productcategory, 'Hardware,Software')
-      ) AS category_id,
+      ) - (-2999) AS category_id,
     p.commissionrate AS commission,
     e.createdtime AS date_created,
     e.description,
@@ -197,7 +219,7 @@ SELECT
     400 AS tax_class_id,
     FIND_IN_SET(
         p.usageunit, 'Stück,Incidents,Box,Hours,Minutes,M'
-      ) AS unit_id,
+      ) - (-299) AS unit_id,
     p.unit_price,
     p.weight
   FROM vtiger_products AS p
@@ -257,7 +279,7 @@ SELECT
         q.carrier = '--None--',
         NULL,
         FIND_IN_SET(q.carrier, 'Abholung,kein,DHL,BlueDart,UPS')
-      ) AS carrier_id,
+      ) - (-499) AS carrier_id,
     e.createdtime AS date_created,
     q.discount_amount,
     q.discount_percent,
@@ -267,7 +289,7 @@ SELECT
     e.modifiedtime AS last_updated,
     SUBSTRING(q.quote_no, 5) AS number,
     q.accountid AS organization_id,
-    q.contactid AS person_id,
+    IF(q.contactid, q.contactid, NULL) AS person_id,
     qsa.ship_country AS shipping_addr_country,
     qsa.ship_city AS shipping_addr_location,
     qsa.ship_pobox AS shipping_addr_po_box,
@@ -302,7 +324,7 @@ SELECT
         q.quotestage = '--None--',
         NULL,
         FIND_IN_SET(q.quotestage, 'Created,Reviewed,Delivered,Accepted,Rejected')
-      ) AS quote_stage_id,
+      ) - (-599) AS quote_stage_id,
     q.validtill AS valid_until,
     NULL AS delivery_date,
     NULL AS due_date,
@@ -332,7 +354,7 @@ SELECT
         so.carrier = '--None--',
         NULL,
         FIND_IN_SET(so.carrier, 'Abholung,kein,DHL,BlueDart,UPS')
-      ) AS carrier_id,
+      ) - (-499) AS carrier_id,
     e.createdtime AS date_created,
     so.discount_amount,
     so.discount_percent,
@@ -342,7 +364,7 @@ SELECT
     e.modifiedtime AS last_updated,
     SUBSTRING(so.salesorder_no, 5) AS number,
     so.accountid AS organization_id,
-    so.contactid AS person_id,
+    IF(so.contactid, so.contactid, NULL) AS person_id,
     sosa.ship_country AS shipping_addr_country,
     sosa.ship_city AS shipping_addr_location,
     sosa.ship_pobox AS shipping_addr_po_box,
@@ -369,7 +391,7 @@ SELECT
         so.sostatus = '--None--',
         NULL,
         FIND_IN_SET(so.sostatus, 'Created,Approved,Delivered')
-      ) AS so_stage_id
+      ) - (-799) AS so_stage_id
   FROM vtiger_salesorder AS so
     JOIN vtiger_sobillads AS soba
       ON soba.sobilladdressid = so.salesorderid
@@ -401,7 +423,7 @@ SELECT
     e.modifiedtime AS last_updated,
     SUBSTRING(i.invoice_no, 5) AS number,
     i.accountid AS organization_id,
-    i.contactid AS person_id,
+    IF(i.contactid, i.contactid, NULL) AS person_id,
     isa.ship_country AS shipping_addr_country,
     isa.ship_city AS shipping_addr_location,
     isa.ship_pobox AS shipping_addr_po_box,
@@ -423,7 +445,7 @@ SELECT
         i.invoicestatus = '--None--',
         NULL,
         FIND_IN_SET(i.invoicestatus, 'Created,Approved,Sent,Paid,Mahnung,inkasso,abgeschrieben,Credit Invoice')
-      ) AS invoice_stage_id,
+      ) - (-899) AS invoice_stage_id,
     NULL AS quote_stage_id,
     NULL AS valid_until,
     NULL AS delivery_date,
@@ -503,6 +525,12 @@ SELECT
   FROM vtiger_senotesrel AS r
     NATURAL JOIN vtiger_crmentity AS e
   WHERE e.setype = 'Accounts';
+--SELECT
+--    r.notesid AS id,
+--    e.crmid AS organization_id
+--  FROM vtiger_senotesrel AS r
+--    NATURAL JOIN vtiger_crmentity AS e
+--  WHERE e.setype = 'Vendors';
 SELECT
     r.notesid AS id,
     e.crmid AS person_id

@@ -14,7 +14,9 @@
       <ul>
         <!--<li><a href="#">Kampagnen</a></li>-->
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
+        <li><hr /></li>
         <!--<li><a href="#">Leads</a></li>
         <li><a href="#">Kalender</a></li>
         <li><a href="#">Postfach</a></li>-->
@@ -26,7 +28,9 @@
       <ul>
         <!--<li><a href="#">Leads</a></li>-->
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
+        <li><hr /></li>
         <!--<li><a href="#">Verkaufspotentiale</a></li>-->
         <g:ifModuleAllowed modules="contact"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
@@ -39,6 +43,7 @@
         <!--<li><a href="#">Trouble Tickets</a></li>
         <li><a href="#">Wissensbasis</a></li>-->
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="note"><li><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
@@ -49,10 +54,14 @@
       <ul>
         <g:ifModuleAllowed modules="product"><li><g:link controller="product"><g:message code="product.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="service"><li><g:link controller="service"><g:message code="service.plural" /></g:link></li></g:ifModuleAllowed>
+        <li><hr /></li>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
-        <!--<li><a href="#">Lieferanten</a></li>
-        <li><a href="#">Preislisten</a></li>
-        <li><a href="#">Einkaufsbestellungen</a></li>-->
+        <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:2]"><g:message code="organization.vendors" default="Vendors" /></g:link></li></g:ifModuleAllowed>
+        <li><hr /></li>
+        <!--<li><a href="#">Preislisten</a></li>
+        <li><a href="#">Einkaufsbestellungen</a></li>
+        <li><hr /></li>-->
         <g:ifModuleAllowed modules="quote"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li></g:ifModuleAllowed>

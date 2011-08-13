@@ -14,7 +14,17 @@ class OrganizationController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [organizationInstanceList: Organization.list(params), organizationInstanceTotal: Organization.count()]
+		def list, count;
+		def type = params.type
+		if (type) {
+			List<Byte> types = [new Byte(type), 3 as byte]
+			list = Organization.findAllByRecTypeInList(types, params)
+			count = Organization.countByRecTypeInList(types)
+		} else {
+			list = Organization.list(params)
+			count = Organization.count()
+		}
+        [organizationInstanceList: list, organizationInstanceTotal: count]
     }
 
     def create = {
@@ -70,7 +80,7 @@ class OrganizationController {
             if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
 				organizationInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
-                redirect(action: 'show', id: organizationInstance.id)
+                redirect(action: 'show', id: organizationInstance.id, params:[type:params.listType])
             } else {
                 render(view: 'edit', model: [organizationInstance: organizationInstance])
             }
@@ -86,19 +96,26 @@ class OrganizationController {
             try {
                 organizationInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
-                redirect(action: 'list')
+                redirect(action: 'list', params:[type:params.type])
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
-                redirect(action: 'show', id: params.id)
+                redirect(action: 'show', id: params.id, params:[type:params.type])
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
-            redirect(action: 'list')
+            redirect(action: 'list', params:[type:params.type])
         }
     }
 	
 	def find = {
-		def list = Organization.findAllByNameLike("%${params.name}%", [sort:'name'])
+		def list;
+		def type = params.type
+		if (type) {
+			List<Byte> types = [new Byte(type), 3 as byte]
+			list = Organization.findAllByRecTypeInListAndNameLike(types, "%${params.name}%", [sort:'name'])
+		} else {
+			list = Organization.findAllByNameLike("%${params.name}%", [sort:'name'])
+		}
 		render(contentType:"text/json") {
 			array {
 				for (org in list) {
