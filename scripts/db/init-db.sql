@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS config (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Daten für Tabelle 'seq_number'
+-- Daten für Tabelle 'config'
 --
 
 TRUNCATE TABLE config;
