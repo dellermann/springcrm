@@ -977,8 +977,8 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
 }
 
 /* form controls */
-button, input[type=button], input[type=password], input[type=reset], 
-  input[type=submit], input[type=text], select, textarea
+button, input[type=button], input[type=file], input[type=password], 
+  input[type=reset], input[type=submit], input[type=text], select, textarea
 {
   background: #F0F0F0;
   border: .1em solid #6C8F18;
@@ -1340,6 +1340,25 @@ form .invoicing-items-pos {
 }
 #login footer div {
   padding: 0;
+}
+
+/* document views */
+.document-preview {
+  margin-top: .5em;
+}
+.document-preview-links {
+  margin: .5em 0 0;
+}
+.document-preview-links li {
+  background-position: left center;
+  background-repeat: no-repeat;
+  height: 16px;
+  line-height: 16px;
+  list-style: none;
+  padding-left: 20px;
+}
+.document-delete {
+  background-image: url("../img/remove.png");
 }
 
 /* search results */

@@ -145,6 +145,16 @@ SELECT
     cs.homephone AS phone_home,
     cs.otherphone AS phone_other,
     IF(
+        c.imagename IS NULL OR c.imagename = '',
+        NULL,
+        LOAD_FILE(CONCAT(
+          '/tmp/vtigercrm/',
+          ar.attachmentsid,
+          '_',
+          c.imagename
+        ))
+      ) AS picture,
+    IF(
         c.salutation = ''
           OR c.salutation = '--None--',
         NULL,
@@ -157,6 +167,8 @@ SELECT
       ON ca.contactaddressid = c.contactid
     JOIN vtiger_crmentity AS e
       ON e.crmid = c.contactid AND e.setype = 'Contacts'
+    LEFT JOIN vtiger_seattachmentsrel AS ar
+      ON e.crmid = ar.crmid
   WHERE e.deleted = 0;
 
 --

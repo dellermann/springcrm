@@ -1,13 +1,18 @@
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpSession
+import com.google.gdata.data.Link;
+
+import net.sf.jmimemagic.Magic;
 
 import com.google.gdata.client.GoogleService
+import com.google.gdata.client.Service.GDataRequest
 import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.data.contacts.*
 import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.extensions.*
 import com.google.gdata.data.extensions.Organization as GDataOrg
+import com.google.gdata.util.ContentType
+import javax.servlet.http.HttpSession
 
 class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
@@ -186,6 +191,26 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 				rel:Website.Rel.WORK
 			))
 		}
+		return contact
+	}
+
+	@Override
+	ContactEntry sync(Person p) {
+		ContactEntry contact = super.sync(p)
+
+		Link photoLink = contact.contactPhotoLink
+		if (p.picture) {
+			GDataRequest request = service.createRequest(
+				GDataRequest.RequestType.UPDATE, new URL(photoLink.href),
+				new ContentType(Magic.getMagicMatch(p.picture).mimeType)
+			);
+			request.setEtag(photoLink.getEtag())
+			request.requestStream.write(p.picture);
+			request.execute();
+		} else {
+			service.delete(new URL(photoLink.href), photoLink.getEtag())
+		}
+
 		return contact
 	}
 

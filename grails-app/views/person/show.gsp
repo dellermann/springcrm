@@ -7,6 +7,7 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <link rel="stylesheet" href="${resource(dir:'css', file:'jquery.lightbox.css')}" media="screen" />
 </head>
 
 <body>
@@ -86,6 +87,13 @@
               <div class="label"><g:message code="person.birthday.label" default="Birthday" /></div>
               <div class="field"><g:formatDate date="${personInstance?.birthday}" type="date" /></div>
 			      </div>
+            
+            <g:if test="${personInstance?.picture}">
+            <div class="row">
+              <div class="label"><g:message code="person.picture.label" default="Picture" /></div>
+              <div class="field"><a id="picture" href="${createLink(action:'getPicture', id:personInstance?.id)}"><img src="${createLink(action:'getPicture', id:personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a></div>
+            </div>
+            </g:if>
           </div>
           <div class="col col-r">
             <div class="row">
@@ -489,6 +497,16 @@
   </section>
   <content tag="jsTexts">
   deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
+  </content>
+  <content tag="additionalJavaScript">
+  <script type="text/javascript" src="${resource(dir:'js', file:'jquery.lightbox.min.js')}"></script>
+  <script type="text/javascript">
+  //<![CDATA[
+  (function ($, SPRINGCRM) {
+      new SPRINGCRM.LightBox({imgDir: "${resource(dir:'img/lightbox')}"})
+          .activate("#picture");
+  }(jQuery, SPRINGCRM));
+  //]]></script>
   </content>
 </body>
 </html>

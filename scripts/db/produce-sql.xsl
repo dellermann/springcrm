@@ -147,6 +147,11 @@
         <xsl:when test="string() = 'NULL'">
           <xsl:value-of select="."/>
         </xsl:when>
+        <xsl:when test="@name = 'picture'">
+          <xsl:text>UNHEX('</xsl:text>
+          <xsl:value-of select="."/>
+          <xsl:text>')</xsl:text>
+        </xsl:when>
         <xsl:when test="number()">
           <xsl:value-of select="number()"/>
         </xsl:when>

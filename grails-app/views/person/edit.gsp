@@ -8,6 +8,7 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <link rel="stylesheet" href="${resource(dir:'css', file:'jquery.lightbox.css')}" media="screen" />
 </head>
 
 <body>
@@ -28,11 +29,11 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${personInstance?.toString()}</h3>
-    <g:form name="person-form" action="update" method="post" >
+    <g:uploadForm name="person-form" action="update" method="post" >
       <g:hiddenField name="id" value="${personInstance?.id}" />
       <g:hiddenField name="version" value="${personInstance?.version}" />
       <g:render template="/person/form" />
-    </g:form>
+    </g:uploadForm>
   </section>
   <content tag="jsTexts">
   copyAddressWarning_mailingAddr: "${message(code: 'person.otherAddr.exists')}",

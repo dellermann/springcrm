@@ -123,8 +123,9 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	 * created.
 	 *
 	 * @param item	the item to synchronize
+	 * @return		the converted Google Data item
 	 */
-	void sync(E item) {
+	G sync(E item) {
 		GoogleDataSyncStatus status = findSyncStatus(item)
 		if (status) {
 			G contact = retrieve(status.url)
@@ -137,10 +138,12 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 				status.url = contact.selfLink.href
 			}
 			afterUpdate(status)
+			return contact
 		} else {
 			G contact = convertToGoogle(item)
 			contact = insert(contact)
 			afterInsert(item, contact)
+			return contact
 		}
 	}
 

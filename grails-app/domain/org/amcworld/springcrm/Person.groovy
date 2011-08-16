@@ -35,6 +35,7 @@ class Person {
         assistant(nullable:true)
         birthday(nullable:true)
         notes(widget:'textarea', nullable:true)
+		picture(nullable:true, maxSize:1048576)
 		dateCreated()
 		lastUpdated()
     }
@@ -81,7 +82,7 @@ class Person {
     String department
     String assistant
     Date birthday
-    // TODO image
+    byte [] picture
     String notes
 	Date dateCreated
 	Date lastUpdated

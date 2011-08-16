@@ -112,6 +112,27 @@
           </g:hasErrors>
         </div>
       </div>
+      
+      <div class="row">
+        <div class="label">
+          <label for="picture"><g:message code="person.picture.label" default="Picture" /></label>
+        </div>
+        <div class="field${hasErrors(bean: personInstance, field: 'picture', ' error')}">
+          <g:hiddenField name="pictureRemove" value="0" />
+          <input type="file" name="picture" /><br />
+          <g:if test="${personInstance?.picture}">
+          <div class="document-preview">
+            <a id="picture" href="${createLink(action:'getPicture', id:personInstance?.id)}"><img src="${createLink(action:'getPicture', id:personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a>
+          </div>
+          <ul class="document-preview-links">
+            <li class="document-delete"><g:message code="person.picture.delete" /></li>
+          </ul>
+          </g:if>
+          <g:hasErrors bean="${personInstance}" field="picture">
+            <span class="error-msg"><g:eachError bean="${personInstance}" field="picture"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
     </div>
     <div class="col col-r">
       <div class="row">
@@ -397,16 +418,27 @@
   </div>
 </fieldset>
 <content tag="additionalJavaScript">
+<script type="text/javascript" src="${resource(dir:'js', file:'jquery.lightbox.min.js')}"></script>
 <script type="text/javascript">
 //<![CDATA[
-(function(SPRINGCRM) {
-    var addrFields;
+(function($, SPRINGCRM) {
+    var a,
+        addrFields;
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
             findUrl: "${createLink(controller:'organization', action:'find')}"
         })
         .init();
+
+    new SPRINGCRM.LightBox({imgDir: "${resource(dir:'img/lightbox')}"})
+        .activate("#picture");
+    a = $('<a href="#">').click(function () {
+            $("#pictureRemove").val(1);
+            $(".document-preview").remove();
+            $(".document-preview-links").remove();
+        });
+    $(".document-delete").wrapInner(a);
 
     addrFields = new SPRINGCRM.AddrFields({
         leftPrefix: "mailingAddr", rightPrefix: "otherAddr",
@@ -434,6 +466,6 @@
     addrFields.addMenuItemCopy(
         false, '${message(code: "person.otherAddr.copy")}'
     );
-}(SPRINGCRM));
+}(jQuery, SPRINGCRM));
 //]]></script>
 </content>

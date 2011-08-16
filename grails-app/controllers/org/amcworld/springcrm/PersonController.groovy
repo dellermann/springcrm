@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import net.sf.jmimemagic.Magic;
+
 import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.client.http.AuthSubUtil
 import com.google.gdata.data.contacts.ContactEntry
@@ -74,7 +76,13 @@ class PersonController {
                     return
                 }
             }
+			byte [] picture = personInstance.picture
             personInstance.properties = params
+			if (params.pictureRemove == '1') {
+				personInstance.picture = null;
+			} else if (params.picture.isEmpty()) {
+				personInstance.picture = picture
+			}
             if (!personInstance.hasErrors() && personInstance.save(flush: true)) {
 				personInstance.reindex()
 				if (ldapService) {
@@ -113,6 +121,18 @@ class PersonController {
             redirect(action: 'list')
         }
     }
+
+	def getPicture = {
+        def personInstance = Person.get(params.id)
+        if (personInstance) {
+			response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
+			response.contentLength = personInstance.picture.length
+			response.outputStream << personInstance.picture
+			return null
+		} else {
+			render(status:404)
+		}
+	}
 	
 	def find = {
 		def organizationInstance = Organization.findById(params.organization)
@@ -139,6 +159,7 @@ class PersonController {
 					flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
 				}
 				redirect(action:'show', id:params.id)
+				return
 			} else {
 				def personInstanceList = Person.list()
 				personInstanceList.each { googleDataContactService.sync(it) }
