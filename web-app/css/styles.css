@@ -1242,6 +1242,36 @@ form .invoicing-items-pos {
   font-style: italic;
 }
 
+/* lists */
+.letter-bar {
+  margin: .5em 0;
+}
+.letter-bar li {
+  border: .1em solid #888;
+  color: #BBB;
+  float: left;
+  list-style: none;
+  margin-left: .5em;
+  padding: .2em .75em .275em;
+  -khtml-border-radius: .5em;
+  -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  -moz-border-radius: .5em;
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  -webkit-border-radius: .5em;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+}
+.letter-bar .available {
+  background: #DDD;
+  padding: .1em .1em .1em;
+}
+.letter-bar .available:hover {
+  background: #AAA;
+}
+.letter-bar a {
+  display: block;
+  padding: .1em .65em .175em;
+}
+
 /* override jQuery styles */
 .ui-menu-item {
   list-style: none;
@@ -1388,7 +1418,7 @@ form .invoicing-items-pos {
 /* clearance */
 #logo:after, #main-menu:after, #main-container:after,
   #main-container-header:after, .multicol-content:after, 
-  .header-with-menu:after, footer:after
+  .header-with-menu:after, .letter-bar:after, footer:after
 {
   clear: both;
   content: ".";

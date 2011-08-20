@@ -14,6 +14,11 @@ class OrganizationController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		if (params.letter) {
+			int num = Organization.countByNameLessThan(params.letter)
+			params.sort = 'name'
+			params.offset = Math.floor(num / params.max) * params.max
+		}
 		def list, count;
 		def type = params.type
 		if (type) {

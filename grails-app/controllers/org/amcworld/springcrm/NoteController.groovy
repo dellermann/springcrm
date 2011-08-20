@@ -12,6 +12,11 @@ class NoteController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		if (params.letter) {
+			int num = Note.countByTitleLessThan(params.letter)
+			params.sort = 'title'
+			params.offset = Math.floor(num / params.max) * params.max
+		}
         [noteInstanceList: Note.list(params), noteInstanceTotal: Note.count()]
     }
 

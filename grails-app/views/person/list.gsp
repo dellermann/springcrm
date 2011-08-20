@@ -30,6 +30,7 @@
     <div class="flash-message message">${flash.message}</div>
     </g:if>
     <g:if test="${personInstanceList}">
+    <g:letterBar clazz="${Person}" property="lastName"/>
     <table class="content-table">
       <thead>
         <tr>

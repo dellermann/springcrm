@@ -31,13 +31,14 @@
     <div class="flash-message message">${flash.message}</div>
     </g:if>
     <g:if test="${organizationInstanceList}">
+    <g:letterBar clazz="${Organization}" property="name" where='${params.type ? "o.recType in (${params.type}, 3)" : ""}'/>
     <table class="content-table">
       <thead>
         <tr>
           <th><input type="checkbox" id="organization-multop-sel" class="multop-sel" /></th>
           <g:sortableColumn property="number" title="${message(code: 'organization.number.label', default: 'Number')}" />
           <g:sortableColumn property="name" title="${message(code: 'organization.name.label', default: 'Name')}" />
-          <g:sortableColumn property="billingAddr" title="${message(code: 'organization.billingAddr.label', default: 'Billing address')}" />
+          <th><g:message code="organization.billingAddr.label" default="Billing address" /></th>
           <g:sortableColumn property="phone" title="${message(code: 'organization.phone.label', default: 'Phone')}" />
           <g:sortableColumn property="email1" title="${message(code: 'organization.email1.label', default: 'E-mail')}" />
           <g:sortableColumn property="website" title="${message(code: 'organization.website.label', default: 'Website')}" />
@@ -52,7 +53,7 @@
           <td><g:link action="show" id="${organizationInstance.id}" params="[type:params.type]">${fieldValue(bean: organizationInstance, field: "name")}</g:link></td>
           <td>${fieldValue(bean: organizationInstance, field: "billingAddr")}</td>
           <td>${fieldValue(bean: organizationInstance, field: "phone")}</td>
-          <td>${fieldValue(bean: organizationInstance, field: "email1")}</td>
+          <td><a href="mailto:${fieldValue(bean: organizationInstance, field: 'email1')}">${fieldValue(bean: organizationInstance, field: "email1")}</a></td>
           <td><a href="${organizationInstance?.website}" target="_blank">${fieldValue(bean: organizationInstance, field: "website")}</a></td>
           <td>
             <g:link action="edit" id="${organizationInstance.id}" params="[listType:params.type]" class="button small green"><g:message code="default.button.edit.label" /></g:link>

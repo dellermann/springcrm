@@ -10,6 +10,11 @@ class CallController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		if (params.letter) {
+			int num = Call.countBySubjectLessThan(params.letter)
+			params.sort = 'subject'
+			params.offset = Math.floor(num / params.max) * params.max
+		}
         [callInstanceList: Call.list(params), callInstanceTotal: Call.count()]
     }
 
