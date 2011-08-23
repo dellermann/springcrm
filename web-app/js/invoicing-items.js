@@ -233,7 +233,7 @@
                 .focusout($.proxy(this._onFocusOut, this));
             $("#add-invoicing-item-btn")
                 .click($.proxy(this._addInvoicingItem, this));
-            if (this._$tbodyItems.find("tr").length == 0) {
+            if (this._$tbodyItems.find("tr").length === 0) {
                 this._addInvoicingItem();
             }
             this._computeFooterValues();
@@ -444,40 +444,15 @@
          *                      selected inventory item is to place
          * @private
          */
-        _loadInventorySelector: function (type, url, pos) {
+        _loadInventorySelector: function (type, url, pos, params) {
             $.ajax({
                 url: url,
                 context: { invoicingItems: this, type: type, pos: pos },
+                data: params,
                 success: function (html) {
-                    var pos = this.pos,
-                        type = this.type;
-
-                    $("#inventory-selector-" + type).html(html)
-                        .unbind("click")
-                        .click($.proxy(
-                            function (e) {
-                                var $target,
-                                    target;
-
-                                target = e.target;
-                                if (target.tagName.toLowerCase() !== "a") {
-                                    return true;
-                                }
-                                $target = $(target);
-                                if ($target.hasClass("select-link")) {
-                                    this._retrieveInventoryItem(
-                                        type, $target.attr("href"), pos
-                                    );
-                                } else {
-                                    this._loadInventorySelector(
-                                        type, $target.attr("href"), pos
-                                    );
-                                }
-                                return false;
-                            },
-                            this.invoicingItems
-                        ))
-                        .dialog({ minWidth: 700, minHeight: 400, modal: true });
+                    this.invoicingItems._onLoadInventorySelector(
+                        html, this.type, this.pos
+                    );
                 }
             });
         },
@@ -628,6 +603,70 @@
             if ($target.hasClass("currency")) {
                 $target.val($.formatCurrency($.parseNumber($target.val())));
             }
+        },
+
+        /**
+         * Called if the data of the inventory selector was loaded
+         * successfully. The method displays the data and rewrites links.
+         *
+         * @param {String} html the HTML content retrieved from the server
+         * @param {String} type the type of inventory items which are to load;
+         *                      possible values are "products" and "services"
+         * @param {Number} pos  the zero-based index of the row in which the
+         *                      selected inventory item is to place
+         */
+        _onLoadInventorySelector: function (html, type, pos) {
+            var $form,
+                $selector,
+                getData = function () {
+                    var data = null,
+                        search = $form.get(0).search.value;
+
+                    if ((search !== SPRINGCRM.getMessage("search")) &&
+                        (search !== ""))
+                    {
+                        data = { search: search };
+                    }
+                    return data;
+                };
+
+            $selector = $("#inventory-selector-" + type);
+            $selector.html(html)
+                .unbind("click")
+                .click($.proxy(
+                    function (e) {
+                        var $target,
+                            target = e.target;
+
+                        if (target.tagName.toLowerCase() !== "a") {
+                            return true;
+                        }
+                        $target = $(target);
+                        if ($target.hasClass("select-link")) {
+                            this._retrieveInventoryItem(
+                                type, $target.attr("href"), pos
+                            );
+                        } else {
+                            this._loadInventorySelector(
+                                type, $target.attr("href"), pos, getData()
+                            );
+                        }
+                        return false;
+                    },
+                    this
+                ));
+            $form = $selector.find("form");
+            $form.submit($.proxy(
+                function (e) {
+                    this._loadInventorySelector(
+                        type, e.target.action, pos, getData()
+                    );
+                    return false;
+                },
+                this
+            ));
+            SPRINGCRM.Page.enableSearchFieldHints();
+            $selector.dialog({ minWidth: 700, minHeight: 400, modal: true });
         },
 
         /**

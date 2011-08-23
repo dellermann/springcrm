@@ -24,12 +24,26 @@ class ServiceController {
 	
 	def selectorList = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		String searchFilter = params.search ? "%${params.search}%".toString() : ''
 		if (params.letter) {
-			int num = Service.countByNameLessThan(params.letter)
+			int num
+			if (params.search) {
+				num = Service.countByNameLessThanAndNameLike(params.letter, searchFilter)
+			} else {
+				num = Service.countByNameLessThan(params.letter)
+			}
 			params.sort = 'name'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-        [serviceInstanceList: Service.list(params), serviceInstanceTotal: Service.count()]
+		def list, count;
+		if (params.search) {
+			list = Service.findAllByNameLike(searchFilter, params)
+			count = Service.countByNameLike(searchFilter)
+		} else {
+			list = Service.list(params)
+			count = Service.count()
+		}
+        [serviceInstanceList: list, serviceInstanceTotal: count]
 	}
 
     def create = {

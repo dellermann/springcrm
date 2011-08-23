@@ -24,12 +24,26 @@ class ProductController {
 	
 	def selectorList = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
+		String searchFilter = params.search ? "%${params.search}%".toString() : ''
 		if (params.letter) {
-			int num = Product.countByNameLessThan(params.letter)
+			int num
+			if (params.search) {
+				num = Product.countByNameLessThanAndNameLike(params.letter, searchFilter)
+			} else {
+				num = Product.countByNameLessThan(params.letter)
+			}
 			params.sort = 'name'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-		[productInstanceList: Product.list(params), productInstanceTotal: Product.count()]
+		def list, count;
+		if (params.search) {
+			list = Product.findAllByNameLike(searchFilter, params)
+			count = Product.countByNameLike(searchFilter)
+		} else {
+			list = Product.list(params)
+			count = Product.count()
+		}
+		[productInstanceList: list, productInstanceTotal: count]
 	}
 
     def create = {

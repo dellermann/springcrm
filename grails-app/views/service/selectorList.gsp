@@ -1,6 +1,14 @@
 <%@ page import="org.amcworld.springcrm.Service" %>
+<div class="selector-toolbar">
+  <g:letterBar clazz="${Service}" property="name" numLetters="3" separator="-"/>
+  <div class="selector-toolbar-search">
+    <g:form action="selectorList">
+      <g:textField name="search" value="${params.search ?: message(code:'default.search.label', default:'Search...')}" class="search-field"/>
+      <button type="submit" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
+    </g:form>
+  </div>
+</div>
 <g:if test="${serviceInstanceList}">
-<g:letterBar clazz="${Service}" property="name" numLetters="3" separator="-"/>
 <table class="content-table">
   <thead>
     <tr>

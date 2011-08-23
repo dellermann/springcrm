@@ -30,6 +30,7 @@
 <script type="text/javascript">
 //<![CDATA[
 SPRINGCRM.addMessages({
+  search: "${message(code:'default.search.label', default:'Search...')}",
 	<g:pageProperty name="page.jsTexts" />
 });
 //]]></script>

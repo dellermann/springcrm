@@ -67,26 +67,11 @@
         this._$document = $(window.document);
 
         /**
-         * The jQuery object representing the search field.
-         *
-         * @type JQueryObject
-         */
-        this._$search = $("#search");
-
-        /**
          * The jQuery object representing the toolbar.
          *
          * @type JQueryObject
          */
         this._$toolbar = $toolbar;
-
-        /**
-         * The initial text which is to display if the search field is not
-         * focused.
-         *
-         * @type String
-         */
-        this._initialSearchText = this._$search.val();
 
         /**
          * The vertical offset of the toolbar when loading the page.
@@ -124,6 +109,39 @@
             return res;
         }());
     };
+
+    /**
+     * Enables the display of hints if the user sets the focus into a search
+     * field.
+     */
+    Page.enableSearchFieldHints = function () {
+        $(".search-field")
+            .unbind("focus")
+            .unbind("blur")
+            .focus(function (e) { Page._swapSearchText(e, true); })
+            .blur(function (e) { Page._swapSearchText(e, false); });
+    };
+
+    /**
+     * Exchanges the text of the search field.
+     *
+     * @param {Object} e    the event data
+     * @param {Boolean} dir if <code>true</code> the initial search field
+     *                      text is replaced by an empty string;
+     *                      <code>false</code> otherwise
+     * @protected
+     */
+    Page._swapSearchText = function (e, dir) {
+        var $input,
+            value1 = dir ? SPRINGCRM.getMessage("search") : "",
+            value2 = dir ? "" : SPRINGCRM.getMessage("search");
+
+        $input = $(e.currentTarget);
+        if ($input.val() === value1) {
+            $input.val(value2);
+        }
+    };
+
     Page.prototype = {
 
         //-- Public methods ---------------------
@@ -135,18 +153,12 @@
             if (this._$toolbar !== null) {
                 this._$document.scroll($.proxy(this._onScrollDocument, this));
             }
-            this._$search
-                .focus($.proxy(
-                    function (e) { this._swapSearchText(e, true); }, this
-                ))
-                .blur($.proxy(
-                    function (e) { this._swapSearchText(e, false); }, this
-                ))
-                .next("a")
-                    .click(function () {
-                        window.document.forms.searchableForm.submit();
-                        return false;
-                    });
+            Page.enableSearchFieldHints();
+            $("#search").next("a")
+                .click(function () {
+                    window.document.forms.searchableForm.submit();
+                    return false;
+                });
             $("#quick-access").change(this._onChangeQuickAccess);
             $("#main-menu > li").hover(this._onMenuHover);
             $(".menu").hover(this._onMenuHover);
@@ -158,6 +170,9 @@
                 });
             $(".date-input-time")
                 .autocomplete({ source: this._timeValues });
+            $("#spinner").click(function () {
+                $(this).css("display", "none");
+            });
             this._renderFontSizeSel();
             this._initAjaxEvents();
         },
@@ -299,26 +314,6 @@
             }
             $("#app-version").after(s + '</ul>');
             $("#font-size-sel").click($.proxy(this._onChangeFontSize, this));
-        },
-
-        /**
-         * Exchanges the text of the search field.
-         *
-         * @param {Object} e    the event data
-         * @param {Boolean} dir if <code>true</code> the initial search field
-         *                      text is replaced by an empty string;
-         *                      <code>false</code> otherwise
-         * @protected
-         */
-        _swapSearchText: function (e, dir) {
-            var $input,
-                value1 = dir ? this._initialSearchText : "",
-                value2 = dir ? "" : this._initialSearchText;
-
-            $input = $(e.currentTarget);
-            if ($input.val() === value1) {
-                $input.val(value2);
-            }
         }
     };
     SPRINGCRM.Page = Page;
@@ -970,7 +965,7 @@
          * @returns {Object}                        this LightBox object
          */
         activate: function (selector) {
-            if (typeof(selector) == "string") {
+            if (typeof(selector) === "string") {
                 selector = $(selector);
             }
             selector.lightBox(this.config);

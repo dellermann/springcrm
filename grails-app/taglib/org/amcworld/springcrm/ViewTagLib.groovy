@@ -47,8 +47,8 @@ class ViewTagLib {
 		def items = []
 		for (int i = 0; i < n; i += numLetters) {
 			boolean inList = false
-			for (int j = 0; j < numLetters; j++) {
-				String letter = availableLetters[i]
+			for (int j = 0; j < numLetters && i + j < n; j++) {
+				String letter = availableLetters[i + j]
 				inList |= letter in letters
 			}
 			StringBuilder buf = new StringBuilder('<li')
