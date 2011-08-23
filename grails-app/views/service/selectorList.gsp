@@ -1,5 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Service" %>
 <g:if test="${serviceInstanceList}">
+<g:letterBar clazz="${Service}" property="name" numLetters="3" separator="-"/>
 <table class="content-table">
   <thead>
     <tr>

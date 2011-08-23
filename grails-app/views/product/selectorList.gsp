@@ -1,5 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Product" %>
 <g:if test="${productInstanceList}">
+<g:letterBar clazz="${Product}" property="name" numLetters="3" separator="-"/>
 <table class="content-table">
   <thead>
     <tr>
