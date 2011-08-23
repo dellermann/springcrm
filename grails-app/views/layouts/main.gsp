@@ -11,7 +11,7 @@
   <!--<g:javascript library="application" />-->
 </head>
 
-<body>
+<body style="font-size: ${userSetting(key:'fontSize')}">
 <section>
   <g:render template="/layouts/header" />
   <g:render template="/layouts/nav" />
@@ -35,6 +35,9 @@ SPRINGCRM.addMessages({
 });
 //]]></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'scripts.js')}"></script>
+<script type="text/javascript">
+SPRINGCRM.page.renderFontSizeSel("${createLink(controller:'user', action:'storeSetting')}", "${userSetting(key:'fontSize')}");
+//</script>
 <g:pageProperty name="page.additionalJavaScript" />
 </body>
 </html>

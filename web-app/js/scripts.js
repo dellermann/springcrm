@@ -30,7 +30,8 @@
     var AddrFields,
         FixedSelAutocomplete,
         LightBox,
-        Page;
+        Page,
+        page;
 
 
     //== Classes ================================
@@ -173,8 +174,47 @@
             $("#spinner").click(function () {
                 $(this).css("display", "none");
             });
-            this._renderFontSizeSel();
             this._initAjaxEvents();
+        },
+
+        /**
+         * Renders the font size selector.
+         *
+         * @param {String} url      the URL which is to call to persist the
+         *                          currently selected font size
+         * @param {String} defSize  the CSS font size value specifying the
+         *                          font size to select as default
+         */
+        renderFontSizeSel: function (url, defSize) {
+            var baseFontSize = SPRINGCRM.BASE_FONT_SIZE,
+                currentSize,
+                i = -1,
+                numFontSizes = SPRINGCRM.NUM_FONT_SIZES,
+                offset,
+                s,
+                size;
+
+            offset = Math.floor(numFontSizes / 2);
+            currentSize = parseInt(this._$body.css("font-size"), 10);
+            if (defSize) {
+                currentSize = parseInt(defSize, 10);
+            }
+            s = '<ul id="font-size-sel">';
+            for (; ++i < numFontSizes; ) {
+                size = baseFontSize - offset + i;
+                s += '<li ';
+                if (size === currentSize) {
+                    s += 'class="current" ';
+                }
+                s += 'style="font-size: ' + String(size) + 'px;">A</li>';
+            }
+            $("#app-version").after(s + '</ul>');
+            $("#font-size-sel").click($.proxy(
+                    function (e) {
+                        this._onChangeFontSize(e.target, url);
+                    },
+                    this
+                ));
         },
 
 
@@ -231,18 +271,25 @@
         /**
          * Called if the font size of the document is to change.
          *
-         * @param {Object} e    the event data
+         * @param {Object} target   the target of the click event
+         * @param {String} url      the URL which is to call to persist the
+         *                          currently selected font size
          * @protected
          */
-        _onChangeFontSize: function (e) {
-            var $target = $(e.target);
+        _onChangeFontSize: function (target, url) {
+            var $target = $(target),
+                fontSize = $target.css("font-size");
 
             this._$body
-                .css("font-size", $target.css("font-size"));
+                .css("font-size", fontSize);
             $target
                 .addClass("current")
                 .siblings(".current")
                     .removeClass("current");
+            $.ajax({
+                data: { key: "fontSize", value: fontSize },
+                url: url
+            });
         },
 
         /**
@@ -285,35 +332,6 @@
             } else {
                 this._$toolbar.removeClass("fixed");
             }
-        },
-
-        /**
-         * Renders the font size selector.
-         *
-         * @protected
-         */
-        _renderFontSizeSel: function () {
-            var baseFontSize = SPRINGCRM.BASE_FONT_SIZE,
-                currentSize,
-                i = -1,
-                numFontSizes = SPRINGCRM.NUM_FONT_SIZES,
-                offset,
-                s,
-                size;
-
-            offset = Math.floor(numFontSizes / 2);
-            currentSize = parseInt(this._$body.css("font-size"), 10);
-            s = '<ul id="font-size-sel">';
-            for (; ++i < numFontSizes; ) {
-                size = baseFontSize - offset + i;
-                s += '<li ';
-                if (size === currentSize) {
-                    s += 'class="current" ';
-                }
-                s += 'style="font-size: ' + String(size) + 'px;">A</li>';
-            }
-            $("#app-version").after(s + '</ul>');
-            $("#font-size-sel").click($.proxy(this._onChangeFontSize, this));
         }
     };
     SPRINGCRM.Page = Page;
@@ -1060,7 +1078,9 @@
 
     //== Main ===================================
 
-    new Page().init();
+    page = new Page();
+    page.init();
+    SPRINGCRM.page = page;
 
     /* TODO: handle info boxes in content tables */
     /*

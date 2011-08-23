@@ -2,7 +2,7 @@ package org.amcworld.springcrm
 
 import grails.test.*
 
-class LoginTagLibTests extends TagLibUnitTestCase {
+class UserTagLibTests extends TagLibUnitTestCase {
 
     protected void setUp() {
         super.setUp()

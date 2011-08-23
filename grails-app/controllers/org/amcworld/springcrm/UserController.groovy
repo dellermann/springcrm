@@ -117,4 +117,13 @@ class UserController {
 		session.user = null
 		redirect(action: 'login')
 	}
+
+	def storeSetting = {
+		User sessionUser = session.user
+		User dbUser = User.get(sessionUser.id)
+		sessionUser.settings[params.key] = params.value
+		dbUser.settings[params.key] = params.value
+		dbUser.save(flush:true)
+		render(status:200)
+	}
 }
