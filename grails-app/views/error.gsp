@@ -105,34 +105,34 @@
 
     <h3><a href="#"><g:message code="error.exception.reportData.title"/></a></h3>
     <div>
-      <pre id="report-data">&lt;?xml version="1.0"?>
+      <pre id="report-data">&lt;?xml version="1.0"?&gt;
       
-&lt;error-report xmlns="http://www.amc-world.de/data/xml/springcrm/error-report">
-  &lt;report-version>1.0&lt;/report-version>
-  &lt;customer>
-    &lt;name>%name%&lt;/name>
-    &lt;email>%email%&lt;/email>
-  &lt;/customer>
-  &lt;description>%description%&lt;/description>
-  &lt;details>
-    &lt;status-code>${request.'javax.servlet.error.status_code'}&lt;/status-code>
-    &lt;message>${request.'javax.servlet.error.message'.encodeAsHTML()}&lt;/message>
-    &lt;servlet>${request.'javax.servlet.error.servlet_name'}&lt;/servlet>
-    &lt;uri>${request.'javax.servlet.error.request_uri'}&lt;/uri>
-  &lt;/details>
-  <g:if test="${exception}">&lt;exception>
-    &lt;message>${exception.message?.encodeAsHTML()}&lt;/message>
-    &lt;caused-by>${exception.cause?.message?.encodeAsHTML()}&lt;/caused-by>
-    &lt;class-name>${exception.className}&lt;/class-name>
-    &lt;line-number>${exception.lineNumber}&lt;/line-number>
-    &lt;code-snippet>
+&lt;error-report xmlns="http://www.amc-world.de/data/xml/springcrm/error-report"&gt;
+  &lt;report-version&gt;1.0&lt;/report-version&gt;
+  &lt;customer&gt;
+    &lt;name&gt;%name%&lt;/name&gt;
+    &lt;email&gt;%email%&lt;/email&gt;
+  &lt;/customer&gt;
+  &lt;description&gt;%description%&lt;/description&gt;
+  &lt;details&gt;
+    &lt;status-code&gt;${request.'javax.servlet.error.status_code'}&lt;/status-code&gt;
+    &lt;message&gt;${request.'javax.servlet.error.message'.encodeAsHTML()}&lt;/message&gt;
+    &lt;servlet&gt;${request.'javax.servlet.error.servlet_name'}&lt;/servlet&gt;
+    &lt;uri&gt;${request.'javax.servlet.error.request_uri'}&lt;/uri&gt;
+  &lt;/details&gt;
+  <g:if test="${exception}">&lt;exception&gt;
+    &lt;message&gt;${exception.message?.encodeAsHTML()}&lt;/message&gt;
+    &lt;caused-by&gt;${exception.cause?.message?.encodeAsHTML()}&lt;/caused-by&gt;
+    &lt;class-name&gt;${exception.className}&lt;/class-name&gt;
+    &lt;line-number&gt;${exception.lineNumber}&lt;/line-number&gt;
+    &lt;code-snippet&gt;
     <g:each var="cs" in="${exception.codeSnippet}">${cs?.encodeAsHTML()}</g:each>
-    &lt;/code-snippet>
-    &lt;stack-trace>
+    &lt;/code-snippet&gt;
+    &lt;stack-trace&gt;
     <g:each in="${exception.stackTraceLines}">${it.encodeAsHTML()}</g:each>
-    &lt;/stack-trace>
-  &lt;/exception></g:if>
-&lt;/error-report>
+    &lt;/stack-trace&gt;
+  &lt;/exception&gt;</g:if>
+&lt;/error-report&gt;
 </pre>
     </div>
   </div>
