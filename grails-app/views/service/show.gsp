@@ -99,7 +99,7 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="service.description.label" default="Description" /></div>
-            <div class="field">${fieldValue(bean: serviceInstance, field: "description")}</div>
+            <div class="field">${nl2br(value: serviceInstance?.description)}</div>
           </div>
         </div>
       </div>

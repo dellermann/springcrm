@@ -114,7 +114,7 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="product.description.label" default="Description" /></div>
-            <div class="field">${fieldValue(bean: productInstance, field: "description")}</div>
+            <div class="field">${nl2br(value: productInstance?.description)}</div>
           </div>
         </div>
       </div>

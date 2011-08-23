@@ -232,7 +232,7 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="person.notes.label" default="Notes" /></div>
-            <div class="field">${fieldValue(bean: personInstance, field: "notes")}</div>
+            <div class="field">${nl2br(value: personInstance?.notes)}</div>
           </div>
         </div>
       </div>

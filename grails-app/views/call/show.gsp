@@ -47,7 +47,7 @@
             
             <div class="row">
               <div class="label"><g:message code="call.notes.label" default="Notes" /></div>
-              <div class="field">${fieldValue(bean: callInstance, field: "notes")}</div>
+              <div class="field">${nl2br(value: callInstance?.notes)}</div>
 			      </div>
             
             <div class="row">

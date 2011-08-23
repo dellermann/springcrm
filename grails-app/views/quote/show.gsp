@@ -186,7 +186,7 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="invoicingItem.headerText.label" default="Header Text" /></div>
-            <div class="field">${quoteInstance?.headerText}</div>
+            <div class="field">${nl2br(value: quoteInstance?.headerText)}</div>
           </div>
         </div>
       </div>
@@ -293,7 +293,7 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="invoicingItem.footerText.label" default="Footer Text" /></div>
-            <div class="field">${quoteInstance?.footerText}</div>
+            <div class="field">${nl2br(value: quoteInstance?.footerText)}</div>
           </div>
           
           <div class="row">

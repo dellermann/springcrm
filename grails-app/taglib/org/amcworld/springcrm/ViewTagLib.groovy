@@ -71,4 +71,15 @@ class ViewTagLib {
 		}
 		out << '<ul class="letter-bar">' << items.join('') << '</ul>'
 	}
+
+	/**
+	 * Converts LF and CR to HTML <br /> tags.
+	 * 
+	 * @attr value	the value to convert; if not specified the body of the tag
+	 * 				is used
+	 */
+	def nl2br = { attrs, body ->
+		String s = (attrs.value ?: body()) ?: ''
+		out << s.replaceAll(/\r\n/, '<br />').replaceAll(/[\r\n]/, '<br />')
+	}
 }
