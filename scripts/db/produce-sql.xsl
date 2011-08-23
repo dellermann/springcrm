@@ -152,7 +152,7 @@
           <xsl:value-of select="."/>
           <xsl:text>')</xsl:text>
         </xsl:when>
-        <xsl:when test="number()">
+        <xsl:when test="number() and not(contains(@name, 'postal_code'))">
           <xsl:value-of select="number()"/>
         </xsl:when>
         <xsl:otherwise>

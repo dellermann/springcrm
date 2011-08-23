@@ -147,12 +147,12 @@ SELECT
     IF(
         c.imagename IS NULL OR c.imagename = '',
         NULL,
-        LOAD_FILE(CONCAT(
+        HEX(LOAD_FILE(CONCAT(
           '/tmp/vtigercrm/',
           ar.attachmentsid,
           '_',
           c.imagename
-        ))
+        )))
       ) AS picture,
     IF(
         c.salutation = ''
