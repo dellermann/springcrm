@@ -141,9 +141,17 @@ class PersonController {
 	
 	def find = {
 		def organizationInstance = Organization.findById(params.organization)
-		def list = Person.findAllByOrganizationAndLastNameLike(
-			organizationInstance, "${params.name}%", [sort:'lastName']
-		)
+		def c = Person.createCriteria()
+		def list = c.list {
+			eq('organization', organizationInstance)
+			and {
+				or {
+					ilike('lastName', "${params.name}%")
+					ilike('firstName', "${params.name}%")
+				}
+			}
+			order('lastName', 'asc')
+		}
 		render(contentType:"text/json") {
 			array {
 				for (p in list) {
