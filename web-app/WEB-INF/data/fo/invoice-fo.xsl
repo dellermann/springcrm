@@ -41,7 +41,7 @@
       <fo:block font-weight="bold">Berliner Volksbank</fo:block>
       <fo:block>Kontonummer: 2067829002</fo:block>
       <fo:block space-after="5mm">Bankleitzahl: 100 900 00</fo:block>
-      <fo:block>
+      <fo:block space-after="5mm">
         <xsl:text>Rechnungsdatum ist gleich Lieferdatum. Es gelten unsere
         Allgemeinen Geschäftsbedingungen. Für weitere Fragen stehen wir gern
         zur Verfügung. Sie erreichen uns unter den oben angegebenen

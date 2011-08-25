@@ -443,7 +443,8 @@
     <fo:table table-layout="fixed" width="100%" space-after="5mm"
               font-family="Frutiger LT 57 Cn" font-size="9pt" color="#5F6A72"
               border-color="#5F6A72" border-width="1pt"
-              border-before-style="solid" border-after-style="solid">
+              border-before-style="solid" border-after-style="solid"
+              table-omit-footer-at-break="true">
       <fo:table-column column-number="1" column-width="9mm"/>
       <fo:table-column column-number="2" column-width="14mm"/>
       <fo:table-column column-number="3" column-width="88mm"/>
