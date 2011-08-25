@@ -1032,7 +1032,7 @@
                 };
 
             d = d || new Date();
-            return f(d.getDate()) + "." + f(d.getMonth()) + "." +
+            return f(d.getDate()) + "." + f(d.getMonth() + 1) + "." +
                 String(d.getFullYear());
         },
 
