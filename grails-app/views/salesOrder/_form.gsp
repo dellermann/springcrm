@@ -335,7 +335,12 @@
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="salesOrder.fieldset.items.label" /></h4>
+  <div class="header-with-menu">
+    <h4><g:message code="salesOrder.fieldset.items.label" /></h4>
+    <div class="menu">
+      <a href="javascript:void 0;" class="add-invoicing-item-btn button small green"><g:message code="invoicingItem.button.addRow.label" /></a>
+    </div>
+  </div>
   <div class="fieldset-content">
     <g:each in="${salesOrderInstance.items}" status="i" var="item">
     <g:if test="${item.id}">
@@ -469,7 +474,7 @@
       </tbody>
     </table>
     <div class="table-actions">
-      <a id="add-invoicing-item-btn" href="javascript:void 0;" class="button medium green"><g:message code="invoicingItem.button.addRow.label" /></a>
+      <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingItem.button.addRow.label" /></a>
     </div>
     <g:hasErrors bean="${salesOrderInstance}" field="items">
       <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="items"><g:message error="${it}" /> </g:eachError></span>

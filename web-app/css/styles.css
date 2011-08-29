@@ -1186,7 +1186,7 @@ form .invoicing-items-pos {
   margin-left: 0;
 }
 .table-actions {
-  padding: .5em;
+  padding: .5em 0;
   text-align: right;
 }
 
