@@ -26,7 +26,9 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><g:link controller="call" action="create" params="['person.id':personInstance?.id]" class="button medium white"><g:message code="person.action.createCall.label" /></g:link></li>
+      <li><g:link controller="call" action="create" params="['person.id':personInstance?.id, 'organization.id':personInstance?.organization?.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link></li>
+      <li><g:link controller="quote" action="create" params="['person.id':personInstance?.id, 'organization.id':personInstance?.organization?.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link></li>
+      <li><g:link controller="invoice" action="create" params="['person.id':personInstance?.id, 'organization.id':personInstance?.organization?.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link></li>
       <li><g:link action="gdatasync" params="[id:personInstance?.id]" class="button medium white"><g:message code="person.action.gdataExport.label"/></g:link></li>
       <li><g:link action="ldapexport" params="[id:personInstance?.id]" class="button medium white"><g:message code="person.action.ldapExport.label"/></g:link></li>
     </ul>
