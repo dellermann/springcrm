@@ -73,7 +73,7 @@ class InvoicingTransaction {
     String shippingAddrState
     String shippingAddrCountry
 	String headerText
-	List items
+	List<InvoicingItem> items
 	String footerText
 	BigDecimal discountPercent
 	BigDecimal discountAmount
@@ -253,9 +253,5 @@ class InvoicingTransaction {
 	
 	String toString() {
 		return subject
-	}
-	
-	def beforeUpdate() {
-		items = items.findAll { it != null }
 	}
 }

@@ -109,6 +109,14 @@
         this._form = window.document.forms[formName];
 
         /**
+         * The next index to use when adding new invoicing items.
+         *
+         * @type Number
+         * @default 0
+         */
+        this._nextIndex = 0;
+
+        /**
          * The table containing the invoicing items.
          *
          * @type JQueryObject
@@ -218,6 +226,39 @@
          */
         this._total = 0.0;
     };
+
+    /**
+     * The names of the input fields for an invoicing item.
+     *
+     * @static
+     */
+    InvoicingItems.INPUT_FIELD_NAMES = [
+        "id", "number", "quantity", "unit", "name", "description", "unitPrice",
+        "tax"
+    ];
+
+    /**
+     * Swaps the position label of the item in the given table row with the
+     * one of the given destination table row. The position label is stored
+     * in the first cell of the table rows.
+     *
+     * @name                            InvoicingItems#_swapItemPos
+     * @param {JQueryObject} $tr        the table row to swap
+     * @param {JQueryObject} $destTr    the table row to swap with
+     * @protected
+     */
+    InvoicingItems._swapItemPos = function ($tr, $destTr) {
+        var $destTd,
+            $td,
+            s;
+
+        $td = $tr.find("td:first-child");
+        $destTd = $destTr.find("td:first-child");
+        s = $td.text();
+        $td.text($destTd.text());
+        $destTd.text(s);
+    };
+
     InvoicingItems.prototype = {
 
         //-- Public methods ---------------------
@@ -226,15 +267,25 @@
          * Initializes the invoicing items table.
          */
         init: function () {
+            var numItems;
+
+            numItems = this._$tbodyItems.find("tr").length;
+            this._nextIndex = numItems;
+//            $(this._form).submit($.proxy(this._onSubmit, this));
             this._$table
                 .click($.proxy(this._onClick, this))
                 .change($.proxy(this._onChange, this))
                 .focusin($.proxy(this._onFocusIn, this))
                 .focusout($.proxy(this._onFocusOut, this));
-            $("#add-invoicing-item-btn")
-                .click($.proxy(this._addInvoicingItem, this));
-            if (this._$tbodyItems.find("tr").length === 0) {
-                this._addInvoicingItem();
+            $(".add-invoicing-item-btn")
+                .click($.proxy(
+                    function () {
+                        this._addInvoicingItem(true);
+                    },
+                    this
+                ));
+            if (numItems === 0) {
+                this._addInvoicingItem(false);
             }
             this._computeFooterValues();
         },
@@ -246,37 +297,36 @@
          * Adds a table row for a new invoicing item and appends it to the end
          * of the table body.
          *
+         * @param {boolean} jumpToNewRow    if <code>true</code> the new
+         *                                  created row won't be scrolled into
+         *                                  view
          * @protected
          */
-        _addInvoicingItem: function () {
+        _addInvoicingItem: function (jumpToNewRow) {
             var $tbody = this._$tbodyItems,
                 gm = SPRINGCRM.getMessage,
-                imgPath,
-                pos,
+                imgPath = this._imgPath,
+                index = this._nextIndex++,
                 s,
-                sPos,
-                table;
+                table = this._tableId;
 
-            table = this._tableId;
-            imgPath = this._imgPath;
-            pos = $tbody.find("tr")
-                .length;
-            sPos = String(pos);
             s = '<tr><td headers="' + table +
-                '-pos" class="invoicing-items-pos">' + String(pos + 1) +
+                '-pos" class="invoicing-items-pos">' + String(index + 1) +
                 '.</td><td headers="' + table +
                 '-number" class="invoicing-items-number">' +
-                '<input type="text" name="items[' + sPos +
-                '].number" size="10" /></td><td headers="' + table +
+                '<input type="text" name="' +
+                this._getInputName(index, "number") +
+                '" size="10" /></td><td headers="' + table +
                 '-quantity" class="invoicing-items-quantity">' +
-                '<input type="text" name="items[' + sPos +
-                '].quantity" size="4" /></td><td headers="' + table +
+                '<input type="text" name="' +
+                this._getInputName(index, "quantity") +
+                '" size="4" /></td><td headers="' + table +
                 '-unit" class="invoicing-items-unit">' +
-                '<input type="text" name="items[' + sPos +
-                '].unit" size="5" /></td><td headers="' + table +
+                '<input type="text" name="' + this._getInputName(index, "unit") +
+                '" size="5" /></td><td headers="' + table +
                 '-name" class="invoicing-items-name">' +
-                '<input type="text" name="items[' + sPos +
-                '].name" size="28" />';
+                '<input type="text" name="' + this._getInputName(index, "name") +
+                '" size="28" />';
             if (this._productListUrl) {
                 s +=
                     '&nbsp;<a href="javascript:void 0;" ' +
@@ -295,16 +345,18 @@
                     'style="vertical-align: middle;" /></a>';
             }
             s +=
-                '<br /><textarea name="items[' + sPos +
-                '].description" cols="30" rows="3"></textarea></td><td headers="' +
+                '<br /><textarea name="' +
+                this._getInputName(index, "description") +
+                '" cols="30" rows="3"></textarea></td><td headers="' +
                 table + '-unit-price" class="invoicing-items-unit-price">' +
-                '<input type="text" name="items[' + sPos +
-                '].unitPrice" size="8" value="0,00" class="currency" />&nbsp;€</td>' +
+                '<input type="text" name="' +
+                this._getInputName(index, "unitPrice") +
+                '" size="8" value="0,00" class="currency" />&nbsp;€</td>' +
                 '<td headers="' + table + '-total" class="invoicing-items-total">' +
                 '<span class="value">0,00</span>&nbsp;€</td>' +
                 '<td headers="' + table + '-tax" class="invoicing-items-tax">' +
-                '<input type="text" name="items[' + sPos +
-                '].tax" size="4" />&nbsp;%</td>' +
+                '<input type="text" name="' +this._getInputName(index, "tax") +
+                '" size="4" />&nbsp;%</td>' +
                 '<td class="invoicing-items-buttons">' +
                 '<a href="javascript:void 0;" class="up-btn"><img src="' +
                 imgPath + '/up.png" alt="' + gm("upBtn") + '" title="' +
@@ -316,6 +368,9 @@
                 imgPath + '/remove.png" alt="' + gm("removeBtn") + '" title="' +
                 gm("removeBtn") + '" width="16" height="16" /></a></td></tr>';
             $tbody.append(s);
+            if (jumpToNewRow) {
+                $("html").scrollTop($tbody.find("tr:last").position().top);
+            }
         },
 
         /**
@@ -434,24 +489,117 @@
         },
 
         /**
+         * Obtains the index and the name of the given input control which
+         * resides in an invoicing item row.
+         *
+         * @param {Object} input    the given input control
+         * @returns {Array}         an array containing the zero-based index in
+         *                          the first element and the name in the
+         *                          second element; <code>null</code> if the
+         *                          given input control does not belong to an
+         *                          invoicing item row
+         * @protected
+         */
+        _getInputIndexAndName: function (input) {
+            var parts;
+
+            parts = input.name.match(/^items\[(\d+)\]\.(\w+)$/);
+            if (parts) {
+                parts.shift();
+                return parts;
+            } else {
+                return null;
+            }
+        },
+
+        /**
+         * Get the input control with the given index and name.
+         *
+         * @param {Number} index    the zero-based index
+         * @param {String} [name]   the name
+         * @param {String} [suffix] an optional suffix which is appended to the
+         *                          name stem
+         * @returns {Object}        the input control
+         * @protected
+         */
+        _getInput: function (index, name, suffix) {
+            return this._form.elements[this._getInputName(index, name, suffix)];
+        },
+
+        /**
+         * Composes the name of the input control from the given index and
+         * name.
+         *
+         * @param {Number} index    the zero-based index
+         * @param {String} [name]   the name
+         * @param {String} [suffix] an optional suffix which is appended to the
+         *                          name stem
+         * @returns {String}        the computed input control name
+         * @protected
+         */
+        _getInputName: function (index, name, suffix) {
+            return "items" + (suffix || "") + "[" + index + "]." +
+                (name || "");
+        },
+
+        /**
+         * Gets the number of invoicing item rows.
+         *
+         * @returns {Number}    the number of rows
+         * @protected
+         */
+        _getNumRows: function () {
+            return this._$tbodyItems.find("tr").length;
+        },
+
+        /**
+         * Gets the zero-based index of the input controls in the given row.
+         *
+         * @param {JQueryObject} $tr    the given table row
+         * @returns {Number}            the zero-based index
+         * @protected
+         */
+        _getRowIndex: function ($tr) {
+            var input = $tr.find(":input").get(0);
+
+            return Number(this._getInputIndexAndName(input)[0]);
+        },
+
+        /**
+         * Gets the zero-based position of the given row within all the
+         * invoicing item rows.
+         *
+         * @param {JQueryObject} $tr    the given table row
+         * @returns {Number}            the zero-based position
+         * @protected
+         */
+        _getRowPosition: function ($tr) {
+            return $tr.parent()
+                .children()
+                .index($tr);
+        },
+
+        /**
          * Displays a dialog window and load inventory items such as products
          * or services for display within the dialog.
          *
-         * @param {String} type the type of inventory items which are to load;
-         *                      possible values are "products" and "services"
-         * @param {String} url  the URL used to load the inventory items
-         * @param {Number} pos  the zero-based index of the row in which the
-         *                      selected inventory item is to place
+         * @param {String} type     the type of inventory items which are to
+         *                          load; possible values are "products" and
+         *                          "services"
+         * @param {String} url      the URL used to load the inventory items
+         * @param {Number} index    the zero-based index of the input controls
+         *                          which are to fill with the selected
+         *                          inventory item is to place
          * @private
          */
-        _loadInventorySelector: function (type, url, pos, params) {
+        _loadInventorySelector: function (type, url, index, params) {
             $.ajax({
                 url: url,
-                context: { invoicingItems: this, type: type, pos: pos },
+                context: { invoicingItems: this, type: type, index: index },
                 data: params,
                 success: function (html) {
                     this.invoicingItems._onLoadInventorySelector(
-                        html, this.type, this.pos
+                        html, this.type, this.index
                     );
                 }
             });
@@ -466,29 +614,23 @@
          * @private
          */
         _moveInvoicingItem: function ($a, dir) {
-            var $allTrs,
-                $destTr = null,
-                $tr,
+            var $destTr = null,
+                $tr = $a.parents("tr"),
                 pos;
 
-            /* obtain current row, all rows, and row position */
-            $tr = $a.parents("tr");
-            $allTrs = $tr.parent()
-                .children();
-            pos = $allTrs.index($tr);
-
             /* swap current row with previous or next row */
+            pos = this._getRowPosition($tr);
             if ((dir < 0) && (pos > 0)) {
                 $destTr = $tr.prev();
                 $destTr.before($tr);
-            } else if (pos < $allTrs.length - 1) {
+            } else if (pos < this._getNumRows() - 1) {
                 $destTr = $tr.next();
                 $destTr.after($tr);
             }
 
             /* swap input name positions and item positions */
             if ($destTr) {
-                InvoicingItems._swapInputItemPos(pos, dir);
+                this._swapInputItemPos($tr, $destTr);
                 InvoicingItems._swapItemPos($tr, $destTr);
             }
         },
@@ -500,38 +642,30 @@
          * @private
          */
         _onChange: function (e) {
-            var $input,
-                $tr,
-                els,
-                field,
+            var $tr,
                 input = e.target,
-                name,
                 parts,
-                pos,
+                index,
                 qty,
                 unitPrice;
 
-            $input = $(input);
-            name = $input.attr("name");
-            els = input.form.elements;
-            parts = name.match(/^items\[(\d+)\]\.(\w+)$/);
+            parts = this._getInputIndexAndName(input.name);
             if (parts) {
-                pos = parts[1];
-                field = parts[2];
-                $tr = $input.parents("tr");
-                switch (field) {
+                index = parts[0];
+                $tr = $(input).parents("tr");
+                switch (parts[1]) {
                 case "quantity":
-                    qty = $.parseNumber($input.val());
+                    qty = $.parseNumber(input.value);
                     unitPrice = $.parseNumber(
-                        $(els["items[" + pos + "].unitPrice"]).val()
+                        this._getInput(index, "unitPrice").value
                     );
                     $tr.find(".invoicing-items-total .value")
                         .text($.formatCurrency(qty * unitPrice));
                     break;
                 case "unitPrice":
-                    unitPrice = $.parseNumber($input.val());
+                    unitPrice = $.parseNumber(input.value);
                     qty = $.parseNumber(
-                        $(els["items[" + pos + "].quantity"]).val()
+                        this._getInput(index, "quantity").value
                     );
                     $tr.find(".invoicing-items-total .value")
                         .text($.formatCurrency(qty * unitPrice));
@@ -609,13 +743,16 @@
          * Called if the data of the inventory selector was loaded
          * successfully. The method displays the data and rewrites links.
          *
-         * @param {String} html the HTML content retrieved from the server
-         * @param {String} type the type of inventory items which are to load;
-         *                      possible values are "products" and "services"
-         * @param {Number} pos  the zero-based index of the row in which the
-         *                      selected inventory item is to place
+         * @param {String} html     the HTML content retrieved from the server
+         * @param {String} type     the type of inventory items which are to
+         *                          load; possible values are "products" and
+         *                          "services"
+         * @param {Number} index    the zero-based index of the input controls
+         *                          which are to fill with the selected
+         *                          inventory item is to place
+         * @private
          */
-        _onLoadInventorySelector: function (html, type, pos) {
+        _onLoadInventorySelector: function (html, type, index) {
             var $form,
                 $selector,
                 getData = function () {
@@ -644,11 +781,11 @@
                         $target = $(target);
                         if ($target.hasClass("select-link")) {
                             this._retrieveInventoryItem(
-                                type, $target.attr("href"), pos
+                                type, $target.attr("href"), index
                             );
                         } else {
                             this._loadInventorySelector(
-                                type, $target.attr("href"), pos, getData()
+                                type, $target.attr("href"), index, getData()
                             );
                         }
                         return false;
@@ -659,7 +796,7 @@
             $form.submit($.proxy(
                 function (e) {
                     this._loadInventorySelector(
-                        type, e.target.action, pos, getData()
+                        type, e.target.action, index, getData()
                     );
                     return false;
                 },
@@ -670,6 +807,76 @@
         },
 
         /**
+         * Called if the form is to submit. The method removes empty rows from
+         * the invoicing items table and re-indexes the input controls in order
+         * to prevent gaps in the indices.
+         *
+         * @private
+         */
+        _onSubmit: function () {
+            var b,
+                del,
+                e,
+                elems = this._form.elements,
+                fieldName,
+                fieldNames = InvoicingItems.INPUT_FIELD_NAMES,
+                i = 0,
+                input,
+                j,
+                name,
+                newName,
+                n = fieldNames.length,
+                val,
+                x;
+
+            while (i < this._nextIndex) {
+                name = this._getInputName(i);
+
+                del = true;
+                for (x = -1; ++x < n; ) {
+                    fieldName = fieldNames[x];
+                    e = elems[name + fieldName];
+                    if (e) {
+                        val = e.value;
+                        b = val === "";
+                        if ((fieldName === "id")
+                            || (fieldName === "quantity")
+                            || (fieldName === "unitPrice")
+                            || (fieldName === "tax"))
+                        {
+                            b = b || $.parseNumber(val) === 0;
+                        } else if (fieldName === "number") {
+                            input = e;
+                        }
+                        del = del && b;
+                        if (!del) {
+                            break;
+                        }
+                    }
+                }
+
+                if (del) {
+                    this._removeRow($(input).parents("tr"));
+                    for (j = i; ++j < this._nextIndex; ) {
+                        name = this._getInputName(j);
+                        newName = this._getInputName(j - 1);
+                        for (x = -1; ++x < n; ) {
+                            fieldName = fieldNames[x];
+                            e = elems[name + fieldName];
+                            if (e) {
+                                e.name = newName + fieldName;
+                            }
+                        }
+                    }
+                    --this._nextIndex;
+                } else {
+                    ++i;
+                }
+            }
+            return false;
+        },
+
+        /**
          * Removes the invoicing item which belongs to the given anchor.
          *
          * @param {JQueryObject} $a the link anchor which was clicked to remove
@@ -677,33 +884,42 @@
          * @private
          */
         _removeInvoicingItem: function ($a) {
-            var instance = this;
+            var numRows;
 
-            $a.parents("tr")
-                .each(function () {
-                    var $this = $(this),
-                        el,
-                        pos;
+            numRows = this._$tbodyItems
+                .find("tr")
+                .size();
+            if (numRows > 1) {
+                this._removeRow($a.parents("tr"));
+            }
+        },
 
-                    /* obtain current row position */
-                    pos = $this.parent()
-                        .children()
-                        .index($this);
+        /**
+         * Removes the given row containing an invoicing item and changes the
+         * ID values.
+         *
+         * @param {JQueryObject} $tr    the row containing the invoicing item
+         *                              which is to delete
+         * @private
+         */
+        _removeRow: function ($tr) {
+            var el,
+                index = this._getRowIndex($tr),
+                pos = this._getRowPosition($tr);
 
-                    /* unset the ID value to cause Grails delete the record */
-                    el = instance.form
-                        .elements["items[" + String(pos) + "].id"];
-                    if (el) {
-                        el.value = "null";
-                    }
+            /* unset the ID value to cause Grails delete the record */
+            el = this._getInput(index, "id");
+            if (el) {
+                el.value = "null";
+            }
 
-                    /* fix row position labels of all successing rows */
-                    $this.nextAll()
-                        .each(function (i) {
-                            $(this).find("td:first-child")
-                                .text(String(pos + i + 1) + ".");
-                        });
-                })
+            /* fix row position labels of all successing rows */
+            $tr.nextAll()
+                    .each(function (i) {
+                        $(this).find("td:first-child")
+                            .text(String(pos + i + 1) + ".");
+                    })
+                .end()
                 .remove();
         },
 
@@ -711,30 +927,32 @@
          * Retrieves an inventory item (product, service etc.) from the server
          * and places it in the table row with the given position.
          *
-         * @param {String} type the type of inventory item which is to load;
-         *                      possible values are "products" and "services"
-         * @param {String} url  the URL used to load the inventory item
-         * @param {Number} pos  the zero-based index of the row in which the
-         *                      selected inventory item is to place
+         * @param {String} type     the type of inventory item which is to
+         *                          load; possible values are "products" and
+         *                          "services"
+         * @param {String} url      the URL used to load the inventory item
+         * @param {Number} index    the zero-based index of the input controls
+         *                          in which the selected inventory item data
+         *                          are to fill in
          * @private
          */
-        _retrieveInventoryItem: function (type, url, pos) {
+        _retrieveInventoryItem: function (type, url, index) {
             $.ajax({
                 url: url,
-                context: { invoicingItems: this, type: type, pos: pos },
+                context: { invoicingItems: this, type: type, index: index },
                 dataType: "json",
                 success: function (data) {
                     var els,
                         instance = this.invoicingItems,
                         item,
                         prefix,
-                        pos = this.pos,
+                        index = this.index,
                         qty,
                         type = this.type,
                         unitPrice,
                         unitPriceInput;
 
-                    prefix = "items[" + pos + "].";
+                    prefix = instance._getInputName(index);
                     els = instance._form.elements;
                     els[prefix + "number"].value = data.fullNumber;
                     item = data.inventoryItem;
@@ -771,20 +989,63 @@
          * @protected
          */
         _showInventorySelector: function ($a, type, url) {
-            var $tr,
-                pos;
+            var index;
 
-            $tr = $a.parents("tr");
-            pos = $tr.parent()
-                .children()
-                .index($tr);
             if (!url) {
                 url = (type === "products") ? this._productListUrl
                         : this._serviceListUrl;
             }
             if (url) {
-                this._loadInventorySelector(type, url, pos);
+                index = this._getRowIndex($a.parents("tr"));
+                this._loadInventorySelector(type, url, index);
             }
+        },
+
+        /**
+         * Swaps the positional names of the input controls of both the given
+         * rows.
+         *
+         * @param {JQueryObject} $tr        the table row to swap
+         * @param {JQueryObject} $destTr    the table row to swap with
+         * @protected
+         */
+        _swapInputItemPos: function($tr, $destTr) {
+            var destIndex,
+                f,
+                form = this._form,
+                index;
+
+            index = this._getRowIndex($tr);
+            destIndex = this._getRowIndex($destTr);
+
+            f = function (name, newName) {
+                var el,
+                    elems = form.elements,
+                    fieldName,
+                    fieldNames = InvoicingItems.INPUT_FIELD_NAMES,
+                    i = -1,
+                    n = fieldNames.length;
+
+                while (++i < n) {
+                    fieldName = fieldNames[i];
+                    el = elems[name + fieldName];
+                    if (el) {
+                        el.name = newName + fieldName;
+                    }
+                }
+            };
+            f(
+                this._getInputName(index),
+                this._getInputName(destIndex, "", "-dest")
+            );
+            f(
+                this._getInputName(destIndex),
+                this._getInputName(index)
+            );
+            f(
+                this._getInputName(destIndex, "", "-dest"),
+                this._getInputName(destIndex)
+            );
         }
     };
 
@@ -812,64 +1073,6 @@
         if (!found) {
             taxRates.push({ taxRate: taxRate, tax: tax });
         }
-    };
-
-    /**
-     * Swaps the positional names of the input controls of the row with the
-     * given position and the preceding or following row, depending on the
-     * given direction.
-     *
-     * @name                InvoicingItems#_swapInputItemPos
-     * @param {Number} pos  the zero-based position of the item to move
-     * @param {Number} dir  the direction to move the item; must be either -1
-     *                      or 1
-     * @protected
-     */
-    InvoicingItems._swapInputItemPos = function(pos, dir) {
-        var destPos = pos + dir,
-
-            /** @ignore */
-            f = function (el, name, pos) {
-                var $el = $(el),
-                    parts;
-
-                parts = $el.attr("name")
-                    .match(/^items(?:-dest)?\[\d+\]\.(\w+)$/);
-                $el.attr("name", name + "[" + String(pos) + "]." + parts[1]);
-            };
-
-        $(':input[name^="items[' + String(pos) + ']."]').each(function () {
-                f(this, "items-dest", destPos);
-            });
-        $(':input[name^="items[' + String(destPos) + ']."]').each(function () {
-                f(this, "items", pos);
-            });
-        $(':input[name^="items-dest[' + String(destPos) + ']."]')
-            .each(function () {
-                f(this, "items", destPos);
-            });
-    };
-
-    /**
-     * Swaps the position label of the item in the given table row with the
-     * one of the given destination table row. The position label is stored
-     * in the first cell of the table rows.
-     *
-     * @name                            InvoicingItems#_swapItemPos
-     * @param {JQueryObject} $tr        the table row to swap
-     * @param {JQueryObject} $destTr    the table row to swap with
-     * @protected
-     */
-    InvoicingItems._swapItemPos = function ($tr, $destTr) {
-        var $destTd,
-            $td,
-            s;
-
-        $td = $tr.find("td:first-child");
-        $destTd = $destTr.find("td:first-child");
-        s = $td.text();
-        $td.text($destTd.text());
-        $destTd.text(s);
     };
 
     SPRINGCRM.InvoicingItems = InvoicingItems;
