@@ -59,9 +59,9 @@
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:2]"><g:message code="organization.vendors" default="Vendors" /></g:link></li></g:ifModuleAllowed>
         <li><hr /></li>
-        <!--<li><a href="#">Preislisten</a></li>
-        <li><a href="#">Einkaufsbestellungen</a></li>
-        <li><hr /></li>-->
+        <!--<li><a href="#">Preislisten</a></li>-->
+        <g:ifModuleAllowed modules="purchaseInvoice"><li><g:link controller="purchaseInvoice"><g:message code="purchaseInvoice.plural" /></g:link></li>
+        <li><hr /></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="quote"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li></g:ifModuleAllowed>

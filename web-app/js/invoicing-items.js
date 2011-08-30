@@ -43,20 +43,22 @@
      *                                          invoicing items list
      * @param {String} config.baseName          the base name used to generate
      *                                          the table ID and form name
-     * @param {String} config.tableId           the ID of the table containing
+     * @param {String} [config.tableId]         the ID of the table containing
      *                                          the invoicing items; defaults
      *                                          to "{baseName}-items"
-     * @param {String} config.formName          the name of the form containing
+     * @param {String} [config.formName]        the name of the form containing
      *                                          the invoicing items; defaults
      *                                          to "{baseName}-form"
+     * @param {String} [config.fieldName]       the base name of the input
+     *                                          fields; defaults to "items"
      * @param {String} config.imgPath           the base path to the folder
      *                                          containing the images which are
      *                                          used for rendering the
      *                                          invoicing items
-     * @param {String} config.productListUrl    the URL used to retrieve the
+     * @param {String} [config.productListUrl]  the URL used to retrieve the
      *                                          products of the CRM; if unset
      *                                          no link is displayed
-     * @param {String} config.serviceListUrl    the URL used to retrieve the
+     * @param {String} [config.serviceListUrl]  the URL used to retrieve the
      *                                          services of the CRM; if unset
      *                                          no link is displayed
      */
@@ -70,6 +72,13 @@
 
 
         //-- Instance variables -----------------
+
+        /**
+         * The base name used to generate various names.
+         *
+         * @type String
+         */
+        this._baseName = config.baseName;
 
         /**
          * The ID of the table containing the invoicing items.
@@ -107,6 +116,15 @@
          * @type Object
          */
         this._form = window.document.forms[formName];
+
+        /**
+         * The base name of the input controls of the invoicing items in the
+         * form.
+         *
+         * @type String
+         * @default "items"
+         */
+        this._fieldName = config.fieldName || "items";
 
         /**
          * The next index to use when adding new invoicing items.
@@ -195,6 +213,15 @@
         this._$total = $("#invoicing-items-total");
 
         /**
+         * The regular expression which is used to obtain the row index and the
+         * input field name.
+         *
+         * @type RegExp
+         */
+        this._inputRegExp =
+            new RegExp("^" + this._fieldName + "\\[(\\d+)\\]\\.(\\w+)$");
+
+        /**
          * The currently computed subtotal net value.
          *
          * @type Number
@@ -271,7 +298,7 @@
 
             numItems = this._$tbodyItems.find("tr").length;
             this._nextIndex = numItems;
-//            $(this._form).submit($.proxy(this._onSubmit, this));
+            $(this._form).submit($.proxy(this._onSubmit, this));
             this._$table
                 .click($.proxy(this._onClick, this))
                 .change($.proxy(this._onChange, this))
@@ -464,18 +491,19 @@
             for (i = -1, n = taxRates.length; ++i < n; ) {
                 tr = taxRates[i];
                 taxTotal += tr.tax;
-                s += '<tr class="tax-rate-sum"><td headers="quote-items-name" ' +
+                s += '<tr class="tax-rate-sum"><td headers="' +
+                    this._baseName + '-items-name" ' +
                     'colspan="5" class="invoicing-items-label"><label>' +
                     gm("taxRateLabel").replace(
                         /\{0\}/, $.formatNumber(tr.taxRate, 1)
                     ) +
-                    '</label></td>' +
-                    '<td headers="quote-items-unitPrice"></td>' +
-                    '<td headers="quote-items-total" class="invoicing-items-total">' +
+                    '</label></td><td headers="' + this._baseName +
+                    '-items-unitPrice"></td>' +
+                    '<td headers="' + this._baseName +
+                    '-items-total" class="invoicing-items-total">' +
                     $.formatCurrency(tr.tax) + '&nbsp;€</td>' +
-                    '<td headers="quote-items-tax"></td>' +
-                    '<td></td>' +
-                    '</tr>';
+                    '<td headers="' + this._baseName +
+                    '-items-tax"></td><td></td></tr>';
             }
             $(".tax-rate-sum").remove();
             $("tfoot tr:first").after(s);
@@ -503,7 +531,7 @@
         _getInputIndexAndName: function (input) {
             var parts;
 
-            parts = input.name.match(/^items\[(\d+)\]\.(\w+)$/);
+            parts = input.name.match(this._inputRegExp);
             if (parts) {
                 parts.shift();
                 return parts;
@@ -538,7 +566,7 @@
          * @protected
          */
         _getInputName: function (index, name, suffix) {
-            return "items" + (suffix || "") + "[" + index + "]." +
+            return this._fieldName + (suffix || "") + "[" + index + "]." +
                 (name || "");
         },
 
@@ -649,8 +677,9 @@
                 qty,
                 unitPrice;
 
-            parts = this._getInputIndexAndName(input.name);
+            parts = this._getInputIndexAndName(input);
             if (parts) {
+                console.dir(parts);
                 index = parts[0];
                 $tr = $(input).parents("tr");
                 switch (parts[1]) {
@@ -873,7 +902,7 @@
                     ++i;
                 }
             }
-            return false;
+            return true;
         },
 
         /**

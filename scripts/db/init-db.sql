@@ -156,6 +156,13 @@ VALUES
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES
+  (2100, 0, 'eingegangen', 10, 'org.amcworld.springcrm.PurchaseInvoiceStage'),
+  (2101, 0, 'geprüft', 20, 'org.amcworld.springcrm.PurchaseInvoiceStage'),
+  (2102, 0, 'bezahlt', 30, 'org.amcworld.springcrm.PurchaseInvoiceStage'),
+  (2103, 0, 'zurückgewiesen', 40, 'org.amcworld.springcrm.PurchaseInvoiceStage');
+
+INSERT INTO sel_value (id, version, name, order_id, class)
+VALUES
 	(3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory'),
 	(3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory');
 
