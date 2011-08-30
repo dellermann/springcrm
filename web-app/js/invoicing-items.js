@@ -920,6 +920,7 @@
                 .size();
             if (numRows > 1) {
                 this._removeRow($a.parents("tr"));
+                this._computeFooterValues();
             }
         },
 
