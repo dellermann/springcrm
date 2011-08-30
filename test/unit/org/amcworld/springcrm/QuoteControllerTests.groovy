@@ -5,7 +5,7 @@ import grails.test.*
 import org.springframework.transaction.TransactionStatus
 
 class QuoteControllerTests extends ControllerUnitTestCase {
-	
+
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
@@ -36,7 +36,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.index()
 		assertEquals 'list', controller.redirectArgs['action']
     }
-	
+
 	void testList() {
 		def map = controller.list()
 		assertEquals 2, map.quoteInstanceTotal
@@ -44,7 +44,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 'Quote 1', map.quoteInstanceList[0].subject
 		assertEquals 'Quote 2', map.quoteInstanceList[1].subject
 	}
-	
+
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.quoteInstance
@@ -55,7 +55,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.params.number = 10010
 		controller.params.subject = 'Quote 3'
 		controller.params.organization = new Organization()
-		controller.params.quoteDate = new Date()
+		controller.params.docDate = new Date()
 		controller.params.headerText = 'Test'
 		controller.params.stage = new QuoteStage()
 		controller.save()
@@ -64,12 +64,12 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		SeqNumber seqNumber = SeqNumber.findByControllerName('quote')
 		assertEquals 10003, seqNumber.nextNumber
 	}
-	
+
 	void testSaveFailed() {
 		controller.params.number = 10001
 		controller.params.subject = ''
 		controller.params.organization = new Organization()
-		controller.params.quoteDate = new Date()
+		controller.params.docDate = new Date()
 		controller.params.headerText = 'Test'
 		controller.params.stage = new QuoteStage()
 		def map = controller.save()
@@ -77,7 +77,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 'unique', map.quoteInstance.errors['number']
 		assertEquals 'blank', map.quoteInstance.errors['subject']
 	}
-	
+
 	void testShow() {
 		controller.params.id = 2
 		def map = controller.show()
@@ -88,7 +88,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testEdit() {
 		controller.params.id = 1
 		def map = controller.edit()
@@ -99,13 +99,13 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testUpdate() {
 		controller.params.id = 1
 		controller.params.number = 10000
 		controller.params.subject = 'Quote 3'
 		controller.params.organization = new Organization()
-		controller.params.quoteDate = new Date()
+		controller.params.docDate = new Date()
 		controller.params.headerText = 'Test'
 		controller.params.stage = new QuoteStage()
 		controller.update()
@@ -113,10 +113,10 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 2, Quote.count()
 		SeqNumber seqNumber = SeqNumber.findByControllerName('quote')
 		assertEquals 10002, seqNumber.nextNumber
-		def org = Quote.get(1)
-		assertEquals 10000, org.number
-		assertEquals 'Quote 3', org.subject
-		assertEquals 'Test', org.headerText
+		def quote = Quote.get(1)
+		assertEquals 10000, quote.number
+		assertEquals 'Quote 3', quote.subject
+		assertEquals 'Test', quote.headerText
 		
 		controller.params.subject = ''
 		def map = controller.update()
@@ -128,7 +128,35 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
+//	void testUpdateItems() {
+//		controller.params.id = 1
+//		controller.params.number = 10000
+//		controller.params.subject = 'Quote 3'
+//		controller.params.organization = new Organization()
+//		controller.params.docDate = new Date()
+//		controller.params.headerText = 'Test'
+//		controller.params.stage = new QuoteStage()
+//		controller.params.'items.size' = 1
+//		controller.params['items[0].number'] = 'S-10002'
+//		controller.params['items[0].amount'] = 3
+//		controller.params['items[0].unit'] = 'Pieces'
+//		controller.params['items[0].name'] = 'Test entry'
+//		controller.params['items[0].unitPrice'] = 60
+//		controller.params['items[0].tax'] = 19
+//		controller.update()
+//		assertEquals 'show', controller.redirectArgs['action']
+//		assertEquals 2, Quote.count()
+//		def quote = Quote.get(1)
+//		assertNotNull quote.items
+//		assertEquals 1, quote.items.length
+//		assertEquals 'S-10002', quote.items[0].number
+//		assertEquals 3, quote.items[0].amount
+//		assertEquals 'Test entry', quote.items[0].name
+//		assertEquals 60, quote.items[0].unitPrice
+//		assertEquals 180, quote.items[0].total
+//	}
+
 	void testDelete() {
 		controller.params.id = 1
 		controller.delete()
