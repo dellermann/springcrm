@@ -42,7 +42,7 @@
           <td><input type="checkbox" id="quote-multop-${quoteInstance.id}" class="multop-sel-item" /></td>
           <td><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
           <td><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
-          <td>${fieldValue(bean: quoteInstance, field: "organization")}</td>
+          <td><g:link controller="organization" action="show" id="${quoteInstance.organization?.id}">${fieldValue(bean: quoteInstance, field: "organization")}</g:link></td>
           <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
           <td>${formatDate(date: quoteInstance?.docDate, type: 'date')}</td>
           <td>${formatDate(date: quoteInstance?.shippingDate, type: 'date')}</td>
