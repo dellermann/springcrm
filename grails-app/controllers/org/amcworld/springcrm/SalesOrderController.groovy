@@ -74,6 +74,24 @@ class SalesOrderController {
                 }
             }
             salesOrderInstance.properties = params
+
+			/*
+			 * XXX 	This code is necessary because the default implementation
+			 * 		in Grails does not work. Either data binding or saving does
+			 * 		not work correctly if items were deleted and gaps in the
+			 * 		indices occurred (e. g. 0, 1, null, null, 4) or the items
+			 * 		were re-ordered. Then I observed cluttering in saved data
+			 * 		columns.
+			 * 		The following lines do not make me happy but they work. In
+			 * 		future, this problem may be fixed in Grails so we can
+			 * 		remove these lines.
+			 */
+			salesOrderInstance.items?.clear()
+			for (int i = 0; params."items[${i}]"; i++) {
+				if (params."items[${i}]".id != 'null') {
+					salesOrderInstance.addToItems(params."items[${i}]")
+				}
+			}
             if (!salesOrderInstance.hasErrors() && salesOrderInstance.save(flush: true)) {
 				salesOrderInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
