@@ -1,11 +1,7 @@
 package org.amcworld.springcrm
 
-import net.sf.jmimemagic.Magic;
-
-import com.google.gdata.client.contacts.ContactsService
-import com.google.gdata.client.http.AuthSubUtil
-import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.extensions.*
+import net.sf.jmimemagic.Magic
 
 class PersonController {
 
@@ -85,7 +81,7 @@ class PersonController {
             personInstance.properties = params
 			if (params.pictureRemove == '1') {
 				personInstance.picture = null;
-			} else if (params.picture.isEmpty()) {
+			} else if (params.picture?.isEmpty()) {
 				personInstance.picture = picture
 			}
             if (!personInstance.hasErrors() && personInstance.save(flush: true)) {
