@@ -34,8 +34,10 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><g:link controller="call" action="create" params="['organization.id':organizationInstance?.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link></li>
+      <g:if test="${organizationInstance.isCustomer()}">
       <li><g:link controller="quote" action="create" params="['organization.id':organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link></li>
       <li><g:link controller="invoice" action="create" params="['organization.id':organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link></li>
+      </g:if>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -278,6 +280,7 @@
         </div>
       </div>
 
+      <g:if test="${organizationInstance.isCustomer()}">
       <g:ifModuleAllowed modules="quote">
       <div class="fieldset">
         <div class="header-with-menu">
@@ -433,6 +436,61 @@
         </div>
       </div>
       </g:ifModuleAllowed>
+      </g:if>
+
+      <g:if test="${organizationInstance.isVendor()}">
+      <g:ifModuleAllowed modules="purchaseInvoice">
+      <div class="fieldset">
+        <div class="header-with-menu">
+          <h4><g:message code="purchaseInvoice.plural" /></h4>
+          <div class="menu">
+            <g:link controller="purchaseInvoice" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'purchaseInvoice.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content">
+          <g:if test="${organizationInstance.purchaseInvoices}">
+          <table class="content-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="purchaseInvoice-multop-sel" class="multop-sel" /></th>
+                <g:sortableColumn property="number" title="${message(code: 'purchaseInvoice.number.label', default: 'Number')}" />
+                <g:sortableColumn property="subject" title="${message(code: 'purchaseInvoice.subject.label', default: 'Subject')}" />
+                <g:sortableColumn property="docDate" title="${message(code: 'purchaseInvoice.docDate.label', default: 'Date')}" />
+                <g:sortableColumn property="dueDate" title="${message(code: 'purchaseInvoice.dueDate.label', default: 'Due date')}" />
+                <g:sortableColumn property="stage" title="${message(code: 'purchaseInvoice.stage.label', default: 'Stage')}" />
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            <g:each in="${organizationInstance.purchaseInvoices}" status="i" var="purchaseInvoiceInstance">
+              <tr>
+                <td><input type="checkbox" id="invoice-multop-${purchaseInvoiceInstance.id}" class="multop-sel-item" /></td>
+                <td><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</g:link></td>
+                <td><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</g:link></td>
+                <td>${formatDate(date: purchaseInvoiceInstance?.docDate, type: 'date')}</td>
+                <td>${formatDate(date: purchaseInvoiceInstance?.dueDate, type: 'date')}</td>
+                <td>${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
+                <td>
+                  <g:link controller="purchaseInvoice" action="edit" id="${purchaseInvoiceInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="purchaseInvoice" action="delete" id="${purchaseInvoiceInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                </td>
+              </tr>
+            </g:each>
+            </tbody>
+          </table>
+          <div class="paginator">
+            <g:paginate total="${organizationInstance.purchaseInvoices.size()}" />
+          </div>
+          </g:if>
+          <g:else>
+            <div class="empty-list-inline">
+              <p><g:message code="default.list.empty" /></p>
+            </div>
+          </g:else>
+        </div>
+      </div>
+      </g:ifModuleAllowed>
+      </g:if>
 
       <g:ifModuleAllowed modules="call">
       <div class="fieldset">

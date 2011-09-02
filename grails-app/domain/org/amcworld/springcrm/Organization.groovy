@@ -36,7 +36,8 @@ class Organization {
     }
     static hasMany = [
 		persons:Person, calls:Call, noteEntries:Note, quotes:Quote,
-		salesOrders:SalesOrder, invoices:Invoice
+		salesOrders:SalesOrder, invoices:Invoice,
+		purchaseInvoices:PurchaseInvoice
 	]
 	static mapping = {
 		calls column:'Organization'
@@ -45,7 +46,8 @@ class Organization {
 	}
 	static searchable = true
 	static transients = [
-		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr'
+		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr', 'customer',
+		'vendor'
 	]
 
 	def seqNumberService
@@ -140,6 +142,14 @@ class Organization {
         }
         this.website = website
     }
+
+	boolean isCustomer() {
+		return (this.recType & 1) != 0;
+	}
+	
+	boolean isVendor() {
+		return (this.recType & 2) != 0;
+	}
 
     String toString() {
         return name ?: ''
