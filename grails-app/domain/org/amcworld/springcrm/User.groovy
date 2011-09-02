@@ -20,6 +20,9 @@ class User {
 		dateCreated()
 		lastUpdated()
     }
+	static mapping = {
+		allowedModules type:'text'
+    }
 	static transients = [
 		'fullName', 'allowedModulesAsList', 'allowedControllers'
 	]

@@ -19,6 +19,7 @@ class Service {
     }
 	static mapping = {
 		sort 'number'
+		description type:'text'
     }
 	static searchable = true
 	static transients = ['fullNumber']

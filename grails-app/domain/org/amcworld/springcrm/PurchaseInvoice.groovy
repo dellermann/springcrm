@@ -27,6 +27,7 @@ class PurchaseInvoice {
 	static hasMany = [ items:PurchaseInvoiceItem ]
 	static mapping = {
 		items cascade:'all-delete-orphan'
+		notes type:'text'
 	}
 	static searchable = true
 	static transients = [

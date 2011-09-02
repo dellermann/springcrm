@@ -41,6 +41,7 @@ class Organization {
 	static mapping = {
 		calls column:'Organization'
 		sort 'name'
+		notes type:'text'
 	}
 	static searchable = true
 	static transients = [

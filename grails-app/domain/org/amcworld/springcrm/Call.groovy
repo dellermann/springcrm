@@ -19,6 +19,7 @@ class Call {
 	static mapping = {
 		sort start:'desc'
 		table 'phone_call'
+		notes type:'text'
     }
 	static searchable = true
 	

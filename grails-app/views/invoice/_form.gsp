@@ -550,7 +550,11 @@
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find', params:[type:1])}"
+            findUrl: "${createLink(controller:'organization', action:'find', params:[type:1])}",
+            onSelect: function () {
+                addrFields.loadFromOrganizationToLeft("billingAddr");
+                addrFields.loadFromOrganizationToRight("shippingAddr");
+            }
         })
         .init();
     new SPRINGCRM.FixedSelAutocomplete({

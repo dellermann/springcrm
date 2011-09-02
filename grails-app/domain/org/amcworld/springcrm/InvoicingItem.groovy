@@ -12,6 +12,9 @@ class InvoicingItem {
 		unitPrice(scale:2, min:0.01)
 		tax(scale:1, min:0.0)
     }
+	static mapping = {
+		description type:'text'
+	}
 	static searchable = [only:['number', 'name', 'description']]
 	static transients = ['total']
 		

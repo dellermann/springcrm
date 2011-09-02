@@ -1,8 +1,8 @@
-#Tue Aug 23 16:36:11 CEST 2011
+#Fri Sep 02 11:48:33 CEST 2011
 DELEGATES_PREFERENCE=delegateValidatorList
 USER_BUILD_PREFERENCE=enabledBuildValidatorListorg.eclipse.wst.wsi.ui.internal.WSIMessageValidator;
 USER_MANUAL_PREFERENCE=enabledManualValidatorListorg.eclipse.wst.wsi.ui.internal.WSIMessageValidator;
-USER_PREFERENCE=overrideGlobalPreferencestruedisableAllValidationfalseversion1.2.201.v201101270100
+USER_PREFERENCE=overrideGlobalPreferencestruedisableAllValidationfalseversion1.2.300.v201104190230
 eclipse.preferences.version=1
 override=true
 suspend=false

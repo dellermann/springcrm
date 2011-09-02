@@ -27,7 +27,7 @@
 
     "use strict";
 
-    var InvoicingItems;
+    var InvoicingItems = null;
 
 
     //== Classes ================================
@@ -679,7 +679,6 @@
 
             parts = this._getInputIndexAndName(input);
             if (parts) {
-                console.dir(parts);
                 index = parts[0];
                 $tr = $(input).parents("tr");
                 switch (parts[1]) {
@@ -782,7 +781,7 @@
          * @private
          */
         _onLoadInventorySelector: function (html, type, index) {
-            var $form,
+            var $form = null,
                 $selector,
                 getData = function () {
                     var data = null,
@@ -850,7 +849,7 @@
                 fieldName,
                 fieldNames = InvoicingItems.INPUT_FIELD_NAMES,
                 i = 0,
-                input,
+                input = null,
                 j,
                 name,
                 newName,

@@ -43,6 +43,8 @@ class InvoicingTransaction {
 	]
 	static mapping = {
 		items cascade:'all-delete-orphan'
+		headerText type:'text'
+		footerText type:'text'
 	}
 	static searchable = true
 	static transients = [

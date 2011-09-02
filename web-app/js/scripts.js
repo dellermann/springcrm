@@ -27,11 +27,11 @@
 
     "use strict";
 
-    var AddrFields,
-        FixedSelAutocomplete,
-        LightBox,
-        Page,
-        page;
+    var AddrFields = null,
+        FixedSelAutocomplete = null,
+        LightBox = null,
+        Page = null,
+        page = null;
 
 
     //== Classes ================================
@@ -169,7 +169,7 @@
                     selectOtherMonths: true, showButtonPanel: true,
                     showOtherMonths: true
                 });
-            $(".date-input-time")
+            $(".date-input-time").change(this._onChangeDateInput)
                 .autocomplete({ source: this._timeValues });
             $("#spinner").click(function () {
                 $(this).css("display", "none");
@@ -374,6 +374,10 @@
      *                                      sent to the server. If this is a
      *                                      function it will be called to
      *                                      produce additional parameters.
+     * @param {Function} [config.onSelect]  a function which is called when the
+     *                                      user selects an item. The function
+     *                                      gets two parameters: the value and
+     *                                      the label of the selected item.
      * @returns {Object}                    the generated autocomplete field
      *                                      object
      */
@@ -469,6 +473,15 @@
          * @default {}
          */
         this._parameters = config.parameters || {};
+
+        /**
+         * A function which is called when the user selects an item. The
+         * function gets two parameters: the value and the label of the
+         * selected item.
+         *
+         * @type Function
+         */
+        this._onSelectFunc = config.onSelect;
     };
 
     FixedSelAutocomplete.prototype = {
@@ -610,6 +623,10 @@
             s = item.value;
             this._oldValue = s;
             this._$valueInput.val(s);
+
+            if (this._onSelectFunc) {
+                this._onSelectFunc.call(this, item.value, item.label);
+            }
 
             return false;
         },

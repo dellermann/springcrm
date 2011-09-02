@@ -47,6 +47,7 @@ class Person {
 	static mapping = {
 		calls column:'Person'
 		sort 'lastName'
+		notes type:'text'
 	}
 	static searchable = true
 	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']
