@@ -16,7 +16,7 @@
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><a href="#" class="green" onclick="SPRINGCRM.submitForm('product-form'); return false;"><g:message code="default.button.save.label" /></a></li>
-        <li><g:link action="list" class="red"><g:message code="default.button.cancel.label" /></g:link></li>
+        <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
       </ul>
     </nav>
   </div>
@@ -28,7 +28,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${productInstance?.toString()}</h3>
-    <g:form name="product-form" action="update" method="post" >
+    <g:form name="product-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
       <g:hiddenField name="id" value="${productInstance?.id}" />
       <g:hiddenField name="version" value="${productInstance?.version}" />
       <g:render template="/product/form" />

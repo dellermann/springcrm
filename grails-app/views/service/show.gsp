@@ -22,6 +22,7 @@
     </nav>
   </div>
   <aside id="action-bar">
+    <!--
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><a href="#" class="button medium white">[Action button]</a></li>
@@ -29,6 +30,7 @@
       <li><a href="#" class="button medium white">[Action button]</a></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
+    -->
   </aside>
   <section id="content" class="with-action-bar">
     <g:if test="${flash.message}">
@@ -43,32 +45,32 @@
             <div class="row">
               <div class="label"><g:message code="service.number.label" default="Number" /></div>
               <div class="field">${fieldValue(bean: serviceInstance, field: "fullNumber")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="service.name.label" default="Name" /></div>
               <div class="field">${fieldValue(bean: serviceInstance, field: "name")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="service.category.label" default="Category" /></div>
               <div class="field">${serviceInstance?.category?.encodeAsHTML()}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="service.quantity.label" default="Quantity" /></div>
               <div class="field">${fieldValue(bean: serviceInstance, field: "quantity")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="service.unit.label" default="Unit" /></div>
               <div class="field">${serviceInstance?.unit?.encodeAsHTML()}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="service.unitPrice.label" default="Unit Price" /></div>
               <div class="field"><g:formatNumber number="${serviceInstance?.unitPrice}" minFractionDigits="2" /> €</div>
-			</div>
+            </div>
           </div>
           <div class="col col-r">
             <div class="row">

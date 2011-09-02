@@ -22,6 +22,7 @@
     </nav>
   </div>
   <aside id="action-bar">
+    <!--
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><a href="#" class="button medium white">[Action button]</a></li>
@@ -29,6 +30,7 @@
       <li><a href="#" class="button medium white">[Action button]</a></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
+    -->
   </aside>
   <section id="content" class="with-action-bar">
     <g:if test="${flash.message}">
@@ -43,42 +45,42 @@
             <div class="row">
               <div class="label"><g:message code="product.number.label" default="Number" /></div>
               <div class="field">${fieldValue(bean: productInstance, field: "fullNumber")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.name.label" default="Name" /></div>
               <div class="field">${fieldValue(bean: productInstance, field: "name")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.category.label" default="Category" /></div>
               <div class="field">${productInstance?.category?.encodeAsHTML()}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.manufacturer.label" default="Manufacturer" /></div>
               <div class="field">${fieldValue(bean: productInstance, field: "manufacturer")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.retailer.label" default="Retailer" /></div>
               <div class="field">${fieldValue(bean: productInstance, field: "retailer")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.quantity.label" default="Quantity" /></div>
               <div class="field">${fieldValue(bean: productInstance, field: "quantity")}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.unit.label" default="Unit" /></div>
               <div class="field">${productInstance?.unit?.encodeAsHTML()}</div>
-			</div>
+            </div>
             
             <div class="row">
               <div class="label"><g:message code="product.unitPrice.label" default="Unit Price" /></div>
               <div class="field"><g:formatNumber number="${productInstance?.unitPrice}" minFractionDigits="2" /> €</div>
-			</div>
+            </div>
           </div>
           <div class="col col-r">
             <div class="row">

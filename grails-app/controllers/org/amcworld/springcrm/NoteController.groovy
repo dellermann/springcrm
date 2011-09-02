@@ -32,7 +32,11 @@ class NoteController {
 			seqNumberService.stepFurther(Note)
 			noteInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])}"
-            redirect(action: 'show', id: noteInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'show', id: noteInstance.id)
+			}
         } else {
             render(view: 'create', model: [noteInstance: noteInstance])
         }
@@ -73,7 +77,11 @@ class NoteController {
             if (!noteInstance.hasErrors() && noteInstance.save(flush: true)) {
 				noteInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])}"
-                redirect(action: 'show', id: noteInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: noteInstance.id)
+				}
             } else {
                 render(view: 'edit', model: [noteInstance: noteInstance])
             }
@@ -89,14 +97,22 @@ class NoteController {
             try {
                 noteInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'note.label', default: 'Note')])}"
-                redirect(action: 'list')
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list')
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'note.label', default: 'Note')])}"
                 redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])}"
-            redirect(action: 'list')
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list')
+			}
         }
     }
 }

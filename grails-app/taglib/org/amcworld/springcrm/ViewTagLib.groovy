@@ -82,4 +82,70 @@ class ViewTagLib {
 		String s = (attrs.value ?: body()) ?: ''
 		out << s.replaceAll(/\r\n/, '<br />').replaceAll(/[\r\n]/, '<br />')
 	}
+
+	/**
+	 * Returns the URL of the current page including all request parameters.
+	 */
+	def url = { attrs, body ->
+		out << createLink(action:actionName, params:params)
+	}
+
+	/**
+	 * Creates a link to the former page (back link), if available, or creates
+	 * a link using the given attributes.
+	 * 
+	 * @attr action		the name of the action to use in the link, if not
+	 * 					specified the default action will be linked
+	 * @attr controller	the name of the controller to use in the link, if not
+	 * 					specified the current controller will be linked
+	 * @attr id 		the id to use in the link
+	 * @attr fragment	the link fragment (often called anchor tag) to use
+	 * @attr mapping	the named URL mapping to use to rewrite the link
+	 * @attr params		a map containing URL query parameters
+	 * @attr url		a map containing the action, controller, id etc.
+	 * @attr absolute	if set to "true" will prefix the link target address
+	 * 					with the value of the grails.serverURL property from
+	 * 					Config, or http://localhost:<port> if no value in
+	 * 					Config and not running in production.
+	 * @attr base		sets the prefix to be added to the link target address,
+	 * 					typically an absolute server URL. This overrides the
+	 * 					behaviour of the absolute property, if both are
+	 * 					specified.
+	 */
+	def backLink = { attrs, body ->
+		if (params.returnUrl) {
+			attrs.url = params.returnUrl
+		}
+		out << link(attrs, body)
+	}
+
+	/**
+	 * Returns the URL of the former page (back link), if available, or creates
+	 * the URL using the given attributes.
+	 * 
+	 * @attr action		the name of the action to use in the link, if not
+	 * 					specified the default action will be linked
+	 * @attr controller	the name of the controller to use in the link, if not
+	 * 					specified the current controller will be linked
+	 * @attr id 		the id to use in the link
+	 * @attr fragment	the link fragment (often called anchor tag) to use
+	 * @attr mapping	the named URL mapping to use to rewrite the link
+	 * @attr params		a map containing URL query parameters
+	 * @attr url		a map containing the action, controller, id etc.
+	 * @attr absolute	if set to "true" will prefix the link target address
+	 * 					with the value of the grails.serverURL property from
+	 * 					Config, or http://localhost:<port> if no value in
+	 * 					Config and not running in production.
+	 * @attr base		sets the prefix to be added to the link target address,
+	 * 					typically an absolute server URL. This overrides the
+	 * 					behaviour of the absolute property, if both are
+	 * 					specified.
+	 */
+	def createBackLink = { attrs, body ->
+		if (params.returnUrl) {
+			out << params.returnUrl
+		} else {
+			createLink(attrs, body)
+		}
+	}
 }

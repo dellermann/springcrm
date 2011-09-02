@@ -40,7 +40,11 @@ class PersonController {
 				ldapService.save(personInstance)
 			}
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
-            redirect(action: 'show', id: personInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+            	redirect(action: 'show', id: personInstance.id)
+			}
         } else {
             render(view: 'create', model: [personInstance: personInstance])
         }
@@ -90,7 +94,11 @@ class PersonController {
 					ldapService.save(personInstance)
 				}
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])}"
-                redirect(action: 'show', id: personInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: personInstance.id)
+				}
             } else {
                 render(view: 'edit', model: [personInstance: personInstance])
             }
@@ -112,14 +120,22 @@ class PersonController {
 					ldapService.delete(personInstance)
 				}
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])}"
-                redirect(action: 'list')
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list')
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])}"
                 redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
-            redirect(action: 'list')
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list')
+			}
         }
     }
 

@@ -22,6 +22,7 @@
     </nav>
   </div>
   <aside id="action-bar">
+    <!--
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><a href="#" class="button medium white">[Action button]</a></li>
@@ -29,6 +30,7 @@
       <li><a href="#" class="button medium white">[Action button]</a></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
+    -->
   </aside>
   <section id="content" class="with-action-bar">
     <g:if test="${flash.message}">

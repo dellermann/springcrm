@@ -36,7 +36,11 @@ class SalesOrderController {
 			seqNumberService.stepFurther(SalesOrder)
 			salesOrderInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
-            redirect(action: 'show', id: salesOrderInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'show', id: salesOrderInstance.id)
+			}
         } else {
             render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
         }
@@ -95,7 +99,11 @@ class SalesOrderController {
             if (!salesOrderInstance.hasErrors() && salesOrderInstance.save(flush: true)) {
 				salesOrderInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
-                redirect(action: 'show', id: salesOrderInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: salesOrderInstance.id)
+				}
             } else {
                 render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
             }
@@ -111,14 +119,22 @@ class SalesOrderController {
             try {
                 salesOrderInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])}"
-                redirect(action: 'list')
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list')
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])}"
                 redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
-            redirect(action: 'list')
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list')
+			}
         }
     }
 	

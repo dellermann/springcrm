@@ -58,7 +58,11 @@ class ServiceController {
 			seqNumberService.stepFurther(Service)
 			serviceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])}"
-            redirect(action: "show", id: serviceInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: "show", id: serviceInstance.id)
+			}
         } else {
             render(view: "create", model: [serviceInstance: serviceInstance])
         }
@@ -99,7 +103,11 @@ class ServiceController {
             if (!serviceInstance.hasErrors() && serviceInstance.save(flush: true)) {
 				serviceInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])}"
-                redirect(action: "show", id: serviceInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: "show", id: serviceInstance.id)
+				}
             } else {
                 render(view: "edit", model: [serviceInstance: serviceInstance])
             }
@@ -115,14 +123,22 @@ class ServiceController {
             try {
                 serviceInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'service.label', default: 'Service')])}"
-                redirect(action: "list")
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: "list")
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'service.label', default: 'Service')])}"
                 redirect(action: "show", id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])}"
-            redirect(action: "list")
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: "list")
+			}
         }
     }
 	

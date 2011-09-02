@@ -33,7 +33,11 @@ class PurchaseInvoiceController {
 			seqNumberService.stepFurther(Invoice)
 			purchaseInvoiceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])}"
-            redirect(action: 'show', id: purchaseInvoiceInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'show', id: purchaseInvoiceInstance.id)
+			}
         } else {
             render(view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
         }
@@ -104,7 +108,11 @@ class PurchaseInvoiceController {
             if (!purchaseInvoiceInstance.hasErrors() && purchaseInvoiceInstance.save(flush: true)) {
 				purchaseInvoiceInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])}"
-                redirect(action: 'show', id: purchaseInvoiceInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: purchaseInvoiceInstance.id)
+				}
             } else {
                 render(view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
             }
@@ -123,14 +131,22 @@ class PurchaseInvoiceController {
             try {
                 purchaseInvoiceInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])}"
-                redirect(action: 'list')
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list')
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])}"
                 redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])}"
-            redirect(action: 'list')
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list')
+			}
         }
     }
 

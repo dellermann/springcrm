@@ -44,7 +44,11 @@ class OrganizationController {
 			seqNumberService.stepFurther(Organization)
 			organizationInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
-            redirect(action: 'show', id: organizationInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'show', id: organizationInstance.id)
+			}
         } else {
             render(view: 'create', model: [organizationInstance: organizationInstance])
         }
@@ -85,7 +89,11 @@ class OrganizationController {
             if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
 				organizationInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
-                redirect(action: 'show', id: organizationInstance.id, params:[type:params.listType])
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: organizationInstance.id, params:[type:params.listType])
+				}
             } else {
                 render(view: 'edit', model: [organizationInstance: organizationInstance])
             }
@@ -101,14 +109,22 @@ class OrganizationController {
             try {
                 organizationInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
-                redirect(action: 'list', params:[type:params.type])
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list', params:[type:params.type])
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
                 redirect(action: 'show', id: params.id, params:[type:params.type])
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
-            redirect(action: 'list', params:[type:params.type])
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list', params:[type:params.type])
+			}
         }
     }
 	

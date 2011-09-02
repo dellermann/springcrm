@@ -16,7 +16,7 @@
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><a href="#" class="green" onclick="SPRINGCRM.submitForm('${domainClass.propertyName}-form'); return false;"><g:message code="default.button.save.label" /></a></li>
-        <li><g:link action="list" class="red"><g:message code="default.button.cancel.label" /></g:link></li>
+        <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
       </ul>
     </nav>
   </div>
@@ -28,7 +28,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3><g:message code="${domainClass.propertyName}.new.label" default="New \${entityName}" /></h3>
-    <g:form name="${domainClass.propertyName}-form" action="save" <%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
+    <g:form name="${domainClass.propertyName}-form" action="save" params="[returnUrl:params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
       <fieldset>
         <h4><g:message code="${domainClass.propertyName}.fieldset.general.label" /></h4>
         <div class="multicol-content">

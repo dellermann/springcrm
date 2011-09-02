@@ -28,7 +28,11 @@ class UserController {
         def userInstance = new User(params)
         if (userInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])}"
-            redirect(action: "show", id: userInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: "show", id: userInstance.id)
+			}
         } else {
             render(view: "create", model: [userInstance: userInstance])
         }
@@ -72,7 +76,11 @@ class UserController {
 			}
             if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])}"
-                redirect(action: "show", id: userInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: "show", id: userInstance.id)
+				}
             } else {
                 render(view: "edit", model: [userInstance: userInstance])
             }
@@ -88,14 +96,22 @@ class UserController {
             try {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User')])}"
-                redirect(action: "list")
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: "list")
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User')])}"
                 redirect(action: "show", id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
-            redirect(action: "list")
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: "list")
+			}
         }
     }
 	

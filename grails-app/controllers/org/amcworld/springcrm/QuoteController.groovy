@@ -30,7 +30,11 @@ class QuoteController {
 			seqNumberService.stepFurther(Quote)
 			quoteInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
-            redirect(action: 'show', id: quoteInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'show', id: quoteInstance.id)
+			}
         } else {
             render(view: 'create', model: [quoteInstance: quoteInstance])
         }
@@ -89,7 +93,11 @@ class QuoteController {
             if (!quoteInstance.hasErrors() && quoteInstance.save(flush: true)) {
 				quoteInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
-				redirect(action: 'show', id: quoteInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: quoteInstance.id)
+				}
             } else {
                 render(view: 'edit', model: [quoteInstance: quoteInstance])
             }
@@ -105,14 +113,22 @@ class QuoteController {
             try {
                 quoteInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])}"
-                redirect(action: 'list')
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list')
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])}"
                 redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
-            redirect(action: 'list')
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list')
+			}
         }
     }
 	

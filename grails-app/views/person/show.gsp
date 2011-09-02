@@ -245,7 +245,7 @@
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
-            <g:link controller="quote" action="create" params="['person.id':personInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
+            <g:link controller="quote" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content">
@@ -266,14 +266,14 @@
             <g:each in="${personInstance.quotes}" status="i" var="quoteInstance">
               <tr>
                 <td><input type="checkbox" id="salesOrder-multop-${quoteInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link controller="quote" action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link controller="quote" action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
+                <td><g:link controller="quote" action="show" id="${quoteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
+                <td><g:link controller="quote" action="show" id="${quoteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
                 <td>${formatDate(date: quoteInstance?.docDate, type: 'date')}</td>
                 <td>${formatDate(date: quoteInstance?.shippingDate, type: 'date')}</td>
                 <td>
-                  <g:link controller="quote" action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="quote" action="delete" id="${quoteInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                  <g:link controller="quote" action="edit" id="${quoteInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="quote" action="delete" id="${quoteInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
                 </td>
               </tr>
             </g:each>
@@ -297,7 +297,7 @@
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
-            <g:link controller="salesOrder" action="create" params="['person.id':personInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
+            <g:link controller="salesOrder" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content">
@@ -318,14 +318,14 @@
             <g:each in="${personInstance.salesOrders}" status="i" var="salesOrderInstance">
               <tr>
                 <td><input type="checkbox" id="salesOrder-multop-${salesOrderInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
+                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
+                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
                 <td>${formatDate(date: salesOrderInstance?.docDate, type: 'date')}</td>
                 <td>${formatDate(date: salesOrderInstance?.dueDate, type: 'date')}</td>
                 <td>
-                  <g:link controller="salesOrder" action="edit" id="${salesOrderInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="salesOrder" action="delete" id="${salesOrderInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                  <g:link controller="salesOrder" action="edit" id="${salesOrderInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="salesOrder" action="delete" id="${salesOrderInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
                 </td>
               </tr>
             </g:each>
@@ -349,7 +349,7 @@
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
-            <g:link controller="invoice" action="create" params="['person.id':personInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+            <g:link controller="invoice" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content">
@@ -370,14 +370,14 @@
             <g:each in="${personInstance.invoices}" status="i" var="invoiceInstance">
               <tr>
                 <td><input type="checkbox" id="invoice-multop-${invoiceInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
+                <td><g:link action="show" id="${invoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
+                <td><g:link action="show" id="${invoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
                 <td>${formatDate(date: invoiceInstance?.docDate, type: 'date')}</td>
                 <td>${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}</td>
                 <td>
-                  <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                  <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
                 </td>
               </tr>
             </g:each>
@@ -401,7 +401,7 @@
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
-            <g:link controller="call" action="create" params="['person.id':personInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
+            <g:link controller="call" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content">
@@ -421,13 +421,13 @@
             <g:each in="${personInstance.calls}" status="i" var="callInstance">
               <tr>
                 <td><input type="checkbox" id="call-multop-${callInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link action="show" id="${callInstance.id}">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
+                <td><g:link action="show" id="${callInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
                 <td><g:formatDate date="${callInstance.start}" style="SHORT" /></td>
                 <td><g:message code="call.type.${callInstance?.type}" /></td>
                 <td><g:message code="call.status.${callInstance?.status}" /></td>
                 <td>
-                  <g:link action="edit" id="${callInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link action="delete" id="${callInstance?.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                  <g:link action="edit" id="${callInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link action="delete" id="${callInstance?.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
                 </td>
               </tr>
             </g:each>
@@ -451,7 +451,7 @@
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">
-            <g:link controller="note" action="create" params="['person.id':personInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
+            <g:link controller="note" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content">
@@ -469,11 +469,11 @@
             <g:each in="${personInstance.noteEntries}" status="i" var="noteInstance">
               <tr>
                 <td><input type="checkbox" id="note-multop-${noteInstance.id}" class="multop-sel-item" /></td>
-                <td style="text-align: center;"><g:link controller="note" action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
+                <td style="text-align: center;"><g:link controller="note" action="show" id="${noteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link controller="note" action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "title")}</g:link></td>
                 <td>
-                  <g:link controller="note" action="edit" id="${noteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="note" action="delete" id="${noteInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+                  <g:link controller="note" action="edit" id="${noteInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+                  <g:link controller="note" action="delete" id="${noteInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
                 </td>
               </tr>
             </g:each>

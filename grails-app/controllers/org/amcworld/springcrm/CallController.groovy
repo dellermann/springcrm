@@ -34,7 +34,11 @@ class CallController {
         if (callInstance.save(flush: true)) {
 			callInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])}"
-            redirect(action: 'show', id: callInstance.id)
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'show', id: callInstance.id)
+			}
         } else {
             render(view: 'create', model: [callInstance: callInstance])
         }
@@ -75,7 +79,11 @@ class CallController {
             if (!callInstance.hasErrors() && callInstance.save(flush: true)) {
 				callInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])}"
-                redirect(action: 'show', id: callInstance.id)
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'show', id: callInstance.id)
+				}
             } else {
                 render(view: 'edit', model: [callInstance: callInstance])
             }
@@ -91,14 +99,22 @@ class CallController {
             try {
                 callInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])}"
-                redirect(action: 'list')
+				if (params.returnUrl) {
+					redirect(url:params.returnUrl)
+				} else {
+					redirect(action: 'list')
+				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])}"
                 redirect(action: 'show', id: params.id)
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])}"
-            redirect(action: 'list')
+			if (params.returnUrl) {
+				redirect(url:params.returnUrl)
+			} else {
+				redirect(action: 'list')
+			}
         }
     }
 }

@@ -22,6 +22,7 @@
     </nav>
   </div>
   <aside id="action-bar">
+    <!--
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><a href="#" class="button medium white">[Action button]</a></li>
@@ -29,6 +30,7 @@
       <li><a href="#" class="button medium white">[Action button]</a></li>
       <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
+    -->
   </aside>
   <section id="content" class="with-action-bar">
     <g:if test="${flash.message}">
@@ -43,19 +45,19 @@
             <div class="row">
               <div class="label"><g:message code="user.userName.label" default="User Name" /></div>
               <div class="field">${fieldValue(bean: userInstance, field: "userName")}</div>
-			      </div>
+            </div>
             <div class="row">
               <div class="label"><g:message code="user.password.label" default="Password" /></div>
               <div class="field">**********</div>
-			      </div>
+            </div>
             <div class="row">
               <div class="label"><g:message code="user.firstName.label" default="First Name" /></div>
               <div class="field">${fieldValue(bean: userInstance, field: "firstName")}</div>
-			      </div>
+            </div>
             <div class="row">
               <div class="label"><g:message code="user.lastName.label" default="Last Name" /></div>
               <div class="field">${fieldValue(bean: userInstance, field: "lastName")}</div>
-			      </div>
+            </div>
           </div>
           <div class="col col-r">
             <div class="row">
