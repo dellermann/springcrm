@@ -55,7 +55,12 @@
             <div class="row">
               <div class="label"><g:message code="purchaseInvoice.vendor.label" default="Vendor" /></div>
               <div class="field">
-                <g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendor?.encodeAsHTML()}</g:link>
+                <g:if test="${purchaseInvoiceInstance?.vendor}">
+                <g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:link>
+                </g:if>
+                <g:else>
+                ${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}
+                </g:else>
               </div>
             </div>
             

@@ -28,13 +28,13 @@
       
       <div class="row">
         <div class="label">
-          <label for="vendor"><g:message code="purchaseInvoice.vendor.label" default="Vendor" /></label>
+          <label for="vendorName"><g:message code="purchaseInvoice.vendor.label" default="Vendor" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'vendor', ' error')}">
-          <input type="text" id="vendor" value="${purchaseInvoiceInstance?.vendor?.name}" size="35" />
-          <input type="hidden" name="vendor.id" id="vendor-id" value="${purchaseInvoiceInstance?.vendor?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
-          <g:hasErrors bean="${purchaseInvoiceInstance}" field="vendor">
-            <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="vendor"><g:message error="${it}" /> </g:eachError></span>
+          <g:textField name="vendorName" value="${purchaseInvoiceInstance?.vendorName}" size="35" />
+          <g:hiddenField name="vendor.id" id="vendor-id" value="${purchaseInvoiceInstance?.vendor?.id}" />
+          <g:hasErrors bean="${purchaseInvoiceInstance}" field="vendorName">
+            <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="vendorName"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -299,11 +299,26 @@
 
     var a;
 
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "vendor",
-            findUrl: "${createLink(controller:'organization', action:'find', params:[type:2])}"
-        })
-        .init();
+    $("#vendorName").autocomplete({
+            select: function (event, ui) {
+                var item = ui.item;
+
+                $(event.target).val(item.label);
+                $("#vendor-id").val(item.value);
+                return false;
+            },
+            source: function (request, response) {
+                $.ajax({
+                    data: { name: request.term }, dataType: "json",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.name, value: item.id };
+                        }));
+                    },
+                    url: "${createLink(controller:'organization', action:'find', params:[type:2])}"
+                });
+            }
+        });
     new SPRINGCRM.InvoicingItems({
             baseName: "purchaseInvoice", imgPath: "${resource(dir: 'img')}"
         })

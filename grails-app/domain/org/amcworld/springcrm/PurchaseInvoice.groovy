@@ -7,7 +7,8 @@ class PurchaseInvoice {
     static constraints = {
 		number(blank:false, nullable:false)
 		subject(blank:false, nullable:false)
-		vendor()
+		vendor(nullable:true)
+		vendorName(blank:false, nullable:false)
 		docDate()
 		dueDate()
 		stage()
@@ -38,6 +39,7 @@ class PurchaseInvoice {
 	String number
 	String subject
 	Organization vendor
+	String vendorName
 	Date docDate = new Date()
 	Date dueDate
 	PurchaseInvoiceStage stage
