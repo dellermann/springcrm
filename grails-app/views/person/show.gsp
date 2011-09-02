@@ -401,7 +401,7 @@
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
-            <g:link controller="call" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
+            <g:link controller="call" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content">
