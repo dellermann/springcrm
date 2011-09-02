@@ -16,18 +16,6 @@
       
       <div class="row">
         <div class="label">
-          <label for="notes"><g:message code="call.notes.label" default="Notes" /></label>
-        </div>
-        <div class="field${hasErrors(bean: callInstance, field: 'notes', ' error')}">
-          <g:textArea name="notes" cols="35" rows="5" value="${callInstance?.notes}" /><br />
-          <g:hasErrors bean="${callInstance}" field="notes">
-            <span class="error-msg"><g:eachError bean="${callInstance}" field="notes"><g:message error="${it}" /> </g:eachError></span>
-          </g:hasErrors>
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="label">
           <label for="start"><g:message code="call.start.label" default="Start" /></label>
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'start', ' error')}">
@@ -104,6 +92,22 @@
             <span class="error-msg"><g:eachError bean="${callInstance}" field="status"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
+      </div>
+    </div>
+  </div>
+</fieldset>
+<fieldset>
+  <h4><g:message code="call.fieldset.notes.label" /></h4>
+  <div class="fieldset-content">
+    <div class="row">
+      <div class="label">
+        <label for="notes"><g:message code="call.notes.label" default="Notes" /></label>
+      </div>
+      <div class="field${hasErrors(bean: callInstance, field: 'notes', ' error')}">
+        <g:textArea name="notes" cols="80" rows="5" value="${callInstance?.notes}" /><br />
+        <g:hasErrors bean="${callInstance}" field="notes">
+          <span class="error-msg"><g:eachError bean="${callInstance}" field="notes"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
       </div>
     </div>
   </div>

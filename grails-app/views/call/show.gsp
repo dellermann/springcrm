@@ -48,11 +48,6 @@
 			      </div>
             
             <div class="row">
-              <div class="label"><g:message code="call.notes.label" default="Notes" /></div>
-              <div class="field">${nl2br(value: callInstance?.notes)}</div>
-			      </div>
-            
-            <div class="row">
               <div class="label"><g:message code="call.start.label" default="Start" /></div>
               <div class="field"><g:formatDate date="${callInstance?.start}" style="SHORT" /></div>
 			      </div>
@@ -88,6 +83,15 @@
               <div class="label"><g:message code="call.status.label" default="Status" /></div>
               <div class="field"><g:message code="call.status.${callInstance?.status}" /></div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="fieldset">
+        <h4><g:message code="call.fieldset.notes.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="call.notes.label" default="Notes" /></div>
+            <div class="field">${nl2br(value: callInstance?.notes)}</div>
           </div>
         </div>
       </div>
