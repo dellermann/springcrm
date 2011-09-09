@@ -519,7 +519,12 @@
 
     "use strict";
 
-    var addrFields;
+    var addrFields,
+        taxes,
+        units;
+    
+    taxes = [ <g:each in="${taxClasses}">${it.taxValue}, </g:each> ];
+    units = [ <g:each in="${units}">"${it.name}", </g:each> ];
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
@@ -546,7 +551,9 @@
     new SPRINGCRM.InvoicingItems({
             baseName: "sales-order", imgPath: "${resource(dir: 'img')}",
             productListUrl: "${createControllerLink(controller:'product', action:'selectorList')}",
-            serviceListUrl: "${createControllerLink(controller:'service', action:'selectorList')}"
+            serviceListUrl: "${createControllerLink(controller:'service', action:'selectorList')}",
+            units: units,
+            taxes: taxes
         })
         .init();
 

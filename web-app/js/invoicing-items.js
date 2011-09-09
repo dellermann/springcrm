@@ -61,6 +61,14 @@
      * @param {String} [config.serviceListUrl]  the URL used to retrieve the
      *                                          services of the CRM; if unset
      *                                          no link is displayed
+     * @param {Array} [config.units]            an array of available options
+     *                                          which are displayed as
+     *                                          autocomplete values when
+     *                                          entering a unit
+     * @param {Array} [config.taxes]            an array of available options
+     *                                          which are displayed as
+     *                                          autocomplete values when
+     *                                          entering a tax value
      */
     InvoicingItems = function InvoicingItems(config) {
         var formName = config.formName || config.baseName + "-form";
@@ -252,6 +260,22 @@
          * @default 0.0
          */
         this._total = 0.0;
+
+        /**
+         * An array of available options which are displayed as autocomplete
+         * values when entering a unit.
+         *
+         * @type Array
+         */
+        this._units = config.units;
+
+        /**
+         * An array of available options which are displayed as autocomplete
+         * values when entering a tax value.
+         *
+         * @type Array
+         */
+        this._taxes = this._prepareTaxes(config.taxes);
     };
 
     /**
@@ -313,6 +337,9 @@
                 ));
             if (numItems === 0) {
                 this._addInvoicingItem(false);
+            } else {
+                this._initUnitAutocomplete();
+                this._initTaxAutocomplete();
             }
             this._computeFooterValues();
         },
@@ -330,7 +357,8 @@
          * @protected
          */
         _addInvoicingItem: function (jumpToNewRow) {
-            var $tbody = this._$tbodyItems,
+            var $row,
+                $tbody = this._$tbodyItems,
                 gm = SPRINGCRM.getMessage,
                 imgPath = this._imgPath,
                 index = this._nextIndex++,
@@ -394,9 +422,17 @@
                 '<a href="javascript:void 0;" class="remove-btn"><img src="' +
                 imgPath + '/remove.png" alt="' + gm("removeBtn") + '" title="' +
                 gm("removeBtn") + '" width="16" height="16" /></a></td></tr>';
-            $tbody.append(s);
+            $row = $(s);
+            $row.appendTo($tbody);
+            this._initUnitAutocomplete(
+                $row.find(".invoicing-items-unit input")
+            );
+            this._initTaxAutocomplete(
+                $row.find(".invoicing-items-tax input")
+            );
             if (jumpToNewRow) {
-                $("html").scrollTop($tbody.find("tr:last").position().top);
+//                $("html").scrollTop($tbody.find("tr:last").position().top);
+                $("html").scrollTop($row.position().top);
             }
         },
 
@@ -605,6 +641,38 @@
             return $tr.parent()
                 .children()
                 .index($tr);
+        },
+
+        /**
+         * Initializes the given input or, if not set, all tax inputs with the
+         * predefined tax options.
+         *
+         * @param {JQueryObject} [$input]   the given input
+         * @protected
+         */
+        _initTaxAutocomplete: function ($input) {
+            if (this._taxes) {
+                if (!$input) {
+                    $input = $(".quote-items-tax input");
+                }
+                $input.autocomplete({ source: this._taxes });
+            }
+        },
+
+        /**
+         * Initializes the given input or, if not set, all unit inputs with the
+         * predefined unit options.
+         *
+         * @param {JQueryObject} [$input]   the given input
+         * @protected
+         */
+        _initUnitAutocomplete: function ($input) {
+            if (this._units) {
+                if (!$input) {
+                    $input = $(".invoicing-items-unit input");
+                }
+                $input.autocomplete({ source: this._units });
+            }
         },
 
         /**
@@ -902,6 +970,31 @@
                 }
             }
             return true;
+        },
+
+        /**
+         * Converts the given taxes to strings which are suitable for display
+         * in an autocomplete field.
+         *
+         * @param {Array} taxes the given taxes; the array may contain either
+         *                      numbers which are multiplied by 100 or strings
+         * @returns {Array}     the processed taxes as strings
+         * @protected
+         */
+        _prepareTaxes: function (taxes) {
+            var i = -1,
+                n = taxes.length,
+                tax;
+
+            if (taxes) {
+                while (++i < n) {
+                    tax = taxes[i];
+                    if (typeof(tax) === "number") {
+                        taxes[i] = $.formatNumber(tax * 100);
+                    }
+                }
+            }
+            return taxes;
         },
 
         /**

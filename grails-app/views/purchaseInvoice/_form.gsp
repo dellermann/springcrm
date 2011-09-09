@@ -297,7 +297,12 @@
 
     "use strict";
 
-    var a;
+    var a,
+        taxes,
+        units;
+    
+    taxes = [ <g:each in="${taxClasses}">${it.taxValue}, </g:each> ];
+    units = [ <g:each in="${units}">"${it.name}", </g:each> ];
 
     $("#vendorName").autocomplete({
             select: function (event, ui) {
@@ -320,7 +325,9 @@
             }
         });
     new SPRINGCRM.InvoicingItems({
-            baseName: "purchaseInvoice", imgPath: "${resource(dir: 'img')}"
+            baseName: "purchaseInvoice", imgPath: "${resource(dir: 'img')}",
+            units: units,
+            taxes: taxes
         })
         .init();
 
