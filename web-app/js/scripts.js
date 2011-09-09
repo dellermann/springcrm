@@ -1058,7 +1058,8 @@
          *
          * @name                jQuery#formatNumber
          * @param {Number} x    the given number
-         * @param {Number} n    the precision
+         * @param {Number} [n]  the precision; if not set the precision remains
+         *                      as it is
          * @returns {String}    the formatted number
          * @function
          */
