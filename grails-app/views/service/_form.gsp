@@ -67,7 +67,7 @@
           <label for="unitPrice"><g:message code="service.unitPrice.label" default="Unit Price" /></label>
         </div>
         <div class="field${hasErrors(bean: serviceInstance, field: 'unitPrice', ' error')}">
-          <g:textField name="unitPrice" value="${formatNumber(number: serviceInstance?.unitPrice, minFractionDigits: 2)}" size="10" /> €<br />
+          <g:textField name="unitPrice" value="${formatNumber(number: serviceInstance?.unitPrice, minFractionDigits: 2)}" size="10" />&nbsp;<g:currency /><br />
           <g:hasErrors bean="${serviceInstance}" field="unitPrice">
             <span class="error-msg"><g:eachError bean="${serviceInstance}" field="unitPrice"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

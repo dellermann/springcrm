@@ -224,14 +224,14 @@
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="salesOrder.subtotalNet.label" default="Subtotal excl. VAT" /></strong></td>
                 <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatNumber(number: salesOrderInstance?.subtotalNet, minFractionDigits: 2)}&nbsp;€</strong></td>
+                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatCurrency(number: salesOrderInstance?.subtotalNet)}</strong></td>
                 <td headers="quote-items-tax"></td>
               </tr>
               <g:each in="${salesOrderInstance.taxRateSums}" var="item">
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
                 <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: item.value, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: item.value)}</td>
                 <td headers="quote-items-tax"></td>
               </tr>
               </g:each>
@@ -239,7 +239,7 @@
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="invoicingItem.subtotalGross.label" default="Subtotal incl. VAT" /></strong></td>
                 <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatNumber(number: salesOrderInstance?.subtotalGross, minFractionDigits: 2)}&nbsp;€</strong></td>
+                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatCurrency(number: salesOrderInstance?.subtotalGross)}</strong></td>
                 <td headers="quote-items-tax"></td>
               </tr>
               </g:if>
@@ -247,7 +247,7 @@
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.discountPercent.label" default="Discount Percent" /></td>
                 <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatNumber(number: salesOrderInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: salesOrderInstance?.discountPercentAmount, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: salesOrderInstance?.discountPercentAmount)}</td>
                 <td headers="quote-items-tax"></td>
               </tr>
               </g:if>
@@ -255,7 +255,7 @@
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.discountAmount.label" default="Discount Amount" /></td>
                 <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: salesOrderInstance?.discountAmount, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: salesOrderInstance?.discountAmount)}</td>
                 <td headers="quote-items-tax"></td>
               </tr>
               </g:if>
@@ -263,14 +263,14 @@
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.adjustment.label" default="Adjustment" /></td>
                 <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: salesOrderInstance?.adjustment, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: salesOrderInstance?.adjustment)}</td>
                 <td headers="quote-items-tax"></td>
               </tr>
               </g:if>
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="salesOrder.total.label" default="Total" /></strong></td>
                 <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total total">${formatNumber(number: salesOrderInstance?.total, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total total">${formatCurrency(number: salesOrderInstance?.total)}</td>
                 <td headers="quote-items-tax"></td>
               </tr>
             </tfoot>
@@ -282,8 +282,8 @@
                 <td headers="quote-items-quantity" class="invoicing-items-quantity">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
                 <td headers="quote-items-unit" class="invoicing-items-unit">${item.unit}</td>
                 <td headers="quote-items-name" class="invoicing-items-name">${item.name}<br />${item.description}</td>
-                <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatNumber(number: item.unitPrice, minFractionDigits: 2)}&nbsp;€</td> 
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: item.total, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatCurrency(number: item.unitPrice)}</td> 
+                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: item.total)}</td>
                 <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>
               </g:each>
@@ -293,7 +293,7 @@
                 <td headers="quote-items-pos" class="invoicing-items-pos" colspan="4"></td>
                 <td headers="quote-items-name" class="invoicing-items-name"><g:message code="invoicingItem.shippingCosts.label" default="Shipping Costs" /></td>
                 <td headers="quote-items-unit-price" class="invoicing-items-unit-price"></td> 
-                <td headers="quote-items-total" class="invoicing-items-total">${formatNumber(number: salesOrderInstance?.shippingCosts, minFractionDigits: 2)}&nbsp;€</td>
+                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: salesOrderInstance?.shippingCosts)}</td>
                 <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: salesOrderInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>
             </tbody>

@@ -46,7 +46,7 @@
           <td>${fieldValue(bean: productInstance, field: "category")}</td>
           <td style="text-align: right;">${fieldValue(bean: productInstance, field: "quantity")}</td>
           <td>${fieldValue(bean: productInstance, field: "unit")}</td>
-          <td style="text-align: right;">${formatNumber(number: productInstance?.unitPrice, minFractionDigits: 2)} €</td>
+          <td style="text-align: right;">${formatCurrency(number: productInstance?.unitPrice)}</td>
           <td>
             <g:link action="edit" id="${productInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${productInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>

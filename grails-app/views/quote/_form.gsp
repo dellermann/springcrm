@@ -333,14 +333,14 @@
         <tr>
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.subtotalNet.label" default="Subtotal excl. VAT" /></label></td>
           <td headers="quote-items-unitPrice"></td>
-          <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-net" class="value">0,00</span>&nbsp;€</strong></td>
+          <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-net" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
           <td headers="quote-items-tax"></td>
           <td></td>
         </tr>
         <tr>
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingItem.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
           <td headers="quote-items-unitPrice"></td>
-          <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;€</strong></td>
+          <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
           <td headers="quote-items-tax"></td>
           <td></td>
         </tr>
@@ -352,7 +352,7 @@
               <span class="error-msg"><g:eachError bean="${quoteInstance}" field="discountPercent"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
           </td>
-          <td headers="quote-items-total" class="invoicing-items-total"><span id="invoicing-items-discount-from-percent" class="value">0,00</span>&nbsp;€</td>
+          <td headers="quote-items-total" class="invoicing-items-total"><span id="invoicing-items-discount-from-percent" class="value">0,00</span>&nbsp;<g:currency /></td>
           <td headers="quote-items-tax"></td>
           <td></td>
         </tr>
@@ -360,7 +360,7 @@
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingItem.discountAmount.label" default="Discount Amount" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'discountAmount', ' error')}">
-            <g:textField name="discountAmount" value="${formatNumber(number: quoteInstance?.discountAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;€<br />
+            <g:textField name="discountAmount" value="${formatNumber(number: quoteInstance?.discountAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
             <g:hasErrors bean="${quoteInstance}" field="discountAmount">
               <span class="error-msg"><g:eachError bean="${quoteInstance}" field="discountAmount"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
@@ -372,7 +372,7 @@
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingItem.adjustment.label" default="Adjustment" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'adjustment', ' error')}">
-            <g:textField name="adjustment" value="${formatNumber(number: quoteInstance?.adjustment, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;€<br />
+            <g:textField name="adjustment" value="${formatNumber(number: quoteInstance?.adjustment, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
             <g:hasErrors bean="${quoteInstance}" field="adjustment">
               <span class="error-msg"><g:eachError bean="${quoteInstance}" field="adjustment"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
@@ -383,7 +383,7 @@
         <tr>
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="quote.total.label" default="Total" /></label></td>
           <td headers="quote-items-unitPrice"></td>
-          <td headers="quote-items-total" class="invoicing-items-total total"><span id="invoicing-items-total" class="value">0,00</span>&nbsp;€</td>
+          <td headers="quote-items-total" class="invoicing-items-total total"><span id="invoicing-items-total" class="value">0,00</span>&nbsp;<g:currency /></td>
           <td headers="quote-items-tax"></td>
           <td></td>
         </tr>
@@ -405,10 +405,10 @@
             <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<a href="javascript:void 0;" class="select-btn-products"><img src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingItem.selector.products.title')}" title="${message(code: 'invoicingItem.selector.products.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<a href="javascript:void 0;" class="select-btn-services"><img src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingItem.selector.services.title')}" title="${message(code: 'invoicingItem.selector.services.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
           </td>
           <td headers="quote-items-unit-price" class="invoicing-items-unit-price">
-            <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" class="currency" />&nbsp;€
+            <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" class="currency" />&nbsp;<g:currency />
           </td> 
           <td headers="quote-items-total" class="invoicing-items-total">
-            <span class="value">${formatNumber(number: item.total, minFractionDigits: 2)}</span>&nbsp;€
+            <span class="value">${formatNumber(number: item.total, minFractionDigits: 2)}</span>&nbsp;<g:currency />
           </td> 
           <td headers="quote-items-tax" class="invoicing-items-tax">
             <input type="text" name="items[${i}].tax" size="4" value="${formatNumber(number: item.tax, minFractionDigits: 1)}" />&nbsp;%
@@ -426,7 +426,7 @@
           <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingItem.shippingCosts.label" default="Shipping Costs" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'shippingCosts', ' error')}">
-            <g:textField name="shippingCosts" value="${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;€<br />
+            <g:textField name="shippingCosts" value="${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
             <g:hasErrors bean="${quoteInstance}" field="shippingCosts">
               <span class="error-msg"><g:eachError bean="${quoteInstance}" field="shippingCosts"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>

@@ -69,7 +69,7 @@
             
             <div class="row">
               <div class="label"><g:message code="service.unitPrice.label" default="Unit Price" /></div>
-              <div class="field"><g:formatNumber number="${serviceInstance?.unitPrice}" minFractionDigits="2" /> €</div>
+              <div class="field"><g:formatCurrency number="${serviceInstance?.unitPrice}" /></div>
             </div>
           </div>
           <div class="col col-r">

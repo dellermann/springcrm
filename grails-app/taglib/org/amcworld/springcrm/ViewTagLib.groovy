@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+
 class ViewTagLib {
 
 	/**
@@ -75,6 +77,38 @@ class ViewTagLib {
 		if (precision >= PRECISION_RANKINGS['minute']) {
 			out.println "<input type=\"hidden\" name=\"${name}_minute\" id=\"${id}_minute\" value=\"${minute}\" />"
 		}
+	}
+
+	/**
+	 * Formats the given number as currency using the currency symbol from the
+	 * application configuration.
+	 * 
+	 * @attr number REQUIRED	the number to format
+	 * @attr minFractionDigits	the minimum number of digits allowed in the
+	 * 							fraction portion of a number; defaults to 2
+	 * @attr groupingUsed		whether or not grouping will be used in this
+	 * 							format; defaults to true
+	 */
+	def formatCurrency = { attrs, body ->
+		def number = attrs.number
+		if (number) {
+			def map = new HashMap(attrs)
+			map.number = number
+			map.type = 'currency'
+			map.currencySymbol = SCH.servletContext.config['currency'] ?: '€'
+			map.groupingUsed = attrs.groupingUsed ?: true
+			map.minFractionDigits = attrs.minFractionDigits ?: 2
+			out << formatNumber(map)
+		} else {
+			out << ""
+		}
+	}
+
+	/**
+	 * Renders the currency symbol from the application configuration.
+	 */
+	def currency = {
+		out << SCH.servletContext.config['currency'] ?: '€'
 	}
 
 	/**
