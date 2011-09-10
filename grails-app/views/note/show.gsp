@@ -86,7 +86,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: noteInstance?.dateCreated, style: 'SHORT'), formatDate(date: noteInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: noteInstance?.dateCreated), formatDate(date: noteInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

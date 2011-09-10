@@ -3,6 +3,81 @@ package org.amcworld.springcrm
 class ViewTagLib {
 
 	/**
+	 * Renders a date/time input field where the user may enter date and time
+	 * values according to the formatting rules of the current locale.
+	 * 
+	 * @attr name REQUIRED	the name of the input field
+	 * @attr value			the value of the input field; this may be either a
+	 * 						Date or a Calendar object
+	 * @attr id				the ID of the input field; defaults to name
+	 * @attr precision		the precision of the date/time input fields;
+	 * 						possible values are "year", "month", "day", "hour",
+	 * 						or "minute"
+	 */
+	def dateInput = { attrs, body ->
+
+		/* obtain precision */
+		final PRECISION_RANKINGS = [
+			'year':0, 'month':10, 'day':20, 'hour':30, 'minute':40
+		]
+		int precision = PRECISION_RANKINGS['minute']
+		if (attrs.precision) {
+			precision = PRECISION_RANKINGS[attrs.precision];
+		} else if (grailsApplication.config.grails.tags.dateInput.default.precision) {
+			precision = PRECISION_RANKINGS[grailsApplication.config.grails.tags.dateInput.default.precision]
+		}
+
+		/* obtain attribute values */
+        String name = attrs.name
+        String id = attrs.id ?: name
+		def value = attrs.value
+        if (value.toString() == 'none') {
+            value = null
+        }
+        Calendar c = null
+        if (value instanceof Calendar) {
+            c = value
+        } else if (value != null) {
+            c = new GregorianCalendar()
+            c.setTime(value)
+        }
+
+		/* compute date/time parts */
+        def day
+        def month
+        def year
+        def hour
+        def minute
+        if (c != null) {
+            day = c.get(GregorianCalendar.DAY_OF_MONTH)
+            month = c.get(GregorianCalendar.MONTH)
+            year = c.get(GregorianCalendar.YEAR)
+            hour = c.get(GregorianCalendar.HOUR_OF_DAY)
+            minute = c.get(GregorianCalendar.MINUTE)
+        }
+
+		out.println "<input type=\"hidden\" name=\"${name}\" value=\"date.struct\" />"
+
+		if (precision >= PRECISION_RANKINGS['year']) {
+			out.println "<input type=\"hidden\" name=\"${name}_year\" id=\"${id}_year\" value=\"${year}\" />"
+			out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.date')}\" size=\"10\" class=\"date-input date-input-date\" />"
+		}
+		if (precision >= PRECISION_RANKINGS['month']) {
+			out.println "<input type=\"hidden\" name=\"${name}_month\" id=\"${id}_month\" value=\"${month ? month + 1 : null}\" />"
+		}
+		if (precision >= PRECISION_RANKINGS['day']) {
+			out.println "<input type=\"hidden\" name=\"${name}_day\" id=\"${id}_day\" value=\"${day}\" />"
+		}
+		if (precision >= PRECISION_RANKINGS['hour']) {
+			out.println "<input type=\"hidden\" name=\"${name}_hour\" id=\"${id}_hour\" value=\"${hour}\" />"
+			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.time')}\" size=\"5\" class=\"date-input date-input-time\" />"
+		}
+		if (precision >= PRECISION_RANKINGS['minute']) {
+			out.println "<input type=\"hidden\" name=\"${name}_minute\" id=\"${id}_minute\" value=\"${minute}\" />"
+		}
+	}
+
+	/**
 	 * Renders a bar of letters which allows the user to switch to a page where
 	 * the elements with the property value with the respective initial letter
 	 * reside.

@@ -49,7 +49,7 @@
             
             <div class="row">
               <div class="label"><g:message code="call.start.label" default="Start" /></div>
-              <div class="field"><g:formatDate date="${callInstance?.start}" style="SHORT" /></div>
+              <div class="field"><g:formatDate date="${callInstance?.start}" /></div>
 			      </div>
           </div>
           <div class="col col-r">
@@ -98,7 +98,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: callInstance?.dateCreated, style: 'SHORT'), formatDate(date: callInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: callInstance?.dateCreated), formatDate(date: callInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

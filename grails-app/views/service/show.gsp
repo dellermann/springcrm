@@ -85,12 +85,12 @@
             
             <div class="row">
               <div class="label"><g:message code="service.salesStart.label" default="Sales Start" /></div>
-              <div class="field"><g:formatDate date="${serviceInstance?.salesStart}" /></div>
+              <div class="field"><g:formatDate date="${serviceInstance?.salesStart}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="service.salesEnd.label" default="Sales End" /></div>
-              <div class="field"><g:formatDate date="${serviceInstance?.salesEnd}" /></div>
+              <div class="field"><g:formatDate date="${serviceInstance?.salesEnd}" formatName="default.format.date" /></div>
             </div>
           </div>
         </div>
@@ -109,7 +109,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: serviceInstance?.dateCreated, style: 'SHORT'), formatDate(date: serviceInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: serviceInstance?.dateCreated), formatDate(date: serviceInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

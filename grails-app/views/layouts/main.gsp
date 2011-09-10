@@ -31,6 +31,8 @@
 //<![CDATA[
 SPRINGCRM.addMessages({
   search: "${message(code:'default.search.label', default:'Search...')}",
+  dateFormat: "${message(code:'default.format.date', default:'yyyy/MM/dd')}",
+  timeFormat: "${message(code:'default.format.time', default:'HH:mm')}",
 	<g:pageProperty name="page.jsTexts" />
 });
 //]]></script>

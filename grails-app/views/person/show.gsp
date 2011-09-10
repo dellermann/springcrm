@@ -87,7 +87,7 @@
             
             <div class="row">
               <div class="label"><g:message code="person.birthday.label" default="Birthday" /></div>
-              <div class="field"><g:formatDate date="${personInstance?.birthday}" type="date" /></div>
+              <div class="field"><g:formatDate date="${personInstance?.birthday}" formatName="default.format.date" /></div>
 			      </div>
             
             <g:if test="${personInstance?.picture}">
@@ -269,8 +269,8 @@
                 <td><g:link controller="quote" action="show" id="${quoteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link controller="quote" action="show" id="${quoteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
-                <td>${formatDate(date: quoteInstance?.docDate, type: 'date')}</td>
-                <td>${formatDate(date: quoteInstance?.shippingDate, type: 'date')}</td>
+                <td><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
+                <td><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
                 <td>
                   <g:link controller="quote" action="edit" id="${quoteInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="quote" action="delete" id="${quoteInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -321,8 +321,8 @@
                 <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
-                <td>${formatDate(date: salesOrderInstance?.docDate, type: 'date')}</td>
-                <td>${formatDate(date: salesOrderInstance?.dueDate, type: 'date')}</td>
+                <td><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>
+                <td><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></td>
                 <td>
                   <g:link controller="salesOrder" action="edit" id="${salesOrderInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="salesOrder" action="delete" id="${salesOrderInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -373,8 +373,8 @@
                 <td><g:link action="show" id="${invoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link action="show" id="${invoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-                <td>${formatDate(date: invoiceInstance?.docDate, type: 'date')}</td>
-                <td>${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}</td>
+                <td><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
+                <td><g:formatDate date="${invoiceInstance?.dueDatePayment} formatName="default.format.date" /></td>
                 <td>
                   <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -422,7 +422,7 @@
               <tr>
                 <td><input type="checkbox" id="call-multop-${callInstance.id}" class="multop-sel-item" /></td>
                 <td><g:link controller="call" action="show" id="${callInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
-                <td><g:formatDate date="${callInstance.start}" style="SHORT" /></td>
+                <td><g:formatDate date="${callInstance.start}" formatName="default.format.date" /></td>
                 <td><g:message code="call.type.${callInstance?.type}" /></td>
                 <td><g:message code="call.status.${callInstance?.status}" /></td>
                 <td>
@@ -494,7 +494,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: personInstance?.dateCreated, style: 'SHORT'), formatDate(date: personInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: personInstance?.dateCreated), formatDate(date: personInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

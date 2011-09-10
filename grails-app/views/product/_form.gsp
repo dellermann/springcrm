@@ -141,8 +141,7 @@
           <label for="salesStart"><g:message code="product.salesStart.label" default="Sales Start" /></label>
         </div>
         <div class="field${hasErrors(bean: productInstance, field: 'salesStart', ' error')}">
-          <g:hiddenField name="salesStart" value="${formatDate(date: productInstance?.salesStart, type: 'date')}" />
-          <g:textField name="salesStart-date" value="${formatDate(date: productInstance?.salesStart, type: 'date')}" size="10" class="date-input" /><br />
+          <g:dateInput name="salesStart" value="${productInstance?.salesStart}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${productInstance}" field="salesStart">
             <span class="error-msg"><g:eachError bean="${productInstance}" field="salesStart"><g:message error="${it}" /> </g:eachError></span>
@@ -155,8 +154,7 @@
           <label for="salesEnd"><g:message code="product.salesEnd.label" default="Sales End" /></label>
         </div>
         <div class="field${hasErrors(bean: productInstance, field: 'salesEnd', ' error')}">
-          <g:hiddenField name="salesEnd" value="${formatDate(date: productInstance?.salesEnd, type: 'date')}" />
-          <g:textField name="salesEnd-date" value="${formatDate(date: productInstance?.salesEnd, type: 'date')}" size="10" class="date-input" /><br />
+          <g:dateInput name="salesEnd" value="${productInstance?.salesEnd}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${productInstance}" field="salesEnd">
             <span class="error-msg"><g:eachError bean="${productInstance}" field="salesEnd"><g:message error="${it}" /> </g:eachError></span>

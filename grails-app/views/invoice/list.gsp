@@ -44,8 +44,8 @@
           <td><g:link action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${invoiceInstance.organization?.id}">${fieldValue(bean: invoiceInstance, field: "organization")}</g:link></td>
           <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-          <td>${formatDate(date: invoiceInstance?.docDate, type: 'date')}</td>
-          <td>${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}</td>
+          <td>${formatDate(date: invoiceInstance?.docDate, formatName: 'default.format.date')}</td>
+          <td>${formatDate(date: invoiceInstance?.dueDatePayment, formatName: 'default.format.date')}</td>
           <td>
             <g:link action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${invoiceInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>

@@ -87,17 +87,17 @@
           <div class="col col-r">
             <div class="row">
               <div class="label"><g:message code="invoice.docDate.label" default="Order date" /></div>
-              <div class="field"><g:formatDate date="${invoiceInstance?.docDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="invoice.dueDatePayment.label" default="Due date of payment" /></div>
-              <div class="field"><g:formatDate date="${invoiceInstance?.dueDatePayment}" type="date" /></div>
+              <div class="field"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="invoice.paymentDate.label" default="Payment date" /></div>
-              <div class="field"><g:formatDate date="${invoiceInstance?.paymentDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></div>
             </div>
 
             <div class="row">
@@ -107,7 +107,7 @@
             
             <div class="row">
               <div class="label"><g:message code="invoice.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${invoiceInstance?.shippingDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${invoiceInstance?.shippingDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
@@ -331,7 +331,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: invoiceInstance?.dateCreated, style: 'SHORT'), formatDate(date: invoiceInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: invoiceInstance?.dateCreated), formatDate(date: invoiceInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

@@ -28,7 +28,7 @@ class Call {
 	Organization organization
 	Person person
 	String phone
-	Date start
+	Date start = new Date()
 	String type
 	String status
 	Date dateCreated

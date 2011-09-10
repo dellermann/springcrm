@@ -79,22 +79,22 @@
           <div class="col col-r">
             <div class="row">
               <div class="label"><g:message code="salesOrder.docDate.label" default="Order date" /></div>
-              <div class="field"><g:formatDate date="${salesOrderInstance?.docDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="salesOrder.dueDate.label" default="Due date" /></div>
-              <div class="field"><g:formatDate date="${salesOrderInstance?.dueDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="salesOrder.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${salesOrderInstance?.shippingDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${salesOrderInstance?.shippingDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="salesOrder.deliveryDate.label" default="Delivery Date" /></div>
-              <div class="field"><g:formatDate date="${salesOrderInstance?.deliveryDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${salesOrderInstance?.deliveryDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
@@ -345,8 +345,8 @@
                 <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-                <td>${formatDate(date: invoiceInstance?.docDate, type: 'date')}</td>
-                <td>${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}</td>
+                <td><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
+                <td><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
                 <td>
                   <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -370,7 +370,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: salesOrderInstance?.dateCreated, style: 'SHORT'), formatDate(date: salesOrderInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: salesOrderInstance?.dateCreated), formatDate(date: salesOrderInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

@@ -66,8 +66,7 @@
           <label for="docDate-date"><g:message code="purchaseInvoice.docDate.label" default="Doc Date" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'docDate', ' error')}">
-          <g:hiddenField name="docDate" value="${formatDate(date: purchaseInvoiceInstance?.docDate, type: 'date')}" />
-          <g:textField name="docDate-date" value="${formatDate(date: purchaseInvoiceInstance?.docDate, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="docDate" value="${purchaseInvoiceInstance?.docDate}" precision="day"/><br />
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="docDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="docDate"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -79,8 +78,7 @@
           <label for="dueDate-date"><g:message code="purchaseInvoice.dueDate.label" default="Due Date" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'dueDate', ' error')}">
-          <g:hiddenField name="dueDate" value="${formatDate(date: purchaseInvoiceInstance?.dueDate, type: 'date')}" />
-          <g:textField name="dueDate-date" value="${formatDate(date: purchaseInvoiceInstance?.dueDate, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="dueDate" value="${purchaseInvoiceInstance?.dueDate}" precision="day"/><br />
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="dueDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="dueDate"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -104,8 +102,7 @@
           <label for="paymentDate-date"><g:message code="purchaseInvoice.paymentDate.label" default="Payment Date" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'paymentDate', ' error')}">
-          <g:hiddenField name="paymentDate" value="${formatDate(date: purchaseInvoiceInstance?.paymentDate, type: 'date')}" />
-          <g:textField name="paymentDate-date" value="${formatDate(date: purchaseInvoiceInstance?.paymentDate, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="paymentDate" value="${purchaseInvoiceInstance?.paymentDate}" precision="day"/><br />
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="paymentDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="paymentDate"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -341,7 +338,7 @@
     $("#stage\\.id").change(function () {
         switch ($(this).val()) {
         case "2102":
-            $("#paymentDate-date").val($.formatDate());
+            $("#paymentDate-date").val($.formatDate(null, "date"));
             break;
         }
     });

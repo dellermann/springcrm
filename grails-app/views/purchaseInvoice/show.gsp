@@ -76,12 +76,12 @@
           <div class="col col-r">
             <div class="row">
               <div class="label"><g:message code="purchaseInvoice.docDate.label" default="Doc Date" /></div>
-              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.docDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.docDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="purchaseInvoice.dueDate.label" default="Due Date" /></div>
-              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.dueDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.dueDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
@@ -91,7 +91,7 @@
             
             <div class="row">
               <div class="label"><g:message code="purchaseInvoice.paymentDate.label" default="Payment Date" /></div>
-              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.paymentDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.paymentDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
@@ -211,7 +211,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: purchaseInvoiceInstance?.dateCreated, style: 'SHORT'), formatDate(date: purchaseInvoiceInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: purchaseInvoiceInstance?.dateCreated), formatDate(date: purchaseInvoiceInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

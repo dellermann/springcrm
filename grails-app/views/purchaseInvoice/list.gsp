@@ -43,8 +43,8 @@
           <td><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</g:link></td>
           <td><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</g:link></td>
           <td><g:if test="${purchaseInvoiceInstance?.vendor}"><g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:link></g:if><g:else>${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:else></td>
-          <td><g:formatDate date="${purchaseInvoiceInstance.docDate}" type="date" /></td>
-          <td><g:formatDate date="${purchaseInvoiceInstance.dueDate}" type="date" /></td>
+          <td><g:formatDate date="${purchaseInvoiceInstance.docDate}" formatName="default.format.date" /></td>
+          <td><g:formatDate date="${purchaseInvoiceInstance.dueDate}" formatName="default.format.date" /></td>
           <td>${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
           <td>
             <g:link action="edit" id="${purchaseInvoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

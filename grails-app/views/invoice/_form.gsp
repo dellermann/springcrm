@@ -100,8 +100,7 @@
           <label for="docDate-date"><g:message code="invoice.docDate.label" default="Invoice date" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'docDate', ' error')}">
-          <g:hiddenField name="docDate" value="${formatDate(date: invoiceInstance?.docDate, type: 'date')}" />
-          <g:textField name="docDate-date" value="${formatDate(date: invoiceInstance?.docDate, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="docDate" value="${invoiceInstance?.docDate}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="docDate">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="docDate"><g:message error="${it}" /> </g:eachError></span>
@@ -114,8 +113,7 @@
           <label for="dueDatePayment-date"><g:message code="invoice.dueDatePayment.label" default="Due date of payment" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'dueDatePayment', ' error')}">
-          <g:hiddenField name="dueDatePayment" value="${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}" />
-          <g:textField name="dueDatePayment-date" value="${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="dueDatePayment" value="${invoiceInstance?.dueDatePayment}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="dueDatePayment">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="dueDatePayment"><g:message error="${it}" /> </g:eachError></span>
@@ -128,8 +126,7 @@
           <label for="paymentDate-date"><g:message code="invoice.paymentDate.label" default="Payment date" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'paymentDate', ' error')}">
-          <g:hiddenField name="paymentDate" value="${formatDate(date: invoiceInstance?.paymentDate, type: 'date')}" />
-          <g:textField name="paymentDate-date" value="${formatDate(date: invoiceInstance?.paymentDate, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="paymentDate" value="${invoiceInstance?.paymentDate}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="paymentDate">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentDate"><g:message error="${it}" /> </g:eachError></span>
@@ -154,8 +151,7 @@
           <label for="shippingDate-date"><g:message code="invoice.shippingDate.label" default="Invoice Shipping Date" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'shippingDate', ' error')}">
-          <g:hiddenField name="shippingDate" value="${formatDate(date: invoiceInstance?.shippingDate, type: 'date')}" />
-          <g:textField name="shippingDate-date" value="${formatDate(date: invoiceInstance?.shippingDate, type: 'date')}" size="10" class="date-input date-input-date" /><br />
+          <g:dateInput name="shippingDate" value="${invoiceInstance?.shippingDate}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="shippingDate">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="shippingDate"><g:message error="${it}" /> </g:eachError></span>
@@ -612,10 +608,10 @@
     $("#stage\\.id").change(function () {
         switch ($(this).val()) {
         case "902":
-            $("#shippingDate-date").val($.formatDate());
+            $("#shippingDate-date").val($.formatDate(null, "date"));
             break;
         case "903":
-            $("#paymentDate-date").val($.formatDate());
+            $("#paymentDate-date").val($.formatDate(null, "date"));
             break;
         }
     });

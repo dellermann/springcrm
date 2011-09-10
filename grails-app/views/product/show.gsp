@@ -100,12 +100,12 @@
             
             <div class="row">
               <div class="label"><g:message code="product.salesStart.label" default="Sales Start" /></div>
-              <div class="field"><g:formatDate date="${productInstance?.salesStart}" /></div>
+              <div class="field"><g:formatDate date="${productInstance?.salesStart}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="product.salesEnd.label" default="Sales End" /></div>
-              <div class="field"><g:formatDate date="${productInstance?.salesEnd}" /></div>
+              <div class="field"><g:formatDate date="${productInstance?.salesEnd}" formatName="default.format.date" /></div>
             </div>
           </div>
         </div>
@@ -124,7 +124,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: productInstance?.dateCreated, style: 'SHORT'), formatDate(date: productInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: productInstance?.dateCreated), formatDate(date: productInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

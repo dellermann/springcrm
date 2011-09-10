@@ -107,7 +107,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: userInstance?.dateCreated, style: 'SHORT'), formatDate(date: userInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: userInstance?.dateCreated), formatDate(date: userInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">

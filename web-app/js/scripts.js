@@ -240,31 +240,58 @@
          * @protected
          */
         _onChangeDateInput: function () {
-            var $this = $(this),
-                $otherPartField,
-                baseId,
-                id,
+            var baseId,
+                date,
+                el,
+                els,
+                otherPartField,
                 partId,
+                type = "",
                 val = "";
 
-            id = $this.attr("id");
-            if (id.match(/^([\w\-]+)-(date|time)$/)) {
+            els = this.form.elements;
+            if (this.id.match(/^([\w\-]+)-(date|time)$/)) {
                 baseId = RegExp.$1;
                 partId = RegExp.$2;
-                $otherPartField =
-                    $("#" + baseId + "-" + ((partId === "date") ? "time" : "date"));
+                otherPartField =
+                    els[baseId + "_" + ((partId === "date") ? "time" : "date")];
                 if (partId === "date") {
-                    val += $this.val();
-                    if ($otherPartField.length) {
-                        val += " " + $otherPartField.val();
+                    val += this.value;
+                    type = "date";
+                    if (otherPartField) {
+                        val += " " + otherPartField.value;
+                        type += "time";
                     }
                 } else {
-                    if ($otherPartField.length) {
-                        val += $otherPartField.val() + " ";
+                    if (otherPartField) {
+                        val += otherPartField.value + " ";
+                        type = "date";
                     }
-                    val += $this.val();
+                    val += this.value;
+                    type += "time";
                 }
-                $("#" + baseId).val(val);
+                date = $.parseDate(val, type);
+
+                el = els[baseId + "_year"];
+                if (el) {
+                    el.value = date ? date.getFullYear() : "";
+                }
+                el = els[baseId + "_month"];
+                if (el) {
+                    el.value = date ? date.getMonth() + 1 : "";
+                }
+                el = els[baseId + "_day"];
+                if (el) {
+                    el.value = date ? date.getDate() : "";
+                }
+                el = els[baseId + "_hour"];
+                if (el) {
+                    el.value = date ? date.getHours() : "";
+                }
+                el = els[baseId + "_minute"];
+                if (el) {
+                    el.value = date ? date.getMinutes() : "";
+                }
             }
         },
 
@@ -1032,25 +1059,101 @@
         },
 
         /**
-         * Formats the given date in the form "DD.MM.YYYY".
+         * Formats the given date with either the given format or the localized
+         * date and time format as specified in the messages
+         * <code>dateFormat</code> and <code>timeFormat</code>.
          *
-         * @name                jQuery#formatDate
-         * @param {Date} d      the given date
-         * @returns {String}    the formatted date
+         * @name                    jQuery#formatDate
+         * @param {Date} [d]        the given date; defaults to the current
+         *                          date and time
+         * @param {String} [type]   the type of string which is to parse;
+         *                          possible values are "date", "time", and
+         *                          "datetime". Defaults to "datetime". The
+         *                          parameter is ignored if parameter "format"
+         *                          is set.
+         * @param {String} [format] uses the given format for parsing; this
+         *                          parameter takes precedence over "type"
+         * @returns {String}        the formatted date
          * @function
          */
-        formatDate: function (d) {
-            var f = function (x) {
+        formatDate: function (d, type, format) {
+            var delimiter,
+                f = function (x) {
                     var s = x.toFixed();
                     if (s.length < 2) {
                         s = "0" + s;
                     }
                     return s;
-                };
+                },
+                regexp = /\W/,
+                res = "",
+                token;
 
             d = d || new Date();
-            return f(d.getDate()) + "." + f(d.getMonth() + 1) + "." +
-                String(d.getFullYear());
+            type = type || "datetime";
+            if (!format) {
+                format = "";
+                if ((type === "date") || (type === "datetime")) {
+                    format += SPRINGCRM.getMessage("dateFormat");
+                }
+                if (type === "datetime") {
+                    format += " ";
+                }
+                if ((type === "time") || (type === "datetime")) {
+                    format += SPRINGCRM.getMessage("timeFormat");
+                }
+            }
+
+            while (format) {
+                if (regexp.test(format)) {
+                    token = RegExp.leftContext;
+                    delimiter = RegExp.lastMatch;
+                    format = RegExp.rightContext;
+                } else {
+                    token = format;
+                    delimiter = "";
+                    format = "";
+                }
+                switch (token) {
+                case 'd':
+                    res += d.getDate();
+                    break;
+                case 'dd':
+                    res += f(d.getDate());
+                    break;
+                case 'M':
+                    res += d.getMonth() + 1;
+                    break;
+                case 'MM':
+                    res += f(d.getMonth() + 1);
+                    break;
+                case 'y':
+                    res += d.getYear();
+                    break;
+                case 'yy':
+                    res += f(d.getYear() - 100);
+                    break;
+                case 'yyy':
+                case 'yyyy':
+                    res += String(d.getFullYear());
+                    break;
+                case 'H':
+                    res += d.getHours();
+                    break;
+                case 'HH':
+                    res += f(d.getHours());
+                    break;
+                case 'm':
+                    res += d.getMinutes();
+                    break;
+                case 'mm':
+                    res += f(d.getMinutes());
+                    break;
+                }
+                res += delimiter;
+            }
+
+            return res;
         },
 
         /**
@@ -1076,6 +1179,117 @@
                 i -= 3;
             }
             return s;
+        },
+
+        /**
+         * Parses the given string as a date and time value with either the
+         * given format or the localized date and time format as specified in
+         * the messages <code>dateFormat</code> and <code>timeFormat</code>.
+         *
+         * @name                        jQuery#parseDate
+         * @param {String} s            the given string containing date or
+         *                              time parts or both; if it contains date
+         *                              and time parts they must be separated
+         *                              by a space character
+         * @param {String} [type]       the type of string which is to parse;
+         *                              possible values are "date", "time", and
+         *                              "datetime". Defaults to "datetime". The
+         *                              parameter is ignored if parameter
+         *                              "format" is set.
+         * @param {String} [format]     uses the given format for parsing; this
+         *                              parameter takes precedence over "type"
+         * @param {Number} [baseYear]   the year which acts as limit for year
+         *                              specifications without century: years
+         *                              before the base year are treated as
+         *                              after 2000, all other years before
+         *                              2000; defaults to 35
+         * @returns {Date}              the parsed date; <code>null</code> if
+         *                              the given string was empty
+         * @throws Error                if the given string does not represent
+         *                              a valid date according to the specified
+         *                              or default format
+         * @function
+         */
+        parseDate: function (s, type, format, baseYear) {
+            var day = 1,
+                hours = 0,
+                minutes = 0,
+                month = 0,
+                part = "",
+                pos = 0,
+                regexp = /\W/,
+                token,
+                year = 1970;
+
+            if (!$.trim(s)) {
+                return null;
+            }
+            type = type || "datetime";
+            if (!format) {
+                format = "";
+                if ((type === "date") || (type === "datetime")) {
+                    format += SPRINGCRM.getMessage("dateFormat");
+                }
+                if (type === "datetime") {
+                    format += " ";
+                }
+                if ((type === "time") || (type === "datetime")) {
+                    format += SPRINGCRM.getMessage("timeFormat");
+                }
+            }
+            baseYear = baseYear || 35;
+
+            while (format) {
+                if (regexp.test(format)) {
+                    token = RegExp.leftContext;
+                    pos = s.indexOf(RegExp.lastMatch);
+                    if ((pos < 0) || (pos + 1 >= s.length)) {
+                        throw new Error("Invalid date or time format: " + s);
+                    }
+                    part = s.substring(0, pos);
+                    s = s.substring(pos + 1);
+                    format = RegExp.rightContext;
+                } else {
+                    token = format;
+                    part = s;
+                    format = "";
+                }
+
+                switch (token) {
+                case 'd':
+                case 'dd':
+                    day = parseInt(part, 10);
+                    break;
+                case 'M':
+                case 'MM':
+                    month = parseInt(part, 10) - 1;
+                    break;
+                case 'y':
+                case 'yy':
+                case 'yyy':
+                case 'yyyy':
+                    year = parseInt(part, 10);
+                    if (year < 100) {
+                        year += (year < baseYear) ? 2000 : 1900;
+                    }
+                    break;
+                case 'H':
+                case 'HH':
+                    hours = parseInt(part, 10);
+                    break;
+                case 'm':
+                case 'mm':
+                    minutes = parseInt(part, 10);
+                    break;
+                }
+            }
+
+            if (isNaN(year) || isNaN(month) || isNaN(day) || isNaN(hours)
+                || isNaN(minutes))
+            {
+                throw new Error("Invalid date or time format: " + s);
+            }
+            return new Date(year, month, day, hours, minutes, 0, 0);
         },
 
         /**

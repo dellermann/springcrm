@@ -104,8 +104,7 @@
           <label for="salesStart"><g:message code="service.salesStart.label" default="Sales Start" /></label>
         </div>
         <div class="field${hasErrors(bean: serviceInstance, field: 'salesStart', ' error')}">
-          <g:hiddenField name="salesStart" value="${formatDate(date: serviceInstance?.salesStart, type: 'date')}" />
-          <g:textField name="salesStart-date" value="${formatDate(date: serviceInstance?.salesStart, type: 'date')}" size="10" class="date-input" /><br />
+          <g:dateInput name="salesStart" value="${serviceInstance?.salesStart}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${serviceInstance}" field="salesStart">
             <span class="error-msg"><g:eachError bean="${serviceInstance}" field="salesStart"><g:message error="${it}" /> </g:eachError></span>
@@ -118,8 +117,7 @@
           <label for="salesEnd"><g:message code="service.salesEnd.label" default="Sales End" /></label>
         </div>
         <div class="field${hasErrors(bean: serviceInstance, field: 'salesEnd', ' error')}">
-          <g:hiddenField name="salesEnd" value="${formatDate(date: serviceInstance?.salesEnd, type: 'date')}" />
-          <g:textField name="salesEnd-date" value="${formatDate(date: serviceInstance?.salesEnd, type: 'date')}" size="10" class="date-input" /><br />
+          <g:dateInput name="salesEnd" value="${serviceInstance?.salesEnd}" precision="day"/><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${serviceInstance}" field="salesEnd">
             <span class="error-msg"><g:eachError bean="${serviceInstance}" field="salesEnd"><g:message error="${it}" /> </g:eachError></span>

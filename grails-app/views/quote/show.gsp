@@ -71,17 +71,17 @@
           <div class="col col-r">
             <div class="row">
               <div class="label"><g:message code="quote.docDate.label" default="Quote Date" /></div>
-              <div class="field"><g:formatDate date="${quoteInstance?.docDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="quote.validUntil.label" default="Valid Until" /></div>
-              <div class="field"><g:formatDate date="${quoteInstance?.validUntil}" type="date" /></div>
+              <div class="field"><g:formatDate date="${quoteInstance?.validUntil}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
               <div class="label"><g:message code="quote.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${quoteInstance?.shippingDate}" type="date" /></div>
+              <div class="field"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></div>
             </div>
             
             <div class="row">
@@ -332,8 +332,8 @@
                 <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
-                <td>${formatDate(date: salesOrderInstance?.docDate, type: 'date')}</td>
-                <td>${formatDate(date: salesOrderInstance?.dueDate, type: 'date')}</td>
+                <td><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>
+                <td><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></td>
                 <td>
                   <g:link controller="salesOrder" action="edit" id="${salesOrderInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="salesOrder" action="delete" id="${salesOrderInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -384,8 +384,8 @@
                 <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
                 <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
                 <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-                <td>${formatDate(date: invoiceInstance?.docDate, type: 'date')}</td>
-                <td>${formatDate(date: invoiceInstance?.dueDatePayment, type: 'date')}</td>
+                <td><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
+                <td><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
                 <td>
                   <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
                   <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
@@ -409,7 +409,7 @@
     </div>
 
     <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: quoteInstance?.dateCreated, style: 'SHORT'), formatDate(date: quoteInstance?.lastUpdated, style: 'SHORT')]" />
+      <g:message code="default.recordTimestamps" args="[formatDate(date: quoteInstance?.dateCreated), formatDate(date: quoteInstance?.lastUpdated)]" />
     </p>
   </section>
   <content tag="jsTexts">
