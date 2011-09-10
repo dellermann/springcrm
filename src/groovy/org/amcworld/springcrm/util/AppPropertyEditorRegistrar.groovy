@@ -26,6 +26,6 @@ class AppPropertyEditorRegistrar implements PropertyEditorRegistrar {
 
 	@Override
 	public void registerCustomEditors(PropertyEditorRegistry registry) {
-		registry.registerCustomEditor(Date, new DatePropertyEditor())
+//		registry.registerCustomEditor(Date, new DatePropertyEditor())
 	}
 }

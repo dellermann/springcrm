@@ -85,7 +85,7 @@
         pw.println()
         pw.println "<ul>"
         pw.println "<g:each in=\"\${${domainInstance}?.${property.name}?}\" var=\"${property.name[0]}\">"
-        pw.println "    <li><g:link controller=\"${property.referencedDomainClass.propertyName}\" action=\"show\" id=\"\${${property.name[0]}.id}\">\${${property.name[0]}?.encodeAsHTML()}</g:link></li>"
+        pw.println "  <li><g:link controller=\"${property.referencedDomainClass.propertyName}\" action=\"show\" id=\"\${${property.name[0]}.id}\">\${${property.name[0]}?.encodeAsHTML()}</g:link></li>"
         pw.println "</g:each>"
         pw.println "</ul>"
         pw.println "<g:link controller=\"${property.referencedDomainClass.propertyName}\" action=\"create\" params=\"['${domainClass.propertyName}.id': ${domainInstance}?.id]\">\${message(code: 'default.add.label', args: [message(code: '${property.referencedDomainClass.propertyName}.label', default: '${property.referencedDomainClass.shortName}')])}</g:link>"
@@ -132,20 +132,18 @@
     private renderDateEditor(domainClass, property) {
         def precision = (property.type == Date.class || property.type == java.sql.Date.class || property.type == Calendar.class) ? "day" : "minute";
         if (!cp) {
-            return "<g:datePicker name=\"${property.name}\" precision=\"${precision}\" value=\"\${${domainInstance}?.${property.name}}\" />"
+            return "<g:dateInput name=\"${property.name}\" precision=\"${precision}\" value=\"\${${domainInstance}?.${property.name}}\" />"
         }
         else {
             if (!cp.editable) {
                 return "\${${domainInstance}?.${property.name}?.toString()}"
             }
             else {
-                def sb = new StringBuffer("<g:datePicker name=\"${property.name}\" ")
-                if (cp.format) sb << "format=\"${cp.format}\" "
-                if (cp.widget) sb << "widget=\"${cp.widget}\" "
+                def sb = new StringBuffer("<g:dateInput name=\"${property.name}\" ")
                 cp.attributes.each { k, v ->
                     sb << "${k}=\"${v}\" "
                 }
-                sb << "precision=\"${precision}\" value=\"\${${domainInstance}?.${property.name}}\" ${renderNoSelection(property)} />"
+                sb << "precision=\"${precision}\" value=\"\${${domainInstance}?.${property.name}}\" />"
                 return sb.toString()
             }
         }
