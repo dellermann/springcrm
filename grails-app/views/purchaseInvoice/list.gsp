@@ -30,9 +30,10 @@
           <g:sortableColumn property="number" title="${message(code: 'purchaseInvoice.number.label', default: 'Number')}" />
           <g:sortableColumn property="subject" title="${message(code: 'purchaseInvoice.subject.label', default: 'Subject')}" />
           <g:sortableColumn property="vendor.name" title="${message(code: 'purchaseInvoice.vendor.label', default: 'Vendor')}" />
-          <g:sortableColumn property="docDate" title="${message(code: 'purchaseInvoice.docDate.label', default: 'Doc Date')}" />
+          <g:sortableColumn property="stage" title="${message(code: 'purchaseInvoice.stage.label.short', default: 'Stage')}" />
+          <g:sortableColumn property="docDate" title="${message(code: 'purchaseInvoice.docDate.label.short', default: 'Doc Date')}" />
           <g:sortableColumn property="dueDate" title="${message(code: 'purchaseInvoice.dueDate.label', default: 'Due Date')}" />
-          <g:sortableColumn property="stage" title="${message(code: 'purchaseInvoice.stage.label', default: 'Stage')}" />
+          <g:sortableColumn property="total" title="${message(code: 'purchaseInvoice.total.label.short', default: 'Total')}" style="width: 6em;" />
           <th></th>
         </tr>
       </thead>
@@ -43,9 +44,10 @@
           <td><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</g:link></td>
           <td><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</g:link></td>
           <td><g:if test="${purchaseInvoiceInstance?.vendor}"><g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:link></g:if><g:else>${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:else></td>
-          <td><g:formatDate date="${purchaseInvoiceInstance.docDate}" formatName="default.format.date" /></td>
-          <td><g:formatDate date="${purchaseInvoiceInstance.dueDate}" formatName="default.format.date" /></td>
           <td>${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
+          <td style="text-align: center;"><g:formatDate date="${purchaseInvoiceInstance.docDate}" formatName="default.format.date" /></td>
+          <td style="text-align: center;"><g:formatDate date="${purchaseInvoiceInstance.dueDate}" formatName="default.format.date" /></td>
+          <td style="text-align: right;"><g:formatCurrency number="${purchaseInvoiceInstance.total}" /></td>
           <td>
             <g:link action="edit" id="${purchaseInvoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${purchaseInvoiceInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>

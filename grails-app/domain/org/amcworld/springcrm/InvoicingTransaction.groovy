@@ -34,6 +34,7 @@ class InvoicingTransaction {
 		shippingCosts(scale:2, min:0.0, nullable:true)
         shippingTax(scale:1, min:0.0, nullable:true)
 		adjustment(scale:2, nullable:true)
+		total(scale:2)
 		dateCreated()
 		lastUpdated()
     }
@@ -49,7 +50,7 @@ class InvoicingTransaction {
 	static searchable = true
 	static transients = [
 		'fullNumber', 'fullName', 'billingAddr', 'shippingAddr', 'subtotalNet',
-		'subtotalGross', 'discountPercentAmount', 'total', 'taxRateSums'
+		'subtotalGross', 'discountPercentAmount', 'taxRateSums'
 	]
 	
 	def seqNumberService
@@ -82,6 +83,7 @@ class InvoicingTransaction {
 	BigDecimal shippingCosts
     BigDecimal shippingTax = 19.0
 	BigDecimal adjustment
+	BigDecimal total
 	Date dateCreated
 	Date lastUpdated
 	
@@ -223,17 +225,6 @@ class InvoicingTransaction {
 	}
 	
 	/**
-	 * Gets the total (gross) value. It is computed from the subtotal gross
-	 * value minus all discounts plus the adjustment.
-	 * 
-	 * @return	the total (gross) value
-	 */
-	BigDecimal getTotal() {
-		return subtotalGross - discountPercentAmount - getDiscountAmount() +
-			getAdjustment()
-	}
-	
-	/**
 	 * Computes a map of taxes used in this transaction. The key represents the
 	 * tax rate (a percentage value), the value the sum of tax values of all
 	 * items which belong to this tax rate.
@@ -253,7 +244,26 @@ class InvoicingTransaction {
 		return res.sort { e1, e2 -> e1.key <=> e2.key }
 	}
 	
+	/**
+	 * Computes the total (gross) value. It is computed from the subtotal gross
+	 * value minus all discounts plus the adjustment.
+	 *
+	 * @return	the total (gross) value
+	 */
+	BigDecimal computeTotal() {
+		return subtotalGross - discountPercentAmount - getDiscountAmount() +
+			getAdjustment()
+	}
+
 	String toString() {
 		return subject
+	}
+
+	def beforeInsert() {
+		total = computeTotal()
+	}
+
+	def beforeUpdate() {
+		total = computeTotal()
 	}
 }

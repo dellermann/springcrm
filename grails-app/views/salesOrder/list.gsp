@@ -30,9 +30,10 @@
           <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
           <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
           <g:sortableColumn property="organization.name" title="${message(code: 'invoicingItem.organization.label', default: 'Organization')}" />
-          <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label', default: 'Stage')}" />
-          <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label', default: 'Date')}" />
+          <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label.short', default: 'Stage')}" />
+          <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label.short', default: 'Date')}" />
           <g:sortableColumn property="dueDate" title="${message(code: 'salesOrder.dueDate.label', default: 'Due date')}" />
+          <g:sortableColumn property="total" title="${message(code: 'salesOrder.total.label.short', default: 'Total')}" style="width: 6em;" />
           <th></th>
         </tr>
       </thead>
@@ -44,8 +45,9 @@
           <td><g:link action="show" id="${salesOrderInstance.id}">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${salesOrderInstance.organization?.id}">${fieldValue(bean: salesOrderInstance, field: "organization")}</g:link></td>
           <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
-          <td><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>
-          <td><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></td>
+          <td style="text-align: center;"><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>
+          <td style="text-align: center;"><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></td>
+          <td style="text-align: right;"><g:formatCurrency number="${salesOrderInstance?.total}" /></td>
           <td>
             <g:link action="edit" id="${salesOrderInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${salesOrderInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>

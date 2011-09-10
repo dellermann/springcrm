@@ -2,6 +2,7 @@ package org.amcworld.springcrm
 
 import static java.math.RoundingMode.HALF_UP
 
+
 class PurchaseInvoice {
 
     static constraints = {
@@ -22,6 +23,7 @@ class PurchaseInvoice {
 		shippingCosts(scale:2, min:0.0, nullable:true)
         shippingTax(scale:1, min:0.0, nullable:true)
 		adjustment(scale:2, nullable:true)
+		total(scale:2)
 		dateCreated()
 		lastUpdated()
     }
@@ -32,8 +34,7 @@ class PurchaseInvoice {
 	}
 	static searchable = true
 	static transients = [
-		'subtotalNet', 'subtotalGross', 'discountPercentAmount', 'total',
-		'taxRateSums'
+		'subtotalNet', 'subtotalGross', 'discountPercentAmount', 'taxRateSums'
 	]
 
 	String number
@@ -53,6 +54,7 @@ class PurchaseInvoice {
 	BigDecimal adjustment
 	String notes
 	String documentFile
+	BigDecimal total
 	Date dateCreated
 	Date lastUpdated
 	
@@ -111,17 +113,6 @@ class PurchaseInvoice {
 	}
 	
 	/**
-	 * Gets the total (gross) value. It is computed from the subtotal gross
-	 * value minus all discounts plus the adjustment.
-	 *
-	 * @return	the total (gross) value
-	 */
-	BigDecimal getTotal() {
-		return subtotalGross - discountPercentAmount - getDiscountAmount() +
-			getAdjustment()
-	}
-	
-	/**
 	 * Computes a map of taxes used in this transaction. The key represents the
 	 * tax rate (a percentage value), the value the sum of tax values of all
 	 * items which belong to this tax rate.
@@ -140,8 +131,27 @@ class PurchaseInvoice {
 		}
 		return res.sort { e1, e2 -> e1.key <=> e2.key }
 	}
+	
+	/**
+	 * Computes the total (gross) value. It is computed from the subtotal gross
+	 * value minus all discounts plus the adjustment.
+	 *
+	 * @return	the total (gross) value
+	 */
+	BigDecimal computeTotal() {
+		return subtotalGross - discountPercentAmount - getDiscountAmount() +
+			getAdjustment()
+	}
 
 	String toString() {
 		return subject
+	}
+
+	def beforeInsert() {
+		total = computeTotal()
+	}
+
+	def beforeUpdate() {
+		total = computeTotal()
 	}
 }

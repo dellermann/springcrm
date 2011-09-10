@@ -30,9 +30,10 @@
           <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
           <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
           <g:sortableColumn property="organization.name" title="${message(code: 'invoicingItem.organization.label', default: 'Organization')}" />
-          <g:sortableColumn property="stage" title="${message(code: 'quote.stage.label', default: 'Stage')}" />
-          <g:sortableColumn property="docDate" title="${message(code: 'quote.docDate.label', default: 'Date')}" />
+          <g:sortableColumn property="stage" title="${message(code: 'quote.stage.label.short', default: 'Stage')}" />
+          <g:sortableColumn property="docDate" title="${message(code: 'quote.docDate.label.short', default: 'Date')}" />
           <g:sortableColumn property="shippingDate" title="${message(code: 'quote.shippingDate.label', default: 'Shipping date')}" />
+          <g:sortableColumn property="total" title="${message(code: 'quote.total.label.short', default: 'Total')}" style="width: 6em;" />
           <th></th>
         </tr>
       </thead>
@@ -44,8 +45,9 @@
           <td><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${quoteInstance.organization?.id}">${fieldValue(bean: quoteInstance, field: "organization")}</g:link></td>
           <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
-          <td><g:formatDate date="${quoteInstance?.docDate} formatName="default.format.date" /></td>
-          <td><g:formatDate date="${quoteInstance?.shippingDate} formatName="default.format.date" /></td>
+          <td style="text-align: center;"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
+          <td style="text-align: center;"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
+          <td style="text-align: right;"><g:formatCurrency number="${quoteInstance?.total}" /></td>
           <td>
             <g:link action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${quoteInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>
