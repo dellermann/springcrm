@@ -114,19 +114,77 @@
 <script type="text/javascript">
 //<![CDATA[
 (function(SPRINGCRM) {
+    var phoneNumbers;
+
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find')}"
+            findUrl: "${createLink(controller:'organization', action:'find')}",
+            onSelect: function () {
+                phoneNumbers = undefined;
+            }
         })
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "person",
             findUrl: "${createLink(controller:'person', action:'find')}",
+            onSelect: function () {
+                phoneNumbers = undefined;
+            },
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }
         })
         .init();
+    $("#phone").autocomplete({
+            source: function (request, response) {
+                var data = {},
+                    term = request.term.toLowerCase(),
+                    url;
+
+                if ($("#person-id").val()) {
+                    url = "${createLink(controller:'person', action:'getPhoneNumbers')}";
+                    data.id = $("#person-id").val();
+                } else if ($("#organization-id").val()) {
+                    url = "${createLink(controller:'organization', action:'getPhoneNumbers')}";
+                    data.id = $("#organization-id").val();
+                }
+                if (!phoneNumbers) {
+                    if (url) {
+                        $.ajax({
+                            data: data,
+                            dataType: "json",
+                            success: function (data) {
+                                var i = -1,
+                                    l = [],
+                                    n = data.length,
+                                    respData = [],
+                                    t = term,
+                                    val;
+
+                                while (++i < n) {
+                                    val = data[i].toLowerCase();
+                                    if (val) {
+                                        l.push(val);
+                                        if (val.indexOf(t) >= 0) {
+                                            respData.push(val);
+                                        }
+                                    }
+                                }
+                                phoneNumbers = l;
+                                response(respData);
+                            },
+                            url: url
+                        });
+                    }
+                } else {
+                    response($.grep(
+                        phoneNumbers, function (val) {
+                            return val.indexOf(term) >= 0;
+                        }
+                    ));
+                }
+            }
+        });
 }(SPRINGCRM));
 //]]></script>
 </content>

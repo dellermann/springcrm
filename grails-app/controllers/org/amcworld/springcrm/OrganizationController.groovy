@@ -165,4 +165,18 @@ class OrganizationController {
 			render(status:404)
         }
 	}
+
+	def getPhoneNumbers = {
+        def organizationInstance = Organization.get(params.id)
+        if (organizationInstance) {
+			def phoneNumbers = [
+				organizationInstance.phone,
+				organizationInstance.phoneOther,
+				organizationInstance.fax
+			]
+			render phoneNumbers as JSON
+        } else {
+			render(status:404)
+        }
+	}
 }

@@ -1,6 +1,7 @@
 package org.amcworld.springcrm
 
 import com.google.gdata.data.extensions.*
+import grails.converters.JSON
 import net.sf.jmimemagic.Magic
 
 class PersonController {
@@ -161,7 +162,27 @@ class PersonController {
 			render(status:404)
 		}
 	}
-	
+
+	def getPhoneNumbers = {
+		def personInstance = Person.get(params.id)
+		if (personInstance) {
+			def phoneNumbers = [
+				personInstance.phone,
+				personInstance.phoneHome,
+				personInstance.mobile,
+				personInstance.fax,
+				personInstance.phoneAssistant,
+				personInstance.phoneOther,
+				personInstance.organization.phone,
+				personInstance.organization.phoneOther,
+				personInstance.organization.fax
+			]
+			render phoneNumbers as JSON
+		} else {
+			render(status:404)
+		}
+	}
+
 	def find = {
 		def organizationInstance = Organization.findById(params.organization)
 		def c = Person.createCriteria()
