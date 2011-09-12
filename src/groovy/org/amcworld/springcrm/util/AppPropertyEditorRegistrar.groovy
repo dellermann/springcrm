@@ -24,8 +24,10 @@ import org.springframework.beans.PropertyEditorRegistry
  */
 class AppPropertyEditorRegistrar implements PropertyEditorRegistrar {
 
+	def messageSource
+
 	@Override
 	public void registerCustomEditors(PropertyEditorRegistry registry) {
-//		registry.registerCustomEditor(Date, new DatePropertyEditor())
+		registry.registerCustomEditor(Date, new DatePropertyEditor(messageSource))
 	}
 }

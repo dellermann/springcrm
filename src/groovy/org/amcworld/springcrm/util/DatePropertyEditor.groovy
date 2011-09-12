@@ -14,25 +14,48 @@
 
 package org.amcworld.springcrm.util
 
-import java.beans.PropertyEditorSupport;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.beans.PropertyEditorSupport
+import java.text.SimpleDateFormat
+import org.springframework.context.i18n.LocaleContextHolder
 
 
 /**
  * @author Daniel Ellermann
  */
 class DatePropertyEditor extends PropertyEditorSupport {
-	
+
+	//-- Instance variables ---------------------
+
+	String dateFormat
+	String dateTimeFormat
+	String timeFormat
+
+
+	//-- Constructors ---------------------------
+
+	DatePropertyEditor(messageSource) {
+		dateFormat = messageSource.getMessage(
+			'default.format.date', null, 'yyyy-MM-dd',
+			LocaleContextHolder.locale
+		)
+		dateTimeFormat = messageSource.getMessage(
+			'default.format.datetime', null, 'yyyy-MM-dd HH:mm',
+			LocaleContextHolder.locale
+		)
+		timeFormat = messageSource.getMessage(
+			'default.format.time', null, 'HH:mm', LocaleContextHolder.locale
+		)
+	}
+
+
+	//-- Public methods -------------------------
+
 	@Override
 	String getAsText() {
 		if (value == null) {
 			return null
 		} else {
-			DateFormat format = DateFormat.getDateTimeInstance(
-				DateFormat.SHORT, DateFormat.SHORT
-			)
+			SimpleDateFormat format = new SimpleDateFormat(dateTimeFormat)
 			return format.format(value)
 		}
 	}
@@ -51,17 +74,20 @@ class DatePropertyEditor extends PropertyEditorSupport {
 			}
 		}
 	}
-	
+
+
+	//-- Non-public methods ---------------------
+
 	protected Date parseDate(String text) throws IllegalArgumentException {
-		DateFormat format;
+		String fmt
 		if (text.isLong()) {
-			format = new SimpleDateFormat(
-				(text.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
-			)
+			fmt = (text.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
 		} else {
-			format = DateFormat.getDateInstance(DateFormat.SHORT)
+			fmt = dateFormat
 		}
 		try {
+			SimpleDateFormat format = new SimpleDateFormat(fmt)
+			format.timeZone = TimeZone.getTimeZone('UTC')
 			value = format.parse(text)
 		} catch (ParseException) {
 			throw new IllegalArgumentException()
@@ -69,13 +95,10 @@ class DatePropertyEditor extends PropertyEditorSupport {
 	}
 	
 	protected void parseTime(Date d, String text) {
-		DateFormat format;
-		if (text.isLong()) {
-			format = new SimpleDateFormat('HHmm')
-		} else {
-			format = DateFormat.getTimeInstance(DateFormat.SHORT)
-		}
+		String fmt = text.isLong() ? 'HHmm' : timeFormat
 		try {
+			SimpleDateFormat format = new SimpleDateFormat(fmt)
+			format.timeZone = TimeZone.getTimeZone('UTC')
 			value = new Date((value as Date).time + format.parse(text).time)
 		} catch (ParseException) {
 			throw new IllegalArgumentException()

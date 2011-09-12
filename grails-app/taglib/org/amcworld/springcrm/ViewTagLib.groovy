@@ -39,43 +39,24 @@ class ViewTagLib {
         Calendar c = null
         if (value instanceof Calendar) {
             c = value
-        } else if (value != null) {
+        } else {
             c = new GregorianCalendar()
-            c.setTime(value)
+			if (value != null) {
+				c.setTime(value)
+			}
         }
 
-		/* compute date/time parts */
-        def day
-        def month
-        def year
-        def hour
-        def minute
-        if (c != null) {
-            day = c.get(GregorianCalendar.DAY_OF_MONTH)
-            month = c.get(GregorianCalendar.MONTH)
-            year = c.get(GregorianCalendar.YEAR)
-            hour = c.get(GregorianCalendar.HOUR_OF_DAY)
-            minute = c.get(GregorianCalendar.MINUTE)
-        }
-
-		out.println "<input type=\"hidden\" name=\"${name}\" value=\"date.struct\" />"
-
-		if (precision >= PRECISION_RANKINGS['year']) {
-			out.println "<input type=\"hidden\" name=\"${name}_year\" id=\"${id}_year\" value=\"${year}\" />"
-			out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.date')}\" size=\"10\" class=\"date-input date-input-date\" />"
-		}
-		if (precision >= PRECISION_RANKINGS['month']) {
-			out.println "<input type=\"hidden\" name=\"${name}_month\" id=\"${id}_month\" value=\"${month ? month + 1 : null}\" />"
-		}
-		if (precision >= PRECISION_RANKINGS['day']) {
-			out.println "<input type=\"hidden\" name=\"${name}_day\" id=\"${id}_day\" value=\"${day}\" />"
-		}
+		def formatName
 		if (precision >= PRECISION_RANKINGS['hour']) {
-			out.println "<input type=\"hidden\" name=\"${name}_hour\" id=\"${id}_hour\" value=\"${hour}\" />"
-			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.time')}\" size=\"5\" class=\"date-input date-input-time\" />"
+			formatName = 'default.format.datetime'
+		} else {
+			formatName = 'default.format.date'
 		}
-		if (precision >= PRECISION_RANKINGS['minute']) {
-			out.println "<input type=\"hidden\" name=\"${name}_minute\" id=\"${id}_minute\" value=\"${minute}\" />"
+		out.println "<input type=\"hidden\" name=\"${name}\" value=\"${formatDate(date:c, formatName:formatName)}\" />"
+		out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.date')}\" size=\"10\" class=\"date-input date-input-date\" />"
+		
+		if (precision >= PRECISION_RANKINGS['hour']) {
+			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.time')}\" size=\"5\" class=\"date-input date-input-time\" />"
 		}
 	}
 

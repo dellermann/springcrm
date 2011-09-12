@@ -241,8 +241,6 @@
          */
         _onChangeDateInput: function () {
             var baseId,
-                date,
-                el,
                 els,
                 otherPartField,
                 partId,
@@ -270,28 +268,7 @@
                     val += this.value;
                     type += "time";
                 }
-                date = $.parseDate(val, type);
-
-                el = els[baseId + "_year"];
-                if (el) {
-                    el.value = date ? date.getFullYear() : "";
-                }
-                el = els[baseId + "_month"];
-                if (el) {
-                    el.value = date ? date.getMonth() + 1 : "";
-                }
-                el = els[baseId + "_day"];
-                if (el) {
-                    el.value = date ? date.getDate() : "";
-                }
-                el = els[baseId + "_hour"];
-                if (el) {
-                    el.value = date ? date.getHours() : "";
-                }
-                el = els[baseId + "_minute"];
-                if (el) {
-                    el.value = date ? date.getMinutes() : "";
-                }
+                els[baseId].value = val;
             }
         },
 
