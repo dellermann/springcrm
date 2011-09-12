@@ -27,7 +27,7 @@ class InvoicingItem {
 	BigDecimal tax
 	
 	InvoicingItem() {}
-	
+
 	InvoicingItem(InvoicingItem i) {
 		number = i.number
 		quantity = i.quantity

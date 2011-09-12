@@ -30,11 +30,17 @@ class Invoice extends InvoicingTransaction {
 
 	Invoice(Quote q) {
 		super(q)
-		this.quote = q
+		quote = q
 	}
 
 	Invoice(SalesOrder so) {
 		super(so)
-		this.salesOrder = so
+		salesOrder = so
+	}
+
+	Invoice(Invoice i) {
+		super(i)
+		quote = i.quote
+		salesOrder = i.salesOrder
 	}
 }

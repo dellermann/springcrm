@@ -26,6 +26,17 @@ class NoteController {
         return [noteInstance: noteInstance]
     }
 
+	def copy = {
+        def noteInstance = Note.get(params.id)
+        if (noteInstance) {
+			noteInstance = new Note(noteInstance)
+			render(view:'create', model:[noteInstance:noteInstance])
+        } else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])}"
+			redirect(action: 'show', id: noteInstance.id)
+        }
+	}
+
     def save = {
         def noteInstance = new Note(params)
         if (noteInstance.save(flush: true)) {

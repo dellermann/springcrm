@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
-
 class Person {
 
     static constraints = {
@@ -51,9 +49,9 @@ class Person {
 	}
 	static searchable = true
 	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']
-	
+
 	def seqNumberService
-	
+
     int number
     Organization organization
     Salutation salutation
@@ -87,15 +85,50 @@ class Person {
     String notes
 	Date dateCreated
 	Date lastUpdated
-	
+
+	Person() {}
+
+	Person(Person p) {
+		organization = p.organization
+		salutation = p.salutation
+		firstName = p.firstName
+		lastName = p.lastName
+		mailingAddrStreet = p.mailingAddrStreet
+		mailingAddrPoBox = p.mailingAddrPoBox
+		mailingAddrPostalCode = p.mailingAddrPostalCode
+		mailingAddrLocation = p.mailingAddrLocation
+		mailingAddrState = p.mailingAddrState
+		mailingAddrCountry = p.mailingAddrCountry
+		otherAddrStreet = p.otherAddrStreet
+		otherAddrPoBox = p.otherAddrPoBox
+		otherAddrPostalCode = p.otherAddrPostalCode
+		otherAddrLocation = p.otherAddrLocation
+		otherAddrState = p.otherAddrState
+		otherAddrCountry = p.otherAddrCountry
+		phone = p.phone
+		phoneHome = p.phoneHome
+		mobile = p.mobile
+		fax = p.fax
+		phoneAssistant = p.phoneAssistant
+		phoneOther = p.phoneOther
+		email1 = p.email1
+		email2 = p.email2
+		jobTitle = p.jobTitle
+		department = p.department
+		assistant = p.assistant
+		birthday = p.birthday
+		picture = p.picture
+		notes = p.notes
+	}
+
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
 	}
-	
+
 	String getFullName() {
 		return "${firstName} ${lastName}"
 	}
-	
+
 	String getMailingAddr() {
 		String s = mailingAddrStreet ?: ''
 		if (mailingAddrLocation) {
@@ -115,7 +148,7 @@ class Person {
 		}
 		return s
 	}
-	
+
 	String getOtherAddr() {
 		String s = otherAddrStreet ?: ''
 		if (otherAddrLocation) {

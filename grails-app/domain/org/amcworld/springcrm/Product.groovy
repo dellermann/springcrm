@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
-
 class Product {
 
     static constraints = {
@@ -28,9 +26,9 @@ class Product {
     }
 	static searchable = true
 	static transients = ['fullNumber']
-	
+
 	def seqNumberService
-	
+
 	int number
 	String name
 	ProductCategory category
@@ -47,11 +45,29 @@ class Product {
 	String description
 	Date dateCreated
 	Date lastUpdated
-	
+
+	Product() {}
+
+	Product(Product p) {
+		name = p.name
+		category = p.category
+		manufacturer = p.manufacturer
+		retailer = p.retailer
+		quantity = p.quantity
+		unit = p.unit
+		unitPrice = p.unitPrice
+		taxClass = p.taxClass
+		weight = p.weight
+		commission = p.commission
+		salesStart = p.salesStart
+		salesEnd = p.salesEnd
+		description = p.description
+	}
+
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
 	}
-	
+
 	String toString() {
 		return name ?: ''
 	}

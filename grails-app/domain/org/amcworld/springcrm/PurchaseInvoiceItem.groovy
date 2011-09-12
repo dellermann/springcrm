@@ -14,7 +14,7 @@ class PurchaseInvoiceItem {
     }
 	static searchable = [only:['number', 'name', 'description']]
 	static transients = ['total']
-		
+
 	String number
 	BigDecimal quantity
 	String unit
@@ -22,9 +22,9 @@ class PurchaseInvoiceItem {
 	String description
 	BigDecimal unitPrice
 	BigDecimal tax
-	
+
 	PurchaseInvoiceItem() {}
-	
+
 	PurchaseInvoiceItem(PurchaseInvoiceItem i) {
 		number = i.number
 		quantity = i.quantity
@@ -34,19 +34,19 @@ class PurchaseInvoiceItem {
 		unitPrice = i.unitPrice
 		tax = i.tax
 	}
-	
+
 	BigDecimal getQuantity() {
 		return quantity ?: 0
 	}
-	
+
 	BigDecimal getUnitPrice() {
 		return unitPrice ?: 0
 	}
-	
+
 	BigDecimal getTotal() {
 		return getQuantity() * getUnitPrice()
 	}
-	
+
 	String toString() {
 		return name
 	}

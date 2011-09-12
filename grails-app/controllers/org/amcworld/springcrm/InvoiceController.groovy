@@ -33,6 +33,17 @@ class InvoiceController {
 		}
         return [invoiceInstance: invoiceInstance]
     }
+	
+	def copy = {
+		def invoiceInstance = Invoice.get(params.id)
+		if (invoiceInstance) {
+			invoiceInstance = new Invoice(invoiceInstance)
+			render(view:'create', model:[invoiceInstance:invoiceInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
+			redirect(action: 'show', id: invoiceInstance.id)
+		}
+	}
 
     def save = {
         def invoiceInstance = new Invoice(params)

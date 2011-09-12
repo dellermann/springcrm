@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date
-
 class User {
 
     static constraints = {
@@ -26,7 +24,7 @@ class User {
 	static transients = [
 		'fullName', 'allowedModulesAsList', 'allowedControllers'
 	]
-	
+
 	String userName
 	String password
 	String firstName
@@ -42,15 +40,15 @@ class User {
 	Date dateCreated
 	Date lastUpdated
 	private Set<String> allowedControllers
-	
+
 	String getFullName() {
 		return "${firstName ?: ''} ${lastName ?: ''}".trim()
 	}
-	
+
 	List<String> getAllowedModulesAsList() {
 		return allowedModules?.split(',')
 	}
-	
+
 	void setAllowedModulesAsList(List<String> l) {
 		allowedModules = l.join(',')
 	}

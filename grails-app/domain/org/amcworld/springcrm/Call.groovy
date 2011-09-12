@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
-
 class Call {
 
     static constraints = {
@@ -33,6 +31,19 @@ class Call {
 	String status
 	Date dateCreated
 	Date lastUpdated
+
+	Call() {}
+
+	Call(Call call) {
+		subject = call.subject
+		notes = call.notes
+		organization = call.organization
+		person = call.person
+		phone = call.phone
+		start = call.start
+		type = call.type
+		status = call.status
+	}
 
 	String toString() {
 		return subject

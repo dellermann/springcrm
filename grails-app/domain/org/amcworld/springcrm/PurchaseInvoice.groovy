@@ -2,7 +2,6 @@ package org.amcworld.springcrm
 
 import static java.math.RoundingMode.HALF_UP
 
-
 class PurchaseInvoice {
 
     static constraints = {
@@ -57,23 +56,40 @@ class PurchaseInvoice {
 	BigDecimal total
 	Date dateCreated
 	Date lastUpdated
-	
+
+	PurchaseInvoice() {}
+
+	PurchaseInvoice(PurchaseInvoice p) {
+		number = p.number
+		subject = p.subject
+		vendor = p.vendor
+		items = new ArrayList(p.items.size())
+		p.items.each { items << new PurchaseInvoiceItem(it) }
+		discountPercent = p.discountPercent
+		discountAmount = p.discountAmount
+		shippingCosts = p.shippingCosts
+		shippingTax = p.shippingTax
+		adjustment = p.adjustment
+		notes = p.notes
+		total = p.total
+	}
+
 	BigDecimal getDiscountPercent() {
 		return discountPercent ?: 0
 	}
-	
+
 	BigDecimal getDiscountAmount() {
 		return discountAmount ?: 0
 	}
-	
+
 	BigDecimal getShippingCosts() {
 		return shippingCosts ?: 0
 	}
-	
+
 	BigDecimal getShippingTax() {
 		return shippingTax ?: 0
 	}
-	
+
 	BigDecimal getAdjustment() {
 		return adjustment ?: 0
 	}
@@ -88,7 +104,7 @@ class PurchaseInvoice {
 	BigDecimal getSubtotalNet() {
 		return items.total.sum() + getShippingCosts()
 	}
-	
+
 	/**
 	 * Gets the subtotal gross value. It is computed by adding the tax values
 	 * to the subtotal net value.
@@ -99,7 +115,7 @@ class PurchaseInvoice {
 	BigDecimal getSubtotalGross() {
 		return subtotalNet + taxRateSums.values().sum()
 	}
-	
+
 	/**
 	 * Gets the discount amount which is granted when the user specifies a
 	 * discount percentage value. The percentage value is related to the
@@ -111,7 +127,7 @@ class PurchaseInvoice {
 	BigDecimal getDiscountPercentAmount() {
 		return (subtotalGross * getDiscountPercent()).divide(100.0, 2, HALF_UP)
 	}
-	
+
 	/**
 	 * Computes a map of taxes used in this transaction. The key represents the
 	 * tax rate (a percentage value), the value the sum of tax values of all
@@ -131,7 +147,7 @@ class PurchaseInvoice {
 		}
 		return res.sort { e1, e2 -> e1.key <=> e2.key }
 	}
-	
+
 	/**
 	 * Computes the total (gross) value. It is computed from the subtotal gross
 	 * value minus all discounts plus the adjustment.

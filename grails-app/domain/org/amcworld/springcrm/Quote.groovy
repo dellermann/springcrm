@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
-
 class Quote extends InvoicingTransaction {
 
     static constraints = {
@@ -13,11 +11,18 @@ class Quote extends InvoicingTransaction {
 		stage column:'quote_stage_id'
 	}
 	static searchable = true
-	
+
 	QuoteStage stage
 	Date validUntil
-	
+
 	{
 		type = 'Q'
+	}
+
+	Quote() {}
+
+	Quote(Quote q) {
+		super(q)
+		validUntil = q.validUntil
 	}
 }

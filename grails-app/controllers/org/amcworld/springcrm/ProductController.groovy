@@ -51,6 +51,17 @@ class ProductController {
         productInstance.properties = params
         return [productInstance: productInstance]
     }
+	
+	def copy = {
+		def productInstance = Product.get(params.id)
+		if (productInstance) {
+			productInstance = new Product(productInstance)
+			render(view:'create', model:[productInstance:productInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])}"
+			redirect(action: 'show', id: productInstance.id)
+		}
+	}
 
     def save = {
         def productInstance = new Product(params)

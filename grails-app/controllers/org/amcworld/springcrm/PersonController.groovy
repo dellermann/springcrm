@@ -30,6 +30,17 @@ class PersonController {
         personInstance.properties = params
         return [personInstance: personInstance]
     }
+	
+	def copy = {
+		def personInstance = Person.get(params.id)
+		if (personInstance) {
+			personInstance = new Person(personInstance)
+			render(view:'create', model:[personInstance:personInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])}"
+			redirect(action: 'show', id: personInstance.id)
+		}
+	}
 
     def save = {
         def personInstance = new Person(params)

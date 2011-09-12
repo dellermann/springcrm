@@ -51,6 +51,17 @@ class ServiceController {
         serviceInstance.properties = params
         return [serviceInstance: serviceInstance]
     }
+	
+	def copy = {
+		def serviceInstance = Service.get(params.id)
+		if (serviceInstance) {
+			serviceInstance = new Service(serviceInstance)
+			render(view:'create', model:[serviceInstance:serviceInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])}"
+			redirect(action: 'show', id: serviceInstance.id)
+		}
+	}
 
     def save = {
         def serviceInstance = new Service(params)

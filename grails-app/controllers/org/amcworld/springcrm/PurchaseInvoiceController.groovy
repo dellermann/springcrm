@@ -23,6 +23,17 @@ class PurchaseInvoiceController {
         purchaseInvoiceInstance.properties = params
         return [purchaseInvoiceInstance: purchaseInvoiceInstance]
     }
+	
+	def copy = {
+		def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
+		if (purchaseInvoiceInstance) {
+			purchaseInvoiceInstance = new PurchaseInvoice(purchaseInvoiceInstance)
+			render(view:'create', model:[purchaseInvoiceInstance:purchaseInvoiceInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])}"
+			redirect(action: 'show', id: purchaseInvoiceInstance.id)
+		}
+	}
 
     def save = {
         def purchaseInvoiceInstance = new PurchaseInvoice(params)

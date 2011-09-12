@@ -29,6 +29,17 @@ class SalesOrderController {
 		}
         return [salesOrderInstance: salesOrderInstance]
     }
+	
+	def copy = {
+		def salesOrderInstance = SalesOrder.get(params.id)
+		if (salesOrderInstance) {
+			salesOrderInstance = new SalesOrder(salesOrderInstance)
+			render(view:'create', model:[salesOrderInstance:salesOrderInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
+			redirect(action: 'show', id: salesOrderInstance.id)
+		}
+	}
 
     def save = {
         def salesOrderInstance = new SalesOrder(params)

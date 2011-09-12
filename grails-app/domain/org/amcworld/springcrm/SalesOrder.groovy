@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
-
 class SalesOrder extends InvoicingTransaction {
 
     static constraints = {
@@ -15,12 +13,12 @@ class SalesOrder extends InvoicingTransaction {
 		stage column:'so_stage_id'
 	}
 	static searchable = true
-	
+
 	SalesOrderStage stage
 	Date dueDate
 	Date deliveryDate
 	Quote quote
-	
+
 	{
 		type = 'O'
 	}
@@ -29,6 +27,11 @@ class SalesOrder extends InvoicingTransaction {
 
 	SalesOrder(Quote q) {
 		super(q)
-		this.quote = q
+		quote = q
+	}
+
+	SalesOrder(SalesOrder so) {
+		super(so)
+		quote = so.quote
 	}
 }

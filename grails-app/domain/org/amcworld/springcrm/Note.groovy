@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import java.util.Date;
-
 class Note {
 
     static constraints = {
@@ -19,7 +17,7 @@ class Note {
 	}
 	static searchable = true
 	static transients = [ 'fullNumber' ]
-	
+
 	def seqNumberService
 
 	int number
@@ -29,6 +27,15 @@ class Note {
 	Person person
 	Date dateCreated
 	Date lastUpdated
+
+	Note() {}
+
+	Note(Note n) {
+		title = n.title
+		content = n.content
+		organization = n.organization
+		person = n.person
+	}
 
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)

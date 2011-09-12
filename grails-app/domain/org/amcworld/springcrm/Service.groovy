@@ -23,9 +23,9 @@ class Service {
     }
 	static searchable = true
 	static transients = ['fullNumber']
-	
+
 	def seqNumberService
-	
+
 	int number
 	String name
 	ServiceCategory category
@@ -39,11 +39,26 @@ class Service {
 	String description
 	Date dateCreated
 	Date lastUpdated
-	
+
+	Service() {}
+
+	Service(Service s) {
+		name = s.name
+		category = s.category
+		quantity = s.quantity
+		unit = s.unit
+		unitPrice = s.unitPrice
+		taxClass = s.taxClass
+		commission = s.commission
+		salesStart = s.salesStart
+		salesEnd = s.salesEnd
+		description = s.description
+	}
+
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
 	}
-	
+
 	String toString() {
 		return name ?: ''
 	}

@@ -23,6 +23,17 @@ class QuoteController {
         quoteInstance.properties = params
         return [quoteInstance: quoteInstance]
     }
+	
+	def copy = {
+		def quoteInstance = Quote.get(params.id)
+		if (quoteInstance) {
+			quoteInstance = new Quote(quoteInstance)
+			render(view:'create', model:[quoteInstance:quoteInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
+			redirect(action: 'show', id: quoteInstance.id)
+		}
+	}
 
     def save = {
         def quoteInstance = new Quote(params)

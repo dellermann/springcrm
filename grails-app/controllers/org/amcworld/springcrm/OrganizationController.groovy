@@ -37,6 +37,17 @@ class OrganizationController {
         organizationInstance.properties = params
         return [organizationInstance: organizationInstance]
     }
+	
+	def copy = {
+		def organizationInstance = Organization.get(params.id)
+		if (organizationInstance) {
+			organizationInstance = new Organization(organizationInstance)
+			render(view:'create', model:[organizationInstance:organizationInstance])
+		} else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+			redirect(action: 'show', id: organizationInstance.id)
+		}
+	}
 
     def save = {
         def organizationInstance = new Organization(params)

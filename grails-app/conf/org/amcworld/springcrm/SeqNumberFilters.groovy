@@ -6,7 +6,7 @@ class SeqNumberFilters {
 	def seqNumberService
 
 	def filters = {
-		create(controller:'*', action:'create') {
+		create(controller:'*', action:'create|copy') {
 			after = { model ->
 				SeqNumber seqNumber =
 					seqNumberService.loadSeqNumber(controllerName)
@@ -22,7 +22,7 @@ class SeqNumberFilters {
 			}
 		}
 		
-		save(controller:'*', action:'(save|edit|update)') {
+		save(controller:'*', action:'save|edit|update') {
 			after = { model ->
 				if (model != null) {
 					SeqNumber seqNumber =

@@ -83,6 +83,38 @@ class Organization {
 	Date dateCreated
 	Date lastUpdated
 
+	Organization() {}
+
+	Organization(Organization org) {
+		recType = org.recType
+		name = org.name
+		billingAddrStreet = org.billingAddrStreet
+		billingAddrPoBox = org.billingAddrPoBox
+		billingAddrPostalCode = org.billingAddrPostalCode
+		billingAddrLocation = org.billingAddrLocation
+		billingAddrState = org.billingAddrState
+		billingAddrCountry = org.billingAddrCountry
+		shippingAddrStreet = org.shippingAddrStreet
+		shippingAddrPoBox = org.shippingAddrPoBox
+		shippingAddrPostalCode = org.shippingAddrPostalCode
+		shippingAddrLocation = org.shippingAddrLocation
+		shippingAddrState = org.shippingAddrState
+		shippingAddrCountry = org.shippingAddrCountry
+		phone = org.phone
+		fax = org.fax
+		phoneOther = org.phoneOther
+		email1 = org.email1
+		email2 = org.email2
+		website = org.website
+		legalForm = org.legalForm
+		type = org.type
+		industry = org.industry
+		owner = org.owner
+		numEmployees = org.numEmployees
+		rating = org.rating
+		notes = org.notes
+	}
+
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
 	}
@@ -146,7 +178,7 @@ class Organization {
 	boolean isCustomer() {
 		return (this.recType & 1) != 0;
 	}
-	
+
 	boolean isVendor() {
 		return (this.recType & 2) != 0;
 	}

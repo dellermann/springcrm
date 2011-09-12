@@ -23,11 +23,23 @@ class CallController {
         callInstance.properties = params
 		if (callInstance.person) {
 			callInstance.phone = callInstance.person.phone
+			callInstance.organization = callInstance.person.organization
 		} else if (callInstance.organization) {
 			callInstance.phone = callInstance.organization.phone
 		}
         return [callInstance: callInstance]
     }
+
+	def copy = {
+        def callInstance = Call.get(params.id)
+        if (callInstance) {
+			callInstance = new Call(callInstance)
+			render(view:'create', model:[callInstance:callInstance])
+        } else {
+            flash.message = "${message(code:'default.not.found.message', args:[message(code:'call.label', default:'Call'), params.id])}"
+			redirect(action: 'show', id: callInstance.id)
+        }
+	}
 
     def save = {
         def callInstance = new Call(params)
