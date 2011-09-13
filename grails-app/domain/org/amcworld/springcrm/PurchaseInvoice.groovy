@@ -162,6 +162,10 @@ class PurchaseInvoice {
 	String toString() {
 		return subject
 	}
+	
+	def beforeValidate() {
+		total = computeTotal()
+	}
 
 	def beforeInsert() {
 		total = computeTotal()
