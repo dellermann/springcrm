@@ -27,6 +27,21 @@ class SalesOrderController {
 			salesOrderInstance = new SalesOrder()
 			salesOrderInstance.properties = params
 		}
+		Organization org = salesOrderInstance.organization
+		if (org) {
+			salesOrderInstance.billingAddrCountry = org.billingAddrCountry
+			salesOrderInstance.billingAddrLocation = org.billingAddrLocation
+			salesOrderInstance.billingAddrPoBox = org.billingAddrPoBox
+			salesOrderInstance.billingAddrPostalCode = org.billingAddrPostalCode
+			salesOrderInstance.billingAddrState = org.billingAddrState
+			salesOrderInstance.billingAddrStreet = org.billingAddrStreet
+			salesOrderInstance.shippingAddrCountry = org.shippingAddrCountry
+			salesOrderInstance.shippingAddrLocation = org.shippingAddrLocation
+			salesOrderInstance.shippingAddrPoBox = org.shippingAddrPoBox
+			salesOrderInstance.shippingAddrPostalCode = org.shippingAddrPostalCode
+			salesOrderInstance.shippingAddrState = org.shippingAddrState
+			salesOrderInstance.shippingAddrStreet = org.shippingAddrStreet
+		}
         return [salesOrderInstance: salesOrderInstance]
     }
 	
@@ -53,6 +68,7 @@ class SalesOrderController {
 				redirect(action: 'show', id: salesOrderInstance.id)
 			}
         } else {
+			log.debug(salesOrderInstance.errors)
             render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
         }
     }
@@ -116,6 +132,7 @@ class SalesOrderController {
 					redirect(action: 'show', id: salesOrderInstance.id)
 				}
             } else {
+				log.debug(salesOrderInstance.errors)
                 render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
             }
         } else {

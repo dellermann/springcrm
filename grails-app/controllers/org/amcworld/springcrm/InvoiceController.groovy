@@ -31,6 +31,21 @@ class InvoiceController {
 			invoiceInstance = new Invoice()
 			invoiceInstance.properties = params
 		}
+		Organization org = invoiceInstance.organization
+		if (org) {
+			invoiceInstance.billingAddrCountry = org.billingAddrCountry
+			invoiceInstance.billingAddrLocation = org.billingAddrLocation
+			invoiceInstance.billingAddrPoBox = org.billingAddrPoBox
+			invoiceInstance.billingAddrPostalCode = org.billingAddrPostalCode
+			invoiceInstance.billingAddrState = org.billingAddrState
+			invoiceInstance.billingAddrStreet = org.billingAddrStreet
+			invoiceInstance.shippingAddrCountry = org.shippingAddrCountry
+			invoiceInstance.shippingAddrLocation = org.shippingAddrLocation
+			invoiceInstance.shippingAddrPoBox = org.shippingAddrPoBox
+			invoiceInstance.shippingAddrPostalCode = org.shippingAddrPostalCode
+			invoiceInstance.shippingAddrState = org.shippingAddrState
+			invoiceInstance.shippingAddrStreet = org.shippingAddrStreet
+		}
         return [invoiceInstance: invoiceInstance]
     }
 	
@@ -57,6 +72,7 @@ class InvoiceController {
 				redirect(action: 'show', id: invoiceInstance.id)
 			}
         } else {
+			log.debug(invoiceInstance.errors)
             render(view: 'create', model: [invoiceInstance: invoiceInstance])
         }
     }
@@ -120,6 +136,7 @@ class InvoiceController {
 					redirect(action: 'show', id: invoiceInstance.id)
 				}
             } else {
+				log.debug(invoiceInstance.errors)
                 render(view: 'edit', model: [invoiceInstance: invoiceInstance])
             }
         } else {

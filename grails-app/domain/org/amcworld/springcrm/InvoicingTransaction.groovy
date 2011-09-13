@@ -258,6 +258,10 @@ class InvoicingTransaction {
 	String toString() {
 		return subject
 	}
+	
+	def beforeValidate() {
+		total = computeTotal()
+	}
 
 	def beforeInsert() {
 		total = computeTotal()

@@ -39,11 +39,9 @@ class ViewTagLib {
         Calendar c = null
         if (value instanceof Calendar) {
             c = value
-        } else {
+        } else if (value != null) {
             c = new GregorianCalendar()
-			if (value != null) {
-				c.setTime(value)
-			}
+			c.setTime(value)
         }
 
 		def formatName
@@ -52,11 +50,11 @@ class ViewTagLib {
 		} else {
 			formatName = 'default.format.date'
 		}
-		out.println "<input type=\"hidden\" name=\"${name}\" value=\"${formatDate(date:c, formatName:formatName)}\" />"
-		out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.date')}\" size=\"10\" class=\"date-input date-input-date\" />"
+		out.println "<input type=\"hidden\" name=\"${name}\" value=\"${c ? formatDate(date:c, formatName:formatName) : ''}\" />"
+		out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${c ? formatDate(date: c, formatName: 'default.format.date') : ''}\" size=\"10\" class=\"date-input date-input-date\" />"
 		
 		if (precision >= PRECISION_RANKINGS['hour']) {
-			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${(c == null) ? '' : formatDate(date: c, formatName: 'default.format.time')}\" size=\"5\" class=\"date-input date-input-time\" />"
+			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${c ? formatDate(date: c, formatName: 'default.format.time') : ''}\" size=\"5\" class=\"date-input date-input-time\" />"
 		}
 	}
 

@@ -21,6 +21,21 @@ class QuoteController {
     def create = {
         def quoteInstance = new Quote()
         quoteInstance.properties = params
+		Organization org = quoteInstance.organization
+		if (org) {
+			quoteInstance.billingAddrCountry = org.billingAddrCountry
+			quoteInstance.billingAddrLocation = org.billingAddrLocation
+			quoteInstance.billingAddrPoBox = org.billingAddrPoBox
+			quoteInstance.billingAddrPostalCode = org.billingAddrPostalCode
+			quoteInstance.billingAddrState = org.billingAddrState
+			quoteInstance.billingAddrStreet = org.billingAddrStreet
+			quoteInstance.shippingAddrCountry = org.shippingAddrCountry
+			quoteInstance.shippingAddrLocation = org.shippingAddrLocation
+			quoteInstance.shippingAddrPoBox = org.shippingAddrPoBox
+			quoteInstance.shippingAddrPostalCode = org.shippingAddrPostalCode
+			quoteInstance.shippingAddrState = org.shippingAddrState
+			quoteInstance.shippingAddrStreet = org.shippingAddrStreet
+		}
         return [quoteInstance: quoteInstance]
     }
 	
@@ -47,6 +62,8 @@ class QuoteController {
 				redirect(action: 'show', id: quoteInstance.id)
 			}
         } else {
+        	println quoteInstance.errors
+			log.debug(quoteInstance.errors)
             render(view: 'create', model: [quoteInstance: quoteInstance])
         }
     }
@@ -110,6 +127,7 @@ class QuoteController {
 					redirect(action: 'show', id: quoteInstance.id)
 				}
             } else {
+				log.debug(quoteInstance.errors)
                 render(view: 'edit', model: [quoteInstance: quoteInstance])
             }
         } else {
