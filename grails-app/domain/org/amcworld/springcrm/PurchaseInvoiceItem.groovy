@@ -9,7 +9,7 @@ class PurchaseInvoiceItem {
 		unit()
 		name(blank:false)
 		description(nullable:true)
-		unitPrice(scale:2, min:0.01)
+		unitPrice(scale:2, min:0.0)
 		tax(scale:1, min:0.0)
     }
 	static searchable = [only:['number', 'name', 'description']]
