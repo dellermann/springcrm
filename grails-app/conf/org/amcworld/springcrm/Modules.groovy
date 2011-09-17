@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory
  * permission control in this application.
  * 
  * @author 	Daniel Ellermann
- * @version 0.9.3
+ * @version 0.9.9
  * @since	0.9.3
  */
 class Modules {
@@ -25,6 +25,7 @@ class Modules {
 		invoice: ['organization', 'invoice'],
 		note: ['note'],
 		product: ['product'],
+		purchaseInvoice: ['purchaseInvoice'],
 		quote: ['organization', 'quote'],
 		salesOrder: ['organization', 'salesOrder'],
 		service: ['service'],
