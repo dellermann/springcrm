@@ -28,7 +28,7 @@
           </tr>
           <tr>
             <th><g:message code="error.exception.details.message"/></th>
-            <td>${request.'javax.servlet.error.message'.encodeAsHTML()}</td>
+            <td>${request.'javax.servlet.error.message'?.encodeAsHTML()}</td>
           </tr>
           <tr>
             <th><g:message code="error.exception.details.servlet"/></th>
