@@ -51,7 +51,10 @@ grails.spring.bean.packages = []
 // request parameters to mask when logging exceptions
 grails.exceptionresolver.params.exclude = ['password']
 
-springcrm.documents.base = "${System.getProperty('user.home')}/.springcrm/documents"
+springcrm {
+	lruList.numEntries = 10
+	documents.base = "${System.getProperty('user.home')}/.springcrm/documents"
+}
 
 // set per-environment serverURL stem for creating absolute links
 environments {
