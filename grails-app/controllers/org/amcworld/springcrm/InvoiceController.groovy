@@ -206,4 +206,17 @@ class InvoiceController {
 			render(status: 404)
 		}
 	}
+
+	def listUnpaidBills = {
+		InvoiceStage stage = InvoiceStage.get(902)
+		def c = Invoice.createCriteria()
+		def invoiceInstanceList = c.list {
+			eq('stage', stage)
+			and {
+				le('dueDatePayment', new Date())
+			}
+			order('docDate')
+		}
+		[invoiceInstanceList:invoiceInstanceList]
+	}
 }

@@ -7,7 +7,7 @@ class UrlMappings {
 			}
 		}
 
-		'/'(view:'/index')
+		'/'(controller:'overview', action:'index')
 		'403'(view:'/forbidden')
 //		'500'(view:'/error')
 	}

@@ -2,5 +2,5 @@
 beans = {
     appEditorRegistrar(org.amcworld.springcrm.util.AppPropertyEditorRegistrar) { 
 		messageSource = ref('messageSource') 
-	} 
+	}
 }

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.amc-world.de/data/xml/springcrm"
+        xmlns:tns="http://www.amc-world.de/data/xml/springcrm"
+        elementFormDefault="qualified">
+  <annotation>
+    <documentation>Schema for the repository of panels which are used on the overview page of SpringCRM.
+
+Copyright © 2011, AMC World Technologies GmbH</documentation>
+  </annotation>
+
+
+  <!-- ==========================================
+
+    ELEMENTS
+
+  =========================================== -->
+
+  <element name="overview-panel-repository" type="tns:overview-panel-repository-type">
+    <annotation>
+      <documentation>Defines a repository of panels which can be places on the overview page by the user.</documentation>
+    </annotation>
+  </element>
+
+  <element name="panel" type="tns:panel-type">
+    <annotation>
+      <appinfo>Defines a panel on the overview page.</appinfo>
+      <documentation>Defines a panel on the overview page. Each panel must be identified by attribute "id".</documentation>
+    </annotation>
+  </element>
+
+  <element name="controller" type="NCName">
+    <annotation>
+      <documentation>Specifies the controller which is called to produce the content of the panel. This elements works together with element "action" and is mandatory.</documentation>
+    </annotation>
+  </element>
+
+  <element name="action" type="NCName">
+    <annotation>
+      <documentation>Specifies the action which is to call to produce the content of the panel. This elements works together with element "controller" and is mandatory.</documentation>
+    </annotation>
+  </element>
+
+  <element name="title" type="tns:title-type">
+    <annotation>
+      <documentation>Defines a title either in the given language or the default language which is displayed in the panel header.</documentation>
+    </annotation>
+  </element>
+
+  <element name="style" type="string">
+    <annotation>
+      <documentation>Specifies any CSS style attributes which are applied to the panel. We recommend the usage of relative units such as "em" or "%" in order to respect changes in font sizes.</documentation>
+    </annotation>
+  </element>
+
+
+  <!-- ==========================================
+
+    ATTRIBUTES
+
+  =========================================== -->
+
+  <attributeGroup name="panel-attrs">
+    <attribute name="id" type="ID" use="required">
+      <annotation>
+        <documentation>Specifies a unique identifier of the panel.</documentation>
+      </annotation>
+    </attribute>
+  </attributeGroup>
+
+  <attributeGroup name="title-attrs">
+    <attribute name="lang" type="language">
+      <annotation>
+        <documentation>Specifies an identifier for the language of the title.</documentation>
+      </annotation>
+    </attribute>
+  </attributeGroup>
+
+
+  <!-- ==========================================
+
+    TYPE DEFINITIONS
+
+  =========================================== -->
+
+  <complexType name="overview-panel-repository-type">
+    <sequence>
+      <element ref="tns:panel" maxOccurs="unbounded"/>
+    </sequence>
+  </complexType>
+  
+  <complexType name="panel-type">
+    <sequence>
+      <element ref="tns:controller"/>
+      <element ref="tns:action"/>
+      <element name="title" type="tns:title-type" maxOccurs="unbounded"/>
+      <element ref="tns:style" minOccurs="0"/>
+    </sequence>
+    <attributeGroup ref="tns:panel-attrs"/>
+  </complexType>
+
+  <complexType name="title-type">
+    <simpleContent>
+      <extension base="normalizedString">
+        <attributeGroup ref="tns:title-attrs"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+</schema>

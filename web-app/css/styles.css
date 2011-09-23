@@ -358,6 +358,7 @@ body {
   display: none;
   margin: 0;
   position: absolute;
+  z-index: 2;
   -khtml-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
@@ -1271,6 +1272,21 @@ form .invoicing-items-pos {
   display: block;
   padding: .1em .4em;
 }
+.simple-ordered-list {
+  margin: 0;
+}
+.simple-ordered-list li {
+  border-bottom: .1em dotted #AAA;
+  list-style: none;
+  margin-bottom: 0;
+  padding: .3em 0;
+}
+.simple-ordered-list li:hover {
+  background: #DDD;
+}
+.simple-ordered-list li:last-child {
+  border-bottom: none;
+}
 
 /* frames */
 .selector-toolbar {
@@ -1400,6 +1416,56 @@ form .invoicing-items-pos {
 }
 #login footer div {
   padding: 0;
+}
+
+/* overview page */
+.overview-columns {
+  display: table;
+  left: 0;
+  position: relative;
+  top: 0;
+  width: 966px;
+}
+.overview-column {
+  border-left: 1px dotted #888;
+  display: table-cell;
+  height: 20em;
+  padding: 0 10px;
+  vertical-align: top;
+  width: 308px;
+}
+.overview-column:first-child {
+  border-left: none;
+  padding-left: 0;
+}
+.overview-column:last-child {
+  padding-right: 0;
+}
+.drag-hover {
+  background: #F0FFF0;
+}
+.panel {
+  border: .1em solid #888;
+  margin-bottom: 1em;
+}
+.panel h3 {
+  background: #97B42D;
+  background: -khtml-gradient(
+      linear, left top, left bottom, from(#B0C639), to(#80A322)
+    );
+  background: -moz-linear-gradient(top, #B0C639, #80A322);
+  background: -webkit-gradient(
+      linear, left top, left bottom, from(#B0C639), to(#80A322)
+    );
+  color: white !important;
+  cursor: move;
+  margin-bottom: 0 !important;
+  padding: .8em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
+}
+.panel-content {
+  overflow-y: auto;
+  padding: .8em;
 }
 
 /* document views */

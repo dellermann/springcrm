@@ -15,11 +15,5 @@ class LruFilters {
 				}
             }
         }
-
-		lruDisplay(uri:'/') {
-			after = { model ->
-				model.lruList = lruService.retrieveLruEntries()
-			}
-		}
     }
 }

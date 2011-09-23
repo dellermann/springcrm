@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<overview-panel-repository xmlns="http://www.amc-world.de/data/xml/springcrm"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           xsi:schemaLocation="http://www.amc-world.de/data/xml/springcrm overview-panel-repository.xsd">
+  <panel id="lru">
+    <controller>overview</controller>
+    <action>lruList</action>
+    <title>Last recently used</title>
+    <title lang="de">Kürzlich verwendet</title>
+  </panel>
+
+  <panel id="unpaid-bills">
+    <controller>invoice</controller>
+    <action>listUnpaidBills</action>
+    <title>Unpaid bills</title>
+    <title lang="de">Offene Rechnungen</title>
+    <style>max-height: 30em;</style>
+  </panel>
+</overview-panel-repository>
