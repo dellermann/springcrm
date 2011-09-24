@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import grails.converters.JSON
+
 class OverviewController {
 
 	def lruService
@@ -22,9 +24,41 @@ class OverviewController {
 		[panels:panels]
 	}
 
+	def listAvailablePanels = {
+		OverviewPanelRepository repository = servletContext.overviewPanelRepository
+		Map<String, OverviewPanel> panels = repository.getPanels()
+		render panels as JSON
+	}
+
 	def lruList = {
 		def lruList = lruService.retrieveLruEntries()
 		[lruList:lruList]
+	}
+
+	def addPanel = {
+		String panelId = params.panelId
+		int col = params.col as Integer
+		int pos = params.pos as Integer
+
+		/* move down all successors of the panel at new position */
+		def c = Panel.createCriteria()
+		def panels = c.list {
+			eq('user', session.user)
+			and {
+				eq('col', col)
+				ge('pos', pos)
+			}
+		}
+		for (Panel p in panels) {
+			p.pos++
+			p.save(flush:true)
+		}
+
+		/* insert new panel */
+		Panel panel = new Panel(
+			user:session.user, col:col, pos:pos, panelId:panelId
+		)
+		panel.save(flush:true)
 	}
 
 	def movePanel = {
@@ -73,8 +107,10 @@ class OverviewController {
 
 	def removePanel = {
 		String panelId = params.panelId
-		Panel panel = Panel.findAllByUserAndPanelId(session.user, panelId)
+		Panel panel = Panel.findByUserAndPanelId(session.user, panelId)
 		if (panel) {
+			panel.delete(flush:true)
+
 			def c = Panel.createCriteria()
 			List<Panel> panels = c.list {
 				eq('user', session.user)
@@ -87,8 +123,6 @@ class OverviewController {
 				p.pos--
 				p.save(flush:true)
 			}
-
-			panel.delete(flush:true)
 		}
 		render(status:200)
 	}

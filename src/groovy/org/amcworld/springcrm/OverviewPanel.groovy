@@ -1,5 +1,7 @@
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.commons.ApplicationHolder
+
 /**
  * The class {@code OverviewPanel} stores information about a panel which can
  * be used on the overview page.
@@ -14,6 +16,7 @@ class OverviewPanel {
 
 	private String controller
 	private String action
+	private String url
 	private String defTitle
 	private String style
 	private Map<Locale, String> localizedTitles
@@ -71,6 +74,14 @@ class OverviewPanel {
 	 */
 	String getStyle() {
 		return style
+	}
+
+	String getUrl() {
+		if (!url) {
+			def g = ApplicationHolder.application.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+			url = g.createLink(controller:controller, action:action)
+		}
+		return url
 	}
 
 
