@@ -10,7 +10,7 @@
     <fo:static-content flow-name="first-page-footer">
       <fo:table table-layout="fixed" width="158mm"
                 font-family="Frutiger LT 57 Cn" font-size="7pt"
-                line-height="140%" color="#5F6A72">
+                line-height="140%" color="#333">
         <fo:table-column column-number="1" column-width="71mm"/>
         <fo:table-column column-number="2" column-width="26mm"/>
         <fo:table-column column-number="3" column-width="8mm"/>

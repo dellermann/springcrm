@@ -27,7 +27,7 @@
 
     <!-- footer text -->
     <fo:block-container font-family="Frutiger LT 57 Cn" font-size="9pt"
-                        color="#5F6A72" line-height="140%"
+                        color="#333" line-height="140%"
                         keep-together.within-page="always">
       <xsl:apply-templates select="footerText"/>
       <fo:block space-after="5mm">

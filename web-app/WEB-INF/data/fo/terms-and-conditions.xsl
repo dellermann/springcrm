@@ -15,7 +15,7 @@
       <fo:static-content flow-name="xsl-region-before"
                          font-family="Arial" font-size="12pt"
                          font-weight="bold" text-align="center"
-                         color="#5F6A72">
+                         color="#333">
         <fo:block>
           Allgemeine Geschäftsbedingungen für Dienstleistungen
           <fo:block/><!-- line break -->
@@ -24,7 +24,7 @@
       </fo:static-content>                 
       <fo:static-content flow-name="rest-page-footer"
                          font-family="Frutiger LT 57 Cn" font-size="7pt"
-                         color="#5F6A72">
+                         color="#333">
         <fo:block text-align="center">
           <xsl:text>— Seite </xsl:text>
           <fo:page-number/>
@@ -33,7 +33,7 @@
       </fo:static-content>
       <fo:flow flow-name="xsl-region-body">
         <fo:block-container font-family="Frutiger LT 57 Cn" font-size="7pt"
-                            color="#5F6A72">
+                            color="#333">
           <fo:block font-family="Arial" font-size="8pt" font-weight="bold"
                     space-after="1.5mm">
             1. Sachlicher Geltungsbereich
@@ -332,7 +332,7 @@
       <fo:static-content flow-name="xsl-region-before"
                          font-family="Arial" font-size="12pt"
                          font-weight="bold" text-align="center"
-                         color="#5F6A72">
+                         color="#333">
         <fo:block>
           Allgemeine Geschäftsbedingungen für Waren
           <fo:block/><!-- line break -->
@@ -341,7 +341,7 @@
       </fo:static-content>                 
       <fo:static-content flow-name="rest-page-footer"
                          font-family="Frutiger LT 57 Cn" font-size="7pt"
-                         color="#5F6A72">
+                         color="#333">
         <fo:block text-align="center">
           <xsl:text>— Seite </xsl:text>
           <fo:page-number/>
@@ -350,7 +350,7 @@
       </fo:static-content>
       <fo:flow flow-name="xsl-region-body">
         <fo:block-container font-family="Frutiger LT 57 Cn" font-size="7pt"
-                            color="#5F6A72">
+                            color="#333">
           <fo:block font-family="Arial" font-size="8pt" font-weight="bold"
                     space-after="1.5mm">
             1. Geltungsbereich und Anbieter
