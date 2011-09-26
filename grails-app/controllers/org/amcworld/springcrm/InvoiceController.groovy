@@ -215,7 +215,7 @@ class InvoiceController {
 			and {
 				le('dueDatePayment', new Date())
 			}
-			order('docDate')
+			order('docDate', 'desc')
 		}
 		[invoiceInstanceList:invoiceInstanceList]
 	}
