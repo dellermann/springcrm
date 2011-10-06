@@ -389,7 +389,7 @@
                 pos;
 
             /* check whether a new panel has been dropped */
-            panelAdded = helper.attr("id").match(/^add-panel-([\w-]+)$/);
+            panelAdded = helper.attr("id").match(/^add-panel-([\w\-]+)$/);
             if (panelAdded) {
                 panelId = RegExp.$1;
                 panelDef = this._availablePanels[panelId];
@@ -521,15 +521,23 @@
                 .slideToggle();
         },
 
+        /**
+         * Refreshes the panel list by re-reading the available panels. All
+         * panels which are already in use are not displayed in the list.
+         *
+         * @protected
+         */
         _refreshPanelList: function () {
             var d = null,
                 data = this._availablePanels,
                 html = "";
 
             for (d in data) {
-                if ($("#" + d).length === 0) {
-                    html += '<li id="add-panel-' + d + '">' + data[d].title +
-                        "</li>";
+                if (data.hasOwnProperty(d)) {
+                    if ($("#" + d).length === 0) {
+                        html += '<li id="add-panel-' + d + '">' +
+                            data[d].title + "</li>";
+                    }
                 }
             }
             this._$panelList
