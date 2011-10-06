@@ -17,6 +17,11 @@ class PurchaseInvoiceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [purchaseInvoiceInstanceList: PurchaseInvoice.list(params), purchaseInvoiceInstanceTotal: PurchaseInvoice.count()]
     }
+	
+	def listEmbedded = {
+		def organizationInstance = Organization.get(params.organization)
+		[purchaseInvoiceInstanceList:PurchaseInvoice.findAllByOrganization(organizationInstance, params), purchaseInvoiceInstanceTotal:PurchaseInvoice.countByOrganization(organizationInstance), linkParams:[organization:organizationInstance.id]]
+	}
 
     def create = {
         def purchaseInvoiceInstance = new PurchaseInvoice()

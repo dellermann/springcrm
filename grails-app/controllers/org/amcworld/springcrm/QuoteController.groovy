@@ -17,6 +17,24 @@ class QuoteController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [quoteInstanceList: Quote.list(params), quoteInstanceTotal: Quote.count()]
     }
+	
+	def listEmbedded = {
+		def l
+		def count
+		def linkParams
+		if (params.organization) {
+			def organizationInstance = Organization.get(params.organization)
+			l = Quote.findAllByOrganization(organizationInstance, params)
+			count = Quote.countByOrganization(organizationInstance)
+			linkParams = [organization:organizationInstance.id]
+		} else if (params.person) {
+			def personInstance = Person.get(params.person)
+			l = Quote.findAllByPerson(personInstance, params)
+			count = Quote.countByPerson(personInstance)
+			linkParams = [person:personInstance.id]
+		}
+		[quoteInstanceList:l, quoteInstanceTotal:count, linkParams:linkParams]
+	}
 
     def create = {
         def quoteInstance = new Quote()

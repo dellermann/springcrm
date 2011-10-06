@@ -31,6 +31,7 @@
         FixedSelAutocomplete = null,
         LightBox = null,
         Page = null,
+        RemoteList = null,
         page = null;
 
 
@@ -997,7 +998,7 @@
         /**
          * Activates the lightbox for the given selector.
          *
-         * @param {String|jQueryObject} selector    either a selector or a
+         * @param {String|JQueryObject} selector    either a selector or a
          *                                          jQuery object for which the
          *                                          lightbox should be
          *                                          activated
@@ -1012,6 +1013,133 @@
         }
     };
     SPRINGCRM.LightBox = LightBox;
+
+
+    /**
+     * Creates a set of list which load their content from the remote server.
+     *
+     * @param {String} returnUrl        the URL which is appended to links in
+     *                                  the body of the table in order to lead
+     *                                  the user back to the current page
+     * @param {String} [sel]            the selector which indicates the
+     *                                  containers that load their content from
+     *                                  the server
+     * @param {String} [containerSel]   the selector which selects the area of
+     *                                  the container where the loaded content
+     *                                  is to display
+     * @returns {Object}                the created RemoteList instance
+     */
+    RemoteList = function (returnUrl, sel, containerSel) {
+
+        /* handle function call without new */
+        if (!(this instanceof RemoteList)) {
+            return new RemoteList(sel, containerSel);
+        }
+
+        sel = sel || "[itemtype=http://www.amc-world.de/data/xml/springcrm/list-vocabulary][itemscope]";
+
+        /**
+         * The containers which load their content from remote servers.
+         *
+         * @type JQueryObject
+         * @default $("[itemtype=http://www.amc-world.de/data/xml/springcrm/list-vocabulary][itemscope]")
+         */
+        this._$containers = $(sel);
+
+        /**
+         * The selector which selects the area of the container where the
+         * loaded content is to display.
+         *
+         * @type String
+         * @default ".fieldset-content"
+         */
+        this._containerSel = containerSel || ".fieldset-content";
+
+        /**
+         * The URL which is appended to links in the body of the table in order
+         * to lead the user back to the current page.
+         *
+         * @type String
+         */
+        this._returnUrl = returnUrl;
+    };
+
+    RemoteList.prototype = {
+
+        //-- Public methods ---------------------
+
+        /**
+         * Initializes all containers which load their content from remote
+         * server.
+         */
+        initialize: function () {
+            var instance = this;
+
+            this._$containers
+                .each(function () {
+                    instance._initContainer(this);
+                });
+        },
+
+
+        //-- Non-public methods -----------------
+
+        /**
+         * Initializes the given container.
+         *
+         * @param {Object} container    the given container
+         * @private
+         */
+        _initContainer: function (container) {
+            var $container = $(container),
+                url;
+
+            url = $container.find("link")
+                .attr("href");
+            this._loadContent($container, url);
+        },
+
+        /**
+         * Loads the HTML content from the given URL and places it in the
+         * stated container. Furthermore, the method rewrites all links in the
+         * returned HTML content in order to load them via AJAX.
+         *
+         * @param {JQueryObject} $container the given container
+         * @param {String} url              the URL to load
+         * @private
+         */
+        _loadContent: function ($container, url) {
+            var instance = this;
+
+            $container.find(this._containerSel)
+                .load(
+                    url,
+                    function () {
+                        var $c = $container;
+
+                        $c.find("thead a")
+                            .add(".paginator a")
+                            .click(function (event) {
+                                var url = $(this).attr("href");
+
+                                event.preventDefault();
+                                instance._loadContent($container, url);
+                            });
+                        $c.find("tbody .button")
+                            .each(function () {
+                                var $this = $(this),
+                                    url;
+
+                                url = $this.attr("href");
+                                url += ((url.indexOf("?") < 0) ? "?" : "&") +
+                                    "returnUrl=" + instance._returnUrl;
+                                $this.attr("href", url);
+                            });
+                    }
+                );
+        }
+    };
+    SPRINGCRM.RemoteList = RemoteList;
 
 
     //== jQuery extensions ======================

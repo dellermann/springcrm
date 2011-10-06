@@ -17,6 +17,24 @@ class CallController {
 		}
         [callInstanceList: Call.list(params), callInstanceTotal: Call.count()]
     }
+	
+	def listEmbedded = {
+		def l
+		def count
+		def linkParams
+		if (params.organization) {
+			def organizationInstance = Organization.get(params.organization)
+			l = Call.findAllByOrganization(organizationInstance, params)
+			count = Call.countByOrganization(organizationInstance)
+			linkParams = [organization:organizationInstance.id]
+		} else if (params.person) {
+			def personInstance = Person.get(params.person)
+			l = Call.findAllByPerson(personInstance, params)
+			count = Call.countByPerson(personInstance)
+			linkParams = [person:personInstance.id]
+		}
+		[callInstanceList:l, callInstanceTotal:count, linkParams:linkParams]
+	}
 
     def create = {
         def callInstance = new Call()

@@ -17,6 +17,29 @@ class SalesOrderController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [salesOrderInstanceList: SalesOrder.list(params), salesOrderInstanceTotal: SalesOrder.count()]
     }
+	
+	def listEmbedded = {
+		def l
+		def count
+		def linkParams
+		if (params.organization) {
+			def organizationInstance = Organization.get(params.organization)
+			l = SalesOrder.findAllByOrganization(organizationInstance, params)
+			count = SalesOrder.countByOrganization(organizationInstance)
+			linkParams = [organization:organizationInstance.id]
+		} else if (params.person) {
+			def personInstance = Person.get(params.person)
+			l = SalesOrder.findAllByPerson(personInstance, params)
+			count = SalesOrder.countByPerson(personInstance)
+			linkParams = [person:personInstance.id]
+		} else if (params.quote) {
+			def quoteInstance = Quote.get(params.quote)
+			l = SalesOrder.findAllByQuote(quoteInstance, params)
+			count = SalesOrder.countByQuote(quoteInstance)
+			linkParams = [quote:quoteInstance.id]
+		}
+		[salesOrderInstanceList:l, salesOrderInstanceTotal:count, linkParams:linkParams]
+	}
 
     def create = {
         def salesOrderInstance

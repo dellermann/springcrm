@@ -17,6 +17,34 @@ class InvoiceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [invoiceInstanceList: Invoice.list(params), invoiceInstanceTotal: Invoice.count()]
     }
+	
+	def listEmbedded = {
+		def l
+		def count
+		def linkParams
+		if (params.organization) {
+			def organizationInstance = Organization.get(params.organization)
+			l = Invoice.findAllByOrganization(organizationInstance, params)
+			count = Invoice.countByOrganization(organizationInstance)
+			linkParams = [organization:organizationInstance.id]
+		} else if (params.person) {
+			def personInstance = Person.get(params.person)
+			l = Invoice.findAllByPerson(personInstance, params)
+			count = Invoice.countByPerson(personInstance)
+			linkParams = [person:personInstance.id]
+		} else if (params.quote) {
+			def quoteInstance = Quote.get(params.quote)
+			l = Invoice.findAllByQuote(quoteInstance, params)
+			count = Invoice.countByQuote(quoteInstance)
+			linkParams = [quote:quoteInstance.id]
+		} else if (params.salesOrder) {
+			def salesOrderInstance = SalesOrder.get(params.salesOrder)
+			l = Invoice.findAllBySalesOrder(salesOrderInstance, params)
+			count = Invoice.countBySalesOrder(salesOrderInstance)
+			linkParams = [salesOrder:salesOrderInstance.id]
+		}
+		[invoiceInstanceList:l, invoiceInstanceTotal:count, linkParams:linkParams]
+	}
 
     def create = {
         def invoiceInstance

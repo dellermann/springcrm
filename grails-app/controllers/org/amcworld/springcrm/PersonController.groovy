@@ -23,8 +23,13 @@ class PersonController {
 			params.sort = 'lastName'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-        [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
+		[personInstanceList:Person.list(params), personInstanceTotal:Person.count()]
     }
+
+	def listEmbedded = {
+		def organizationInstance = Organization.get(params.organization)
+		[personInstanceList:Person.findAllByOrganization(organizationInstance, params), personInstanceTotal:Person.countByOrganization(organizationInstance), linkParams:[organization:organizationInstance.id]]
+	}
 
     def create = {
         def personInstance = new Person()

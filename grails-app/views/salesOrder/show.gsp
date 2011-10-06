@@ -317,54 +317,15 @@
       </div>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'invoice', action:'listEmbedded', params:[salesOrder:salesOrderInstance.id])}" />
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
             <g:link controller="invoice" action="create" params="['salesOrder.id':salesOrderInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-          <g:if test="${salesOrderInstance.invoices}">
-          <table class="content-table">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="invoice-multop-sel" class="multop-sel" /></th>
-                <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
-                <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-                <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label', default: 'Stage')}" />
-                <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label', default: 'Date')}" />
-                <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label', default: 'Due date of payment')}" />
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${salesOrderInstance.invoices}" status="i" var="invoiceInstance">
-              <tr>
-                <td><input type="checkbox" id="invoice-multop-${invoiceInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
-                <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-                <td><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
-                <td><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-                <td>
-                  <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
-                </td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-          <div class="paginator">
-            <g:paginate total="${salesOrderInstance.invoices.size()}" />
-          </div>
-          </g:if>
-          <g:else>
-            <div class="empty-list-inline">
-              <p><g:message code="default.list.empty" /></p>
-            </div>
-          </g:else>
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
     </div>
@@ -375,6 +336,15 @@
   </section>
   <content tag="jsTexts">
   deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
+  </content>
+  <content tag="additionalJavaScript">
+  <script type="text/javascript">
+  //<![CDATA[
+  (function (SPRINGCRM) {
+      new SPRINGCRM.RemoteList("${url()}")
+          .initialize();
+  }(SPRINGCRM));
+  //]]></script>
   </content>
 </body>
 </html>

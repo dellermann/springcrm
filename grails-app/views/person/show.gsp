@@ -241,254 +241,67 @@
       </g:if>
 
       <g:ifModuleAllowed modules="quote">
-      <div class="fieldset">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'quote', action:'listEmbedded', params:[person:personInstance.id])}" />
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
             <g:link controller="quote" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-          <g:if test="${personInstance.quotes}">
-          <table class="content-table">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="salesOrder-multop-sel" class="multop-sel" /></th>
-                <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
-                <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-                <g:sortableColumn property="stage" title="${message(code: 'quote.stage.label', default: 'Stage')}" />
-                <g:sortableColumn property="docDate" title="${message(code: 'quote.docDate.label', default: 'Date')}" />
-                <g:sortableColumn property="shippingDate" title="${message(code: 'quote.shippingDate.label', default: 'Shipping date')}" />
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${personInstance.quotes}" status="i" var="quoteInstance">
-              <tr>
-                <td><input type="checkbox" id="salesOrder-multop-${quoteInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link controller="quote" action="show" id="${quoteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link controller="quote" action="show" id="${quoteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
-                <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
-                <td><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
-                <td><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
-                <td>
-                  <g:link controller="quote" action="edit" id="${quoteInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="quote" action="delete" id="${quoteInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
-                </td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-          <div class="paginator">
-            <g:paginate total="${personInstance.quotes.size()}" />
-          </div>
-          </g:if>
-          <g:else>
-            <div class="empty-list-inline">
-              <p><g:message code="default.list.empty" /></p>
-            </div>
-          </g:else>
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'salesOrder', action:'listEmbedded', params:[person:personInstance.id])}" />
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
             <g:link controller="salesOrder" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-          <g:if test="${personInstance.salesOrders}">
-          <table class="content-table">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="salesOrder-multop-sel" class="multop-sel" /></th>
-                <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
-                <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-                <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label', default: 'Stage')}" />
-                <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label', default: 'Date')}" />
-                <g:sortableColumn property="dueDate" title="${message(code: 'salesOrder.dueDate.label', default: 'Due date')}" />
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${personInstance.salesOrders}" status="i" var="salesOrderInstance">
-              <tr>
-                <td><input type="checkbox" id="salesOrder-multop-${salesOrderInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: salesOrderInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link controller="salesOrder" action="show" id="${salesOrderInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: salesOrderInstance, field: "subject")}</g:link></td>
-                <td>${fieldValue(bean: salesOrderInstance, field: "stage")}</td>
-                <td><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>
-                <td><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></td>
-                <td>
-                  <g:link controller="salesOrder" action="edit" id="${salesOrderInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="salesOrder" action="delete" id="${salesOrderInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
-                </td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-          <div class="paginator">
-            <g:paginate total="${personInstance.salesOrders.size()}" />
-          </div>
-          </g:if>
-          <g:else>
-            <div class="empty-list-inline">
-              <p><g:message code="default.list.empty" /></p>
-            </div>
-          </g:else>
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'invoice', action:'listEmbedded', params:[person:personInstance.id])}" />
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
             <g:link controller="invoice" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-          <g:if test="${personInstance.invoices}">
-          <table class="content-table">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="invoice-multop-sel" class="multop-sel" /></th>
-                <g:sortableColumn property="fullNumber" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
-                <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-                <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label', default: 'Stage')}" />
-                <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label', default: 'Date')}" />
-                <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label', default: 'Due date of payment')}" />
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${personInstance.invoices}" status="i" var="invoiceInstance">
-              <tr>
-                <td><input type="checkbox" id="invoice-multop-${invoiceInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link action="show" id="${invoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link action="show" id="${invoiceInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
-                <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-                <td><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
-                <td><g:formatDate date="${invoiceInstance?.dueDatePayment} formatName="default.format.date" /></td>
-                <td>
-                  <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
-                </td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-          <div class="paginator">
-            <g:paginate total="${personInstance.invoices.size()}" />
-          </div>
-          </g:if>
-          <g:else>
-            <div class="empty-list-inline">
-              <p><g:message code="default.list.empty" /></p>
-            </div>
-          </g:else>
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="call">
-      <div class="fieldset">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'call', action:'listEmbedded', params:[person:personInstance.id])}" />
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
             <g:link controller="call" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-          <g:if test="${personInstance?.calls}">
-          <table class="content-table">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="call-multop-sel" class="multop-sel" /></th>
-                <g:sortableColumn property="subject" title="${message(code: 'call.subject.label', default: 'Subject')}" />
-                <g:sortableColumn property="start" title="${message(code: 'call.start.label', default: 'Start')}" />
-                <g:sortableColumn property="type" title="${message(code: 'call.type.label', default: 'Type')}" />
-                <g:sortableColumn property="status" title="${message(code: 'call.status.label', default: 'Status')}" />
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${personInstance.calls}" status="i" var="callInstance">
-              <tr>
-                <td><input type="checkbox" id="call-multop-${callInstance.id}" class="multop-sel-item" /></td>
-                <td><g:link controller="call" action="show" id="${callInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
-                <td><g:formatDate date="${callInstance.start}" formatName="default.format.date" /></td>
-                <td><g:message code="call.type.${callInstance?.type}" /></td>
-                <td><g:message code="call.status.${callInstance?.status}" /></td>
-                <td>
-                  <g:link controller="call" action="edit" id="${callInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="call" action="delete" id="${callInstance?.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
-                </td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-          <div class="paginator">
-            <g:paginate total="${personInstance.calls.size()}" />
-          </div>
-          </g:if>
-          <g:else>
-            <div class="empty-list-inline">
-              <p><g:message code="default.list.empty" /></p>
-            </div>
-          </g:else>
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="note">
-      <div class="fieldset">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'note', action:'listEmbedded', params:[person:personInstance.id])}" />
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">
             <g:link controller="note" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-          <g:if test="${personInstance.noteEntries}">
-          <table class="content-table">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="note-multop-sel" class="multop-sel" /></th>
-                <g:sortableColumn property="number" title="${message(code: 'note.number.label', default: 'Number')}" />
-                <g:sortableColumn property="title" title="${message(code: 'note.title.label', default: 'Title')}" />
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${personInstance.noteEntries}" status="i" var="noteInstance">
-              <tr>
-                <td><input type="checkbox" id="note-multop-${noteInstance.id}" class="multop-sel-item" /></td>
-                <td style="text-align: center;"><g:link controller="note" action="show" id="${noteInstance.id}" params="[returnUrl:url()]">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
-                <td><g:link controller="note" action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "title")}</g:link></td>
-                <td>
-                  <g:link controller="note" action="edit" id="${noteInstance.id}" params="[returnUrl:url()]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-                  <g:link controller="note" action="delete" id="${noteInstance.id}" params="[returnUrl:url()]" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
-                </td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-          <div class="paginator">
-            <g:paginate total="${personInstance.noteEntries.size()}" />
-          </div>
-          </g:if>
-          <g:else>
-            <div class="empty-list-inline">
-              <p><g:message code="default.list.empty" /></p>
-            </div>
-          </g:else>
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
     </div>
@@ -507,6 +320,8 @@
   (function ($, SPRINGCRM) {
       new SPRINGCRM.LightBox({imgDir: "${resource(dir:'img/lightbox')}"})
           .activate("#picture");
+      new SPRINGCRM.RemoteList("${url()}")
+          .initialize();
   }(jQuery, SPRINGCRM));
   //]]></script>
   </content>

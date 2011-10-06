@@ -19,6 +19,24 @@ class NoteController {
 		}
         [noteInstanceList: Note.list(params), noteInstanceTotal: Note.count()]
     }
+	
+	def listEmbedded = {
+		def l
+		def count
+		def linkParams
+		if (params.organization) {
+			def organizationInstance = Organization.get(params.organization)
+			l = Note.findAllByOrganization(organizationInstance, params)
+			count = Note.countByOrganization(organizationInstance)
+			linkParams = [organization:organizationInstance.id]
+		} else if (params.person) {
+			def personInstance = Person.get(params.person)
+			l = Note.findAllByPerson(personInstance, params)
+			count = Note.countByPerson(personInstance)
+			linkParams = [person:personInstance.id]
+		}
+		[noteInstanceList:l, noteInstanceTotal:count, linkParams:linkParams]
+	}
 
     def create = {
         def noteInstance = new Note()
