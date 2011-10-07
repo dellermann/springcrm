@@ -33,7 +33,7 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><g:link controller="call" action="create" params="['organization.id':organizationInstance?.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link></li>
+      <li><g:link controller="call" action="create" params="['organization.id':organizationInstance?.id, returnUrl:url()]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link></li>
       <g:if test="${organizationInstance.isCustomer()}">
       <li><g:link controller="quote" action="create" params="['organization.id':organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link></li>
       <li><g:link controller="invoice" action="create" params="['organization.id':organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link></li>

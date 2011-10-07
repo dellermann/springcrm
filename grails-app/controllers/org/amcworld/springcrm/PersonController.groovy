@@ -229,7 +229,11 @@ class PersonController {
 			}
 			googleDataContactService.deleteMarkedEntries()
 		}
-        redirect(action:'list')
+		if (params.returnUrl) {
+			redirect(url:params.returnUrl)
+		} else {
+			redirect(action: 'list')
+		}
 	}
 	
 	def ldapexport = {
@@ -249,6 +253,10 @@ class PersonController {
 				flash.message = "${message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])}"
 			}
 		}
-        redirect(action:'list')
+		if (params.returnUrl) {
+			redirect(url:params.returnUrl)
+		} else {
+			redirect(action: 'list')
+		}
 	}
 }
