@@ -25,6 +25,7 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><g:link action="print" id="${quoteInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
+      <li><g:link action="print" id="${quoteInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label"/></g:link></li>
       <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder" action="create" params="[quote:quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createSalesOrder" /></g:link></li></g:ifModuleAllowed>
       <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice" action="create" params="[quote:quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createInvoice" /></g:link></li></g:ifModuleAllowed>
     </ul>

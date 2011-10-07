@@ -211,10 +211,17 @@ class QuoteController {
 					subtotalGross:quoteInstance.subtotalGross,
 					discountPercentAmount:quoteInstance.discountPercentAmount,
 					total:quoteInstance.total
-				]
+				],
+				watermark:params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml
+			
+			GString fileName = "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
+			if (params.duplicate) {
+				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+			}
+			fileName += ".pdf"
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
@@ -222,7 +229,7 @@ class QuoteController {
 			)
 			response.contentType = 'application/pdf'
 			response.addHeader 'Content-Disposition', 
-				"attachment; filename=\"${message(code: 'quote.label')} ${quoteInstance.fullNumber}.pdf\""
+				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())
 			response.outputStream.flush()

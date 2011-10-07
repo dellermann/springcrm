@@ -214,10 +214,17 @@ class InvoiceController {
 					subtotalGross:invoiceInstance.subtotalGross,
 					discountPercentAmount:invoiceInstance.discountPercentAmount,
 					total:invoiceInstance.total
-				]
+				],
+				watermark:params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml
+			
+			GString fileName = "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
+			if (params.duplicate) {
+				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+			}
+			fileName += ".pdf"
 			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
@@ -226,7 +233,7 @@ class InvoiceController {
 			)
 			response.contentType = 'application/pdf'
 			response.addHeader 'Content-Disposition', 
-				"attachment; filename=\"${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}.pdf\""
+				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())
 			response.outputStream.flush()

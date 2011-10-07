@@ -25,6 +25,7 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <li><g:link action="print" id="${invoiceInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
+      <li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label"/></g:link></li>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">

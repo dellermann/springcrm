@@ -326,7 +326,13 @@
                              margin-bottom="11mm" margin-left="21mm"
                              master-name="first-page">
         <fo:region-body space-before="20mm" space-after="16mm"
-                        margin-left="2mm" width="156mm"/>
+                        margin-left="2mm" width="156mm">
+          <xsl:if test="key('entries', 'watermark') = 'duplicate'">
+            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/fo/img/copy-watermark.png')</xsl:attribute>
+            <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
+            <xsl:attribute name="background-repeat">repeat-y</xsl:attribute>
+          </xsl:if>
+        </fo:region-body>
         <fo:region-before extent="15mm"/>
         <fo:region-after region-name="first-page-footer" extent="11mm"/>
         <fo:region-end region-name="first-page-margin" extent="17.5mm"/>
@@ -334,7 +340,13 @@
       <fo:simple-page-master margin-top="25mm" margin-right="31mm"
                              margin-bottom="11mm" margin-left="23mm"
                              master-name="rest-page">
-        <fo:region-body space-after="10mm"/>
+        <fo:region-body space-after="10mm">
+          <xsl:if test="key('entries', 'watermark') = 'duplicate'">
+            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/fo/img/copy-watermark.png')</xsl:attribute>
+            <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
+            <xsl:attribute name="background-repeat">repeat-y</xsl:attribute>
+          </xsl:if>
+        </fo:region-body>
         <fo:region-after region-name="rest-page-footer" extent="3mm"/>
       </fo:simple-page-master>
       <fo:simple-page-master margin-top="25mm" margin-right="31mm"

@@ -221,11 +221,18 @@ class SalesOrderController {
 					subtotalGross:salesOrderInstance.subtotalGross,
 					discountPercentAmount:salesOrderInstance.discountPercentAmount,
 					total:salesOrderInstance.total
-				]
+				],
+				watermark:params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml
 			
+			GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
+			if (params.duplicate) {
+				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+			}
+			fileName += ".pdf"
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
 				new StringReader(xml), '/WEB-INF/data/fo/sales-order-fo.xsl',
@@ -233,7 +240,7 @@ class SalesOrderController {
 			)
 			response.contentType = 'application/pdf'
 			response.addHeader 'Content-Disposition', 
-				"attachment; filename=\"${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}.pdf\""
+				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())
 			response.outputStream.flush()
