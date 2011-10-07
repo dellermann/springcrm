@@ -18,8 +18,7 @@ class LoginFilters {
 			before = {
 				User user = session?.user
 				if (user && controllerName &&
-					controllerName != 'notification' &&
-					controllerName != 'overview' &&
+					!(controllerName in ['notification', 'searchable', 'overview']) &&
 					!(actionName in ['login', 'authenticate', 'logout']))
 				{
 					if (!user.checkAllowedControllers([controllerName])) {
