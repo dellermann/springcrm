@@ -19,7 +19,7 @@
         <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <li><g:link action="edit" id="${personInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${personInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="${personInstance?.id}" class="red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link></li>
+        <li><g:link action="delete" id="${personInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
       </ul>
     </nav>
   </div>
@@ -310,9 +310,6 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: personInstance?.dateCreated), formatDate(date: personInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="jsTexts">
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
-  </content>
   <content tag="additionalJavaScript">
   <script type="text/javascript" src="${resource(dir:'js', file:'jquery.lightbox.min.js')}"></script>
   <script type="text/javascript">

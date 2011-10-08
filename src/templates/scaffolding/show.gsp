@@ -17,7 +17,7 @@
         <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
         <li><g:link action="edit" id="\${${propertyName}?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="\${${propertyName}?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="\${${propertyName}?.id}" class="red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link></li>
+        <li><g:link action="delete" id="\${${propertyName}?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
       </ul>
     </nav>
   </div>

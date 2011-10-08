@@ -127,7 +127,7 @@ class PersonController {
 
     def delete = {
         def personInstance = Person.get(params.id)
-        if (personInstance) {
+        if (personInstance && params.confirmed) {
             try {
                 personInstance.delete(flush: true)
 				if (googleDataContactService) {

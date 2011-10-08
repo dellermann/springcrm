@@ -92,7 +92,7 @@ class UserController {
 
     def delete = {
         def userInstance = User.get(params.id)
-        if (userInstance) {
+        if (userInstance && params.confirmed) {
             try {
                 userInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User')])}"

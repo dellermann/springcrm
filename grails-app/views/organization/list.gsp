@@ -57,7 +57,7 @@
           <td><a href="${organizationInstance?.website}" target="_blank">${fieldValue(bean: organizationInstance, field: "website")}</a></td>
           <td>
             <g:link action="edit" id="${organizationInstance.id}" params="[listType:params.type]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="${organizationInstance?.id}" params="[type:params.type]" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>
+            <g:link action="delete" id="${organizationInstance?.id}" params="[type:params.type]" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
           </td>
         </tr>
       </g:each>
@@ -76,8 +76,5 @@
       </div>
     </g:else>
   </section>
-  <content tag="jsTexts">
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
-  </content>
 </body>
 </html>

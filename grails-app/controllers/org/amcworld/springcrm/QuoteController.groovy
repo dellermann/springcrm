@@ -156,7 +156,7 @@ class QuoteController {
 
     def delete = {
         def quoteInstance = Quote.get(params.id)
-        if (quoteInstance) {
+        if (quoteInstance && params.confirmed) {
             try {
                 quoteInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])}"

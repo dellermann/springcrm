@@ -49,7 +49,7 @@
           <td><g:message code="call.status.${callInstance?.status}" /></td>
           <td>
             <g:link action="edit" id="${callInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="${callInstance?.id}" class="button small red" onclick="return confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));"><g:message code="default.button.delete.label" /></g:link>
+            <g:link action="delete" id="${callInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
           </td>
         </tr>
       </g:each>
@@ -68,8 +68,5 @@
       </div>
     </g:else>
   </section>
-  <content tag="jsTexts">
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
-  </content>
 </body>
 </html>

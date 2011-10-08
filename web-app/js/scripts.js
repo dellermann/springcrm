@@ -164,6 +164,7 @@
             $("#quick-access").change(this._onChangeQuickAccess);
             $("#main-menu > li").hover(this._onMenuHover);
             $(".menu").hover(this._onMenuHover);
+            $(".delete-btn").click(this._onClickDeleteBtn);
             $(".date-input-date").change(this._onChangeDateInput)
                 .datepicker({
                     changeMonth: true, changeYear: true, gotoCurrent: true,
@@ -312,6 +313,32 @@
             if (val !== "") {
                 window.location.href = val;
             }
+        },
+
+        /**
+         * Called if the user clicks the button to delete a record.
+         *
+         * @returns {Boolean}   <code>true</code> to delete the record;
+         *                      <code>false</code> to abort the operation
+         * @protected
+         * @since               0.9.10
+         */
+        _onClickDeleteBtn: function () {
+            var $this = $(this),
+                res,
+                url;
+
+            res = window.confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));
+            if (res) {
+                url = $this.attr("href");
+                if (url.indexOf("?") < 0) {
+                    url += "?";
+                } else {
+                    url += "&";
+                }
+                $this.attr("href", url + "confirmed=1");
+            }
+            return res;
         },
 
         /**
@@ -1135,6 +1162,8 @@
                                     "returnUrl=" + instance._returnUrl;
                                 $this.attr("href", url);
                             });
+                        $c.find(".delete-btn")
+                            .click(Page.prototype._onClickDeleteBtn);
                     }
                 );
         }

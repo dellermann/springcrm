@@ -130,7 +130,7 @@ class ProductController {
 
     def delete = {
         def productInstance = Product.get(params.id)
-        if (productInstance) {
+        if (productInstance && params.confirmed) {
             try {
                 productInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'product.label', default: 'Product')])}"

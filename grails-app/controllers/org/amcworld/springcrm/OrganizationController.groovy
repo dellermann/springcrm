@@ -116,7 +116,7 @@ class OrganizationController {
 
     def delete = {
         def organizationInstance = Organization.get(params.id)
-        if (organizationInstance) {
+        if (organizationInstance && params.confirmed) {
             try {
                 organizationInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"

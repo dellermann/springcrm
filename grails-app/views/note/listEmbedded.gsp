@@ -18,7 +18,7 @@
       <td><g:link controller="person" action="show" id="${noteInstance.person?.id}">${fieldValue(bean: noteInstance, field: "person")}</g:link></td>
       <td>
         <g:link controller="note" action="edit" id="${noteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-        <g:link controller="note" action="delete" id="${noteInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+        <g:link controller="note" action="delete" id="${noteInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
       </td>
     </tr>
   </g:each>

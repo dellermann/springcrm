@@ -140,7 +140,7 @@ class PurchaseInvoiceController {
 
     def delete = {
         def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
-        if (purchaseInvoiceInstance) {
+        if (purchaseInvoiceInstance && params.confirmed) {
 			if (purchaseInvoiceInstance.documentFile) {
 				fileService.removeFile(purchaseInvoiceInstance.documentFile)
 			}

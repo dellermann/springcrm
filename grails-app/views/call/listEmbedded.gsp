@@ -22,7 +22,7 @@
       <td><g:message code="call.status.${callInstance?.status}" /></td>
       <td>
         <g:link controller="call" action="edit" id="${callInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-        <g:link controller="call" action="delete" id="${callInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+        <g:link controller="call" action="delete" id="${callInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
       </td>
     </tr>
   </g:each>

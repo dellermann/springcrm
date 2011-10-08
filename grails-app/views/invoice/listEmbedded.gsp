@@ -24,7 +24,7 @@
       <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
       <td>
         <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-        <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link>
+        <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
       </td>
     </tr>
   </g:each>

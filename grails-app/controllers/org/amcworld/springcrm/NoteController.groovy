@@ -122,7 +122,7 @@ class NoteController {
 
     def delete = {
         def noteInstance = Note.get(params.id)
-        if (noteInstance) {
+        if (noteInstance && params.confirmed) {
             try {
                 noteInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'note.label', default: 'Note')])}"

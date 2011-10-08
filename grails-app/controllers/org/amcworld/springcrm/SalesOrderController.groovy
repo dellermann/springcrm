@@ -166,7 +166,7 @@ class SalesOrderController {
 
     def delete = {
         def salesOrderInstance = SalesOrder.get(params.id)
-        if (salesOrderInstance) {
+        if (salesOrderInstance && params.confirmed) {
             try {
                 salesOrderInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])}"

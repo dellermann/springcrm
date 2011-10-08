@@ -130,7 +130,7 @@ class ServiceController {
 
     def delete = {
         def serviceInstance = Service.get(params.id)
-        if (serviceInstance) {
+        if (serviceInstance && params.confirmed) {
             try {
                 serviceInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'service.label', default: 'Service')])}"

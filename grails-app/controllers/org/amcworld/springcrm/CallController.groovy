@@ -125,7 +125,7 @@ class CallController {
 
     def delete = {
         def callInstance = Call.get(params.id)
-        if (callInstance) {
+        if (callInstance && params.confirmed) {
             try {
                 callInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])}"

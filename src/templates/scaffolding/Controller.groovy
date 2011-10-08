@@ -82,7 +82,7 @@
 
     def delete = {
         def ${propertyName} = ${className}.get(params.id)
-        if (${propertyName}) {
+        if (${propertyName} && params.confirmed) {
             try {
                 ${propertyName}.delete(flush: true)
                 flash.message = "\${message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}')])}"

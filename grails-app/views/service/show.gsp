@@ -17,7 +17,7 @@
         <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
         <li><g:link action="edit" id="${serviceInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${serviceInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="${serviceInstance?.id}" class="red" onclick="return confirm(springcrm.messages.deleteConfirmMsg);"><g:message code="default.button.delete.label" /></g:link></li>
+        <li><g:link action="delete" id="${serviceInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
       </ul>
     </nav>
   </div>
@@ -112,8 +112,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: serviceInstance?.dateCreated), formatDate(date: serviceInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="jsTexts">
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
-  </content>
 </body>
 </html>

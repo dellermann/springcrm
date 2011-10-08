@@ -175,7 +175,7 @@ class InvoiceController {
 
     def delete = {
         def invoiceInstance = Invoice.get(params.id)
-        if (invoiceInstance) {
+        if (invoiceInstance && params.confirmed) {
             try {
                 invoiceInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'invoice.label', default: 'Invoice')])}"
