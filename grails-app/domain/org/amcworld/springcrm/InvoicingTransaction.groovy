@@ -37,6 +37,7 @@ class InvoicingTransaction {
 		dateCreated()
 		lastUpdated()
     }
+    static belongsTo = [ organization:Organization, person:Person ]
 	static hasMany = [
 		items:InvoicingItem,
 		termsAndConditions:TermsAndConditions
@@ -57,8 +58,6 @@ class InvoicingTransaction {
 	int number
 	String type
 	String subject
-	Organization organization
-	Person person
 	Date docDate = new Date()
 	Carrier carrier
 	Date shippingDate

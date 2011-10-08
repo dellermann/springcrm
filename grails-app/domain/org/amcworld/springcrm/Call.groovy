@@ -14,6 +14,7 @@ class Call {
 		dateCreated()
 		lastUpdated()
     }
+    static belongsTo = [ organization:Organization, person:Person ]
 	static mapping = {
 		sort start:'desc'
 		table 'phone_call'
@@ -23,8 +24,6 @@ class Call {
 	
 	String subject
 	String notes
-	Organization organization
-	Person person
 	String phone
 	Date start = new Date()
 	String type

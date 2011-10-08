@@ -26,6 +26,7 @@ class PurchaseInvoice {
 		dateCreated()
 		lastUpdated()
     }
+    static belongsTo = [ organization:Organization ]
 	static hasMany = [ items:PurchaseInvoiceItem ]
 	static mapping = {
 		items cascade:'all-delete-orphan'
@@ -38,7 +39,6 @@ class PurchaseInvoice {
 
 	String number
 	String subject
-	Organization vendor
 	String vendorName
 	Date docDate = new Date()
 	Date dueDate

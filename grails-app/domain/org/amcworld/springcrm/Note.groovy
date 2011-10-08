@@ -11,6 +11,7 @@ class Note {
 		dateCreated()
 		lastUpdated()
     }
+    static belongsTo = [ organization:Organization, person:Person ]
 	static mapping = {
 		sort 'title'
 		content type:'text'
@@ -23,8 +24,6 @@ class Note {
 	int number
 	String title
 	String content
-	Organization organization
-	Person person
 	Date dateCreated
 	Date lastUpdated
 
