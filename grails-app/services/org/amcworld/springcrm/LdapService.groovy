@@ -104,7 +104,9 @@ class LdapService {
 			l.add p.organization.fax
 		}
 		if (!l.isEmpty()) {
-			attrs.facsimiletelephonenumber = l
+			attrs.facsimiletelephonenumber = l.unique {
+				it.replaceAll(~/\D/, '')
+			}
 		}
 	    if (p.phoneHome) {
 			attrs.homephone = p.phoneHome
@@ -129,7 +131,7 @@ class LdapService {
 			l.add p.organization.email2
 		}
 		if (!l.isEmpty()) {
-			attrs.mail = l
+			attrs.mail = l.unique()
 		}
 	    if (p.mobile) {
 			attrs.mobile = p.mobile
@@ -169,7 +171,9 @@ class LdapService {
 			l.add p.organization.phoneOther
 		}
 		if (!l.isEmpty()) {
-			attrs.telephonenumber = l
+			attrs.telephonenumber = l.unique {
+				it.replaceAll(~/\D/, '')
+			}
 		}
 		return attrs
 	}
