@@ -26,7 +26,7 @@ class PurchaseInvoice {
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization:Organization ]
+    static belongsTo = [ vendor:Organization ]
 	static hasMany = [ items:PurchaseInvoiceItem ]
 	static mapping = {
 		items cascade:'all-delete-orphan'
