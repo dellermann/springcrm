@@ -66,15 +66,15 @@
         </div>
       </div>
       </g:ifModuleAllowed>
-      
+
       <div class="row">
         <div class="label">
-          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
+          <label for="stage.id"><g:message code="salesOrder.stage.label" default="Stage" /></label>
         </div>
-        <div class="field${hasErrors(bean: salesOrderInstance, field: 'carrier', ' error')}">
-          <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${salesOrderInstance?.carrier?.id}" noSelection="['null': '']" /><br />
-          <g:hasErrors bean="${salesOrderInstance}" field="carrier">
-            <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="carrier"><g:message error="${it}" /> </g:eachError></span>
+        <div class="field${hasErrors(bean: salesOrderInstance, field: 'stage', ' error')}">
+          <g:select name="stage.id" from="${org.amcworld.springcrm.SalesOrderStage.list()}" optionKey="id" value="${salesOrderInstance?.stage?.id}"  /><br />
+          <g:hasErrors bean="${salesOrderInstance}" field="stage">
+            <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -105,7 +105,19 @@
           </g:hasErrors>
         </div>
       </div>
-            
+
+      <div class="row">
+        <div class="label">
+          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
+        </div>
+        <div class="field${hasErrors(bean: salesOrderInstance, field: 'carrier', ' error')}">
+          <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${salesOrderInstance?.carrier?.id}" noSelection="['null': '']" /><br />
+          <g:hasErrors bean="${salesOrderInstance}" field="carrier">
+            <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="carrier"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+
       <div class="row">
         <div class="label">
           <label for="shippingDate-date"><g:message code="salesOrder.shippingDate.label" default="Order Shipping Date" /></label>
@@ -128,18 +140,6 @@
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${salesOrderInstance}" field="deliveryDate">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="deliveryDate"><g:message error="${it}" /> </g:eachError></span>
-          </g:hasErrors>
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="label">
-          <label for="stage.id"><g:message code="salesOrder.stage.label" default="Stage" /></label>
-        </div>
-        <div class="field${hasErrors(bean: salesOrderInstance, field: 'stage', ' error')}">
-          <g:select name="stage.id" from="${org.amcworld.springcrm.SalesOrderStage.list()}" optionKey="id" value="${salesOrderInstance?.stage?.id}"  /><br />
-          <g:hasErrors bean="${salesOrderInstance}" field="stage">
-            <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -515,7 +515,8 @@
 
     "use strict";
 
-    var addrFields,
+    var $stage,
+        addrFields,
         taxes,
         units;
     
@@ -573,14 +574,25 @@
         "shippingAddr"
     );
     
-    $("#stage\\.id").change(function () {
+    $stage = $("#stage\\.id");
+    $stage.change(function () {
         switch ($(this).val()) {
         case "802":
-            $("#shippingDate-date").val($.formatDate(null, "date"));
+            SPRINGCRM.Page.fillInDate($("#shippingDate-date"));
             break;
         case "803":
-            $("#deliveryDate-date").val($.formatDate(null, "date"));
+            SPRINGCRM.Page.fillInDate($("#deliveryDate-date"));
             break;
+        }
+    });
+    $("#shippingDate-date").change(function () {
+        if ($stage.val() < 802) {
+            $stage.val(802);
+        }
+    });
+    $("#deliveryDate-date").change(function () {
+        if ($stage.val() < 803) {
+            $stage.val(803);
         }
     });
 }(SPRINGCRM, jQuery));

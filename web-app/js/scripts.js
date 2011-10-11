@@ -125,6 +125,22 @@
     };
 
     /**
+     * Fills in the given date or the current date into the given field if it
+     * is empty.
+     *
+     * @param {JQueryObject} $field the given input field
+     * @param {Date} [date]         the given date; if not specified the
+     *                              current date is used
+     * @since                       0.9.10
+     */
+    Page.fillInDate = function ($field, date) {
+        if ($field.val() === "") {
+            $field.val($.formatDate(date, "date"))
+                .trigger("change");
+        }
+    };
+
+    /**
      * Exchanges the text of the search field.
      *
      * @param {Object} e    the event data
@@ -1174,8 +1190,8 @@
     //== jQuery extensions ======================
 
     /**
-     * @name jQuery
-     * @class       Extends the jQuery class.
+     * @name    jQuery
+     * @class   Extends the jQuery class.
      */
     $.extend({
 

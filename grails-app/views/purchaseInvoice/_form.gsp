@@ -59,6 +59,18 @@
           </g:hasErrors>
         </div>
       </div>
+
+      <div class="row">
+        <div class="label">
+          <label for="stage"><g:message code="purchaseInvoice.stage.label" default="Stage" /></label>
+        </div>
+        <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'stage', ' error')}">
+          <g:select name="stage.id" from="${org.amcworld.springcrm.PurchaseInvoiceStage.list()}" optionKey="id" value="${purchaseInvoiceInstance?.stage?.id}"  /><br />
+          <g:hasErrors bean="${purchaseInvoiceInstance}" field="stage">
+            <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
     </div>
     <div class="col col-r">
       <div class="row">
@@ -83,18 +95,6 @@
           <span class="info-msg"><g:message code="default.required" default="required" /></span><span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="dueDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="dueDate"><g:message error="${it}" /> </g:eachError></span>
-          </g:hasErrors>
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="label">
-          <label for="stage"><g:message code="purchaseInvoice.stage.label" default="Stage" /></label>
-        </div>
-        <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'stage', ' error')}">
-          <g:select name="stage.id" from="${org.amcworld.springcrm.PurchaseInvoiceStage.list()}" optionKey="id" value="${purchaseInvoiceInstance?.stage?.id}"  /><br />
-          <g:hasErrors bean="${purchaseInvoiceInstance}" field="stage">
-            <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -297,7 +297,8 @@
 
     "use strict";
 
-    var a,
+    var $stage,
+        a,
         taxes,
         units;
     
@@ -338,11 +339,17 @@
         });
     $(".document-delete").wrapInner(a);
 
-    $("#stage\\.id").change(function () {
+    $stage = $("#stage\\.id");
+    $stage.change(function () {
         switch ($(this).val()) {
         case "2102":
-            $("#paymentDate-date").val($.formatDate(null, "date"));
+            SPRINGCRM.Page.fillInDate($("#paymentDate-date"));
             break;
+        }
+    });
+    $("#paymentDate-date").change(function () {
+        if ($stage.val() < 2102) {
+            $stage.val(2102);
         }
     });
 }(SPRINGCRM, jQuery));

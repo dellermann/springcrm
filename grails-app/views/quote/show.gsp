@@ -63,10 +63,10 @@
                 <g:link controller="person" action="show" id="${quoteInstance?.person?.id}">${quoteInstance?.person?.encodeAsHTML()}</g:link>
       			  </div>
       			</div>
-                        
+
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
-              <div class="field">${quoteInstance?.carrier?.encodeAsHTML()}</div>
+              <div class="label"><g:message code="quote.stage.label" default="Stage" /></div>
+              <div class="field">${quoteInstance?.stage?.encodeAsHTML()}</div>
             </div>
           </div>
           <div class="col col-r">
@@ -84,10 +84,10 @@
               <div class="label"><g:message code="quote.shippingDate.label" default="Shipping Date" /></div>
               <div class="field"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></div>
             </div>
-            
+
             <div class="row">
-              <div class="label"><g:message code="quote.stage.label" default="Stage" /></div>
-              <div class="field">${quoteInstance?.stage?.encodeAsHTML()}</div>
+              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
+              <div class="field">${quoteInstance?.carrier?.encodeAsHTML()}</div>
             </div>
           </div>
         </div>

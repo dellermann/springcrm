@@ -13,7 +13,7 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
           <label for="subject"><g:message code="invoicingItem.subject.label" default="Subject" /></label>
@@ -25,7 +25,7 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
           <label for="organization"><g:message code="invoicingItem.organization.label" default="Organization" /></label>
@@ -38,7 +38,7 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
           <label for="person"><g:message code="invoicingItem.person.label" default="Person" /></label>
@@ -51,15 +51,15 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
-          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
+          <label for="stage.id"><g:message code="quote.stage.label" default="Stage" /></label>
         </div>
-        <div class="field${hasErrors(bean: quoteInstance, field: 'carrier', ' error')}">
-          <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${quoteInstance?.carrier?.id}" noSelection="['null': '']" /><br />
-          <g:hasErrors bean="${quoteInstance}" field="carrier">
-            <span class="error-msg"><g:eachError bean="${quoteInstance}" field="carrier"><g:message error="${it}" /> </g:eachError></span>
+        <div class="field${hasErrors(bean: quoteInstance, field: 'stage', ' error')}">
+          <g:select name="stage.id" from="${org.amcworld.springcrm.QuoteStage.list()}" optionKey="id" value="${quoteInstance?.stage?.id}"  /><br />
+          <g:hasErrors bean="${quoteInstance}" field="stage">
+            <span class="error-msg"><g:eachError bean="${quoteInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -103,15 +103,15 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
-          <label for="stage.id"><g:message code="quote.stage.label" default="Stage" /></label>
+          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
         </div>
-        <div class="field${hasErrors(bean: quoteInstance, field: 'stage', ' error')}">
-          <g:select name="stage.id" from="${org.amcworld.springcrm.QuoteStage.list()}" optionKey="id" value="${quoteInstance?.stage?.id}"  /><br />
-          <g:hasErrors bean="${quoteInstance}" field="stage">
-            <span class="error-msg"><g:eachError bean="${quoteInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
+        <div class="field${hasErrors(bean: quoteInstance, field: 'carrier', ' error')}">
+          <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${quoteInstance?.carrier?.id}" noSelection="['null': '']" /><br />
+          <g:hasErrors bean="${quoteInstance}" field="carrier">
+            <span class="error-msg"><g:eachError bean="${quoteInstance}" field="carrier"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -487,7 +487,8 @@
 
     "use strict";
 
-    var addrFields,
+    var $stage,
+        addrFields,
         taxes,
         units;
 
@@ -539,11 +540,17 @@
         "shippingAddr"
     );
     
-    $("#stage\\.id").change(function () {
+    $stage = $("#stage\\.id");
+    $stage.change(function () {
         switch ($(this).val()) {
         case "602":
-            $("#shippingDate-date").val($.formatDate(null, "date"));
+            SPRINGCRM.Page.fillInDate($("#shippingDate-date"));
             break;
+        }
+    });
+    $("#shippingDate-date").change(function () {
+        if ($stage.val() < 602) {
+            $stage.val(602);
         }
     });
 }(SPRINGCRM, jQuery));

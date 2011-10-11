@@ -73,8 +73,8 @@
             </g:ifModuleAllowed>
 
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
-              <div class="field">${salesOrderInstance?.carrier?.encodeAsHTML()}</div>
+              <div class="label"><g:message code="salesOrder.stage.label" default="Stage" /></div>
+              <div class="field">${salesOrderInstance?.stage?.encodeAsHTML()}</div>
             </div>
           </div>
           <div class="col col-r">
@@ -87,7 +87,12 @@
               <div class="label"><g:message code="salesOrder.dueDate.label" default="Due date" /></div>
               <div class="field"><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></div>
             </div>
-            
+
+            <div class="row">
+              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
+              <div class="field">${salesOrderInstance?.carrier?.encodeAsHTML()}</div>
+            </div>
+
             <div class="row">
               <div class="label"><g:message code="salesOrder.shippingDate.label" default="Shipping Date" /></div>
               <div class="field"><g:formatDate date="${salesOrderInstance?.shippingDate}" formatName="default.format.date" /></div>
@@ -96,11 +101,6 @@
             <div class="row">
               <div class="label"><g:message code="salesOrder.deliveryDate.label" default="Delivery Date" /></div>
               <div class="field"><g:formatDate date="${salesOrderInstance?.deliveryDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="salesOrder.stage.label" default="Stage" /></div>
-              <div class="field">${salesOrderInstance?.stage?.encodeAsHTML()}</div>
             </div>
           </div>
         </div>

@@ -81,15 +81,15 @@
         </div>
       </div>
       </g:ifModuleAllowed>
-      
+
       <div class="row">
         <div class="label">
-          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
+          <label for="stage.id"><g:message code="invoice.stage.label" default="Stage" /></label>
         </div>
-        <div class="field${hasErrors(bean: invoiceInstance, field: 'carrier', ' error')}">
-          <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${invoiceInstance?.carrier?.id}" noSelection="['null': '']" /><br />
-          <g:hasErrors bean="${invoiceInstance}" field="carrier">
-            <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="carrier"><g:message error="${it}" /> </g:eachError></span>
+        <div class="field${hasErrors(bean: invoiceInstance, field: 'stage', ' error')}">
+          <g:select name="stage.id" from="${org.amcworld.springcrm.InvoiceStage.list()}" optionKey="id" value="${invoiceInstance?.stage?.id}"  /><br />
+          <g:hasErrors bean="${invoiceInstance}" field="stage">
+            <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -120,7 +120,32 @@
           </g:hasErrors>
         </div>
       </div>
-            
+
+      <div class="row">
+        <div class="label">
+          <label for="shippingDate-date"><g:message code="invoice.shippingDate.label" default="Invoice Shipping Date" /></label>
+        </div>
+        <div class="field${hasErrors(bean: invoiceInstance, field: 'shippingDate', ' error')}">
+          <g:dateInput name="shippingDate" value="${invoiceInstance?.shippingDate}" precision="day"/><br />
+          <span class="info-msg"><g:message code="default.format.date.label" /></span>
+          <g:hasErrors bean="${invoiceInstance}" field="shippingDate">
+            <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="shippingDate"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
+        </div>
+        <div class="field${hasErrors(bean: invoiceInstance, field: 'carrier', ' error')}">
+          <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${invoiceInstance?.carrier?.id}" noSelection="['null': '']" /><br />
+          <g:hasErrors bean="${invoiceInstance}" field="carrier">
+            <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="carrier"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+
       <div class="row">
         <div class="label">
           <label for="paymentDate-date"><g:message code="invoice.paymentDate.label" default="Payment date" /></label>
@@ -142,31 +167,6 @@
           <g:textField name="paymentAmount" value="${formatNumber(number: invoiceInstance?.paymentAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
           <g:hasErrors bean="${invoiceInstance}" field="paymentAmount">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentAmount"><g:message error="${it}" /> </g:eachError></span>
-          </g:hasErrors>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="label">
-          <label for="shippingDate-date"><g:message code="invoice.shippingDate.label" default="Invoice Shipping Date" /></label>
-        </div>
-        <div class="field${hasErrors(bean: invoiceInstance, field: 'shippingDate', ' error')}">
-          <g:dateInput name="shippingDate" value="${invoiceInstance?.shippingDate}" precision="day"/><br />
-          <span class="info-msg"><g:message code="default.format.date.label" /></span>
-          <g:hasErrors bean="${invoiceInstance}" field="shippingDate">
-            <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="shippingDate"><g:message error="${it}" /> </g:eachError></span>
-          </g:hasErrors>
-        </div>
-      </div>
-      
-      <div class="row">
-        <div class="label">
-          <label for="stage.id"><g:message code="invoice.stage.label" default="Stage" /></label>
-        </div>
-        <div class="field${hasErrors(bean: invoiceInstance, field: 'stage', ' error')}">
-          <g:select name="stage.id" from="${org.amcworld.springcrm.InvoiceStage.list()}" optionKey="id" value="${invoiceInstance?.stage?.id}"  /><br />
-          <g:hasErrors bean="${invoiceInstance}" field="stage">
-            <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -542,7 +542,8 @@
 
     "use strict";
 
-    var addrFields,
+    var $stage,
+        addrFields,
         taxes,
         units;
     
@@ -605,14 +606,25 @@
         "shippingAddr"
     );
     
-    $("#stage\\.id").change(function () {
+    $stage = $("#stage\\.id");
+    $stage.change(function () {
         switch ($(this).val()) {
         case "902":
-            $("#shippingDate-date").val($.formatDate(null, "date"));
+            SPRINGCRM.Page.fillInDate($("#shippingDate-date"));
             break;
         case "903":
-            $("#paymentDate-date").val($.formatDate(null, "date"));
+            SPRINGCRM.Page.fillInDate($("#paymentDate-date"));
             break;
+        }
+    });
+    $("#shippingDate-date").change(function () {
+        if ($stage.val() < 902) {
+            $stage.val(902);
+        }
+    });
+    $("#paymentDate-date").change(function () {
+        if ($stage.val() < 903) {
+            $stage.val(903);
         }
     });
 }(SPRINGCRM, jQuery));

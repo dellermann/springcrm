@@ -72,6 +72,11 @@
                 </g:if>
               </div>
             </div>
+
+            <div class="row">
+              <div class="label"><g:message code="purchaseInvoice.stage.label" default="Stage" /></div>
+              <div class="field">${purchaseInvoiceInstance?.stage?.encodeAsHTML()}</div>
+            </div>
           </div>
           <div class="col col-r">
             <div class="row">
@@ -82,11 +87,6 @@
             <div class="row">
               <div class="label"><g:message code="purchaseInvoice.dueDate.label" default="Due Date" /></div>
               <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.dueDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.stage.label" default="Stage" /></div>
-              <div class="field">${purchaseInvoiceInstance?.stage?.encodeAsHTML()}</div>
             </div>
             
             <div class="row">

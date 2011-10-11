@@ -81,8 +81,8 @@
             </g:ifModuleAllowed>
 
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
-              <div class="field">${invoiceInstance?.carrier?.encodeAsHTML()}</div>
+              <div class="label"><g:message code="invoice.stage.label" default="Stage" /></div>
+              <div class="field">${invoiceInstance?.stage?.encodeAsHTML()}</div>
             </div>
           </div>
           <div class="col col-r">
@@ -95,7 +95,17 @@
               <div class="label"><g:message code="invoice.dueDatePayment.label" default="Due date of payment" /></div>
               <div class="field"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></div>
             </div>
-            
+
+            <div class="row">
+              <div class="label"><g:message code="invoice.shippingDate.label" default="Shipping Date" /></div>
+              <div class="field"><g:formatDate date="${invoiceInstance?.shippingDate}" formatName="default.format.date" /></div>
+            </div>
+
+            <div class="row">
+              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
+              <div class="field">${invoiceInstance?.carrier?.encodeAsHTML()}</div>
+            </div>
+
             <div class="row">
               <div class="label"><g:message code="invoice.paymentDate.label" default="Payment date" /></div>
               <div class="field"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></div>
@@ -104,16 +114,6 @@
             <div class="row">
               <div class="label"><g:message code="invoice.paymentAmount.label" default="Payment amount" /></div>
               <div class="field"><g:formatCurrency number="${invoiceInstance?.paymentAmount}" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="invoice.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${invoiceInstance?.shippingDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="invoice.stage.label" default="Stage" /></div>
-              <div class="field">${invoiceInstance?.stage?.encodeAsHTML()}</div>
             </div>
           </div>
         </div>
