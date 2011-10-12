@@ -59,6 +59,28 @@ class ViewTagLib {
 	}
 
 	/**
+	 * Renders a number input field and an associated auto number checkbox.
+	 * 
+	 * @attr value	the value of the number field
+	 * @attr prefix	the prefix to display in front of the number field
+	 * @attr suffix	the suffix to display after the number field
+	 */
+	def autoNumber = { attrs, body ->
+		if (attrs.prefix) {
+			out << attrs.prefix << '-'
+		}
+		out << textField(name:'number', value:attrs.value, size:10)
+		if (attrs.suffix) {
+			out << '-' << attrs.suffix
+		}
+		out << '<span class="auto-number">'
+		out << checkBox(name:'autoNumber', checked:true)
+		out << '<label for="autoNumber">'
+		out << message(code:'default.number.auto.label')
+		out << '</label></span>'
+	}
+
+	/**
 	 * Formats the given number as currency using the currency symbol from the
 	 * application configuration.
 	 * 

@@ -192,6 +192,8 @@
             $("#spinner").click(function () {
                 $(this).css("display", "none");
             });
+            $("#autoNumber").change(this._onChangeAutoNumber)
+                .triggerHandler("change");
             this._initAjaxEvents();
         },
 
@@ -248,6 +250,23 @@
             this._$spinner
                 .ajaxSend(function () { $(this).show(); })
                 .ajaxComplete(function () { $(this).hide(); });
+        },
+
+        /**
+         * Called if the auto number check box was changed. The method enables
+         * or disables the number field.
+         *
+         * @protected
+         * @since 0.9.10
+         */
+        _onChangeAutoNumber: function () {
+            if (this.checked) {
+                $("#number").attr("disabled", "disabled")
+                    .addClass("disabled");
+            } else {
+                $("#number").removeAttr("disabled")
+                    .removeClass("disabled");
+            }
         },
 
         /**

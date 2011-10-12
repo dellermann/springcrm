@@ -233,7 +233,7 @@ class InvoicingTransaction {
 	Map<Double, BigDecimal> getTaxRateSums() {
 		Map<Double, BigDecimal> res = [:]
 		for (item in items) {
-			double tax = item.tax.toDouble()
+			double tax = (item.tax != null) ? item.tax.toDouble() : 0.0
 			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
 		}
 		if (getShippingTax() != 0 && getShippingCosts() != 0) {
@@ -257,12 +257,28 @@ class InvoicingTransaction {
 	String toString() {
 		return subject
 	}
+
+	int maxNumber(SeqNumber seq) {
+		def c = InvoicingTransaction.createCriteria()
+		return c.get {
+			projections {
+				max('number')
+			}
+			and {
+				eq('type', type)
+				between('number', seq.startValue, seq.endValue)
+			}
+		}
+	}
 	
 	def beforeValidate() {
 		total = computeTotal()
 	}
 
 	def beforeInsert() {
+		if (number == 0) {
+			number = nextNumber
+		}
 		total = computeTotal()
 	}
 

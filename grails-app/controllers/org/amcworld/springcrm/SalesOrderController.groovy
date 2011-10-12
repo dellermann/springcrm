@@ -82,7 +82,6 @@ class SalesOrderController {
     def save = {
         def salesOrderInstance = new SalesOrder(params)
         if (salesOrderInstance.save(flush:true)) {
-			seqNumberService.stepFurther(SalesOrder)
 			salesOrderInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
 			if (params.returnUrl) {
@@ -127,6 +126,9 @@ class SalesOrderController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = salesOrderInstance.number
+			}
             salesOrderInstance.properties = params
 
 			/*

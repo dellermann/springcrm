@@ -9,8 +9,8 @@ class InvoicingItem {
 		unit()
 		name(blank:false)
 		description(nullable:true)
-		unitPrice(scale:2, min:0.0)
-		tax(scale:1, min:0.0)
+		unitPrice(scale:2)
+		tax(scale:1, min:0.0, nullable:false)
     }
 	static mapping = {
 		description type:'text'

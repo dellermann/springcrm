@@ -20,7 +20,7 @@ class PurchaseInvoiceController {
 	
 	def listEmbedded = {
 		def organizationInstance = Organization.get(params.organization)
-		[purchaseInvoiceInstanceList:PurchaseInvoice.findAllByOrganization(organizationInstance, params), purchaseInvoiceInstanceTotal:PurchaseInvoice.countByOrganization(organizationInstance), linkParams:[organization:organizationInstance.id]]
+		[purchaseInvoiceInstanceList:PurchaseInvoice.findAllByVendor(organizationInstance, params), purchaseInvoiceInstanceTotal:PurchaseInvoice.countByVendor(organizationInstance), linkParams:[organization:organizationInstance.id]]
 	}
 
     def create = {
@@ -46,7 +46,6 @@ class PurchaseInvoiceController {
 			purchaseInvoiceInstance.documentFile = fileService.storeFile(params.file)
 		}
         if (purchaseInvoiceInstance.save(flush: true)) {
-			seqNumberService.stepFurther(Invoice)
 			purchaseInvoiceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])}"
 			if (params.returnUrl) {

@@ -58,7 +58,6 @@ class NoteController {
     def save = {
         def noteInstance = new Note(params)
         if (noteInstance.save(flush: true)) {
-			seqNumberService.stepFurther(Note)
 			noteInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])}"
 			if (params.returnUrl) {
@@ -102,6 +101,9 @@ class NoteController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = noteInstance.number
+			}
             noteInstance.properties = params
             if (!noteInstance.hasErrors() && noteInstance.save(flush: true)) {
 				noteInstance.reindex()

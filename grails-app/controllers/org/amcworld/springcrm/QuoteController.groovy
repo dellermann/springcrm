@@ -71,7 +71,6 @@ class QuoteController {
     def save = {
         def quoteInstance = new Quote(params)
         if (quoteInstance.save(flush:true)) {
-			seqNumberService.stepFurther(Quote)
 			quoteInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
 			if (params.returnUrl) {
@@ -117,6 +116,9 @@ class QuoteController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = quoteInstance.number
+			}
             quoteInstance.properties = params
 
 			/*

@@ -51,7 +51,6 @@ class PersonController {
     def save = {
         def personInstance = new Person(params)
         if (personInstance.save(flush:true)) {
-			seqNumberService.stepFurther(Person)
 			personInstance.index()
 			if (ldapService) {
 				ldapService.save(personInstance)
@@ -99,6 +98,9 @@ class PersonController {
                 }
             }
 			byte [] picture = personInstance.picture
+			if (params.autoNumber) {
+				params.number = personInstance.number
+			}
             personInstance.properties = params
 			if (params.pictureRemove == '1') {
 				personInstance.picture = null;

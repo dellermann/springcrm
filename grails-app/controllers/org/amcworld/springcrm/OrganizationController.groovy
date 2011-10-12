@@ -52,7 +52,6 @@ class OrganizationController {
     def save = {
         def organizationInstance = new Organization(params)
         if (organizationInstance.save(flush:true)) {
-			seqNumberService.stepFurther(Organization)
 			organizationInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
 			if (params.returnUrl) {
@@ -96,6 +95,9 @@ class OrganizationController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = organizationInstance.number
+			}
             organizationInstance.properties = params
             if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
 				organizationInstance.reindex()

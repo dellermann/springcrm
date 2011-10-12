@@ -1,10 +1,13 @@
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.commons.ArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.transaction.annotation.Transactional
 
 class SeqNumberService {
 
     static transactional = true
+	def grailsApplication
 
 
 	//-- Public methods -------------------------
@@ -17,9 +20,24 @@ class SeqNumberService {
 	 * @return					the next available sequence number
 	 */
 	@Transactional(readOnly = true)
-    BigInteger nextNumber(String controllerName) {
-		def seqNumberInstance = SeqNumber.findByControllerName(controllerName)
-		return seqNumberInstance ? seqNumberInstance.nextNumber : 1 
+    int nextNumber(String controllerName) {
+		SeqNumber seq = loadSeqNumber(controllerName)
+		GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
+			'Domain', controllerName
+		)
+		Integer num
+		try {
+			num = cls.clazz.'maxNumber'(seq)
+		} catch (Exception e) {
+			def c = cls.clazz.'createCriteria'()
+			num = c.get {
+				projections {
+					max('number')
+				}
+				between('number', seq.startValue, seq.endValue)
+			}
+		}
+		return (num == null || num < seq.startValue) ? seq.startValue : num + 1
     }
 
 	/**
@@ -30,7 +48,7 @@ class SeqNumberService {
 	 * @return		the next available sequence number
 	 */
 	@Transactional(readOnly = true)
-	BigInteger nextNumber(Class cls) {
+	int nextNumber(Class cls) {
 		return nextNumber(classToControllerName(cls))
 	}
 
@@ -93,7 +111,7 @@ class SeqNumberService {
 	 * @return					the formatted number
 	 */
 	@Transactional(readOnly = true)
-	String format(String controllerName, BigInteger number) {
+	String format(String controllerName, int number) {
 		return formatNumber([controllerName:controllerName, number:number])
 	}
 	
@@ -106,7 +124,7 @@ class SeqNumberService {
 	 * @return			the formatted number
 	 */
 	@Transactional(readOnly = true)
-	String format(Class cls, BigInteger number) {
+	String format(Class cls, int number) {
 		return format(classToControllerName(cls), number)
 	}
 	
@@ -119,7 +137,7 @@ class SeqNumberService {
 	 * @return					the formatted number
 	 */
 	@Transactional(readOnly = true)
-	String formatWithPrefix(String controllerName, BigInteger number) {
+	String formatWithPrefix(String controllerName, int number) {
 		return formatNumber(
 			[controllerName:controllerName, number:number, withSuffix:false]
 		)
@@ -134,7 +152,7 @@ class SeqNumberService {
 	 * @return			the formatted number
 	 */
 	@Transactional(readOnly = true)
-	String formatWithPrefix(Class cls, BigInteger number) {
+	String formatWithPrefix(Class cls, int number) {
 		return formatWithPrefix(classToControllerName(cls), number)
 	}
 
@@ -147,7 +165,7 @@ class SeqNumberService {
 	 * @return					the formatted number
 	 */
 	@Transactional(readOnly = true)
-	String formatWithSuffix(String controllerName, BigInteger number) {
+	String formatWithSuffix(String controllerName, int number) {
 		return formatNumber(
 			[controllerName:controllerName, number:number, withPrefix:false]
 		)
@@ -162,39 +180,8 @@ class SeqNumberService {
 	 * @return			the formatted number
 	 */
 	@Transactional(readOnly = true)
-	String formatWithSuffix(Class cls, BigInteger number) {
+	String formatWithSuffix(Class cls, int number) {
 		return formatWithSuffix(classToControllerName(cls), number)
-	}
-
-	/**
-	 * Increments the sequence number for the given controller and stores it
-	 * in the database. If no entry for the controller exists a new one with
-	 * a sequence number of 2 is created.
-	 * 
-	 * @param controllerName	the given controller name
-	 */
-	@Transactional
-	void stepFurther(String controllerName) {
-		def seqNumberInstance = SeqNumber.findByControllerName(controllerName)
-		if (seqNumberInstance) {
-			seqNumberInstance.nextNumber++
-		} else {
-			seqNumberInstance = new SeqNumber(
-				controllerName:controllerName, startNumber:1, nextNumber:2
-			)
-		}
-		seqNumberInstance.save(flush:true)
-	}
-	
-	/**
-	 * Increments the sequence number for the controller which is associated to
-	 * the given class and stores it in the database. If no entry for the
-	 * controller exists a new one with a sequence number of 2 is created.
-	 * 
-	 * @param cls	the given class
-	 */
-	void stepFurther(Class cls) {
-		stepFurther(classToControllerName(cls))
 	}
 
 
@@ -207,11 +194,10 @@ class SeqNumberService {
 	 * @param cls	the given class
 	 * @return		the associated controller name
 	 */
-	protected static String classToControllerName(Class cls) {
-		String className = cls.simpleName
-		StringBuilder buf = new StringBuilder(className[0].toLowerCase())
-		buf << className.substring(1)
-		return buf.toString()
+	protected String classToControllerName(Class cls) {
+		ArtefactHandler handler = grailsApplication.getArtefactType(cls)
+		GrailsClass gc = grailsApplication.getArtefact(handler.type, cls.name)
+		return gc?.logicalPropertyName
 	}
 
 	/**
@@ -231,7 +217,7 @@ class SeqNumberService {
 	protected String formatNumber(Map args) {
 		if (args == null) args = [:]
 		String controllerName = args.controllerName
-		BigInteger number = args.number
+		Integer number = args.number
 		boolean withPrefix = args.withPrefix ?: true
 		boolean withSuffix = args.withSuffix ?: true
 
@@ -240,7 +226,7 @@ class SeqNumberService {
 			def s = new StringBuilder()
 			if (withPrefix) s << seqNumberInstance.prefix
 			if (s != '') s << '-'
-			s << number ?: seqNumberInstance.nextNumber
+			s << number ?: nextNumber(controllerName)
 			if (withSuffix && (seqNumberInstance.suffix != '')) {
 				s << '-' << seqNumberInstance.suffix
 			}

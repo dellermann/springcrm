@@ -91,7 +91,6 @@ class InvoiceController {
     def save = {
         def invoiceInstance = new Invoice(params)
 		if (invoiceInstance.save(flush:true)) {
-			seqNumberService.stepFurther(Invoice)
 			invoiceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])}"
 			if (params.returnUrl) {
@@ -100,7 +99,7 @@ class InvoiceController {
 				redirect(action: 'show', id: invoiceInstance.id)
 			}
         } else {
-			log.debug(invoiceInstance.errors)
+        	log.debug(invoiceInstance.errors)
             render(view: 'create', model: [invoiceInstance: invoiceInstance])
         }
     }
@@ -136,6 +135,9 @@ class InvoiceController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = invoiceInstance.number
+			}
             invoiceInstance.properties = params
 
 			/*

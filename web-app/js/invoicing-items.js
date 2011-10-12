@@ -952,7 +952,6 @@
                 }
 
                 if (del) {
-                    this._removeRow($(input).parents("tr"));
                     for (j = i; ++j < this._nextIndex; ) {
                         name = this._getInputName(j);
                         newName = this._getInputName(j - 1);

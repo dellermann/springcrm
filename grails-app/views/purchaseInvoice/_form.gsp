@@ -268,8 +268,8 @@
     <div class="table-actions">
       <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingItem.button.addRow.label" /></a>
     </div>
-    <g:hasErrors bean="${purchaseInvoiceInstance}" field="items">
-      <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="items"><g:message error="${it}" /> </g:eachError></span>
+    <g:hasErrors bean="${purchaseInvoiceInstance}" field="items.*">
+      <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="items.*">${it.arguments[0]}: <g:message error="${it}" /> </g:eachError></span>
     </g:hasErrors>
   </div>
 </fieldset>

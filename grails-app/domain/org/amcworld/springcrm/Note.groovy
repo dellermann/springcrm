@@ -43,4 +43,10 @@ class Note {
 	String toString() {
 		return title ?: ''
 	}
+
+	def beforeInsert() {
+		if (number == 0) {
+			number = seqNumberService.nextNumber(getClass())
+		}
+	}
 }

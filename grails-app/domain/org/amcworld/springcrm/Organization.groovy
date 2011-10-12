@@ -186,4 +186,10 @@ class Organization {
     String toString() {
         return name ?: ''
     }
+
+	def beforeInsert() {
+		if (number == 0) {
+			number = seqNumberService.nextNumber(getClass())
+		}
+	}
 }

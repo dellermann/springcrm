@@ -66,7 +66,6 @@ class ProductController {
     def save = {
         def productInstance = new Product(params)
         if (productInstance.save(flush:true)) {
-			seqNumberService.stepFurther(Product)
 			productInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])}"
 			if (params.returnUrl) {
@@ -110,6 +109,9 @@ class ProductController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = productInstance.number
+			}
             productInstance.properties = params
             if (!productInstance.hasErrors() && productInstance.save(flush: true)) {
 				productInstance.reindex()

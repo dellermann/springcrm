@@ -66,7 +66,6 @@ class ServiceController {
     def save = {
         def serviceInstance = new Service(params)
         if (serviceInstance.save(flush:true)) {
-			seqNumberService.stepFurther(Service)
 			serviceInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])}"
 			if (params.returnUrl) {
@@ -110,6 +109,9 @@ class ServiceController {
                     return
                 }
             }
+			if (params.autoNumber) {
+				params.number = serviceInstance.number
+			}
             serviceInstance.properties = params
             if (!serviceInstance.hasErrors() && serviceInstance.save(flush: true)) {
 				serviceInstance.reindex()

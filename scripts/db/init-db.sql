@@ -187,17 +187,17 @@ CREATE TABLE IF NOT EXISTS seq_number (
 --
 
 TRUNCATE TABLE seq_number;
-INSERT INTO seq_number (id, version, controller_name, next_number, prefix, 
-  start_number, suffix) 
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, 
+  start_value, suffix) 
 VALUES
-	(1, 0, 'quote', 10000, 'A', 10000, ''),
-	(2, 0, 'salesOrder', 10000, 'B', 10000, ''),
-	(3, 0, 'invoice', 10000, 'R', 10000, ''),
-	(4, 0, 'service', 10000, 'S', 10000, ''),
-	(5, 0, 'product', 10000, 'P', 10000, ''),
-	(6, 0, 'organization', 10000, 'O', 10000, ''),
-	(7, 0, 'person', 10000, 'E', 10000, ''),
-	(8, 0, 'note', 10000, 'N', 10000, '');
+	(1, 0, 'quote', 99999, 'A', 10000, ''),
+	(2, 0, 'salesOrder', 99999, 'B', 10000, ''),
+	(3, 0, 'invoice', 99999, 'R', 10000, ''),
+	(4, 0, 'service', 99999, 'S', 10000, ''),
+	(5, 0, 'product', 99999, 'P', 10000, ''),
+	(6, 0, 'organization', 99999, 'O', 10000, ''),
+	(7, 0, 'person', 99999, 'E', 10000, ''),
+	(8, 0, 'note', 99999, 'N', 10000, '');
 
 
 --

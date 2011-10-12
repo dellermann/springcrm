@@ -7,7 +7,7 @@
           <label for="number"><g:message code="invoicingItem.number.label" default="Number" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'number', ' error')}">
-          ${seqNumberPrefix}-<g:textField name="number" value="${salesOrderInstance?.number}" size="10" /><br />
+          <g:autoNumber prefix="${seqNumberPrefix}" suffix="${seqNumberSuffix}" value="${salesOrderInstance?.number}" /><br />
           <g:hasErrors bean="${salesOrderInstance}" field="number">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="number"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -472,8 +472,8 @@
     <div class="table-actions">
       <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingItem.button.addRow.label" /></a>
     </div>
-    <g:hasErrors bean="${salesOrderInstance}" field="items">
-      <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="items"><g:message error="${it}" /> </g:eachError></span>
+    <g:hasErrors bean="${salesOrderInstance}" field="items.*">
+      <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="items.*">${it.arguments[0]}: <g:message error="${it}" /> </g:eachError></span>
     </g:hasErrors>
     <div id="inventory-selector-products" title="${message(code: 'invoicingItem.selector.products.title')}"></div>
     <div id="inventory-selector-services" title="${message(code: 'invoicingItem.selector.services.title')}"></div>

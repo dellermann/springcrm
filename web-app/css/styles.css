@@ -995,6 +995,11 @@ input[type=text]:focus, input[type=password]:focus, select:focus,
 {
   background: #DDD;
 }
+.disabled {
+  background: #CCC !important;
+  border-color: #888 !important;
+  color: #EEE;
+}
 label, .data-sheet .label {
   font-weight: bold;
 }
@@ -1040,6 +1045,14 @@ button.combobox {
   -moz-border-radius-topleft: 0;
   -webkit-border-radius-bottomleft: 0;
   -webkit-border-radius-topleft: 0;
+}
+.auto-number {
+  padding-left: .5em;
+  position: relative;
+  top: .4em;
+}
+.auto-number label {
+  top: -.4em !important;
 }
 .error input[type=text], .error input[type=password], .error select, 
   .error textarea
@@ -1161,20 +1174,36 @@ form .invoicing-items-pos {
   text-align: center;
 }
 .paginator {
-  margin-top: .5em;
-  text-align: center;
+  display: table;
+  margin: 0 auto;
 }
 .paginator a, .paginator span {
-  border: .1em solid #888;
+  border: 1px #888;
+  border-style: solid solid solid none;
   color: #444;
-  margin-left: .5em;
-  padding: .2em 1em;
-  -khtml-border-radius: .5em;
-  -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -moz-border-radius: .5em;
-  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -webkit-border-radius: .5em;
-  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  display: table-cell;
+  padding: .5em 1em;
+}
+.paginator *:first-child {
+  border-bottom-left-radius: .5em;
+  border-left: 1px solid #888;
+  border-top-left-radius: .5em;
+  -khtml-border-radius-topleft: .5em;
+  -khtml-border-radius-bottomleft: .5em;
+  -moz-border-radius-topleft: .5em;
+  -moz-border-radius-bottomleft: .5em;
+  -webkit-border-radius-topleft: .5em;
+  -webkit-border-radius-bottomleft: .5em;
+}
+.paginator *:last-child {
+  border-bottom-right-radius: .5em;
+  border-top-right-radius: .5em;
+  -khtml-border-radius-topright: .5em;
+  -khtml-border-radius-bottomright: .5em;
+  -moz-border-radius-topright: .5em;
+  -moz-border-radius-bottomright: .5em;
+  -webkit-border-radius-topright: .5em;
+  -webkit-border-radius-bottomright: .5em;
 }
 .paginator .currentStep {
   background: #DDD;
@@ -1245,21 +1274,40 @@ form .invoicing-items-pos {
 
 /* lists */
 .letter-bar {
-  margin: .5em 0 1em;
+  display: table;
+  margin: .5em auto 1em;
+  width: 100%;
 }
 .letter-bar li {
-  border: .1em solid #888;
+  border: 1px #888;
+  border-style: solid solid solid none;
   color: #BBB;
-  float: left;
+  display: table-cell;
   list-style: none;
-  margin: 0 0 0 .5em;
+  margin: 0;
   padding: .2em .5em;
-  -khtml-border-radius: .5em;
-  -khtml-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -moz-border-radius: .5em;
-  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
-  -webkit-border-radius: .5em;
-  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+  text-align: center;
+}
+.letter-bar li:first-child {
+  border-bottom-left-radius: .5em;
+  border-left: 1px solid #888;
+  border-top-left-radius: .5em;
+  -khtml-border-radius-topleft: .5em;
+  -khtml-border-radius-bottomleft: .5em;
+  -moz-border-radius-topleft: .5em;
+  -moz-border-radius-bottomleft: .5em;
+  -webkit-border-radius-topleft: .5em;
+  -webkit-border-radius-bottomleft: .5em;
+}
+.letter-bar li:last-child {
+  border-bottom-right-radius: .5em;
+  border-top-right-radius: .5em;
+  -khtml-border-radius-topright: .5em;
+  -khtml-border-radius-bottomright: .5em;
+  -moz-border-radius-topright: .5em;
+  -moz-border-radius-bottomright: .5em;
+  -webkit-border-radius-topright: .5em;
+  -webkit-border-radius-bottomright: .5em;
 }
 .letter-bar .available {
   background: #DDD;

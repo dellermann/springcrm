@@ -182,4 +182,10 @@ class Person {
 		}
         return s
     }
+
+	def beforeInsert() {
+		if (number == 0) {
+			number = seqNumberService.nextNumber(getClass())
+		}
+	}
 }
