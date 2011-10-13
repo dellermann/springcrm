@@ -1,6 +1,8 @@
 <%@ page import="org.amcworld.springcrm.Product" %>
 <div class="selector-toolbar">
-  <g:letterBar clazz="${Product}" property="name" numLetters="3" separator="-" where="name like '%${params.search ?: ''}%'"/>
+  <div class="selector-letter-bar">
+    <g:letterBar clazz="${Product}" property="name" numLetters="3" separator="-" where="name like '%${params.search ?: ''}%'"/>
+  </div>
   <div class="selector-toolbar-search">
     <g:form action="selectorList">
       <g:textField name="search" value="${params.search ?: message(code:'default.search.label', default:'Search...')}" class="search-field"/>

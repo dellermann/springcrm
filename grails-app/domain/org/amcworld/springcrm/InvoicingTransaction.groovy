@@ -277,7 +277,7 @@ class InvoicingTransaction {
 
 	def beforeInsert() {
 		if (number == 0) {
-			number = nextNumber
+			number = seqNumberService.nextNumber(getClass())
 		}
 		total = computeTotal()
 	}

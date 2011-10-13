@@ -1342,15 +1342,18 @@ form .invoicing-items-pos {
   margin-bottom: .5em;
   width: 100%;
 }
-.selector-toolbar .letter-bar {
+.selector-letter-bar {
   display: table-cell;
   margin: 0;
   vertical-align: middle;
 }
-.selector-toolbar .letter-bar li:first-child {
+.selector-letter-bar ul {
+  margin: 0;
+}
+.selector-letter-bar li:first-child {
   margin-left: 0;
 }
-.selector-toolbar .letter-bar a {
+.selector-letter-bar a {
   padding: 0 .3em;
 }
 .selector-toolbar-search {
