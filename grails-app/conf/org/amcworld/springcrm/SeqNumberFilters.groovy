@@ -9,15 +9,16 @@ class SeqNumberFilters {
 		loadSeqNumberDefault(controller:'*', action:'create|copy|edit') {
 			after = { model ->
 				if (model) {
-					if (actionName != 'edit') {
-						def inst = model["${controllerName}Instance"]
-						if (inst) {
-							inst.number = seqNumberService.nextNumber(controllerName)
-						}
-					}
 					SeqNumber seqNumber =
 						seqNumberService.loadSeqNumber(controllerName)
 					if (seqNumber) {
+						if (actionName != 'edit') {
+							def inst = model["${controllerName}Instance"]
+							if (inst) {
+								inst.number = 
+									seqNumberService.nextNumber(controllerName)
+							}
+						}
 						model.seqNumberPrefix = seqNumber.prefix
 						model.seqNumberSuffix = seqNumber.suffix
 					}
