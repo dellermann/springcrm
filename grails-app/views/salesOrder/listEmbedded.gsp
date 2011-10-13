@@ -3,8 +3,8 @@
   <thead>
     <tr>
       <th><input type="checkbox" id="salesOrder-multop-sel" class="multop-sel" /></th>
-      <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" params="${linkParams}" />
-      <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" params="${linkParams}" />
+      <g:sortableColumn property="number" title="${message(code: 'invoicingTransaction.number.label', default: 'Number')}" params="${linkParams}" />
+      <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label', default: 'Subject')}" params="${linkParams}" />
       <g:sortableColumn property="stage" title="${message(code: 'salesOrder.stage.label.short', default: 'Stage')}" params="${linkParams}" />
       <g:sortableColumn property="docDate" title="${message(code: 'salesOrder.docDate.label.short', default: 'Date')}" params="${linkParams}" />
       <g:sortableColumn property="dueDate" title="${message(code: 'salesOrder.dueDate.label', default: 'Due date')}" params="${linkParams}" />

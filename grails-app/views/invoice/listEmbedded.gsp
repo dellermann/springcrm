@@ -3,8 +3,8 @@
   <thead>
     <tr>
       <th><input type="checkbox" id="invoice-multop-sel" class="multop-sel" /></th>
-      <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" params="${linkParams}" />
-      <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" params="${linkParams}" />
+      <g:sortableColumn property="number" title="${message(code: 'invoicingTransaction.number.label', default: 'Number')}" params="${linkParams}" />
+      <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label', default: 'Subject')}" params="${linkParams}" />
       <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label.short', default: 'Stage')}" params="${linkParams}" />
       <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label.short', default: 'Date')}" params="${linkParams}" />
       <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label', default: 'Due date of payment')}" params="${linkParams}" />
@@ -23,8 +23,10 @@
       <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
       <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
       <td>
+        <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
         <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
         <g:link controller="invoice" action="delete" id="${invoiceInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+        </g:if>
       </td>
     </tr>
   </g:each>

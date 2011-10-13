@@ -130,7 +130,7 @@
   <div class="header-with-menu">
     <h4><g:message code="purchaseInvoice.fieldset.items.label" /></h4>
     <div class="menu">
-      <a href="javascript:void 0;" class="add-invoicing-item-btn button small green"><g:message code="invoicingItem.button.addRow.label" /></a>
+      <a href="javascript:void 0;" class="add-invoicing-item-btn button small green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
     </div>
   </div>
   <div class="fieldset-content">
@@ -142,14 +142,14 @@
     <table id="purchaseInvoice-items" class="invoicing-items content-table">
       <thead>
         <tr>
-          <th id="invoice-items-pos"><g:message code="invoicingItem.pos.label" default="Pos." /></th>
-          <th id="invoice-items-number"><g:message code="invoicingItem.number.label" default="No." /></th>
-          <th id="invoice-items-quantity"><g:message code="invoicingItem.quantity.label" default="Qty" /></th>
-          <th id="invoice-items-unit"><g:message code="invoicingItem.unit.label" default="Unit" /></th>
-          <th id="invoice-items-name"><g:message code="invoicingItem.name.label" default="Name" /></th>
-          <th id="invoice-items-unit-price"><g:message code="invoicingItem.unitPrice.label" default="Unit price" /></th>
-          <th id="invoice-items-total"><g:message code="invoicingItem.total.label" default="Total" /></th>
-          <th id="invoice-items-tax"><g:message code="invoicingItem.tax.label" default="Tax" /></th>
+          <th id="invoice-items-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
+          <th id="invoice-items-number"><g:message code="invoicingTransaction.number.label" default="No." /></th>
+          <th id="invoice-items-quantity"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
+          <th id="invoice-items-unit"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
+          <th id="invoice-items-name"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
+          <th id="invoice-items-unit-price"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
+          <th id="invoice-items-total"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
+          <th id="invoice-items-tax"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
           <th></th>
         </tr>
       </thead>
@@ -162,14 +162,14 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingItem.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
+          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
           <td headers="invoice-items-unitPrice"></td>
           <td headers="invoice-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
           <td headers="invoice-items-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingItem.discountPercent.label" default="Discount Percent" /></label></td>
+          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></label></td>
           <td headers="invoice-items-unitPrice" class="invoicing-items-unit-price${hasErrors(bean: purchaseInvoiceInstance, field: 'discountPercent', ' error')}">
             <g:textField name="discountPercent" value="${fieldValue(bean: purchaseInvoiceInstance, field: 'discountPercent')}" size="8" />&nbsp;%<br />
             <g:hasErrors bean="${purchaseInvoiceInstance}" field="discountPercent">
@@ -181,7 +181,7 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingItem.discountAmount.label" default="Discount Amount" /></label></td>
+          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></label></td>
           <td headers="invoice-items-unitPrice"></td>
           <td headers="invoice-items-total" class="invoicing-items-total${hasErrors(bean: purchaseInvoiceInstance, field: 'discountAmount', ' error')}">
             <g:textField name="discountAmount" value="${formatNumber(number: purchaseInvoiceInstance?.discountAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
@@ -193,7 +193,7 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingItem.adjustment.label" default="Adjustment" /></label></td>
+          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></label></td>
           <td headers="invoice-items-unitPrice"></td>
           <td headers="invoice-items-total" class="invoicing-items-total${hasErrors(bean: purchaseInvoiceInstance, field: 'adjustment', ' error')}">
             <g:textField name="adjustment" value="${formatNumber(number: purchaseInvoiceInstance?.adjustment, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
@@ -247,7 +247,7 @@
       </tbody>
       <tbody>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingItem.shippingCosts.label" default="Shipping Costs" /></label></td>
+          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></label></td>
           <td headers="invoice-items-unitPrice"></td>
           <td headers="invoice-items-total" class="invoicing-items-total${hasErrors(bean: purchaseInvoiceInstance, field: 'shippingCosts', ' error')}">
             <g:textField name="shippingCosts" value="${formatNumber(number: purchaseInvoiceInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
@@ -266,7 +266,7 @@
       </tbody>
     </table>
     <div class="table-actions">
-      <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingItem.button.addRow.label" /></a>
+      <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
     </div>
     <g:hasErrors bean="${purchaseInvoiceInstance}" field="items.*">
       <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="items.*">${it.arguments[0]}: <g:message error="${it}" /> </g:eachError></span>
@@ -348,7 +348,7 @@
         }
     });
     $("#paymentDate-date").change(function () {
-        if ($stage.val() < 2102) {
+        if ($(this).val() !== "" && $stage.val() < 2102) {
             $stage.val(2102);
         }
     });

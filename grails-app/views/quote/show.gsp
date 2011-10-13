@@ -37,28 +37,28 @@
     <h3>${quoteInstance?.toString()}</h3>
     <div class="data-sheet">
       <div class="fieldset">
-        <h4><g:message code="invoicingItem.fieldset.general.label" /></h4>
+        <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.number.label" default="Number" /></div>
+              <div class="label"><g:message code="invoicingTransaction.number.label" default="Number" /></div>
               <div class="field">${quoteInstance?.fullNumber}</div>
 	        </div>
             
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.subject.label" default="Subject" /></div>
+              <div class="label"><g:message code="invoicingTransaction.subject.label" default="Subject" /></div>
               <div class="field">${fieldValue(bean: quoteInstance, field: "subject")}</div>
             </div>
             
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.organization.label" default="Organization" /></div>
+              <div class="label"><g:message code="invoicingTransaction.organization.label" default="Organization" /></div>
               <div class="field">
                 <g:link controller="organization" action="show" id="${quoteInstance?.organization?.id}">${quoteInstance?.organization?.encodeAsHTML()}</g:link>
       	      </div>
       	    </div>
             
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.person.label" default="Person" /></div>
+              <div class="label"><g:message code="invoicingTransaction.person.label" default="Person" /></div>
               <div class="field">
                 <g:link controller="person" action="show" id="${quoteInstance?.person?.id}">${quoteInstance?.person?.encodeAsHTML()}</g:link>
       			  </div>
@@ -86,7 +86,7 @@
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="invoicingItem.carrier.label" default="Carrier" /></div>
+              <div class="label"><g:message code="invoicingTransaction.carrier.label" default="Carrier" /></div>
               <div class="field">${quoteInstance?.carrier?.encodeAsHTML()}</div>
             </div>
           </div>
@@ -96,35 +96,35 @@
       <div class="multicol-content">
         <div class="col col-l">
           <div class="fieldset">
-            <h4><g:message code="invoicingItem.fieldset.billingAddr.label" /></h4>
+            <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.billingAddrStreet.label" default="Street" /></div>
+                <div class="label"><g:message code="invoicingTransaction.billingAddrStreet.label" default="Street" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrStreet")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.billingAddrPoBox.label" default="PO Box" /></div>
+                <div class="label"><g:message code="invoicingTransaction.billingAddrPoBox.label" default="PO Box" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrPoBox")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.billingAddrPostalCode.label" default="Postal Code" /></div>
+                <div class="label"><g:message code="invoicingTransaction.billingAddrPostalCode.label" default="Postal Code" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrPostalCode")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.billingAddrLocation.label" default="Location" /></div>
+                <div class="label"><g:message code="invoicingTransaction.billingAddrLocation.label" default="Location" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrLocation")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.billingAddrState.label" default="State" /></div>
+                <div class="label"><g:message code="invoicingTransaction.billingAddrState.label" default="State" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrState")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.billingAddrCountry.label" default="Country" /></div>
+                <div class="label"><g:message code="invoicingTransaction.billingAddrCountry.label" default="Country" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrCountry")}</div>
               </div>
               
@@ -139,35 +139,35 @@
         </div>
         <div class="col col-r">
           <div class="fieldset">
-            <h4><g:message code="invoicingItem.fieldset.shippingAddr.label" /></h4>
+            <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.shippingAddrStreet.label" default="Street" /></div>
+                <div class="label"><g:message code="invoicingTransaction.shippingAddrStreet.label" default="Street" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrStreet")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.shippingAddrPoBox.label" default="PO Box" /></div>
+                <div class="label"><g:message code="invoicingTransaction.shippingAddrPoBox.label" default="PO Box" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrPoBox")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.shippingAddrPostalCode.label" default="Postal Code" /></div>
+                <div class="label"><g:message code="invoicingTransaction.shippingAddrPostalCode.label" default="Postal Code" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrPostalCode")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.shippingAddrLocation.label" default="Location" /></div>
+                <div class="label"><g:message code="invoicingTransaction.shippingAddrLocation.label" default="Location" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrLocation")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.shippingAddrState.label" default="State" /></div>
+                <div class="label"><g:message code="invoicingTransaction.shippingAddrState.label" default="State" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrState")}</div>
               </div>
               
               <div class="row">
-                <div class="label"><g:message code="invoicingItem.shippingAddrCountry.label" default="Country" /></div>
+                <div class="label"><g:message code="invoicingTransaction.shippingAddrCountry.label" default="Country" /></div>
                 <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrCountry")}</div>
               </div>
               
@@ -183,10 +183,10 @@
       </div>
 
       <div class="fieldset">
-        <h4><g:message code="invoicingItem.fieldset.header.label" /></h4>
+        <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
         <div class="fieldset-content">
           <div class="row">
-            <div class="label"><g:message code="invoicingItem.headerText.label" default="Header Text" /></div>
+            <div class="label"><g:message code="invoicingTransaction.headerText.label" default="Header Text" /></div>
             <div class="field">${nl2br(value: quoteInstance?.headerText)}</div>
           </div>
         </div>
@@ -198,14 +198,14 @@
           <table id="quote-items" class="invoicing-items content-table">
             <thead>
               <tr>
-                <th id="quote-items-pos"><g:message code="invoicingItem.pos.label" default="Pos." /></th>
-                <th id="quote-items-number"><g:message code="invoicingItem.number.label" default="No." /></th>
-                <th id="quote-items-quantity"><g:message code="invoicingItem.quantity.label" default="Qty" /></th>
-                <th id="quote-items-unit"><g:message code="invoicingItem.unit.label" default="Unit" /></th>
-                <th id="quote-items-name"><g:message code="invoicingItem.name.label" default="Name" /></th>
-                <th id="quote-items-unit-price"><g:message code="invoicingItem.unitPrice.label" default="Unit price" /></th>
-                <th id="quote-items-total"><g:message code="invoicingItem.total.label" default="Total" /></th>
-                <th id="quote-items-tax"><g:message code="invoicingItem.tax.label" default="Tax" /></th>
+                <th id="quote-items-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
+                <th id="quote-items-number"><g:message code="invoicingTransaction.number.label" default="No." /></th>
+                <th id="quote-items-quantity"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
+                <th id="quote-items-unit"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
+                <th id="quote-items-name"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
+                <th id="quote-items-unit-price"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
+                <th id="quote-items-total"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
+                <th id="quote-items-tax"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
               </tr>
             </thead>
             <tfoot>
@@ -217,7 +217,7 @@
               </tr>
               <g:each in="${quoteInstance.taxRateSums}" var="item">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
                 <td headers="quote-items-unit-price"></td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: item.value)}</td>
                 <td headers="quote-items-tax"></td>
@@ -225,7 +225,7 @@
               </g:each>
               <g:if test="${quoteInstance?.discountPercent != 0 || quoteInstance?.discountAmount != 0 || quoteInstance?.adjustment != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="invoicingItem.subtotalGross.label" default="Subtotal incl. VAT" /></strong></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></strong></td>
                 <td headers="quote-items-unit-price"></td>
                 <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatCurrency(number: quoteInstance?.subtotalGross)}</strong></td>
                 <td headers="quote-items-tax"></td>
@@ -233,7 +233,7 @@
               </g:if>
               <g:if test="${quoteInstance?.discountPercent != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.discountPercent.label" default="Discount Percent" /></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
                 <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatNumber(number: quoteInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: quoteInstance?.discountPercentAmount)}</td>
                 <td headers="quote-items-tax"></td>
@@ -241,7 +241,7 @@
               </g:if>
               <g:if test="${quoteInstance?.discountAmount != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.discountAmount.label" default="Discount Amount" /></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
                 <td headers="quote-items-unit-price"></td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: quoteInstance?.discountAmount)}</td>
                 <td headers="quote-items-tax"></td>
@@ -249,7 +249,7 @@
               </g:if>
               <g:if test="${quoteInstance?.adjustment != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingItem.adjustment.label" default="Adjustment" /></td>
+                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
                 <td headers="quote-items-unit-price"></td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: quoteInstance?.adjustment)}</td>
                 <td headers="quote-items-tax"></td>
@@ -279,7 +279,7 @@
             <tbody>
               <tr>
                 <td headers="quote-items-pos" class="invoicing-items-pos" colspan="4"></td>
-                <td headers="quote-items-name" class="invoicing-items-name"><g:message code="invoicingItem.shippingCosts.label" default="Shipping Costs" /></td>
+                <td headers="quote-items-name" class="invoicing-items-name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
                 <td headers="quote-items-unit-price" class="invoicing-items-unit-price"></td> 
                 <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: quoteInstance?.shippingCosts)}</td>
                 <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: quoteInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
@@ -290,15 +290,15 @@
       </div>
       
       <div class="fieldset">
-        <h4><g:message code="invoicingItem.fieldset.footer.label" /></h4>
+        <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
         <div class="fieldset-content">
           <div class="row">
-            <div class="label"><g:message code="invoicingItem.footerText.label" default="Footer Text" /></div>
+            <div class="label"><g:message code="invoicingTransaction.footerText.label" default="Footer Text" /></div>
             <div class="field">${nl2br(value: quoteInstance?.footerText)}</div>
           </div>
           
           <div class="row">
-            <div class="label"><g:message code="invoicingItem.termsAndConditions.label" default="Terms And Conditions" /></div>
+            <div class="label"><g:message code="invoicingTransaction.termsAndConditions.label" default="Terms And Conditions" /></div>
             <div class="field">${quoteInstance?.termsAndConditions?.name.join(', ')}</div>
           </div>
         </div>

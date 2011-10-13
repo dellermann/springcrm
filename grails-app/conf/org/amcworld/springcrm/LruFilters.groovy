@@ -7,11 +7,13 @@ class LruFilters {
     def filters = {
         lruRecord(controller:'*', action:'show|edit') {
             after = { model ->
-                def inst = model["${controllerName}Instance"]
-				if (inst) {
-					lruService.recordItem(
-						controllerName, params.id as long, inst.toString()
-					)
+				if (model) {
+	                def inst = model["${controllerName}Instance"]
+					if (inst) {
+						lruService.recordItem(
+							controllerName, params.id as long, inst.toString()
+						)
+					}
 				}
             }
         }

@@ -8,17 +8,19 @@ class SeqNumberFilters {
 	def filters = {
 		loadSeqNumberDefault(controller:'*', action:'create|copy|edit') {
 			after = { model ->
-				if (actionName != 'edit') {
-					def inst = model["${controllerName}Instance"]
-					if (inst) {
-						inst.number = seqNumberService.nextNumber(controllerName)
+				if (model) {
+					if (actionName != 'edit') {
+						def inst = model["${controllerName}Instance"]
+						if (inst) {
+							inst.number = seqNumberService.nextNumber(controllerName)
+						}
 					}
-				}
-				SeqNumber seqNumber =
-					seqNumberService.loadSeqNumber(controllerName)
-				if (seqNumber) {
-					model.seqNumberPrefix = seqNumber.prefix
-					model.seqNumberSuffix = seqNumber.suffix
+					SeqNumber seqNumber =
+						seqNumberService.loadSeqNumber(controllerName)
+					if (seqNumber) {
+						model.seqNumberPrefix = seqNumber.prefix
+						model.seqNumberSuffix = seqNumber.suffix
+					}
 				}
 			}
 		}

@@ -27,14 +27,14 @@
       <thead>
         <tr>
           <th><input type="checkbox" id="invoice-multop-sel" class="multop-sel" /></th>
-          <g:sortableColumn property="number" title="${message(code: 'invoicingItem.number.label', default: 'Number')}" />
-          <g:sortableColumn property="subject" title="${message(code: 'invoicingItem.subject.label', default: 'Subject')}" />
-          <g:sortableColumn property="organization.name" title="${message(code: 'invoicingItem.organization.label', default: 'Organization')}" />
+          <g:sortableColumn property="number" title="${message(code: 'invoicingTransaction.number.label', default: 'Number')}" />
+          <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label', default: 'Subject')}" />
+          <g:sortableColumn property="organization.name" title="${message(code: 'invoicingTransaction.organization.label', default: 'Organization')}" />
           <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label.short', default: 'Stage')}" />
           <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label.short', default: 'Date')}" />
           <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label', default: 'Due date of payment')}" />
           <g:sortableColumn property="total" title="${message(code: 'invoice.total.label.short', default: 'Total')}" style="width: 6em;" />
-          <th></th>
+          <th style="width: 11.5em;"></th>
         </tr>
       </thead>
       <tbody>
@@ -49,8 +49,10 @@
           <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
           <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
           <td>
+            <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
             <g:link action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${invoiceInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+            </g:if>
           </td>
         </tr>
       </g:each>

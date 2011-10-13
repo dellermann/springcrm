@@ -118,9 +118,12 @@ class InvoiceController {
         def invoiceInstance = Invoice.get(params.id)
         if (!invoiceInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
-            redirect(action: 'list')
+            redirect(action:'list')
         } else {
-            return [invoiceInstance: invoiceInstance]
+			if (session.user.admin || invoiceInstance.stage.id < 902) {
+				return [invoiceInstance: invoiceInstance]
+			}
+			redirect(action:'list')
         }
     }
 
@@ -178,6 +181,9 @@ class InvoiceController {
     def delete = {
         def invoiceInstance = Invoice.get(params.id)
         if (invoiceInstance && params.confirmed) {
+			if (!session.user.admin && invoiceInstance.stage.id >= 902) {
+				redirect(action:'list')
+			}
             try {
                 invoiceInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'invoice.label', default: 'Invoice')])}"

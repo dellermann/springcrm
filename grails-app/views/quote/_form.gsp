@@ -1,10 +1,10 @@
 <fieldset>
-  <h4><g:message code="invoicingItem.fieldset.general.label" /></h4>
+  <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="row">
         <div class="label">
-          <label for="number"><g:message code="invoicingItem.number.label" default="Number" /></label>
+          <label for="number"><g:message code="invoicingTransaction.number.label" default="Number" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'number', ' error')}">
           <g:autoNumber prefix="${seqNumberPrefix}" suffix="${seqNumberSuffix}" value="${quoteInstance?.number}" /><br />
@@ -16,7 +16,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="subject"><g:message code="invoicingItem.subject.label" default="Subject" /></label>
+          <label for="subject"><g:message code="invoicingTransaction.subject.label" default="Subject" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'subject', ' error')}">
           <g:textField name="subject" value="${quoteInstance?.subject}" size="40" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
@@ -28,7 +28,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="organization"><g:message code="invoicingItem.organization.label" default="Organization" /></label>
+          <label for="organization"><g:message code="invoicingTransaction.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${quoteInstance?.organization?.name}" size="35" />
@@ -41,7 +41,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="person"><g:message code="invoicingItem.person.label" default="Person" /></label>
+          <label for="person"><g:message code="invoicingTransaction.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${quoteInstance?.person?.fullName}" size="35" />
@@ -106,7 +106,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="carrier.id"><g:message code="invoicingItem.carrier.label" default="Carrier" /></label>
+          <label for="carrier.id"><g:message code="invoicingTransaction.carrier.label" default="Carrier" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'carrier', ' error')}">
           <g:select name="carrier.id" from="${org.amcworld.springcrm.Carrier.list()}" optionKey="id" value="${quoteInstance?.carrier?.id}" noSelection="['null': '']" /><br />
@@ -122,7 +122,7 @@
   <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
-        <h4><g:message code="invoicingItem.fieldset.billingAddr.label" /></h4>
+        <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
         <div class="menu">
           <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
         </div>
@@ -130,7 +130,7 @@
       <div class="fieldset-content form-fragment">
         <div class="row">
           <div class="label">
-            <label for="billingAddrStreet"><g:message code="invoicingItem.billingAddrStreet.label" default="Street" /></label>
+            <label for="billingAddrStreet"><g:message code="invoicingTransaction.billingAddrStreet.label" default="Street" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'billingAddrStreet', ' error')}">
             <g:textArea name="billingAddrStreet" cols="35" rows="3" value="${quoteInstance?.billingAddrStreet}" /><br />
@@ -142,7 +142,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="billingAddrPoBox"><g:message code="invoicingItem.billingAddrPoBox.label" default="PO Box" /></label>
+            <label for="billingAddrPoBox"><g:message code="invoicingTransaction.billingAddrPoBox.label" default="PO Box" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'billingAddrPoBox', ' error')}">
             <g:textField name="billingAddrPoBox" value="${quoteInstance?.billingAddrPoBox}" size="40" /><br />
@@ -154,7 +154,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="billingAddrPostalCode"><g:message code="invoicingItem.billingAddrPostalCode.label" default="Postal Code" /></label>
+            <label for="billingAddrPostalCode"><g:message code="invoicingTransaction.billingAddrPostalCode.label" default="Postal Code" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'billingAddrPostalCode', ' error')}">
             <g:textField name="billingAddrPostalCode" value="${quoteInstance?.billingAddrPostalCode}" size="10" /><br />
@@ -166,7 +166,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="billingAddrLocation"><g:message code="invoicingItem.billingAddrLocation.label" default="Location" /></label>
+            <label for="billingAddrLocation"><g:message code="invoicingTransaction.billingAddrLocation.label" default="Location" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'billingAddrLocation', ' error')}">
             <g:textField name="billingAddrLocation" value="${quoteInstance?.billingAddrLocation}" size="40" /><br />
@@ -178,7 +178,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="billingAddrState"><g:message code="invoicingItem.billingAddrState.label" default="State" /></label>
+            <label for="billingAddrState"><g:message code="invoicingTransaction.billingAddrState.label" default="State" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'billingAddrState', ' error')}">
             <g:textField name="billingAddrState" value="${quoteInstance?.billingAddrState}" size="40" /><br />
@@ -190,7 +190,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="billingAddrCountry"><g:message code="invoicingItem.billingAddrCountry.label" default="Country" /></label>
+            <label for="billingAddrCountry"><g:message code="invoicingTransaction.billingAddrCountry.label" default="Country" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'billingAddrCountry', ' error')}">
             <g:textField name="billingAddrCountry" value="${quoteInstance?.billingAddrCountry}" size="40" /><br />
@@ -205,7 +205,7 @@
   <div class="col col-r right-address">
     <fieldset>
       <div class="header-with-menu">
-        <h4><g:message code="invoicingItem.fieldset.shippingAddr.label" /></h4>
+        <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
         <div class="menu">
           <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
         </div>
@@ -213,7 +213,7 @@
       <div class="fieldset-content form-fragment">
         <div class="row">
           <div class="label">
-            <label for="shippingAddrStreet"><g:message code="invoicingItem.shippingAddrStreet.label" default="Street" /></label>
+            <label for="shippingAddrStreet"><g:message code="invoicingTransaction.shippingAddrStreet.label" default="Street" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'shippingAddrStreet', ' error')}">
             <g:textArea name="shippingAddrStreet" cols="35" rows="3" value="${quoteInstance?.shippingAddrStreet}" /><br />
@@ -225,7 +225,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="shippingAddrPoBox"><g:message code="invoicingItem.shippingAddrPoBox.label" default="PO Box" /></label>
+            <label for="shippingAddrPoBox"><g:message code="invoicingTransaction.shippingAddrPoBox.label" default="PO Box" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'shippingAddrPoBox', ' error')}">
             <g:textField name="shippingAddrPoBox" value="${quoteInstance?.shippingAddrPoBox}" size="40" /><br />
@@ -237,7 +237,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="shippingAddrPostalCode"><g:message code="invoicingItem.shippingAddrPostalCode.label" default="Postal Code" /></label>
+            <label for="shippingAddrPostalCode"><g:message code="invoicingTransaction.shippingAddrPostalCode.label" default="Postal Code" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'shippingAddrPostalCode', ' error')}">
             <g:textField name="shippingAddrPostalCode" value="${quoteInstance?.shippingAddrPostalCode}" size="10" /><br />
@@ -249,7 +249,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="shippingAddrLocation"><g:message code="invoicingItem.shippingAddrLocation.label" default="Location" /></label>
+            <label for="shippingAddrLocation"><g:message code="invoicingTransaction.shippingAddrLocation.label" default="Location" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'shippingAddrLocation', ' error')}">
             <g:textField name="shippingAddrLocation" value="${quoteInstance?.shippingAddrLocation}" size="40" /><br />
@@ -261,7 +261,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="shippingAddrState"><g:message code="invoicingItem.shippingAddrState.label" default="State" /></label>
+            <label for="shippingAddrState"><g:message code="invoicingTransaction.shippingAddrState.label" default="State" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'shippingAddrState', ' error')}">
             <g:textField name="shippingAddrState" value="${quoteInstance?.shippingAddrState}" size="40" /><br />
@@ -273,7 +273,7 @@
         
         <div class="row">
           <div class="label">
-            <label for="shippingAddrCountry"><g:message code="invoicingItem.shippingAddrCountry.label" default="Country" /></label>
+            <label for="shippingAddrCountry"><g:message code="invoicingTransaction.shippingAddrCountry.label" default="Country" /></label>
           </div>
           <div class="field${hasErrors(bean: quoteInstance, field: 'shippingAddrCountry', ' error')}">
             <g:textField name="shippingAddrCountry" value="${quoteInstance?.shippingAddrCountry}" size="40" /><br />
@@ -287,11 +287,11 @@
   </div>
 </div>
 <fieldset>
-  <h4><g:message code="invoicingItem.fieldset.header.label" /></h4>
+  <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
   <div class="fieldset-content">
     <div class="row">
       <div class="label">
-        <label for="headerText"><g:message code="invoicingItem.headerText.label" default="Header Text" /></label>
+        <label for="headerText"><g:message code="invoicingTransaction.headerText.label" default="Header Text" /></label>
       </div>
       <div class="field${hasErrors(bean: quoteInstance, field: 'headerText', ' error')}">
         <g:textArea name="headerText" cols="80" rows="3" value="${quoteInstance?.headerText}" /><br />
@@ -306,7 +306,7 @@
   <div class="header-with-menu">
     <h4><g:message code="quote.fieldset.items.label" /></h4>
     <div class="menu">
-      <a href="javascript:void 0;" class="add-invoicing-item-btn button small green"><g:message code="invoicingItem.button.addRow.label" /></a>
+      <a href="javascript:void 0;" class="add-invoicing-item-btn button small green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
     </div>
   </div>
   <div class="fieldset-content">
@@ -318,14 +318,14 @@
     <table id="quote-items" class="invoicing-items content-table">
       <thead>
         <tr>
-          <th id="quote-items-pos"><g:message code="invoicingItem.pos.label" default="Pos." /></th>
-          <th id="quote-items-number"><g:message code="invoicingItem.number.label" default="No." /></th>
-          <th id="quote-items-quantity"><g:message code="invoicingItem.quantity.label" default="Qty" /></th>
-          <th id="quote-items-unit"><g:message code="invoicingItem.unit.label" default="Unit" /></th>
-          <th id="quote-items-name"><g:message code="invoicingItem.name.label" default="Name" /></th>
-          <th id="quote-items-unit-price"><g:message code="invoicingItem.unitPrice.label" default="Unit price" /></th>
-          <th id="quote-items-total"><g:message code="invoicingItem.total.label" default="Total" /></th>
-          <th id="quote-items-tax"><g:message code="invoicingItem.tax.label" default="Tax" /></th>
+          <th id="quote-items-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
+          <th id="quote-items-number"><g:message code="invoicingTransaction.number.label" default="No." /></th>
+          <th id="quote-items-quantity"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
+          <th id="quote-items-unit"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
+          <th id="quote-items-name"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
+          <th id="quote-items-unit-price"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
+          <th id="quote-items-total"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
+          <th id="quote-items-tax"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
           <th></th>
         </tr>
       </thead>
@@ -338,14 +338,14 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingItem.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
           <td headers="quote-items-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingItem.discountPercent.label" default="Discount Percent" /></label></td>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></label></td>
           <td headers="quote-items-unitPrice" class="invoicing-items-unit-price${hasErrors(bean: quoteInstance, field: 'discountPercent', ' error')}">
             <g:textField name="discountPercent" value="${fieldValue(bean: quoteInstance, field: 'discountPercent')}" size="8" />&nbsp;%<br />
             <g:hasErrors bean="${quoteInstance}" field="discountPercent">
@@ -357,7 +357,7 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingItem.discountAmount.label" default="Discount Amount" /></label></td>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'discountAmount', ' error')}">
             <g:textField name="discountAmount" value="${formatNumber(number: quoteInstance?.discountAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
@@ -369,7 +369,7 @@
           <td></td>
         </tr>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingItem.adjustment.label" default="Adjustment" /></label></td>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'adjustment', ' error')}">
             <g:textField name="adjustment" value="${formatNumber(number: quoteInstance?.adjustment, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
@@ -402,7 +402,7 @@
             <input type="text" name="items[${i}].unit" size="5" value="${item.unit}" />
           </td>
           <td headers="quote-items-name" class="invoicing-items-name">
-            <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<a href="javascript:void 0;" class="select-btn-products"><img src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingItem.selector.products.title')}" title="${message(code: 'invoicingItem.selector.products.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<a href="javascript:void 0;" class="select-btn-services"><img src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingItem.selector.services.title')}" title="${message(code: 'invoicingItem.selector.services.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
+            <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<a href="javascript:void 0;" class="select-btn-products"><img src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingTransaction.selector.products.title')}" title="${message(code: 'invoicingTransaction.selector.products.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<a href="javascript:void 0;" class="select-btn-services"><img src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingTransaction.selector.services.title')}" title="${message(code: 'invoicingTransaction.selector.services.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
           </td>
           <td headers="quote-items-unit-price" class="invoicing-items-unit-price">
             <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" class="currency" />&nbsp;<g:currency />
@@ -423,7 +423,7 @@
       </tbody>
       <tbody>
         <tr>
-          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingItem.shippingCosts.label" default="Shipping Costs" /></label></td>
+          <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></label></td>
           <td headers="quote-items-unitPrice"></td>
           <td headers="quote-items-total" class="invoicing-items-total${hasErrors(bean: quoteInstance, field: 'shippingCosts', ' error')}">
             <g:textField name="shippingCosts" value="${formatNumber(number: quoteInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
@@ -442,21 +442,21 @@
       </tbody>
     </table>
     <div class="table-actions">
-      <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingItem.button.addRow.label" /></a>
+      <a href="javascript:void 0;" class="add-invoicing-item-btn button medium green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
     </div>
     <g:hasErrors bean="${quoteInstance}" field="items.*">
       <span class="error-msg"><g:eachError bean="${quoteInstance}" field="items.*">${it.arguments[0]}: <g:message error="${it}" /> </g:eachError></span>
     </g:hasErrors>
-    <div id="inventory-selector-products" title="${message(code: 'invoicingItem.selector.products.title')}"></div>
-    <div id="inventory-selector-services" title="${message(code: 'invoicingItem.selector.services.title')}"></div>
+    <div id="inventory-selector-products" title="${message(code: 'invoicingTransaction.selector.products.title')}"></div>
+    <div id="inventory-selector-services" title="${message(code: 'invoicingTransaction.selector.services.title')}"></div>
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="invoicingItem.fieldset.footer.label" /></h4>
+  <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
   <div class="fieldset-content">
     <div class="row">
       <div class="label">
-        <label for="footerText"><g:message code="invoicingItem.footerText.label" default="Footer Text" /></label>
+        <label for="footerText"><g:message code="invoicingTransaction.footerText.label" default="Footer Text" /></label>
       </div>
       <div class="field${hasErrors(bean: quoteInstance, field: 'footerText', ' error')}">
         <g:textArea name="footerText" cols="80" rows="3" value="${quoteInstance?.footerText}" /><br />
@@ -468,7 +468,7 @@
     
     <div class="row">
       <div class="label">
-        <label for="termsAndConditions"><g:message code="invoicingItem.termsAndConditions.label" default="Terms And Conditions" /></label>
+        <label for="termsAndConditions"><g:message code="invoicingTransaction.termsAndConditions.label" default="Terms And Conditions" /></label>
       </div>
       <div class="field${hasErrors(bean: quoteInstance, field: 'termsAndConditions', ' error')}">
         <g:select name="termsAndConditions" from="${org.amcworld.springcrm.TermsAndConditions.list()}" optionKey="id" value="${quoteInstance?.termsAndConditions*.id}" multiple="true" /><br />
@@ -526,17 +526,17 @@
         retrieveOrgUrl: "${createLink(controller: 'organization', action: 'get')}"
     });
     addrFields.addMenuItemCopy(
-        true, '${message(code: "invoicingItem.billingAddr.copy")}'
+        true, '${message(code: "invoicingTransaction.billingAddr.copy")}'
     );
     addrFields.addMenuItemLoadFromOrganization(
-        true, '${message(code: "invoicingItem.addr.fromOrgBillingAddr")}',
+        true, '${message(code: "invoicingTransaction.addr.fromOrgBillingAddr")}',
         "billingAddr"
     );
     addrFields.addMenuItemCopy(
-        false, '${message(code: "invoicingItem.shippingAddr.copy")}'
+        false, '${message(code: "invoicingTransaction.shippingAddr.copy")}'
     );
     addrFields.addMenuItemLoadFromOrganization(
-        false, '${message(code: "invoicingItem.addr.fromOrgShippingAddr")}',
+        false, '${message(code: "invoicingTransaction.addr.fromOrgShippingAddr")}',
         "shippingAddr"
     );
     
@@ -549,7 +549,7 @@
         }
     });
     $("#shippingDate-date").change(function () {
-        if ($stage.val() < 602) {
+        if ($(this).val() !== "" && $stage.val() < 602) {
             $stage.val(602);
         }
     });

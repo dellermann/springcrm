@@ -50,8 +50,10 @@ class ViewFilters {
 
 		invoicingItems(controller:'quote|salesOrder|invoice|purchaseInvoice', action:'create|edit') {
 			after = { model ->
-				model.units = Unit.list(sort:'orderId')
-				model.taxClasses = TaxClass.list(sort:'orderId')
+				if (model) {
+					model.units = Unit.list(sort:'orderId')
+					model.taxClasses = TaxClass.list(sort:'orderId')
+				}
 			}
 		}
 	}
