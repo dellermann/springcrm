@@ -65,6 +65,7 @@
         <g:ifModuleAllowed modules="quote"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="dunning"><li><g:link controller="dunning"><g:message code="dunning.plural" /></g:link></li></g:ifModuleAllowed>
       </ul>
     </li>
     <g:ifAdmin>

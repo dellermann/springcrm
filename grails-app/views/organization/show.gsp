@@ -282,6 +282,19 @@
       </g:ifModuleAllowed>
       </g:if>
 
+      <g:ifModuleAllowed modules="dunning">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'dunning', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+        <div class="header-with-menu">
+          <h4><g:message code="dunning.plural" /></h4>
+          <div class="menu">
+            <g:link controller="dunning" action="create" params="['organization.id':organizationInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content"></div>
+      </div>
+      </g:ifModuleAllowed>
+
       <g:if test="${organizationInstance.isVendor()}">
       <g:ifModuleAllowed modules="purchaseInvoice">
       <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">

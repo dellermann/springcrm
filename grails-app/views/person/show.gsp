@@ -246,7 +246,7 @@
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
-            <g:link controller="quote" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
+            <g:link controller="quote" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -259,7 +259,7 @@
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
-            <g:link controller="salesOrder" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
+            <g:link controller="salesOrder" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -272,7 +272,20 @@
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
-            <g:link controller="invoice" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+            <g:link controller="invoice" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content"></div>
+      </div>
+      </g:ifModuleAllowed>
+
+      <g:ifModuleAllowed modules="dunning">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'dunning', action:'listEmbedded', params:[person:personInstance.id])}" />
+        <div class="header-with-menu">
+          <h4><g:message code="dunning.plural" /></h4>
+          <div class="menu">
+            <g:link controller="dunning" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -298,7 +311,7 @@
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">
-            <g:link controller="note" action="create" params="['person.id':personInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
+            <g:link controller="note" action="create" params="['person.id':personInstance.id, 'organization.id':personInstance?.organization?.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>

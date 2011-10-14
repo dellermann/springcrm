@@ -206,6 +206,23 @@ class InvoiceController {
         }
     }
 
+	def find = {
+		Integer number = null
+		try {
+			number = params.name as Integer
+		} catch (NumberFormatException) { /* ignored */ }
+		def list = Invoice.findAllByNumberOrSubjectLike(
+			number, "%${params.name}%", [sort:'number']
+		)
+		render(contentType:"text/json") {
+			array {
+				for (i in list) {
+					invoice id:i.id, name:i.fullName
+				}
+			}
+		}
+	}
+
 	def print = {
         def invoiceInstance = Invoice.get(params.id)
         if (invoiceInstance) {

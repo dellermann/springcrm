@@ -163,6 +163,22 @@ VALUES
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES
+  (2200, 0, 'erstellt', 10, 'org.amcworld.springcrm.DunningStage'),
+  (2201, 0, 'durchgesehen', 20, 'org.amcworld.springcrm.DunningStage'),
+  (2202, 0, 'versendet', 30, 'org.amcworld.springcrm.DunningStage'),
+  (2203, 0, 'bezahlt', 40, 'org.amcworld.springcrm.DunningStage'),
+  (2204, 0, 'inkasso', 50, 'org.amcworld.springcrm.DunningStage'),
+  (2205, 0, 'ausgebucht', 60, 'org.amcworld.springcrm.DunningStage'),
+  (2206, 0, 'storniert', 70, 'org.amcworld.springcrm.DunningStage');
+
+INSERT INTO sel_value (id, version, name, order_id, class)
+VALUES
+  (2300, 0, '1. Mahnung', 10, 'org.amcworld.springcrm.DunningLevel'),
+  (2301, 0, '2. Mahnung', 20, 'org.amcworld.springcrm.DunningLevel'),
+  (2302, 0, '3. Mahnung', 30, 'org.amcworld.springcrm.DunningLevel');
+
+INSERT INTO sel_value (id, version, name, order_id, class)
+VALUES
 	(3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory'),
 	(3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory');
 
@@ -193,11 +209,12 @@ VALUES
 	(1, 0, 'quote', 99999, 'A', 10000, ''),
 	(2, 0, 'salesOrder', 99999, 'B', 10000, ''),
 	(3, 0, 'invoice', 99999, 'R', 10000, ''),
-	(4, 0, 'service', 99999, 'S', 10000, ''),
-	(5, 0, 'product', 99999, 'P', 10000, ''),
-	(6, 0, 'organization', 99999, 'O', 10000, ''),
-	(7, 0, 'person', 99999, 'E', 10000, ''),
-	(8, 0, 'note', 99999, 'N', 10000, '');
+  (4, 0, 'dunning', 99999, 'M', 10000, ''),
+	(5, 0, 'service', 99999, 'S', 10000, ''),
+	(6, 0, 'product', 99999, 'P', 10000, ''),
+	(7, 0, 'organization', 99999, 'O', 10000, ''),
+	(8, 0, 'person', 99999, 'E', 10000, ''),
+	(9, 0, 'note', 99999, 'N', 10000, '');
 
 
 --

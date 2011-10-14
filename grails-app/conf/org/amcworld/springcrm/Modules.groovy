@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory
  * permission control in this application.
  * 
  * @author 	Daniel Ellermann
- * @version 0.9.9
+ * @version 0.9.11
  * @since	0.9.3
  */
 class Modules {
@@ -22,6 +22,7 @@ class Modules {
 	protected static final Map<String, List<String>> MODULES = [
 		call: ['call'],
 		contact: ['organization', 'person'],
+		dunning: ['organization', 'invoice', 'dunning'],
 		invoice: ['organization', 'invoice'],
 		note: ['note'],
 		product: ['product'],

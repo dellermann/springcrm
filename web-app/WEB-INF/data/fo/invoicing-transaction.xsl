@@ -439,6 +439,7 @@
   
   <xsl:template name="header-text">
     <xsl:param name="transaction-type-label"/>
+    <xsl:param name="additional-text"/>
 
     <fo:block-container font-family="Frutiger LT 57 Cn"
                         font-size="9pt" space-before="79mm"
@@ -455,6 +456,11 @@
         <xsl:value-of select="subject"/>
       </fo:block>
       <xsl:apply-templates select="headerText"/>
+      <xsl:if test="$additional-text">
+        <fo:block space-after="5mm">
+          <xsl:value-of select="$additional-text"/>
+        </fo:block>
+      </xsl:if>
     </fo:block-container>
   </xsl:template>
   

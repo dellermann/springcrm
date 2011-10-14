@@ -10,6 +10,7 @@ class Invoice extends InvoicingTransaction {
 		quote(nullable:true)
 		salesOrder(nullable:true)
     }
+    static belongsTo = [quote:Quote, salesOrder:SalesOrder]
 	static mapping = {
 		stage column:'invoice_stage_id'
 	}
@@ -19,8 +20,6 @@ class Invoice extends InvoicingTransaction {
 	Date dueDatePayment
 	Date paymentDate
 	BigDecimal paymentAmount
-	Quote quote
-	SalesOrder salesOrder
 	
 	{
 		type = 'I'

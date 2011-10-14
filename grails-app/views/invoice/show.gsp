@@ -30,6 +30,7 @@
     <ul>
       <li><g:link action="print" id="${invoiceInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
       <li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label"/></g:link></li>
+      <g:ifModuleAllowed modules="dunning"><li><g:link controller="dunning" action="create" params="[invoice:invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createDunning" /></g:link></li></g:ifModuleAllowed>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -333,11 +334,33 @@
           </div>
         </div>
       </div>
+
+      <g:ifModuleAllowed modules="dunning">
+      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
+        <link itemprop="list-link" href="${createLink(controller:'dunning', action:'listEmbedded', params:[invoice:invoiceInstance.id])}" />
+        <div class="header-with-menu">
+          <h4><g:message code="dunning.plural" /></h4>
+          <div class="menu">
+            <g:link controller="dunning" action="create" params="[invoice:invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content"></div>
+      </div>
+      </g:ifModuleAllowed>
     </div>
 
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: invoiceInstance?.dateCreated), formatDate(date: invoiceInstance?.lastUpdated)]" />
     </p>
   </section>
+  <content tag="additionalJavaScript">
+  <script type="text/javascript">
+  //<![CDATA[
+  (function (SPRINGCRM) {
+      new SPRINGCRM.RemoteList("${url()}")
+          .initialize();
+  }(SPRINGCRM));
+  //]]></script>
+  </content>
 </body>
 </html>
