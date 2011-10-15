@@ -44,7 +44,7 @@
           <label for="person"><g:message code="invoicingTransaction.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${salesOrderInstance?.person?.fullName}" size="35" />
+          <input type="text" id="person" value="${salesOrderInstance?.person?.fullName}" size="35" /><br />
           <input type="hidden" name="person.id" id="person-id" value="${salesOrderInstance?.person?.id}" />
           <g:hasErrors bean="${salesOrderInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -59,7 +59,7 @@
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'quote', ' error')}">
           <input type="text" id="quote" value="${salesOrderInstance?.quote?.fullName}" size="35" />
-          <input type="hidden" name="quote.id" id="quote-id" value="${salesOrderInstance?.quote?.id}" />
+          <input type="hidden" name="quote.id" id="quote-id" value="${salesOrderInstance?.quote?.id}" /><br />
           <g:hasErrors bean="${salesOrderInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="quote"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

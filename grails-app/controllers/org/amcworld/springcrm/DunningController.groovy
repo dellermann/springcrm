@@ -50,6 +50,7 @@ class DunningController {
 			dunningInstance = new Dunning()
 			dunningInstance.properties = params
 		}
+
 		Organization org = dunningInstance.organization
 		if (org) {
 			dunningInstance.billingAddrCountry = org.billingAddrCountry
@@ -64,6 +65,22 @@ class DunningController {
 			dunningInstance.shippingAddrPostalCode = org.shippingAddrPostalCode
 			dunningInstance.shippingAddrState = org.shippingAddrState
 			dunningInstance.shippingAddrStreet = org.shippingAddrStreet
+		}
+
+		ConfigHolder config = servletContext.config
+		Integer serviceId = config.getConfig('serviceIdDunningCharge')
+		if (serviceId) {
+			def service = Service.get(serviceId)
+			if (service) {
+				dunningInstance.addToItems(serviceToItem(service))
+			}
+		}
+		serviceId = config.getConfig('serviceIdDefaultInterest')
+		if (serviceId) {
+			def service = Service.get(serviceId)
+			if (service) {
+				dunningInstance.addToItems(serviceToItem(service))
+			}
 		}
         return [dunningInstance: dunningInstance]
     }
@@ -81,8 +98,14 @@ class DunningController {
 
     def save = {
         def dunningInstance = new Dunning(params)
-        if (dunningInstance.save(flush: true)) {
+        if (dunningInstance.save(flush:true)) {
 			dunningInstance.index()
+
+			def invoiceInstance = dunningInstance.invoice
+			invoiceInstance.stage = InvoiceStage.get(904)
+			invoiceInstance.save(flush:true)
+			invoiceInstance.reindex()
+
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])}"
 			if (params.returnUrl) {
 				redirect(url:params.returnUrl)
@@ -154,7 +177,13 @@ class DunningController {
 			}
             if (!dunningInstance.hasErrors() && dunningInstance.save(flush: true)) {
 				dunningInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])}"
+
+				def invoiceInstance = dunningInstance.invoice
+				invoiceInstance.stage = InvoiceStage.get(904)
+				invoiceInstance.save(flush:true)
+				invoiceInstance.reindex()
+
+				flash.message = "${message(code: 'default.updated.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])}"
 				if (params.returnUrl) {
 					redirect(url:params.returnUrl)
 				} else {
@@ -241,5 +270,13 @@ class DunningController {
 		} else {
 			render(status: 404)
 		}
+	}
+
+	private InvoicingItem serviceToItem(Service s) {
+		return new InvoicingItem(
+			number:s.fullNumber, quantity:s.quantity, unit:s.unit.toString(),
+			name:s.name, description:s.description, unitPrice:s.unitPrice,
+			tax:s.taxClass.taxValue * 100
+		)
 	}
 }

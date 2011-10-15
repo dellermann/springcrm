@@ -73,8 +73,10 @@ class ViewTagLib {
 		if (attrs.suffix) {
 			out << '-' << attrs.suffix
 		}
+		boolean checked = true
+		if (params._autoNumber != null) checked = params.autoNumber
 		out << '<span class="auto-number">'
-		out << checkBox(name:'autoNumber', checked:true)
+		out << checkBox(name:'autoNumber', checked:checked)
 		out << '<label for="autoNumber">'
 		out << message(code:'default.number.auto.label')
 		out << '</label></span>'

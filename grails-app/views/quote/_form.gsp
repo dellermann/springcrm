@@ -44,7 +44,7 @@
           <label for="person"><g:message code="invoicingTransaction.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${quoteInstance?.person?.fullName}" size="35" />
+          <input type="text" id="person" value="${quoteInstance?.person?.fullName}" size="35" /><br />
           <input type="hidden" name="person.id" id="person-id" value="${quoteInstance?.person?.id}" />
           <g:hasErrors bean="${quoteInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -57,7 +57,7 @@
           <label for="stage.id"><g:message code="quote.stage.label" default="Stage" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'stage', ' error')}">
-          <g:select name="stage.id" from="${org.amcworld.springcrm.QuoteStage.list()}" optionKey="id" value="${quoteInstance?.stage?.id}"  /><br />
+          <g:select name="stage.id" from="${org.amcworld.springcrm.QuoteStage.list()}" optionKey="id" value="${quoteInstance?.stage?.id}" /><br />
           <g:hasErrors bean="${quoteInstance}" field="stage">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

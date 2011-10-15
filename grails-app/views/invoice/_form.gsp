@@ -45,7 +45,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${invoiceInstance?.person?.fullName}" size="35" />
-          <input type="hidden" name="person.id" id="person-id" value="${invoiceInstance?.person?.id}" />
+          <input type="hidden" name="person.id" id="person-id" value="${invoiceInstance?.person?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -59,7 +59,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'quote', ' error')}">
           <input type="text" id="quote" value="${invoiceInstance?.quote?.fullName}" size="35" />
-          <input type="hidden" name="quote.id" id="quote-id" value="${invoiceInstance?.quote?.id}" />
+          <input type="hidden" name="quote.id" id="quote-id" value="${invoiceInstance?.quote?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="quote"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -74,7 +74,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'salesOrder', ' error')}">
           <input type="text" id="salesOrder" value="${invoiceInstance?.salesOrder?.fullName}" size="35" />
-          <input type="hidden" name="salesOrder.id" id="salesOrder-id" value="${invoiceInstance?.salesOrder?.id}" />
+          <input type="hidden" name="salesOrder.id" id="salesOrder-id" value="${invoiceInstance?.salesOrder?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="salesOrder"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -88,7 +88,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'stage', ' error')}">
           <input type="hidden" id="old-stage" value="${session.user.admin ? 0 : invoiceInstance?.stage?.id}" />
-          <g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.InvoiceStage.list()}" optionKey="id" value="${invoiceInstance?.stage?.id}"  /><br />
+          <g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.InvoiceStage.list()}" optionKey="id" value="${invoiceInstance?.stage?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="stage">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

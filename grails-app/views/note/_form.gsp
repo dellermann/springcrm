@@ -33,7 +33,7 @@
         </div>
         <div class="field${hasErrors(bean: noteInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${noteInstance?.organization?.name}" size="35" />
-          <input type="hidden" name="organization.id" id="organization-id" value="${noteInstance?.organization?.id}" />
+          <input type="hidden" name="organization.id" id="organization-id" value="${noteInstance?.organization?.id}" /><br />
           <g:hasErrors bean="${noteInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${noteInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -46,7 +46,7 @@
         </div>
         <div class="field${hasErrors(bean: noteInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${noteInstance?.person?.fullName}" size="35" />
-          <input type="hidden" name="person.id" id="person-id" value="${noteInstance?.person?.id}" />
+          <input type="hidden" name="person.id" id="person-id" value="${noteInstance?.person?.id}" /><br />
           <g:hasErrors bean="${noteInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${noteInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

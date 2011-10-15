@@ -45,7 +45,7 @@
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${dunningInstance?.person?.fullName}" size="35" />
-          <input type="hidden" name="person.id" id="person-id" value="${dunningInstance?.person?.id}" />
+          <input type="hidden" name="person.id" id="person-id" value="${dunningInstance?.person?.id}" /><br />
           <g:hasErrors bean="${dunningInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -58,7 +58,7 @@
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'invoice', ' error')}">
           <input type="text" id="invoice" value="${dunningInstance?.invoice?.fullName}" size="35" />
-          <input type="hidden" name="invoice.id" id="invoice-id" value="${dunningInstance?.invoice?.id}" />
+          <input type="hidden" name="invoice.id" id="invoice-id" value="${dunningInstance?.invoice?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${dunningInstance}" field="invoice">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="invoice"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -71,7 +71,7 @@
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'stage', ' error')}">
           <input type="hidden" id="old-stage" value="${session.user.admin ? 0 : dunningInstance?.stage?.id}" />
-          <g:select name="stage.id" from="${org.amcworld.springcrm.DunningStage.list()}" optionKey="id" value="${dunningInstance?.stage?.id}"  /><br />
+          <g:select name="stage.id" from="${org.amcworld.springcrm.DunningStage.list()}" optionKey="id" value="${dunningInstance?.stage?.id}" /><br />
           <g:hasErrors bean="${dunningInstance}" field="stage">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -83,7 +83,7 @@
           <label for="level.id"><g:message code="dunning.level.label" default="Level" /></label>
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'level', ' error')}">
-          <g:select name="level.id" from="${org.amcworld.springcrm.DunningLevel.list()}" optionKey="id" value="${dunningInstance?.level?.id}"  /><br />
+          <g:select name="level.id" from="${org.amcworld.springcrm.DunningLevel.list()}" optionKey="id" value="${dunningInstance?.level?.id}" /><br />
           <g:hasErrors bean="${dunningInstance}" field="level">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="level"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
