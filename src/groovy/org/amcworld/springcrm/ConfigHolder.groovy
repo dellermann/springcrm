@@ -21,11 +21,11 @@ class ConfigHolder {
 
 	//-- Public methods -------------------------
 
-	Object getAt(String name) {
+	synchronized Object getAt(String name) {
 		return getConfig(name)
 	}
 
-	Object getConfig(String name) {
+	synchronized Object getConfig(String name) {
 		Config config = cache[name]
 		if (config == null) {
 			config = Config.findByName(name)
@@ -36,18 +36,18 @@ class ConfigHolder {
 		return config?.value
 	}
 
-	static ConfigHolder getInstance() {
+	static synchronized ConfigHolder getInstance() {
 		if (instance == null) {
 			instance = new ConfigHolder()
 		}
 		return instance
 	}
 
-	void setAt(String name, Object value) {
+	synchronized void setAt(String name, Object value) {
 		setConfig(name, value)
 	}
 
-	void setConfig(String name, Object value) {
+	synchronized void setConfig(String name, Object value) {
 		Config config = getConfig(name)
 		if (config == null) {
 			config = new Config(name:name)

@@ -67,15 +67,15 @@ class DunningController {
 			dunningInstance.shippingAddrStreet = org.shippingAddrStreet
 		}
 
-		ConfigHolder config = servletContext.config
-		Integer serviceId = config.getConfig('serviceIdDunningCharge')
+		ConfigHolder config = ConfigHolder.instance
+		Integer serviceId = config.config['serviceIdDunningCharge']
 		if (serviceId) {
 			def service = Service.get(serviceId)
 			if (service) {
 				dunningInstance.addToItems(serviceToItem(service))
 			}
 		}
-		serviceId = config.getConfig('serviceIdDefaultInterest')
+		serviceId = config.config['serviceIdDefaultInterest']
 		if (serviceId) {
 			def service = Service.get(serviceId)
 			if (service) {

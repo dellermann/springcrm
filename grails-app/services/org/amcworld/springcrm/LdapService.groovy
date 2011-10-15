@@ -1,9 +1,7 @@
 package org.amcworld.springcrm
 
-import javax.naming.NameAlreadyBoundException;
-
-import org.apache.directory.groovyldap.LDAP;
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+import javax.naming.NameAlreadyBoundException
+import org.apache.directory.groovyldap.LDAP
 
 class LdapService {
 
@@ -185,7 +183,7 @@ class LdapService {
 	 * @return	the configuration holder
 	 */
 	protected ConfigHolder getConfig() {
-		return SCH.servletContext.config
+		return ConfigHolder.instance
 	}
 
 	/**

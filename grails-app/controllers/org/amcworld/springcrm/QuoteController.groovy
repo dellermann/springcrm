@@ -186,9 +186,22 @@ class QuoteController {
 		try {
 			number = params.name as Integer
 		} catch (NumberFormatException) { /* ignored */ }
-		def list = Quote.findAllByNumberOrSubjectLike(
-			number, "%${params.name}%", [sort:'number']
-		)
+		def organization = params.organization ? Organization.get(params.organization) : null
+
+		def c = Quote.createCriteria()
+		def list = c.list {
+			or {
+				eq('number', number)
+				ilike('subject', "%${params.name}%")
+			}
+			if (organization) {
+				and {
+					eq('organization', organization)
+				}
+			}
+			order('number', 'desc')
+		}
+
 		render(contentType:"text/json") {
 			array {
 				for (q in list) {

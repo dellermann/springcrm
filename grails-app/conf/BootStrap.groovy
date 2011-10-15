@@ -1,4 +1,3 @@
-import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.OverviewPanelRepository
 
 class BootStrap {
@@ -10,12 +9,8 @@ class BootStrap {
 			'java.lang.Exception': '/error'
 		]
 
-		def configHolder = ConfigHolder.instance
-		servletContext.config = configHolder
-
 		OverviewPanelRepository opr = OverviewPanelRepository.instance
 		opr.initialize(servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml'))
-		servletContext.overviewPanelRepository = opr
     }
 
     def destroy = {}

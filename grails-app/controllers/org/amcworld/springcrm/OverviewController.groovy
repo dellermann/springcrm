@@ -12,7 +12,7 @@ class OverviewController {
 			panels[i] = []
 		}
 
-		OverviewPanelRepository repository = servletContext.overviewPanelRepository
+		OverviewPanelRepository repository = OverviewPanelRepository.instance
 
 		List<Panel> l = Panel.findAllByUser(
 			session.user, [sort:'col']
@@ -25,7 +25,7 @@ class OverviewController {
 	}
 
 	def listAvailablePanels = {
-		OverviewPanelRepository repository = servletContext.overviewPanelRepository
+		OverviewPanelRepository repository = OverviewPanelRepository.instance
 		Map<String, OverviewPanel> panels = repository.getPanels()
 		render panels as JSON
 	}

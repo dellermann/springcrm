@@ -570,12 +570,18 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "quote",
-            findUrl: "${createLink(controller:'quote', action:'find')}"
+            findUrl: "${createLink(controller:'quote', action:'find')}",
+            parameters: function () {
+                return { organization: $("#organization-id").val() };
+            }
         })
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "salesOrder",
-            findUrl: "${createLink(controller:'salesOrder', action:'find')}"
+            findUrl: "${createLink(controller:'salesOrder', action:'find')}",
+            parameters: function () {
+                return { organization: $("#organization-id").val() };
+            }
         })
         .init();
     new SPRINGCRM.InvoicingItems({

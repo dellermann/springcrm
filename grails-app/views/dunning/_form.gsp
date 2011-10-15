@@ -565,7 +565,10 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "invoice",
-            findUrl: "${createLink(controller:'invoice', action:'find')}"
+            findUrl: "${createLink(controller:'invoice', action:'find')}",
+            parameters: function () {
+                return { organization: $("#organization-id").val() };
+            }
         })
         .init();
     new SPRINGCRM.InvoicingItems({

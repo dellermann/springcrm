@@ -1,7 +1,5 @@
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
-
 class ViewTagLib {
 
 	/**
@@ -98,7 +96,7 @@ class ViewTagLib {
 			def map = new HashMap(attrs)
 			map.number = number
 			map.type = 'currency'
-			map.currencySymbol = SCH.servletContext.config['currency'] ?: '€'
+			map.currencySymbol = ConfigHolder.instance['currency'] ?: '€'
 			map.groupingUsed = attrs.groupingUsed ?: true
 			map.minFractionDigits = attrs.minFractionDigits ?: 2
 			out << formatNumber(map)
@@ -111,7 +109,7 @@ class ViewTagLib {
 	 * Renders the currency symbol from the application configuration.
 	 */
 	def currency = {
-		out << SCH.servletContext.config['currency'] ?: '€'
+		out << ConfigHolder.instance['currency'] ?: '€'
 	}
 
 	/**

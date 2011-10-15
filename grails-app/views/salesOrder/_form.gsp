@@ -509,8 +509,7 @@
 </fieldset>
 <content tag="additionalJavaScript">
 <script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
-<script type="text/javascript">
-//<![CDATA[
+<script type="text/javascript">//<![CDATA[
 (function (SPRINGCRM, $) {
 
     "use strict";
@@ -542,7 +541,10 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "quote",
-            findUrl: "${createLink(controller:'quote', action:'find')}"
+            findUrl: "${createLink(controller:'quote', action:'find')}",
+            parameters: function () {
+                return { organization: $("#organization-id").val() };
+            }
         })
         .init();
     new SPRINGCRM.InvoicingItems({
