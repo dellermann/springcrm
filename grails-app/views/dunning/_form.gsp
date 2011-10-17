@@ -67,7 +67,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="stage"><g:message code="dunning.stage.label" default="Stage" /></label>
+          <label for="stage.id"><g:message code="dunning.stage.label" default="Stage" /></label>
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'stage', ' error')}">
           <input type="hidden" id="old-stage" value="${session.user.admin ? 0 : dunningInstance?.stage?.id}" />
@@ -160,7 +160,7 @@
           <label for="paymentAmount"><g:message code="dunning.paymentAmount.label" default="Payment Amount" /></label>
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'paymentAmount', ' error')}">
-          <g:textField name="paymentAmount" value="${formatNumber(number: invoiceInstance?.paymentAmount, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
+          <g:textField name="paymentAmount" value="${formatNumber(number: dunningInstance?.paymentAmount, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
           <g:hasErrors bean="${dunningInstance}" field="paymentAmount">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="paymentAmount"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>

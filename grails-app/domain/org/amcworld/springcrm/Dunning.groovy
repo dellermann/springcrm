@@ -11,7 +11,11 @@ class Dunning extends InvoicingTransaction {
 		invoice()
     }
 	static belongsTo = [invoice:Invoice]
-	
+	static mapping = {
+		stage column:'dunning_stage_id'
+	}
+	static searchable = true
+
 	DunningLevel level
 	DunningStage stage
 	Date dueDatePayment

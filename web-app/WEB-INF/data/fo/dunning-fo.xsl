@@ -12,9 +12,23 @@
     <!-- address field -->
     <xsl:call-template name="address-field"/>
 
-    <!-- invoice specifications -->
+    <!-- dunning specifications -->
     <xsl:call-template name="transaction-specification">
       <xsl:with-param name="number-label">Mahnungsnummer</xsl:with-param>
+      <xsl:with-param name="additional-specifications">
+        <fo:table-row>
+          <fo:table-cell padding-after="2mm">
+            <fo:block>
+              <xsl:text>Zu Rechnung:</xsl:text>
+            </fo:block>
+          </fo:table-cell>
+          <fo:table-cell padding-after="2mm" text-align="right">
+            <fo:block>
+              <xsl:value-of select="key('entries', 'invoiceFullNumber')"/>
+            </fo:block>
+          </fo:table-cell>
+        </fo:table-row>
+      </xsl:with-param>
     </xsl:call-template>
 
     <!-- letter caption -->
@@ -34,7 +48,7 @@
       </xsl:with-param>
     </xsl:call-template>
 
-    <!-- invoice items -->
+    <!-- dunning items -->
     <xsl:call-template name="items"/>
 
     <!-- footer text -->
@@ -47,9 +61,17 @@
         haben, betrachten Sie dieses Schreiben bitte als
         gegenstandslos.</xsl:text>
       </fo:block>
+    </fo:block-container>
+    <fo:block-container font-family="Frutiger LT 57 Cn" font-size="9pt"
+                        color="#333" line-height="140%"
+                        keep-together.within-page="always">
       <fo:block space-after="5mm">
-        <xsl:text>Bitte zahlen Sie den Betrag unter Angabe der o. g.
-        Mahnungsnummer bis zum </xsl:text>
+        <xsl:text>Bitte zahlen Sie den Rechnungsbetrag in Höhe von </xsl:text>
+        <xsl:value-of select="format-number(key('entries', 'invoice')/total, '#.##0,00')"/>
+        <xsl:text> € und den oben angegebenen Mahnbetrag in Höhe von </xsl:text>
+        <xsl:value-of select="format-number(total, '#.##0,00')"/>
+        <xsl:text> € unter Angabe der o. g. Rechnungs- bzw. Mahnungsnummer bis
+        zum </xsl:text>
         <xsl:call-template name="format-date-long">
           <xsl:with-param name="date" select="dueDatePayment"/>
         </xsl:call-template>
@@ -58,6 +80,18 @@
       <fo:block font-weight="bold">Berliner Volksbank</fo:block>
       <fo:block>Kontonummer: 2067829002</fo:block>
       <fo:block space-after="5mm">Bankleitzahl: 100 900 00</fo:block>
+    </fo:block-container>
+    <fo:block-container font-family="Frutiger LT 57 Cn" font-size="9pt"
+                        color="#333" line-height="140%"
+                        keep-together.within-page="always">
+      <fo:block space-after="5mm">
+        <xsl:text>Sollte bis zum </xsl:text>
+        <xsl:call-template name="format-date-long">
+          <xsl:with-param name="date" select="dueDatePayment"/>
+        </xsl:call-template>
+        <xsl:text> kein Zahlungseingang zu verzeichnen sein, behalten wir uns
+        rechtliche Schritte vor.</xsl:text>
+      </fo:block>
       <fo:block space-after="5mm">
         <xsl:text>Es gelten unsere Allgemeinen Geschäftsbedingungen. Für
         weitere Fragen stehen wir gern zur Verfügung. Sie erreichen uns unter

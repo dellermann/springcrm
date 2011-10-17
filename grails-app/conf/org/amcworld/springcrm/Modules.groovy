@@ -22,6 +22,7 @@ class Modules {
 	protected static final Map<String, List<String>> MODULES = [
 		call: ['call'],
 		contact: ['organization', 'person'],
+		creditMemo: ['organization', 'creditMemo'],
 		dunning: ['organization', 'invoice', 'dunning'],
 		invoice: ['organization', 'invoice'],
 		note: ['note'],

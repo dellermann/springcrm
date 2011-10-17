@@ -45,6 +45,7 @@ class DunningController {
         def dunningInstance
 		if (params.invoice) {
 			def invoiceInstance = Invoice.get(params.invoice)
+			invoiceInstance.items?.clear()
 			dunningInstance = new Dunning(invoiceInstance)
 		} else {
 			dunningInstance = new Dunning()
@@ -84,7 +85,7 @@ class DunningController {
 		}
         return [dunningInstance: dunningInstance]
     }
-	
+
 	def copy = {
 		def dunningInstance = Dunning.get(params.id)
 		if (dunningInstance) {
@@ -225,6 +226,36 @@ class DunningController {
 			}
         }
     }
+
+	def find = {
+		Integer number = null
+		try {
+			number = params.name as Integer
+		} catch (NumberFormatException) { /* ignored */ }
+		def organization = params.organization ? Organization.get(params.organization) : null
+
+		def c = Dunning.createCriteria()
+		def list = c.list {
+			or {
+				eq('number', number)
+				ilike('subject', "%${params.name}%")
+			}
+			if (organization) {
+				and {
+					eq('organization', organization)
+				}
+			}
+			order('number', 'desc')
+		}
+
+		render(contentType:"text/json") {
+			array {
+				for (d in list) {
+					dunning id:d.id, name:d.fullName
+				}
+			}
+		}
+	}
 
 	def print = {
         def dunningInstance = Dunning.get(params.id)

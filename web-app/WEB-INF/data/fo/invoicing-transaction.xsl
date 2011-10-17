@@ -387,8 +387,9 @@
   
   <xsl:template name="transaction-specification">
     <xsl:param name="number-label"/>
+    <xsl:param name="additional-specifications"/>
 
-    <fo:block-container absolute-position="absolute" top="27mm"
+    <fo:block-container absolute-position="absolute" top="23.5mm"
                         right="0" width="60mm" height="26mm"
                         font-family="Frutiger LT 57 Cn"
                         font-size="9pt" color="#333">
@@ -409,6 +410,9 @@
               </fo:block>
             </fo:table-cell>
           </fo:table-row>
+          <xsl:if test="$additional-specifications">
+            <xsl:copy-of select="$additional-specifications"/>
+          </xsl:if>
           <fo:table-row>
             <fo:table-cell padding-after="2mm">
               <fo:block>Ansprechpartner:</fo:block>

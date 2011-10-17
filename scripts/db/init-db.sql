@@ -179,6 +179,21 @@ VALUES
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES
+  (2400, 0, 'bar', 10, 'org.amcworld.springcrm.PaymentMethod'),
+  (2401, 0, 'Überweisung', 20, 'org.amcworld.springcrm.PaymentMethod'),
+  (2402, 0, 'Scheck', 30, 'org.amcworld.springcrm.PaymentMethod'),
+  (2403, 0, 'Verrechnung', 40, 'org.amcworld.springcrm.PaymentMethod');
+
+INSERT INTO sel_value (id, version, name, order_id, class)
+VALUES
+  (2500, 0, 'erstellt', 10, 'org.amcworld.springcrm.CreditMemoStage'),
+  (2501, 0, 'durchgesehen', 20, 'org.amcworld.springcrm.CreditMemoStage'),
+  (2502, 0, 'versendet', 30, 'org.amcworld.springcrm.CreditMemoStage'),
+  (2503, 0, 'bezahlt', 40, 'org.amcworld.springcrm.CreditMemoStage'),
+  (2504, 0, 'storniert', 50, 'org.amcworld.springcrm.CreditMemoStage');
+
+INSERT INTO sel_value (id, version, name, order_id, class)
+VALUES
 	(3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory'),
 	(3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory');
 
@@ -214,7 +229,8 @@ VALUES
 	(6, 0, 'product', 99999, 'P', 10000, ''),
 	(7, 0, 'organization', 99999, 'O', 10000, ''),
 	(8, 0, 'person', 99999, 'E', 10000, ''),
-	(9, 0, 'note', 99999, 'N', 10000, '');
+	(9, 0, 'note', 99999, 'N', 10000, ''),
+	(10, 0, 'creditMemo', 99999, 'G', 10000, '');
 
 
 --
