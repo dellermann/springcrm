@@ -8,6 +8,7 @@ class Dunning extends InvoicingTransaction {
 		dueDatePayment()
 		paymentDate(nullable:true)
 		paymentAmount(nullable:true, min:0.0, scale:2)
+		paymentMethod(nullable:true)
 		invoice()
     }
 	static belongsTo = [invoice:Invoice]
@@ -21,6 +22,7 @@ class Dunning extends InvoicingTransaction {
 	Date dueDatePayment
 	Date paymentDate
 	BigDecimal paymentAmount
+	PaymentMethod paymentMethod
 
 	{
 		type = 'D'
@@ -35,6 +37,12 @@ class Dunning extends InvoicingTransaction {
 
 	Dunning(Dunning d) {
 		super(d)
+		level = d.level
+		stage = d.stage
+		dueDatePayment = d.dueDatePayment
+		paymentDate = d.paymentDate
+		paymentAmount = d.paymentAmount
+		paymentMethod = d.paymentMethod
 		invoice = d.invoice
 	}
 }

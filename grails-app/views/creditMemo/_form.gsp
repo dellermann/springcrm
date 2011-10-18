@@ -130,7 +130,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="paymentDate-date"><g:message code="creditMemo.paymentDate.label" default="Payment Date" /></label>
+          <label for="paymentDate-date"><g:message code="invoicingTransaction.paymentDate.label" default="Payment Date" /></label>
         </div>
         <div class="field${hasErrors(bean: creditMemoInstance, field: 'paymentDate', ' error')}">
           <g:dateInput name="paymentDate" precision="day" value="${creditMemoInstance?.paymentDate}" /><br />
@@ -142,7 +142,7 @@
 
       <div class="row">
         <div class="label">
-          <label for="paymentAmount"><g:message code="creditMemo.paymentAmount.label" default="Payment Amount" /></label>
+          <label for="paymentAmount"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment Amount" /></label>
         </div>
         <div class="field${hasErrors(bean: creditMemoInstance, field: 'paymentAmount', ' error')}">
           <g:textField name="paymentAmount" value="${formatNumber(number: creditMemoInstance?.paymentAmount, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
@@ -151,10 +151,10 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
-          <label for="paymentMethod.id"><g:message code="creditMemo.paymentMethod.label" default="Payment Method" /></label>
+          <label for="paymentMethod.id"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></label>
         </div>
         <div class="field${hasErrors(bean: creditMemoInstance, field: 'paymentMethod', ' error')}">
           <g:select name="paymentMethod.id" from="${org.amcworld.springcrm.PaymentMethod.list()}" optionKey="id" value="${creditMemoInstance?.paymentMethod?.id}" noSelection="['null': '']" /><br />
@@ -522,6 +522,22 @@
         <g:select name="termsAndConditions" from="${org.amcworld.springcrm.TermsAndConditions.list()}" optionKey="id" value="${creditMemoInstance?.termsAndConditions*.id}" multiple="true" /><br />
         <g:hasErrors bean="${creditMemoInstance}" field="termsAndConditions">
           <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="termsAndConditions"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
+      </div>
+    </div>
+  </div>
+</fieldset>
+<fieldset>
+  <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
+  <div class="fieldset-content">
+    <div class="row">
+      <div class="label">
+        <label for="notes"><g:message code="invoicingTransaction.notes.label" default="Notes" /></label>
+      </div>
+      <div class="field${hasErrors(bean: creditMemoInstance, field: 'notes', ' error')}">
+        <g:textArea name="notes" cols="80" rows="5" value="${creditMemoInstance?.notes}" /><br />
+        <g:hasErrors bean="${creditMemoInstance}" field="notes">
+          <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="notes"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
       </div>
     </div>

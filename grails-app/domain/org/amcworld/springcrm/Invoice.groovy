@@ -7,6 +7,7 @@ class Invoice extends InvoicingTransaction {
 		dueDatePayment()
 		paymentDate(nullable:true)
 		paymentAmount(nullable:true, min:0.0, scale:2)
+		paymentMethod(nullable:true)
 		quote(nullable:true)
 		salesOrder(nullable:true)
     }
@@ -20,7 +21,8 @@ class Invoice extends InvoicingTransaction {
 	Date dueDatePayment
 	Date paymentDate
 	BigDecimal paymentAmount
-	
+	PaymentMethod paymentMethod
+
 	{
 		type = 'I'
 	}

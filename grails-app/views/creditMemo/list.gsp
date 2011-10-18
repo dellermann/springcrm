@@ -32,8 +32,8 @@
           <g:sortableColumn property="organization.name" title="${message(code: 'invoicingTransaction.organization.label', default: 'Organization')}" />
           <g:sortableColumn property="stage" title="${message(code: 'creditMemo.stage.label.short', default: 'Stage')}" />
           <g:sortableColumn property="docDate" title="${message(code: 'creditMemo.docDate.label.short', default: 'Date')}" />
-          <g:sortableColumn property="paymentDate" title="${message(code: 'creditMemo.paymentDate.label', default: 'Payment date')}" />
-          <g:sortableColumn property="total" title="${message(code: 'credit.total.label.short', default: 'Total')}" style="width: 6em;" />
+          <g:sortableColumn property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label', default: 'Payment date')}" />
+          <g:sortableColumn property="total" title="${message(code: 'creditMemo.total.label.short', default: 'Total')}" style="width: 6em;" />
           <th style="width: 11.5em;"></th>
         </tr>
       </thead>

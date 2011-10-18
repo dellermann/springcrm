@@ -14,6 +14,7 @@ class PurchaseInvoice {
 		stage()
 		paymentDate(nullable:true)
 		paymentAmount(nullable:true)
+		paymentMethod(nullable:true)
 		items(minSize:1)
 		notes(widget:'textarea', nullable:true)
 		documentFile(nullable:true)
@@ -45,6 +46,7 @@ class PurchaseInvoice {
 	PurchaseInvoiceStage stage
 	Date paymentDate
 	BigDecimal paymentAmount
+	PaymentMethod paymentMethod
 	List<PurchaseInvoiceItem> items
 	BigDecimal discountPercent
 	BigDecimal discountAmount
@@ -63,6 +65,7 @@ class PurchaseInvoice {
 		number = p.number
 		subject = p.subject
 		vendor = p.vendor
+		vendorName = p.vendorName
 		items = new ArrayList(p.items.size())
 		p.items.each { items << new PurchaseInvoiceItem(it) }
 		discountPercent = p.discountPercent

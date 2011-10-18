@@ -113,13 +113,18 @@
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="invoice.paymentDate.label" default="Payment date" /></div>
+              <div class="label"><g:message code="invoicingTransaction.paymentDate.label" default="Payment date" /></div>
               <div class="field"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="invoice.paymentAmount.label" default="Payment amount" /></div>
+              <div class="label"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment amount" /></div>
               <div class="field"><g:formatCurrency number="${invoiceInstance?.paymentAmount}" /></div>
+            </div>
+
+            <div class="row">
+              <div class="label"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></div>
+              <div class="field">${invoiceInstance?.paymentMethod?.encodeAsHTML()}</div>
             </div>
           </div>
         </div>
@@ -335,6 +340,18 @@
           </div>
         </div>
       </div>
+
+      <g:if test="${invoiceInstance?.notes}">
+      <div class="fieldset">
+        <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="invoicingTransaction.notes.label" default="Notes" /></div>
+            <div class="field">${nl2br(value: invoiceInstance?.notes)}</div>
+          </div>
+        </div>
+      </div>
+      </g:if>
 
       <g:ifModuleAllowed modules="dunning">
       <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">

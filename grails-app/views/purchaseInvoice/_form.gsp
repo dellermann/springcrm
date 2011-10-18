@@ -111,7 +111,7 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
           <label for="paymentAmount"><g:message code="purchaseInvoice.paymentAmount.label" default="Payment Amount" /></label>
@@ -120,6 +120,18 @@
           <g:textField name="paymentAmount" value="${fieldValue(bean: purchaseInvoiceInstance, field: 'paymentAmount')}" size="10" />&nbsp;<g:currency /><br />
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="paymentAmount">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="paymentAmount"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <label for="paymentMethod.id"><g:message code="purchaseInvoice.paymentMethod.label" default="Payment Method" /></label>
+        </div>
+        <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'paymentMethod', ' error')}">
+          <g:select name="paymentMethod.id" from="${org.amcworld.springcrm.PaymentMethod.list()}" optionKey="id" value="${purchaseInvoiceInstance?.paymentMethod?.id}" noSelection="['null': '']" /><br />
+          <g:hasErrors bean="${purchaseInvoiceInstance}" field="paymentMethod">
+            <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="paymentMethod"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>

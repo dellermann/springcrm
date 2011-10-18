@@ -102,17 +102,17 @@
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="creditMemo.paymentDate.label" default="Payment Date" /></div>
+              <div class="label"><g:message code="invoicingTransaction.paymentDate.label" default="Payment Date" /></div>
               <div class="field"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="creditMemo.paymentAmount.label" default="Payment Amount" /></div>
+              <div class="label"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment Amount" /></div>
               <div class="field"><g:formatCurrency number="${creditMemoInstance?.paymentAmount}" /></div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="creditMemo.paymentMethod.label" default="Payment Method" /></div>
+              <div class="label"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></div>
               <div class="field">${creditMemoInstance?.paymentMethod?.encodeAsHTML()}</div>
             </div>
           </div>
@@ -329,6 +329,18 @@
           </div>
         </div>
       </div>
+
+      <g:if test="${creditMemoInstance?.notes}">
+      <div class="fieldset">
+        <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="invoicingTransaction.notes.label" default="Notes" /></div>
+            <div class="field">${nl2br(value: creditMemoInstance?.notes)}</div>
+          </div>
+        </div>
+      </div>
+      </g:if>
     </div>
 
     <p class="record-timestamps">

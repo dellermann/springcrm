@@ -8,7 +8,7 @@ class Service {
 		category(nullable:true)
 		quantity(min:0.0d)
 		unit(nullable:true)
-		unitPrice(scale:2, min:0.01d)
+		unitPrice(scale:2, min:0.0d)
 		taxClass(nullable:true)
 		commission(min:0.0d)
 		salesStart(nullable:true)

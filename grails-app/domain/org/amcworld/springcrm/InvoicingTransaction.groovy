@@ -34,6 +34,7 @@ class InvoicingTransaction {
         shippingTax(scale:1, min:0.0, nullable:true)
 		adjustment(scale:2, nullable:true)
 		total(scale:2)
+        notes(widget:'textarea', nullable:true)
 		dateCreated()
 		lastUpdated()
     }
@@ -46,6 +47,9 @@ class InvoicingTransaction {
 		items cascade:'all-delete-orphan'
 		headerText type:'text'
 		footerText type:'text'
+		notes type:'text'
+		sort 'number'
+		order 'desc'
 	}
 	static searchable = true
 	static transients = [
@@ -82,6 +86,7 @@ class InvoicingTransaction {
     BigDecimal shippingTax = 19.0
 	BigDecimal adjustment
 	BigDecimal total
+	String notes
 	Date dateCreated
 	Date lastUpdated
 
@@ -114,6 +119,7 @@ class InvoicingTransaction {
 		shippingTax = i.shippingTax
 		adjustment = i.adjustment
 		total = i.total
+		notes = i.notes
 		termsAndConditions = i.termsAndConditions
 	}
 

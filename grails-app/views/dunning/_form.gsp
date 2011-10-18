@@ -144,7 +144,7 @@
       
       <div class="row">
         <div class="label">
-          <label for="paymentDate-date"><g:message code="dunning.paymentDate.label" default="Payment Date" /></label>
+          <label for="paymentDate-date"><g:message code="invoicingTransaction.paymentDate.label" default="Payment Date" /></label>
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'paymentDate', ' error')}">
           <g:dateInput name="paymentDate" precision="day" value="${dunningInstance?.paymentDate}" /><br />
@@ -154,15 +154,27 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
-          <label for="paymentAmount"><g:message code="dunning.paymentAmount.label" default="Payment Amount" /></label>
+          <label for="paymentAmount"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment Amount" /></label>
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'paymentAmount', ' error')}">
           <g:textField name="paymentAmount" value="${formatNumber(number: dunningInstance?.paymentAmount, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
           <g:hasErrors bean="${dunningInstance}" field="paymentAmount">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="paymentAmount"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="label">
+          <label for="paymentMethod.id"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></label>
+        </div>
+        <div class="field${hasErrors(bean: dunningInstance, field: 'paymentMethod', ' error')}">
+          <g:select name="paymentMethod.id" from="${org.amcworld.springcrm.PaymentMethod.list()}" optionKey="id" value="${dunningInstance?.paymentMethod?.id}" noSelection="['null': '']" /><br />
+          <g:hasErrors bean="${dunningInstance}" field="paymentMethod">
+            <span class="error-msg"><g:eachError bean="${dunningInstance}" field="paymentMethod"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>
@@ -525,6 +537,22 @@
         <g:select name="termsAndConditions" from="${org.amcworld.springcrm.TermsAndConditions.list()}" optionKey="id" value="${dunningInstance?.termsAndConditions*.id}" multiple="true" /><br />
         <g:hasErrors bean="${dunningInstance}" field="termsAndConditions">
           <span class="error-msg"><g:eachError bean="${dunningInstance}" field="termsAndConditions"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
+      </div>
+    </div>
+  </div>
+</fieldset>
+<fieldset>
+  <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
+  <div class="fieldset-content">
+    <div class="row">
+      <div class="label">
+        <label for="notes"><g:message code="invoicingTransaction.notes.label" default="Notes" /></label>
+      </div>
+      <div class="field${hasErrors(bean: dunningInstance, field: 'notes', ' error')}">
+        <g:textArea name="notes" cols="80" rows="5" value="${dunningInstance?.notes}" /><br />
+        <g:hasErrors bean="${dunningInstance}" field="notes">
+          <span class="error-msg"><g:eachError bean="${dunningInstance}" field="notes"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
       </div>
     </div>

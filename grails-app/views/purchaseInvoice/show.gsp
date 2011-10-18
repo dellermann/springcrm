@@ -98,6 +98,11 @@
               <div class="label"><g:message code="purchaseInvoice.paymentAmount.label" default="Payment Amount" /></div>
               <div class="field"><g:formatCurrency number="${purchaseInvoiceInstance?.paymentAmount}" /></div>
             </div>
+
+            <div class="row">
+              <div class="label"><g:message code="purchaseInvoice.paymentMethod.label" default="Payment Method" /></div>
+              <div class="field">${purchaseInvoiceInstance?.paymentMethod?.encodeAsHTML()}</div>
+            </div>
           </div>
         </div>
       </div>

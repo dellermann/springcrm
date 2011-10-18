@@ -10,8 +10,9 @@ class Product {
 		retailer(nullable:true)
 		quantity(min:0.0d)
 		unit(nullable:true)
-		unitPrice(scale:2, min:0.01d)
+		unitPrice(scale:2, min:0.0d)
 		taxClass(nullable:true)
+		purchasePrice(nullable:true, scale:2, min:0.0)
 		weight(nullable:true, min:0.0)
 		commission(min:0.0d)
 		salesStart(nullable:true)
@@ -38,6 +39,7 @@ class Product {
 	Unit unit
 	double unitPrice
 	TaxClass taxClass
+	BigDecimal purchasePrice
 	BigDecimal weight
 	double commission
 	Date salesStart
@@ -57,6 +59,7 @@ class Product {
 		unit = p.unit
 		unitPrice = p.unitPrice
 		taxClass = p.taxClass
+		purchasePrice = p.purchasePrice
 		weight = p.weight
 		commission = p.commission
 		salesStart = p.salesStart

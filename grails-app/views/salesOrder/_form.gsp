@@ -507,6 +507,22 @@
     </div>
   </div>
 </fieldset>
+<fieldset>
+  <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
+  <div class="fieldset-content">
+    <div class="row">
+      <div class="label">
+        <label for="notes"><g:message code="invoicingTransaction.notes.label" default="Notes" /></label>
+      </div>
+      <div class="field${hasErrors(bean: salesOrderInstance, field: 'notes', ' error')}">
+        <g:textArea name="notes" cols="80" rows="5" value="${salesOrderInstance?.notes}" /><br />
+        <g:hasErrors bean="${salesOrderInstance}" field="notes">
+          <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="notes"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
+      </div>
+    </div>
+  </div>
+</fieldset>
 <content tag="additionalJavaScript">
 <script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
 <script type="text/javascript">//<![CDATA[

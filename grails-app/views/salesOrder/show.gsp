@@ -317,6 +317,18 @@
         </div>
       </div>
 
+      <g:if test="${salesOrderInstance?.notes}">
+      <div class="fieldset">
+        <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="invoicingTransaction.notes.label" default="Notes" /></div>
+            <div class="field">${nl2br(value: salesOrderInstance?.notes)}</div>
+          </div>
+        </div>
+      </div>
+      </g:if>
+
       <g:ifModuleAllowed modules="invoice">
       <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
         <link itemprop="list-link" href="${createLink(controller:'invoice', action:'listEmbedded', params:[salesOrder:salesOrderInstance.id])}" />

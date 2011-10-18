@@ -85,14 +85,19 @@
           <div class="col col-r">
             <div class="row">
               <div class="label"><g:message code="product.weight.label" default="Weight" /></div>
-              <div class="field"><g:formatNumber number="${productInstance?.weight}" minFractionDigits="3" /> <g:message code="product.weight.unit" default="kg" /></div>
+              <div class="field"><g:formatNumber number="${productInstance?.weight}" minFractionDigits="3" />&nbsp;<g:message code="product.weight.unit" default="kg" /></div>
             </div>
             
             <div class="row">
-              <div class="label"><g:message code="product.taxClass.label" default="Tax Class" /></div>
+              <div class="label"><g:message code="product.taxClass.label" default="Tax class" /></div>
               <div class="field">${productInstance?.taxClass?.encodeAsHTML()}</div>
             </div>
-            
+
+            <div class="row">
+              <div class="label"><g:message code="product.purchasePrice.label" default="Purchase price" /></div>
+              <div class="field"><g:formatCurrency number="${productInstance?.purchasePrice}" /></div>
+            </div>
+
             <div class="row">
               <div class="label"><g:message code="product.commission.label" default="Commission" /></div>
               <div class="field"><g:formatNumber number="${productInstance?.commission}" minFractionDigits="2" /> %</div>

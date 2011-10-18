@@ -13,7 +13,7 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
           <label for="name"><g:message code="product.name.label" default="Name" /></label>
@@ -25,7 +25,7 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="label">
           <label for="category"><g:message code="product.category.label" default="Category" /></label>
@@ -123,7 +123,19 @@
           </g:hasErrors>
         </div>
       </div>
-      
+
+      <div class="row">
+        <div class="label">
+          <label for="purchasePrice"><g:message code="product.purchasePrice.label" default="Purchase price" /></label>
+        </div>
+        <div class="field${hasErrors(bean: productInstance, field: 'purchasePrice', ' error')}">
+          <g:textField name="purchasePrice" value="${formatNumber(number: productInstance?.purchasePrice, minFractionDigits: 2)}" size="10" />&nbsp;<g:currency /><br />
+          <g:hasErrors bean="${productInstance}" field="purchasePrice">
+            <span class="error-msg"><g:eachError bean="${productInstance}" field="purchasePrice"><g:message error="${it}" /> </g:eachError></span>
+          </g:hasErrors>
+        </div>
+      </div>
+
       <div class="row">
         <div class="label">
           <label for="commission"><g:message code="product.commission.label" default="Commission" /></label>

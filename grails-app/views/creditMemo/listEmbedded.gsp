@@ -7,7 +7,7 @@
       <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label', default: 'Subject')}" params="${linkParams}" />
       <g:sortableColumn property="stage" title="${message(code: 'creditMemo.stage.label.short', default: 'Stage')}" params="${linkParams}" />
       <g:sortableColumn property="docDate" title="${message(code: 'creditMemo.docDate.label.short', default: 'Date')}" params="${linkParams}" />
-      <g:sortableColumn property="paymentDate" title="${message(code: 'creditMemo.paymentDate.label', default: 'Payment date')}" params="${linkParams}" />
+      <g:sortableColumn property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label', default: 'Payment date')}" params="${linkParams}" />
       <g:sortableColumn property="total" title="${message(code: 'creditMemo.total.label.short', default: 'Total')}" style="width: 6em;" />
       <th></th>
     </tr>
