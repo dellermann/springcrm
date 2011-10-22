@@ -131,6 +131,7 @@ class UserController {
 	def logout = {
 		flash.message = "${message(code: 'user.logout.message', default: 'You were logged out.')}"
 		session.user = null
+		session.invalidate()
 		redirect(action: 'login')
 	}
 
