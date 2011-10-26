@@ -6,6 +6,9 @@ class SelValue {
         name(blank:false)
         orderId()
     }
+	static mapping = {
+		sort 'orderId'
+    }
 
     String name
     int orderId = 0
