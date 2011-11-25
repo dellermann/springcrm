@@ -14,6 +14,8 @@
 
 package org.amcworld.springcrm.util
 
+import java.text.ParseException;
+
 import java.beans.PropertyEditorSupport
 import java.text.SimpleDateFormat
 import org.springframework.context.i18n.LocaleContextHolder
@@ -65,13 +67,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		if (text == null) {
 			value = null
 		} else {
-			int pos = text.indexOf(' ')
-			if (pos < 0) {
-				value = parseDate(text)
-			} else {
-				value = parseDate(text.substring(0, pos))
-				parseTime(value, text.substring(pos + 1))
-			}
+			value = (text.indexOf(' ') < 0) ? parseDate(text) : parseDateTime(text)
 		}
 	}
 
@@ -86,20 +82,29 @@ class DatePropertyEditor extends PropertyEditorSupport {
 			fmt = dateFormat
 		}
 		try {
-			SimpleDateFormat format = new SimpleDateFormat(fmt)
-			format.timeZone = TimeZone.getTimeZone('UTC')
-			value = format.parse(text)
+			return new SimpleDateFormat(fmt).parse(text)
 		} catch (ParseException) {
 			throw new IllegalArgumentException()
 		}
 	}
 	
-	protected void parseTime(Date d, String text) {
-		String fmt = text.isLong() ? 'HHmm' : timeFormat
+	protected Date parseDateTime(String text) throws IllegalArgumentException {
+		String fmt
+		int pos = text.indexOf(' ')
+		if (pos >= 0) {
+			String s = text.substring(0, pos)
+			if (s.isLong()) {
+				fmt = (s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
+			} else {
+				fmt = dateFormat
+			}
+			s = text.substring(pos + 1).trim()
+			fmt += ' ' + (s.isLong() ? 'HHmm' : timeFormat)
+		} else {
+			fmt += dateTimeFormat
+		}
 		try {
-			SimpleDateFormat format = new SimpleDateFormat(fmt)
-			format.timeZone = TimeZone.getTimeZone('UTC')
-			value = new Date((value as Date).time + format.parse(text).time)
+			return new SimpleDateFormat(fmt).parse(text)
 		} catch (ParseException) {
 			throw new IllegalArgumentException()
 		}
