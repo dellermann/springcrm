@@ -35,9 +35,5 @@
       <g:render template="/person/form" />
     </g:uploadForm>
   </section>
-  <content tag="jsTexts">
-  copyAddressWarning_mailingAddr: "${message(code: 'person.otherAddr.exists')}",
-  copyAddressWarning_otherAddr: "${message(code: 'person.mailingAddr.exists')}"
-  </content>
 </body>
 </html>

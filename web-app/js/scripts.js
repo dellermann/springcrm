@@ -260,13 +260,7 @@
          * @since 0.9.10
          */
         _onChangeAutoNumber: function () {
-            if (this.checked) {
-                $("#number").attr("disabled", "disabled")
-                    .addClass("disabled");
-            } else {
-                $("#number").removeAttr("disabled")
-                    .removeClass("disabled");
-            }
+            $("#number").toggleEnable(!this.checked);
         },
 
         /**
@@ -1473,6 +1467,69 @@
         parseNumber: function (s) {
             return (s === "") ? 0
                     : parseFloat(s.replace(/\./, "").replace(/,/, "."));
+        }
+    });
+    $.fn.extend({
+
+        /**
+         * Disables the elements in the jQuery object.
+         *
+         * @name                    jQuery#disable
+         * @returns {JQueryObject}  this jQuery object
+         * @function
+         * @since                   0.9.12
+         */
+        disable: function () {
+            return $(this).each(function () {
+                $(this).attr("disabled", "disabled")
+                    .addClass("disabled");
+            });
+        },
+
+        /**
+         * Enables the elements in the jQuery object.
+         *
+         * @name                    jQuery#enable
+         * @returns {JQueryObject}  this jQuery object
+         * @function
+         * @since                   0.9.12
+         */
+        enable: function () {
+            return $(this).each(function () {
+                $(this).removeAttr("disabled")
+                    .removeClass("disabled");
+            });
+        },
+
+        /**
+         * Enables or disables the elements in the jQuery object depending on
+         * the given state.
+         *
+         * @name                                jQuery#enable
+         * @param {Boolean|String|JQueryObject} either a boolean value
+         *                                      indicating whether or not to
+         *                                      enable the elements, a string
+         *                                      representing a selector of a
+         *                                      checkbox, or a jQueryObject
+         *                                      representing a checkbox which
+         *                                      checked state is obtained
+         * @returns {JQueryObject}              this jQuery object
+         * @function
+         * @since                               0.9.12
+         */
+        toggleEnable: function (enable) {
+            var b;
+
+            if (enable.constructor === Boolean) {
+                b = enable;
+            } else {
+                b = $(enable).is(":checked");
+            }
+            if (b) {
+                $(this).enable();
+            } else {
+                $(this).disable();
+            }
         }
     });
 

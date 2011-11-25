@@ -27,16 +27,7 @@
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery-ui-1.8.13.custom.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery.ui.datepicker-de.js')}"></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'init.js')}"></script>
-<script type="text/javascript">
-//<![CDATA[
-SPRINGCRM.addMessages({
-  search: "${message(code:'default.search.label', default:'Search...')}",
-  dateFormat: "${message(code:'default.format.date', default:'yyyy/MM/dd')}",
-  timeFormat: "${message(code:'default.format.time', default:'HH:mm')}",
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}",
-	<g:pageProperty name="page.jsTexts" />
-});
-//]]></script>
+<g:loadJsLocale/>
 <script type="text/javascript" src="${resource(dir:'js', file:'scripts.js')}"></script>
 <script type="text/javascript">
 SPRINGCRM.page.renderFontSizeSel("${createLink(controller:'user', action:'storeSetting')}", "${userSetting(key:'fontSize')}");

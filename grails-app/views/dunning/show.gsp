@@ -364,9 +364,6 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: dunningInstance?.dateCreated, style: 'SHORT'), formatDate(date: dunningInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
   </section>
-  <content tag="jsTexts">
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
-  </content>
   <content tag="additionalJavaScript">
   <script type="text/javascript">
   //<![CDATA[

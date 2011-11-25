@@ -43,9 +43,5 @@
       <g:render template="/organization/form" />
     </g:form>
   </section>
-  <content tag="jsTexts">
-  copyAddressWarning_billingAddr: "${message(code: 'organization.shippingAddr.exists')}",
-  copyAddressWarning_shippingAddr: "${message(code: 'organization.billingAddr.exists')}"
-  </content>
 </body>
 </html>

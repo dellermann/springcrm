@@ -32,13 +32,5 @@
       <g:render template="/purchaseInvoice/form" />
     </g:uploadForm>
   </section>
-  <content tag="jsTexts">
-  taxRateLabel: "${message(code: 'invoicingTransaction.taxRate.label')}",
-  productSel: "${message(code: 'invoicingTransaction.selector.products.title')}",
-  serviceSel: "${message(code: 'invoicingTransaction.selector.services.title')}",
-  upBtn: "${message(code: 'default.btn.up')}",
-  downBtn: "${message(code: 'default.btn.down')}",
-  removeBtn: "${message(code: 'default.btn.remove')}"
-  </content>
 </body>
 </html>

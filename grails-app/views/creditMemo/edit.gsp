@@ -34,15 +34,5 @@
       <g:render template="/creditMemo/form" />
     </g:form>
   </section>
-  <content tag="jsTexts">
-  copyAddressWarning_billingAddr: "${message(code: 'invoicingTransaction.billingAddr.exists')}",
-  copyAddressWarning_shippingAddr: "${message(code: 'invoicingTransaction.shippingAddr.exists')}",
-  taxRateLabel: "${message(code: 'invoicingTransaction.taxRate.label')}",
-  productSel: "${message(code: 'invoicingTransaction.selector.products.title')}",
-  serviceSel: "${message(code: 'invoicingTransaction.selector.services.title')}",
-  upBtn: "${message(code: 'default.btn.up')}",
-  downBtn: "${message(code: 'default.btn.down')}",
-  removeBtn: "${message(code: 'default.btn.remove')}"
-  </content>
 </body>
 </html>

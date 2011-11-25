@@ -113,7 +113,7 @@
 <content tag="additionalJavaScript">
 <script type="text/javascript">
 //<![CDATA[
-(function(SPRINGCRM) {
+(function (SPRINGCRM) {
     var phoneNumbers;
 
     new SPRINGCRM.FixedSelAutocomplete({

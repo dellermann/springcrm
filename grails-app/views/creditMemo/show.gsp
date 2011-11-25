@@ -347,8 +347,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: creditMemoInstance?.dateCreated, style: 'SHORT'), formatDate(date: creditMemoInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
   </section>
-  <content tag="jsTexts">
-  deleteConfirmMsg: "${message(code: 'default.button.delete.confirm.message')}"
-  </content>
 </body>
 </html>
