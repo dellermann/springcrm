@@ -181,8 +181,9 @@ INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES
   (2400, 0, 'bar', 10, 'org.amcworld.springcrm.PaymentMethod'),
   (2401, 0, 'Überweisung', 20, 'org.amcworld.springcrm.PaymentMethod'),
-  (2402, 0, 'Scheck', 30, 'org.amcworld.springcrm.PaymentMethod'),
-  (2403, 0, 'Verrechnung', 40, 'org.amcworld.springcrm.PaymentMethod');
+  (2402, 0, 'Abbuchung', 30, 'org.amcworld.springcrm.PaymentMethod'),
+  (2403, 0, 'Scheck', 40, 'org.amcworld.springcrm.PaymentMethod'),
+  (2404, 0, 'Verrechnung', 50, 'org.amcworld.springcrm.PaymentMethod');
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES
