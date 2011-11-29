@@ -83,6 +83,87 @@
   </div>
 </fieldset>
 <fieldset>
+  <h4><g:message code="calendarEvent.fieldset.recurrence.label" /></h4>
+  <div class="fieldset-content">
+    <div id="tabs-recurType">
+      <g:set var="selectedWeekdays" value="${calendarEventInstance.recurWeekdaysAsList}"/>
+      <g:set var="weekdayNames" value="${java.text.DateFormatSymbols.instance.weekdays}"/>
+      <g:set var="monthNames" value="${java.text.DateFormatSymbols.instance.months}"/>
+      <ul>
+        <li><g:radio id="recurType-0" name="recurType" value="0" checked="${calendarEventInstance.recurType == 0}" /><a href="#tabs-recurType-0"><g:message code="calendarEvent.recurType.0"/></a></li>
+        <li><g:radio id="recurType-10" name="recurType" value="10" checked="${calendarEventInstance.recurType == 10}" /><a href="#tabs-recurType-10"><g:message code="calendarEvent.recurType.10"/></a></li>
+        <li><g:radio id="recurType-30" name="recurType" value="30" checked="${calendarEventInstance.recurType == 30}" /><a href="#tabs-recurType-30"><g:message code="calendarEvent.recurType.30"/></a></li>
+        <li><g:radio id="recurType-40" name="recurType" value="40" checked="${calendarEventInstance.recurType == 40}" /><a href="#tabs-recurType-40"><g:message code="calendarEvent.recurType.40"/></a></li>
+        <li><g:radio id="recurType-50" name="recurType" value="50" checked="${calendarEventInstance.recurType == 50}" /><a href="#tabs-recurType-50"><g:message code="calendarEvent.recurType.50"/></a></li>
+        <li><g:radio id="recurType-60" name="recurType" value="60" checked="${calendarEventInstance.recurType == 60}" /><a href="#tabs-recurType-60"><g:message code="calendarEvent.recurType.60"/></a></li>
+        <li><g:radio id="recurType-70" name="recurType" value="70" checked="${calendarEventInstance.recurType == 70}" /><a href="#tabs-recurType-70"><g:message code="calendarEvent.recurType.70"/></a></li>
+      </ul>
+      <div id="tabs-recurType-0">
+        <p><g:message code="calendarEvent.recurType.0.noOptions.label"/></p>
+      </div>
+      <div id="tabs-recurType-10">
+        <p>
+          <label for="recurInterval-10"><g:message code="calendarEvent.recurType.10.each.label"/></label>&nbsp;
+          <g:textField name="recurInterval-10" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurType.10.days.label"/></label>
+        </p>
+      </div>
+      <div id="tabs-recurType-30">
+        <p>
+          <label for="recurInterval-30"><g:message code="calendarEvent.recurType.30.at.label"/></label>&nbsp;
+          <span><g:checkBox name="recurWeekdays-30-1" checked="${selectedWeekdays?.contains(1)}" />&nbsp;<label for="recurWeekdays-30-1">${weekdayNames[2]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-2" checked="${selectedWeekdays?.contains(2)}" />&nbsp;<label for="recurWeekdays-30-2">${weekdayNames[3]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-3" checked="${selectedWeekdays?.contains(3)}" />&nbsp;<label for="recurWeekdays-30-3">${weekdayNames[4]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-4" checked="${selectedWeekdays?.contains(4)}" />&nbsp;<label for="recurWeekdays-30-4">${weekdayNames[5]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-5" checked="${selectedWeekdays?.contains(5)}" />&nbsp;<label for="recurWeekdays-30-5">${weekdayNames[6]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-6" checked="${selectedWeekdays?.contains(6)}" />&nbsp;<label for="recurWeekdays-30-6">${weekdayNames[7]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-0" checked="${selectedWeekdays?.contains(7)}" />&nbsp;<label for="recurWeekdays-30-0">${weekdayNames[1]}</label></span>
+        </p>
+        <p>
+          <label for="recurInterval-30"><g:message code="calendarEvent.recurType.30.each.label"/></label>&nbsp;
+          <g:textField name="recurInterval-30" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurType.30.weeks.label"/></label>
+        </p>
+      </div>
+      <div id="tabs-recurType-40">
+        <p>
+          <label for="recurMonthDay-40"><g:message code="calendarEvent.recurType.40.at.label"/></label>&nbsp;
+          <g:textField name="recurMonthDay-40" size="3"/>.
+          <label for="recurInterval-40"><g:message code="calendarEvent.recurType.40.each.label"/></label>&nbsp;
+          <g:textField name="recurInterval-40" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurType.40.months.label"/></label>
+        </p>
+      </div>
+      <div id="tabs-recurType-50">
+        <p>
+          <label for="recurWeekdayOrd-50"><g:message code="calendarEvent.recurType.50.at.label"/></label>&nbsp;
+          <g:textField name="recurWeekdayOrd-50" size="3"/>.
+          <g:select name="recurWeekdays-50" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}"/>&nbsp;
+          <label for="recurInterval-50"><g:message code="calendarEvent.recurType.50.each.label"/></label>&nbsp;
+          <g:textField name="recurInterval-50" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurType.50.months.label"/></label>
+        </p>
+      </div>
+      <div id="tabs-recurType-60">
+        <p>
+          <label for="recurMonthDay-60"><g:message code="calendarEvent.recurType.60.yearlyAt.label"/></label>&nbsp;
+          <g:textField name="recurMonthDay-60" size="3"/>.
+          <g:select name="recurMonth-60" from="${1..12}" optionValue="${{monthNames[it - 1]}}"/>
+        </p>
+      </div>
+      <div id="tabs-recurType-70">
+        <p>
+          <label for="recurMonthDay-70"><g:message code="calendarEvent.recurType.70.yearlyAt.label"/></label>&nbsp;
+          <g:textField name="recurWeekdayOrd-70" size="3"/>.
+          <g:select name="recurWeekdays-70" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}"/>&nbsp;
+          <label for="recurMonth-70"><g:message code="calendarEvent.recurType.70.inMonth.label"/></label>&nbsp;
+          <g:select name="recurMonth-70" from="${1..12}" optionValue="${{monthNames[it - 1]}}"/>
+        </p>
+      </div>
+    </div>
+  </div>
+</fieldset>
+<fieldset>
   <h4><g:message code="calendarEvent.fieldset.description.label" /></h4>
   <div class="fieldset-content">
     <div class="row">
@@ -101,7 +182,12 @@
 <content tag="additionalJavaScript">
 <script type="text/javascript">
 //<![CDATA[
-(function (SPRINGCRM) {
+(function ($, SPRINGCRM) {
+
+    "use strict";
+
+    var $tabs;
+
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
             findUrl: "${createLink(controller:'organization', action:'find')}",
@@ -118,7 +204,7 @@
                         if (data.shippingAddrPostalCode ||
                             data.shippingAddrLocation)
                         {
-                            if (s != "") {
+                            if (s !== "") {
                                 s += ", ";
                             }
                             if (data.shippingAddrPostalCode) {
@@ -142,6 +228,22 @@
             $("#end-time").toggleEnable(!checked);
         })
         .triggerHandler("change");
-}(SPRINGCRM));
+    $tabs = $("#tabs-recurType");
+    $tabs.tabs()
+        .change(function (event) {
+            var $target = $(event.target),
+                id;
+
+            if ($target.attr("name") === "recurType") {
+                $tabs.tabs("select", "tabs-recurType-" + $target.val());
+            } else {
+                id = $target.parents(".ui-tabs-panel")
+                    .attr("id");
+                if (id.match(/^tabs-recurType-(\d+)$/)) {
+                    $("#recurType-" + RegExp.$1).trigger("click");
+                }
+            }
+        });
+}(jQuery, SPRINGCRM));
 //]]></script>
 </content>

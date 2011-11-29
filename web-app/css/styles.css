@@ -1394,6 +1394,12 @@ form .invoicing-items-pos {
 .ui-accordion .ui-accordion-header {
   margin-bottom: 0 !important;
 }
+.ui-tabs-nav input {
+  float: right;
+}
+.ui-tabs-panel p:last-child {
+  margin-bottom: 0;
+}
 
 /* login page */
 #login {
@@ -1578,6 +1584,16 @@ form .invoicing-items-pos {
 }
 .document-delete {
   background-image: url("../img/remove.png");
+}
+
+/* calendar */
+#tabs-recurType label {
+  display: inline;
+  font-weight: normal;
+  padding-right: 0;
+}
+#tabs-recurType label:after {
+  content: "";
 }
 
 /* search results */
