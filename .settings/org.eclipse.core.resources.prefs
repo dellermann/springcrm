@@ -1,7 +1,21 @@
-#Tue Aug 30 16:28:36 CEST 2011
+#Wed Nov 30 00:07:10 CET 2011
 eclipse.preferences.version=1
+encoding//.link_to_grails_plugins/jsunit-0.7/grails-app/i18n/messages.properties=UTF-8
+encoding//.link_to_grails_plugins/mail-1.0-SNAPSHOT/grails-app/i18n/messages.properties=UTF-8
+encoding//.link_to_grails_plugins/mail-1.0-SNAPSHOT/grails-app/i18n/messages_fr.properties=UTF-8
 encoding//grails-app/i18n/messages.properties=UTF-8
+encoding//grails-app/i18n/messages_da.properties=UTF-8
 encoding//grails-app/i18n/messages_de.properties=UTF-8
+encoding//grails-app/i18n/messages_es.properties=UTF-8
+encoding//grails-app/i18n/messages_fr.properties=UTF-8
+encoding//grails-app/i18n/messages_it.properties=UTF-8
+encoding//grails-app/i18n/messages_ja.properties=UTF-8
+encoding//grails-app/i18n/messages_nl.properties=UTF-8
+encoding//grails-app/i18n/messages_pt_BR.properties=UTF-8
+encoding//grails-app/i18n/messages_pt_PT.properties=UTF-8
+encoding//grails-app/i18n/messages_ru.properties=UTF-8
+encoding//grails-app/i18n/messages_th.properties=UTF-8
+encoding//grails-app/i18n/messages_zh_CN.properties=UTF-8
 encoding//grails-app/views/invoice/_form.gsp=UTF-8
 encoding//grails-app/views/invoice/show.gsp=UTF-8
 encoding//grails-app/views/product/_form.gsp=UTF-8
