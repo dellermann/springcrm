@@ -85,6 +85,11 @@
 <fieldset>
   <h4><g:message code="calendarEvent.fieldset.recurrence.label" /></h4>
   <div class="fieldset-content">
+    <input type="hidden" id="recurInterval" name="recurInterval" value="${calendarEventInstance.recurInterval}" />
+    <input type="hidden" id="recurMonthDay" name="recurMonthDay" value="${calendarEventInstance.recurMonthDay}" />
+    <input type="hidden" id="recurWeekdays" name="recurWeekdays" value="${calendarEventInstance.recurWeekdays}" />
+    <input type="hidden" id="recurWeekdayOrd" name="recurWeekdayOrd" value="${calendarEventInstance.recurWeekdayOrd}" />
+    <input type="hidden" id="recurMonth" name="recurMonth" value="${calendarEventInstance.recurMonth}" />
     <div id="tabs-recurType">
       <g:set var="selectedWeekdays" value="${calendarEventInstance.recurWeekdaysAsList}"/>
       <g:set var="weekdayNames" value="${java.text.DateFormatSymbols.instance.weekdays}"/>
@@ -186,7 +191,11 @@
 
     "use strict";
 
-    var $tabs;
+    var $tabs,
+        i = -1,
+        n,
+        recurType,
+        wds;
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
@@ -244,6 +253,25 @@
                 }
             }
         });
+    recurType = $("#tabs-recurType input:radio:checked").val();
+    if (recurType > 0) {
+        $("#recurInterval-" + recurType).val($("#recurInterval").val());
+        $("#recurMonthDay-" + recurType).val($("#recurMonthDay").val());
+        $("#recurWeekdayOrd-" + recurType).val($("#recurWeekdayOrd").val());
+        $("#recurMonth-" + recurType).val($("#recurMonth").val());
+        if ((recurType == 30) || (recurType == 50)) {
+            wds = $("#recurWeekdays").val().split(/,/);
+            n = wds.length;
+            if (recurType == 30) {
+                $("#tabs-recurType-30 input:checkbox").attr("checked", false);
+                while (++i < n) {
+                    $("#recurWeekdays-30-" + wds[i]).attr("checked", true);
+                }
+            } else {
+                $("#recurWeekdays-50").val((n > 0) ? wds[0] : "");
+            }
+        }
+    }
 }(jQuery, SPRINGCRM));
 //]]></script>
 </content>
