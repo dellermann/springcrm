@@ -85,84 +85,80 @@
 <fieldset>
   <h4><g:message code="calendarEvent.fieldset.recurrence.label" /></h4>
   <div class="fieldset-content">
-    <input type="hidden" id="recurInterval" name="recurInterval" value="${calendarEventInstance.recurInterval}" />
-    <input type="hidden" id="recurMonthDay" name="recurMonthDay" value="${calendarEventInstance.recurMonthDay}" />
-    <input type="hidden" id="recurWeekdays" name="recurWeekdays" value="${calendarEventInstance.recurWeekdays}" />
-    <input type="hidden" id="recurWeekdayOrd" name="recurWeekdayOrd" value="${calendarEventInstance.recurWeekdayOrd}" />
-    <input type="hidden" id="recurMonth" name="recurMonth" value="${calendarEventInstance.recurMonth}" />
-    <div id="tabs-recurType">
-      <g:set var="selectedWeekdays" value="${calendarEventInstance.recurWeekdaysAsList}"/>
+    <input type="hidden" id="recurrence-interval" name="recurrence.interval" value="${calendarEventInstance.recurrence.interval}" />
+    <input type="hidden" id="recurrence-monthDay" name="recurrence.monthDay" value="${calendarEventInstance.recurrence.monthDay}" />
+    <input type="hidden" id="recurrence-weekdays" name="recurrence.weekdays" value="${calendarEventInstance.recurrence.weekdays}" />
+    <input type="hidden" id="recurrence-weekdayOrd" name="recurrence.weekdayOrd" value="${calendarEventInstance.recurrence.weekdayOrd}" />
+    <input type="hidden" id="recurrence-month" name="recurrence.month" value="${calendarEventInstance.recurrence.month}" />
+    <div id="tabs-recurrence-type">
+      <g:set var="selectedWeekdays" value="${calendarEventInstance.recurrence.weekdaysAsList}"/>
       <g:set var="weekdayNames" value="${java.text.DateFormatSymbols.instance.weekdays}"/>
       <g:set var="monthNames" value="${java.text.DateFormatSymbols.instance.months}"/>
       <ul>
-        <li><g:radio id="recurType-0" name="recurType" value="0" checked="${calendarEventInstance.recurType == 0}" /><a href="#tabs-recurType-0"><g:message code="calendarEvent.recurType.0"/></a></li>
-        <li><g:radio id="recurType-10" name="recurType" value="10" checked="${calendarEventInstance.recurType == 10}" /><a href="#tabs-recurType-10"><g:message code="calendarEvent.recurType.10"/></a></li>
-        <li><g:radio id="recurType-30" name="recurType" value="30" checked="${calendarEventInstance.recurType == 30}" /><a href="#tabs-recurType-30"><g:message code="calendarEvent.recurType.30"/></a></li>
-        <li><g:radio id="recurType-40" name="recurType" value="40" checked="${calendarEventInstance.recurType == 40}" /><a href="#tabs-recurType-40"><g:message code="calendarEvent.recurType.40"/></a></li>
-        <li><g:radio id="recurType-50" name="recurType" value="50" checked="${calendarEventInstance.recurType == 50}" /><a href="#tabs-recurType-50"><g:message code="calendarEvent.recurType.50"/></a></li>
-        <li><g:radio id="recurType-60" name="recurType" value="60" checked="${calendarEventInstance.recurType == 60}" /><a href="#tabs-recurType-60"><g:message code="calendarEvent.recurType.60"/></a></li>
-        <li><g:radio id="recurType-70" name="recurType" value="70" checked="${calendarEventInstance.recurType == 70}" /><a href="#tabs-recurType-70"><g:message code="calendarEvent.recurType.70"/></a></li>
+        <li><g:radio id="recurrence-type-0" name="recurrence.type" value="0" checked="${calendarEventInstance.recurrence.type == 0}" /><a href="#tabs-recurrence-type-0"><g:message code="calendarEvent.recurrence.type.0"/></a></li>
+        <li><g:radio id="recurrence-type-10" name="recurrence.type" value="10" checked="${calendarEventInstance.recurrence.type == 10}" /><a href="#tabs-recurrence-type-10"><g:message code="calendarEvent.recurrence.type.10"/></a></li>
+        <li><g:radio id="recurrence-type-30" name="recurrence.type" value="30" checked="${calendarEventInstance.recurrence.type == 30}" /><a href="#tabs-recurrence-type-30"><g:message code="calendarEvent.recurrence.type.30"/></a></li>
+        <li><g:radio id="recurrence-type-40" name="recurrence.type" value="40" checked="${calendarEventInstance.recurrence.type == 40}" /><a href="#tabs-recurrence-type-40"><g:message code="calendarEvent.recurrence.type.40"/></a></li>
+        <li><g:radio id="recurrence-type-50" name="recurrence.type" value="50" checked="${calendarEventInstance.recurrence.type == 50}" /><a href="#tabs-recurrence-type-50"><g:message code="calendarEvent.recurrence.type.50"/></a></li>
+        <li><g:radio id="recurrence-type-60" name="recurrence.type" value="60" checked="${calendarEventInstance.recurrence.type == 60}" /><a href="#tabs-recurrence-type-60"><g:message code="calendarEvent.recurrence.type.60"/></a></li>
+        <li><g:radio id="recurrence-type-70" name="recurrence.type" value="70" checked="${calendarEventInstance.recurrence.type == 70}" /><a href="#tabs-recurrence-type-70"><g:message code="calendarEvent.recurrence.type.70"/></a></li>
       </ul>
-      <div id="tabs-recurType-0">
-        <p><g:message code="calendarEvent.recurType.0.noOptions.label"/></p>
+      <div id="tabs-recurrence-type-0">
+        <p><g:message code="calendarEvent.recurrence.type.0.noOptions.label"/></p>
       </div>
-      <div id="tabs-recurType-10">
+      <div id="tabs-recurrence-type-10">
         <p>
-          <label for="recurInterval-10"><g:message code="calendarEvent.recurType.10.each.label"/></label>&nbsp;
-          <g:textField name="recurInterval-10" size="3"/>
-          &nbsp;<label><g:message code="calendarEvent.recurType.10.days.label"/></label>
+          <label for="recurrence-interval-10"><g:message code="calendarEvent.recurrence.type.10.each.label"/></label>&nbsp;
+          <g:textField name="recurrence-interval-10" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurrence.type.10.days.label"/></label>
         </p>
       </div>
-      <div id="tabs-recurType-30">
+      <div id="tabs-recurrence-type-30">
         <p>
-          <label for="recurInterval-30"><g:message code="calendarEvent.recurType.30.at.label"/></label>&nbsp;
-          <span><g:checkBox name="recurWeekdays-30-1" checked="${selectedWeekdays?.contains(1)}" value="1" />&nbsp;<label for="recurWeekdays-30-1">${weekdayNames[2]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-2" checked="${selectedWeekdays?.contains(2)}" value="2" />&nbsp;<label for="recurWeekdays-30-2">${weekdayNames[3]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-3" checked="${selectedWeekdays?.contains(3)}" value="3" />&nbsp;<label for="recurWeekdays-30-3">${weekdayNames[4]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-4" checked="${selectedWeekdays?.contains(4)}" value="4" />&nbsp;<label for="recurWeekdays-30-4">${weekdayNames[5]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-5" checked="${selectedWeekdays?.contains(5)}" value="5" />&nbsp;<label for="recurWeekdays-30-5">${weekdayNames[6]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-6" checked="${selectedWeekdays?.contains(6)}" value="6" />&nbsp;<label for="recurWeekdays-30-6">${weekdayNames[7]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-0" checked="${selectedWeekdays?.contains(7)}" value="0" />&nbsp;<label for="recurWeekdays-30-0">${weekdayNames[1]}</label></span>
+          <label><g:message code="calendarEvent.recurrence.type.30.at.label"/></label>&nbsp;
+          <g:each in="${[*2..7, 1]}" var="i">
+          <span><g:checkBox name="recurrence-weekdays-30-${i}" checked="${selectedWeekdays?.contains(i)}" value="${i}" />&nbsp;<label for="recurrence-weekdays-30-${i}">${weekdayNames[i]}</label></span>
+          </g:each>
         </p>
         <p>
-          <label for="recurInterval-30"><g:message code="calendarEvent.recurType.30.each.label"/></label>&nbsp;
-          <g:textField name="recurInterval-30" size="3"/>
-          &nbsp;<label><g:message code="calendarEvent.recurType.30.weeks.label"/></label>
+          <label for="recurrence-interval-30"><g:message code="calendarEvent.recurrence.type.30.each.label"/></label>&nbsp;
+          <g:textField name="recurrence-interval-30" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurrence.type.30.weeks.label"/></label>
         </p>
       </div>
-      <div id="tabs-recurType-40">
+      <div id="tabs-recurrence-type-40">
         <p>
-          <label for="recurMonthDay-40"><g:message code="calendarEvent.recurType.40.at.label"/></label>&nbsp;
-          <g:textField name="recurMonthDay-40" size="3"/>.
-          <label for="recurInterval-40"><g:message code="calendarEvent.recurType.40.each.label"/></label>&nbsp;
-          <g:textField name="recurInterval-40" size="3"/>
-          &nbsp;<label><g:message code="calendarEvent.recurType.40.months.label"/></label>
+          <label for="recurrence-monthDay-40"><g:message code="calendarEvent.recurrence.type.40.at.label"/></label>&nbsp;
+          <g:textField name="recurrence-monthDay-40" size="3"/>.
+          <label for="recurrence-interval-40"><g:message code="calendarEvent.recurrence.type.40.each.label"/></label>&nbsp;
+          <g:textField name="recurrence-interval-40" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurrence.type.40.months.label"/></label>
         </p>
       </div>
-      <div id="tabs-recurType-50">
+      <div id="tabs-recurrence-type-50">
         <p>
-          <label for="recurWeekdayOrd-50"><g:message code="calendarEvent.recurType.50.at.label"/></label>&nbsp;
-          <g:textField name="recurWeekdayOrd-50" size="3"/>.
-          <g:select name="recurWeekdays-50" from="${[*1..6, 0]}" optionValue="${{weekdayNames[it + 1]}}"/>&nbsp;
-          <label for="recurInterval-50"><g:message code="calendarEvent.recurType.50.each.label"/></label>&nbsp;
-          <g:textField name="recurInterval-50" size="3"/>
-          &nbsp;<label><g:message code="calendarEvent.recurType.50.months.label"/></label>
+          <label for="recurrence-weekdayOrd-50"><g:message code="calendarEvent.recurrence.type.50.at.label"/></label>&nbsp;
+          <g:textField name="recurrence-weekdayOrd-50" size="3"/>.
+          <g:select name="recurrence-weekdays-50" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}"/>&nbsp;
+          <label for="recurrence-interval-50"><g:message code="calendarEvent.recurrence.type.50.each.label"/></label>&nbsp;
+          <g:textField name="recurrence-interval-50" size="3"/>
+          &nbsp;<label><g:message code="calendarEvent.recurrence.type.50.months.label"/></label>
         </p>
       </div>
-      <div id="tabs-recurType-60">
+      <div id="tabs-recurrence-type-60">
         <p>
-          <label for="recurMonthDay-60"><g:message code="calendarEvent.recurType.60.yearlyAt.label"/></label>&nbsp;
-          <g:textField name="recurMonthDay-60" size="3"/>.
-          <g:select name="recurMonth-60" from="${1..12}" optionValue="${{monthNames[it - 1]}}"/>
+          <label for="recurrence-monthDay-60"><g:message code="calendarEvent.recurrence.type.60.yearlyAt.label"/></label>&nbsp;
+          <g:textField name="recurrence-monthDay-60" size="3"/>.
+          <g:select name="recurrence-month-60" from="${0..11}" optionValue="${{monthNames[it]}}"/>
         </p>
       </div>
-      <div id="tabs-recurType-70">
+      <div id="tabs-recurrence-type-70">
         <p>
-          <label for="recurMonthDay-70"><g:message code="calendarEvent.recurType.70.yearlyAt.label"/></label>&nbsp;
-          <g:textField name="recurWeekdayOrd-70" size="3"/>.
-          <g:select name="recurWeekdays-70" from="${[*1..6, 0]}" optionValue="${{weekdayNames[it + 1]}}"/>&nbsp;
-          <label for="recurMonth-70"><g:message code="calendarEvent.recurType.70.inMonth.label"/></label>&nbsp;
-          <g:select name="recurMonth-70" from="${1..12}" optionValue="${{monthNames[it - 1]}}"/>
+          <label for="recurrence-monthDay-70"><g:message code="calendarEvent.recurrence.type.70.yearlyAt.label"/></label>&nbsp;
+          <g:textField name="recurrence-weekdayOrd-70" size="3"/>.
+          <g:select name="recurrence-weekdays-70" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}"/>&nbsp;
+          <label for="recurrence-month-70"><g:message code="calendarEvent.recurrence.type.70.inMonth.label"/></label>&nbsp;
+          <g:select name="recurrence-month-70" from="${0..11}" optionValue="${{monthNames[it]}}"/>
         </p>
       </div>
     </div>
@@ -237,68 +233,86 @@
             $("#end-time").toggleEnable(!checked);
         })
         .triggerHandler("change");
-    $tabs = $("#tabs-recurType");
+
+    $tabs = $("#tabs-recurrence-type");
     $tabs.tabs()
         .change(function (event) {
             var $target = $(event.target),
                 id;
 
-            if ($target.attr("name") === "recurType") {
-                $tabs.tabs("select", "tabs-recurType-" + $target.val());
+            if ($target.attr("name") === "recurrence.type") {
+                $tabs.tabs("select", "tabs-recurrence-type-" + $target.val());
             } else {
                 id = $target.parents(".ui-tabs-panel")
                     .attr("id");
-                if (id.match(/^tabs-recurType-(\d+)$/)) {
-                    $("#recurType-" + RegExp.$1).trigger("click");
+                if (id.match(/^tabs-recurrence-type-(\d+)$/)) {
+                    $("#recurrence-type-" + RegExp.$1).trigger("click");
                 }
             }
         });
-    recurType = $("#tabs-recurType input:radio:checked").val();
+
+    recurType = $("#tabs-recurrence-type input:radio:checked").val();
     if (recurType > 0) {
-        $("#recurInterval-" + recurType).val($("#recurInterval").val());
-        $("#recurMonthDay-" + recurType).val($("#recurMonthDay").val());
-        $("#recurWeekdayOrd-" + recurType).val($("#recurWeekdayOrd").val());
-        $("#recurMonth-" + recurType).val($("#recurMonth").val());
+        $("#recurrence-interval-" + recurType).val(
+                $("#recurrence-interval").val()
+            );
+        $("#recurrence-monthDay-" + recurType).val(
+                $("#recurrence-monthDay").val()
+            );
+        $("#recurrence-weekdayOrd-" + recurType).val(
+                $("#recurrence-weekdayOrd").val()
+            );
+        $("#recurrence-month-" + recurType).val($("#recurrence-month").val());
         if ((recurType == 30) || (recurType == 50) || (recurType == 70)) {
-            wds = $("#recurWeekdays").val().split(/,/);
+            wds = $("#recurrence-weekdays").val().split(/,/);
             n = wds.length;
             if (recurType == 30) {
-                $("#tabs-recurType-30 input:checkbox").attr("checked", false);
+                $("#tabs-recurrence-type-30 input:checkbox")
+                    .attr("checked", false);
                 while (++i < n) {
-                    $("#recurWeekdays-30-" + wds[i]).attr("checked", true);
+                    $("#recurrence-weekdays-30-" + wds[i])
+                        .attr("checked", true);
                 }
             } else if (n > 0) {
-                $("#recurWeekdays-" + recurType).val(wds[0]);
+                $("#recurrence-weekdays-" + recurType).val(wds[0]);
             }
         }
     }
-    $tabs.tabs("select", "tabs-recurType-" + recurType);
+    $tabs.tabs("select", "tabs-recurrence-type-" + recurType);
+
     $("#calendarEvent-form").bind("submit", function () {
-            var recurType = $("#tabs-recurType input:radio:checked").val(),
+            var recurType,
                 val,
                 wds;
 
+            recurType = $("#tabs-recurrence-type input:radio:checked").val();
             if (recurType > 0) {
-                val = $("#recurInterval-" + recurType).val();
-                $("#recurInterval").val(val ? val : 1);
-                $("#recurMonthDay").val(
-                        $("#recurMonthDay-" + recurType).val()
+                val = $("#recurrence-interval-" + recurType).val();
+                $("#recurrence-interval").val(val ? val : 1);
+                $("#recurrence-monthDay").val(
+                        $("#recurrence-monthDay-" + recurType).val()
                     );
-                $("#recurWeekdayOrd").val(
-                        $("#recurWeekdayOrd-" + recurType).val()
+                $("#recurrence-weekdayOrd").val(
+                        $("#recurrence-weekdayOrd-" + recurType).val()
                     );
-                $("#recurMonth").val($("#recurMonth-" + recurType).val());
+                $("#recurrence-month").val(
+                        $("#recurrence-month-" + recurType).val()
+                    );
                 if (recurType == 30) {
                     wds = [];
-                    $("#tabs-recurType-30 input:checkbox:checked")
+                    $("#tabs-recurrence-type-30 input:checkbox:checked")
                         .each(function () {
                             wds.push($(this).val());
                         });
-                    $("#recurWeekdays").val(wds.join(","));
+                    $("#recurrence-weekdays").val(wds.join(","));
                 } else if (recurType == 50) {
-                    $("#recurWeekdays").val($("#recurWeekdays-50").val());
+                    $("#recurrence-weekdays").val(
+                            $("#recurrence-weekdays-50").val()
+                        );
                 } else if (recurType == 70) {
-                    $("#recurWeekdays").val($("#recurWeekdays-70").val());
+                    $("#recurrence-weekdays").val(
+                            $("#recurrence-weekdays-70").val()
+                        );
                 }
             }
             return true;

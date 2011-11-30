@@ -86,6 +86,19 @@
         </div>
       </div>
       <div class="fieldset">
+        <h4><g:message code="calendarEvent.fieldset.recurrence.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="calendarEvent.recurrence.type.label" /></div>
+            <div class="field"><g:message code="calendarEvent.recurrence.type.${calendarEventInstance?.recurrence.type}"/></div>
+          </div>
+          <div class="row">
+            <div class="label"><g:message code="calendarEvent.recurrence.pattern.label" /></div>
+            <div class="field"><g:message message="${calendarEventInstance?.recurrence}"/></div>
+          </div>
+        </div>
+      </div>
+      <div class="fieldset">
         <h4><g:message code="calendarEvent.fieldset.description.label" /></h4>
         <div class="fieldset-content">
           <div class="row">

@@ -1587,13 +1587,16 @@ form .invoicing-items-pos {
 }
 
 /* calendar */
-#tabs-recurType label {
+#tabs-recurrence-type label {
   display: inline;
   font-weight: normal;
   padding-right: 0;
 }
-#tabs-recurType label:after {
+#tabs-recurrence-type label:after {
   content: "";
+}
+#tabs-recurrence-type-30 span {
+  padding-right: .8em;
 }
 
 /* search results */
