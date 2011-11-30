@@ -13,7 +13,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="#" class="green" onclick="SPRINGCRM.submitForm('dunning-form'); return false;"><g:message code="default.button.save.label" /></a></li>
+        <li><a href="#" class="green submit-btn" data-form="dunning-form"><g:message code="default.button.save.label" /></a></li>
         <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
       </ul>
     </nav>

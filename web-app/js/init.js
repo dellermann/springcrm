@@ -25,7 +25,7 @@
 
 /**
  * Contains all JavaScript code for the SpringCRM application.
- * 
+ *
  * @namespace   Contains all JavaScript code for the SpringCRM application.
  */
 var SPRINGCRM = SPRINGCRM || (function ($) {
@@ -33,33 +33,33 @@ var SPRINGCRM = SPRINGCRM || (function ($) {
     "use strict";
 
     return {
-    
+
         //== Definitions ========================
-    
+
         /**
          * The default font size in pixels. The value is used in the font
          * selector.
-         * 
+         *
          * @name SPRINGCRM.BASE_FONT_SIZE
          * @type Number
          * @constant
          * @default 11
          */
         BASE_FONT_SIZE: 11,
-        
+
         /**
          * The number of choices which are available in the font selector.
-         * 
+         *
          * @name SPRINGCRM.NUM_FONT_SIZES
          * @type Number
          * @constant
          * @default 5
          */
         NUM_FONT_SIZES: 5,
-    
-        
+
+
         //== Package variables ======================
-    
+
         /**
          * Contains internationalized messages which are used in JavaScript
          * functions.
@@ -70,13 +70,13 @@ var SPRINGCRM = SPRINGCRM || (function ($) {
          * @static
          */
         _messages: {},
-    
-    
+
+
         //== Public package functions ===============
-    
+
         /**
          * Adds the given messages to the internal message store.
-         * 
+         *
          * @name SPRINGCRM.addMessages
          * @param {Object} msgs the messages to add; the messages must be
          *                      key/value pairs
@@ -86,10 +86,10 @@ var SPRINGCRM = SPRINGCRM || (function ($) {
         addMessages: function (msgs) {
             $.extend(SPRINGCRM._messages, msgs);
         },
-    
+
         /**
          * Gets the message with the given key from the internal message store.
-         * 
+         *
          * @name SPRINGCRM.getMessage
          * @param {String} key  the given message key
          * @returns {String}    the internationalized message;
@@ -100,18 +100,6 @@ var SPRINGCRM = SPRINGCRM || (function ($) {
          */
         getMessage: function (key) {
             return SPRINGCRM._messages[key];
-        },
-        
-        /**
-         * Submits the form with the given ID.
-         * 
-         * @name SPRINGCRM.submitForm
-         * @param {String} formId   the ID of the form
-         * @function
-         * @static
-         */
-        submitForm: function (formId) {
-            $("#" + formId).submit();
         }
     };
 }(jQuery));

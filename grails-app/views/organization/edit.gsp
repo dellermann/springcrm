@@ -23,7 +23,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="#" class="green" onclick="SPRINGCRM.submitForm('organization-form'); return false;"><g:message code="default.button.save.label" /></a></li>
+        <li><a href="#" class="green submit-btn" data-form="organization-form"><g:message code="default.button.save.label" /></a></li>
         <li><g:link action="list" class="red" params="[type:params.listType]"><g:message code="default.button.cancel.label" /></g:link></li>
       </ul>
     </nav>

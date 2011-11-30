@@ -180,6 +180,7 @@
             $("#quick-access").change(this._onChangeQuickAccess);
             $("#main-menu > li").hover(this._onMenuHover);
             $(".menu").hover(this._onMenuHover);
+            $(".submit-btn").click(this._onSubmitForm);
             $(".delete-btn").click(this._onClickDeleteBtn);
             $(".date-input-date").change(this._onChangeDateInput)
                 .datepicker({
@@ -393,6 +394,18 @@
             } else {
                 this._$toolbar.removeClass("fixed");
             }
+        },
+
+        /**
+         * Called if the form submit button in the toolbar is clicked.
+         *
+         * @returns {Boolean}   always <code>false</code>
+         * @protected
+         * @since 0.9.12
+         */
+        _onSubmitForm: function () {
+            $("#" + $(this).attr("data-form")).submit();
+            return false;
         }
     };
     SPRINGCRM.Page = Page;
