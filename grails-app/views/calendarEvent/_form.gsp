@@ -116,13 +116,13 @@
       <div id="tabs-recurType-30">
         <p>
           <label for="recurInterval-30"><g:message code="calendarEvent.recurType.30.at.label"/></label>&nbsp;
-          <span><g:checkBox name="recurWeekdays-30-1" checked="${selectedWeekdays?.contains(1)}" />&nbsp;<label for="recurWeekdays-30-1">${weekdayNames[2]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-2" checked="${selectedWeekdays?.contains(2)}" />&nbsp;<label for="recurWeekdays-30-2">${weekdayNames[3]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-3" checked="${selectedWeekdays?.contains(3)}" />&nbsp;<label for="recurWeekdays-30-3">${weekdayNames[4]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-4" checked="${selectedWeekdays?.contains(4)}" />&nbsp;<label for="recurWeekdays-30-4">${weekdayNames[5]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-5" checked="${selectedWeekdays?.contains(5)}" />&nbsp;<label for="recurWeekdays-30-5">${weekdayNames[6]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-6" checked="${selectedWeekdays?.contains(6)}" />&nbsp;<label for="recurWeekdays-30-6">${weekdayNames[7]}</label></span>
-          <span><g:checkBox name="recurWeekdays-30-0" checked="${selectedWeekdays?.contains(7)}" />&nbsp;<label for="recurWeekdays-30-0">${weekdayNames[1]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-1" checked="${selectedWeekdays?.contains(1)}" value="1" />&nbsp;<label for="recurWeekdays-30-1">${weekdayNames[2]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-2" checked="${selectedWeekdays?.contains(2)}" value="2" />&nbsp;<label for="recurWeekdays-30-2">${weekdayNames[3]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-3" checked="${selectedWeekdays?.contains(3)}" value="3" />&nbsp;<label for="recurWeekdays-30-3">${weekdayNames[4]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-4" checked="${selectedWeekdays?.contains(4)}" value="4" />&nbsp;<label for="recurWeekdays-30-4">${weekdayNames[5]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-5" checked="${selectedWeekdays?.contains(5)}" value="5" />&nbsp;<label for="recurWeekdays-30-5">${weekdayNames[6]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-6" checked="${selectedWeekdays?.contains(6)}" value="6" />&nbsp;<label for="recurWeekdays-30-6">${weekdayNames[7]}</label></span>
+          <span><g:checkBox name="recurWeekdays-30-0" checked="${selectedWeekdays?.contains(7)}" value="0" />&nbsp;<label for="recurWeekdays-30-0">${weekdayNames[1]}</label></span>
         </p>
         <p>
           <label for="recurInterval-30"><g:message code="calendarEvent.recurType.30.each.label"/></label>&nbsp;
@@ -143,7 +143,7 @@
         <p>
           <label for="recurWeekdayOrd-50"><g:message code="calendarEvent.recurType.50.at.label"/></label>&nbsp;
           <g:textField name="recurWeekdayOrd-50" size="3"/>.
-          <g:select name="recurWeekdays-50" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}"/>&nbsp;
+          <g:select name="recurWeekdays-50" from="${[*1..6, 0]}" optionValue="${{weekdayNames[it + 1]}}"/>&nbsp;
           <label for="recurInterval-50"><g:message code="calendarEvent.recurType.50.each.label"/></label>&nbsp;
           <g:textField name="recurInterval-50" size="3"/>
           &nbsp;<label><g:message code="calendarEvent.recurType.50.months.label"/></label>
@@ -160,7 +160,7 @@
         <p>
           <label for="recurMonthDay-70"><g:message code="calendarEvent.recurType.70.yearlyAt.label"/></label>&nbsp;
           <g:textField name="recurWeekdayOrd-70" size="3"/>.
-          <g:select name="recurWeekdays-70" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}"/>&nbsp;
+          <g:select name="recurWeekdays-70" from="${[*1..6, 0]}" optionValue="${{weekdayNames[it + 1]}}"/>&nbsp;
           <label for="recurMonth-70"><g:message code="calendarEvent.recurType.70.inMonth.label"/></label>&nbsp;
           <g:select name="recurMonth-70" from="${1..12}" optionValue="${{monthNames[it - 1]}}"/>
         </p>
@@ -259,7 +259,7 @@
         $("#recurMonthDay-" + recurType).val($("#recurMonthDay").val());
         $("#recurWeekdayOrd-" + recurType).val($("#recurWeekdayOrd").val());
         $("#recurMonth-" + recurType).val($("#recurMonth").val());
-        if ((recurType == 30) || (recurType == 50)) {
+        if ((recurType == 30) || (recurType == 50) || (recurType == 70)) {
             wds = $("#recurWeekdays").val().split(/,/);
             n = wds.length;
             if (recurType == 30) {
@@ -267,11 +267,42 @@
                 while (++i < n) {
                     $("#recurWeekdays-30-" + wds[i]).attr("checked", true);
                 }
-            } else {
-                $("#recurWeekdays-50").val((n > 0) ? wds[0] : "");
+            } else if (n > 0) {
+                $("#recurWeekdays-" + recurType).val(wds[0]);
             }
         }
     }
+    $tabs.tabs("select", "tabs-recurType-" + recurType);
+    $("#calendarEvent-form").bind("submit", function () {
+            var recurType = $("#tabs-recurType input:radio:checked").val(),
+                val,
+                wds;
+
+            if (recurType > 0) {
+                val = $("#recurInterval-" + recurType).val();
+                $("#recurInterval").val(val ? val : 1);
+                $("#recurMonthDay").val(
+                        $("#recurMonthDay-" + recurType).val()
+                    );
+                $("#recurWeekdayOrd").val(
+                        $("#recurWeekdayOrd-" + recurType).val()
+                    );
+                $("#recurMonth").val($("#recurMonth-" + recurType).val());
+                if (recurType == 30) {
+                    wds = [];
+                    $("#tabs-recurType-30 input:checkbox:checked")
+                        .each(function () {
+                            wds.push($(this).val());
+                        });
+                    $("#recurWeekdays").val(wds.join(","));
+                } else if (recurType == 50) {
+                    $("#recurWeekdays").val($("#recurWeekdays-50").val());
+                } else if (recurType == 70) {
+                    $("#recurWeekdays").val($("#recurWeekdays-70").val());
+                }
+            }
+            return true;
+        });
 }(jQuery, SPRINGCRM));
 //]]></script>
 </content>
