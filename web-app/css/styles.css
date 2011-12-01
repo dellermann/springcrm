@@ -1394,8 +1394,37 @@ form .invoicing-items-pos {
 .ui-accordion .ui-accordion-header {
   margin-bottom: 0 !important;
 }
+.ui-tabs {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.ui-tabs .ui-widget-header {
+  background: none;
+  border: none;
+}
+.ui-tabs .ui-tabs-nav {
+  padding: 0;
+}
+.ui-tabs .ui-tabs-nav li {
+  border-left-style: none;
+  margin-right: 0;
+}
+.ui-tabs .ui-tabs-nav li:first-child {
+  border-left-style: solid;
+}
+.ui-tabs .ui-tabs-nav li a {
+  padding: .5em;
+}
 .ui-tabs-nav input {
-  float: right;
+  float: left;
+  margin: .5em 0 0 .5em;
+}
+.ui-tabs .ui-corner-all {
+  border-radius: 0;
+}
+.ui-tabs .ui-tabs-panel {
+  border: 1px solid #888;
 }
 .ui-tabs-panel p:last-child {
   margin-bottom: 0;

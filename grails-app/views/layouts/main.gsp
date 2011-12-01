@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8" />
   <title><g:layoutTitle default="SpringCRM" /></title>
-  <link rel="stylesheet" href="${resource(dir:'css', file:'styles.css')}" />
   <link rel="stylesheet" href="${resource(dir:'css/jquery/default', file:'jquery-ui-1.8.13.custom.css')}" />
+  <link rel="stylesheet" href="${resource(dir:'css', file:'styles.css')}" />
   <link rel="shortcut icon" href="${resource(dir:'img', file:'favicon.ico')}" type="image/x-icon" />
   <g:layoutHead />
   <!--<g:javascript library="application" />-->

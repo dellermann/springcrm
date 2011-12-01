@@ -280,7 +280,7 @@
                 val = "";
 
             els = this.form.elements;
-            if (this.id.match(/^([\w\-]+)-(date|time)$/)) {
+            if (this.id.match(/^([\w\-.]+)-(date|time)$/)) {
                 baseId = RegExp.$1;
                 partId = RegExp.$2;
                 otherPartField =

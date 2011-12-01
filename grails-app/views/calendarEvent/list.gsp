@@ -34,8 +34,9 @@
           <g:sortableColumn property="subject" title="${message(code: 'calendarEvent.subject.label', default: 'Subject')}" />
           <g:sortableColumn property="start" title="${message(code: 'calendarEvent.start.label', default: 'Start')}" />
           <g:sortableColumn property="end" title="${message(code: 'calendarEvent.end.label', default: 'End')}" />
-          <g:sortableColumn property="location" title="${message(code: 'calendarEvent.location.label', default: 'Location')}" />
+          <g:sortableColumn property="recurrence.type" title="${message(code: 'calendarEvent.recurrence.label')}"/>
           <g:ifModuleAllowed modules="contact"><g:sortableColumn property="organization.name" title="${message(code: 'calendarEvent.organization.label', default: 'Organization')}" /></g:ifModuleAllowed>
+          <g:sortableColumn property="location" title="${message(code: 'calendarEvent.location.label', default: 'Location')}" />
           <th></th>
         </tr>
       </thead>
@@ -46,8 +47,9 @@
           <td><g:link action="show" id="${calendarEventInstance.id}">${fieldValue(bean: calendarEventInstance, field: "subject")}</g:link></td>
           <td style="text-align: center;"><g:formatDate date="${calendarEventInstance.start}" /></td>
           <td style="text-align: center;"><g:formatDate date="${calendarEventInstance.end}" /></td>
-          <td>${fieldValue(bean: calendarEventInstance, field: "location")}</td>
+          <td><g:message message="${calendarEventInstance.recurrence}"/></td>
           <g:ifModuleAllowed modules="contact"><td><g:link controller="organization" action="show" id="${calendarEventInstance.organization?.id}">${fieldValue(bean: calendarEventInstance, field: "organization")}</g:link></td></g:ifModuleAllowed>
+          <td>${fieldValue(bean: calendarEventInstance, field: "location")}</td>
           <td>
             <g:link action="edit" id="${calendarEventInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${calendarEventInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
