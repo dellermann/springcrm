@@ -101,7 +101,7 @@
           <label for="docDate-date"><g:message code="invoice.docDate.label" default="Invoice date" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'docDate', ' error')}">
-          <g:dateInput name="docDate" value="${invoiceInstance?.docDate}" precision="day"/><br />
+          <g:dateInput name="docDate" value="${invoiceInstance?.docDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="docDate">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="docDate"><g:message error="${it}" /> </g:eachError></span>
@@ -114,7 +114,7 @@
           <label for="dueDatePayment-date"><g:message code="invoice.dueDatePayment.label" default="Due date of payment" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'dueDatePayment', ' error')}">
-          <g:dateInput name="dueDatePayment" value="${invoiceInstance?.dueDatePayment}" precision="day"/><br />
+          <g:dateInput name="dueDatePayment" value="${invoiceInstance?.dueDatePayment}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="dueDatePayment">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="dueDatePayment"><g:message error="${it}" /> </g:eachError></span>
@@ -127,7 +127,7 @@
           <label for="shippingDate-date"><g:message code="invoice.shippingDate.label" default="Invoice Shipping Date" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'shippingDate', ' error')}">
-          <g:dateInput name="shippingDate" value="${invoiceInstance?.shippingDate}" precision="day"/><br />
+          <g:dateInput name="shippingDate" value="${invoiceInstance?.shippingDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="shippingDate">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="shippingDate"><g:message error="${it}" /> </g:eachError></span>
@@ -152,7 +152,7 @@
           <label for="paymentDate-date"><g:message code="invoicingTransaction.paymentDate.label" default="Payment date" /></label>
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'paymentDate', ' error')}">
-          <g:dateInput name="paymentDate" value="${invoiceInstance?.paymentDate}" precision="day"/><br />
+          <g:dateInput name="paymentDate" value="${invoiceInstance?.paymentDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="paymentDate">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentDate"><g:message error="${it}" /> </g:eachError></span>

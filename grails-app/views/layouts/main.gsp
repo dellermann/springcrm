@@ -27,7 +27,7 @@
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery-ui-1.8.13.custom.min.js')}"></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'jquery.ui.datepicker-de.js')}"></script>
 <script type="text/javascript" src="${resource(dir:'js', file:'init.js')}"></script>
-<g:loadJsLocale/>
+<g:loadJsLocale />
 <script type="text/javascript" src="${resource(dir:'js', file:'scripts.js')}"></script>
 <script type="text/javascript">
 SPRINGCRM.page.renderFontSizeSel("${createLink(controller:'user', action:'storeSetting')}", "${userSetting(key:'fontSize')}");

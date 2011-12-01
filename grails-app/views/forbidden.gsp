@@ -10,8 +10,8 @@
     <h2><g:message code="error.forbidden.title" /></h2>
   </div>
   <section id="content">
-    <p><g:message code="error.forbidden.description"/></p>
-    <p><g:link uri="/" class="button white"><g:message code="module.menu.home" default="Home"/></g:link></p>
+    <p><g:message code="error.forbidden.description" /></p>
+    <p><g:link uri="/" class="button white"><g:message code="module.menu.home" default="Home" /></g:link></p>
   </section>
 </body>
 </html>

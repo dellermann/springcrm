@@ -28,8 +28,8 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><g:link action="print" id="${invoiceInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label"/></g:link></li>
-      <li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label"/></g:link></li>
+      <li><g:link action="print" id="${invoiceInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label" /></g:link></li>
+      <li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label" /></g:link></li>
       <g:ifModuleAllowed modules="dunning"><li><g:link controller="dunning" action="create" params="[invoice:invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createDunning" /></g:link></li></g:ifModuleAllowed>
       <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo" action="create" params="[invoice:invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createCreditMemo" /></g:link></li></g:ifModuleAllowed>
     </ul>

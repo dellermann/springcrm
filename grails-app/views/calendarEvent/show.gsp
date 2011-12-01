@@ -51,7 +51,7 @@
               <div class="label"><g:message code="calendarEvent.start.label" default="Start" /></div>
               <div class="field">
                 <g:formatDate date="${calendarEventInstance?.start}" formatName="${calendarEventInstance.allDay ? 'default.format.date' : 'default.format.datetime'}" />
-                <g:if test="${calendarEventInstance.allDay}">(<g:message code="calendarEvent.allDay.label"/>)</g:if>
+                <g:if test="${calendarEventInstance.allDay}">(<g:message code="calendarEvent.allDay.label" />)</g:if>
               </div>
             </div>
 
@@ -59,7 +59,7 @@
               <div class="label"><g:message code="calendarEvent.end.label" default="End" /></div>
               <div class="field">
                 <g:formatDate date="${calendarEventInstance?.end}" formatName="${calendarEventInstance.allDay ? 'default.format.date' : 'default.format.datetime'}" />
-                <g:if test="${calendarEventInstance.allDay}">(<g:message code="calendarEvent.allDay.label"/>)</g:if>
+                <g:if test="${calendarEventInstance.allDay}">(<g:message code="calendarEvent.allDay.label" />)</g:if>
               </div>
             </div>
           </div>
@@ -90,20 +90,20 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="calendarEvent.recurrence.type.label" /></div>
-            <div class="field"><g:message code="calendarEvent.recurrence.type.${calendarEventInstance?.recurrence.type}"/></div>
+            <div class="field"><g:message code="calendarEvent.recurrence.type.${calendarEventInstance?.recurrence.type}" /></div>
           </div>
           <g:if test="${calendarEventInstance?.recurrence.type > 0}">
           <div class="row">
             <div class="label"><g:message code="calendarEvent.recurrence.pattern.label" /></div>
-            <div class="field"><g:message message="${calendarEventInstance?.recurrence}"/></div>
+            <div class="field"><g:message message="${calendarEventInstance?.recurrence}" /></div>
           </div>
           <div class="row">
             <div class="label"><g:message code="calendarEvent.recurrence.until.label" /></div>
-            <div class="field"><g:formatDate date="${calendarEventInstance?.recurrence.until}" formatName="default.format.date"/></div>
+            <div class="field"><g:formatDate date="${calendarEventInstance?.recurrence.until}" formatName="default.format.date" /></div>
           </div>
           <div class="row">
             <div class="label"><g:message code="calendarEvent.recurrence.cnt.label" /></div>
-            <div class="field"><g:message code="calendarEvent.recurrence.cnt.text" args="${[calendarEventInstance?.recurrence.cnt]}"/></div>
+            <div class="field"><g:message code="calendarEvent.recurrence.cnt.text" args="${[calendarEventInstance?.recurrence.cnt]}" /></div>
           </div>
           </g:if>
         </div>

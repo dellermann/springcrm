@@ -104,7 +104,7 @@
           <label for="salesStart"><g:message code="service.salesStart.label" default="Sales Start" /></label>
         </div>
         <div class="field${hasErrors(bean: serviceInstance, field: 'salesStart', ' error')}">
-          <g:dateInput name="salesStart" value="${serviceInstance?.salesStart}" precision="day"/><br />
+          <g:dateInput name="salesStart" value="${serviceInstance?.salesStart}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${serviceInstance}" field="salesStart">
             <span class="error-msg"><g:eachError bean="${serviceInstance}" field="salesStart"><g:message error="${it}" /> </g:eachError></span>
@@ -117,7 +117,7 @@
           <label for="salesEnd"><g:message code="service.salesEnd.label" default="Sales End" /></label>
         </div>
         <div class="field${hasErrors(bean: serviceInstance, field: 'salesEnd', ' error')}">
-          <g:dateInput name="salesEnd" value="${serviceInstance?.salesEnd}" precision="day"/><br />
+          <g:dateInput name="salesEnd" value="${serviceInstance?.salesEnd}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${serviceInstance}" field="salesEnd">
             <span class="error-msg"><g:eachError bean="${serviceInstance}" field="salesEnd"><g:message error="${it}" /> </g:eachError></span>

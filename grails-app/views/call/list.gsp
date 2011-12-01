@@ -23,7 +23,7 @@
     <div class="flash-message message">${flash.message}</div>
     </g:if>
     <g:if test="${callInstanceList}">
-    <g:letterBar clazz="${Call}" property="subject"/>
+    <g:letterBar clazz="${Call}" property="subject" />
     <table class="content-table">
       <thead>
         <tr>
@@ -31,7 +31,7 @@
           <g:sortableColumn property="subject" title="${message(code: 'call.subject.label', default: 'Subject')}" />
           <g:ifModuleAllowed modules="contact"><g:sortableColumn property="organization.name" title="${message(code: 'call.organization.label', default: 'Organization')}" style="width: 15em;" /></g:ifModuleAllowed>
           <g:ifModuleAllowed modules="contact"><g:sortableColumn property="person.lastName" title="${message(code: 'call.person.label', default: 'Person')}" /></g:ifModuleAllowed>
-          <g:sortableColumn property="start" title="${message(code: 'call.start.label', default: 'Start')}" style="width: 9em;"/>
+          <g:sortableColumn property="start" title="${message(code: 'call.start.label', default: 'Start')}" style="width: 9em;" />
           <g:sortableColumn property="type" title="${message(code: 'call.type.label', default: 'Type')}" />
           <g:sortableColumn property="status" title="${message(code: 'call.status.label', default: 'Status')}" />
           <th></th>

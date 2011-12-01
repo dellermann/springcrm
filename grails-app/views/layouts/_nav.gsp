@@ -4,7 +4,7 @@
       <a href="#">Home</a>
       <ul>
         <li><a href="${createLink(uri: '/')}">Startseite</a></li>
-        <g:ifModuleAllowed modules="calendar"><li><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label"/></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="calendar"><li><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="call"><li><g:link controller="call"><g:message code="call.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>

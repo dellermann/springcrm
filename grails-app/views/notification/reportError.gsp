@@ -1,1 +1,1 @@
-<p><g:message code="error.exception.form.submitted"/></p>
+<p><g:message code="error.exception.form.submitted" /></p>

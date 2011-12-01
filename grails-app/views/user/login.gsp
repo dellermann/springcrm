@@ -46,7 +46,7 @@
             <div class="row">
               <div class="label"></div>
               <div class="field">
-                <g:submitButton class="button green" name="submit" value="${message(code:'default.button.login.label')}"/>
+                <g:submitButton class="button green" name="submit" value="${message(code:'default.button.login.label')}" />
               </div>
             </div>
           </fieldset>

@@ -70,7 +70,7 @@
           <label for="docDate-date"><g:message code="quote.docDate.label" default="Quote Date" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'docDate', ' error')}">
-          <g:dateInput name="docDate" value="${quoteInstance?.docDate}" precision="day"/><br />
+          <g:dateInput name="docDate" value="${quoteInstance?.docDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${quoteInstance}" field="docDate">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="docDate"><g:message error="${it}" /> </g:eachError></span>
@@ -83,7 +83,7 @@
           <label for="validUntil-date"><g:message code="quote.validUntil.label" default="Valid Until" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'validUntil', ' error')}">
-          <g:dateInput name="validUntil" value="${quoteInstance?.validUntil}" precision="day"/><br />
+          <g:dateInput name="validUntil" value="${quoteInstance?.validUntil}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${quoteInstance}" field="validUntil">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="validUntil"><g:message error="${it}" /> </g:eachError></span>
@@ -96,7 +96,7 @@
           <label for="shippingDate-date"><g:message code="quote.shippingDate.label" default="Shipping Date" /></label>
         </div>
         <div class="field${hasErrors(bean: quoteInstance, field: 'shippingDate', ' error')}">
-          <g:dateInput name="shippingDate" value="${quoteInstance?.shippingDate}" precision="day"/><br />
+          <g:dateInput name="shippingDate" value="${quoteInstance?.shippingDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${quoteInstance}" field="shippingDate">
             <span class="error-msg"><g:eachError bean="${quoteInstance}" field="shippingDate"><g:message error="${it}" /> </g:eachError></span>

@@ -7,56 +7,56 @@
 
 <body>
 <div id="main-container-header">
-  <h2><g:message code="error.exception.title"/></h2>
+  <h2><g:message code="error.exception.title" /></h2>
 </div>
 <section id="content">
-  <p><g:message code="error.exception.description"/></p>
+  <p><g:message code="error.exception.description" /></p>
   <ul>
-    <li><g:message code="error.exception.contact.email"/></li>
-    <li><g:message code="error.exception.contact.bugzilla"/></li>
-    <li><g:message code="error.exception.contact.form"/></li>
+    <li><g:message code="error.exception.contact.email" /></li>
+    <li><g:message code="error.exception.contact.bugzilla" /></li>
+    <li><g:message code="error.exception.contact.form" /></li>
   </ul>
 
   <div id="accordion">
-    <h3><a href="#"><g:message code="error.exception.details.title"/></a></h3>
+    <h3><a href="#"><g:message code="error.exception.details.title" /></a></h3>
     <div>
     	<table class="error-message">
         <tbody>
           <tr>
-            <th><g:message code="error.exception.details.number"/></th>
+            <th><g:message code="error.exception.details.number" /></th>
             <td>${request.'javax.servlet.error.status_code'}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.message"/></th>
+            <th><g:message code="error.exception.details.message" /></th>
             <td>${request.'javax.servlet.error.message'?.encodeAsHTML()}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.servlet"/></th>
+            <th><g:message code="error.exception.details.servlet" /></th>
             <td>${request.'javax.servlet.error.servlet_name'}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.uri"/></th>
+            <th><g:message code="error.exception.details.uri" /></th>
             <td>${request.'javax.servlet.error.request_uri'}</td>
           </tr>
       		<g:if test="${exception}">
           <tr>
-            <th><g:message code="error.exception.details.exceptionMessage"/></th>
+            <th><g:message code="error.exception.details.exceptionMessage" /></th>
             <td>${exception.message?.encodeAsHTML()}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.causedBy"/></th>
+            <th><g:message code="error.exception.details.causedBy" /></th>
             <td>${exception.cause?.message?.encodeAsHTML()}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.className"/></th>
+            <th><g:message code="error.exception.details.className" /></th>
             <td>${exception.className}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.lineNumber"/></th>
+            <th><g:message code="error.exception.details.lineNumber" /></th>
             <td>${exception.lineNumber}</td>
           </tr>
           <tr>
-            <th><g:message code="error.exception.details.snippet"/></th>
+            <th><g:message code="error.exception.details.snippet" /></th>
             <td class="snippet">
               <g:each var="cs" in="${exception.codeSnippet}">
                 ${cs?.encodeAsHTML()}<br />
@@ -69,13 +69,13 @@
     </div>
   
   	<g:if test="${exception}">
-    <h3><a href="#"><g:message code="error.exception.stackTrace.title"/></a></h3>
+    <h3><a href="#"><g:message code="error.exception.stackTrace.title" /></a></h3>
     <div class="stack-trace">
-      <pre><g:each in="${exception.stackTraceLines}">${it.encodeAsHTML()}<br/></g:each></pre>
+      <pre><g:each in="${exception.stackTraceLines}">${it.encodeAsHTML()}<br /></g:each></pre>
     </div>
   	</g:if>
 
-    <h3><a href="#"><g:message code="error.exception.form.title"/></a></h3>
+    <h3><a href="#"><g:message code="error.exception.form.title" /></a></h3>
     <div>
       <form id="bugreport-form" name="bugreport-form">
         <fieldset>
@@ -95,15 +95,15 @@
             <div class="label">
               <label for="description"><g:message code="error.exception.form.description.label" default="Description" /></label>
             </div>
-            <div class="field"><g:textArea name="description" cols="80" rows="5"/></div>
+            <div class="field"><g:textArea name="description" cols="80" rows="5" /></div>
           </div>
         </fieldset>
-        <p><g:message code="error.exception.form.privacy"/></p>
-        <button type="button" class="button green"><g:message code="error.exception.form.submit" default="Report error"/></button>
+        <p><g:message code="error.exception.form.privacy" /></p>
+        <button type="button" class="button green"><g:message code="error.exception.form.submit" default="Report error" /></button>
       </form>
     </div>
 
-    <h3><a href="#"><g:message code="error.exception.reportData.title"/></a></h3>
+    <h3><a href="#"><g:message code="error.exception.reportData.title" /></a></h3>
     <div>
       <pre id="report-data">&lt;?xml version="1.0"?&gt;
       

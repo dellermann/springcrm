@@ -23,7 +23,7 @@
     <div class="flash-message message">${flash.message}</div>
     </g:if>
     <g:if test="${noteInstanceList}">
-    <g:letterBar clazz="${Note}" property="title"/>
+    <g:letterBar clazz="${Note}" property="title" />
     <table class="content-table">
       <thead>
         <tr>

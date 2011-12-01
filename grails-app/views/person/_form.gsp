@@ -104,7 +104,7 @@
           <label for="birthday"><g:message code="person.birthday.label" default="Birthday" /></label>
         </div>
         <div class="field${hasErrors(bean: personInstance, field: 'birthday', ' error')}">
-          <g:dateInput name="birthday" value="${personInstance?.birthday}" precision="day"/><br />
+          <g:dateInput name="birthday" value="${personInstance?.birthday}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${personInstance}" field="birthday">
             <span class="error-msg"><g:eachError bean="${personInstance}" field="birthday"><g:message error="${it}" /> </g:eachError></span>

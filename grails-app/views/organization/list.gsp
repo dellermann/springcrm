@@ -31,7 +31,7 @@
     <div class="flash-message message">${flash.message}</div>
     </g:if>
     <g:if test="${organizationInstanceList}">
-    <g:letterBar clazz="${Organization}" property="name" where='${params.type ? "o.recType in (${params.type}, 3)" : ""}'/>
+    <g:letterBar clazz="${Organization}" property="name" where='${params.type ? "o.recType in (${params.type}, 3)" : ""}' />
     <table class="content-table">
       <thead>
         <tr>

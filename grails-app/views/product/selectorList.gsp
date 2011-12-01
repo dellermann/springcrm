@@ -1,11 +1,11 @@
 <%@ page import="org.amcworld.springcrm.Product" %>
 <div class="selector-toolbar">
   <div class="selector-letter-bar">
-    <g:letterBar clazz="${Product}" property="name" numLetters="3" separator="-" where="name like '%${params.search ?: ''}%'"/>
+    <g:letterBar clazz="${Product}" property="name" numLetters="3" separator="-" where="name like '%${params.search ?: ''}%'" />
   </div>
   <div class="selector-toolbar-search">
     <g:form action="selectorList">
-      <g:textField name="search" value="${params.search ?: message(code:'default.search.label', default:'Search...')}" class="search-field"/>
+      <g:textField name="search" value="${params.search ?: message(code:'default.search.label', default:'Search...')}" class="search-field" />
       <button type="submit" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
     </g:form>
   </div>

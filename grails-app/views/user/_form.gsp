@@ -123,7 +123,7 @@
         <label for="admin"><g:message code="user.admin.label" default="Administrator" /></label>
       </div>
       <div class="field${hasErrors(bean: userInstance, field: 'admin', ' error')}">
-        <g:checkBox name="admin" value="${userInstance?.admin}"/><br />
+        <g:checkBox name="admin" value="${userInstance?.admin}" /><br />
         <g:hasErrors bean="${userInstance}" field="admin">
           <span class="error-msg"><g:eachError bean="${userInstance}" field="admin"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
@@ -138,7 +138,7 @@
                   from="${Modules.moduleNames}"
                   valueMessagePrefix="module"
                   value="${userInstance?.allowedModulesAsList}"
-                  multiple="true" size="7"/><br />
+                  multiple="true" size="7" /><br />
         <g:hasErrors bean="${userInstance}" field="allowedModulesAsList">
           <span class="error-msg"><g:eachError bean="${userInstance}" field="allowedModulesAsList"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>

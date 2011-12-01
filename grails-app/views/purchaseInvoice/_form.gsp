@@ -78,7 +78,7 @@
           <label for="docDate-date"><g:message code="purchaseInvoice.docDate.label" default="Doc Date" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'docDate', ' error')}">
-          <g:dateInput name="docDate" value="${purchaseInvoiceInstance?.docDate}" precision="day"/><br />
+          <g:dateInput name="docDate" value="${purchaseInvoiceInstance?.docDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.required" default="required" /></span><span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="docDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="docDate"><g:message error="${it}" /> </g:eachError></span>
@@ -91,7 +91,7 @@
           <label for="dueDate-date"><g:message code="purchaseInvoice.dueDate.label" default="Due Date" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'dueDate', ' error')}">
-          <g:dateInput name="dueDate" value="${purchaseInvoiceInstance?.dueDate}" precision="day"/><br />
+          <g:dateInput name="dueDate" value="${purchaseInvoiceInstance?.dueDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.required" default="required" /></span><span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="dueDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="dueDate"><g:message error="${it}" /> </g:eachError></span>
@@ -104,7 +104,7 @@
           <label for="paymentDate-date"><g:message code="purchaseInvoice.paymentDate.label" default="Payment Date" /></label>
         </div>
         <div class="field${hasErrors(bean: purchaseInvoiceInstance, field: 'paymentDate', ' error')}">
-          <g:dateInput name="paymentDate" value="${purchaseInvoiceInstance?.paymentDate}" precision="day"/><br />
+          <g:dateInput name="paymentDate" value="${purchaseInvoiceInstance?.paymentDate}" precision="day" /><br />
           <span class="info-msg"><g:message code="default.format.date.label" /></span>
           <g:hasErrors bean="${purchaseInvoiceInstance}" field="paymentDate">
             <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="paymentDate"><g:message error="${it}" /> </g:eachError></span>

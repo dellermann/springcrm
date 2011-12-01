@@ -87,7 +87,7 @@
         <div class="fieldset-content">
           <div class="row">
             <div class="label"><g:message code="user.admin.label" default="Administrator" /></div>
-            <div class="field"><g:formatBoolean boolean="${userInstance?.admin}"/></div>
+            <div class="field"><g:formatBoolean boolean="${userInstance?.admin}" /></div>
           </div>
           <div class="row">
             <div class="label"><g:message code="user.allowedModules.label" default="Allowed modules" /></div>
@@ -95,7 +95,7 @@
             <g:if test="${userInstance?.allowedModulesAsList}">
               <ul class="compact-list">
               <g:each in="${userInstance?.allowedModulesAsList}">
-                <li><g:message code="module.${it}"/></li>
+                <li><g:message code="module.${it}" /></li>
               </g:each>
               </ul>
             </g:if>
