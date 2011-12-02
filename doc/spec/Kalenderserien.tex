@@ -1,0 +1,1168 @@
+%
+% Kalenderserien.tex
+%
+% $Id: Kalenderserien.tex 474 2006-06-07 17:15:29Z danny $
+%
+% Copyright (c) 1998-2003 AMC World Technologies
+% Fischerinsel 4, D-10179 Berlin, Deutschland
+% All Rights Reserved.
+%
+% This software is the confidential and proprietary information of AMC World
+% Technologies ("Confidential Information"). You shall not disclose such
+% Confidential Information and shall use it only in accordance with the terms
+% of the licence agreement you entered into with AMC World Technologies.
+%
+
+
+%================================================
+%
+%
+% Praeambel
+%
+%
+%================================================
+\documentclass[a4paper]{article}
+
+%--------------------------------------
+%
+% Packages
+%
+%--------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{ngerman}
+\usepackage{tabularx}
+
+
+%--------------------------------------
+%
+% Kommandos
+%
+%--------------------------------------
+\newcommand*{\dayf}{\mathrm{day}}
+\newcommand*{\monf}{\mathrm{mon}}
+\newcommand*{\yearf}{\mathrm{year}}
+\newcommand*{\wdf}{\mathrm{wd}}
+\newcommand*{\weekf}{\mathrm{week}}
+\newcommand*{\womf}{\mathrm{wom}}
+\newcommand*{\calf}{\mathrm{cal}}
+\newcommand*{\datev}[1]{\texttt{`#1'}}
+\newcommand*{\gff}{\mathrm{gf}}
+\newcommand*{\sff}{\mathrm{sf}}
+\newcommand*{\addff}{\boxplus}
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\numberwithin{equation}{section}
+\newtheorem{dfn}{Definition}
+\newtheorem{thm}{Satz}
+
+
+%--------------------------------------
+%
+% Laengen
+%
+%--------------------------------------
+\newlength{\widthTab}  % Breite von bestimmten Tabellen
+
+
+%--------------------------------------
+%
+% Titel
+%
+%--------------------------------------
+\title{Berechnung von Kalenderserien}
+\author{Daniel Ellermann}
+\date{30. Oktober 2003}
+
+
+%--------------------------------------
+%
+% Dokumentstart
+%
+%--------------------------------------
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+
+%================================================
+%
+%
+% Inspiration
+%
+%
+%================================================
+\section{Inspiration}
+Die Berechnung und Verwaltung von Kalenderserien ist eine z. T. nicht triviale
+Aufgabe. sYnergy unterst"utzt die wichtigsten Muster f"ur Terminserien, ohne
+dabei den Benutzer unn"otig zu verwirren. Es bestand der Anspruch, f"ur
+s"amtliche zur Verf"ugung stehenden Serienmuster eine Formel zur Berechnung
+des Zeitpunkts bei einer gegebenen Anzahl $n$ von Terminen der Serie zu haben.
+
+Weiterhin bietet dieser Artikel wertvolle Formeln, die f"ur die
+Kalenderberechnung von ausschlaggebender Bedeutung sind.
+
+
+
+%================================================
+%
+%
+% Serienmuster
+%
+%
+%================================================
+\section{Serienmuster}
+Die definierten Serientypen in sYnergy finden Sie in Tabelle \ref{tab:pattern}
+auf Seite \pageref{tab:pattern}. Jedes Muster hat die Form
+
+\vspace{8pt}
+\texttt{fall d m y wd [ ursprung ]}
+\vspace{8pt}
+
+\noindent Dabei stellt \texttt{fall} die Fallnummer nach
+Tabelle~\ref{tab:pattern}, Spalte ''Fall'' dar, sowie \texttt{d} das
+Tagesmuster, \texttt{m} das Monatsmuster, \texttt{y} das Jahresmuster und
+\texttt{wd} das Wochentagsmuster.
+
+Jedes dieser Muster besteht aus einem Basiswert und einem optionalen
+Qualifizierer. F"ur jedes der vier Muster (Tagesmuster, Monatsmuster,
+Jahresmuster und Wochentagsmuster) muss genau einer der folgenden m"oglichen
+Basiswerte angegeben werden:
+\begin{itemize}
+\item \texttt{*} (beliebiger Wert). Das Feld passt auf jeden beliebigen Wert.
+\item \texttt{\textit{x}} (exakter Wert). Das Feld passt dann und nur dann, wenn
+  es den Wert \texttt{\textit{x}} hat.
+\item \texttt{\textit{a}-\textit{b}} (Bereichswert). Repr"asentiert Werte im
+  Bereich von \texttt{\textit{a}} bis \texttt{\textit{b}} (beide
+  eingeschlossen).
+\item \texttt{\textit{a}, \textit{b}, \ldots} (Aufz"ahlungswert). Repr"asentiert
+  die Werte \texttt{\textit{a}}, \texttt{\textit{b}} usw.
+\item \texttt{+\textit{x}} bzw. \texttt{-\textit{x}} (Relativwert). Stellt einen
+  relativen Wert zu einem gegebenen Ursprung \texttt{\textit{ursprung}} dar, der
+  am Ende des Musters angegeben wird. Wird kein Ursprung spezifiziert, wird der
+  1. Januar angenommen. Beispiel: Das Muster \texttt{+49 * * * E} mit \texttt{E}
+  als Kennzeichnung des Ostersonntags (Eastern) als Ursprung repr"asentiert den
+  Pfingstsonntag, der 49 Tage nach dem Ostersonntag liegt. Relativwerte sind nur
+  im Tages- und Monatsmuster erlaubt.
+\end{itemize}
+
+\noindent Dar"uber hinaus kann jeder dieser Basiswerte mit den folgenden
+optionalen Qualifizierern gekennzeichnet werden. In den nachfolgenden
+Definitionen steht \texttt{\textit{b}} f"ur einen Basiswert.
+\begin{itemize}
+\item \texttt{\textit{b}/\textit{n}} (Schrittwert-Qualifizierer). Das Feld passt
+  auf jedes \texttt{\textit{n}}. Vorkommen des Wertes \texttt{\textit{b}}. Dabei
+  darf \texttt{\textit{b}} allerdings kein Relativwert sein. Beispiel: der Wert
+  \texttt{*/2} im Monatsfeld bedeutet aller zwei Monate; der Wert \texttt{1,3/3}
+  im Wochentagsfeld bedeutet Montag und Mittwoch aller drei Wochen.
+\item \texttt{\textit{b}:\textit{y}} (Ordinalwert). Bedeutet den
+  \texttt{\textit{y}}. Wert \texttt{\textit{b}}. Ordinalwerte sind nur im
+  Wochentagsfeld erlaubt. M"oglich sind auch negative Werte f"ur
+  \texttt{\textit{y}}, wobei diese dann vom Ende eines Monats gerechnet werden.
+  Beispiel: der Wert \texttt{4:2} stellt den zweiten Donnerstag dar, der Wert
+  \texttt{2:-1} bedeutet den letzten Dienstag im Monat. Momentan werden bei
+  Ordinalwerten als zugeh"origer Basiswert nur \texttt{*} und ein exakter Wert
+  unterst"utzt.
+\end{itemize}
+
+\setcounter{footnote}{1}
+\begin{table}[ht]
+\caption{Muster f"ur Terminserien}
+\label{tab:pattern}\begin{tabularx}{\textwidth}{ccXc}
+\hline
+Fall & Muster & Beschreibung & Intervall $\varepsilon$ \\
+\hline
+0 & - & Sonderf"alle, z. B. Feiertage & - \\
+100 & \texttt{*/$n$ * * *} & aller $n$ Tage & $n$ Tag(e) \\
+200 & \texttt{* * * 1-5} & jeden Arbeitstag & - \\
+300 & \texttt{* * * $ws$/$w$} & an den Wochentagen $ws$ aller $w$ Wochen & - \\
+400 & \texttt{$d$ */$n$ * *} & am $d$. Tag jedes $n$. Monats & $n$ Monat(e) \\
+500 & \texttt{* */$n$ * $ws$:$w$} & am $w$. Wochentag $ws$ jedes $n$. Monats &
+  $n$ Monat(e)\footnotemark[\ref{ft:oneMonth}] \\
+600 & \texttt{$d$ $m$ * * *} & am $d$. des Monats $m$ (Geburtstagsserie) &
+  1 Jahr \\
+700 & \texttt{* $m$ * $ws$:$w$} & am $w$. Wochentag $ws$ im Monat $m$
+  (Muttertagsserie) & 1 Jahr\footnotemark[\ref{ft:oneMonth}] \\
+\hline
+\end{tabularx}\end{table}
+\footnotetext{\label{ft:oneMonth}Im Monat des Vorkommens des Serienelements ist
+  der $w$. Wochentag zu w"ahlen.}
+
+\label{badInterval}
+Bei den Intervallen $n$ Monat(e) bzw. 1 Jahr ist zu beachten, dass sich diese
+Werte programmatisch schlecht abbilden lassen. Eine Umrechnung in einen
+Millisekundenwert ist nicht m"oglich, da die L"ange eines Monats bzw. eines
+Jahres variieren kann.
+
+
+
+%================================================
+%
+%
+% Voraussetzungen
+%
+%
+%================================================
+\section{Voraussetzungen}
+In den nachfolgenden Berechnungen seien folgende Definitionen gegeben.
+
+
+%--------------------------------------
+%
+% Wochendaten
+%
+%--------------------------------------
+\subsection{Wochendaten}
+F"ur Daten die Woche betreffend, definieren wir folgendes:
+\begin{dfn}[Wochenl"ange]
+Die Anzahl der Tage in einer Woche bezeichnen wir mit $T$. Es gilt:
+\begin{equation}T := 7\end{equation}
+\end{dfn}
+
+\begin{dfn}[Wochentage]\label{def:weekdays}
+  Die Wochentage werden durch Indizes beginnend mit null beschrieben und mit
+  $d_w$ bezeichnet. Sie sind wie folgt definiert:
+  \par
+  \begin{table}[ht]
+  \caption{Wochentage}\label{tab:weekDays}
+  \begin{tabularx}{\textwidth}{X|ccccccc}
+    \hline
+    Wochentag & Montag & Dienstag & Mittwoch & Donnerstag \\
+    Index $d_w$ & 1 & 2 & 3 & 4 \\
+    \hline
+    Wochentag & Freitag & Samstag & Sonntag & \\
+    Index $d_w$ & 5 & 6 & 0 & \\
+    \hline
+  \end{tabularx}\end{table}
+  \par
+  \noindent Es gilt:
+  \begin{equation}d_w \in \mathbb{N},\ 0 \le d_w < T\end{equation}
+  \par
+  \noindent Die Menge aller Wochentage wird mit $D_w$ bezeichnet und es gilt:
+  \begin{equation}D_w := \{ x : x = d_w(i) \},\ 0 \le i < T\end{equation}
+\end{dfn}
+
+\begin{dfn}[Wochenanfang]
+  Der Index des Wochentages des ersten Tags in der Woche wird mit $\eta$
+  bezeichnet und es gilt:
+  \begin{equation}\eta \in D_w\end{equation}
+  In Deutschland gilt $\eta := 1$, in Gro"sbritannien gilt
+  $\eta := 0$.
+\end{dfn}
+
+
+%--------------------------------------
+%
+% Terminserien
+%
+%--------------------------------------
+\subsection{Terminserien}
+F"ur die betrachteten Terminserien definieren wir folgendes:
+
+\begin{dfn}[Anzahl der Elemente einer Terminserie]\label{def:numOfElements}
+  Die vorgegebene Anzahl von Terminen innerhalb einer Terminserie bezeichnen wir
+  mit $n$. Es gilt:
+  \begin{equation}n \in \mathbb{N}, n > 0\end{equation}
+\end{dfn}
+
+\begin{dfn}[Anfangs- und Endpunkt einer Terminserie]
+  Die beiden benutzerdefinierten Anfangs- und Endzeitpunkte der Serie werden mit
+  $t_s$ bzw. $t_e$ bezeichnet. Diese Zeitpunkte m"ussen nicht zur Serie selbst
+  geh"oren.
+\end{dfn}
+
+\begin{dfn}[Kalibrierter Startpunkt]
+  Der kalibrierte Startpunkt einer Terminserie wird mit $t'_s$ bezeichnet. Dies
+  kann entweder das Startdatum der Terminserie sein, oder es handelt sich dabei
+  um einen Betrachtungszeitpunkt. In jedem Fall muss $t'_s$ selbst ein Element
+  der Serie sein.
+\end{dfn}
+
+\begin{dfn}[Terminserie als Folge]\label{def:seriesAsSeries}
+  Eine Terminserie stellt eine Folge $s_n$ von Serienelementen dar, f"ur die
+  gilt:
+  \begin{eqnarray}
+    s_1 & := & t'_s \\
+    s_{i+1} & := & s_i + \varepsilon
+  \end{eqnarray}
+\end{dfn}
+
+Manchmal ben"otigen wir auch die Serienelemente in der Mengenschreibweise und
+beschreiben das durch folgende Definition:
+\begin{dfn}[Serienelementmenge]
+  Die geordnete Menge aller Elemente einer Serie bezeichnen wir als $\vec{S}$
+  und es gilt:
+  \begin{equation}
+    \vec{S} := \{ x : x = s_i \} \text{ mit } 0 < i \le n
+  \end{equation}
+\end{dfn}
+
+
+%--------------------------------------
+%
+% Mengen
+%
+%--------------------------------------
+\subsection{Mengen}
+Es seien die folgenden Mengen definiert:
+\begin{dfn}
+  Die Menge der Tage $M_d$ in einem Monat ist wie folgt definiert:
+  \begin{equation}
+    M_d := \{ q : q \in \mathbb{N},\ 1 \le q \le 31 \}
+  \end{equation}
+\end{dfn}
+
+\begin{dfn}
+  Die Menge der Monate $M_m$ in einem Jahr ist wie folgt definiert:
+  \begin{equation}
+    M_m := \{ q : q \in \mathbb{N},\ 1 \le q \le 12 \}
+  \end{equation}
+\end{dfn}
+
+\begin{dfn}
+  Die Menge der Jahre $M_y$ ist wie folgt definiert:
+  \begin{equation}M_y := \mathbb{Z} \backslash 0\end{equation}
+\end{dfn}
+
+\begin{dfn}
+  Die Menge der Wochen $M_w$ in einem Jahr ist wie folgt definiert:
+  \begin{equation}
+    M_w := \{ q : q \in \mathbb{N},\ 1 \le q \le 53 \}
+  \end{equation}
+\end{dfn}
+
+\begin{dfn}
+  Die Menge der Wochen $M_{wom}$ in einem Monat ist wie folgt definiert:
+  \begin{equation}
+    M_{wom} := \{ q : q \in \mathbb{N},\ 1 \le q \le 5 \}
+  \end{equation}
+\end{dfn}
+
+\noindent Die Menge der Wochentage wurde bereits in
+Definition~\ref{def:weekdays} auf Seite~\pageref{def:weekdays} festgelegt.
+
+
+%--------------------------------------
+%
+% Funktionen
+%
+%--------------------------------------
+\subsection{Funktionen}
+Wir ben"otigen eine Funktion, die den Index eines Wochentages $x \in D_w$ in
+einer geordneten Menge $\vec{M}$ von Wochentagsindizes sucht. Dabei gelte
+$\forall\ p \in \vec{M} : p \in D_w$. Folgende Definition soll das liefern:
+\begin{dfn}
+\begin{equation}
+  p(\vec{M}, x) := \left\{\begin{array}{ll}
+  \exists\ q_i \in \vec{M} \textrm{ mit } q_i = x : & i \\
+  \nexists\ q_i \in \vec{M} \textrm{ mit } q_i = x : & 0 \\
+  \end{array}\right.,\quad
+  1 \le i \le ||\vec{M}||
+\end{equation}
+\end{dfn}
+\noindent Beispiel: sei $\vec{M} = \{2, 4, 5, 6\}$, dann gilt
+$p(\vec{M}, 5) = 3$ und $p(\vec{M}, 1) = 0$.
+
+Es seien eine Reihe von Funktionen gegeben, die bestimmte Elemente eines
+gegebenen Datums $d$ extrahieren.
+\begin{dfn}[Datumsfunktionen]
+  Zur Extraktion eines bestimmten Kalendarelements eines gegebenen Datums $d$
+  sind die Funktionen in Tabelle~\ref{tab:dateFunctions} auf
+  Seite~\pageref{tab:dateFunctions} definiert.
+  \begin{table}[tp]
+  \caption{Datumsfunktionen}\label{tab:dateFunctions}
+  \begin{tabularx}{\textwidth}{cXl}
+  \hline
+  Funktion & Beschreibung & Beispiel \\
+  \hline
+  $\dayf(d)$ & berechnet den Tag von $d$. Es gilt $\dayf(d) \in M_d$. &
+    $\dayf(d) = 13$ \\
+  $\monf(d)$ & berechnet den Monat von $d$. Es gilt $\monf(d) \in M_m$. &
+    $\monf(d) = 5$ \\
+  $\yearf(d)$ & berechnet das Jahr von $d$. Es gilt $\yearf(d) \in M_y$ &
+    $\yearf(d) = 2002$. \\
+  $\wdf(d)$ & berechnet den Wochentagsindex von $d$. Es gilt $\wdf(d) \in D_w$. &
+    $\wdf(d) = 1$ \\
+  $\weekf(d)$ & berechnet die Wochennummer von $d$. Es gilt $\weekf(d) \in M_w$.
+    & $\weekf(d) = 20$ \\
+  $\womf(d)$ & berechnet die Wochennummer von $d$ innerhalb eines Monats. Es
+    gilt: $\womf(d) \in M_{wom}$. & $\womf(d) = 3$ \\
+  \hline
+  \multicolumn{3}{c}{Die Beispiele setzen $d = \datev{13.05.2002}$ voraus.}
+  \end{tabularx}\end{table}
+\end{dfn}
+
+Weiterhin brauchen wir eine Funktion, die aus angegebenen Kalenderelementen das
+zugeh"orige Datum errechnet:
+\begin{dfn}[Kalenderfunktion]
+  Die Funktion
+  \begin{equation*}\calf(d, m, y, wd, week, wom)\end{equation*}
+  berechnet aus den gegebenen, optionalen Elementen Tag im Monat $d \in M_d$,
+  Monat $m \in M_m$, Jahr $y \in M_y$, Wochentag $wd \in D_w$, Wochennummer
+  $week \in M_w$ und Wochenummer innerhalb eines Monats $wom \in M_{wom}$ das
+  zugeh"orige Datum. Dabei k"onnen Elemente, die nicht von Bedeutung sind,
+  weggelassen werden, wobei die Anzahl der Kommata unver"anderlich bleiben muss.
+  Es gilt:
+  \begin{multline}
+  q = \calf(d, m, y, wd, week, wom) \Leftrightarrow \\
+    (\exists\ d \Rightarrow \dayf(q) = d)\ \wedge \\
+    (\exists\ m \Rightarrow \monf(q) = m)\ \wedge \\
+    (\exists\ y \Rightarrow \yearf(q) = y)\ \wedge \\
+    (\exists\ wd \Rightarrow \wdf(q) = wd)\ \wedge \\
+    (\exists\ week \Rightarrow \weekf(q) = week)\ \wedge \\
+    (\exists\ wom \Rightarrow \womf(q) = wom) \\
+  \end{multline}
+\end{dfn}
+\noindent Beispiel: $\calf(13, 5, 2002, , ,) = \datev{13.05.2002}$.
+
+Zum allgemeinen Arbeiten mit Kalenderfeldern wollen wir noch zwei Funktionen
+definieren, die den Wert eines Kalenderfeldes liefern und setzen, sowie eine
+Funktion zum Ver"andern eines Kalenderfeldes.
+\begin{dfn}[lesender Kalenderfeldzugriff]
+  Die Funktion $\gff$ (f"ur \emph{get calendar field}) ermittelt den Wert eines
+  Kalenderfeldes $f$ in einem Datum $d$. Sie ist wie folgt definiert:
+  \begin{equation}
+    \gff(f, d) := f(d),\ f \in \{\dayf, \monf, \yearf, \wdf, \weekf, \womf\}
+  \end{equation}
+\end{dfn}
+\noindent Beispiel: $\gff(\monf, \datev{13.05.2002}) = 5$.
+
+\begin{dfn}[schreibender Kalenderfeldzugriff]
+  Die Funktion $\sff$ (f"ur \emph{set calendar field}) setzt den Wert eines
+  Kalenderfeldes
+  \begin{equation*}
+    f \in \{\dayf, \monf, \yearf, \wdf, \weekf, \womf\}
+  \end{equation*}
+  in einem Datum $d$ auf den Wert $q$. Sie ist wie folgt definiert:
+  \begin{equation}
+    \sff(f, d, q) := \left\{\begin{array}{ll}
+    f = \dayf : & \calf(q, \monf(d), \yearf(d), , , ) \\
+    f = \monf : & \calf(\dayf(d), q, \yearf(d), , , ) \\
+    f = \yearf : & \calf(\dayf(d), \monf(d), q, , ,) \\
+    f = \wdf : & \calf(, \monf(d), \yearf(d), q, \weekf(d), ) \\
+    f = \weekf : & \calf(, \monf(d), \yearf(d), \wdf(d), q, ) \\
+    f = \womf : & \calf(, \monf(d), \yearf(d), \wdf(d), , q) \\
+    \end{array}\right.
+  \end{equation}
+\end{dfn}
+\noindent Beispiel: $\sff(\monf, \datev{13.05.2002}, 8) = \datev{13.08.2002}$.
+
+\begin{dfn}["andernder Kalenderfeldzugriff]
+  Die Funktion $\addff$ "andert den Wert eines Kalenderfeldes $f \in \{\dayf,
+  \monf, \yearf, \wdf, \weekf, \womf\}$ in einem Datum $d$ um den Wert $q$. Sie
+  ist wie folgt definiert:
+  \begin{equation}
+    \addff(f, d, q) := \sff(f, d, \gff(f, d) + q)
+  \end{equation}
+\end{dfn}
+
+
+%--------------------------------------
+%
+% Wichtige Feststellungen
+%
+%--------------------------------------
+\subsection{Wichtige Feststellungen}
+Resultierend aus den vorhergehenden Definitionen k"onnen wir eine Reihe von
+Feststellungen notieren.
+
+\begin{thm}[Ende einer Terminserie]\label{thm:endOfSeries}
+  Das Ende einer Terminserie $t_e$ ergibt sich wie folgt:
+  \begin{equation}t_e := s_n\end{equation}
+\end{thm}
+\begin{proof}[Beweis]
+  Nach Definition~\ref{def:numOfElements} ist $n$ die Anzahl der Termine in der
+  Serie, d. h. die Serie endet nach $n$ Serienelementen. Da wir nach
+  Definition~\ref{def:seriesAsSeries} eine Serie als Folge auf\mbox{}fassen,
+  muss das letzte Element $s_n$ sein.
+\end{proof}
+
+\begin{thm}[Unechte Terminserie]
+  Eine Terminserie mit nur einem Element bezeichnen wir als ``unechte
+  Terminserie''. Es gilt:
+  \begin{equation}t'_s = t_e \Leftrightarrow n = 1\end{equation}
+\end{thm}
+\begin{proof}[Beweis]
+  Wir beweisen zuerst $t'_s = t_e \Rightarrow n = 1$. Laut
+  Definition~\ref{def:seriesAsSeries} ist $s_1 = t'_s$. Wenn nun gilt
+  $t'_s = t_e$, dann muss auch $t_e = s_1$ gelten, d. h. $s_n$ mit $n = 1$.
+  \par
+  Nun beweisen wir $n = 1 \Rightarrow t'_s = t_e$. Wenn $n = 1$, dann muss
+  $s_n = s_1 = t'_s$ gelten nach Definition~\ref{def:seriesAsSeries}. Nun gilt
+  aber auch $s_n = s_1 = t_e$ nach Satz~\ref{thm:endOfSeries}. Daraus folgt
+  $t'_s = t_e$.
+\end{proof}
+
+Die Betrachtung der Serienmuster 200 und 300 ist gleich, wenn man den folgenden
+Zusammenhang ber"ucksichtigt:
+\begin{equation}
+  \label{eqn:200to300}\texttt{* * * 1-5}\ \hat{=}\ \texttt{* * * 1,2,3,4,5/1}
+\end{equation}
+Wir k"onnen uns damit auf die Betrachtung von Fall 300 beschr"anken. Die
+angegebenen Wochentage $ws$ k"onnen wir als eine geordnete Menge $\vec{M}$
+auf\mbox{}fassen, die den Index jedes Wochentags aus $ws$ enth"alt. Die Angabe
+$ws$ kann sowohl in aufz"ahlender als auch in Bereichsschreibweise gemacht
+werden. Die Wandlung der aufz"ahlende Schreibweise in die Menge $\vec{M}$ ist
+trivial. F"ur die Bereichsschreibweise $a$-$b$ gilt:
+\begin{equation}\label{eqn:range}
+  \vec{M} = \{ p\,|\ a \le p \le b \}
+\end{equation}
+Um den Wochenbeginn zu ber"ucksichtigen, muss $\vec{M}$ noch in eine kanonische
+Form $\vec{\Theta}$ "uberf"uhrt werden:
+\begin{eqnarray}
+  \vec{\Theta} & = & \forall\ i,\ 1 \le i \le ||\vec{M}||:
+  \left\{\begin{array}{ll}
+  \vec{M}_i < \eta : & \vec{\Theta}_i = \vec{M}_i + T \\
+  \vec{M}_i \ge \eta : & \vec{\Theta}_i = \vec{M}_i \\
+  \end{array}\right. \\
+  k & = & ||\vec{\Theta}|| = ||\vec{M}||
+\end{eqnarray}
+Dadurch (da $\vec{\Theta}$ geordnet ist) entsteht eine Menge mit Wochentagen,
+die alle gr"o"ser oder gleich dem Wochenbeginn $\eta$ sind. Au"serdem haben wir
+$k$ ermittelt, das die Anzahl der Wochentage in der Menge $\vec{\Theta}$, also
+die Kardinalit"at von $\vec{\Theta}$ bezeichnet.
+
+
+
+%================================================
+%
+%
+% Pruefung auf ein Serienelement
+%
+%
+%================================================
+\section{Pr"ufung auf ein Serienelement}
+\noindent Dieser Abschnitt beschreibt, wie gepr"uft werden kann, ob ein
+gegebenens Datum $d$ Element einer Terminserie $\vec{S}$ ist. Dazu wird in
+folgender Reihenfolge vorgegangen:
+\begin{enumerate}
+\item Pr"ufung des Basiswertes jedes Musterfeldes in folgender Reihenfolge:
+  \begin{enumerate}
+  \item Pr"ufung von einfachen Werten, d. h. \texttt{*} und exakten Werten
+  \item Pr"ufung von Aufz"ahlungs- und Bereichswerten
+  \item Pr"ufung von Relativwerten
+  \end{enumerate}
+  Anschlie"send sollte jedes Musterfeld durch eine der o. g. Pr"ufungen
+  abgedeckt worden sein.
+\item Pr"ufung von optionalen Qualifizierern in folgender Reihenfolge:
+  \begin{enumerate}
+  \item Pr"ufung von Schrittwerten
+  \item Pr"ufung von Ordinalwerten
+  \end{enumerate}
+\end{enumerate}
+
+
+\subsection{Pr"ufung von Basiswerten}
+\subsubsection{Pr"ufung einfacher Werte}
+Einfache Werte, d. h. \texttt{*} und exakte Werte werden nach folgenden Regeln
+gepr"uft:
+\begin{enumerate}
+\item Ist der Basiswert \texttt{*} passt er auf jeden beliebigen Wert.
+\item Ist der Basiswert der exakte Wert \texttt{\textit{x}}, passt das jeweilige
+  Feld von $d$ dann und nur dann, wenn gilt:
+  \begin{itemize}
+  \item Im Tagesmuster: $\dayf(d) = x$
+  \item Im Monatsmuster: $\monf(d) = x$
+  \item Im Jahresmuster: $\yearf(d) = x$
+  \item Im Wochentagsmuster: $\wdf(d) = x$
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{Pr"ufung von Aufz"ahlungs- und Bereichswerten}
+Nach~(\ref{eqn:range}) wandeln wir zun"achst Bereichswerte in Aufz"ahlungswerte
+um und arbeiten hinfort mit einer Menge $\vec{M}$ von Werten. Das jeweilige Feld
+von $d$ passt dann und nur dann, wenn gilt:
+\begin{itemize}
+\item Im Tagesmuster: $\dayf(d) \in \vec{M}$
+\item Im Monatsmuster: $\monf(d) \in \vec{M}$
+\item Im Jahresmuster: $\yearf(d) \in \vec{M}$
+\item Im Wochentagsmuster: $\wdf(d) \in \vec{M}$
+\end{itemize}
+
+\subsubsection{Pr"ufung von Relativwerten}
+Zun"achst muss das Vorkommen des Ursprungs $d_U$ im Jahr $\yearf(d)$ ermittelt
+werden. Das jeweilige Feld von $d$ passt dann und nur dann, wenn gilt:
+\begin{itemize}
+\item Im Tagesmuster: $d = \calf(\dayf(d_U) + x, \monf(d_U), \yearf(d_U), , ,)$
+\item Im Monatsmuster: $d = \calf(\dayf(d_U), \monf(d_U) + x, \yearf(d_U), , ,)$
+\end{itemize}
+
+
+\subsection{Pr"ufung von Qualifizierern}
+Sind Qualifizierer angegeben, werden die gepr"uften Basiswerte damit verkn"upft
+und gegen $d$ gepr"uft.
+
+\subsubsection{Pr"ufung von Schrittwerten}
+In Abh"angigkeit vom Musterfeld werden die Schrittwerte wie folgt gepr"uft:
+\begin{itemize}
+\item Tagesmuster. Zun"achst wird die Differenz $\Delta$ zwischen $d$ und $t'_s$
+  in Tagen ermittelt:
+  \begin{equation}
+    \Delta = \left[\frac{d - t'_s}{1 \textrm{ Tag}}\right]
+  \end{equation}
+  Das Datum $d$ passt dann und nur dann wenn gilt:
+  \begin{equation}(\Delta \ge 0) \wedge (\Delta \mod n = 0)\end{equation}
+\item Monatsmuster. Nach~(\ref{eqn:monthDiff}) wird zun"achst die Differenz
+  $\Delta_m$ in Monaten zwischen $d$ und $t'_s$ ermittelt. Das Datum $d$ passt
+  dann und nur dann wenn gilt:
+  \begin{equation}(\Delta_m \ge 0) \wedge (\Delta_m \mod n = 0)\end{equation}
+\item Jahresmuster. Die Differenz in Jahren $\Delta$ wird zun"achst wie folgt
+  errechnet:
+  \begin{equation}\Delta = \yearf(d) - \yearf(t'_s)\end{equation}
+  Das Datum $d$ passt dann und nur dann wenn gilt:
+  \begin{equation}(\Delta \ge 0) \wedge (\Delta \mod n = 0)\end{equation}
+\item Wochentagsmuster. Zun"achst wird die Differenz $\Delta$ zwischen $d$ und
+  $t'_s$ in Wochen ermittelt:
+  \begin{eqnarray}
+    \Delta & = & \frac{d - t'_s}{1 \textrm{ Woche}} \\
+    \Delta' & = & \left[\Delta\right]
+  \end{eqnarray}
+  Das Datum $d$ passt wenn
+  \begin{equation}\label{eqn:weekStepMatch}
+    (\Delta' \ge 0) \wedge (\Delta' \mod n = 0)
+  \end{equation}
+  (\ref{eqn:weekStepMatch}) gilt allerdings nicht unbedingt, wenn $\Delta' = 0$.
+  Dieser Fall kann n"amlich sowohl auftreten, wenn $d = t'_s$ gilt (dann passt
+  $d$) als auch wenn $0 < \Delta < 1$ gilt (dann liegt $d$ in der ersten Woche
+  nach $t'_s$, also zwischen $t'_s$ und $t'_s + 7$ Tage (und $d$ passt dann
+  nicht).
+\end{itemize}
+
+\subsubsection{Pr"ufung von Ordinalwerten}
+Ordinalwerte k"onnen laut Definition nur in den Wochentagsmustern vorkommen.
+Hier ist eine Unterscheidung zwischen $y < 0$ und $y \ge 0$ notwendig:
+\begin{itemize}
+\item $y \ge 0$. $d$ passt dann und nur dann wenn gilt:
+  \begin{equation}\womf(d) = y\end{equation}
+\item $y < 0$. Hier erstellen wir uns ein verl"aufiges Datum $d'$,
+  da $\forall\ d: \womf(d) \ge 0$ gilt.
+  \begin{equation}d' := \calf(, m', \yearf(d), x, , y)\end{equation}
+  wobei wir den Monat $m'$ in Abh"angigkeit vom verwendeten Basiswert des
+  Monatsmusters $patt$ abh"angig machen:
+  \begin{equation}
+  m' := \left\{\begin{array}{ll}
+  patt = \texttt{*} : & \monf(d) \\
+  patt = \texttt{\textit{x}} : & x \\
+  \end{array}\right.
+  \end{equation}
+  Das Datum $d$ passt dann und nur dann wenn gilt:
+  \begin{equation}
+    (\dayf(d) = \dayf(d')) \wedge (\monf(d) = \monf(d')) \wedge
+    (\yearf(d) = \yearf(d'))
+  \end{equation}
+\end{itemize}
+
+
+
+%================================================
+%
+%
+% Kalibrierung des Startzeitpunkts
+%
+%
+%================================================
+\section{Kalibrierung des Startzeitpunkts}
+\noindent Eine Kalibrierung des Startzeitpunkts einer Terminserie muss immer
+dann stattfinden, wenn der vom Benutzer gew"ahlte Serienbeginn nicht selbst Teil
+der Serie ist. In anderen Worten: es ist eine Kalibrierung notwendig, wenn gilt:
+\begin{equation}
+  t_s \notin \vec{S}
+\end{equation}
+Offensichtlich ist im Fall 100 keine explizite Kalibrierung notwendig, da
+\begin{equation}
+  \forall\ t_s : t_s \in \vec{S}
+\end{equation}
+Im Fall 200 muss eine Kalibrierung vorgenommen werden, wenn der Wochentag des
+Startzeitpunkts kein Werktag ist, d. h. wd$(t_s) < 1$ oder wd$(t_s) > 5$. In
+diesem Fall ist als kalibrierter Startzeitpunkt der Montag der n"achsten Woche
+zu verwenden. Dies kann aber, wie in den Voraussetzungen bereits beschrieben,
+auch durch die Berechnungen von Fall 300 ermittelt werden.
+
+Die Kalibrierung im Fall 300 ist nicht trivial. Zun"achst ist zu "uberpr"ufen,
+ob sich einer der Wochentag $w \in \vec{M}$ noch in der aktuellen Woche
+befindet, also die folgende Aussage wahr ist:
+\begin{equation}
+  \exists\ \xi,\ \wdf(t_s) < \xi < \eta + T :\quad \xi \in \vec{M}
+\end{equation}
+Ist sie wahr, ist das zugeh"orige Datum das kalibrierte Startdatum:
+\begin{equation}
+  t'_s = \calf(, , \yearf(t_s), \xi \mod T + 1, \weekf(t_s) +
+  \left[\frac{\xi}{T}\right], )
+\end{equation}
+Andernfalls muss die Suche nach dem passenden Wochentag nach $w - 1$ Wochen
+stattfinden:
+\begin{equation}
+  \exists\ \xi,\ \eta \le \xi < \wdf(t_s) :\quad \xi \in \vec{M}
+\end{equation}
+Dann ergibt sich als kalibriertes Startdatum:
+\begin{equation}
+  t'_s = \calf(, , \yearf(t_s), \xi \mod 7 + 1, \weekf(t_s) + w, )
+\end{equation}
+
+\noindent Im Fall 400 findet sich das kalibrierte Startdatum wie folgt:
+\begin{equation}
+  t'_s = \left\{\begin{array}{ll}
+  \dayf(t_s) < d: & \calf(d, \monf(t_s), \yearf(t_s), , , ) \\
+  \dayf(t_s) > d: & \calf(d, \monf(t_s) + n, \yearf(t_s), , , ) \\
+  \end{array}\right.
+\end{equation}
+
+\noindent "Ahnlich auch im Fall 500. Sei zun"achst der n"achste infragekommende
+Termin $t_x$ mit $t_x = \calf(, \monf(t_s), \yearf(t_s), , ws, w)$ bezeichnet.
+Dann gilt f"ur das kalibrierte Startdatum:
+\begin{equation}
+  t'_s = \left\{\begin{array}{ll}
+  t_s < t_x : & t_x \\
+  t_s > t_x : & \calf(, \monf(t_s) + n, \yearf(t_s), , ws, w) \\
+  \end{array}\right.
+\end{equation}
+
+\noindent F"ur Fall 600 gilt unter Ber"ucksichtigung des n"achsten
+infragekommenden Termins $t_x$ mit $t_x = \calf(d, m, \yearf(t_s), , , )$:
+\begin{equation}
+t'_s = \left\{\begin{array}{ll}
+t_s < t_x : & t_x \\
+t_s > t_x : & \calf(d, m, \yearf(t_s) + 1, , , ) \\
+\end{array}\right.
+\end{equation}
+
+\noindent Schlie"slich berechnet sich das kalibrierte Startdatum f"ur Fall 700
+mit dem n"achsten infragekommenden Termin $t_x$ mit
+$t_x = \calf(, m, \yearf(t_s), , ws, w)$ wie folgt:
+\begin{equation}
+t'_s = \left\{\begin{array}{ll}
+t_s < t_x : & t_x \\
+t_s > t_x : & \calf(, m, \yearf(t_s) + 1, , ws, w) \\
+\end{array}\right.
+\end{equation}
+
+
+
+%================================================
+%
+%
+% Intervall- und Endpunktberechnung
+%
+%
+%================================================
+\section{Intervall- und Endpunktberechnung}
+\noindent Wie oben dargestellt, ergibt sich f"ur die F"alle 100 und 400 bis 700
+ein regelm"a"siges Intervall $\varepsilon$, und es gilt f"ur die Berechnung des
+Zeitpunkts $t_e$ nach $n$ Terminen:
+\begin{equation}\label{eqn:endEasy}
+  t_e = t'_s + \varepsilon(n - 1)
+\end{equation}
+
+\noindent Eine kleine Abweichung stellt Fall 500 dar. Hier wird zun"achst auch
+nach~(\ref{eqn:endEasy}) der Monat des Endzeitpunktes berechnet, wobei als
+Interval $\varepsilon$ der Wert $n$ Monat(e) angenommen wird. $t_e$ ergibt sich
+dann wie folgt:
+\begin{equation}t_e = \calf(, \monf(t_e), \yearf(t_e), ws, , w)\end{equation}
+
+\noindent In der gleichen Weise arbeitet auch die Abweichung in Fall 700, jedoch
+wird hier f"ur $\varepsilon$ der Wert 1 Jahr angenommen und $t_e$ ergibt sich
+nach:
+\begin{equation}t_e = \calf(, m, \yearf(t_e), ws, , w)\end{equation}
+
+\noindent Nicht trivial ist dagegen die Berechnung der Intervalle f"ur die
+F"alle 200 und 300, und damit auch des Zeitpunkts $t_e$. Auf unsere
+transformierte Menge $\vec{\Theta}$ wenden wir eine Funktion $\Delta$ an, die
+den Abstand zwischen dem Wochentag an der Stelle $i$ und dem Wochentag an der
+Stelle $i+1$ ermittelt:
+\begin{equation}
+\Delta(\vec{\Theta}, i, w) = \left\{\begin{array}{ll}
+1 \le i < k : & \vec{\Theta}_{i+1} - \vec{\Theta}_i \\
+i = k : & tw + \vec{\Theta}_{1} - \vec{\Theta}_{i} \\
+\end{array}\right., 1 \le i \le k
+\end{equation}
+Die Funktion $\Delta$ berechnet au"serdem den Abstand zwischen dem letzten
+Wochentag $\vec{\Theta}_k$ und dem ersten Wochentag $\vec{\Theta}_1$ nach $w$
+Wochen. Der Wert $w$ ergibt sich aus Tabelle \ref{tab:pattern} auf Seite
+\pageref{tab:pattern}.
+
+Dadurch entsteht eine Reihe $s_n$ von Terminen dieser Serie:
+\begin{eqnarray}
+s_1 & = & t'_s \\
+s_{j} & = & s_{j-1} + \Delta(\vec{\Theta}, p(\vec{\Theta}, \textrm{wd}(s_{j-1})), w)
+\end{eqnarray}
+
+\noindent F"ur eine Anzahl von $n$ Terminen ergibt sich somit folgender
+Endtermin $t_e$ im Falle 300:
+\begin{equation}
+\label{eqn:sn300}t_e = s_n
+\end{equation}
+
+
+
+%================================================
+%
+%
+% Approximierung
+%
+%
+%================================================
+\section{Approximierung}
+Eine weitere wichtige Problemstellung ist die Findung eines Termins innerhalb
+einer Serie, der einem gegebenen Datum $d_x$ chronologisch als n"achstes folgt.
+Die folgende Definition beschreibt das:
+\begin{dfn}[approximierter Zeitpunkt]\label{def:approx}
+  Gegeben sei ein Datum $d_x$ und eine Terminserie $s$. Unter der Voraussetzung,
+  dass $d_x \le t_e = s_n$, gilt
+  \begin{equation}\exists\ \vartheta : \vartheta \ge d_x\end{equation}
+  Dabei ist $\vartheta$ ein Serienelements $s_i \in \vec{S}$, das $d_x$
+  chronologisch als n"achstes folgt:
+  \begin{gather}\label{eqn:approxGeneral}
+    \vartheta := s_i \textnormal{ mit } d_x = s_i - \delta,\ 1 \le i \le n
+      \textnormal{ und} \\
+    \delta \ge 0 \textnormal{ und } \lim \delta = 0
+  \end{gather}
+  Weiterhin gilt:
+  \begin{eqnarray}\label{eqn:approxEasy}
+    d_x < t'_s \Rightarrow \vartheta = t'_s
+  \end{eqnarray}
+\end{dfn}
+
+\paragraph{Anmerkungen}
+\begin{itemize}
+\item Die Voraussetzung $d_x \le t_e = s_n$ ergibt sich daraus, dass abgelaufene
+  Termine nie wieder stattfinden werden.
+\item Der Wert $\delta$ bestimmt einen m"oglichst kleinen Wert, der, zu $d_x$
+  addiert, ein Element $s_i$ der Terminserie ergibt.
+\end{itemize}
+
+\noindent Die Ermittlung von $\vartheta$ ist vom Fall der Terminserie abh"angig.
+Nachfolgend wird die Berechnung f"ur jeden Fall beleuchtet. Im
+Fall~\eqref{eqn:approxEasy} ist $\vartheta$ bereits bestimmt worden. In den
+folgenden Abschnitten wollen wir deshalb von $d_x \ge t'_s$ ausgehen. Dazu
+halten wir zun"achst folgendes fest:
+\begin{thm}\label{thm:dBetweenElems}
+  Unter der Voraussetzung $t'_s \le d_x \le t_e$ gilt
+  \begin{equation}
+    \exists\ i \in \mathbb{N},\ 1 \le i < n :\ s_i \le d_x \le s_{i+1}
+  \end{equation}
+  $d_x$ muss sich also zwischen zwei benachbarten Serienelementen befinden.
+\end{thm}
+\begin{proof}[Beweis]
+  Vom Bereich her ist Satz~\ref{thm:dBetweenElems} korrekt, denn es gilt
+  \begin{gather}
+    \forall\ i \in \mathbb{N},\ 1 \le i < n :\ s_i \le d_x \le s_{i+1} \\
+    \Leftrightarrow s_1 \le d_x \le s_n \\
+    \Leftrightarrow t'_s \le d_x \le t_e
+  \end{gather}
+  Das wurde durch die Voraussetzung bereits sichergestellt. Nach
+  Definition~\ref{def:seriesAsSeries} gilt
+  \begin{eqnarray}
+    s_{n+1} &=& s_n + \varepsilon \\
+    s_{n+1} - s_n &=& \varepsilon
+  \end{eqnarray}
+  Nach den Werten f"ur $\varepsilon$ aus Tabelle~\ref{tab:pattern} auf
+  Seite~\pageref{tab:pattern} erkennen wir, dass $\varepsilon \ge 1$ Tag gilt,
+  d. h. $s_{n+1} - s_n \ge 1$ Tag. Die L"ange eines Datums $d_x$ ist
+  offensichtlich 1 Tag. Es gilt also
+  \begin{equation}s_n + 1 \textrm{ Tag} \le s_n + \varepsilon\end{equation}
+\end{proof}
+
+
+%--------------------------------------
+%
+% Fall 100
+%
+%--------------------------------------
+\subsection{Fall 100}
+Dem Fall 100 liegt als einzigem Fall ein fester, deterministischer Intervall
+zugrunde. Wir wollen nun den Index $q$ desjenigen Serienelements $s_q$
+ermitteln, f"ur das gilt $d_x = s_q - \delta$ mit $\delta \ge 0$ und
+$\lim \delta = 0$. Das bedeutet, wir ermitteln den Index des Serienelements, das
+$d_x$ chronologisch als n"achstes folgt. Durch Einsetzen von $q$ in
+Gleichung~\eqref{eqn:endEasy} erhalten wir dann $\vartheta$.
+
+Um $q$ zu bestimmen, ersetzen wir in~\eqref{eqn:endEasy} $n$ durch $q$ und $t_e$
+durch $d_x$ und stellen nach $q$ um. Wir erhalten:
+\begin{eqnarray}
+  d_x & = & t'_s + \varepsilon(n - 1) \\
+  d_x - t'_s & = & \varepsilon(n - 1) \\
+  \frac{d_x - t'_s}{\varepsilon} & = & n - 1 \\
+  \frac{d_x - t'_s}{\varepsilon} + 1 & = & n
+\end{eqnarray}
+Wir k"onnen davon ausgehen, dass $\varepsilon \ge 0$ gilt. Mit
+\begin{equation}\label{eqn:nv}n_v = \left[n + \gamma\right]\end{equation}
+erhalten wir den Index $n_v$ desjenigen Termins, der chronologisch auf $d_x$
+folgt. F"ur $\gamma$ w"ahlen wir einen Wert, der fast 1 ist. Damit erreichen
+wir, dass f"ur $n_v$ gilt:
+\begin{equation}\label{eqn:nv2}
+  n_v = \left\{\begin{array}{ll}
+  n - [n] = 0 : & n \\
+  n - [n] \ne 0 : & [n] + 1 \\
+  \end{array}\right.
+\end{equation}
+Wir setzen also $\gamma$ wie folgt, wobei wir m"oglichst hohe Werte f"ur $x$
+annehmen:
+\begin{equation}\label{eqn:gamma}
+  \gamma := \lim_{x \to \infty} (1 - \frac{1}{x})
+\end{equation}
+\begin{thm}
+F"ur $\gamma$ gilt:
+\begin{equation}1 > \gamma \ge 1 - n + [n]\end{equation}
+\end{thm}
+\begin{proof}[Beweis]
+Der Teil $\gamma < 1$ ergibt sich aus~(\ref{eqn:gamma}):
+\begin{eqnarray}
+  \gamma & = & \lim_{x \to \infty} (1 - \frac{1}{x}) \\
+    & = & \lim_{x \to \infty} 1 - \lim_{x \to \infty} \frac{1}{x} \\
+    & = & 1 - 0 \\
+    & = & 1
+\end{eqnarray}
+Den zweiten Teil $\gamma \ge 1 - n + [n]$ beweisen wir durch den Umkehrschluss.
+W"are $\gamma < 1 - n + [n]$ wahr, gilt $\gamma = 1 - n + [n] - \delta$ mit
+$\delta > 0$. Dann gilt nach~(\ref{eqn:nv}) f"ur den Fall $n - [n] \ne 0$:
+\begin{eqnarray}
+  n_v & = & [ n + \gamma ] \\
+    & = & [ n + 1 - n + [n] - \delta ] \\
+    & = & [ 1 + [n] - \delta ]
+\end{eqnarray}
+Dies wiederspricht jedoch~(\ref{eqn:nv2}), wo bei $n - [n] \ne 0$ festgelegt
+wurde $n_v = [n] + 1$.
+\end{proof}
+\noindent Wir erhalten $\vartheta$ durch~\eqref{eqn:endEasy}, wobei wir $t_e$
+durch $\vartheta$ und $n$ durch $n_v$ ersetzen:
+\begin{equation}\vartheta = t'_s + \varepsilon (n_v-1)\end{equation}
+
+
+%--------------------------------------
+%
+% Faelle 200 und 300
+%
+%--------------------------------------
+\subsection{F"alle 200 und 300}
+Um $\vartheta$ f"ur die F"alle 200 und 300 zu berechnen, ist eine umfangreichere
+Betrachtung vonn"oten. Auch hier "uberf"uhren wir Fall 200 nach
+Satz~\ref{eqn:200to300} in den Fall 300 (siehe Seite~\pageref{eqn:200to300}). Da
+dem Fall 300 kein regelm"a"siges Intervall zugrundeliegt, m"ussen wir uns einzig
+und allein mit der Folge $s_n$ behelfen. Um das Durchlaufen der Folge zu
+vermeiden, verwenden wir einen Approximationsalgorithmus, mit dem wir uns an
+$\vartheta$ ann"ahern.
+
+Wir erkennen zun"achst, dass sich die Serienelemente aller $w$ Wochen
+wiederholen. Wir errechnen erst einmal die Anzahl der Wochen $q$ vom Startdatum.
+\begin{equation}
+  q = \left[\frac{d_x - t'_s}{7 \textrm{ Tage}}\right]
+\end{equation}
+Das hei"st, $d_x$ liegt in der $q$. Woche seit $t'_s$. Nun beobachten wir
+folgendes:
+\begin{itemize}
+\item Wenn $q \bmod w = 0$, dann liegt $d_x$ in einer Serienwoche, d. h. einer
+  Woche, die an den Wochentagen in $\vec{\Theta}$ Termine der Serie enth"alt.
+\item Wenn $q \bmod w \ne 0$, dann liegt $d_x$ in eine Zwischenwoche, d. h.
+  einer Woche zwischen zwei Serienwochen.
+\end{itemize}
+
+\noindent Betrachten wir den ersten Fall ($q \bmod w = 0$). Der Wochentag $v$
+des gegebenen Datums $d_x$ ermitteln wir mit
+\begin{equation}v = \wdf(d_x)\end{equation}
+Weiterhin sei $k$ die Anzahl der Elemente in $\vec{\Theta}$, also
+\begin{equation}k = ||\vec{\Theta}||\end{equation}
+Um die Differenz $\delta$ zum n"achsten Wochentag der Serie in Woche $q$ bzw.
+der n"achstm"oglichen Woche zu ermitteln, verwenden wir folgenden Algorithmus:
+\begin{equation}
+  \delta = \left\{\begin{array}{ll}
+    k = 1 : & 0 \\
+    k > 1 : & \left\{\begin{array}{ll}
+      v < \vec{\Theta}_k: & \vec{\Theta}_i - \vec{\Theta}_{1} \textrm{ mit }
+      1 < i \le k \textrm{ und } \vec{\Theta}_{i-1} \le v < \vec{\Theta}_i \\
+      v \ge \vec{\Theta}_k: & 7w \\
+      \end{array}\right. \\
+    \end{array}\right.
+\end{equation}
+(Bemerkung: Der Fall $k = 0$ ist nat"urlich nicht definiert und muss im Frontend
+verhindert werden.)
+
+\noindent Wenn der Wochentag $v$ nicht der letzte in der Wochentagsmenge
+$\vec{\Theta}$ ist, ermitteln wir damit den n"achsten passenden Wochentag aus
+der Menge, der nicht $v$ selbst ist. Falls es der letzte Wochentag in der Menge
+ist, dann verwenden wir den ersten Wochentag aus $\vec{\Theta}$ in der
+n"achstm"oglichen Serienwoche.
+
+Nun ist der Errechnung von $\vartheta$ kein Problem mehr:
+\begin{equation}
+\label{eqn:theta300}\vartheta = t'_s + 7q + \delta
+\end{equation}
+
+\noindent Liegt $d_x$ nicht in einer Serienwoche (Fall $q \bmod w \ne 0$), dann
+m"ussen wir lediglich die fehlenden Wochen bis zur n"achsten Serienwoche
+addieren:
+\begin{equation}\delta = 7w(\left[\frac{q}{w}\right] + 1) - 7q\end{equation}
+und errechnen schlie"slich nach~\eqref{eqn:theta300} den Wert von $\vartheta$.
+
+
+%--------------------------------------
+%
+% Faelle 400 und 500
+%
+%--------------------------------------
+\subsection{F"alle 400 und 500}\label{ssec:approx400_500}
+Hier l"asst sich f"ur $\varepsilon$ kein definitiver Wert festlegen, da die
+Anzahl der Tage in einem Monat von 28 bis 31 variieren. Aus diesem Grund
+kann~\eqref{eqn:nv} nicht angewendet werden und es muss eine Alternative gesucht
+werden.
+
+Wir berechnen zun"achst die Differenz $\Delta_m$ zwischen $d_x$ und $t'_s$ in
+Monaten:
+\begin{equation}\label{eqn:deltaM}
+  \Delta_m = 12 (\yearf(d_x)-\yearf(t'_s)) - \monf(t'_s) + \monf(d_x)
+\end{equation}
+Hier ist jetzt eine Fallunterscheidung notwendig. Wir schaffen uns ein Pr"adikat
+$P$, dass wahr ist, wenn $d_x$ in einem Monat liegt, in dem die Serie ein
+Vorkommen hat. Es gilt also:
+\begin{equation}P \equiv \Delta_m \bmod n = 0\end{equation}
+Ist $P$ wahr, berechnen wir das Vorkommen $\vartheta'$ der Serie in diesem
+Monat, d. h. im Monat $\monf(t'_s) + \Delta_m$ im Jahr $\yearf(t'_s)$. Im Fall
+400 ist das:
+\begin{equation}\label{eqn:thetaStrich400}
+  \vartheta' = \calf(d_x, \monf(t'_s) + \Delta_m, \yearf(t'_s), , , )
+\end{equation}
+Im Fall 500 ist das:
+\begin{equation}\label{eqn:thetaStrich500}
+  \vartheta' = \calf(, \monf(t'_s) + \Delta_m, \yearf(t'_s), ws, , w)
+\end{equation}
+\begin{thm}
+Ist $P$ wahr, d. h. liegt $d_x$ in einem Monat, in der die Serie ein Vorkommen
+hat, muss dieses Vorkommen $\vartheta'$ sein.
+\end{thm}
+\begin{proof}[Beweis]
+Wir beweisen zun"achst, dass $d_x$ und $\vartheta'$ im selben Monat und Jahr
+liegt. Dazu schaffen wir uns eine Hilfsfunktion $m(d_x)$, die zu einem gegebenen
+Datum die Anzahl der Monate errechnet:
+\begin{equation}m(d_x) := 12\yearf(d_x) + \monf(d_x)\end{equation}
+Nach~(\ref{eqn:deltaM}) gilt
+\begin{eqnarray}
+  \Delta_m & = & 12 (\yearf(d_x)-\yearf(t'_s)) - \monf(t'_s) + \monf(d_x) \\
+    & = & 12\yearf(d_x) - 12\yearf(t'_s) + \monf(d_x) - \monf(t'_s) \\
+    & = & 12\yearf(d_x) + \monf(d_x) - (12\yearf(t'_s) + \monf(t'_s)) \\
+    & = & m(d_x) - m(t'_s)
+\end{eqnarray}
+F"ur Monat und Jahr von $\vartheta'$ gilt
+\begin{eqnarray}
+  m(\vartheta') & = & m(t'_s) + \Delta_m \\
+    & = & m(t'_s) + m(d_x) - m(t'_s) \\
+    & = & m(d_x)
+\end{eqnarray}
+Schlie"slich muss im Fall 400 f"ur den Tag des Vorkommens offensichtlich gelten:
+\begin{equation}\dayf(\vartheta') = \dayf(t'_s)\end{equation}
+Im Fall 500 gilt dagegen:
+\begin{equation}
+  \wdf(\vartheta') = \wdf(t'_s) \textrm{ und } \womf(\vartheta') = \womf(t'_s)
+\end{equation}
+Das ergibt sich nach~(\ref{eqn:thetaStrich400}) bzw.~(\ref{eqn:thetaStrich500}).
+\end{proof}
+
+Wenn $P$ wahr ist, kommt es darauf an, ob $d_x$ chronologisch vor oder hinter
+dem Vorkommen $\vartheta'$ der Serie liegt. Gilt $d_x \le \vartheta'$, ist
+offensichtlich $\vartheta'$ selbst das gesuchte Vorkommen. Gilt jedoch
+$d_x > \vartheta'$, liegt das gesuchte Vorkommen $n$ Monate sp"ater, also zum
+Zeitpunkt
+\begin{equation*}\vartheta = \addff(\monf, \vartheta', n)\end{equation*}
+
+Es bleibt noch der Fall $P$ ist falsch, d. h. $d_x$ liegt nicht in einem Monat,
+in dem die Serie ein Vorkommen hat.
+Dann ergibt sich $\vartheta$ wie folgt:
+\begin{equation}\vartheta = \addff(\monf, \vartheta', n-\Delta_m)\end{equation}
+
+\noindent Zusammenfassend gilt f"ur die F"alle 400 und 500 unter Zuhilfenahme
+von $\vartheta'$ aus~(\ref{eqn:thetaStrich400}) und~(\ref{eqn:thetaStrich500}):
+\begin{equation}\label{eqn:theta400}
+  \vartheta = \left\{\begin{array}{ll}
+  P : & \left\{\begin{array}{ll}
+    d_x \le \vartheta' : & \vartheta' \\
+    d_x > \vartheta' : & \addff(\monf, \vartheta', n) \\
+    \end{array}\right. \\
+  \overline{P} : & \addff(\monf, \vartheta', n-\Delta_m) \\
+  \end{array}\right.
+\end{equation}
+
+
+%--------------------------------------
+%
+% Faelle 600 und 700
+%
+%--------------------------------------
+\subsection{F"alle 600 und 700}
+Wie schon in der Betrachtung der F"alle 400 und 500 (siehe
+Seite~\pageref{ssec:approx400_500}) kann auch in diesen F"allen kein definitiver
+Wert f"ur das Interval $\varepsilon$ angenommen werden, da die L"ange eines
+Jahres zwischen 365 und 366 Tagen variiert. Auch die Verwendung der genauen
+Dauer eines tropischen Erdjahres mit $\varepsilon \approx 365,242198$ Tage ist
+f"ur kurze Zeitr"aume, die kein Schaltjahr enthalten, nicht geeignet.
+
+Wir errechnen zun"achst das Datum $\vartheta'$ des Serienvorkommens im aktuellen
+Jahr, d. h. im Jahr $\yearf(d_x)$. F"ur den Fall 600 gilt
+\begin{equation}\vartheta' = \calf(d, m, \yearf(d_x), , , )\end{equation}
+Im Fall 700 gilt
+\begin{equation}\vartheta' = \calf(, m, \yearf(d_x), ws, , w)\end{equation}
+
+Desweiteren repr"asentieren die Hilfswerte $y_s$ und $y_e$ den Anfang und das
+Ende des aktuellen Jahres:
+\begin{eqnarray}
+  y_s & = & \calf(1, 1, \yearf(d_x), , , ) \\
+  y_e & = & \calf(31, 12, \yearf(d_x), , , )
+\end{eqnarray}
+
+Liegt das gegebene Datum $d_x$ vor dem Serienvorkommen (oder ist es sogar das
+Serienvorkommen), so ist $\vartheta'$ das gesuchte Datum. Andernfalls ist es das
+Serienvorkommen im n"achsten Jahr. Zusammenfassend gilt also:
+\begin{equation}
+  \vartheta = \left\{\begin{array}{ll}
+    y_s \le d_x \le \vartheta' : & \vartheta' \\
+    \vartheta' < d_x \le y_e : & \addff(\yearf, \vartheta', 1) \\
+    \end{array}\right.
+\end{equation}
+
+
+
+%================================================
+%
+%
+% Weitere Formeln
+%
+%
+%================================================
+\section{Weitere Formeln}
+Nachfolgend sind Formeln aufgelistet, die f"ur die L"osungsfindung bei oben
+ausgef"uhrten Problemen von Nutzen sind.
+
+Die Ermittlung der Differenz in Monaten $\Delta_m$ von zwei Daten $t_s$ und
+$t_e$ (mit $t_s < t_e$) ergibt sich wie folgt:
+\begin{equation}\label{eqn:monthDiff}
+  \Delta_m = 12(\omega_y - \alpha_y) - \alpha_m + \omega_m
+\end{equation}
+Dabei bezeichnen $\alpha_m$ und $\omega_m$ die Monatsnummer und $\alpha_y$ und
+$\omega_y$ die Jahreszahl des Anfangs- bzw. Enddatums $t_s$ und $t_e$.
+
+Der Wochenbeginn $\alpha_w$ eines Datums $d$ berechnet sich nach folgender
+Formel:
+\begin{equation}\alpha_w(d) = d - (\wdf(d) - \eta + T) \mod T\end{equation}
+Das ermittelte Datum $\alpha_w$ stellt dabei den ersten Tag in der Woche dar, in
+der auch $d$ liegt. Dabei werden verschiedene Wochenbeginne ber"ucksichtigt.
+
+
+
+%================================================
+%
+%
+% Hinweise zur Implementation
+%
+%
+%================================================
+\section{Hinweise zur Implementation}
+Es bietet sich an, ein darzustellendes Datum $d$ als einen ganzzahligen Wert in
+Bezug auf einen Urwert (z. B. dem 1. Januar 1970) anzusehen. F"ur die
+Implementation in Java bietet sich die Verwendung der Klasse
+\texttt{java.util.Calendar} an, die umfangreiche M"oglichkeiten zur Berechnung
+offeriert.
+
+Eine ganze Reihe von wichtigen Datumsfunktionen wurde in die Klasse
+\texttt{org.amcworld.util.date.DateTimeUtils} eingebaut. In sYnergy werden die
+Serienberechnungen in den drei Klassen \texttt{CalendarEntry},
+\texttt{CalendarSeries} und \texttt{CalendarSeriesField}, alle aus dem Package
+\texttt{org.amcworld.synergy.cms.\-data}.
+\end{document}
