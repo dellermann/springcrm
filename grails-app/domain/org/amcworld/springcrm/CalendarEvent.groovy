@@ -93,10 +93,8 @@ class RecurrenceData implements MessageSourceResolvable {
 	
 	List<Integer> getWeekdaysAsList() {
 		List<Integer> res = null
-		if (weekdays != null) {
-			def wds = weekdays.split(',')
-			res = new ArrayList<Integer>(wds.length)
-			wds.each { res << (it as Integer) }
+		if (weekdays != null && weekdays.length() > 0) {
+			res = weekdays.split(',').collect { it as Integer }
 		}
 		return res
 	}

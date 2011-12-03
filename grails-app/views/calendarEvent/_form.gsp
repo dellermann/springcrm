@@ -273,10 +273,10 @@
                 val;
 
             if ($target.attr("name") === "recurrence.type") {
-                val = $target.val();
+                val = Number($target.val());
                 $tabs.tabs("select", "tabs-recurrence-type-" + val);
-                $("#recurrence\\.until-date").toggleEnable(val != 0);
-                $("#recurrence-cnt").toggleEnable(val != 0);
+                $("#recurrence\\.until-date").toggleEnable(val !== 0);
+                $("#recurrence-cnt").toggleEnable(val !== 0);
             } else {
                 id = $target.parents(".ui-tabs-panel")
                     .attr("id");
@@ -286,8 +286,8 @@
             }
         });
 
-    recurType = $("#tabs-recurrence-type input:radio:checked").val();
-    if (recurType == 0) {
+    recurType = Number($("#tabs-recurrence-type input:radio:checked").val());
+    if (recurType === 0) {
         $("#recurrence\\.until-date").disable();
         $("#recurrence-cnt").disable();
     } else {
@@ -301,10 +301,10 @@
                 $("#recurrence-weekdayOrd").val()
             );
         $("#recurrence-month-" + recurType).val($("#recurrence-month").val());
-        if ((recurType == 30) || (recurType == 50) || (recurType == 70)) {
+        if ((recurType === 30) || (recurType === 50) || (recurType === 70)) {
             wds = $("#recurrence-weekdays").val().split(/,/);
             n = wds.length;
-            if (recurType == 30) {
+            if (recurType === 30) {
                 $("#tabs-recurrence-type-30 input:checkbox")
                     .attr("checked", false);
                 while (++i < n) {
@@ -325,10 +325,12 @@
                 val,
                 wds;
 
-            recurType = $("#tabs-recurrence-type input:radio:checked").val();
+            recurType = Number(
+                    $("#tabs-recurrence-type input:radio:checked").val()
+                );
             if (recurType > 0) {
                 val = $("#recurrence-interval-" + recurType).val();
-                $("#recurrence-interval").val(val ? val : 1);
+                $("#recurrence-interval").val(val || 1);
                 $("#recurrence-monthDay").val(
                         $("#recurrence-monthDay-" + recurType).val()
                     );
@@ -338,18 +340,19 @@
                 $("#recurrence-month").val(
                         $("#recurrence-month-" + recurType).val()
                     );
-                if (recurType == 30) {
+                if (recurType === 30) {
                     wds = [];
                     $("#tabs-recurrence-type-30 input:checkbox:checked")
                         .each(function () {
-                            wds.push($(this).val());
+                            wds.push(Number($(this).val()));
                         });
+                        wds.sort();
                     $("#recurrence-weekdays").val(wds.join(","));
-                } else if (recurType == 50) {
+                } else if (recurType === 50) {
                     $("#recurrence-weekdays").val(
                             $("#recurrence-weekdays-50").val()
                         );
-                } else if (recurType == 70) {
+                } else if (recurType === 70) {
                     $("#recurrence-weekdays").val(
                             $("#recurrence-weekdays-70").val()
                         );

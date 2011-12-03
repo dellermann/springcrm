@@ -28,6 +28,8 @@ class RecurrenceDataTests extends GrailsUnitTestCase {
 		assertEquals([1, 4, 5, 6], rd.weekdaysAsList)
 		rd = new RecurrenceData(weekdays:'4')
 		assertEquals([4], rd.weekdaysAsList)
+		rd = new RecurrenceData(weekdays:'')
+		assertNull(rd.weekdaysAsList)
 		rd = new RecurrenceData()
 		assertNull(rd.weekdaysAsList)
     }
@@ -72,10 +74,11 @@ class RecurrenceDataTests extends GrailsUnitTestCase {
 			month:Calendar.AUGUST
 		)
 		Locale.default = Locale.GERMANY
+		println rd.arguments
 		assertEquals(
-			[3, 14, 'Mittwoch, Donnerstag, Freitag, Sonntag', 2, Calendar.AUGUST],
+			[ 3, 14, 'Mittwoch, Donnerstag, Freitag, Sonntag', 2, Calendar.AUGUST, 'August' ],
 			rd.arguments
 		)
-		assertEquals(['calendarEvent.recurPattern.30'], rd.codes)
+		assertEquals(['calendarEvent.recurrence.pattern.30'], rd.codes)
 	}
 }
