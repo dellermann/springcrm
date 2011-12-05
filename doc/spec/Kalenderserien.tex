@@ -134,26 +134,25 @@ Die definierten Serientypen in SpringCRM finden Sie in Tabelle
 \noindent Dabei stellt \texttt{fall} die Fallnummer nach
 Tabelle~\ref{tab:pattern}, Spalte "`Fall"' dar, sowie \texttt{d} das
 Tagesmuster, \texttt{m} das Monatsmuster, \texttt{y} das Jahresmuster und
-\texttt{wd} das Wochentagsmuster. Das Jahresmuster wird in unseren F"allen nicht
-verwendet und im weiteren weggelassen.
+\texttt{wd} das Wochentagsmuster.
 
 Jedes dieser Muster besteht aus einem Basiswert und einem optionalen
 Qualifizierer. F"ur jedes der vier Muster (Tagesmuster, Monatsmuster,
 Jahresmuster und Wochentagsmuster) muss genau einer der folgenden m"oglichen
 Basiswerte angegeben werden. Dabei sei $v$ ein gegebener Wert aus dem
 Wertebereich des jeweiligen Feldes. Zu jedem m"oglichen Fall geben wir ein
-Pr"adikat $P$ an, das $\top$ ist, wenn $v$ zu dem Wert des Feldes passt.
+Pr"adikat $P$ an, das aussagt ob $v$ zu dem Wert des Feldes passt.
 \begin{itemize}
 \item \texttt{*} (beliebiger Wert). Das Feld passt auf jeden beliebigen Wert. Es
   gilt $P \equiv \top$.
 \item \texttt{\textit{x}} (einfacher Wert). Das Feld passt dann und nur dann,
-  wenn es den Wert \texttt{\textit{x}} hat, d. h. $P \equiv w = x$.
+  wenn es den Wert \texttt{\textit{x}} hat, d. h. $P \equiv v = x$.
 \item \texttt{\textit{a}-\textit{b}} (Bereichswert). Repr"asentiert Werte im
   Bereich von \texttt{\textit{a}} bis \texttt{\textit{b}} (beide
-  eingeschlossen). Es gilt $P \equiv w \in [a;\,b]$.
+  eingeschlossen). Es gilt $P \equiv v \in [a;\,b]$.
 \item \texttt{\textit{a}, \textit{b}, \ldots} (Aufz"ahlungswert). Repr"asentiert
   die Werte \texttt{\textit{a}}, \texttt{\textit{b}} usw. Dabei gilt
-  $P \equiv w \in M$ mit $M = \{a,\,b,\dots\}$.
+  $P \equiv v \in M$ mit $M = \{a,\,b,\dots\}$.
 \item \texttt{+\textit{x}} bzw. \texttt{-\textit{x}} (Relativwert). Stellt einen
   relativen Wert zu einem gegebenen Ursprung $d_u = $ \texttt{\textit{ursprung}}
   dar, der am Ende des Musters angegeben wird. Wird kein Ursprung spezifiziert,
@@ -161,7 +160,7 @@ Pr"adikat $P$ an, das $\top$ ist, wenn $v$ zu dem Wert des Feldes passt.
   \texttt{E} als Kennzeichnung des Ostersonntags (Eastern) als Ursprung
   repr"asentiert den Pfingstsonntag, der 49 Tage nach dem Ostersonntag liegt.
   Relativwerte sind nur im Tages- und Monatsmuster erlaubt. Es gilt
-  $P \equiv w = d_u + x$.
+  $P \equiv v = d_u + x$.
 \end{itemize}
 
 \noindent Dar"uber hinaus kann jeder dieser Basiswerte mit den folgenden
@@ -187,29 +186,29 @@ Definitionen steht \texttt{\textit{b}} f"ur einen Basiswert.
 \begin{table}[ht]
   \caption{Muster f"ur Terminserien}
   \label{tab:pattern}
-  \begin{tabularx}{\textwidth}{ccccXc}
+  \begin{tabularx}{\textwidth}{rccccXc}
     \hline
-    Fall & \multicolumn{3}{c}{Muster} & Beschreibung & Intervall $\varepsilon$ \\
-    & Tag & Mon & WT & & \\
+    Fall & \multicolumn{4}{c}{Muster} & Beschreibung & Intervall $\varepsilon$ \\
+    & Tag & Mon & Jahr & WT & & \\
     \hline
-    0 & \multicolumn{3}{c}{-} & keine Terminserie & - \\
-    10 & \texttt{*/$n$} & \texttt{*} & \texttt{*} & aller $n$ Tage &
-      $n$ Tag(e) \\
-    20 & \texttt{*} & \texttt{*} & \texttt{1-5} & jeden Arbeitstag &
-      - \\
-    30 & \texttt{*} & \texttt{*} & \texttt{$ws$/$w$} &
+    0 & \multicolumn{4}{c}{-} & keine Terminserie & - \\
+    10 & \texttt{*/$n$} & \texttt{*} & \texttt{*} & \texttt{*} &
+      aller $n$ Tage & $n$ Tage \\
+    20 & \texttt{*} & \texttt{*} & \texttt{*} & \texttt{1-5} &
+      jeden Arbeitstag & - \\
+    30 & \texttt{*} & \texttt{*} & \texttt{*} & \texttt{$ws$/$w$} &
       an den Wochentagen $ws$ aller $w$ Wochen & - \\
-    40 & \texttt{$d$} & \texttt{*/$n$} & \texttt{*} &
-      am $d$. Tag jedes $n$. Monats & $n$ Monat(e) \\
-    50 & \texttt{*} & \texttt{*/$n$} & \texttt{$ws$:$w$} &
+    40 & \texttt{$d$} & \texttt{*/$n$} & \texttt{*} & \texttt{*} &
+      am $d$. Tag jedes $n$. Monats & $n$ Monate \\
+    50 & \texttt{*} & \texttt{*/$n$} & \texttt{*} & \texttt{$ws$:$w$} &
       am $w$. Wochentag $ws$ jedes $n$. Monats &
-      $n$ Monat(e)\footnotemark[\ref{ft:oneMonth}] \\
-    60 & \texttt{$d$} & \texttt{$m$} & \texttt{*} &
+      $n$ Monate\footnotemark[\ref{ft:oneMonth}] \\
+    60 & \texttt{$d$} & \texttt{$m$} & \texttt{*/1} & \texttt{*} &
       am $d$. des Monats $m$ (Geburtstagsserie) & 1 Jahr \\
-    70 & \texttt{*} & \texttt{$m$} & \texttt{$ws$:$w$} &
+    70 & \texttt{*} & \texttt{$m$} & \texttt{*/1} & \texttt{$ws$:$w$} &
       am $w$. Wochentag $ws$ im Monat $m$ (Muttertagsserie) &
       1 Jahr\footnotemark[\ref{ft:oneMonth}] \\
-    80 & \multicolumn{3}{c}{-} & Sonderf"alle, z. B. Feiertage & - \\
+    80 & \multicolumn{4}{c}{-} & Sonderf"alle, z. B. Feiertage & - \\
     \hline
   \end{tabularx}
 \end{table}
@@ -257,7 +256,8 @@ annehmen.
     \wkdays := \{ d_w : 0 < d_w \le T\},\ \wkdays \subset \mathbb{N}
   \end{equation}
   Die Wochentage werden durch Indizes beginnend mit eins
-  wie in Tabelle~\ref{tab:weekDays} definiert beschrieben.
+  wie in Tabelle~\ref{tab:weekDays} definiert
+  beschrieben.\footnotemark[\ref{ft:weekdays}]
   \par
   \begin{table}[ht]
   \caption{Wochentage $\wkdays$}\label{tab:weekDays}
@@ -271,6 +271,8 @@ annehmen.
     \hline
   \end{tabularx}\end{table}
 \end{dfn}
+\footnotetext{\label{ft:weekdays}Die Indizes der Wochentage entspricht der
+Nummerierung der Wochentage in der Java-Klasse \texttt{java.util.Calendar}.}
 
 \begin{dfn}[Wochenanfang]
   Der Index des Wochentages des ersten Tags in der Woche wird mit $\eta$
@@ -297,7 +299,7 @@ Wert annehmen.
   Die Menge aller Monate wird mit $\months$ bezeichnet und es gilt:
   \begin{equation}\months := \{ m : 0 \le m < M_{max}\}\end{equation}
   Die Monate werden durch Indizes beginnend mit null wie in
-  Tabelle~\ref{tab:months} definiert beschrieben.
+  Tabelle~\ref{tab:months} definiert beschrieben.\footnotemark[\ref{ft:months}]
   \par
   \begin{table}[ht]
   \caption{Monate $\months$}\label{tab:months}
@@ -317,6 +319,10 @@ Wert annehmen.
     \hline
   \end{tabularx}\end{table}
 \end{dfn}
+\footnotetext{\label{ft:months}Die Indizes der Monate entspricht der
+Nummerierung der Monate in der Java-Klasse \texttt{java.util.Calendar}. Deshalb
+erfolgt die Nummerierung un"ublicherweise nullbasiert.}
+
 \begin{dfn}[Maximale Anzahl der Tage jedem Monat]
   Die maximale Anzahl der Tage in einem beliebigen Monat im gregorianischen
   Kalender bezeichnen wir mit
@@ -416,24 +422,6 @@ Mengenschreibweise und beschreiben das durch folgende Definition:
 %
 %--------------------------------------
 \subsection{Funktionen}
-Wir ben"otigen eine Funktion, die den Index eines Wochentages in einer
-geordneten Menge von Wochentagsindizes sucht. Folgende Definition soll das
-liefern:
-\begin{dfn}
-  \begin{equation}
-  \begin{split}
-    & p :\ \pot{\wkdays},\,\wkdays \mapsto \mathbb{N} \\
-    & p(\vec{M},\,w) := \left\{\begin{array}{ll}
-    \exists\ q_i \in \vec{M} \textrm{ mit } q_i = w : & i \\
-    \nexists\ q_i \in \vec{M} \textrm{ mit } q_i = w : & 0 \\
-    \end{array}\right.,\quad
-    1 \le i \le ||\vec{M}||
-  \end{split}
-  \end{equation}
-\end{dfn}
-\noindent Beispiel: sei $\vec{M} = \{2,\,4,\,5,\,6\}$, dann gilt
-$p(\vec{M},\,5) = 3$ und $p(\vec{M},\,1) = 0$.
-
 Um Zusammenhang mit dem landesspezifisch unterschiedlichen Wochenbeginn $\eta$
 ergibt sich die Notwendigkeit, die Nummern Wochentage $w \in \wkdays$ zu
 linearisieren. Dabei werden die Nummern so angeordnet, dass sie den Ablauf einer
@@ -699,6 +687,56 @@ Funktion zum Ver"andern eines Kalenderfeldes.
   \end{equation}
 \end{dfn}
 
+\noindent Die angegebenen Wochentage $ws \in \wkdays$ in einem Serienmuster
+k"onnen wir als eine geordnete Liste auf\mbox{}fassen, die den Index jedes
+Wochentags aus $ws$ enth"alt. Dazu verwenden wir die folgenden Definitionen:
+\begin{dfn}[geordnete Liste]
+  Eine geordnete Liste von beliebigen Werten $a_1,\,a_2,\,\dots,\,a_n$ wird in
+  der Form $\vec{L} = \langle a_1,\,a_2,\,\dots,\,a_n\rangle$ notiert. Die Menge
+  aller Listen $\vec{N} = \langle a_1,\,a_2,\,\dots,\,a_n\rangle$ mit
+  $a_i \in \mathbb{N}$ f"ur alle $1 \le i \le n$ wird mit $\vec{\mathbb{N}}$
+  bezeichnet.
+\end{dfn}
+\begin{dfn}[geordnete Liste von Wochentagen]
+  Eine geordnete Liste von Wochentagen $w_1,\,w_2,\,\ldots,\,w_n \in \wkdays$
+  wird mit $\vec{W}$ bezeichnet. Es gilt
+  \begin{equation}
+    \vec{W} := \langle w_1,\,w_2,\,\dots,\,w_n\rangle\textrm{ mit }
+    w_1 < w_i < w_{i+1} \textrm{ f"ur alle } 1 < i < n
+  \end{equation}
+\end{dfn}
+
+\noindent F"ur Bereichswerte gilt folgendes:
+\begin{thm}
+  Ein Bereichswert \texttt{a-b} kann wie folgt als geordnete Liste dargestellt
+  werden:
+  \begin{equation}
+    \texttt{a-b} = [a;\,b] \iff \langle a,\,a+1,\,\dots,\,b\rangle
+  \end{equation}
+\end{thm}
+\begin{proof}[Beweis]Der Beweis ist trivial.\end{proof}
+
+\noindent Wir ben"otigen eine Funktion, die den Index eines Wochentages in einer
+geordneten Liste von Wochentagen sucht. Folgende Definition soll das
+liefern:
+\begin{dfn}
+  \begin{equation}
+  \begin{split}
+    & \pi :\ \vec{\mathbb{N}},\,\wkdays \mapsto \mathbb{N} \\
+    & \pi(\vec{M},\,w) := \left\{\begin{array}{ll}
+    \exists\ q_i \in \vec{M} \textrm{ mit } q_i = w : & i \\
+    \nexists\ q_i \in \vec{M} \textrm{ mit } q_i = w : & 0 \\
+    \end{array}\right.,\quad
+    1 \le i \le ||\vec{M}||
+  \end{split}
+  \end{equation}
+\end{dfn}
+\noindent Beispiel: sei $\vec{W} = \{2,\,4,\,5,\,6\}$, dann gilt
+$\pi(\vec{W},\,5) = 3$ und $\pi(\vec{W},\,1) = 0$.
+
+Die Funktion $\pi$ kann auch f"ur Werte der unter Definition~\ref{def:lin} auf
+Seite~\ref{def:lin} eingef"uhrten Linearisierungsfunktion verwendet werden.
+
 
 %--------------------------------------
 %
@@ -739,17 +777,9 @@ Feststellungen notieren.
 Die Betrachtung der Serienmuster 20 und 30 ist gleich, wenn man den folgenden
 Zusammenhang ber"ucksichtigt:
 \begin{equation}
-  \label{eqn:20to30}\texttt{* * 1-5}\ \hat{=}\ \texttt{* * 1,2,3,4,5/1}
+  \label{eqn:20to30}\texttt{* * * 1-5}\ \hat{=}\ \texttt{* * * 1,2,3,4,5/1}
 \end{equation}
-Wir k"onnen uns damit auf die Betrachtung von Fall 30 beschr"anken. Die
-angegebenen Wochentage $ws \in \wkdays$ k"onnen wir als eine geordnete Menge
-$\vec{M}$ auf\mbox{}fassen, die den Index jedes Wochentags aus $ws$ enth"alt.
-Die Angabe $ws$ kann sowohl in aufz"ahlender als auch in Bereichsschreibweise
-gemacht werden. Die Wandlung der aufz"ahlende Schreibweise in die Menge
-$\vec{M}$ ist trivial. F"ur die Bereichsschreibweise $a$-$b$ gilt:
-\begin{equation}\label{eqn:range}
-  \vec{M} = \{ p\,|\ a \le p \le b \}
-\end{equation}
+Wir k"onnen uns damit auf die Betrachtung von Fall 30 beschr"anken.
 
 
 
@@ -898,7 +928,7 @@ Pr"adikat $P_y$ nach folgenden Formeln berechnet werden, das angibt ob ein Datum
 $d \in \Psi$ Element einer Terminserie $\vec{S}$ ist.
 
 \subsubsection{Serie 10}
-Gegeben sei die Serie \texttt{*/\textit{n} * *}.
+Gegeben sei die Serie \texttt{*/\textit{n} * * *}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Tag}}\right\rfloor \\
@@ -907,7 +937,7 @@ Gegeben sei die Serie \texttt{*/\textit{n} * *}.
 \end{equation}
 
 \subsubsection{Serie 30}
-Gegeben sei die Serie \texttt{* * \textit{ws}/\textit{n}}.
+Gegeben sei die Serie \texttt{* * * \textit{ws}/\textit{n}}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Monat}}\right\rfloor \\
@@ -916,7 +946,7 @@ Gegeben sei die Serie \texttt{* * \textit{ws}/\textit{n}}.
 \end{equation}
 
 \subsubsection{Serie 40}
-Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} *}.
+Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} * *}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Monat}}\right\rfloor \\
@@ -925,7 +955,7 @@ Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} *}.
 \end{equation}
 
 \subsubsection{Serie 50}
-Gegeben sei die Serie \texttt{* */\textit{n} \textit{ws}:\textit{w}}.
+Gegeben sei die Serie \texttt{* */\textit{n} * \textit{ws}:\textit{w}}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Monat}}\right\rfloor \\
@@ -940,13 +970,13 @@ Gegeben sei die Serie \texttt{* */\textit{n} \textit{ws}:\textit{w}}.
 \end{equation}
 
 \subsubsection{Serie 60}
-Gegeben sei die Serie \texttt{\textit{dy} \textit{m} *}.
+Gegeben sei die Serie \texttt{\textit{dy} \textit{m} */1 *}.
 \begin{equation}
   P_{60} \equiv (\dayf(d) = dy) \wedge (\monf(d) = m)
 \end{equation}
 
 \subsubsection{Serie 70}
-Gegeben sei die Serie \texttt{* \textit{m} \textit{ws}:\textit{w}}.
+Gegeben sei die Serie \texttt{* \textit{m} */1 \textit{ws}:\textit{w}}.
 \begin{equation}
 \begin{split}
   d' & = \calf(,\,\monf(d),\,\yearf(d),\,ws,\,,\,w) \\
@@ -992,25 +1022,25 @@ auf Seite~\pageref{ssec:dateInSeries}, wobei die Betrachtung der Intervallwerte
 weggelassen wird.
 
 \subsubsection{Serie 10}
-Gegeben sei die Serie \texttt{*/\textit{n} * *}. Offensichtlich ist im Fall 10
+Gegeben sei die Serie \texttt{*/\textit{n} * * *}. Offensichtlich ist im Fall 10
 keine explizite Kalibrierung notwendig, da gilt:
 \begin{equation}\forall\ t_s : t_s \in \vec{S}\end{equation}
 Daraus folgt:
 \begin{equation}P_{10} \equiv \top\end{equation}
 
 \subsubsection{Serie 30}
-Gegeben sei die Serie \texttt{* * \textit{ws}/\textit{n}}. Eine Kalibrierung ist
-notwendig, wenn der Wochentag des gegebenen Datums $t_s$ nicht in der Menge $ws$
-enthalten ist, also:
+Gegeben sei die Serie \texttt{* * * \textit{ws}/\textit{n}}. Eine Kalibrierung
+ist notwendig, wenn der Wochentag des gegebenen Datums $t_s$ nicht in der Menge
+$ws$ enthalten ist, also:
 \begin{equation}P_{30} \equiv \wdf(t_s) \in ws\end{equation}
 
 \subsubsection{Serie 40}
-Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} *}. Eine Kalibrierung ist
-notwendig, wenn der Tag des gegebenen Datums $t_s$ ungleich $dy$ ist, also:
+Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} * *}. Eine Kalibrierung
+ist notwendig, wenn der Tag des gegebenen Datums $t_s$ ungleich $dy$ ist, also:
 \begin{equation}P_{40} \equiv \dayf(t_s) = dy\end{equation}
 
 \subsubsection{Serie 50}
-Gegeben sei die Serie \texttt{* */\textit{n} \textit{ws}:\textit{w}}. Eine
+Gegeben sei die Serie \texttt{* */\textit{n} * \textit{ws}:\textit{w}}. Eine
 Kalibrierung ist notwendig, wenn der Wochentag des gegebenen Datums $t_s$
 ungleich $ws$ ist oder der Ordinalwert der Wochennummer nicht passt, also:
 \begin{equation}
@@ -1025,15 +1055,15 @@ ungleich $ws$ ist oder der Ordinalwert der Wochennummer nicht passt, also:
 \end{equation}
 
 \subsubsection{Serie 60}
-Gegeben sei die Serie \texttt{\textit{dy} \textit{m} *}. Eine Kalibrierung ist
-notwendig, wenn der Tag des gegebenen Datums $t_s$ ungleich $dy$ und der Monat
-ungleich $m$ ist, also:
+Gegeben sei die Serie \texttt{\textit{dy} \textit{m} */1 *}. Eine Kalibrierung
+ist notwendig, wenn der Tag des gegebenen Datums $t_s$ ungleich $dy$ und der
+Monat ungleich $m$ ist, also:
 \begin{equation}
   P_{60} \equiv (\dayf(t_s) = dy) \wedge (\monf(t_s) = m)
 \end{equation}
 
 \subsubsection{Serie 70}
-Gegeben sei die Serie \texttt{* \textit{m} \textit{ws}:\textit{w}}. Eine
+Gegeben sei die Serie \texttt{* \textit{m} */1 \textit{ws}:\textit{w}}. Eine
 Kalibrierung ist notwendig, wenn der Wochentag des gegebenen Datums $t_s$
 ungleich $ws$ ist, der Ordinalwert der Wochennummer nicht passt oder der Monat
 ungleich $m$ ist, also:
@@ -1060,7 +1090,7 @@ erfordern die Formeln zur Berechnung des kalibrierten Startdatums $t'_s$
 angegeben.
 
 \subsubsection{Serie 30}
-Gegeben sei die Serie \texttt{* * \textit{ws}/\textit{n}}. Die Kalibrierung im
+Gegeben sei die Serie \texttt{* * * \textit{ws}/\textit{n}}. Die Kalibrierung im
 Fall 30 ist nicht trivial. Zun"achst ist zu "uberpr"ufen, ob sich einer der
 Wochentag $ws$ noch in der aktuellen Woche befindet, also die folgende Aussage
 wahr ist:
@@ -1081,48 +1111,49 @@ Dann ergibt sich als kalibriertes Startdatum:
 \end{equation}
 
 \subsubsection{Serie 40}
-Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} *}. Im Fall 40 findet
-sich das kalibrierte Startdatum wie folgt:
+Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} * *}. Im Fall 40 findet
+sich das kalibrierte Startdatum wie folgt. Dabei sei
+$t_x = \calf(dy,\,\monf(t_s),\,\yearf(t_s),\,,\,,\,)$.
 \begin{equation}
   t'_s = \left\{\begin{array}{ll}
-      \dayf(t_s) < dy: & \calf(dy,\,\monf(t_s),\,\yearf(t_s),\,,\,,\,) \\
-      \dayf(t_s) > dy: & \calf(dy,\,\monf(t_s) + n,\,\yearf(t_s),\,,\,,\,) \\
+      t_s < t_x: & t_x \\
+      t_s > t_x: & \addff(\monf,\,t_x,\,n) \\
     \end{array}\right.
 \end{equation}
 
 \subsubsection{Serie 50}
 "Ahnlich auch im Fall 50. Gegeben sei die Serie
-\texttt{* */\textit{n} \textit{ws}:\textit{w}}. Sei zun"achst der n"achste
+\texttt{* */\textit{n} * \textit{ws}:\textit{w}}. Sei zun"achst der n"achste
 infragekommende Termin $t_x$ mit
 $t_x = \calf(,\,\monf(t_s),\,\yearf(t_s),\,,\,ws,\,w)$ bezeichnet. Dann gilt
 f"ur das kalibrierte Startdatum:
 \begin{equation}
   t'_s = \left\{\begin{array}{ll}
       t_s < t_x : & t_x \\
-      t_s > t_x : & \calf(,\,\monf(t_s) + n,\,\yearf(t_s),\,,\,ws,\,w) \\
+      t_s > t_x : & \addff(\monf,\,t_x,\,n) \\
     \end{array}\right.
 \end{equation}
 
 \subsubsection{Serie 60}
-Gegeben sei die Serie \texttt{\textit{dy} \textit{m} *}. F"ur Fall 60 gilt
+Gegeben sei die Serie \texttt{\textit{dy} \textit{m} */1 *}. F"ur Fall 60 gilt
 unter Ber"ucksichtigung des n"achsten infragekommenden Termins $t_x$ mit
 $t_x = \calf(dy,\,m,\,\yearf(t_s),\,,\,,\,)$:
 \begin{equation}
   t'_s = \left\{\begin{array}{ll}
     t_s < t_x : & t_x \\
-    t_s > t_x : & \calf(dy,\,m,\,\yearf(t_s) + 1,\,,\,,\,) \\
+    t_s > t_x : & \addff(\yearf,\,t_x,\,1) \\
   \end{array}\right.
 \end{equation}
 
 \subsubsection{Serie 70}
-Gegeben sei die Serie \texttt{* \textit{m} \textit{ws}:\textit{w}}. Schlie"slich
+Gegeben sei die Serie \texttt{* \textit{m} */1 \textit{ws}:\textit{w}}. Hier
 berechnet sich das kalibrierte Startdatum f"ur Fall 70 mit dem n"achsten
 infragekommenden Termin $t_x$ mit $t_x = \calf(,\,m,\,\yearf(t_s),\,,\,ws,\,w)$
 wie folgt:
 \begin{equation}
   t'_s = \left\{\begin{array}{ll}
     t_s < t_x : & t_x \\
-    t_s > t_x : & \calf(,\,m,\,\yearf(t_s) + 1,\,,\,ws,\,w) \\
+    t_s > t_x : & \addff(\yearf,\,t_x,\,1) \\
   \end{array}\right.
 \end{equation}
 
