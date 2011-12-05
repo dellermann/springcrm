@@ -8,7 +8,7 @@ import org.junit.Test;
 class RecurCalendarEventHelperTests {
 
 	@Test
-	public void testLin() {
+	void testLin() {
 		Locale.default = Locale.GERMANY
 		assertEquals(7 + SUNDAY, RecurCalendarEventHelper.lin(SUNDAY))
 		assertEquals(MONDAY, RecurCalendarEventHelper.lin(MONDAY))
@@ -21,7 +21,7 @@ class RecurCalendarEventHelperTests {
 	}
 
 	@Test
-	public void testCalibrateDate30() {
+	void testCalibrateDate30() {
 		def helper = new RecurCalendarEventHelper(		// We, Fr, Su
 			new RecurrenceData(type:30, weekdays:'1,4,6', interval:2)
 		)
@@ -64,7 +64,7 @@ class RecurCalendarEventHelperTests {
 	}
 	
 	@Test
-	public void testCalibrateDate40() {
+	void testCalibrateDate40() {
 		def helper = new RecurCalendarEventHelper(
 			new RecurrenceData(type:40, monthDay:14, interval:2)
 		)
@@ -79,7 +79,7 @@ class RecurCalendarEventHelperTests {
 	}
 	
 	@Test
-	public void testCalibrateDate50() {
+	void testCalibrateDate50() {
 		def helper = new RecurCalendarEventHelper(		// Th
 			new RecurrenceData(type:50, weekdays:'5', weekdayOrd:3, interval:2)
 		)
@@ -106,7 +106,7 @@ class RecurCalendarEventHelperTests {
 	}
 
 	@Test
-	public void testCalibrateDate60() {
+	void testCalibrateDate60() {
 		def helper = new RecurCalendarEventHelper(
 			new RecurrenceData(type:60, monthDay:13, month:MAY)
 		)
@@ -123,7 +123,7 @@ class RecurCalendarEventHelperTests {
 	}
 
 	@Test
-	public void testCalibrateDate70() {
+	void testCalibrateDate70() {
 		def helper = new RecurCalendarEventHelper(		// Su
 			new RecurrenceData(type:70, weekdays:'1', weekdayOrd:2, month:MAY)
 		)
@@ -153,6 +153,158 @@ class RecurCalendarEventHelperTests {
 		assertEquals(getDate(2012, MAY, 27), d)						// -> Su
 		d = helper.calibrateStart(getDate(2011, DECEMBER, 31))		// Sa
 		assertEquals(getDate(2012, MAY, 27), d)						// -> Su
+	}
+
+	@Test
+	void testComputeNthEvent10() {
+		def helper = new RecurCalendarEventHelper(
+			new RecurrenceData(type:10, interval:5)
+		)
+		def start = getDate(2011, DECEMBER, 5)
+		def d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, DECEMBER, 5), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2011, DECEMBER, 10), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2011, DECEMBER, 15), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2011, DECEMBER, 20), d)
+		d = helper.computeNthEvent(start, 5)
+		assertEquals(getDate(2011, DECEMBER, 25), d)
+		d = helper.computeNthEvent(start, 6)
+		assertEquals(getDate(2011, DECEMBER, 30), d)
+		d = helper.computeNthEvent(start, 7)
+		assertEquals(getDate(2012, JANUARY, 4), d)
+	} 
+
+	@Test
+	void testComputeNthEvent30() {
+		def helper = new RecurCalendarEventHelper(		// We, Fr, Su
+			new RecurrenceData(type:30, weekdays:'1,4,6', interval:2)
+		)
+		def start = getDate(2011, DECEMBER, 7)
+		def d = helper.computeNthEvent(start, 1)		// We
+		assertEquals(getDate(2011, DECEMBER, 7), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2011, DECEMBER, 9), d)		// Fr
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2011, DECEMBER, 11), d)	// Su
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2011, DECEMBER, 21), d)	// We
+		d = helper.computeNthEvent(start, 5)
+		assertEquals(getDate(2011, DECEMBER, 23), d)	// Fr
+		d = helper.computeNthEvent(start, 6)
+		assertEquals(getDate(2011, DECEMBER, 25), d)	// Su
+		d = helper.computeNthEvent(start, 7)
+		assertEquals(getDate(2012, JANUARY, 4), d)		// We
+		d = helper.computeNthEvent(start, 8)
+		assertEquals(getDate(2012, JANUARY, 6), d)		// Fr
+		d = helper.computeNthEvent(start, 9)
+		assertEquals(getDate(2012, JANUARY, 8), d)		// Su
+		d = helper.computeNthEvent(start, 10)
+		assertEquals(getDate(2012, JANUARY, 18), d)		// We
+	}
+
+	@Test
+	void testComputeNthEvent40() {
+		def helper = new RecurCalendarEventHelper(
+			new RecurrenceData(type:40, monthDay:14, interval:2)
+		)
+		def start = getDate(2011, NOVEMBER, 14)
+		def d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, NOVEMBER, 14), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2012, MARCH, 14), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2012, MAY, 14), d)
+		d = helper.computeNthEvent(start, 7)
+		assertEquals(getDate(2012, NOVEMBER, 14), d)
+	}
+
+	@Test
+	void testComputeNthEvent50() {
+		def helper = new RecurCalendarEventHelper(		// Th
+			new RecurrenceData(type:50, weekdays:'5', weekdayOrd:3, interval:2)
+		)
+		def start = getDate(2011, NOVEMBER, 17)
+		def d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, NOVEMBER, 17), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2012, MARCH, 15), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2012, MAY, 17), d)
+		d = helper.computeNthEvent(start, 7)
+		assertEquals(getDate(2012, NOVEMBER, 15), d)
+
+		helper = new RecurCalendarEventHelper(			// Th
+			new RecurrenceData(type:50, weekdays:'5', weekdayOrd:-1, interval:2)
+		)
+		start = getDate(2011, NOVEMBER, 24)
+		d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, NOVEMBER, 24), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2012, JANUARY, 26), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2012, MARCH, 29), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2012, MAY, 31), d)
+		d = helper.computeNthEvent(start, 7)
+		assertEquals(getDate(2012, NOVEMBER, 29), d)
+	}
+
+	@Test
+	void testComputeNthEvent60() {
+		def helper = new RecurCalendarEventHelper(
+			new RecurrenceData(type:60, monthDay:13, month:MAY)
+		)
+		def start = getDate(2011, MAY, 13)
+		def d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, MAY, 13), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2013, MAY, 13), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2014, MAY, 13), d)
+		d = helper.computeNthEvent(start, 10)
+		assertEquals(getDate(2020, MAY, 13), d)
+	}
+
+	@Test
+	void testComputeNthEvent70() {
+		def helper = new RecurCalendarEventHelper(		// Su
+			new RecurrenceData(type:70, weekdays:'1', weekdayOrd:2, month:MAY)
+		)
+		def start = getDate(2011, MAY, 8)
+		def d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, MAY, 8), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2013, MAY, 12), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2014, MAY, 11), d)
+		d = helper.computeNthEvent(start, 10)
+		assertEquals(getDate(2020, MAY, 10), d)
+
+		helper = new RecurCalendarEventHelper(			// Su
+			new RecurrenceData(type:70, weekdays:'1', weekdayOrd:-1, month:MAY)
+		)
+		start = getDate(2011, MAY, 29)
+		d = helper.computeNthEvent(start, 1)
+		assertEquals(getDate(2011, MAY, 29), d)
+		d = helper.computeNthEvent(start, 2)
+		assertEquals(getDate(2012, MAY, 27), d)
+		d = helper.computeNthEvent(start, 3)
+		assertEquals(getDate(2013, MAY, 26), d)
+		d = helper.computeNthEvent(start, 4)
+		assertEquals(getDate(2014, MAY, 25), d)
+		d = helper.computeNthEvent(start, 10)
+		assertEquals(getDate(2020, MAY, 31), d)
 	}
 
 	private Date getDate(int year, int month, int day) {

@@ -18,6 +18,15 @@ class RecurCalendarEventHelper {
 
 	//-- Public methods -------------------------
 
+	/**
+	 * Computes a date after or equal to the given date which can act as the
+	 * start of the recurrence. Thus the returned date is part of the
+	 * recurrence.
+	 * 
+	 * @param start	the given date
+	 * @return		the date which is part of the recurrence and therefore may
+	 * 				be used as start of the recurrence
+	 */
 	Date calibrateStart(Date start) {
 		Calendar cal = Calendar.instance
 		cal.time = start
@@ -51,11 +60,56 @@ class RecurCalendarEventHelper {
 		return cal.time
 	}
 
-	public static int delin(int x) {
+	/**
+	 * Computes the date of the recurring calendar event at the n-th
+	 * recurrence. The first recurrence is the start of the recurrence, that
+	 * is, the given start date.
+	 * 
+	 * @param start	the start of the recurrence; the start date must be part of
+	 * 				the recurrence
+	 * @param n		the n-th recurrence; must be greater than zero
+	 * @return		the date of the n-th recurrence
+	 */
+	Date computeNthEvent(Date start, int n) {
+		if (n < 1) {
+			throw new IllegalArgumentException(
+				"n must be greater than zero but is ${n}."
+			)
+		}
+		Calendar cal = Calendar.instance
+		cal.time = start
+		switch (data.type) {
+		case 10:
+			cal.add(DAY_OF_MONTH, (n - 1) * data.interval)
+			break
+		case 30:
+			computeNthEvent30(cal, n)
+			break
+		case 40:
+			cal.add(MONTH, (n - 1) * data.interval)
+			break
+		case 50:
+			cal.add(MONTH, (n - 1) * data.interval)
+			cal.set(DAY_OF_WEEK, data.weekdaysAsList[0])
+			cal.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
+			break
+		case 60:
+			cal.add(YEAR, n - 1)
+			break
+		case 70:
+			cal.add(YEAR, n - 1)
+			cal.set(DAY_OF_WEEK, data.weekdaysAsList[0])
+			cal.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
+			break
+		}
+		return cal.time
+	}
+
+	static int delin(int x) {
 		return (x - SUNDAY) % numDaysInWeek + SUNDAY
 	}
 
-	public static int lin(int wd) {
+	static int lin(int wd) {
 		return wd + unitStep(wd)
 	}
 
@@ -134,6 +188,27 @@ class RecurCalendarEventHelper {
 			c.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
 		}
 		cal.time = c.time
+	}
+
+	protected void computeNthEvent30(Calendar cal, int n) {
+		List<Integer> wds = data.weekdaysAsList
+		List<Integer> linWds = wds.collect({ lin(it) }).sort()
+		int k = wds.size()
+		int m = (int) ((n - 1) / k)
+		cal.add(DAY_OF_MONTH, data.interval * numDaysInWeek * m)
+		for (int i = k * m + 2; i <= n; i++) {
+			int ws = lin(cal.get(DAY_OF_WEEK))
+			cal.add(DAY_OF_MONTH, delta(linWds, linWds.indexOf(ws)))
+		}
+	}
+
+	private int delta(List<Integer> linWds, int i) {
+		int k = linWds.size()
+		if (i < k - 1) {
+			return linWds[i + 1] - linWds[i]
+		} else {
+			return data.interval * numDaysInWeek + linWds.first - linWds.last
+		}
 	}
 
 	protected static int getFirstDayOfWeek() {

@@ -196,8 +196,8 @@ Definitionen steht \texttt{\textit{b}} f"ur einen Basiswert.
       aller $n$ Tage & $n$ Tage \\
     20 & \texttt{*} & \texttt{*} & \texttt{*} & \texttt{1-5} &
       jeden Arbeitstag & - \\
-    30 & \texttt{*} & \texttt{*} & \texttt{*} & \texttt{$ws$/$w$} &
-      an den Wochentagen $ws$ aller $w$ Wochen & - \\
+    30 & \texttt{*} & \texttt{*} & \texttt{*} & \texttt{$ws$/$n$} &
+      an den Wochentagen $ws$ aller $n$ Wochen & - \\
     40 & \texttt{$d$} & \texttt{*/$n$} & \texttt{*} & \texttt{*} &
       am $d$. Tag jedes $n$. Monats & $n$ Monate \\
     50 & \texttt{*} & \texttt{*/$n$} & \texttt{*} & \texttt{$ws$:$w$} &
@@ -707,7 +707,7 @@ Wochentags aus $ws$ enth"alt. Dazu verwenden wir die folgenden Definitionen:
 \end{dfn}
 
 \noindent F"ur Bereichswerte gilt folgendes:
-\begin{thm}
+\begin{thm}\label{thm:range}
   Ein Bereichswert \texttt{a-b} kann wie folgt als geordnete Liste dargestellt
   werden:
   \begin{equation}
@@ -831,9 +831,9 @@ Einfache Werte werden nach folgenden Regeln gepr"uft:
 \end{enumerate}
 
 \subsubsection{Pr"ufung von Aufz"ahlungs- und Bereichswerten}
-Nach~(\ref{eqn:range}) wandeln wir zun"achst Bereichswerte in Aufz"ahlungswerte
-um und arbeiten hinfort mit einer Menge $\vec{M}$ von Werten. Das jeweilige Feld
-von $d \in \Psi$ passt dann und nur dann, wenn gilt:
+Nach Satz~\ref{thm:range} wandeln wir zun"achst Bereichswerte in
+Aufz"ahlungswerte um und arbeiten hinfort mit einer Menge $\vec{M}$ von Werten.
+Das jeweilige Feld von $d \in \Psi$ passt dann und nur dann, wenn gilt:
 \begin{itemize}
   \item Im Wochentagsmuster (Muster 30, 50 und 70): $\wdf(d) \in \vec{M}$
 \end{itemize}
@@ -1162,56 +1162,75 @@ wie folgt:
 %================================================
 %
 %
-% Intervall- und Endpunktberechnung
+% Intervall- und Endzeitpunktberechnung
 %
 %
 %================================================
-\section{Intervall- und Endpunktberechnung}
-\noindent Wie oben dargestellt, ergibt sich f"ur die F"alle 100 und 400 bis 700
-ein regelm"a"siges Intervall $\varepsilon$, und es gilt f"ur die Berechnung des
-Zeitpunkts $t_e$ nach $n$ Terminen:
+\section{Intervall- und Endzeitpunktberechnung}
+\noindent Wie in Tabelle~\ref{tab:pattern} auf Seite~\pageref{tab:pattern}
+dargestellt, ergibt sich f"ur die F"alle 10 und 40 bis 70 ein regelm"a"siges
+Intervall $\varepsilon$, und es gilt f"ur die Berechnung des Zeitpunkts $t_e$
+nach $c$ Terminen:
 \begin{equation}\label{eqn:endEasy}
-  t_e = t'_s + \varepsilon(n - 1)
+  t_e = t'_s + \varepsilon(c - 1)
 \end{equation}
 
-\noindent Eine kleine Abweichung stellt Fall 500 dar. Hier wird zun"achst auch
-nach~(\ref{eqn:endEasy}) der Monat des Endzeitpunktes berechnet, wobei als
-Interval $\varepsilon$ der Wert $n$ Monat(e) angenommen wird. $t_e$ ergibt sich
-dann wie folgt:
-\begin{equation}t_e = \calf(,\,\monf(t_e),\,\yearf(t_e),\,ws,\,,\,w)\end{equation}
-
-\noindent In der gleichen Weise arbeitet auch die Abweichung in Fall 700, jedoch
-wird hier f"ur $\varepsilon$ der Wert 1 Jahr angenommen und $t_e$ ergibt sich
-nach:
-\begin{equation}t_e = \calf(,\,m,\,\yearf(t_e),\,ws,\,,\,w)\end{equation}
-
-\noindent Nicht trivial ist dagegen die Berechnung der Intervalle f"ur die
-F"alle 200 und 300, und damit auch des Zeitpunkts $t_e$. Auf unsere
-transformierte Menge $\vec{\Theta}$ wenden wir eine Funktion $\Delta$ an, die
-den Abstand zwischen dem Wochentag an der Stelle $i$ und dem Wochentag an der
-Stelle $i+1$ ermittelt:
+\noindent Nicht trivial ist dagegen die Berechnung der Intervalle des Zeitpunkts
+$t_e$ f"ur den Fall 30. Gegeben sei die Serie
+\texttt{* * * \textit{ws}/\textit{n}}. Wir schaffen uns zun"achst eine geordnete
+Liste $\vec{\Theta}$ f"ur $ws = \langle w_1,\,w_2,\,\dots,\,w_m\rangle$ wie
+folgt:
 \begin{equation}
-\Delta(\vec{\Theta},\,i,\,w) = \left\{\begin{array}{ll}
-1 \le i < k : & \vec{\Theta}_{i+1} - \vec{\Theta}_i \\
-i = k : & tw + \vec{\Theta}_{1} - \vec{\Theta}_{i} \\
-\end{array}\right.,\,1 \le i \le k
+  \vec{\Theta} = \langle \linf(w_1),\,\linf(w_2),\,\dots,\,\linf(w_m)\rangle
+\end{equation}
+
+\noindent Auf unsere transformierte Menge $\vec{\Theta}$ wenden wir eine
+Funktion $\Delta$ an, die den Abstand in Tagen zwischen dem Wochentag an der
+Stelle $i$ und dem Wochentag an der Stelle $i+1$ ermittelt:
+\begin{equation}
+\begin{split}
+  & \Delta :\, \vec{\mathbb{N}},\,\mathbb{N},\,\mathbb{N} \mapsto \mathbb{N} \\
+  & \Delta(\vec{\Theta},\,i,\,n) = \left\{\begin{array}{ll}
+  1 \le i < \|\vec{\Theta}\| : & \vec{\Theta}_{i+1} - \vec{\Theta}_i \\
+  i = \|\vec{\Theta}\| : & nT + \vec{\Theta}_{1} - \vec{\Theta}_{i} \\
+  \end{array}\right.,\,1 \le i \le \|\vec{\Theta}\|
+\end{split}
 \end{equation}
 Die Funktion $\Delta$ berechnet au"serdem den Abstand zwischen dem letzten
-Wochentag $\vec{\Theta}_k$ und dem ersten Wochentag $\vec{\Theta}_1$ nach $w$
-Wochen. Der Wert $w$ ergibt sich aus Tabelle \ref{tab:pattern} auf Seite
-\pageref{tab:pattern}.
+Wochentag $\vec{\Theta}_m$ und dem ersten Wochentag $\vec{\Theta}_1$ nach $n$
+Wochen.
 
-Dadurch entsteht eine Reihe $s_n$ von Terminen dieser Serie:
-\begin{eqnarray}
-s_1 & = & t'_s \\
-s_{j} & = & s_{j-1} + \Delta(\vec{\Theta},\,p(\vec{\Theta},\,\textrm{wd}(s_{j-1})),\,w)
-\end{eqnarray}
-
-\noindent F"ur eine Anzahl von $n$ Terminen ergibt sich somit folgender
-Endtermin $t_e$ im Falle 300:
-\begin{equation}
-\label{eqn:sn300}t_e = s_n
+\noindent Dadurch entsteht eine Reihe $s_n$ von Terminen dieser Serie:
+\begin{equation}\label{eqn:computeSeries30}
+\begin{split}  
+  s_1 & = t'_s \\
+  s_{j} & = s_{j-1} + \Delta(\vec{\Theta},\,\pi(\vec{\Theta},\,\linf(\wdf(s_{j-1}))),\,n)
+\end{split}
 \end{equation}
+
+\noindent F"ur eine Anzahl von $c$ Terminen ergibt sich somit folgender
+Endtermin $t_e$ im Falle 30:
+\begin{equation}\label{eqn:sn300}t_e = s_c\end{equation}
+
+\noindent Diese Berechnung ist allerdings bei der Implementation teuer, da sie
+auf einem induktiven Prinzip basiert und die Laufzeit linear mit $c$ w"achst,
+also $O(c)$ gilt. Der folgende Ansatz berechnet $t_e$ in konstanter Laufzeit
+$O(1)$.
+
+Sei $k = \|\vec{\Theta}\|$. Wir beobachten, dass jeweils bis zu $k$ Termine in
+einer Woche liegen k"onnen. Daraus errechnen wir einen Wert $\varphi$ wie folgt:
+\begin{equation}
+  \varphi = k \left\lfloor\frac{c - 1}{k}\right\rfloor + 1 \\
+\end{equation}
+Wir verwenden $c - 1$, da der Startzeitpunkt $t'_s$ zu den $c$ Terminen der
+Serie geh"ort, aber nicht in die Berechnung einflie"sen soll. Dann gilt
+\begin{equation}
+  s_\varphi = t'_s + nT \left\lfloor\frac{c - 1}{k}\right\rfloor\textrm{ Tage}
+\end{equation}
+
+\noindent Die Werte $s_{\varphi + 1}$ bis $s_c$ errechnen wir
+nach~(\ref{eqn:computeSeries30}). Dadurch ergibt sich eine Laufzeit von
+$O(1) + O(c) = O(1)$.
 
 
 
