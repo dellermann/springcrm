@@ -189,7 +189,10 @@
                     showOtherMonths: true
                 });
             $(".date-input-time").change(this._onChangeDateInput)
-                .autocomplete({ source: this._timeValues });
+                .autocomplete({
+                    select: this._onSelectTimeValue,
+                    source: this._timeValues
+                });
             $("#spinner").click(function () {
                 $(this).css("display", "none");
             });
@@ -394,6 +397,24 @@
             } else {
                 this._$toolbar.removeClass("fixed");
             }
+        },
+
+        /**
+         * Called if the user selects a time from the autocomplete list.
+         *
+         * @param {Object} event    the event data
+         * @param {Object} ui       information about the selected item
+         * @protected
+         * @since 0.9.12
+         */
+        _onSelectTimeValue: function (event, ui) {
+            var $this = $(this),
+                item = ui.item;
+
+            if (item) {
+                $this.val(item.value);
+            }
+            $this.trigger("change");
         },
 
         /**
