@@ -2,6 +2,7 @@ package org.amcworld.springcrm
 
 import static java.util.Calendar.*
 
+
 class RecurCalendarEventHelper {
 
 	//-- Instance variables ---------------------
@@ -17,6 +18,47 @@ class RecurCalendarEventHelper {
 
 
 	//-- Public methods -------------------------
+
+	/**
+	 * Finds the calendar event of this recurrence which is greater than or
+	 * equal to the given date.
+	 * 
+	 * @param start	the start of the recurrence; the start date must be part of
+	 * 				the recurrence
+	 * @param d		the given date
+	 * @return		the next possible calendar event
+	 */
+	Date approximate(Date start, Date d) {
+		if (d <= start) {
+			return start
+		} else {
+			Calendar calStart = Calendar.instance
+			calStart.time = start
+			Calendar cal = Calendar.instance
+			cal.time = d
+			switch (data.type) {
+			case 10:
+				approximate10(calStart, cal)
+				break
+			case 30:
+				approximate30(calStart, cal)
+				break
+			case 40:
+				approximate40(calStart, cal)
+				break
+			case 50:
+				approximate50(calStart, cal)
+				break
+			case 60:
+				approximate60(calStart, cal)
+				break
+			case 70:
+				approximate70(calStart, cal)
+				break
+			}
+			return calStart.time
+		}
+	}
 
 	/**
 	 * Computes a date after or equal to the given date which can act as the
@@ -90,23 +132,24 @@ class RecurCalendarEventHelper {
 			break
 		case 50:
 			cal.add(MONTH, (n - 1) * data.interval)
-			cal.set(DAY_OF_WEEK, data.weekdaysAsList[0])
-			cal.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
+			cal[DAY_OF_WEEK] = data.weekdaysAsList[0]
+			cal[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
 			break
 		case 60:
 			cal.add(YEAR, n - 1)
 			break
 		case 70:
 			cal.add(YEAR, n - 1)
-			cal.set(DAY_OF_WEEK, data.weekdaysAsList[0])
-			cal.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
+			cal[DAY_OF_WEEK] = data.weekdaysAsList[0]
+			cal[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
 			break
 		}
 		return cal.time
 	}
 
 	static int delin(int x) {
-		return (x - SUNDAY) % numDaysInWeek + SUNDAY
+		int i = Calendar.instance.getMinimum(DAY_OF_WEEK)
+		return (x - i) % numDaysInWeek + i
 	}
 
 	static int lin(int wd) {
@@ -115,6 +158,88 @@ class RecurCalendarEventHelper {
 
 
 	//-- Non-public methods ---------------------
+
+	private void approximate10(Calendar calStart, Calendar cal) {
+		int n = data.interval
+		int q = (int) ((cal - calStart - 1) / n + 1)
+		calStart.add(DAY_OF_MONTH, n * q)
+	}
+
+	private void approximate30(Calendar calStart, Calendar cal) {
+		int t = numDaysInWeek
+		int n = data.interval
+		int q = (int) ((cal - calStart) / t)
+		if (q % n == 0) {
+			List<Integer> linWds = theta
+			int k = linWds.size()
+			int delta = 0
+			if (k > 1) {
+				int w = lin(cal[DAY_OF_WEEK])
+				if (w < linWds.first() || w > linWds.last()) {
+					delta = n * t
+				} else {
+					delta = linWds.find({ it >= w }) - linWds.first()
+				}
+			}
+			calStart.add(DAY_OF_MONTH, q * t + delta)
+		} else {
+			calStart.add(DAY_OF_MONTH, n * t * (((int) (q / n)) + 1))
+		}
+	}
+
+	private void approximate40(Calendar calStart, Calendar cal) {
+		int delta = numMonths * 
+			(cal[YEAR] - calStart[YEAR]) + cal[MONTH] - calStart[MONTH]
+		calStart[DAY_OF_MONTH] = data.monthDay
+		calStart.add(MONTH, delta)
+		if (delta % data.interval == 0) {
+			if (cal > calStart) {
+				calStart.add(MONTH, data.interval)
+			}
+		} else {
+			calStart.add(MONTH, data.interval - delta)
+		}
+	}
+
+	private void approximate50(Calendar calStart, Calendar cal) {
+		int delta = numMonths *
+			(cal[YEAR] - calStart[YEAR]) + cal[MONTH] - calStart[MONTH]
+		calStart.add(MONTH, delta)
+		calStart[DAY_OF_WEEK] = data.weekdaysAsList.first()
+		calStart[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
+		if (delta % data.interval == 0) {
+			if (cal > calStart) {
+				calStart.add(MONTH, data.interval)
+				calStart[DAY_OF_WEEK] = data.weekdaysAsList.first()
+				calStart[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
+			}
+		} else {
+			calStart.add(MONTH, data.interval - delta)
+			calStart[DAY_OF_WEEK] = data.weekdaysAsList.first()
+			calStart[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
+		}
+	}
+
+	private void approximate60(Calendar calStart, Calendar cal) {
+		calStart[DAY_OF_MONTH] = data.monthDay
+		calStart[MONTH] = data.month
+		calStart[YEAR] = cal[YEAR]
+		if (cal > calStart) {
+			calStart.add(YEAR, 1)
+		}
+	}
+
+	private void approximate70(Calendar calStart, Calendar cal) {
+		calStart[MONTH] = data.month
+		calStart[YEAR] = cal[YEAR]
+		calStart[DAY_OF_WEEK] = data.weekdaysAsList.first()
+		calStart[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
+		if (cal > calStart) {
+			calStart.add(YEAR, 1)
+			calStart[DAY_OF_WEEK] = data.weekdaysAsList.first()
+			calStart[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
+		}
+	}
 
 	/**
 	 * Computes an auxiliary date using month and year from the given calendar
@@ -128,52 +253,51 @@ class RecurCalendarEventHelper {
 	 */
 	private Calendar auxDate(Calendar cal, Integer month = null) {
 		def c = Calendar.instance
-		c.set(MONTH, month ?: cal.get(MONTH))
-		c.set(YEAR, cal.get(YEAR))
-		c.set(DAY_OF_WEEK, data.weekdaysAsList[0])
-		c.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
-		c.set(HOUR_OF_DAY, 0)
-		c.set(MINUTE, 0)
-		c.set(SECOND, 0)
-		c.set(MILLISECOND, 0)
+		c[MONTH] = month ?: cal[MONTH]
+		c[YEAR] = cal[YEAR]
+		c[DAY_OF_WEEK] = data.weekdaysAsList.first()
+		c[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
+		c[HOUR_OF_DAY] = 0
+		c[MINUTE] = 0
+		c[SECOND] = 0
+		c[MILLISECOND] = 0
 		return c
 	}
 
 	private void calibrateStart30(Calendar cal) {
-		int calwd = lin(cal.get(DAY_OF_WEEK))
-		List<Integer> wds = data.weekdaysAsList
-		List<Integer> linWds = wds.collect({ lin(it) }).sort()
+		int calwd = lin(cal[DAY_OF_WEEK])
+		List<Integer> linWds = theta
 		int wd = linWds.find { it > calwd }
 		if (wd) {
-			cal.set(DAY_OF_WEEK, delin(wd))
+			cal[DAY_OF_WEEK] = delin(wd)
 		} else {
-			wd = linWds.min()
-			cal.set(DAY_OF_WEEK, delin(wd))
+			wd = linWds.first()
+			cal[DAY_OF_WEEK] = delin(wd)
 			cal.add(WEEK_OF_YEAR, data.interval)
 		}
 	}
 
 	private void calibrateStart40(Calendar cal) {
-		if (cal.get(DAY_OF_MONTH) > data.monthDay) {
+		if (cal[DAY_OF_MONTH] > data.monthDay) {
 			cal.add(MONTH, data.interval)
 		}
-		cal.set(DAY_OF_MONTH, data.monthDay)
+		cal[DAY_OF_MONTH] = data.monthDay
 	}
 
 	private void calibrateStart50(Calendar cal) {
 		def c = auxDate(cal)
 		if (cal > c) {
 			c.add(MONTH, data.interval)
-			c.set(DAY_OF_WEEK, data.weekdaysAsList[0])
-			c.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
+			c[DAY_OF_WEEK] = data.weekdaysAsList.first()
+			c[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
 		}
 		cal.time = c.time
 	}
 
 	private void calibrateStart60(Calendar cal) {
 		Calendar c = cal.clone()
-		c.set(DAY_OF_MONTH, data.monthDay)
-		c.set(MONTH, data.month)
+		c[DAY_OF_MONTH] = data.monthDay
+		c[MONTH] = data.month
 		if (cal > c) {
 			c.add(YEAR, 1)
 		}
@@ -184,20 +308,19 @@ class RecurCalendarEventHelper {
 		def c = auxDate(cal, data.month)
 		if (cal > c) {
 			c.add(YEAR, 1)
-			c.set(DAY_OF_WEEK, data.weekdaysAsList[0])
-			c.set(DAY_OF_WEEK_IN_MONTH, data.weekdayOrd)
+			c[DAY_OF_WEEK] = data.weekdaysAsList.first()
+			c[DAY_OF_WEEK_IN_MONTH] = data.weekdayOrd
 		}
 		cal.time = c.time
 	}
 
 	protected void computeNthEvent30(Calendar cal, int n) {
-		List<Integer> wds = data.weekdaysAsList
-		List<Integer> linWds = wds.collect({ lin(it) }).sort()
-		int k = wds.size()
+		List<Integer> linWds = theta
+		int k = theta.size()
 		int m = (int) ((n - 1) / k)
 		cal.add(DAY_OF_MONTH, data.interval * numDaysInWeek * m)
 		for (int i = k * m + 2; i <= n; i++) {
-			int ws = lin(cal.get(DAY_OF_WEEK))
+			int ws = lin(cal[DAY_OF_WEEK])
 			cal.add(DAY_OF_MONTH, delta(linWds, linWds.indexOf(ws)))
 		}
 	}
@@ -207,7 +330,8 @@ class RecurCalendarEventHelper {
 		if (i < k - 1) {
 			return linWds[i + 1] - linWds[i]
 		} else {
-			return data.interval * numDaysInWeek + linWds.first - linWds.last
+			return data.interval * numDaysInWeek + linWds.first() - 
+				linWds.last()
 		}
 	}
 
@@ -215,45 +339,55 @@ class RecurCalendarEventHelper {
 		return Calendar.instance.firstDayOfWeek
 	}
 
+	protected List<Integer> getTheta() {
+		return data.weekdaysAsList.collect({ lin(it) }).sort()
+	}
+
 	protected static int getNumDaysInWeek() {
-		return Calendar.instance.getMaximum(DAY_OF_WEEK)
+		def c = Calendar.instance
+		return c.getMaximum(DAY_OF_WEEK) - c.getMinimum(DAY_OF_WEEK) + 1
+	}
+
+	protected static int getNumMonths() {
+		def c = Calendar.instance
+		return c.getMaximum(MONTH) - c.getMinimum(MONTH) + 1
 	}
 
 	private boolean needCalibration30(Calendar cal) {
-		return !(cal.get(DAY_OF_WEEK) in data.weekdaysAsList)
+		return !(cal[DAY_OF_WEEK] in data.weekdaysAsList)
 	}
 
 	private boolean needCalibration40(Calendar cal) {
-		return !(cal.get(DAY_OF_MONTH) == data.monthDay)
+		return !(cal[DAY_OF_MONTH] == data.monthDay)
 	}
 
 	private boolean needCalibration50(Calendar cal) {
 		boolean b
 		if (data.weekdayOrd < 0) {
 			def c = auxDate(cal)
-			b = (cal.get(DAY_OF_MONTH) == c.get(DAY_OF_MONTH)) &&
-				(cal.get(MONTH) == c.get(MONTH))
+			b = (cal[DAY_OF_MONTH] == c[DAY_OF_MONTH]) &&
+				(cal[MONTH] == c[MONTH])
 		} else {
-			b = cal.get(DAY_OF_WEEK_IN_MONTH) != data.weekdayOrd
+			b = cal[DAY_OF_WEEK_IN_MONTH] != data.weekdayOrd
 		}
-		return !((cal.get(DAY_OF_WEEK) in data.weekdaysAsList) && b)
+		return !((cal[DAY_OF_WEEK] in data.weekdaysAsList) && b)
 	}
 
 	private boolean needCalibration60(Calendar cal) {
-		return !((cal.get(DAY_OF_MONTH) == data.monthDay) &&
-			(cal.get(MONTH) == data.month))
+		return !((cal[DAY_OF_MONTH] == data.monthDay) &&
+			(cal[MONTH] == data.month))
 	}
 
 	private boolean needCalibration70(Calendar cal) {
 		boolean b
 		if (data.weekdayOrd < 0) {
 			def c = auxDate(cal)
-			b = cal.get(DAY_OF_MONTH) == c.get(DAY_OF_MONTH)
+			b = cal[DAY_OF_MONTH] == c[DAY_OF_MONTH]
 		} else {
-			b = cal.get(DAY_OF_WEEK_IN_MONTH) != data.weekdayOrd
+			b = cal[DAY_OF_WEEK_IN_MONTH] != data.weekdayOrd
 		}
-		return !((cal.get(DAY_OF_WEEK) in data.weekdaysAsList) && 
-			(cal.get(MONTH) == data.month) && b)
+		return !((cal[DAY_OF_WEEK] in data.weekdaysAsList) && 
+			(cal[MONTH] == data.month) && b)
 	}
 
 	protected static int unitStep(int x) {

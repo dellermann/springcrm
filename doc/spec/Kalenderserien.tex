@@ -61,7 +61,6 @@
 \newcommand*{\weeksyr}{\mathfrak{W}_Y}
 \newcommand*{\weeksmo}{\mathfrak{W}_M}
 \renewcommand{\theequation}{\thesection.\arabic{equation}}
-\renewcommand{\mod}{\;\mathrm{mod}\;}
 \numberwithin{equation}{section}
 \newtheorem{dfn}{Definition}
 \newtheorem{thm}{Satz}
@@ -83,7 +82,7 @@
 %--------------------------------------
 \title{Berechnung von Kalenderserien}
 \author{Daniel Ellermann}
-\date{2. Dezember 2011}
+\date{5. Dezember 2011}
 
 
 %--------------------------------------
@@ -462,7 +461,7 @@ Hilfssatz:
   F"ur Modulo Operation im Bereich $D = [0;\,2n[\ \subseteq \mathbb{N}$ mit
   $n \in \mathbb{N}$ und $v \in D$ gilt:
   \begin{equation}
-    v \mod n = \left\{\begin{array}{ll}
+    v \bmod n = \left\{\begin{array}{ll}
         0 \le v < n & : v \\
         n \le v < 2n & : v - n \\
       \end{array}\right.
@@ -471,7 +470,7 @@ Hilfssatz:
 \begin{proof}[Beweis]
   Zun"achst sei $t = \lfloor\frac{v}{n}\rfloor$. Nach Definition der
   Modulo-Operation gilt:
-  \begin{equation}s = v \mod n \Longleftrightarrow v = tn + s\end{equation}
+  \begin{equation}s = v \bmod n \Longleftrightarrow v = tn + s\end{equation}
 
   \noindent Wir zeigen zuerst den Fall $0 \le v < n$. Sei Dann gilt $t = 0$ so
   dass auch $v = 0 + s = v$ gilt. Im zweiten Fall $n \le v < 2n$ gilt $t = 1$
@@ -484,7 +483,7 @@ folgendes:
   \begin{equation}
   \begin{split}
     & \linf^{-1} :\ [\eta;\,\eta + T[\ \mapsto \wkdays \\
-    & \linf^{-1}(x) := (x - 1) \mod T + 1
+    & \linf^{-1}(x) := (x - 1) \bmod T + 1
   \end{split}
   \end{equation}
 \end{thm}
@@ -493,19 +492,19 @@ folgendes:
   \begin{equation}
   \begin{split}
     x & = \linf(\linf^{-1}(x)) \\
-    & = \linf((x - 1) \mod T + 1) \\
-    & = (x - 1) \mod T + 1 + T\left\lfloor\frac{1}{2}
-      (\sgn(\eta - ((x - 1) \mod T + 1)) + 1)\right\rfloor \\
+    & = \linf((x - 1) \bmod T + 1) \\
+    & = (x - 1) \bmod T + 1 + T\left\lfloor\frac{1}{2}
+      (\sgn(\eta - ((x - 1) \bmod T + 1)) + 1)\right\rfloor \\
   \end{split}
   \end{equation}
   Hier unterscheiden wir drei F"alle.
 
-  \noindent\textbf{Fall I $(x - 1) \mod T + 1 < \eta$:} Dann ist
-  $\sgn(\eta - ((x - 1) \mod T + 1)) = 1$. Dann gilt weiter:
+  \noindent\textbf{Fall I $(x - 1) \bmod T + 1 < \eta$:} Dann ist
+  $\sgn(\eta - ((x - 1) \bmod T + 1)) = 1$. Dann gilt weiter:
   \begin{equation}
   \begin{split}
-    x & = (x - 1) \mod T + 1 + T\left\lfloor\frac{1}{2} (1 + 1)\right\rfloor \\
-    & = (x - 1) \mod T + 1 + T \\
+    x & = (x - 1) \bmod T + 1 + T\left\lfloor\frac{1}{2} (1 + 1)\right\rfloor \\
+    & = (x - 1) \bmod T + 1 + T \\
   \end{split}
   \end{equation}
   Nach Definition~\ref{def:lin} ist in betrachteten Fall $x \ge T$ und nach
@@ -517,21 +516,21 @@ folgendes:
   \end{split}
   \end{equation}
 
-  \noindent\textbf{Fall II $(x - 1) \mod T + 1 = \eta$:} Dann ist
-  $\sgn(\eta - ((x - 1) \mod T + 1)) = 0$. Dann gilt weiter:
+  \noindent\textbf{Fall II $(x - 1) \bmod T + 1 = \eta$:} Dann ist
+  $\sgn(\eta - ((x - 1) \bmod T + 1)) = 0$. Dann gilt weiter:
   \begin{equation}
   \begin{split}
-    x & = (x - 1) \mod T + 1 + T\left\lfloor\frac{1}{2} (0 + 1)\right\rfloor \\
-    & = (x - 1) \mod T + 1 \\
+    x & = (x - 1) \bmod T + 1 + T\left\lfloor\frac{1}{2} (0 + 1)\right\rfloor \\
+    & = (x - 1) \bmod T + 1 \\
   \end{split}
   \end{equation}
 
-  \noindent\textbf{Fall III $(x - 1) \mod T + 1 \ge \eta$:} Dann ist
-  $\sgn(\eta - ((x - 1) \mod T + 1)) = -1$. Dann gilt weiter:
+  \noindent\textbf{Fall III $(x - 1) \bmod T + 1 \ge \eta$:} Dann ist
+  $\sgn(\eta - ((x - 1) \bmod T + 1)) = -1$. Dann gilt weiter:
   \begin{equation}
   \begin{split}
-    x & = (x - 1) \mod T + 1 + T\left\lfloor\frac{1}{2} (1 - 1)\right\rfloor \\
-    & = (x - 1) \mod T + 1 \\
+    x & = (x - 1) \bmod T + 1 + T\left\lfloor\frac{1}{2} (1 - 1)\right\rfloor \\
+    & = (x - 1) \bmod T + 1 \\
   \end{split}
   \end{equation}
 
@@ -551,14 +550,14 @@ folgendes:
     & = \linf^{-1}(w + T\left\lfloor\frac{1}{2}
       (\sgn(\eta - w) + 1)\right\rfloor) \\
     & = (w + T\left\lfloor\frac{1}{2}
-      (\sgn(\eta - w) + 1)\right\rfloor - 1) \mod T + 1 \\
+      (\sgn(\eta - w) + 1)\right\rfloor - 1) \bmod T + 1 \\
   \end{split}
   \end{equation}
   Hier unterscheiden wir zwei F"alle.
 
   \noindent\textbf{Fall I $w < \eta$:} Dann ist $\sgn(\eta - w) = 1$. Dann gilt
   weiter:
-  \begin{equation}w = (w + T - 1) \mod T + 1\end{equation}
+  \begin{equation}w = (w + T - 1) \bmod T + 1\end{equation}
   Da $w + T - 1 \ge T$ ist gilt nach Lemma~\ref{lmm:modulo}:
   \begin{equation}
   \begin{split}
@@ -569,7 +568,7 @@ folgendes:
 
   \noindent\textbf{Fall II $w \ge \eta$:} Dann ist entweder $\sgn(\eta - w) = 0$
   oder $\sgn(\eta - w) = -1$. Dann gilt in beiden F"allen weiter:
-  \begin{equation}w = (w - 1) \mod T + 1\end{equation}
+  \begin{equation}w = (w - 1) \bmod T + 1\end{equation}
   Da $w - 1 < T$ ist gilt nach Lemma~\ref{lmm:modulo}:
   \begin{equation}
   \begin{split}
@@ -866,16 +865,16 @@ In Abh"angigkeit vom Musterfeld werden die Intervallwerte wie folgt gepr"uft:
     \Delta = \left\lfloor\frac{d - t'_s}{1 \textrm{ Tag}}\right\rfloor
   \end{equation}
   Das Datum $d$ passt dann und nur dann wenn gilt:
-  \begin{equation}(\Delta \ge 0) \wedge (\Delta \mod n = 0)\end{equation}
-\item Monatsmuster. Nach~(\ref{eqn:monthDiff}) wird zun"achst die Differenz
+  \begin{equation}(\Delta \ge 0) \wedge (\Delta \bmod n = 0)\end{equation}
+\item Monatsmuster. Nach~\eqref{eqn:monthDiff} wird zun"achst die Differenz
   $\Delta_m$ in Monaten zwischen $d$ und $t'_s$ ermittelt. Das Datum $d$ passt
   dann und nur dann wenn gilt:
-  \begin{equation}(\Delta_m \ge 0) \wedge (\Delta_m \mod n = 0)\end{equation}
+  \begin{equation}(\Delta_m \ge 0) \wedge (\Delta_m \bmod n = 0)\end{equation}
 \item Jahresmuster. Die Differenz in Jahren $\Delta$ wird zun"achst wie folgt
   errechnet:
   \begin{equation}\Delta = \yearf(d) - \yearf(t'_s)\end{equation}
   Das Datum $d$ passt dann und nur dann wenn gilt:
-  \begin{equation}(\Delta \ge 0) \wedge (\Delta \mod n = 0)\end{equation}
+  \begin{equation}(\Delta \ge 0) \wedge (\Delta \bmod n = 0)\end{equation}
 \item Wochentagsmuster. Zun"achst wird die Differenz $\Delta$ zwischen $d$ und
   $t'_s$ in Wochen ermittelt:
   \begin{eqnarray}
@@ -884,9 +883,9 @@ In Abh"angigkeit vom Musterfeld werden die Intervallwerte wie folgt gepr"uft:
   \end{eqnarray}
   Das Datum $d$ passt wenn
   \begin{equation}\label{eqn:weekStepMatch}
-    (\Delta' \ge 0) \wedge (\Delta' \mod n = 0)
+    (\Delta' \ge 0) \wedge (\Delta' \bmod n = 0)
   \end{equation}
-  (\ref{eqn:weekStepMatch}) gilt allerdings nicht unbedingt, wenn $\Delta' = 0$.
+  \eqref{eqn:weekStepMatch} gilt allerdings nicht unbedingt, wenn $\Delta' = 0$.
   Dieser Fall kann n"amlich sowohl auftreten, wenn $d = t'_s$ gilt (dann passt
   $d$) als auch wenn $0 < \Delta < 1$ gilt (dann liegt $d$ in der ersten Woche
   nach $t'_s$, also zwischen $t'_s$ und $t'_s + 7$ Tage (und $d$ passt dann
@@ -932,7 +931,7 @@ Gegeben sei die Serie \texttt{*/\textit{n} * * *}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Tag}}\right\rfloor \\
-  P_{10} & \equiv (\Delta \ge 0) \wedge (\Delta \mod n = 0)
+  P_{10} & \equiv (\Delta \ge 0) \wedge (\Delta \bmod n = 0)
 \end{split}
 \end{equation}
 
@@ -941,7 +940,7 @@ Gegeben sei die Serie \texttt{* * * \textit{ws}/\textit{n}}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Monat}}\right\rfloor \\
-  P_{30} & \equiv (\wdf(d) \in ws) \wedge (\Delta \ge 0) \wedge (\Delta \mod n = 0)
+  P_{30} & \equiv (\wdf(d) \in ws) \wedge (\Delta \ge 0) \wedge (\Delta \bmod n = 0)
 \end{split}
 \end{equation}
 
@@ -950,7 +949,7 @@ Gegeben sei die Serie \texttt{\textit{dy} */\textit{n} * *}.
 \begin{equation}
 \begin{split}
   \Delta & = \left\lfloor\frac{d - t'_s}{1 \textrm{ Monat}}\right\rfloor \\
-  P_{40} & \equiv (\dayf(d) = dy) \wedge (\Delta \ge 0) \wedge (\Delta \mod n = 0)
+  P_{40} & \equiv (\dayf(d) = dy) \wedge (\Delta \ge 0) \wedge (\Delta \bmod n = 0)
 \end{split}
 \end{equation}
 
@@ -965,7 +964,7 @@ Gegeben sei die Serie \texttt{* */\textit{n} * \textit{ws}:\textit{w}}.
       w < 0 & : \dayf(d) = \dayf(d')
     \end{array}\right. \\
   P_{50} & \equiv (\wdf(d) = ws) \wedge P' \wedge
-    (\Delta \ge 0) \wedge (\Delta \mod n = 0)
+    (\Delta \ge 0) \wedge (\Delta \bmod n = 0)
 \end{split}
 \end{equation}
 
@@ -1180,7 +1179,7 @@ $t_e$ f"ur den Fall 30. Gegeben sei die Serie
 \texttt{* * * \textit{ws}/\textit{n}}. Wir schaffen uns zun"achst eine geordnete
 Liste $\vec{\Theta}$ f"ur $ws = \langle w_1,\,w_2,\,\dots,\,w_m\rangle$ wie
 folgt:
-\begin{equation}
+\begin{equation}\label{eqn:theta}
   \vec{\Theta} = \langle \linf(w_1),\,\linf(w_2),\,\dots,\,\linf(w_m)\rangle
 \end{equation}
 
@@ -1229,7 +1228,7 @@ Serie geh"ort, aber nicht in die Berechnung einflie"sen soll. Dann gilt
 \end{equation}
 
 \noindent Die Werte $s_{\varphi + 1}$ bis $s_c$ errechnen wir
-nach~(\ref{eqn:computeSeries30}). Dadurch ergibt sich eine Laufzeit von
+nach~\eqref{eqn:computeSeries30}. Dadurch ergibt sich eine Laufzeit von
 $O(1) + O(c) = O(1)$.
 
 
@@ -1242,257 +1241,268 @@ $O(1) + O(c) = O(1)$.
 %
 %================================================
 \section{Approximierung}
-Eine weitere wichtige Problemstellung ist die Findung eines Termins innerhalb
-einer Serie, der einem gegebenen Datum $d_x$ chronologisch als n"achstes folgt.
-Die folgende Definition beschreibt das:
+Eine wichtige Problemstellung ist die Findung eines Termins innerhalb einer
+Serie, der einem gegebenen Datum $d_x$ chronologisch als n"achstes folgt. Die
+folgende Definition beschreibt das:
 \begin{dfn}[approximierter Zeitpunkt]\label{def:approx}
-  Gegeben sei ein Datum $d_x$ und eine Terminserie $s$. Unter der Voraussetzung,
-  dass $d_x \le t_e = s_n$, gilt
+  Gegeben sei ein Datum $d_x \in \Psi$ und eine Terminserie $s$. Unter der
+  Voraussetzung, dass $d_x \le t_e = s_c$, gilt
   \begin{equation}\exists\ \vartheta : \vartheta \ge d_x\end{equation}
-  Dabei ist $\vartheta$ ein Serienelements $s_i \in \vec{S}$, das $d_x$
-  chronologisch als n"achstes folgt:
-  \begin{gather}\label{eqn:approxGeneral}
-    \vartheta := s_i \textnormal{ mit } d_x = s_i - \delta,\ 1 \le i \le n
-      \textnormal{ und} \\
-    \delta \ge 0 \textnormal{ und } \lim \delta = 0
-  \end{gather}
+  Dabei ist $\vartheta \in \vec{S}$ ein Serienelement $s_i \in \vec{S}$, das
+  $d_x$ chronologisch als n"achstes folgt:
+  \begin{equation}\label{eqn:approxGeneral}
+  \begin{split}
+    & \vartheta := s_i \textnormal{ mit } d_x = s_i - \delta,\ 1 \le i \le c
+      \textnormal{ und } \delta \ge 0 \\
+    & \forall j \textnormal{ mit } i < j \le c :\ s_j - d_x > \delta
+  \end{split}
+  \end{equation}
   Weiterhin gilt:
   \begin{eqnarray}\label{eqn:approxEasy}
-    d_x < t'_s \Rightarrow \vartheta = t'_s
+    d_x < t'_s \Longrightarrow \vartheta = t'_s
   \end{eqnarray}
 \end{dfn}
 
 \paragraph{Anmerkungen}
 \begin{itemize}
-\item Die Voraussetzung $d_x \le t_e = s_n$ ergibt sich daraus, dass abgelaufene
-  Termine nie wieder stattfinden werden.
-\item Der Wert $\delta$ bestimmt einen m"oglichst kleinen Wert, der, zu $d_x$
-  addiert, ein Element $s_i$ der Terminserie ergibt.
+  \item Die Voraussetzung $d_x \le t_e = s_c$ ergibt sich daraus, dass
+    abgelaufene Termine nie wieder stattfinden werden.
+  \item Der Wert $\delta$ bestimmt kleinsten m"oglichen Wert, der, zu $d_x$
+    addiert, ein Element $s_i$ der Terminserie ergibt.
 \end{itemize}
 
 \noindent Die Ermittlung von $\vartheta$ ist vom Fall der Terminserie abh"angig.
-Nachfolgend wird die Berechnung f"ur jeden Fall beleuchtet. Im
+Nachfolgend wird die Berechnung f"ur jeden Fall untersucht. Im
 Fall~\eqref{eqn:approxEasy} ist $\vartheta$ bereits bestimmt worden. In den
 folgenden Abschnitten wollen wir deshalb von $d_x \ge t'_s$ ausgehen. Dazu
 halten wir zun"achst folgendes fest:
 \begin{thm}\label{thm:dBetweenElems}
   Unter der Voraussetzung $t'_s \le d_x \le t_e$ gilt
   \begin{equation}
-    \exists\ i \in \mathbb{N},\ 1 \le i < n :\ s_i \le d_x \le s_{i+1}
+    \exists\ i \in \mathbb{N},\ 1 \le i < c :\ s_i \le d_x \le s_{i+1}
   \end{equation}
   $d_x$ muss sich also zwischen zwei benachbarten Serienelementen befinden.
 \end{thm}
 \begin{proof}[Beweis]
   Vom Bereich her ist Satz~\ref{thm:dBetweenElems} korrekt, denn es gilt
-  \begin{gather}
-    \forall\ i \in \mathbb{N},\ 1 \le i < n :\ s_i \le d_x \le s_{i+1} \\
-    \Leftrightarrow s_1 \le d_x \le s_n \\
-    \Leftrightarrow t'_s \le d_x \le t_e
-  \end{gather}
+  \begin{equation}
+  \begin{split}
+    \forall\ i \in \mathbb{N},\,1 \le i < c : & \ s_i \le d_x \le s_{i+1} \\
+    \Longleftrightarrow & \ s_1 \le d_x \le s_c \\
+    \Longleftrightarrow & \ t'_s \le d_x \le t_e
+  \end{split}
+  \end{equation}
   Das wurde durch die Voraussetzung bereits sichergestellt. Nach
   Definition~\ref{def:seriesAsSeries} gilt
-  \begin{eqnarray}
-    s_{n+1} &=& s_n + \varepsilon \\
-    s_{n+1} - s_n &=& \varepsilon
-  \end{eqnarray}
+  \begin{equation}
+  \begin{split}
+    s_{i+1} & = s_i + \varepsilon \\
+    s_{i+1} - s_i & = \varepsilon
+  \end{split}
+  \end{equation}
   Nach den Werten f"ur $\varepsilon$ aus Tabelle~\ref{tab:pattern} auf
   Seite~\pageref{tab:pattern} erkennen wir, dass $\varepsilon \ge 1$ Tag gilt,
-  d. h. $s_{n+1} - s_n \ge 1$ Tag. Die L"ange eines Datums $d_x$ ist
+  d. h. $s_{i+1} - s_i \ge 1$ Tag. Die L"ange eines Datums $d_x$ ist
   offensichtlich 1 Tag. Es gilt also
-  \begin{equation}s_n + 1 \textrm{ Tag} \le s_n + \varepsilon\end{equation}
+  \begin{equation}s_i + 1 \textrm{ Tag} \le s_i + \varepsilon\end{equation}
 \end{proof}
 
 
 %--------------------------------------
 %
-% Fall 100
+% Serie 10
 %
 %--------------------------------------
-\subsection{Fall 100}
-Dem Fall 100 liegt als einzigem Fall ein fester, deterministischer Intervall
-zugrunde. Wir wollen nun den Index $q$ desjenigen Serienelements $s_q$
-ermitteln, f"ur das gilt $d_x = s_q - \delta$ mit $\delta \ge 0$ und
-$\lim \delta = 0$. Das bedeutet, wir ermitteln den Index des Serienelements, das
-$d_x$ chronologisch als n"achstes folgt. Durch Einsetzen von $q$ in
-Gleichung~\eqref{eqn:endEasy} erhalten wir dann $\vartheta$.
-
-Um $q$ zu bestimmen, ersetzen wir in~\eqref{eqn:endEasy} $n$ durch $q$ und $t_e$
-durch $d_x$ und stellen nach $q$ um. Wir erhalten:
-\begin{eqnarray}
-  d_x & = & t'_s + \varepsilon(n - 1) \\
-  d_x - t'_s & = & \varepsilon(n - 1) \\
-  \frac{d_x - t'_s}{\varepsilon} & = & n - 1 \\
-  \frac{d_x - t'_s}{\varepsilon} + 1 & = & n
-\end{eqnarray}
-Wir k"onnen davon ausgehen, dass $\varepsilon \ge 0$ gilt. Mit
-\begin{equation}\label{eqn:nv}n_v = \left[n + \gamma\right]\end{equation}
-erhalten wir den Index $n_v$ desjenigen Termins, der chronologisch auf $d_x$
-folgt. F"ur $\gamma$ w"ahlen wir einen Wert, der fast 1 ist. Damit erreichen
-wir, dass f"ur $n_v$ gilt:
-\begin{equation}\label{eqn:nv2}
-  n_v = \left\{\begin{array}{ll}
-  n - [n] = 0 : & n \\
-  n - [n] \ne 0 : & [n] + 1 \\
-  \end{array}\right.
+\subsection{Serie 10}
+Gegeben sei die Serie \texttt{*/\textit{n} * * *}. Dem Fall 10 liegt als
+einzigem Fall ein fester, deterministischer Intervall zugrunde. Wir wollen nun
+den Index $q$ desjenigen Serienelements $s_q$ ermitteln, f"ur das gilt
+$d_x = s_q - \delta$ mit $\delta \ge 0$ und
+$\forall j,\ i < j \le c :\ s_j - d_x > \delta$. Das bedeutet, wir ermitteln den
+Index des Serienelements, das $d_x$ chronologisch als n"achstes folgt. Dabei
+verwenden wir Gleichung~\eqref{eqn:endEasy} und machen uns zunutze, dass der
+dort betrachtete Endzeitpunkt ein Element der Terminserie ist. Wir ersetzen
+deshalb in~\eqref{eqn:endEasy} $c$ durch $q$ und $t_e$ durch $d_x$ und stellen
+nach $q$ um. Dabei gilt $\varepsilon = n$ Tage.
+\begin{equation}\label{eqn:qFromEpsilon}
+\begin{split}
+  d_x & = t'_s + \varepsilon(q - 1) \\
+  d_x - t'_s & = \varepsilon(q - 1) \\
+  \frac{d_x - t'_s}{\varepsilon} & = q - 1 \\
+  \frac{d_x - t'_s}{\varepsilon} + 1 & = q
+\end{split}
 \end{equation}
-Wir setzen also $\gamma$ wie folgt, wobei wir m"oglichst hohe Werte f"ur $x$
-annehmen:
-\begin{equation}\label{eqn:gamma}
-  \gamma := \lim_{x \to \infty} (1 - \frac{1}{x})
+Damit gilt f"ur $\vartheta$:
+\begin{equation}\label{eqn:theta10}
+\begin{split}
+  \vartheta & = t'_s + \varepsilon\lfloor q\rfloor \\
+  & = t'_s + \varepsilon\left\lfloor \frac{d_x - t'_s}{\varepsilon} +
+    1\right\rfloor
+\end{split}
 \end{equation}
-\begin{thm}
-F"ur $\gamma$ gilt:
-\begin{equation}1 > \gamma \ge 1 - n + [n]\end{equation}
-\end{thm}
-\begin{proof}[Beweis]
-Der Teil $\gamma < 1$ ergibt sich aus~(\ref{eqn:gamma}):
-\begin{eqnarray}
-  \gamma & = & \lim_{x \to \infty} (1 - \frac{1}{x}) \\
-    & = & \lim_{x \to \infty} 1 - \lim_{x \to \infty} \frac{1}{x} \\
-    & = & 1 - 0 \\
-    & = & 1
-\end{eqnarray}
-Den zweiten Teil $\gamma \ge 1 - n + [n]$ beweisen wir durch den Umkehrschluss.
-W"are $\gamma < 1 - n + [n]$ wahr, gilt $\gamma = 1 - n + [n] - \delta$ mit
-$\delta > 0$. Dann gilt nach~(\ref{eqn:nv}) f"ur den Fall $n - [n] \ne 0$:
-\begin{eqnarray}
-  n_v & = & [ n + \gamma ] \\
-    & = & [ n + 1 - n + [n] - \delta ] \\
-    & = & [ 1 + [n] - \delta ]
-\end{eqnarray}
-Dies wiederspricht jedoch~(\ref{eqn:nv2}), wo bei $n - [n] \ne 0$ festgelegt
-wurde $n_v = [n] + 1$.
-\end{proof}
-\noindent Wir erhalten $\vartheta$ durch~\eqref{eqn:endEasy}, wobei wir $t_e$
-durch $\vartheta$ und $n$ durch $n_v$ ersetzen:
-\begin{equation}\vartheta = t'_s + \varepsilon (n_v-1)\end{equation}
-
-
-%--------------------------------------
-%
-% Faelle 200 und 300
-%
-%--------------------------------------
-\subsection{F"alle 200 und 300}
-Um $\vartheta$ f"ur die F"alle 200 und 300 zu berechnen, ist eine umfangreichere
-Betrachtung vonn"oten. Auch hier "uberf"uhren wir Fall 200 nach
-Satz~\ref{eqn:20to30} in den Fall 300 (siehe Seite~\pageref{eqn:20to30}). Da
-dem Fall 300 kein regelm"a"siges Intervall zugrundeliegt, m"ussen wir uns einzig
-und allein mit der Folge $s_n$ behelfen. Um das Durchlaufen der Folge zu
-vermeiden, verwenden wir einen Approximationsalgorithmus, mit dem wir uns an
-$\vartheta$ ann"ahern.
-
-Wir erkennen zun"achst, dass sich die Serienelemente aller $w$ Wochen
-wiederholen. Wir errechnen erst einmal die Anzahl der Wochen $q$ vom Startdatum.
+Diese Formel gilt jedoch nicht, wenn $d_x - t'_s = 0$. In diesem Fall ist $d_x$
+bereits ein Serienelement und es darf nicht das n"achste ausgew"ahlt werden.
+Mit einem Trick l"osen wir dieses Problem: wenn wir statt $d_x$ den Vortag
+$d_x - 1$ verwenden, geh"ort auch ein Serienelement mit zum Intervall. Daher
+wandeln wir~\eqref{eqn:theta10} wie folgt ab:
 \begin{equation}
-  q = \left[\frac{d_x - t'_s}{7 \textrm{ Tage}}\right]
+  \vartheta = t'_s + \varepsilon\left\lfloor
+    \frac{d_x - 1 - t'_s}{\varepsilon} + 1\right\rfloor
 \end{equation}
+
+
+%--------------------------------------
+%
+% Serie 30
+%
+%--------------------------------------
+\subsection{Serie 30}
+Gegeben sei die Serie \texttt{* * * \textit{ws}/\textit{n}}. Wir verwenden
+wieder die geordnete Liste $\vec{\Theta}$ wie in~\eqref{eqn:theta} auf
+Seite~\pageref{eqn:theta} definiert.
+
+Um $\vartheta$ f"ur den Fall 30 zu berechnen, ist eine umfangreichere
+Betrachtung vonn"oten. Da kein regelm"a"siges Intervall zugrundeliegt, m"ussen
+wir uns einzig und allein mit der Folge $s_n$ behelfen. Um das Durchlaufen der
+Folge zu vermeiden, verwenden wir einen Approximationsalgorithmus, mit dem wir
+uns an $\vartheta$ ann"ahern.
+
+Wir erkennen zun"achst, dass sich die Serienelemente aller $n$ Wochen
+wiederholen. Wir errechnen erst einmal die Anzahl der Wochen $q$ vom Startdatum.
+\begin{equation}q = \left\lfloor\frac{d_x - t'_s}{T}\right\rfloor\end{equation}
 Das hei"st, $d_x$ liegt in der $q$. Woche seit $t'_s$. Nun beobachten wir
 folgendes:
 \begin{itemize}
-\item Wenn $q \bmod w = 0$, dann liegt $d_x$ in einer Serienwoche, d. h. einer
-  Woche, die an den Wochentagen in $\vec{\Theta}$ Termine der Serie enth"alt.
-\item Wenn $q \bmod w \ne 0$, dann liegt $d_x$ in eine Zwischenwoche, d. h.
-  einer Woche zwischen zwei Serienwochen.
+  \item Wenn $q \bmod n = 0$, dann liegt $d_x$ in einer Serienwoche, d. h. einer
+    Woche, die an den Wochentagen in $\vec{\Theta}$ Termine der Serie enth"alt.
+  \item Wenn $q \bmod n \ne 0$, dann liegt $d_x$ in eine Zwischenwoche, d. h.
+    einer Woche zwischen zwei Serienwochen.
 \end{itemize}
 
-\noindent Betrachten wir den ersten Fall ($q \bmod w = 0$). Der Wochentag $v$
+\noindent Betrachten wir den ersten Fall ($q \bmod w = 0$). Der Wochentag $w$
 des gegebenen Datums $d_x$ ermitteln wir mit
-\begin{equation}v = \wdf(d_x)\end{equation}
+\begin{equation}w = \linf(\wdf(d_x))\end{equation}
 Weiterhin sei $k$ die Anzahl der Elemente in $\vec{\Theta}$, also
 \begin{equation}k = ||\vec{\Theta}||\end{equation}
 Um die Differenz $\delta$ zum n"achsten Wochentag der Serie in Woche $q$ bzw.
-der n"achstm"oglichen Woche zu ermitteln, verwenden wir folgenden Algorithmus:
+der n"achstm"oglichen Woche zu ermitteln, definieren wir eine Hilfsfunktion
+$\gamma$ wie folgt:
+\begin{equation}
+\begin{split}
+  & \gamma : \vec{\mathbb{N}},\,\wkdays \mapsto \mathbb{N} \\
+  & \gamma(\vec{W},\,w) := i \textrm{ mit } 1 < i \le \|\vec{W}\| :
+    \ \vec{W}_{i-1} < w \le \vec{W}_i
+\end{split}
+\end{equation}
+Die Funktion $\gamma$ ermittelt aus einer geordneten Liste von Wochentagen den
+Index desjenigen Wochentages der gleich $w$ ist oder $w$ als n"achstes folgt.
+Daraus bilden wir nun folgenden Algorithmus:
 \begin{equation}
   \delta = \left\{\begin{array}{ll}
-    k = 1 : & 0 \\
-    k > 1 : & \left\{\begin{array}{ll}
-      v < \vec{\Theta}_k: & \vec{\Theta}_i - \vec{\Theta}_{1} \textrm{ mit }
-      1 < i \le k \textrm{ und } \vec{\Theta}_{i-1} \le v < \vec{\Theta}_i \\
-      v \ge \vec{\Theta}_k: & 7w \\
-      \end{array}\right. \\
+      k = 1 : & 0 \\
+      k > 1,\,w < \vec{\Theta}_1: & nT \\
+      k > 1,\,\vec{\Theta}_1 \le w \le \vec{\Theta}_k: &
+        \vec{\Theta}_i - \vec{\Theta}_{1} \textrm{ mit }
+        i = \gamma(\vec{\Theta},\,w) \\
+      k > 1,\,w > \vec{\Theta}_k: & nT \\
     \end{array}\right.
 \end{equation}
-(Bemerkung: Der Fall $k = 0$ ist nat"urlich nicht definiert und muss im Frontend
-verhindert werden.)
 
-\noindent Wenn der Wochentag $v$ nicht der letzte in der Wochentagsmenge
-$\vec{\Theta}$ ist, ermitteln wir damit den n"achsten passenden Wochentag aus
-der Menge, der nicht $v$ selbst ist. Falls es der letzte Wochentag in der Menge
-ist, dann verwenden wir den ersten Wochentag aus $\vec{\Theta}$ in der
-n"achstm"oglichen Serienwoche.
+\noindent Wenn die Liste der Wochentage $\vec{\Theta}$ nur einen einzigen
+Eintrag hat, wird keine Differenz zum n"achsten Wochentag in der Liste
+ermittelt. Statt dessen gehen wir $n$ Wochen weiter.
+
+Andernfalls unterscheiden wir drei F"alle. Liegt $w$ vor dem ersten Wochentag in
+der Liste, dann gehen wir $n$ Wochen weiter. Dies gilt auch, wenn $w$ hinter dem
+letzten Wochentag in der Liste liegt. In allen anderen F"allen ermitteln wir mit
+der Funktion $\gamma$ den Index des Wochentages der gleich oder gr"o"ser $w$ ist
+und berechnen die Differenz in Tagen zum ersten Wochentag aus der Liste.
 
 Nun ist der Errechnung von $\vartheta$ kein Problem mehr:
-\begin{equation}
-\label{eqn:theta300}\vartheta = t'_s + 7q + \delta
-\end{equation}
+\begin{equation}\label{eqn:theta30}\vartheta = t'_s + qT + \delta\end{equation}
 
 \noindent Liegt $d_x$ nicht in einer Serienwoche (Fall $q \bmod w \ne 0$), dann
 m"ussen wir lediglich die fehlenden Wochen bis zur n"achsten Serienwoche
 addieren:
-\begin{equation}\delta = 7w(\left[\frac{q}{w}\right] + 1) - 7q\end{equation}
-und errechnen schlie"slich nach~\eqref{eqn:theta300} den Wert von $\vartheta$.
+\begin{equation}
+  \delta = nT(\left\lfloor\frac{q}{n}\right\rfloor + 1) - qT
+\end{equation}
+und errechnen schlie"slich nach~\eqref{eqn:theta30} den Wert von $\vartheta$:
+\begin{equation}
+  \vartheta = t'_s + nT(\left\lfloor\frac{q}{n}\right\rfloor + 1)
+\end{equation}
 
 
 %--------------------------------------
 %
-% Faelle 400 und 500
+% Faelle 40 und 50
 %
 %--------------------------------------
-\subsection{F"alle 400 und 500}\label{ssec:approx400_500}
-Hier l"asst sich f"ur $\varepsilon$ kein definitiver Wert festlegen, da die
-Anzahl der Tage in einem Monat von 28 bis 31 variieren. Aus diesem Grund
-kann~\eqref{eqn:nv} nicht angewendet werden und es muss eine Alternative gesucht
-werden.
+\subsection{Serien 40 und 50}\label{ssec:approx40_50}
+Gegeben seien die Serien \texttt{\textit{dy} */\textit{n} * *} bzw.
+\texttt{* */\textit{n} * \textit{ws}:\textit{w}}. Hier l"asst sich f"ur
+$\varepsilon$ kein definitiver Wert festlegen, da die Anzahl der Tage in einem
+Monat von 28 bis 31 variieren. Aus diesem Grund kann~\eqref{eqn:qFromEpsilon}
+nicht angewendet werden und es muss eine Alternative gesucht werden.
 
 Wir berechnen zun"achst die Differenz $\Delta_m$ zwischen $d_x$ und $t'_s$ in
 Monaten:
 \begin{equation}\label{eqn:deltaM}
-  \Delta_m = 12 (\yearf(d_x)-\yearf(t'_s)) - \monf(t'_s) + \monf(d_x)
+  \Delta_m = 12 (\yearf(d_x)-\yearf(t'_s)) + \monf(d_x) - \monf(t'_s)
 \end{equation}
 Hier ist jetzt eine Fallunterscheidung notwendig. Wir schaffen uns ein Pr"adikat
 $P$, dass wahr ist, wenn $d_x$ in einem Monat liegt, in dem die Serie ein
 Vorkommen hat. Es gilt also:
 \begin{equation}P \equiv \Delta_m \bmod n = 0\end{equation}
 Ist $P$ wahr, berechnen wir das Vorkommen $\vartheta'$ der Serie in diesem
-Monat, d. h. im Monat $\monf(t'_s) + \Delta_m$ im Jahr $\yearf(t'_s)$. Im Fall
-400 ist das:
-\begin{equation}\label{eqn:thetaStrich400}
-  \vartheta' = \calf(d_x,\,\monf(t'_s) + \Delta_m,\,\yearf(t'_s),\,,\,,\,)
+Monat, d. h. im Monat $\monf(t'_s) + \Delta_m$ im Jahr $\yearf(t'_s)$. In Serie
+40 ist das:
+\begin{equation}\label{eqn:thetaStrich40}
+  \vartheta' = \calf(dy,\,\monf(t'_s) + \Delta_m,\,\yearf(t'_s),\,,\,,\,)
 \end{equation}
-Im Fall 500 ist das:
-\begin{equation}\label{eqn:thetaStrich500}
+In Serie 50 ist das:
+\begin{equation}\label{eqn:thetaStrich50}
   \vartheta' = \calf(,\,\monf(t'_s) + \Delta_m,\,\yearf(t'_s),\,ws,\,,\,w)
 \end{equation}
 \begin{thm}
-Ist $P$ wahr, d. h. liegt $d_x$ in einem Monat, in der die Serie ein Vorkommen
-hat, muss dieses Vorkommen $\vartheta'$ sein.
+  Ist $P$ wahr, d. h. liegt $d_x$ in einem Monat, in der die Serie ein Vorkommen
+  hat, muss dieses Vorkommen $\vartheta'$ sein.
 \end{thm}
 \begin{proof}[Beweis]
-Wir beweisen zun"achst, dass $d_x$ und $\vartheta'$ im selben Monat und Jahr
-liegt. Dazu schaffen wir uns eine Hilfsfunktion $m(d_x)$, die zu einem gegebenen
-Datum die Anzahl der Monate errechnet:
-\begin{equation}m(d_x) := 12\yearf(d_x) + \monf(d_x)\end{equation}
-Nach~(\ref{eqn:deltaM}) gilt
-\begin{eqnarray}
-  \Delta_m & = & 12 (\yearf(d_x)-\yearf(t'_s)) - \monf(t'_s) + \monf(d_x) \\
-    & = & 12\yearf(d_x) - 12\yearf(t'_s) + \monf(d_x) - \monf(t'_s) \\
-    & = & 12\yearf(d_x) + \monf(d_x) - (12\yearf(t'_s) + \monf(t'_s)) \\
-    & = & m(d_x) - m(t'_s)
-\end{eqnarray}
-F"ur Monat und Jahr von $\vartheta'$ gilt
-\begin{eqnarray}
-  m(\vartheta') & = & m(t'_s) + \Delta_m \\
-    & = & m(t'_s) + m(d_x) - m(t'_s) \\
-    & = & m(d_x)
-\end{eqnarray}
-Schlie"slich muss im Fall 400 f"ur den Tag des Vorkommens offensichtlich gelten:
-\begin{equation}\dayf(\vartheta') = \dayf(t'_s)\end{equation}
-Im Fall 500 gilt dagegen:
-\begin{equation}
-  \wdf(\vartheta') = \wdf(t'_s) \textrm{ und } \womf(\vartheta') = \womf(t'_s)
-\end{equation}
-Das ergibt sich nach~(\ref{eqn:thetaStrich400}) bzw.~(\ref{eqn:thetaStrich500}).
+  Wir beweisen zun"achst, dass $d_x$ und $\vartheta'$ im selben Monat und Jahr
+  liegt. Dazu schaffen wir uns eine Hilfsfunktion $m$, die zu einem gegebenen
+  Datum die Anzahl der Monate errechnet:
+  \begin{equation}
+  \begin{split}
+    & m : \Psi \mapsto \mathbb{N} \\
+    & m(d) := 12\cdot\yearf(d) + \monf(d)
+  \end{split}
+  \end{equation}
+  Nach~\eqref{eqn:deltaM} gilt
+  \begin{equation}
+  \begin{split}
+    \Delta_m & = 12\,(\yearf(d_x)-\yearf(t'_s)) + \monf(d_x) - \monf(t'_s) \\
+      & = 12\cdot\yearf(d_x) - 12\cdot\yearf(t'_s) + \monf(d_x) - \monf(t'_s) \\
+      & = 12\cdot\yearf(d_x) + \monf(d_x) - (12\cdot\yearf(t'_s) + \monf(t'_s)) \\
+      & = m(d_x) - m(t'_s)
+  \end{split}
+  \end{equation}
+  F"ur Monat und Jahr von $\vartheta'$ gilt
+  \begin{equation}
+  \begin{split}
+    m(\vartheta') & = m(t'_s) + \Delta_m \\
+      & = m(t'_s) + m(d_x) - m(t'_s) \\
+      & = m(d_x)
+  \end{split}
+  \end{equation}
+  Schlie"slich muss in Serie 40 f"ur den Tag des Vorkommens offensichtlich
+  gelten:
+  \begin{equation}\dayf(\vartheta') = \dayf(t'_s)\end{equation}
+  In Serie 50 gilt dagegen:
+  \begin{equation}
+    \wdf(\vartheta') = \wdf(t'_s) \textrm{ und } \womf(\vartheta') = \womf(t'_s)
+  \end{equation}
+  Das ergibt sich nach~\eqref{eqn:thetaStrich40} bzw.~\eqref{eqn:thetaStrich50}.
 \end{proof}
 
 Wenn $P$ wahr ist, kommt es darauf an, ob $d_x$ chronologisch vor oder hinter
@@ -1507,101 +1517,44 @@ in dem die Serie ein Vorkommen hat.
 Dann ergibt sich $\vartheta$ wie folgt:
 \begin{equation}\vartheta = \addff(\monf,\,\vartheta',\,n-\Delta_m)\end{equation}
 
-\noindent Zusammenfassend gilt f"ur die F"alle 400 und 500 unter Zuhilfenahme
-von $\vartheta'$ aus~(\ref{eqn:thetaStrich400}) und~(\ref{eqn:thetaStrich500}):
-\begin{equation}\label{eqn:theta400}
-  \vartheta = \left\{\begin{array}{ll}
-  P : & \left\{\begin{array}{ll}
-    d_x \le \vartheta' : & \vartheta' \\
-    d_x > \vartheta' : & \addff(\monf,\,\vartheta',\,n) \\
-    \end{array}\right. \\
-  \overline{P} : & \addff(\monf,\,\vartheta',\,n-\Delta_m) \\
-  \end{array}\right.
-\end{equation}
-
-
-%--------------------------------------
-%
-% Faelle 600 und 700
-%
-%--------------------------------------
-\subsection{F"alle 600 und 700}
-Wie schon in der Betrachtung der F"alle 400 und 500 (siehe
-Seite~\pageref{ssec:approx400_500}) kann auch in diesen F"allen kein definitiver
-Wert f"ur das Interval $\varepsilon$ angenommen werden, da die L"ange eines
-Jahres zwischen 365 und 366 Tagen variiert. Auch die Verwendung der genauen
-Dauer eines tropischen Erdjahres mit $\varepsilon \approx 365,242198$ Tage ist
-f"ur kurze Zeitr"aume, die kein Schaltjahr enthalten, nicht geeignet.
-
-Wir errechnen zun"achst das Datum $\vartheta'$ des Serienvorkommens im aktuellen
-Jahr, d. h. im Jahr $\yearf(d_x)$. F"ur den Fall 600 gilt
-\begin{equation}\vartheta' = \calf(d,\,m,\,\yearf(d_x),\,,\,,\,)\end{equation}
-Im Fall 700 gilt
-\begin{equation}\vartheta' = \calf(,\,m,\,\yearf(d_x),\,ws,\,,\,w)\end{equation}
-
-Desweiteren repr"asentieren die Hilfswerte $y_s$ und $y_e$ den Anfang und das
-Ende des aktuellen Jahres:
-\begin{eqnarray}
-  y_s & = & \calf(1,\,1,\,\yearf(d_x),\,,\,,\,) \\
-  y_e & = & \calf(31,\,12,\,\yearf(d_x),\,,\,,\,)
-\end{eqnarray}
-
-Liegt das gegebene Datum $d_x$ vor dem Serienvorkommen (oder ist es sogar das
-Serienvorkommen), so ist $\vartheta'$ das gesuchte Datum. Andernfalls ist es das
-Serienvorkommen im n"achsten Jahr. Zusammenfassend gilt also:
+\noindent Zusammenfassend gilt f"ur die Serien 40 und 50 unter Zuhilfenahme
+von $\vartheta'$ aus~\eqref{eqn:thetaStrich40} und~\eqref{eqn:thetaStrich50}:
 \begin{equation}
   \vartheta = \left\{\begin{array}{ll}
-    y_s \le d_x \le \vartheta' : & \vartheta' \\
-    \vartheta' < d_x \le y_e : & \addff(\yearf,\,\vartheta',\,1) \\
+      P,\,d_x \le \vartheta' : & \vartheta' \\
+      P,\,d_x > \vartheta' : & \addff(\monf,\,\vartheta',\,n) \\
+      \overline{P} : & \addff(\monf,\,\vartheta',\,n-\Delta_m) \\
     \end{array}\right.
 \end{equation}
 
 
+%--------------------------------------
+%
+% Serien 60 und 70
+%
+%--------------------------------------
+\subsection{Serien 60 und 70}
+Gegeben seien die Serien \texttt{\textit{dy} \textit{m} */1 *} bzw.
+\texttt{* \textit{m} */1 \textit{ws}:\textit{w}}. Wie schon in der Betrachtung
+der Serien 40 und 50 (siehe Seite~\pageref{ssec:approx40_50}) kann auch in
+diesen F"allen kein definitiver Wert f"ur das Interval $\varepsilon$ angenommen
+werden, da die L"ange eines Jahres zwischen 365 und 366 Tagen variiert. Auch die
+Verwendung der genauen Dauer eines tropischen Erdjahres mit
+$\varepsilon \approx 365,242198$ Tage ist f"ur kurze Zeitr"aume, die kein
+Schaltjahr enthalten, nicht geeignet.
 
-%================================================
-%
-%
-% Weitere Formeln
-%
-%
-%================================================
-\section{Weitere Formeln}
-Nachfolgend sind Formeln aufgelistet, die f"ur die L"osungsfindung bei oben
-ausgef"uhrten Problemen von Nutzen sind.
-
-Die Ermittlung der Differenz in Monaten $\Delta_m$ von zwei Daten $t_s$ und
-$t_e$ (mit $t_s < t_e$) ergibt sich wie folgt:
-\begin{equation}\label{eqn:monthDiff}
-  \Delta_m = 12(\omega_y - \alpha_y) - \alpha_m + \omega_m
+Wir errechnen zun"achst das Datum $\vartheta'$ des Serienvorkommens im aktuellen
+Jahr, d. h. im Jahr $\yearf(d_x)$. F"ur Serie 60 gilt
+\begin{equation}\vartheta' = \calf(dy,\,m,\,\yearf(d_x),\,,\,,\,)\end{equation}
+In Serie 70 gilt
+\begin{equation}\vartheta' = \calf(,\,m,\,\yearf(d_x),\,ws,\,,\,w)\end{equation}
+Analog zu den Serien 40 und 50 ergibt sich f"ur $\vartheta$ in den Serien 60
+und 70:
+\begin{equation}
+  \vartheta = \left\{\begin{array}{ll}
+    d_x \le \vartheta' : & \vartheta' \\
+    \vartheta' < d_x : & \addff(\yearf,\,\vartheta',\,1) \\
+    \end{array}\right.
 \end{equation}
-Dabei bezeichnen $\alpha_m$ und $\omega_m$ die Monatsnummer und $\alpha_y$ und
-$\omega_y$ die Jahreszahl des Anfangs- bzw. Enddatums $t_s$ und $t_e$.
 
-Der Wochenbeginn $\alpha_w$ eines Datums $d$ berechnet sich nach folgender
-Formel:
-\begin{equation}\alpha_w(d) = d - (\wdf(d) - \eta + T) \mod T\end{equation}
-Das ermittelte Datum $\alpha_w$ stellt dabei den ersten Tag in der Woche dar, in
-der auch $d$ liegt. Dabei werden verschiedene Wochenbeginne ber"ucksichtigt.
-
-
-
-%================================================
-%
-%
-% Hinweise zur Implementation
-%
-%
-%================================================
-\section{Hinweise zur Implementation}
-Es bietet sich an, ein darzustellendes Datum $d$ als einen ganzzahligen Wert in
-Bezug auf einen Urwert (z. B. dem 1. Januar 1970) anzusehen. F"ur die
-Implementation in Java bietet sich die Verwendung der Klasse
-\texttt{java.util.Calendar} an, die umfangreiche M"oglichkeiten zur Berechnung
-offeriert.
-
-Eine ganze Reihe von wichtigen Datumsfunktionen wurde in die Klasse
-\texttt{org.amcworld.util.date.DateTimeUtils} eingebaut. In sYnergy werden die
-Serienberechnungen in den drei Klassen \texttt{CalendarEntry},
-\texttt{CalendarSeries} und \texttt{CalendarSeriesField}, alle aus dem Package
-\texttt{org.amcworld.synergy.cms.\-data}.
 \end{document}

@@ -2,6 +2,7 @@ package org.amcworld.springcrm;
 
 import static java.util.Calendar.*;
 import static org.junit.Assert.*;
+import static org.amcworld.springcrm.RecurCalendarEventHelper.*;
 
 import org.junit.Test;
 
@@ -10,14 +11,33 @@ class RecurCalendarEventHelperTests {
 	@Test
 	void testLin() {
 		Locale.default = Locale.GERMANY
-		assertEquals(7 + SUNDAY, RecurCalendarEventHelper.lin(SUNDAY))
-		assertEquals(MONDAY, RecurCalendarEventHelper.lin(MONDAY))
-		assertEquals(SATURDAY, RecurCalendarEventHelper.lin(SATURDAY))
+		assertEquals(7 + SUNDAY, lin(SUNDAY))
+		assertEquals(MONDAY, lin(MONDAY))
+		assertEquals(SATURDAY, lin(SATURDAY))
 
 		Locale.default = Locale.US
-		assertEquals(SUNDAY, RecurCalendarEventHelper.lin(SUNDAY))
-		assertEquals(MONDAY, RecurCalendarEventHelper.lin(MONDAY))
-		assertEquals(SATURDAY, RecurCalendarEventHelper.lin(SATURDAY))
+		assertEquals(SUNDAY, lin(SUNDAY))
+		assertEquals(MONDAY, lin(MONDAY))
+		assertEquals(SATURDAY, lin(SATURDAY))
+	}
+
+	@Test
+	void testDelin() {
+		Locale.default = Locale.GERMANY
+		assertEquals(SUNDAY, delin(lin(SUNDAY)))
+		assertEquals(MONDAY, delin(lin(MONDAY)))
+		assertEquals(SATURDAY, delin(lin(SATURDAY)))
+		assertEquals(7 + SUNDAY, lin(delin(7 + SUNDAY)))
+		assertEquals(MONDAY, lin(delin(MONDAY)))
+		assertEquals(SATURDAY, lin(delin(SATURDAY)))
+		
+		Locale.default = Locale.US
+		assertEquals(SUNDAY, delin(lin(SUNDAY)))
+		assertEquals(MONDAY, delin(lin(MONDAY)))
+		assertEquals(SATURDAY, delin(lin(SATURDAY)))
+		assertEquals(SUNDAY, lin(delin(SUNDAY)))
+		assertEquals(MONDAY, lin(delin(MONDAY)))
+		assertEquals(SATURDAY, lin(delin(SATURDAY)))
 	}
 
 	@Test
@@ -306,6 +326,171 @@ class RecurCalendarEventHelperTests {
 		d = helper.computeNthEvent(start, 10)
 		assertEquals(getDate(2020, MAY, 31), d)
 	}
+
+	@Test
+	void testApproximate10() {
+		def helper = new RecurCalendarEventHelper(
+			new RecurrenceData(type:10, interval:5)
+		)
+		def start = getDate(2011, DECEMBER, 5)
+		def d = helper.approximate(start, getDate(2011, DECEMBER, 1))
+		assertEquals(getDate(2011, DECEMBER, 5), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 5))
+		assertEquals(getDate(2011, DECEMBER, 5), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 6))
+		assertEquals(getDate(2011, DECEMBER, 10), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 9))
+		assertEquals(getDate(2011, DECEMBER, 10), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 10))
+		assertEquals(getDate(2011, DECEMBER, 10), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 11))
+		assertEquals(getDate(2011, DECEMBER, 15), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 14))
+		assertEquals(getDate(2011, DECEMBER, 15), d)
+	}
+
+	@Test
+	void testApproximate30() {
+		def helper = new RecurCalendarEventHelper(		// We, Fr, Su
+			new RecurrenceData(type:30, weekdays:'1,4,6', interval:2)
+		)
+		def start = getDate(2011, DECEMBER, 7)							// We
+		def d = helper.approximate(start, getDate(2011, DECEMBER, 1))	// Th
+		assertEquals(getDate(2011, DECEMBER, 7), d)						// -> We
+		d = helper.approximate(start, getDate(2011, DECEMBER, 7))		// We
+		assertEquals(getDate(2011, DECEMBER, 7), d)						// We
+		d = helper.approximate(start, getDate(2011, DECEMBER, 8))		// Th
+		assertEquals(getDate(2011, DECEMBER, 9), d)						// -> Fr
+		d = helper.approximate(start, getDate(2011, DECEMBER, 9))		// Fr
+		assertEquals(getDate(2011, DECEMBER, 9), d)						// Fr
+		d = helper.approximate(start, getDate(2011, DECEMBER, 10))		// Sa
+		assertEquals(getDate(2011, DECEMBER, 11), d)					// -> Su
+		d = helper.approximate(start, getDate(2011, DECEMBER, 11))		// Su
+		assertEquals(getDate(2011, DECEMBER, 11), d)					// Su
+		d = helper.approximate(start, getDate(2011, DECEMBER, 12))		// Mo
+		assertEquals(getDate(2011, DECEMBER, 21), d)					// -> We
+		d = helper.approximate(start, getDate(2011, DECEMBER, 19))		// Mo
+		assertEquals(getDate(2011, DECEMBER, 21), d)					// -> We
+		d = helper.approximate(start, getDate(2011, DECEMBER, 21))		// We
+		assertEquals(getDate(2011, DECEMBER, 21), d)					// We
+		d = helper.approximate(start, getDate(2011, DECEMBER, 22))		// Th
+		assertEquals(getDate(2011, DECEMBER, 23), d)					// -> Fr
+		d = helper.approximate(start, getDate(2011, DECEMBER, 23))		// Fr
+		assertEquals(getDate(2011, DECEMBER, 23), d)					// Fr
+		d = helper.approximate(start, getDate(2011, DECEMBER, 24))		// Sa
+		assertEquals(getDate(2011, DECEMBER, 25), d)					// -> Su
+		d = helper.approximate(start, getDate(2011, DECEMBER, 25))		// Su
+		assertEquals(getDate(2011, DECEMBER, 25), d)					// Su
+		d = helper.approximate(start, getDate(2011, DECEMBER, 26))		// Mo
+		assertEquals(getDate(2012, JANUARY, 4), d)						// -> We
+	}
+
+	@Test
+	void testApproximate40() {
+		def helper = new RecurCalendarEventHelper(
+			new RecurrenceData(type:40, monthDay:14, interval:2)
+		)
+		def start = getDate(2011, NOVEMBER, 14)
+		def d = helper.approximate(start, getDate(2011, NOVEMBER, 1))
+		assertEquals(getDate(2011, NOVEMBER, 14), d)
+		d = helper.approximate(start, getDate(2011, NOVEMBER, 14))
+		assertEquals(getDate(2011, NOVEMBER, 14), d)
+		d = helper.approximate(start, getDate(2011, NOVEMBER, 15))
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.approximate(start, getDate(2011, NOVEMBER, 30))
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 14))
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 1))
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 13))
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 14))
+		assertEquals(getDate(2012, JANUARY, 14), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 15))
+		assertEquals(getDate(2012, MARCH, 14), d)
+	}
+	
+	@Test
+	void testApproximate50() {
+		def helper = new RecurCalendarEventHelper(		// Th
+			new RecurrenceData(type:50, weekdays:'5', weekdayOrd:3, interval:2)
+		)
+		def start = getDate(2011, NOVEMBER, 17)
+		def d = helper.approximate(start, getDate(2011, NOVEMBER, 1))
+		assertEquals(getDate(2011, NOVEMBER, 17), d)
+		d = helper.approximate(start, getDate(2011, NOVEMBER, 17))
+		assertEquals(getDate(2011, NOVEMBER, 17), d)
+		d = helper.approximate(start, getDate(2011, NOVEMBER, 18))
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 15))
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 17))
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 1))
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 18))
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 19))
+		assertEquals(getDate(2012, JANUARY, 19), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 20))
+		assertEquals(getDate(2012, MARCH, 15), d)
+	}
+
+	@Test
+	void testApproximate60() {
+		def helper = new RecurCalendarEventHelper(
+			new RecurrenceData(type:60, monthDay:13, month:MAY)
+		)
+		def start = getDate(2011, MAY, 13)
+		def d = helper.approximate(start, getDate(2011, MAY, 1))
+		assertEquals(getDate(2011, MAY, 13), d)
+		d = helper.approximate(start, getDate(2011, MAY, 13))
+		assertEquals(getDate(2011, MAY, 13), d)
+		d = helper.approximate(start, getDate(2011, MAY, 14))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 31))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 1))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, MAY, 12))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, MAY, 13))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, MAY, 14))
+		assertEquals(getDate(2013, MAY, 13), d)
+		d = helper.approximate(start, getDate(2019, MAY, 14))
+		assertEquals(getDate(2020, MAY, 13), d)
+	}
+
+	@Test
+	void testApproximate70() {
+		def helper = new RecurCalendarEventHelper(		// Su
+			new RecurrenceData(type:70, weekdays:'1', weekdayOrd:2, month:MAY)
+		)
+		def start = getDate(2011, MAY, 8)
+		def d = helper.approximate(start, getDate(2011, MAY, 1))
+		assertEquals(getDate(2011, MAY, 8), d)
+		d = helper.approximate(start, getDate(2011, MAY, 8))
+		assertEquals(getDate(2011, MAY, 8), d)
+		d = helper.approximate(start, getDate(2011, MAY, 9))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2011, DECEMBER, 31))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, JANUARY, 1))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, MAY, 12))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, MAY, 13))
+		assertEquals(getDate(2012, MAY, 13), d)
+		d = helper.approximate(start, getDate(2012, MAY, 14))
+		assertEquals(getDate(2013, MAY, 12), d)
+		d = helper.approximate(start, getDate(2019, MAY, 13))
+		assertEquals(getDate(2020, MAY, 10), d)
+	}
+
+
+	//-- Non-public methods ---------------------
 
 	private Date getDate(int year, int month, int day) {
 		return new GregorianCalendar(year, month, day).time
