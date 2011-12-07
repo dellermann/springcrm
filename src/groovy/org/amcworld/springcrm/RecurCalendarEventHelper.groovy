@@ -32,10 +32,8 @@ class RecurCalendarEventHelper {
 		if (d <= start) {
 			return start
 		} else {
-			Calendar calStart = Calendar.instance
-			calStart.time = start
-			Calendar cal = Calendar.instance
-			cal.time = d
+			Calendar calStart = start.toCalendar()
+			Calendar cal = d.toCalendar()
 			switch (data.type) {
 			case 10:
 				approximate10(calStart, cal)
@@ -70,8 +68,7 @@ class RecurCalendarEventHelper {
 	 * 				be used as start of the recurrence
 	 */
 	Date calibrateStart(Date start) {
-		Calendar cal = Calendar.instance
-		cal.time = start
+		Calendar cal = start.toCalendar()
 		switch (data.type) {
 		case 30:
 			if (needCalibration30(cal)) {
@@ -118,8 +115,7 @@ class RecurCalendarEventHelper {
 				"n must be greater than zero but is ${n}."
 			)
 		}
-		Calendar cal = Calendar.instance
-		cal.time = start
+		Calendar cal = start.toCalendar()
 		switch (data.type) {
 		case 10:
 			cal.add(DAY_OF_MONTH, (n - 1) * data.interval)
