@@ -100,7 +100,7 @@
                 hh,
                 res = [];
 
-            for (h = -1; ++h < 24; ) {
+            while (++h < 24) {
                 hh = h.toString();
                 if (hh.length < 2) {
                     hh = "0" + hh;
@@ -224,7 +224,7 @@
                 currentSize = parseInt(defSize, 10);
             }
             s = '<ul id="font-size-sel">';
-            for (; ++i < numFontSizes; ) {
+            while (++i < numFontSizes) {
                 size = baseFontSize - offset + i;
                 s += '<li ';
                 if (size === currentSize) {
