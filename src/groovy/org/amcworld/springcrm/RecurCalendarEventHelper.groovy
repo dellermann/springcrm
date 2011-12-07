@@ -29,11 +29,12 @@ class RecurCalendarEventHelper {
 	 * @return		the next possible calendar event
 	 */
 	Date approximate(Date start, Date d) {
-		if (d <= start) {
+		Calendar calStart = start.toCalendar()
+		Calendar cal = d.toCalendar()
+		cal.clearTime()
+		if (cal <= calStart) {
 			return start
 		} else {
-			Calendar calStart = start.toCalendar()
-			Calendar cal = d.toCalendar()
 			switch (data.type) {
 			case 10:
 				approximate10(calStart, cal)
@@ -69,6 +70,7 @@ class RecurCalendarEventHelper {
 	 */
 	Date calibrateStart(Date start) {
 		Calendar cal = start.toCalendar()
+		cal.clearTime()
 		switch (data.type) {
 		case 30:
 			if (needCalibration30(cal)) {

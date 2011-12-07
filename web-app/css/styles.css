@@ -970,6 +970,16 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
   list-style: none;
   margin-bottom: .2em;
 }
+.checkbox-area input, .checkbox-area select, .checkbox-area textarea {
+  position: relative;
+  top: -.2em;
+}
+.checkbox-area input[type=radio] {
+  position: static;
+}
+.checkbox-area .info-msg {
+  margin-left: 2.5em;
+}
 .buttons {
   border-top: .1em dotted #888;
   margin: 1em 0 0;

@@ -58,14 +58,13 @@ class CalendarEventController {
 			calendarEventInstance.location = calendarEventInstance.organization.shippingAddr
 		}
 		if (params.start) {
-			println "Start: ${params.start} / ${calendarEventInstance.start}"
 			def c = calendarEventInstance.start.toCalendar()
 			c.add(Calendar.HOUR_OF_DAY, 1)
-			calendarEventInstance.end = c.time 
+			calendarEventInstance.end = c.time
 		}
         return [calendarEventInstance: calendarEventInstance]
     }
-	
+
 	def copy = {
 		def calendarEventInstance = CalendarEvent.get(params.id)
 		if (calendarEventInstance) {
@@ -79,7 +78,9 @@ class CalendarEventController {
 
     def save = {
         def calendarEventInstance = new CalendarEvent(params)
-        if (calendarEventInstance.save(flush: true)) {
+        if (calendarEventInstance.validate()) {
+			refineCalendarEvent(calendarEventInstance)
+			calendarEventInstance.save(flush: true)
 			calendarEventInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])}"
 			if (params.returnUrl) {
@@ -118,14 +119,16 @@ class CalendarEventController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (calendarEventInstance.version > version) {
-                    
+
                     calendarEventInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'calendarEvent.label', default: 'CalendarEvent')] as Object[], "Another user has updated this CalendarEvent while you were editing")
                     render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
                     return
                 }
             }
             calendarEventInstance.properties = params
-            if (!calendarEventInstance.hasErrors() && calendarEventInstance.save(flush: true)) {
+	        if (calendarEventInstance.validate()) {
+				refineCalendarEvent(calendarEventInstance)
+				calendarEventInstance.save(flush: true)
 				calendarEventInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])}"
 				if (params.returnUrl) {
@@ -166,4 +169,31 @@ class CalendarEventController {
 			}
         }
     }
+
+	private void refineCalendarEvent(CalendarEvent calendarEventInstance) {
+		def helper = new RecurCalendarEventHelper(
+			calendarEventInstance.recurrence
+		)
+        Calendar dayStart = calendarEventInstance.start.toCalendar()
+        dayStart.clearTime()
+        int offset = calendarEventInstance.start.time - dayStart.time.time
+		int diff = calendarEventInstance.end.time - calendarEventInstance.start.time
+		def start = helper.calibrateStart(calendarEventInstance.start)
+		calendarEventInstance.start = new Date(start.time + offset)
+		calendarEventInstance.end = new Date(start.time + offset + diff)
+
+		def until = null
+		switch (params['recurrence.endType']) {
+		case 'until':
+			until = helper.approximate(start, calendarEventInstance.recurrence.until)
+			if (until < start) {
+				until = start
+			}
+			break
+		case 'count':
+			until = helper.computeNthEvent(start, params['recurrence.cnt'] as Integer)
+			break
+		}
+		calendarEventInstance.recurrence.until = until
+	}
 }

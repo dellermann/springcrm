@@ -57,7 +57,6 @@ class RecurrenceData implements MessageSourceResolvable {
     static constraints = {
 		type(nullable:false, inList:[0, 10, 30, 40, 50, 60, 70])
 		until(nullable:true)
-		cnt(nullable:true, min:0)
 		interval(nullable:false, min:1)
 		monthDay(nullable:true, range:1..31)
 		weekdays(nullable:true, maxSize:13)
@@ -71,7 +70,6 @@ class RecurrenceData implements MessageSourceResolvable {
 
 	int type = 0
 	Date until
-	Integer cnt
 	int interval = 1
 	Integer monthDay
 	String weekdays

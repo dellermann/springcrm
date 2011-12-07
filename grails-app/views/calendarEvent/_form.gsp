@@ -169,27 +169,28 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" id="recurrence-end">
       <div class="label">
-        <label for="recurrence.until-date"><g:message code="calendarEvent.recurrence.until.label" default="Ends at" /></label>
+        <label for="recurrence.endType-until"><g:message code="calendarEvent.recurrence.end.label" default="Ends" /></label>
       </div>
       <div class="field${hasErrors(bean: calendarEventInstance, field: 'recurrence.until', ' error')}">
-        <g:dateInput name="recurrence.until" precision="day" value="${calendarEventInstance?.recurrence.until}" /><br />
-        <span class="info-msg"><g:message code="default.format.datetime.label" /></span>
+        <ul class="checkbox-area">
+          <li>
+            <g:radio id="recurrence.endType-until" name="recurrence.endType" value="until" checked="${calendarEventInstance.recurrence.until}" />&nbsp;<label for="recurrence.endType-until"><g:message code="calendarEvent.recurrence.until.label" default="at" /></label>&nbsp;
+            <g:dateInput name="recurrence.until" precision="day" value="${calendarEventInstance?.recurrence.until}" /><br />
+            <span class="info-msg"><g:message code="default.format.datetime.label" /></span>
+          </li>
+          <li>
+            <g:radio id="recurrence.endType-count" name="recurrence.endType" value="count" />&nbsp;<label for="recurrence.endType-count"><g:message code="calendarEvent.recurrence.cnt.label" default="after" /></label>&nbsp;
+            <g:textField name="recurrence.cnt" value="${params['recurrence.cnt']}" size="5" />
+            <label for="recurrence.cnt"><g:message code="calendarEvent.recurrence.cnt.events.label" default="events" /></label>
+          </li>
+          <li>
+            <g:radio id="recurrence.endType-none" name="recurrence.endType" value="none" checked="${calendarEventInstance.recurrence.until == null}" />&nbsp;<label for="recurrence.endType-none"><g:message code="calendarEvent.recurrence.none.label" default="none" /></label>
+          </li>
+        </ul>
         <g:hasErrors bean="${calendarEventInstance}" field="recurrence.until">
           <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.until"><g:message error="${it}" /> </g:eachError></span>
-        </g:hasErrors>
-      </div>
-    </div>
-    <div class="row">
-      <div class="label">
-        <label for="recurrence-cnt"><g:message code="calendarEvent.recurrence.cnt.label" default="Ends after" /></label>
-      </div>
-      <div class="field${hasErrors(bean: calendarEventInstance, field: 'recurrence.cnt', ' error')}">
-        <g:textField id="recurrence-cnt" name="recurrence.cnt" value="${calendarEventInstance?.recurrence.cnt}" size="5" />&nbsp;
-        <g:message code="calendarEvent.recurrence.cnt.events.label" default="events" /><br />
-        <g:hasErrors bean="${calendarEventInstance}" field="recurrence.cnt">
-          <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.cnt"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
       </div>
     </div>
@@ -275,8 +276,7 @@
             if ($target.attr("name") === "recurrence.type") {
                 val = Number($target.val());
                 $tabs.tabs("select", "tabs-recurrence-type-" + val);
-                $("#recurrence\\.until-date").toggleEnable(val !== 0);
-                $("#recurrence-cnt").toggleEnable(val !== 0);
+                $("#recurrence-end").toggle(val !== 0);
             } else {
                 id = $target.parents(".ui-tabs-panel")
                     .attr("id");
@@ -286,10 +286,30 @@
             }
         });
 
+    $("#recurrence-end input[name=recurrence\\.endType]")
+        .change(function () {
+            switch (this.id) {
+            case "recurrence.endType-until":
+                $("#recurrence\\.until-date").enable()
+                    .focus();
+                $("#recurrence\\.cnt").disable();
+                break;
+            case "recurrence.endType-count":
+                $("#recurrence\\.cnt").enable()
+                    .focus();
+                $("#recurrence\\.until-date").disable();
+                break;
+            case "recurrence.endType-none":
+                $("#recurrence\\.until-date").disable();
+                $("#recurrence\\.cnt").disable();
+                break;
+            }
+        });
+    $("input[name=recurrence\\.endType]:checked").triggerHandler("change");
+
     recurType = Number($("#tabs-recurrence-type input:radio:checked").val());
     if (recurType === 0) {
-        $("#recurrence\\.until-date").disable();
-        $("#recurrence-cnt").disable();
+        $("#recurrence-end").hide();
     } else {
         $("#recurrence-interval-" + recurType).val(
                 $("#recurrence-interval").val()
@@ -315,8 +335,7 @@
                 $("#recurrence-weekdays-" + recurType).val(wds[0]);
             }
         }
-        $("#recurrence\\.until-date").enable();
-        $("#recurrence-cnt").enable();
+        $("#recurrence-end").show();
     }
     $tabs.tabs("select", "tabs-recurrence-type-" + recurType);
 
