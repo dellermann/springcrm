@@ -3,6 +3,7 @@ package org.amcworld.springcrm
 import java.text.DateFormatSymbols
 import org.springframework.context.MessageSourceResolvable
 
+
 class CalendarEvent {
 
     static constraints = {
@@ -47,6 +48,16 @@ class CalendarEvent {
 		recurrence = new RecurrenceData(c.recurrence)
 	}
 
+    CalendarEvent eventAtDate(Date d) {
+        def res = new CalendarEvent([
+            subject:subject, location:location, description:description,
+            start:d, end:new Date(d.time + end.time - start.time),
+            allDay:allDay, dateCreated:dateCreated, lastUpdated:lastUpdated
+        ])
+        res.setId(ident())
+        return res
+    }
+
 	String toString() {
 		return subject
 	}
@@ -88,7 +99,7 @@ class RecurrenceData implements MessageSourceResolvable {
 		weekdayOrd = c.weekdayOrd
 		month = c.month
 	}
-	
+
 	List<Integer> getWeekdaysAsList() {
 		List<Integer> res = null
 		if (weekdays != null && weekdays.length() > 0) {
@@ -96,7 +107,7 @@ class RecurrenceData implements MessageSourceResolvable {
 		}
 		return res
 	}
-	
+
 	List<String> getWeekdayNamesAsList() {
 		List<String> res = []
 		if (weekdays != null) {
@@ -114,7 +125,7 @@ class RecurrenceData implements MessageSourceResolvable {
 		}
 		return res
 	}
-	
+
 	String getWeekdayNames() {
 		return weekdayNamesAsList.join(', ')
 	}
@@ -130,7 +141,7 @@ class RecurrenceData implements MessageSourceResolvable {
 
     Object [] getArguments() {
         return [
-			interval, monthDay, weekdayNames, weekdayOrd, month, monthName 
+			interval, monthDay, weekdayNames, weekdayOrd, month, monthName
 		] as Object[]
     }
 

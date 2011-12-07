@@ -32,19 +32,37 @@ class CalendarEventController {
     	Date start = new Date((params.start as Long) * 1000L)
 		Date end = new Date((params.end as Long) * 1000L)
 		def c = CalendarEvent.createCriteria()
-		def l = c.list {
-			or {
-				between('start', start, end)
-				between('end', start, end)
-				and {
-					le('start', start)
-					ge('end', end)
-				}
-			}
+		def list = c.list {
+            and {
+                eq('recurrence.type', 0)
+                or {
+                    between('start', start, end)
+                    between('end', start, end)
+                    and {
+                        le('start', start)
+                        ge('end', end)
+                    }
+                }
+            }
 		}
+        c = CalendarEvent.createCriteria()
+        def l = c.list {
+            ne('recurrence.type', 0)
+        }
+        for (CalendarEvent ce in l) {
+            def helper = new RecurCalendarEventHelper(ce.recurrence)
+            Date s = ce.start
+            Date d = helper.approximate(s, start)
+            while (d <= end) {
+                list << ce.eventAtDate(d)
+                Date dOld = d + 1
+                d = helper.approximate(s, dOld)
+                assert d > dOld
+            }
+        }
 		render(contentType:"text/json") {
 			array {
-				for (ce in l) {
+				for (ce in list) {
 					event id:ce.id, title:ce.subject, allDay:ce.allDay, start:ce.start, end:ce.end, url:createLink(controller:'calendarEvent', action:'show', id:ce.id)
 				}
 			}
