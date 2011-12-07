@@ -22,7 +22,7 @@ class RecurCalendarEventHelper {
 	/**
 	 * Finds the calendar event of this recurrence which is greater than or
 	 * equal to the given date.
-	 * 
+	 *
 	 * @param start	the start of the recurrence; the start date must be part of
 	 * 				the recurrence
 	 * @param d		the given date
@@ -63,7 +63,7 @@ class RecurCalendarEventHelper {
 	 * Computes a date after or equal to the given date which can act as the
 	 * start of the recurrence. Thus the returned date is part of the
 	 * recurrence.
-	 * 
+	 *
 	 * @param start	the given date
 	 * @return		the date which is part of the recurrence and therefore may
 	 * 				be used as start of the recurrence
@@ -105,7 +105,7 @@ class RecurCalendarEventHelper {
 	 * Computes the date of the recurring calendar event at the n-th
 	 * recurrence. The first recurrence is the start of the recurrence, that
 	 * is, the given start date.
-	 * 
+	 *
 	 * @param start	the start of the recurrence; the start date must be part of
 	 * 				the recurrence
 	 * @param n		the n-th recurrence; must be greater than zero
@@ -169,16 +169,14 @@ class RecurCalendarEventHelper {
 		int q = (int) ((cal - calStart) / t)
 		if (q % n == 0) {
 			List<Integer> linWds = theta
-			int k = linWds.size()
-			int delta = 0
-			if (k > 1) {
-				int w = lin(cal[DAY_OF_WEEK])
-				if (w < linWds.first() || w > linWds.last()) {
-					delta = n * t
-				} else {
-					delta = linWds.find({ it >= w }) - linWds.first()
-				}
-			}
+			int delta = n * t
+            int k = linWds.size()
+            int w = lin(cal[DAY_OF_WEEK])
+			if (k > 1 && w >= linWds.first() && w <= linWds.last()) {
+				delta = linWds.find({ it >= w }) - linWds.first()
+			} else if (k == 1 && w == linWds.first()) {
+                delta = 0
+            }
 			calStart.add(DAY_OF_MONTH, q * t + delta)
 		} else {
 			calStart.add(DAY_OF_MONTH, n * t * (((int) (q / n)) + 1))
@@ -186,7 +184,7 @@ class RecurCalendarEventHelper {
 	}
 
 	private void approximate40(Calendar calStart, Calendar cal) {
-		int delta = numMonths * 
+		int delta = numMonths *
 			(cal[YEAR] - calStart[YEAR]) + cal[MONTH] - calStart[MONTH]
 		calStart[DAY_OF_MONTH] = data.monthDay
 		calStart.add(MONTH, delta)
@@ -243,7 +241,7 @@ class RecurCalendarEventHelper {
 	 * Computes an auxiliary date using month and year from the given calendar
 	 * and day of week and week number in month from the recurrence data. The
 	 * time values are all set to zero.
-	 * 
+	 *
 	 * @param cal	the given date
 	 * @param month	the month to set; if {@code null} the month is taken from
 	 * 				the given date
@@ -328,7 +326,7 @@ class RecurCalendarEventHelper {
 		if (i < k - 1) {
 			return linWds[i + 1] - linWds[i]
 		} else {
-			return data.interval * numDaysInWeek + linWds.first() - 
+			return data.interval * numDaysInWeek + linWds.first() -
 				linWds.last()
 		}
 	}
@@ -384,7 +382,7 @@ class RecurCalendarEventHelper {
 		} else {
 			b = cal[DAY_OF_WEEK_IN_MONTH] != data.weekdayOrd
 		}
-		return !((cal[DAY_OF_WEEK] in data.weekdaysAsList) && 
+		return !((cal[DAY_OF_WEEK] in data.weekdaysAsList) &&
 			(cal[MONTH] == data.month) && b)
 	}
 

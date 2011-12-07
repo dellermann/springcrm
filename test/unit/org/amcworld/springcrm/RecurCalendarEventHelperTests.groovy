@@ -383,6 +383,23 @@ class RecurCalendarEventHelperTests {
         assertEquals(getDate(2011, DECEMBER, 25), d)                    // Su
         d = helper.approximate(start, getDate(2011, DECEMBER, 26))      // Mo
         assertEquals(getDate(2012, JANUARY, 4), d)                      // -> We
+
+        helper = new RecurCalendarEventHelper(          // We
+            new RecurrenceData(type:30, weekdays:'4', interval:2)
+        )
+        start = getDate(2011, NOVEMBER, 9)                              // We
+        d = helper.approximate(start, getDate(2011, NOVEMBER, 1, 10))   // Tu
+        assertEquals(getDate(2011, NOVEMBER, 9), d)                     // -> We
+        d = helper.approximate(start, getDate(2011, NOVEMBER, 9, 10))   // We
+        assertEquals(getDate(2011, NOVEMBER, 9), d)                     // We
+        d = helper.approximate(start, getDate(2011, NOVEMBER, 10, 10))  // Th
+        assertEquals(getDate(2011, NOVEMBER, 23), d)                    // -> We
+        d = helper.approximate(start, getDate(2011, NOVEMBER, 22, 10))  // Tu
+        assertEquals(getDate(2011, NOVEMBER, 23), d)                    // -> We
+        d = helper.approximate(start, getDate(2011, NOVEMBER, 23, 10))  // We
+        assertEquals(getDate(2011, NOVEMBER, 23), d)                    // We
+        d = helper.approximate(start, getDate(2011, NOVEMBER, 24, 10))  // Th
+        assertEquals(getDate(2011, DECEMBER, 7), d)                     // -> We
     }
 
     @Test

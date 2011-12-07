@@ -1399,24 +1399,25 @@ Index desjenigen Wochentages der gleich $w$ ist oder $w$ als n"achstes folgt.
 Daraus bilden wir nun folgenden Algorithmus:
 \begin{equation}
   \delta = \left\{\begin{array}{ll}
-      k = 1 : & 0 \\
-      k > 1,\,w < \vec{\Theta}_1: & nT \\
       k > 1,\,\vec{\Theta}_1 \le w \le \vec{\Theta}_k: &
         \vec{\Theta}_i - \vec{\Theta}_{1} \textrm{ mit }
         i = \gamma(\vec{\Theta},\,w) \\
-      k > 1,\,w > \vec{\Theta}_k: & nT \\
+      k = 1,\,w = \vec{\Theta}_1: & 0 \\
+      \textrm{sonst}: & nT \\
     \end{array}\right.
 \end{equation}
 
 \noindent Wenn die Liste der Wochentage $\vec{\Theta}$ nur einen einzigen
-Eintrag hat, wird keine Differenz zum n"achsten Wochentag in der Liste
-ermittelt. Statt dessen gehen wir $n$ Wochen weiter.
+Eintrag hat und der aktuelle Wochentag dem (einzigen) Wochentag $\vec{\Theta}_1$
+entspricht, haben wir das n"achste Serienelement bereits gefunden. Andernfalls
+gehen wir $n$ Wochen weiter.
 
-Andernfalls unterscheiden wir drei F"alle. Liegt $w$ vor dem ersten Wochentag in
-der Liste, dann gehen wir $n$ Wochen weiter. Dies gilt auch, wenn $w$ hinter dem
-letzten Wochentag in der Liste liegt. In allen anderen F"allen ermitteln wir mit
-der Funktion $\gamma$ den Index des Wochentages der gleich oder gr"o"ser $w$ ist
-und berechnen die Differenz in Tagen zum ersten Wochentag aus der Liste.
+Befinden sich mehr als ein Element in $\vec{\Theta}$ unterscheiden wir drei
+F"alle. Liegt $w$ vor dem ersten Wochentag in der Liste, dann gehen wir $n$
+Wochen weiter. Dies gilt auch, wenn $w$ hinter dem letzten Wochentag in der
+Liste liegt. In allen anderen F"allen ermitteln wir mit der Funktion $\gamma$
+den Index des Wochentages der gleich oder gr"o"ser $w$ ist und berechnen die
+Differenz in Tagen zum ersten Wochentag aus der Liste.
 
 Nun ist der Errechnung von $\vartheta$ kein Problem mehr:
 \begin{equation}\label{eqn:theta30}\vartheta = t'_s + qT + \delta\end{equation}
