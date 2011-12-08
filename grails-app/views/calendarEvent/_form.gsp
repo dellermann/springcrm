@@ -60,7 +60,7 @@
           <label for="organization"><g:message code="calendarEvent.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: calendarEventInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${calendarEventInstance?.organization?.name}" size="35" />
+          <input type="text" id="organization" value="${calendarEventInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find')}" data-get-url="${createLink(controller:'organization', action:'get')}" />
           <input type="hidden" name="organization.id" id="organization-id" value="${calendarEventInstance?.organization?.id}" />
           <g:hasErrors bean="${calendarEventInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
@@ -197,6 +197,21 @@
   </div>
 </fieldset>
 <fieldset>
+  <h4><g:message code="calendarEvent.fieldset.reminder.label" /></h4>
+  <div class="fieldset-content">
+    <input type="hidden" id="reminders" name="reminders" value="${reminderInstanceList}" />
+    <div class="row">
+      <div class="label">
+        <label for="description"><g:message code="calendarEvent.reminder.label" default="Reminder" /></label>
+      </div>
+      <div class="field">
+        <div id="reminder-selectors"></div>
+        <a id="reminder-add-btn" href="#" class="button small green"><g:message code="calendarEvent.reminder.add.label" /></a>
+      </div>
+    </div>
+  </div>
+</fieldset>
+<fieldset>
   <h4><g:message code="calendarEvent.fieldset.description.label" /></h4>
   <div class="fieldset-content">
     <div class="row">
@@ -213,172 +228,5 @@
   </div>
 </fieldset>
 <content tag="additionalJavaScript">
-<script type="text/javascript">
-//<![CDATA[
-(function ($, SPRINGCRM) {
-
-    "use strict";
-
-    var $tabs,
-        i = -1,
-        n,
-        recurType,
-        wds;
-
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find')}",
-            onSelect: function (value) {
-                $.ajax({
-                    data: { id: value },
-                    dataType: "json",
-                    success: function (data) {
-                        var s = "";
-
-                        if (data.shippingAddrStreet) {
-                            s += data.shippingAddrStreet;
-                        }
-                        if (data.shippingAddrPostalCode ||
-                            data.shippingAddrLocation)
-                        {
-                            if (s !== "") {
-                                s += ", ";
-                            }
-                            if (data.shippingAddrPostalCode) {
-                                s += data.shippingAddrPostalCode + " ";
-                            }
-                            if (data.shippingAddrLocation) {
-                                s += data.shippingAddrLocation;
-                            }
-                        }
-                        $("#location").val(s);
-                    },
-                    url: "${createLink(controller:'organization', action:'get')}"
-                });
-            }
-        })
-        .init();
-    $("#allDay").change(function () {
-            var checked = this.checked;
-
-            $("#start-time").toggleEnable(!checked);
-            $("#end-time").toggleEnable(!checked);
-        })
-        .triggerHandler("change");
-
-    $tabs = $("#tabs-recurrence-type");
-    $tabs.tabs()
-        .change(function (event) {
-            var $target = $(event.target),
-                id,
-                val;
-
-            if ($target.attr("name") === "recurrence.type") {
-                val = Number($target.val());
-                $tabs.tabs("select", "tabs-recurrence-type-" + val);
-                $("#recurrence-end").toggle(val !== 0);
-            } else {
-                id = $target.parents(".ui-tabs-panel")
-                    .attr("id");
-                if (id.match(/^tabs-recurrence-type-(\d+)$/)) {
-                    $("#recurrence-type-" + RegExp.$1).trigger("click");
-                }
-            }
-        });
-
-    $("#recurrence-end input[name=recurrence\\.endType]")
-        .change(function () {
-            switch (this.id) {
-            case "recurrence.endType-until":
-                $("#recurrence\\.until-date").enable()
-                    .focus();
-                $("#recurrence\\.cnt").disable();
-                break;
-            case "recurrence.endType-count":
-                $("#recurrence\\.cnt").enable()
-                    .focus();
-                $("#recurrence\\.until-date").disable();
-                break;
-            case "recurrence.endType-none":
-                $("#recurrence\\.until-date").disable();
-                $("#recurrence\\.cnt").disable();
-                break;
-            }
-        });
-    $("input[name=recurrence\\.endType]:checked").triggerHandler("change");
-
-    recurType = Number($("#tabs-recurrence-type input:radio:checked").val());
-    if (recurType === 0) {
-        $("#recurrence-end").hide();
-    } else {
-        $("#recurrence-interval-" + recurType).val(
-                $("#recurrence-interval").val()
-            );
-        $("#recurrence-monthDay-" + recurType).val(
-                $("#recurrence-monthDay").val()
-            );
-        $("#recurrence-weekdayOrd-" + recurType).val(
-                $("#recurrence-weekdayOrd").val()
-            );
-        $("#recurrence-month-" + recurType).val($("#recurrence-month").val());
-        if ((recurType === 30) || (recurType === 50) || (recurType === 70)) {
-            wds = $("#recurrence-weekdays").val().split(/,/);
-            n = wds.length;
-            if (recurType === 30) {
-                $("#tabs-recurrence-type-30 input:checkbox")
-                    .attr("checked", false);
-                while (++i < n) {
-                    $("#recurrence-weekdays-30-" + wds[i])
-                        .attr("checked", true);
-                }
-            } else if (n > 0) {
-                $("#recurrence-weekdays-" + recurType).val(wds[0]);
-            }
-        }
-        $("#recurrence-end").show();
-    }
-    $tabs.tabs("select", "tabs-recurrence-type-" + recurType);
-
-    $("#calendarEvent-form").bind("submit", function () {
-            var recurType,
-                val,
-                wds;
-
-            recurType = Number(
-                    $("#tabs-recurrence-type input:radio:checked").val()
-                );
-            if (recurType > 0) {
-                val = $("#recurrence-interval-" + recurType).val();
-                $("#recurrence-interval").val(val || 1);
-                $("#recurrence-monthDay").val(
-                        $("#recurrence-monthDay-" + recurType).val()
-                    );
-                $("#recurrence-weekdayOrd").val(
-                        $("#recurrence-weekdayOrd-" + recurType).val()
-                    );
-                $("#recurrence-month").val(
-                        $("#recurrence-month-" + recurType).val()
-                    );
-                if (recurType === 30) {
-                    wds = [];
-                    $("#tabs-recurrence-type-30 input:checkbox:checked")
-                        .each(function () {
-                            wds.push(Number($(this).val()));
-                        });
-                        wds.sort();
-                    $("#recurrence-weekdays").val(wds.join(","));
-                } else if (recurType === 50) {
-                    $("#recurrence-weekdays").val(
-                            $("#recurrence-weekdays-50").val()
-                        );
-                } else if (recurType === 70) {
-                    $("#recurrence-weekdays").val(
-                            $("#recurrence-weekdays-70").val()
-                        );
-                }
-            }
-            return true;
-        });
-}(jQuery, SPRINGCRM));
-//]]></script>
+<script type="text/javascript" src="${resource(dir: 'js', file: 'calendar-form.js')}"></script>
 </content>

@@ -98,7 +98,9 @@ class CalendarEventController {
         def calendarEventInstance = new CalendarEvent(params)
         if (calendarEventInstance.validate()) {
 			refineCalendarEvent(calendarEventInstance)
+            calendarEventInstance.owner = session.user
 			calendarEventInstance.save(flush: true)
+            saveReminders(calendarEventInstance)
 			calendarEventInstance.index()
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])}"
 			if (params.returnUrl) {
@@ -127,7 +129,20 @@ class CalendarEventController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])}"
             redirect(action: 'list')
         } else {
-            return [calendarEventInstance: calendarEventInstance]
+            def c = Reminder.createCriteria()
+            def l = c.list {
+                eq('user', session.user)
+                eq('calendarEvent', calendarEventInstance)
+            }
+            if (l.isEmpty()) {
+                c = Reminder.createCriteria()
+                l = c.list {
+                    isNull('user')
+                    eq('calendarEvent', calendarEventInstance)
+                }
+            }
+            def reminderInstanceList = l*.rule
+            return [calendarEventInstance: calendarEventInstance, reminderInstanceList:reminderInstanceList.join(' ')]
         }
     }
 
@@ -147,6 +162,7 @@ class CalendarEventController {
 	        if (calendarEventInstance.validate()) {
 				refineCalendarEvent(calendarEventInstance)
 				calendarEventInstance.save(flush: true)
+                saveReminders(calendarEventInstance, session.user)
 				calendarEventInstance.reindex()
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])}"
 				if (params.returnUrl) {
@@ -188,6 +204,39 @@ class CalendarEventController {
         }
     }
 
+    def reminders = {
+        def c = Reminder.createCriteria()
+        def l = c.list {
+            and {
+                or {
+                    isNull('user')
+                    eq('user', session.user)
+                }
+                le('nextReminder', new Date())
+            }
+        }
+
+        def list = []
+        for (Reminder r in l) {
+            if (r.user != null) {
+                list[r.calendarEvent] = r
+            }
+        }
+        for (Reminder r in l) {
+            if (r.user == null && list[r.calendarEvent] == null) {
+                list[r.calendarEvent] = r
+            }
+        }
+
+        render(contentType:"text/json") {
+            array {
+                for (Reminder r in list) {
+                    reminder title:r.calendarEvent.subject, allDay:r.calendarEvent.allDay, start:r.calendarEvent.start, end:r.calendarEvent.end, url:createLink(controller:'calendarEvent', action:'show', id:r.calendarEvent.id)
+                }
+            }
+        }
+    }
+
 	private void refineCalendarEvent(CalendarEvent calendarEventInstance) {
 		def helper = new RecurCalendarEventHelper(
 			calendarEventInstance.recurrence
@@ -214,4 +263,33 @@ class CalendarEventController {
 		}
 		calendarEventInstance.recurrence.until = until
 	}
+
+    private void saveReminders(CalendarEvent calendarEventInstance,
+                                 User user = null)
+    {
+        if (calendarEventInstance.owner.id == user?.id) {
+            user = null
+        }
+        def l = Reminder.findAllByCalendarEventAndUser(calendarEventInstance, user)
+        for (Reminder r in l) {
+            r.delete()
+        }
+
+        String [] reminderRules = params.reminders.split()
+        for (String rule in reminderRules) {
+            Reminder reminder = Reminder.fromRule(rule)
+            reminder.calendarEvent = calendarEventInstance
+            reminder.user = user
+            Date d = calendarEventInstance.start
+            if (calendarEventInstance.recurrence.type > 0) {
+                def helper = new RecurCalendarEventHelper(
+                    calendarEventInstance.recurrence
+                )
+                d = helper.approximate(d)
+            }
+            reminder.nextReminder =
+                new Date(d.time - reminder.valueAsMilliseconds)
+            reminder.save(flush:true)
+        }
+    }
 }

@@ -15,10 +15,11 @@ class CalendarEvent {
 		allDay()
 		recurrence(nullable:false)
 		organization(nullable:true)
+        owner(nullable:false)
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization:Organization ]
+    static belongsTo = [ organization:Organization, owner:User ]
 	static embedded = [ 'recurrence' ]
 	static mapping = {
 		sort 'start'
@@ -46,13 +47,16 @@ class CalendarEvent {
 		end = c.end
 		allDay = c.allDay
 		recurrence = new RecurrenceData(c.recurrence)
+        organization = c.organization
+        owner = c.owner
 	}
 
     CalendarEvent eventAtDate(Date d) {
         def res = new CalendarEvent([
             subject:subject, location:location, description:description,
             start:d, end:new Date(d.time + end.time - start.time),
-            allDay:allDay, dateCreated:dateCreated, lastUpdated:lastUpdated
+            allDay:allDay, organization:organization, owner:owner,
+            dateCreated:dateCreated, lastUpdated:lastUpdated
         ])
         res.setId(ident())
         return res

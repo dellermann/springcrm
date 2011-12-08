@@ -6,10 +6,10 @@ import org.apache.commons.logging.LogFactory
 /**
  * The class <code>Modules</code> defines modules which can be used for
  * permission control in this application.
- * 
- * @author 	Daniel Ellermann
- * @version 0.9.11
- * @since	0.9.3
+ *
+ * @author  Daniel Ellermann
+ * @version 0.9.12
+ * @since   0.9.3
  */
 class Modules {
 
@@ -20,6 +20,7 @@ class Modules {
 	 * this application.
 	 */
 	protected static final Map<String, List<String>> MODULES = [
+        calendar: ['calendarEvent', 'organization'],
 		call: ['call'],
 		contact: ['organization', 'person'],
 		creditMemo: ['organization', 'creditMemo'],
@@ -49,7 +50,7 @@ class Modules {
 
 	/**
 	 * Gets a set of all defined module names.
-	 * 
+	 *
 	 * @return	the module names
 	 */
 	public static Set<String> getModuleNames() {
@@ -58,7 +59,7 @@ class Modules {
 
 	/**
 	 * Resolves the given module name to a list of controller names.
-	 * 
+	 *
 	 * @param name	the given module name
 	 * @return		the list of controller name; <code>null</code> if no module
 	 * 				with the given name is defined
@@ -73,7 +74,7 @@ class Modules {
 
 	/**
 	 * Resolves the given module names to a set of controller names.
-	 * 
+	 *
 	 * @param names	the given module names
 	 * @return		the set of controller names
 	 */

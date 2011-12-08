@@ -456,8 +456,11 @@
      *                                      this case an additional button is
      *                                      rendered beside the autocomplete
      *                                      input field.
-     * @param {String} config.findUrl       the URL used to query for the
-     *                                      entered search term
+     * @param {String} [config.findUrl]     the URL used to query for the
+     *                                      entered search term; if not set the
+     *                                      value is obtained from attribute
+     *                                      <code>data-find-url</code> from the
+     *                                      label input field
      * @param {String} [config.labelProp]   the name of the property in the
      *                                      returned JSON data where the labels
      *                                      of the selector items are stored
@@ -520,7 +523,8 @@
          *
          * @type String
          */
-        this._findUrl = config.findUrl;
+        this._findUrl = config.findUrl ||
+            this._$labelInput.attr("data-find-url");
 
         /**
          * The name of the property in the returned JSON data where the labels

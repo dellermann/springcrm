@@ -28,7 +28,7 @@ class RecurCalendarEventHelper {
 	 * @param d		the given date
 	 * @return		the next possible calendar event
 	 */
-	Date approximate(Date start, Date d) {
+	Date approximate(Date start, Date d = new Date()) {
 		Calendar calStart = start.toCalendar()
 		Calendar cal = d.toCalendar()
 		cal.clearTime()

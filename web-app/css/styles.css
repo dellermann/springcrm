@@ -1637,6 +1637,15 @@ form .invoicing-items-pos {
 #tabs-recurrence-type-30 span {
   padding-right: .8em;
 }
+#reminder-selectors ul {
+  margin: 0;
+}
+#reminder-selectors li {
+  list-style: none;
+}
+#reminder-selectors option {
+  padding-right: 4em;
+}
 
 /* search results */
 .searchresults-number {

@@ -55,7 +55,7 @@ class User {
 
 	/**
 	 * Gets a set of controllers the user is permitted to access.
-	 * 
+	 *
 	 * @return	the names of the controllers the user may access
 	 */
 	Set<String> getAllowedControllers() {
@@ -70,7 +70,7 @@ class User {
 	/**
 	 * Checks whether or not the user has permission to access the given
 	 * controllers.
-	 *  
+	 *
 	 * @param controllers	the names of the controllers to check
 	 * @return				<code>true</code> if the user can access all the
 	 * 						given controllers; <code>false</code> otherwise
@@ -82,7 +82,7 @@ class User {
 	/**
 	 * Checks whether or not the user has permission to access the given
 	 * modules.
-	 *  
+	 *
 	 * @param modules	the names of the modules to check
 	 * @return			<code>true</code> if the user can access all the given
 	 * 					modules; <code>false</code> otherwise
@@ -90,6 +90,14 @@ class User {
 	boolean checkAllowedModules(List<String> modules) {
 		return admin || modules?.intersect(getAllowedModulesAsList())
 	}
+
+    boolean equals(Object o) {
+        if (o instanceof User) {
+            return o.ident() == ident()
+        } else {
+            return false
+        }
+    }
 
 	String toString() {
 		return fullName
