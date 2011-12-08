@@ -34,7 +34,7 @@
           <label for="organization"><g:message code="call.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${callInstance?.organization?.name}" size="35" />
+          <input type="text" id="organization" value="${callInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find')}" />
           <input type="hidden" name="organization.id" id="organization-id" value="${callInstance?.organization?.id}" />
           <g:hasErrors bean="${callInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
@@ -47,7 +47,7 @@
           <label for="person"><g:message code="call.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${callInstance?.person?.fullName}" size="35" />
+          <input type="text" id="person" value="${callInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" />
           <input type="hidden" name="person.id" id="person-id" value="${callInstance?.person?.id}" />
           <g:hasErrors bean="${callInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -118,7 +118,6 @@
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find')}",
             onSelect: function () {
                 phoneNumbers = undefined;
             }
@@ -126,7 +125,6 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "person",
-            findUrl: "${createLink(controller:'person', action:'find')}",
             onSelect: function () {
                 phoneNumbers = undefined;
             },

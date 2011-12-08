@@ -31,7 +31,7 @@
           <label for="organization"><g:message code="invoicingTransaction.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: creditMemoInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${creditMemoInstance?.organization?.name}" size="35" />
+          <input type="text" id="organization" value="${creditMemoInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find', params:[type:1])}" />
           <input type="hidden" name="organization.id" id="organization-id" value="${creditMemoInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${creditMemoInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
@@ -44,7 +44,7 @@
           <label for="person"><g:message code="invoicingTransaction.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: creditMemoInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${creditMemoInstance?.person?.fullName}" size="35" />
+          <input type="text" id="person" value="${creditMemoInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" />
           <input type="hidden" name="person.id" id="person-id" value="${creditMemoInstance?.person?.id}" /><br />
           <g:hasErrors bean="${creditMemoInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -57,7 +57,7 @@
           <label for="invoice"><g:message code="creditMemo.invoice.label" default="Invoice" /></label>
         </div>
         <div class="field${hasErrors(bean: creditMemoInstance, field: 'invoice', ' error')}">
-          <input type="text" id="invoice" value="${creditMemoInstance?.invoice?.fullName}" size="35" />
+          <input type="text" id="invoice" value="${creditMemoInstance?.invoice?.fullName}" size="35" data-find-url="${createLink(controller:'invoice', action:'find')}" />
           <input type="hidden" name="invoice.id" id="invoice-id" value="${creditMemoInstance?.invoice?.id}" /><br />
           <g:hasErrors bean="${creditMemoInstance}" field="invoice">
             <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="invoice"><g:message error="${it}" /> </g:eachError></span>
@@ -561,7 +561,6 @@
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find', params:[type:1])}",
             onSelect: function () {
                 addrFields.loadFromOrganizationToLeft("billingAddr");
                 addrFields.loadFromOrganizationToRight("shippingAddr");
@@ -570,7 +569,6 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "person",
-            findUrl: "${createLink(controller:'person', action:'find')}",
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }
@@ -578,7 +576,6 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "invoice",
-            findUrl: "${createLink(controller:'invoice', action:'find')}",
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }
@@ -586,7 +583,6 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "dunning",
-            findUrl: "${createLink(controller:'dunning', action:'find')}",
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }

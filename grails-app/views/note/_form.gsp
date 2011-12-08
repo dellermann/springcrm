@@ -32,7 +32,7 @@
           <label for="organization"><g:message code="note.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: noteInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${noteInstance?.organization?.name}" size="35" />
+          <input type="text" id="organization" value="${noteInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find')}" />
           <input type="hidden" name="organization.id" id="organization-id" value="${noteInstance?.organization?.id}" /><br />
           <g:hasErrors bean="${noteInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${noteInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
@@ -45,7 +45,7 @@
           <label for="person"><g:message code="note.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: noteInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${noteInstance?.person?.fullName}" size="35" />
+          <input type="text" id="person" value="${noteInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" />
           <input type="hidden" name="person.id" id="person-id" value="${noteInstance?.person?.id}" /><br />
           <g:hasErrors bean="${noteInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${noteInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -78,14 +78,10 @@
 <script type="text/javascript">
 //<![CDATA[
 (function(SPRINGCRM) {
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find')}"
-        })
+    new SPRINGCRM.FixedSelAutocomplete({ baseId: "organization" })
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "person",
-            findUrl: "${createLink(controller:'person', action:'find')}",
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }

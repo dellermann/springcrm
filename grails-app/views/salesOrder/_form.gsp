@@ -31,7 +31,7 @@
           <label for="organization"><g:message code="invoicingTransaction.organization.label" default="Organization" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'organization', ' error')}">
-          <input type="text" id="organization" value="${salesOrderInstance?.organization?.name}" size="35" />
+          <input type="text" id="organization" value="${salesOrderInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find', params:[type:1])}" />
           <input type="hidden" name="organization.id" id="organization-id" value="${salesOrderInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${salesOrderInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
@@ -44,7 +44,7 @@
           <label for="person"><g:message code="invoicingTransaction.person.label" default="Person" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'person', ' error')}">
-          <input type="text" id="person" value="${salesOrderInstance?.person?.fullName}" size="35" /><br />
+          <input type="text" id="person" value="${salesOrderInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" /><br />
           <input type="hidden" name="person.id" id="person-id" value="${salesOrderInstance?.person?.id}" />
           <g:hasErrors bean="${salesOrderInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
@@ -58,7 +58,7 @@
           <label for="quote"><g:message code="salesOrder.quote.label" default="Quote" /></label>
         </div>
         <div class="field${hasErrors(bean: salesOrderInstance, field: 'quote', ' error')}">
-          <input type="text" id="quote" value="${salesOrderInstance?.quote?.fullName}" size="35" />
+          <input type="text" id="quote" value="${salesOrderInstance?.quote?.fullName}" size="35" data-find-url="${createLink(controller:'quote', action:'find')}" />
           <input type="hidden" name="quote.id" id="quote-id" value="${salesOrderInstance?.quote?.id}" /><br />
           <g:hasErrors bean="${salesOrderInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${salesOrderInstance}" field="quote"><g:message error="${it}" /> </g:eachError></span>
@@ -540,7 +540,6 @@
 
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "organization",
-            findUrl: "${createLink(controller:'organization', action:'find', params:[type:1])}",
             onSelect: function () {
                 addrFields.loadFromOrganizationToLeft("billingAddr");
                 addrFields.loadFromOrganizationToRight("shippingAddr");
@@ -549,7 +548,6 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "person",
-            findUrl: "${createLink(controller:'person', action:'find')}",
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }
@@ -557,7 +555,6 @@
         .init();
     new SPRINGCRM.FixedSelAutocomplete({
             baseId: "quote",
-            findUrl: "${createLink(controller:'quote', action:'find')}",
             parameters: function () {
                 return { organization: $("#organization-id").val() };
             }
