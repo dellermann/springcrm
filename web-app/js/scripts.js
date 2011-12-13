@@ -28,333 +28,12 @@
     "use strict";
 
     var AddrFields = null,
-        FixedSelAutocomplete = null,
         LightBox = null,
         RemoteList = null,
         jQuery = $;
 
 
     //== Classes ================================
-
-    /**
-     * Creates a new autocomplete field which stores the selected labels and
-     * values in separate input fields and forces the user to select a value.
-     *
-     * @class                               An autocomplete field which stores
-     *                                      the selected labels and values in
-     *                                      separate input fields and forces
-     *                                      the user to select a value
-     * @constructor
-     * @param {Object} config               the configuration data for this
-     *                                      input
-     * @param {String} config.baseId        the base ID used to compute the IDs
-     *                                      of the label and value input fields
-     * @param {String} config.labelInputId  the ID of the input field where the
-     *                                      user enters the search term and
-     *                                      where the label of the selected
-     *                                      item is displayed
-     * @param {String} config.valueInputId  the ID of the (usually hidden) input
-     *                                      field where the value of the
-     *                                      selected item is stored
-     * @param {Boolean} [config.combobox]   whether or not the autocomplete
-     *                                      field is displayed as combobox. In
-     *                                      this case an additional button is
-     *                                      rendered beside the autocomplete
-     *                                      input field.
-     * @param {String} [config.findUrl]     the URL used to query for the
-     *                                      entered search term; if not set the
-     *                                      value is obtained from attribute
-     *                                      <code>data-find-url</code> from the
-     *                                      label input field
-     * @param {String} [config.labelProp]   the name of the property in the
-     *                                      returned JSON data where the labels
-     *                                      of the selector items are stored
-     * @param {String} [config.valueProp]   the name of the property in the
-     *                                      returned JSON data where the values
-     *                                      of the selector items are stored
-     * @param {Object|Function} [config.parameters]
-     *                                      any additional parameters which are
-     *                                      sent to the server. If this is a
-     *                                      function it will be called to
-     *                                      produce additional parameters.
-     * @param {Function} [config.onSelect]  a function which is called when the
-     *                                      user selects an item. The function
-     *                                      gets two parameters: the value and
-     *                                      the label of the selected item.
-     * @returns {Object}                    the generated autocomplete field
-     *                                      object
-     */
-    FixedSelAutocomplete = function FixedSelAutocomplete(config) {
-        var baseId = config.baseId;
-
-        /* handle function call without new */
-        if (!(this instanceof FixedSelAutocomplete)) {
-            return new FixedSelAutocomplete(config);
-        }
-
-
-        //-- Instance variables -----------------
-
-        /**
-         * The input field where the user enters the search term and where the
-         * label of the selected item is displayed.
-         *
-         * @type JQueryObject
-         * @default "{baseId}"
-         */
-        this._$labelInput = $("#" + (config.labelInputId || baseId));
-
-        /**
-         * The (usually hidden) input field where the value of the selected
-         * item is stored.
-         *
-         * @type JQueryObject
-         * @default "{baseId}-id"
-         */
-        this._$valueInput = $("#" + (config.valueInputId || baseId + "-id"));
-
-        /**
-         * Determines whether or not the autocomplete field is displayed as
-         * combobox. In this case an additional button is rendered beside the
-         * autocomplete input field.
-         *
-         * @type Boolean
-         * @default true
-         */
-        this._combobox = config.combobox || true;
-
-        /**
-         * The URL used to query for the entered search term.
-         *
-         * @type String
-         */
-        this._findUrl = config.findUrl ||
-            this._$labelInput.attr("data-find-url");
-
-        /**
-         * The name of the property in the returned JSON data where the labels
-         * of the selector items are stored.
-         *
-         * @type String
-         * @default "name"
-         */
-        this._labelProp = config.labelProp || "name";
-
-        /**
-         * The name of the property in the returned JSON data where the values
-         * of the selector items are stored.
-         *
-         * @type String
-         * @default "id"
-         */
-        this._valueProp = config.valueProp || "id";
-
-        /**
-         * The previous selection value before a new selection was started.
-         *
-         * @type String
-         * @default ""
-         * @see FixedSelAutocomplete#_onFocus
-         * @see FixedSelAutocomplete#_onBlur
-         */
-        this._oldValue = "";
-
-        /**
-         * The previous selection label before a new selection was started.
-         *
-         * @type String
-         * @default ""
-         * @see FixedSelAutocomplete#_onFocus
-         * @see FixedSelAutocomplete#_onBlur
-         */
-        this._oldLabel = "";
-
-        /**
-         * Any additional parameters which are sent to the server. If this is a
-         * function it will be called to produce additional parameters.
-         *
-         * @type Object|Function
-         * @default {}
-         */
-        this._parameters = config.parameters || {};
-
-        /**
-         * A function which is called when the user selects an item. The
-         * function gets two parameters: the value and the label of the
-         * selected item.
-         *
-         * @type Function
-         */
-        this._onSelectFunc = config.onSelect;
-    };
-
-    FixedSelAutocomplete.prototype = {
-
-        //-- Public methods ---------------------
-
-        /**
-         * Initializes the autocomplete field.
-         */
-        init: function () {
-            this._$labelInput
-                .focus($.proxy(this._onFocus, this))
-                .blur($.proxy(this._onBlur, this))
-                .autocomplete({
-                    focus: $.proxy(this._onFocusItem, this),
-                    select: $.proxy(this._onSelect, this),
-                    source: $.proxy(this._sendFindRequest, this)
-                });
-            if (this._combobox) {
-                this._$labelInput
-                    .addClass("combobox")
-                    .after($('<button/>', {
-                        "class": "combobox",
-                        click: $.proxy(this._onClickComboboxBtn, this),
-                        text: "...",
-                        type: "button"
-                    }));
-            }
-        },
-
-
-        //-- Non-public methods -----------------
-
-        /**
-         * Called if a successful AJAX response was received.
-         *
-         * @param {Function} response  the function which should be called to
-         *                             render the received labels and values
-         * @param {Object} data        the received JSON data
-         * @private
-         */
-        _handleResponse: function (response, data) {
-            var labelProp = this._labelProp,
-                valueProp = this._valueProp;
-
-            response($.map(data, function (item) {
-                return { label: item[labelProp], value: item[valueProp] };
-            }));
-        },
-
-        /**
-         * Called if the user leaves the autocomplete field. The method
-         * restores a previously stored label and value to force the user
-         * select a concrete value.
-         *
-         * @see        FixedSelAutocomplete#_onFocus
-         * @private
-         */
-        _onBlur: function () {
-            this._$valueInput.val(this._oldValue);
-            this._$labelInput.val(this._oldLabel);
-        },
-
-        /**
-         * Called if the combobox button beside the autocomplete field was
-         * clicked. The method starts a search for all entries.
-         *
-         * @param {Object} event    the event data
-         * @private
-         */
-        _onClickComboboxBtn: function (event) {
-            var $input = this._$labelInput;
-
-            if ($input.autocomplete("widget").is(":visible")) {
-                $input.autocomplete("close");
-                return;
-            }
-
-            /* work around a bug (likely same cause as #5265) */
-            $(event.target).blur();
-
-            /* pass wildcard as value to search for, displaying all results */
-            $input.autocomplete("search", "%");
-            $input.focus();
-        },
-
-        /**
-         * Called if an item from the autocomplete selector was focused, but
-         * not selected. The method displays the label of the item instead of
-         * the value.
-         *
-         * @param {Object} event    any data about the event
-         * @param {Object} ui       data of the autocomplete input field
-         * @param {Object} ui.item  the data of the selected item (label and
-         *                          value)
-         * @return {Boolean}        always <code>false</code> to suppress
-         *                          further handling of the event
-         * @private
-         */
-        _onFocusItem: function (event, ui) {
-            $(event.target).val(ui.item.label);
-            return false;
-        },
-
-        /**
-         * Called if an item from the autocomplete selector was chosen. The
-         * method stores the selected label and value in the properties
-         * {@link FixedSelAutocomplete#oldLabel} and
-         * {@link FixedSelAutocomplete#oldValue} as well as in the input
-         * fields.
-         *
-         * @param {Object} event    any data about the event
-         * @param {Object} ui       data of the autocomplete input field
-         * @param {Object} ui.item  the data of the selected item (label and
-         *                          value)
-         * @return {Boolean}        always <code>false</code> to suppress
-         *                          further handling of the event
-         * @private
-         */
-        _onSelect: function (event, ui) {
-            var item = ui.item,
-                s;
-
-            s = item.label;
-            this._oldLabel = s;
-            $(event.target).val(s);
-            s = item.value;
-            this._oldValue = s;
-            this._$valueInput.val(s);
-
-            if (this._onSelectFunc) {
-                this._onSelectFunc.call(this, item.value, item.label);
-            }
-
-            return false;
-        },
-
-        /**
-         * Sends a request to the server using the entered search term as base
-         * for querying particular items.
-         *
-         * @param {Object} request         information about the search request
-         * @param {String} request.term    the entered search term
-         * @param {Function} response      the function which should be called
-         *                                 to render the received labels and
-         *                                 values
-         * @private
-         */
-        _sendFindRequest: function (request, response) {
-            var p = this._parameters,
-                params = {};
-
-            if (p) {
-                params = $.isFunction(p) ? p.call(this) : p;
-            }
-            $.extend(params, { name: request.term });
-
-            $.ajax({
-                context: this, data: params, dataType: "json",
-                /** @ignore */
-                success: function (data) {
-                    this._handleResponse(response, data);
-                },
-                url: this._findUrl
-            });
-        }
-    };
-    SPRINGCRM.FixedSelAutocomplete = FixedSelAutocomplete;
-
 
     /**
      * Creates a new handling mechanism for address fields. Usually, there are
@@ -1290,41 +969,35 @@
 
         _create: function () {
             var baseClass = this.widgetBaseClass,
+                clsCombobox = baseClass + "-combobox",
                 el = this.element,
-                focus,
-                name,
                 opts = this.options,
-                select = opts.select,
-                self = this,
-                url,
-                v = opts.valueInput,
-                valueInput = null;
+                parentOpts = {};
 
-            if (!opts.source) {
-                url = opts.url || el.attr("data-find-url");
-                if (url) {
-                    opts.url = url;
-                    opts.source = $.proxy(this._load, this);
-                }
+            this._prepareOptions();
+            $.extend(parentOpts, opts);
+            el.autocomplete(parentOpts)
+                .focus($.proxy(this._onFocus, this))
+                .blur($.proxy(this._onBlur, this));
+
+            this.valueInput = this._getValueInput();
+
+            if (opts.combobox) {
+                el.addClass(clsCombobox)
+                    .after($('<button/>', {
+                        "class": clsCombobox,
+                        click: $.proxy(this._onClickComboboxBtn, this),
+                        text: "...",
+                        type: "button"
+                    }));
             }
-            opts.select = function () {
-                self._onSelect.apply(self, arguments);
-                if (select) {
-                    select.apply(self, arguments);
-                }
-                return false;
-            };
-            focus = opts.focus;
-            opts.focus = function () {
-                self._onFocusItem.apply(self, arguments);
-                if (focus) {
-                    focus.apply(self, arguments);
-                }
-                return false;
-            };
+        },
 
-            this.autocomplete = $.ui.autocomplete.prototype;
-            this.autocomplete._create.apply(this, arguments);
+        _getValueInput: function () {
+            var el = this.element,
+                name,
+                v = this.options.valueInput,
+                valueInput = null;
 
             if (v == null) {
                 name = el.attr("name");
@@ -1334,54 +1007,48 @@
                     name = el.attr("id");
                     if (name) {
                         valueInput = $("#" + name + "\\.id");
+                        if (valueInput.length === 0) {
+                            valueInput = $("#" + name + "-id");
+                        }
                     }
                 }
             } else if (v.constructor === String) {
                 valueInput = $(v);
             }
-            this.valueInput = valueInput;
-
-            el.focus($.proxy(this._onFocus, this))
-                .blur($.proxy(this._onBlur, this));
-            if (opts.combobox) {
-                el.addClass(baseClass + "-combobox")
-                    .after($('<button/>', {
-                        "class": baseClass + "-combobox",
-                        click: $.proxy(this._onClickComboboxBtn, this),
-                        text: "...",
-                        type: "button"
-                    }));
-            }
+            return valueInput;
         },
 
         _load: function (request, response) {
             var opts = this.options,
                 p = opts.loadParameters,
-                params = {},
-                self = this;
+                params,
+                self = this,
+                url = opts.url;
 
-            if (p) {
-                params = $.isFunction(p) ? p.call(this) : p;
+            if (url) {
+                params = {};
+                if (p) {
+                    params = $.isFunction(p) ? p.call(this) : p;
+                }
+                params.name = request.term;
+
+                $.getJSON(
+                        url, params, function (data) {
+                            var labelProp,
+                                opts = self.options,
+                                valueProp;
+
+                            labelProp = opts.labelProp;
+                            valueProp = opts.valueProp;
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item[labelProp],
+                                    value: item[valueProp]
+                                };
+                            }));
+                        }
+                    );
             }
-            params.name = request.term;
-
-            $.getJSON(
-                    opts.url, params,
-                    function (data) {
-                        var labelProp,
-                            opts = self.options,
-                            valueProp;
-
-                        labelProp = opts.labelProp,
-                        valueProp = opts.valueProp;
-                        response($.map(data, function (item) {
-                            return {
-                                label: item[labelProp],
-                                value: item[valueProp]
-                            };
-                        }));
-                    }
-                );
         },
 
         _onBlur: function () {
@@ -1390,12 +1057,10 @@
         },
 
         _onClickComboboxBtn: function (event) {
-            var ac = this.autocomplete,
-                el = this.element,
-                widget = ac.widget.call(this);
+            var el = this.element;
 
-            if (widget.is(":visible")) {
-                ac.close.call(this);
+            if (el.autocomplete("widget").is(":visible")) {
+                el.autocomplete("close");
                 return;
             }
 
@@ -1403,7 +1068,7 @@
             $(event.target).blur();
 
             /* pass wildcard as value to search for, displaying all results */
-            ac.search.call(this, "%");
+            el.autocomplete("search", "%");
             el.focus();
         },
 
@@ -1422,10 +1087,45 @@
 
             s = item.label;
             this.oldLabel = s;
-            $(event.target).val(s);
+            this.element.val(s);
             s = item.value;
             this.oldValue = s;
             this.valueInput.val(s);
+        },
+
+        _prepareOptions: function () {
+            var el = this.element,
+                focus,
+                opts = this.options,
+                select,
+                self = this,
+                url;
+
+            if (!opts.source) {
+                url = opts.url || el.attr("data-find-url");
+                if (url) {
+                    opts.url = url;
+                    opts.source = $.proxy(this._load, this);
+                }
+            }
+
+            select = opts.select;
+            focus = opts.focus;
+
+            opts.select = function () {
+                self._onSelect.apply(self, arguments);
+                if (select) {
+                    select.apply(self, arguments);
+                }
+                return false;
+            };
+            opts.focus = function () {
+                self._onFocusItem.apply(self, arguments);
+                if (focus) {
+                    focus.apply(self, arguments);
+                }
+                return false;
+            };
         }
     });
 

@@ -296,11 +296,9 @@
     //-- Main -----------------------------------
 
     /* initialize autocompletion fields */
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "organization",
-            onSelect: onSelectOrganization
-        })
-        .init();
+    $("#organization").autocompleteex({
+            select: onSelectOrganization
+        });
 
     /* initialize all-day checkbox */
     $("#allDay").change(onChangeAllDay)

@@ -35,7 +35,7 @@
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${callInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find')}" />
-          <input type="hidden" name="organization.id" value="${callInstance?.organization?.id}" />
+          <input type="hidden" id="organization.id" name="organization.id" value="${callInstance?.organization?.id}" />
           <g:hasErrors bean="${callInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -48,7 +48,7 @@
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${callInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" />
-          <input type="hidden" name="person.id" value="${callInstance?.person?.id}" />
+          <input type="hidden" id="person.id" name="person.id" value="${callInstance?.person?.id}" />
           <g:hasErrors bean="${callInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -114,8 +114,57 @@
 <script type="text/javascript">
 //<![CDATA[
 (function (SPRINGCRM) {
-    var phoneNumbers;
+    var onLoadPhoneNumbers,
+        phoneNumbers;
 
+    onLoadPhoneNumbers = function (request, response) {
+        var data = {},
+            term = request.term.toLowerCase(),
+            url;
+    
+        if ($("#person\\.id").val()) {
+            url = "${createLink(controller:'person', action:'getPhoneNumbers')}";
+            data.id = $("#person\\.id").val();
+        } else if ($("#organization\\.id").val()) {
+            url = "${createLink(controller:'organization', action:'getPhoneNumbers')}";
+            data.id = $("#organization\\.id").val();
+        }
+        if (!phoneNumbers) {
+            if (url) {
+                $.getJSON(url, data, function (data) {
+                        var d,
+                            i = -1,
+                            l = [],
+                            n = data.length,
+                            respData = [],
+                            t = term,
+                            val;
+    
+                        while (++i < n) {
+                            d = data[i];
+                            if (d) {
+                                val = d.toLowerCase();
+                                if (val) {
+                                    l.push(val);
+                                    if (val.indexOf(t) >= 0) {
+                                        respData.push(val);
+                                    }
+                                }
+                            }
+                        }
+                        phoneNumbers = l;
+                        response(respData);
+                    });
+            }
+        } else {
+            response($.grep(
+                phoneNumbers, function (val) {
+                    return val.indexOf(term) >= 0;
+                }
+            ));
+        }
+    };
+    
     $("#organization").autocompleteex({
             select: function () {
                 phoneNumbers = undefined;
@@ -130,54 +179,7 @@
             }
         });
     $("#phone").autocomplete({
-            source: function (request, response) {
-                var data = {},
-                    term = request.term.toLowerCase(),
-                    url;
-
-                if ($("#person-id").val()) {
-                    url = "${createLink(controller:'person', action:'getPhoneNumbers')}";
-                    data.id = $("#person-id").val();
-                } else if ($("#organization-id").val()) {
-                    url = "${createLink(controller:'organization', action:'getPhoneNumbers')}";
-                    data.id = $("#organization-id").val();
-                }
-                if (!phoneNumbers) {
-                    if (url) {
-                        $.ajax({
-                            data: data,
-                            dataType: "json",
-                            success: function (data) {
-                                var i = -1,
-                                    l = [],
-                                    n = data.length,
-                                    respData = [],
-                                    t = term,
-                                    val;
-
-                                while (++i < n) {
-                                    val = data[i].toLowerCase();
-                                    if (val) {
-                                        l.push(val);
-                                        if (val.indexOf(t) >= 0) {
-                                            respData.push(val);
-                                        }
-                                    }
-                                }
-                                phoneNumbers = l;
-                                response(respData);
-                            },
-                            url: url
-                        });
-                    }
-                } else {
-                    response($.grep(
-                        phoneNumbers, function (val) {
-                            return val.indexOf(term) >= 0;
-                        }
-                    ));
-                }
-            }
+            source: onLoadPhoneNumbers
         });
 }(SPRINGCRM));
 //]]></script>

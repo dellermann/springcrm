@@ -32,7 +32,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${invoiceInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find', params:[type:1])}" />
-          <input type="hidden" name="organization.id" id="organization-id" value="${invoiceInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
+          <input type="hidden" name="organization.id" id="organization.id" value="${invoiceInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${invoiceInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -45,7 +45,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${invoiceInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" />
-          <input type="hidden" name="person.id" id="person-id" value="${invoiceInstance?.person?.id}" /><br />
+          <input type="hidden" name="person.id" id="person.id" value="${invoiceInstance?.person?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -59,7 +59,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'quote', ' error')}">
           <input type="text" id="quote" value="${invoiceInstance?.quote?.fullName}" size="35" data-find-url="${createLink(controller:'quote', action:'find')}" />
-          <input type="hidden" name="quote.id" id="quote-id" value="${invoiceInstance?.quote?.id}" /><br />
+          <input type="hidden" name="quote.id" id="quote.id" value="${invoiceInstance?.quote?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="quote"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -74,7 +74,7 @@
         </div>
         <div class="field${hasErrors(bean: invoiceInstance, field: 'salesOrder', ' error')}">
           <input type="text" id="salesOrder" value="${invoiceInstance?.salesOrder?.fullName}" size="35" data-find-url="${createLink(controller:'salesOrder', action:'find')}" />
-          <input type="hidden" name="salesOrder.id" id="salesOrder-id" value="${invoiceInstance?.salesOrder?.id}" /><br />
+          <input type="hidden" name="salesOrder.id" id="salesOrder.id" value="${invoiceInstance?.salesOrder?.id}" /><br />
           <g:hasErrors bean="${invoiceInstance}" field="quote">
             <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="salesOrder"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -573,41 +573,32 @@
 
     var $stage,
         addrFields,
+        getOrganizationId,
         taxes,
         units;
     
     taxes = [ <g:each in="${taxClasses}">${it.taxValue}, </g:each> ];
     units = [ <g:each in="${units}">"${it.name}", </g:each> ];
 
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "organization",
-            onSelect: function () {
+    getOrganizationId = function () {
+        return { organization: $("#organization\\.id").val() };
+    };
+
+    $("#organization").autocompleteex({
+            select: function () {
                 addrFields.loadFromOrganizationToLeft("billingAddr");
                 addrFields.loadFromOrganizationToRight("shippingAddr");
             }
-        })
-        .init();
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "person",
-            parameters: function () {
-                return { organization: $("#organization-id").val() };
-            }
-        })
-        .init();
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "quote",
-            parameters: function () {
-                return { organization: $("#organization-id").val() };
-            }
-        })
-        .init();
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "salesOrder",
-            parameters: function () {
-                return { organization: $("#organization-id").val() };
-            }
-        })
-        .init();
+        });
+    $("#person").autocompleteex({
+            loadParameters: getOrganizationId
+        });
+    $("#quote").autocompleteex({
+            loadParameters: getOrganizationId
+        });
+    $("#salesOrder").autocompleteex({
+            loadParameters: getOrganizationId
+        });
     new SPRINGCRM.InvoicingItems({
             baseName: "invoice", imgPath: "${resource(dir: 'img')}",
             productListUrl: "${createControllerLink(controller:'product', action:'selectorList')}",
@@ -620,7 +611,7 @@
     addrFields = new SPRINGCRM.AddrFields({
         leftPrefix: "billingAddr", rightPrefix: "shippingAddr",
         retrieveOrgUrl: "${createLink(controller: 'organization', action: 'get')}",
-        orgFieldId: "organization-id"
+        orgFieldId: "organization.id"
     });
     addrFields.addMenuItemCopy(
         true, '${message(code: "invoicingTransaction.billingAddr.copy")}'

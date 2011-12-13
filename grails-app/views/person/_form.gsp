@@ -56,7 +56,7 @@
         </div>
         <div class="field${hasErrors(bean: personInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${personInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find')}" />
-          <input type="hidden" name="organization.id" id="organization-id" value="${personInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
+          <input type="hidden" name="organization.id" id="organization.id" value="${personInstance?.organization?.id}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
           <g:hasErrors bean="${personInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${personInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -424,8 +424,7 @@
     var a,
         addrFields;
 
-    new SPRINGCRM.FixedSelAutocomplete({ baseId: "organization" })
-        .init();
+    $("#organization").autocompleteex();
 
     new SPRINGCRM.LightBox({imgDir: "${resource(dir:'img/lightbox')}"})
         .activate("#picture");
