@@ -621,10 +621,10 @@
     $stage.change(function () {
         switch ($(this).val()) {
         case "2502":
-            SPRINGCRM.Page.fillInDate($("#shippingDate-date"));
+            $("#shippingDate-date").populateDate();
             break;
         case "2503":
-            SPRINGCRM.Page.fillInDate($("#paymentDate-date"));
+            $("#paymentDate-date").populateDate();
             break;
         }
     });

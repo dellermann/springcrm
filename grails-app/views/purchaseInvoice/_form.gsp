@@ -355,7 +355,7 @@
     $stage.change(function () {
         switch ($(this).val()) {
         case "2102":
-            SPRINGCRM.Page.fillInDate($("#paymentDate-date"));
+            $("#paymentDate-date").populateDate();
             break;
         }
     });

@@ -30,406 +30,11 @@
     var AddrFields = null,
         FixedSelAutocomplete = null,
         LightBox = null,
-        Page = null,
         RemoteList = null,
-        page = null;
+        jQuery = $;
 
 
     //== Classes ================================
-
-    /**
-     * Creates a new object to initialize the basic elements of the page.
-     *
-     * @class               Represents a web page in this application.
-     * @constructor
-     * @returns {Object}    the generated page initialization object
-     */
-    Page = function Page() {
-        var $toolbar = $("#toolbar-container");
-
-        if (!(this instanceof Page)) {
-            return new Page();
-        }
-
-
-        //-- Instance variables -----------------
-
-        /**
-         * The jQuery object representing the body of the document.
-         *
-         * @type jQueryObject
-         */
-        this._$body = $("body");
-
-        /**
-         * The jQuery object representing the whole document.
-         *
-         * @type JQueryObject
-         */
-        this._$document = $(window.document);
-
-        /**
-         * The jQuery object representing the toolbar.
-         *
-         * @type JQueryObject
-         */
-        this._$toolbar = $toolbar;
-
-        /**
-         * The vertical offset of the toolbar when loading the page.
-         *
-         * @type Number
-         */
-        this._toolbarOffset = $toolbar.size() ? $toolbar.offset().top : 0;
-
-        /**
-         * The jQuery object representing the spinner which is used to indicate
-         * long-term operations.
-         *
-         * @type JQueryObject
-         */
-        this._$spinner = $("#spinner");
-
-        /**
-         * The values which are displayed in time selectors.
-         *
-         * @type Array
-         */
-        this._timeValues = (function () {
-            var h = -1,
-                hh,
-                res = [];
-
-            while (++h < 24) {
-                hh = h.toString();
-                if (hh.length < 2) {
-                    hh = "0" + hh;
-                }
-                res.push(hh + ":00");
-                res.push(hh + ":30");
-            }
-            return res;
-        }());
-    };
-
-    /**
-     * Enables the display of hints if the user sets the focus into a search
-     * field.
-     */
-    Page.enableSearchFieldHints = function () {
-        $(".search-field")
-            .unbind("focus")
-            .unbind("blur")
-            .focus(function (e) { Page._swapSearchText(e, true); })
-            .blur(function (e) { Page._swapSearchText(e, false); });
-    };
-
-    /**
-     * Fills in the given date or the current date into the given field if it
-     * is empty.
-     *
-     * @param {JQueryObject} $field the given input field
-     * @param {Date} [date]         the given date; if not specified the
-     *                              current date is used
-     * @since                       0.9.10
-     */
-    Page.fillInDate = function ($field, date) {
-        if ($field.val() === "") {
-            $field.val($.formatDate(date, "date"))
-                .trigger("change");
-        }
-    };
-
-    /**
-     * Exchanges the text of the search field.
-     *
-     * @param {Object} e    the event data
-     * @param {Boolean} dir if <code>true</code> the initial search field
-     *                      text is replaced by an empty string;
-     *                      <code>false</code> otherwise
-     * @protected
-     */
-    Page._swapSearchText = function (e, dir) {
-        var $input,
-            value1 = dir ? SPRINGCRM.getMessage("search") : "",
-            value2 = dir ? "" : SPRINGCRM.getMessage("search");
-
-        $input = $(e.currentTarget);
-        if ($input.val() === value1) {
-            $input.val(value2);
-        }
-    };
-
-    Page.prototype = {
-
-        //-- Public methods ---------------------
-
-        /**
-         * Initializes the page and their elements.
-         */
-        init: function () {
-            if (this._$toolbar !== null) {
-                this._$document.scroll($.proxy(this._onScrollDocument, this));
-            }
-            Page.enableSearchFieldHints();
-            $("#search").next("a")
-                .click(function () {
-                    window.document.forms.searchableForm.submit();
-                    return false;
-                });
-            $("#quick-access").change(this._onChangeQuickAccess);
-            $("#main-menu > li").hover(this._onMenuHover);
-            $(".menu").hover(this._onMenuHover);
-            $(".submit-btn").click(this._onSubmitForm);
-            $(".delete-btn").click(this._onClickDeleteBtn);
-            $(".date-input-date").change(this._onChangeDateInput)
-                .datepicker({
-                    changeMonth: true, changeYear: true, gotoCurrent: true,
-                    selectOtherMonths: true, showButtonPanel: true,
-                    showOtherMonths: true
-                });
-            $(".date-input-time").change(this._onChangeDateInput)
-                .autocomplete({
-                    select: this._onSelectTimeValue,
-                    source: this._timeValues
-                });
-            $("#spinner").click(function () {
-                $(this).css("display", "none");
-            });
-            $("#autoNumber").change(this._onChangeAutoNumber)
-                .triggerHandler("change");
-            this._initAjaxEvents();
-        },
-
-        /**
-         * Renders the font size selector.
-         *
-         * @param {String} url      the URL which is to call to persist the
-         *                          currently selected font size
-         * @param {String} defSize  the CSS font size value specifying the
-         *                          font size to select as default
-         */
-        renderFontSizeSel: function (url, defSize) {
-            var baseFontSize = SPRINGCRM.BASE_FONT_SIZE,
-                currentSize,
-                i = -1,
-                numFontSizes = SPRINGCRM.NUM_FONT_SIZES,
-                offset,
-                s,
-                size;
-
-            offset = Math.floor(numFontSizes / 2);
-            currentSize = parseInt(this._$body.css("font-size"), 10);
-            if (defSize) {
-                currentSize = parseInt(defSize, 10);
-            }
-            s = '<ul id="font-size-sel">';
-            while (++i < numFontSizes) {
-                size = baseFontSize - offset + i;
-                s += '<li ';
-                if (size === currentSize) {
-                    s += 'class="current" ';
-                }
-                s += 'style="font-size: ' + String(size) + 'px;">A</li>';
-            }
-            $("#app-version").after(s + '</ul>');
-            $("#font-size-sel").click($.proxy(
-                    function (e) {
-                        this._onChangeFontSize(e.target, url);
-                    },
-                    this
-                ));
-        },
-
-
-        //-- Non-public methods -----------------
-
-        /**
-         * Initializes the handling of AJAX requests. The method cares about
-         * display of a spinner view while loading data.
-         *
-         * @protected
-         */
-        _initAjaxEvents: function () {
-            this._$spinner
-                .ajaxSend(function () { $(this).show(); })
-                .ajaxComplete(function () { $(this).hide(); });
-        },
-
-        /**
-         * Called if the auto number check box was changed. The method enables
-         * or disables the number field.
-         *
-         * @protected
-         * @since 0.9.10
-         */
-        _onChangeAutoNumber: function () {
-            $("#number").toggleEnable(!this.checked);
-        },
-
-        /**
-         * Called if either the date or time part of a date/time input field
-         * has changed. The method computes a formatted composed value in a
-         * hidden date/time field.
-         *
-         * @protected
-         */
-        _onChangeDateInput: function () {
-            var baseId,
-                els,
-                otherPartField,
-                partId,
-                type = "",
-                val = "";
-
-            els = this.form.elements;
-            if (this.id.match(/^([\w\-.]+)-(date|time)$/)) {
-                baseId = RegExp.$1;
-                partId = RegExp.$2;
-                otherPartField =
-                    els[baseId + "_" + ((partId === "date") ? "time" : "date")];
-                if (partId === "date") {
-                    val += this.value;
-                    type = "date";
-                    if (otherPartField) {
-                        val += " " + otherPartField.value;
-                        type += "time";
-                    }
-                } else {
-                    if (otherPartField) {
-                        val += otherPartField.value + " ";
-                        type = "date";
-                    }
-                    val += this.value;
-                    type += "time";
-                }
-                els[baseId].value = val;
-            }
-        },
-
-        /**
-         * Called if the font size of the document is to change.
-         *
-         * @param {Object} target   the target of the click event
-         * @param {String} url      the URL which is to call to persist the
-         *                          currently selected font size
-         * @protected
-         */
-        _onChangeFontSize: function (target, url) {
-            var $target = $(target),
-                fontSize = $target.css("font-size");
-
-            this._$body
-                .css("font-size", fontSize);
-            $target
-                .addClass("current")
-                .siblings(".current")
-                    .removeClass("current");
-            $.ajax({
-                data: { key: "fontSize", value: fontSize },
-                url: url
-            });
-        },
-
-        /**
-         * Called if an item of the quick access selector was selected. The
-         * method calls the associated URL.
-         *
-         * @protected
-         */
-        _onChangeQuickAccess: function () {
-            var $this = $(this),
-                val;
-
-            val = $this.val();
-            $this.val("");
-            if (val !== "") {
-                window.location.href = val;
-            }
-        },
-
-        /**
-         * Called if the user clicks the button to delete a record.
-         *
-         * @returns {Boolean}   <code>true</code> to delete the record;
-         *                      <code>false</code> to abort the operation
-         * @protected
-         * @since               0.9.10
-         */
-        _onClickDeleteBtn: function () {
-            var $this = $(this),
-                res,
-                url;
-
-            res = window.confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));
-            if (res) {
-                url = $this.attr("href");
-                if (url.indexOf("?") < 0) {
-                    url += "?";
-                } else {
-                    url += "&";
-                }
-                $this.attr("href", url + "confirmed=1");
-            }
-            return res;
-        },
-
-        /**
-         * Called if the user enters or leaves a menu. The method shows or
-         * hides the submenu.
-         *
-         * @protected
-         */
-        _onMenuHover: function () {
-            $(this).find("ul")
-                .stop(true, true)
-                .slideToggle();
-        },
-
-        /**
-         * Called if the document is scrolled.
-         *
-         * @protected
-         */
-        _onScrollDocument: function () {
-            if (this._$document.scrollTop() >= this._toolbarOffset) {
-                this._$toolbar.addClass("fixed");
-            } else {
-                this._$toolbar.removeClass("fixed");
-            }
-        },
-
-        /**
-         * Called if the user selects a time from the autocomplete list.
-         *
-         * @param {Object} event    the event data
-         * @param {Object} ui       information about the selected item
-         * @protected
-         * @since 0.9.12
-         */
-        _onSelectTimeValue: function (event, ui) {
-            var $this = $(this),
-                item = ui.item;
-
-            if (item) {
-                $this.val(item.value);
-            }
-            $this.trigger("change");
-        },
-
-        /**
-         * Called if the form submit button in the toolbar is clicked.
-         *
-         * @returns {Boolean}   always <code>false</code>
-         * @protected
-         * @since 0.9.12
-         */
-        _onSubmitForm: function () {
-            $("#" + $(this).attr("data-form")).submit();
-            return false;
-        }
-    };
-    SPRINGCRM.Page = Page;
 
     /**
      * Creates a new autocomplete field which stores the selected labels and
@@ -665,18 +270,6 @@
             /* pass wildcard as value to search for, displaying all results */
             $input.autocomplete("search", "%");
             $input.focus();
-        },
-
-        /**
-         * Called if the user enters the autocomplete field. The method stores
-         * the currently active label and value for later recovery by the
-         * {@link FixedSelAutocomplete#_onBlur} method.
-         *
-         * @private
-         */
-        _onFocus: function () {
-            this._oldValue = this._$valueInput.val();
-            this._oldLabel = this._$labelInput.val();
         },
 
         /**
@@ -1507,6 +1100,7 @@
                     : parseFloat(s.replace(/\./, "").replace(/,/, "."));
         }
     });
+
     $.fn.extend({
 
         /**
@@ -1518,10 +1112,10 @@
          * @since                   0.9.12
          */
         disable: function () {
-            return $(this).each(function () {
-                $(this).attr("disabled", "disabled")
-                    .addClass("disabled");
-            });
+            return this.each(function () {
+                    $(this).attr("disabled", "disabled")
+                        .addClass("disabled");
+                });
         },
 
         /**
@@ -1533,10 +1127,67 @@
          * @since                   0.9.12
          */
         enable: function () {
-            return $(this).each(function () {
-                $(this).removeAttr("disabled")
-                    .removeClass("disabled");
-            });
+            return this.each(function () {
+                    $(this).removeAttr("disabled")
+                        .removeClass("disabled");
+                });
+        },
+
+        /**
+         * Sets a hint for input controls represented by the given jQuery
+         * object which is displayed if the input control is empty. If the user
+         * enters a text it replaces the hint.
+         *
+         * @name                    jQuery#hint
+         * @param {String} hint     the hint to display
+         * @returns {JQueryObject}  this jQuery object
+         * @function
+         */
+        hint: function (hint) {
+            return this.each(function () {
+                    var $this = $(this),
+                        swapSearchText;
+
+                    swapSearchText = function (event) {
+                        var $this = $(this),
+                            dir = event.data.dir,
+                            h = hint,
+                            value1 = dir ? h : "",
+                            value2 = dir ? "" : h;
+
+                        if ($this.val() === value1) {
+                            $this.val(value2);
+                        }
+                    };
+
+                    $this.focus({ dir: true }, swapSearchText)
+                        .blur({ dir: false }, swapSearchText);
+                    if ($this.val() === "") {
+                        $this.val(hint);
+                    }
+                });
+        },
+
+        /**
+         * Fills in the given date or the current date into the jQuery object
+         * if it is empty.
+         *
+         * @name                    jQuery#populateDate
+         * @param {Date} [date]     the given date; if not specified the
+         *                          current date is used
+         * @returns {JQueryObject}  this jQuery object
+         * @function
+         * @since               0.9.10
+         */
+        populateDate: function (date) {
+            return this.each(function () {
+                    var $this = $(this);
+
+                    if ($this.val() === "") {
+                        $this.val($.formatDate(date, "date"))
+                            .trigger("change");
+                    }
+                });
         },
 
         /**
@@ -1563,31 +1214,466 @@
             } else {
                 b = $(enable).is(":checked");
             }
-            if (b) {
-                $(this).enable();
-            } else {
-                $(this).disable();
+            return b ? this.enable() : this.disable();
+        }
+    });
+
+    $.widget("springcrm.fontsize", {
+        options: {
+            currentSize: "11px",
+            numItems: 5,
+            url: null
+        },
+
+        _create: function () {
+            var DEF_SIZE = 11,
+                $ = jQuery,
+                $ul,
+                baseClass = this.widgetBaseClass,
+                clsCurrent = baseClass + "-current",
+                currentSize = parseInt($("body").css("font-size"), 10),
+                i = -1,
+                n,
+                offset,
+                opts = this.options,
+                size;
+
+            n = opts.numItems;
+            offset = Math.floor(n / 2);
+            currentSize = parseInt(opts.currentSize, 10);
+
+            $ul = $('<ul/>')
+                .addClass(baseClass + "-selector")
+                .click($.proxy(this._onChangeFontSize, this))
+                .appendTo(this.element);
+            while (++i < n) {
+                size = DEF_SIZE - offset + i;
+                $('<li/>', {
+                        "class": (size === currentSize) ? clsCurrent : null,
+                        style: "font-size: " + String(size) + "px;",
+                        text: "A"
+                    }).appendTo($ul);
+            }
+        },
+
+        _destroy: function () {
+            this.element
+                .remove("ul");
+        },
+
+        _onChangeFontSize: function (event) {
+            var $ = jQuery,
+                $target = $(event.target),
+                fontSize = $target.css("font-size"),
+                url = this.options.url;
+
+            $("body").css("font-size", fontSize);
+            $target.addClass("current")
+                .siblings(".current")
+                    .removeClass("current");
+            if (url) {
+                $.get(url, { key: "fontSize", value: fontSize });
             }
         }
     });
 
+    $.widget("springcrm.autocompleteex", $.ui.autocomplete, {
+        options: {
+            combobox: true,
+            labelProp: "name",
+            loadParameters: {},
+            lookupUrl: null,
+            url: null,
+            valueInput: null,
+            valueProp: "id"
+        },
 
-    //== Main ===================================
+        _create: function () {
+            var baseClass = this.widgetBaseClass,
+                el = this.element,
+                focus,
+                name,
+                opts = this.options,
+                select = opts.select,
+                self = this,
+                url,
+                v = opts.valueInput,
+                valueInput = null;
 
-    page = new Page();
-    page.init();
-    SPRINGCRM.page = page;
-
-    /* TODO: handle info boxes in content tables */
-    /*
-    $(".content-table").mouseover(function (e) {
-            var target = e.target;
-            if (target.tagName == "a") {
-                $(target).siblings(".info-box")
-                    .show();
+            if (!opts.source) {
+                url = opts.url || el.attr("data-find-url");
+                if (url) {
+                    opts.url = url;
+                    opts.source = $.proxy(this._load, this);
+                }
             }
-        });
-    */
+            opts.select = function () {
+                self._onSelect.apply(self, arguments);
+                if (select) {
+                    select.apply(self, arguments);
+                }
+                return false;
+            };
+            focus = opts.focus;
+            opts.focus = function () {
+                self._onFocusItem.apply(self, arguments);
+                if (focus) {
+                    focus.apply(self, arguments);
+                }
+                return false;
+            };
+
+            this.autocomplete = $.ui.autocomplete.prototype;
+            this.autocomplete._create.apply(this, arguments);
+
+            if (v == null) {
+                name = el.attr("name");
+                if (name) {
+                    valueInput = $(":input[name=" + name + ".id]");
+                } else {
+                    name = el.attr("id");
+                    if (name) {
+                        valueInput = $("#" + name + "\\.id");
+                    }
+                }
+            } else if (v.constructor === String) {
+                valueInput = $(v);
+            }
+            this.valueInput = valueInput;
+
+            el.focus($.proxy(this._onFocus, this))
+                .blur($.proxy(this._onBlur, this));
+            if (opts.combobox) {
+                el.addClass(baseClass + "-combobox")
+                    .after($('<button/>', {
+                        "class": baseClass + "-combobox",
+                        click: $.proxy(this._onClickComboboxBtn, this),
+                        text: "...",
+                        type: "button"
+                    }));
+            }
+        },
+
+        _load: function (request, response) {
+            var opts = this.options,
+                p = opts.loadParameters,
+                params = {},
+                self = this;
+
+            if (p) {
+                params = $.isFunction(p) ? p.call(this) : p;
+            }
+            params.name = request.term;
+
+            $.getJSON(
+                    opts.url, params,
+                    function (data) {
+                        var labelProp,
+                            opts = self.options,
+                            valueProp;
+
+                        labelProp = opts.labelProp,
+                        valueProp = opts.valueProp;
+                        response($.map(data, function (item) {
+                            return {
+                                label: item[labelProp],
+                                value: item[valueProp]
+                            };
+                        }));
+                    }
+                );
+        },
+
+        _onBlur: function () {
+            this.valueInput.val(this.oldValue);
+            this.element.val(this.oldLabel);
+        },
+
+        _onClickComboboxBtn: function (event) {
+            var ac = this.autocomplete,
+                el = this.element,
+                widget = ac.widget.call(this);
+
+            if (widget.is(":visible")) {
+                ac.close.call(this);
+                return;
+            }
+
+            /* work around a bug (likely same cause as #5265) */
+            $(event.target).blur();
+
+            /* pass wildcard as value to search for, displaying all results */
+            ac.search.call(this, "%");
+            el.focus();
+        },
+
+        _onFocus: function () {
+            this.oldValue = this.valueInput.val();
+            this.oldLabel = this.element.val();
+        },
+
+        _onFocusItem: function (event, ui) {
+            $(event.target).val(ui.item.label);
+        },
+
+        _onSelect: function (event, ui) {
+            var item = ui.item,
+                s;
+
+            s = item.label;
+            this.oldLabel = s;
+            $(event.target).val(s);
+            s = item.value;
+            this.oldValue = s;
+            this.valueInput.val(s);
+        }
+    });
+
+
+    //== INITIALIZATION =========================
+
+    (function () {
+        var $document = $(window.document),
+            $spinner = $("#spinner"),
+            $toolbar = $("#toolbar-container"),
+            init,
+            initAjaxEvents,
+            onChangeAutoNumber = null,
+            onChangeDateInput = null,
+            onChangeQuickAccess = null,
+            onClickDeleteBtn = null,
+            onClickSubmitSearchForm = null,
+            onMenuHover = null,
+            onScrollDocument = null,
+            onSelectTimeValue = null,
+            onSubmitForm = null,
+            timeValues = null,
+            toolbarOffset = $toolbar.length ? $toolbar.offset().top : 0;
+
+        /**
+         * Initializes the page and their elements.
+         *
+         * @protected
+         */
+        init = function () {
+            var $ = jQuery;
+
+            if ($toolbar !== null) {
+                $document.scroll(onScrollDocument);
+            }
+            $("#search").hint(SPRINGCRM.getMessage("search"))
+                .next("a")
+                .click(onClickSubmitSearchForm);
+            $("#quick-access").change(onChangeQuickAccess);
+            $("#main-menu > li").hover(onMenuHover);
+            $(".menu").hover(onMenuHover);
+            $(".submit-btn").click(onSubmitForm);
+            $(".delete-btn").click(onClickDeleteBtn);
+            $(".date-input-date").change(onChangeDateInput)
+                .datepicker({
+                    changeMonth: true, changeYear: true, gotoCurrent: true,
+                    selectOtherMonths: true, showButtonPanel: true,
+                    showOtherMonths: true
+                });
+            $(".date-input-time").change(onChangeDateInput)
+                .autocomplete({
+                    select: onSelectTimeValue,
+                    source: timeValues
+                });
+            $spinner.click(function () {
+                    $(this).css("display", "none");
+                });
+            $("#autoNumber").change(onChangeAutoNumber)
+                .triggerHandler("change");
+            initAjaxEvents();
+        };
+
+        /**
+         * Initializes the handling of AJAX requests. The method cares about
+         * display of a spinner view while loading data.
+         *
+         * @protected
+         */
+        initAjaxEvents = function () {
+            $spinner.ajaxSend(function () { $(this).show(); })
+                .ajaxComplete(function () { $(this).hide(); });
+        };
+
+        /**
+         * Called if the auto number check box was changed. The method enables
+         * or disables the number field.
+         *
+         * @protected
+         * @since 0.9.10
+         */
+        onChangeAutoNumber = function () {
+            $("#number").toggleEnable(!this.checked);
+        };
+
+        /**
+         * Called if either the date or time part of a date/time input field
+         * has changed. The method computes a formatted composed value in a
+         * hidden date/time field.
+         *
+         * @protected
+         */
+        onChangeDateInput = function () {
+            var baseId,
+                els,
+                otherPartField,
+                partId,
+                type = "",
+                val = "";
+
+            els = this.form.elements;
+            if (this.id.match(/^([\w\-.]+)-(date|time)$/)) {
+                baseId = RegExp.$1;
+                partId = RegExp.$2;
+                otherPartField =
+                    els[baseId + "_" + ((partId === "date") ? "time" : "date")];
+                if (partId === "date") {
+                    val += this.value;
+                    type = "date";
+                    if (otherPartField) {
+                        val += " " + otherPartField.value;
+                        type += "time";
+                    }
+                } else {
+                    if (otherPartField) {
+                        val += otherPartField.value + " ";
+                        type = "date";
+                    }
+                    val += this.value;
+                    type += "time";
+                }
+                els[baseId].value = val;
+            }
+        };
+
+        /**
+         * Called if an item of the quick access selector was selected. The
+         * method calls the associated URL.
+         *
+         * @protected
+         */
+        onChangeQuickAccess = function () {
+            var $this = $(this),
+                val;
+
+            val = $this.val();
+            $this.val("");
+            if (val !== "") {
+                window.location.href = val;
+            }
+        };
+
+        /**
+         * Called if the user clicks the button to delete a record.
+         *
+         * @returns {Boolean}   <code>true</code> to delete the record;
+         *                      <code>false</code> to abort the operation
+         * @protected
+         * @since               0.9.10
+         */
+        onClickDeleteBtn = function () {
+            var $this = $(this),
+                res,
+                url;
+
+            res = window.confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));
+            if (res) {
+                url = $this.attr("href");
+                if (url.indexOf("?") < 0) {
+                    url += "?";
+                } else {
+                    url += "&";
+                }
+                $this.attr("href", url + "confirmed=1");
+            }
+            return res;
+        };
+
+        onClickSubmitSearchForm = function () {
+            window.document.forms.searchableForm.submit();
+            return false;
+        };
+
+        /**
+         * Called if the user enters or leaves a menu. The method shows or
+         * hides the submenu.
+         *
+         * @protected
+         */
+        onMenuHover = function () {
+            $(this).find("ul")
+                .stop(true, true)
+                .slideToggle();
+        };
+
+        /**
+         * Called if the document is scrolled.
+         *
+         * @protected
+         */
+        onScrollDocument = function () {
+            if ($document.scrollTop() >= toolbarOffset) {
+                $toolbar.addClass("fixed");
+            } else {
+                $toolbar.removeClass("fixed");
+            }
+        };
+
+        /**
+         * Called if the user selects a time from the autocomplete list.
+         *
+         * @param {Object} event    the event data
+         * @param {Object} ui       information about the selected item
+         * @protected
+         * @since 0.9.12
+         */
+        onSelectTimeValue = function (event, ui) {
+            var $this = $(this),
+                item = ui.item;
+
+            if (item) {
+                $this.val(item.value);
+            }
+            $this.trigger("change");
+        };
+
+        /**
+         * Called if the form submit button in the toolbar is clicked.
+         *
+         * @returns {Boolean}   always <code>false</code>
+         * @protected
+         * @since 0.9.12
+         */
+        onSubmitForm = function () {
+            var $ = jQuery;
+
+            $("#" + $(this).attr("data-form")).submit();
+            return false;
+        };
+
+        timeValues = (function () {
+            var h = -1,
+                hh,
+                res = [];
+
+            while (++h < 24) {
+                hh = h.toString();
+                if (hh.length < 2) {
+                    hh = "0" + hh;
+                }
+                res.push(hh + ":00");
+                res.push(hh + ":30");
+            }
+            return res;
+        }());
+
+
+        init();
+    }());
 }(this, SPRINGCRM, jQuery));
 
 // vim:set ts=4 sw=4 sts=4:

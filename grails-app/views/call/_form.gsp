@@ -35,7 +35,7 @@
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'organization', ' error')}">
           <input type="text" id="organization" value="${callInstance?.organization?.name}" size="35" data-find-url="${createLink(controller:'organization', action:'find')}" />
-          <input type="hidden" name="organization.id" id="organization-id" value="${callInstance?.organization?.id}" />
+          <input type="hidden" name="organization.id" value="${callInstance?.organization?.id}" />
           <g:hasErrors bean="${callInstance}" field="organization">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="organization"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -48,7 +48,7 @@
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'person', ' error')}">
           <input type="text" id="person" value="${callInstance?.person?.fullName}" size="35" data-find-url="${createLink(controller:'person', action:'find')}" />
-          <input type="hidden" name="person.id" id="person-id" value="${callInstance?.person?.id}" />
+          <input type="hidden" name="person.id" value="${callInstance?.person?.id}" />
           <g:hasErrors bean="${callInstance}" field="person">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="person"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -116,23 +116,19 @@
 (function (SPRINGCRM) {
     var phoneNumbers;
 
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "organization",
-            onSelect: function () {
+    $("#organization").autocompleteex({
+            select: function () {
                 phoneNumbers = undefined;
             }
-        })
-        .init();
-    new SPRINGCRM.FixedSelAutocomplete({
-            baseId: "person",
-            onSelect: function () {
-                phoneNumbers = undefined;
+        });
+    $("#person").autocompleteex({
+            loadParameters: function () {
+                return { organization: $("#organization\\.id").val() };
             },
-            parameters: function () {
-                return { organization: $("#organization-id").val() };
+            select: function () {
+                phoneNumbers = undefined;
             }
-        })
-        .init();
+        });
     $("#phone").autocomplete({
             source: function (request, response) {
                 var data = {},

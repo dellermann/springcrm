@@ -5,7 +5,7 @@
   </div>
   <div class="selector-toolbar-search">
     <g:form action="selectorList">
-      <g:textField name="search" value="${params.search ?: message(code:'default.search.label', default:'Search...')}" class="search-field" />
+      <g:textField id="selector-search" name="search" />
       <button type="submit" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
     </g:form>
   </div>

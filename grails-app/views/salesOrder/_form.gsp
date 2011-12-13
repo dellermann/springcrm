@@ -593,10 +593,10 @@
     $stage.change(function () {
         switch ($(this).val()) {
         case "802":
-            SPRINGCRM.Page.fillInDate($("#shippingDate-date"));
+            $("#shippingDate-date").populateDate();
             break;
         case "803":
-            SPRINGCRM.Page.fillInDate($("#deliveryDate-date"));
+            $("#deliveryDate-date").populateDate();
             break;
         }
     });

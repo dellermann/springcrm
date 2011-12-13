@@ -898,7 +898,7 @@
                 },
                 this
             ));
-            SPRINGCRM.Page.enableSearchFieldHints();
+            $("#selector-search").hint(SPRINGCRM.getMessage("search"));
             $selector.dialog({ minWidth: 700, minHeight: 400, modal: true });
         },
 
@@ -917,7 +917,6 @@
                 fieldName,
                 fieldNames = InvoicingItems.INPUT_FIELD_NAMES,
                 i = 0,
-                input = null,
                 j,
                 name,
                 newName,

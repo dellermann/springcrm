@@ -535,12 +535,14 @@ footer {
   padding-left: 1em;
 }
 #font-size-sel {
-  border-left: .1em solid #888;
   float: left;
+}
+.springcrm-fontsize-selector {
+  border-left: .1em solid #888;
   margin: 0 0 0 1em;
   padding-left: .6em;
 }
-#font-size-sel li {
+.springcrm-fontsize-selector li {
   cursor: pointer;
   display: inline;
   font-weight: bold;
@@ -549,7 +551,7 @@ footer {
   margin-bottom: 0;
   padding-left: 1ex;
 }
-#font-size-sel li.current {
+.springcrm-fontsize-selector li.springcrm-fontsize-current {
   color: #567B0F;
 }
 #copyright {
@@ -1032,7 +1034,7 @@ input[type=checkbox] ~ label:after, input[type=radio] ~ label:after {
 fieldset, .fieldset {
   margin-bottom: 1.5em;
 }
-input.combobox {
+input.springcrm-autocompleteex-combobox {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
   -khtml-border-radius-bottomright: 0;
@@ -1042,7 +1044,7 @@ input.combobox {
   -webkit-border-radius-bottomright: 0;
   -webkit-border-radius-topright: 0;
 }
-button.combobox {
+button.springcrm-autocompleteex-combobox {
   background: url("../img/menu-arrow.png") no-repeat center center;
   border-bottom-left-radius: 0;
   border-left: none;
