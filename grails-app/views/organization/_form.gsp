@@ -190,7 +190,7 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content">
+<div class="multicol-content" id="addresses">
   <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
@@ -378,18 +378,22 @@
 <script type="text/javascript">
 //<![CDATA[
 (function(SPRINGCRM) {
-    var $recType = $("#recType"),
-        addrFields;
+    var $recType = $("#recType");
 
-    addrFields = new SPRINGCRM.AddrFields({
-        leftPrefix: "billingAddr", rightPrefix: "shippingAddr"
-    });
-    addrFields.addMenuItemCopy(
-        true, '${message(code: "organization.billingAddr.copy")}'
-    );
-    addrFields.addMenuItemCopy(
-        false, '${message(code: "organization.shippingAddr.copy")}'
-    );
+    $("#addresses").addrfields({
+            leftPrefix: "billingAddr",
+            menuItems: [
+                {
+                    action: "copy", side: "left", 
+                    text: "${message(code: 'organization.billingAddr.copy')}"
+                },
+                {
+                    action: "copy", side: "right", 
+                    text: "${message(code: 'organization.shippingAddr.copy')}"
+                }
+            ],
+            rightPrefix: "shippingAddr"
+        });
 
     $(".rec-type").click(function () {
             var $this = $(this);

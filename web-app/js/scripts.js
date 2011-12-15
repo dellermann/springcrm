@@ -27,307 +27,12 @@
 
     "use strict";
 
-    var AddrFields = null,
-        LightBox = null,
+    var LightBox = null,
         RemoteList = null,
         jQuery = $;
 
 
     //== Classes ================================
-
-    /**
-     * Creates a new handling mechanism for address fields. Usually, there are
-     * two address field blocks side by side which content is interchangeable.
-     *
-     * @class                                   Represents a handling mechanism
-     *                                          for address field blocks.
-     * @constructor
-     * @param {Object} config                   the configuration data
-     * @param {String} config.leftPrefix        the prefix of the fields in the
-     *                                          left address block
-     * @param {String} config.rightPrefix       the prefix of the fields in the
-     *                                          right address block
-     * @param {String} [config.retrieveOrgUrl]  the URL used to retrieve the
-     *                                          data of an organization; may be
-     *                                          <code>null</code>
-     * @param {String} [config.orgFieldId]      the ID of the field used to
-     *                                          obtain the selected
-     *                                          organization; may be
-     *                                          <code>null</code>
-     * @returns {Object}                        the generated address fields
-     *                                          object
-     */
-    AddrFields = function (config) {
-
-        /* handle function call without new */
-        if (!(this instanceof AddrFields)) {
-            return new AddrFields(config);
-        }
-
-
-        //-- Instance variables -----------------
-
-        /**
-         * The prefix of the fields in the left address block.
-         *
-         * @type String
-         */
-        this._leftPrefix = config.leftPrefix;
-
-        /**
-         * The prefix of the fields in the right address block.
-         *
-         * @type String
-         */
-        this._rightPrefix = config.rightPrefix;
-
-        /**
-         * The URL used to retrieve the data of an organization; may be
-         * <code>null</code>.
-         *
-         * @type String
-         */
-        this._retrieveOrgUrl = config.retrieveOrgUrl;
-
-        /**
-         * The ID of the field used to obtain the selected organization.
-         *
-         * @type String
-         * @default "organization-id"
-         */
-        this._orgFieldId = config.orgFieldId || "organization-id";
-
-        /**
-         * The menu which belongs to the left address block.
-         *
-         * @type JQueryObject
-         */
-        this._$leftMenu = $(".left-address .menu");
-
-        /**
-         * The menu which belongs to the right address block.
-         *
-         * @type JQueryObject
-         */
-        this._$rightMenu = $(".right-address .menu");
-    };
-
-    /**
-     * The names of the fields the addresses consist of.
-     *
-     * @type Array
-     * @constant
-     * @default [ "Street", "PoBox", "PostalCode", "Location", "State", "Country" ]
-     */
-    AddrFields.ADDRESS_FIELDS = [
-        "Street", "PoBox", "PostalCode", "Location", "State", "Country"
-    ];
-
-    AddrFields.prototype = {
-
-        //-- Public methods ---------------------
-
-        addMenuItemCopy: function (left, text) {
-            var f = left ? this.copyToLeft : this.copyToRight;
-
-            $("<li/>", {
-                    text: text,
-                    click: $.proxy(f, this)
-                })
-                .appendTo(this._getMenu(left));
-        },
-
-        addMenuItemLoadFromOrganization: function (left, text, orgPrefix) {
-            $("<li/>", {
-                    text: text,
-                    click: $.proxy(function () {
-                            if (left) {
-                                this.loadFromOrganizationToLeft(orgPrefix);
-                            } else {
-                                this.loadFromOrganizationToRight(orgPrefix);
-                            }
-                        }, this)
-                })
-                .appendTo(this._getMenu(left));
-        },
-
-        /**
-         * Copies the address from the right block to the left one.
-         */
-        copyToLeft: function () {
-            this._copyAddress(this._rightPrefix, this._leftPrefix);
-        },
-
-        /**
-         * Copies the address from the left block to the right one.
-         */
-        copyToRight: function () {
-            this._copyAddress(this._leftPrefix, this._rightPrefix);
-        },
-
-        /**
-         * Retrieves the address with the given prefix from the organization
-         * and fills the left address block.
-         *
-         * @param {String} orgPrefix    the prefix in the JSON data object
-         *                              containing the address of the
-         *                              organization which will be filled into
-         */
-        loadFromOrganizationToLeft: function (orgPrefix) {
-            this._loadFromOrganization(this._leftPrefix, orgPrefix);
-        },
-
-        /**
-         * Retrieves the address with the given prefix from the organization
-         * and fills the right address block.
-         *
-         * @param {String} orgPrefix    the prefix in the JSON data object
-         *                              containing the address of the
-         *                              organization which will be filled into
-         */
-        loadFromOrganizationToRight: function (orgPrefix) {
-            this._loadFromOrganization(this._rightPrefix, orgPrefix);
-        },
-
-
-        //-- Non-public methods -----------------
-
-        /**
-         * Copies the contents of the address fields from one side to the
-         * other.
-         *
-         * @param {String} fromPrefix   the field prefix where to copy from
-         * @param {String} toPrefix     the field prefix where to copy to
-         * @private
-         */
-        _copyAddress: function (fromPrefix, toPrefix) {
-            var addrFields = AddrFields.ADDRESS_FIELDS,
-                f,
-                gaf = this._getField,
-                i = -1,
-                msg = SPRINGCRM.getMessage("copyAddressWarning_" + toPrefix),
-                n = addrFields.length;
-
-            if (!this._doesExist(toPrefix) || window.confirm(msg)) {
-                while (++i < n) {
-                    f = addrFields[i];
-                    gaf(toPrefix, f).val(gaf(fromPrefix, f).val());
-                }
-            }
-        },
-
-        /**
-         * Checks whether or not the address block with the given prefix is
-         * fully or partially filled out.
-         *
-         * @param {String} prefix   the prefix of the address fields to test
-         * @returns {Boolean}       <code>true</code> if the address fields in
-         *                          the block were filled out;
-         *                          <code>false</code> otherwise
-         * @protected
-         */
-        _doesExist: function (prefix) {
-            var addrFields = AddrFields.ADDRESS_FIELDS,
-                i = -1,
-                n = addrFields.length,
-                res = false;
-
-            while (++i < n) {
-                res = res || this._getField(prefix, addrFields[i]).val() !== "";
-            }
-            return res;
-        },
-
-        /**
-         * Fills the address data into the address block with the given prefix.
-         * If the address block is fully or partially filled out a warning is
-         * displayed.
-         *
-         * @param {String} prefix       the prefix of the address fields which
-         *                              are to fill out
-         * @param {String} orgPrefix    the prefix used to extract the address
-         *                              values from the JSON data
-         * @param {Object} data         the address data
-         * @private
-         */
-        _fillAddress: function (prefix, orgPrefix, data) {
-            var addrFields = AddrFields.ADDRESS_FIELDS,
-                f,
-                i = -1,
-                msg = SPRINGCRM.getMessage("copyAddressWarning_" + prefix),
-                n = addrFields.length;
-
-            if (!this._doesExist(prefix) || window.confirm(msg)) {
-                while (++i < n) {
-                    f = addrFields[i];
-                    this._getField(prefix, f).val(data[orgPrefix + f]);
-                }
-            }
-        },
-
-        /**
-         * Gets the address field with the given prefix and name.
-         *
-         * @param {String} prefix   the given prefix
-         * @param {String} name     the given name
-         * @returns {JQueryObject}  the address field
-         * @protected
-         */
-        _getField: function (prefix, name) {
-            return $("#" + prefix + name);
-        },
-
-        /**
-         * Gets the <code>&lt;ul></code> of either the left or right menu.
-         *
-         * @param {Boolean} left    <code>true</code> if the left menu is to
-         *                          return; <code>false</code> otherwise
-         * @return {JQueryObject}   the menu unordered list
-         * @protected
-         */
-        _getMenu: function (left) {
-            var $menu = left ? this._$leftMenu : this._$rightMenu,
-                $ul;
-
-            $ul = $menu.find("ul");
-            if ($ul.length === 0) {
-                $ul = $("<ul/>").appendTo($menu);
-            }
-            return $ul;
-        },
-
-        /**
-         * Retrieves the data of the organization which is selected in the
-         * field with ID <code>organization-sel</code> and stores the address
-         * in the address block with the given prefix.
-         *
-         * @param {String} prefix       the prefix of the address fields which
-         *                              are to fill out
-         * @param {String} orgPrefix    the prefix used to extract the address
-         *                              values from the JSON data
-         * @private
-         */
-        _loadFromOrganization: function (prefix, orgPrefix) {
-            var url = this._retrieveOrgUrl;
-
-            if (url) {
-                $.ajax({
-                    url: url, dataType: "json",
-                    data: { id: $("#" + this._orgFieldId).val() },
-                    context: {
-                        instance: this, orgPrefix: orgPrefix, prefix: prefix
-                    },
-                    success: function (data) {
-                        this.instance._fillAddress(
-                            this.prefix, this.orgPrefix, data
-                        );
-                    }
-                });
-            }
-        }
-    };
-    SPRINGCRM.AddrFields = AddrFields;
-
 
     /**
      * Creates a application adapted lightbox instance.
@@ -1126,6 +831,179 @@
                 }
                 return false;
             };
+        }
+    });
+
+    $.widget("springcrm.addrfields", {
+        ADDRESS_FIELDS: [
+            "Street", "PoBox", "PostalCode", "Location", "State", "Country"
+        ],
+
+        addMenuItemCopy: function (side, text) {
+            var f = (side === "left") ? this.copyToLeft : this.copyToRight;
+
+            $("<li/>", {
+                    text: text,
+                    click: $.proxy(f, this)
+                })
+                .appendTo(this._getMenu(side));
+        },
+
+        addMenuItemLoadFromOrganization: function (side, text, propPrefix) {
+            var f = (side === "left") ? this.loadFromOrganizationToLeft
+                    : this.loadFromOrganizationToRight,
+                self = this;
+
+            $("<li/>", { text: text })
+                .click(function () {
+                    f.call(self, propPrefix);
+                })
+                .appendTo(this._getMenu(side));
+        },
+
+        copyToLeft: function () {
+            var opts = this.options;
+
+            this._copyAddress(opts.rightPrefix, opts.leftPrefix);
+        },
+
+        copyToRight: function () {
+            var opts = this.options;
+
+            this._copyAddress(opts.leftPrefix, opts.rightPrefix);
+        },
+
+        loadFromOrganizationToLeft: function (propPrefix) {
+            this._loadFromOrganization(this.options.leftPrefix, propPrefix);
+        },
+
+        loadFromOrganizationToRight: function (propPrefix) {
+            this._loadFromOrganization(this.options.rightPrefix, propPrefix);
+        },
+
+        options: {
+            confirm: function (msg) {
+                return window.confirm(msg);
+            },
+            leftMenuSelector: ".left-address .menu",
+            leftPrefix: "billingAddr",
+            loadOrganizationUrl: null,
+            menuItems: [],
+            organizationId: null,
+            rightMenuSelector: ".right-address .menu",
+            rightPrefix: "shippingAddr"
+        },
+
+        _copyAddress: function (fromPrefix, toPrefix) {
+            var addrFields = this.ADDRESS_FIELDS,
+                f,
+                gaf = this._getField,
+                i = -1,
+                msg = SPRINGCRM.getMessage("copyAddressWarning_" + toPrefix),
+                n = addrFields.length;
+
+            if (!this._doesExist(toPrefix) || this.options.confirm(msg)) {
+                while (++i < n) {
+                    f = addrFields[i];
+                    gaf(toPrefix, f).val(gaf(fromPrefix, f).val());
+                }
+            }
+        },
+
+        _create: function () {
+            var el = this.element,
+                i = -1,
+                menuItem,
+                menuItems,
+                n,
+                opts = this.options;
+
+            this.leftMenu = el.find(opts.leftMenuSelector);
+            this.rightMenu = el.find(opts.rightMenuSelector);
+
+            menuItems = opts.menuItems;
+            n = menuItems.length;
+            while (++i < n) {
+                menuItem = menuItems[i];
+                switch (menuItem.action) {
+                case "copy":
+                    this.addMenuItemCopy(menuItem.side, menuItem.text);
+                    break;
+                case "loadFromOrganization":
+                    if (opts.loadOrganizationUrl && opts.organizationId) {
+                        this.addMenuItemLoadFromOrganization(
+                            menuItem.side, menuItem.text, menuItem.propPrefix
+                        );
+                    }
+                    break;
+                }
+            }
+        },
+
+        _doesExist: function (prefix) {
+            var addrFields = this.ADDRESS_FIELDS,
+                gaf = this._getField,
+                i = -1,
+                n = addrFields.length,
+                res = false;
+
+            while (++i < n) {
+                res = res || gaf(prefix, addrFields[i]).val() !== "";
+            }
+            return res;
+        },
+
+        _fillAddress: function (prefix, propPrefix, data) {
+            var addrFields = this.ADDRESS_FIELDS,
+                f,
+                i = -1,
+                msg = SPRINGCRM.getMessage("copyAddressWarning_" + prefix),
+                opts = this.options,
+                n = addrFields.length;
+
+            if (!this._doesExist(prefix) || opts.confirm(msg)) {
+                while (++i < n) {
+                    f = addrFields[i];
+                    this._getField(prefix, f).val(data[propPrefix + f]);
+                }
+            }
+        },
+
+        _getField: function (prefix, name) {
+            return $("#" + prefix + name);
+        },
+
+        _getMenu: function (side) {
+            var $menu = (side === "left") ? this.leftMenu : this.rightMenu,
+                $ul = $menu.find("ul");
+
+            return ($ul.length === 0) ? $("<ul/>").appendTo($menu) : $ul;
+        },
+
+        _loadFromOrganization: function (prefix, propPrefix) {
+            var id = null,
+                organizationId,
+                opts = this.options,
+                self = this,
+                url;
+
+            organizationId = opts.organizationId;
+            url = opts.loadOrganizationUrl;
+            if (url && organizationId) {
+                if ($.isFunction(organizationId)) {
+                    id = organizationId.call(this);
+                } else if (organizationId.constructor === String) {
+                    id = $(organizationId).val();
+                } else if (organizationId.constructor === Number) {
+                    id = organizationId;
+                }
+
+                if (id !== null) {
+                    $.getJSON(url, { id: id }, function (data) {
+                            self._fillAddress(prefix, propPrefix, data);
+                        });
+                }
+            }
         }
     });
 

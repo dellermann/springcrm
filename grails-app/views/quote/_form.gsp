@@ -118,7 +118,7 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content">
+<div class="multicol-content" id="addresses">
   <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
@@ -504,7 +504,6 @@
     "use strict";
 
     var $stage,
-        addrFields,
         taxes,
         units;
 
@@ -513,8 +512,9 @@
 
     $("#organization").autocompleteex({
             select: function () {
-                addrFields.loadFromOrganizationToLeft("billingAddr");
-                addrFields.loadFromOrganizationToRight("shippingAddr");
+                $("#addresses")
+                    .addrfields("loadFromOrganizationToLeft", "billingAddr")
+                    .addrfields("loadFromOrganizationToRight", "shippingAddr");
             }
         });
     $("#person").autocompleteex({
@@ -522,6 +522,34 @@
                 return { organization: $("#organization\\.id").val() };
             }
         });
+
+    $("#addresses").addrfields({
+            leftPrefix: "billingAddr",
+            loadOrganizationUrl: "${createLink(controller: 'organization', action: 'get')}",
+            menuItems: [
+                {
+                    action: "copy", side: "left", 
+                    text: "${message(code: 'invoicingTransaction.billingAddr.copy')}"
+                },
+                {
+                    action: "loadFromOrganization", propPrefix: "billingAddr",
+                    side: "left", 
+                    text: "${message(code: 'invoicingTransaction.addr.fromOrgBillingAddr')}"
+                },
+                {
+                    action: "copy", side: "right", 
+                    text: "${message(code: 'invoicingTransaction.shippingAddr.copy')}"
+                },
+                {
+                    action: "loadFromOrganization", propPrefix: "shippingAddr",
+                    side: "right", 
+                    text: "${message(code: 'invoicingTransaction.addr.fromOrgShippingAddr')}"
+                }
+            ],
+            organizationId: "#organization\\.id",
+            rightPrefix: "shippingAddr"
+        });
+    
     new SPRINGCRM.InvoicingItems({
             baseName: "quote", imgPath: "${resource(dir: 'img')}",
             productListUrl: "${createControllerLink(controller:'product', action:'selectorList')}",
@@ -531,25 +559,6 @@
         })
         .init();
 
-    addrFields = new SPRINGCRM.AddrFields({
-        leftPrefix: "billingAddr", rightPrefix: "shippingAddr",
-        retrieveOrgUrl: "${createLink(controller: 'organization', action: 'get')}"
-    });
-    addrFields.addMenuItemCopy(
-        true, '${message(code: "invoicingTransaction.billingAddr.copy")}'
-    );
-    addrFields.addMenuItemLoadFromOrganization(
-        true, '${message(code: "invoicingTransaction.addr.fromOrgBillingAddr")}',
-        "billingAddr"
-    );
-    addrFields.addMenuItemCopy(
-        false, '${message(code: "invoicingTransaction.shippingAddr.copy")}'
-    );
-    addrFields.addMenuItemLoadFromOrganization(
-        false, '${message(code: "invoicingTransaction.addr.fromOrgShippingAddr")}',
-        "shippingAddr"
-    );
-    
     $stage = $("#stage\\.id");
     $stage.change(function () {
         switch ($(this).val()) {

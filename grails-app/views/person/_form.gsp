@@ -232,7 +232,7 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content">
+<div class="multicol-content" id="addresses">
   <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
@@ -421,8 +421,7 @@
 <script type="text/javascript">
 //<![CDATA[
 (function($, SPRINGCRM) {
-    var a,
-        addrFields;
+    var a;
 
     $("#organization").autocompleteex();
 
@@ -435,32 +434,42 @@
         });
     $(".document-delete").wrapInner(a);
 
-    addrFields = new SPRINGCRM.AddrFields({
-        leftPrefix: "mailingAddr", rightPrefix: "otherAddr",
-        retrieveOrgUrl: "${createLink(controller: 'organization', action: 'get')}"
-    });
-    addrFields.addMenuItemLoadFromOrganization(
-        true, '${message(code: "person.addr.fromOrgBillingAddr")}',
-        "billingAddr"
-    );
-    addrFields.addMenuItemLoadFromOrganization(
-        true, '${message(code: "person.addr.fromOrgShippingAddr")}',
-        "shippingAddr"
-    );
-    addrFields.addMenuItemCopy(
-        true, '${message(code: "person.mailingAddr.copy")}'
-    );
-    addrFields.addMenuItemLoadFromOrganization(
-        false, '${message(code: "person.addr.fromOrgBillingAddr")}',
-        "billingAddr"
-    );
-    addrFields.addMenuItemLoadFromOrganization(
-        false, '${message(code: "person.addr.fromOrgShippingAddr")}',
-        "shippingAddr"
-    );
-    addrFields.addMenuItemCopy(
-        false, '${message(code: "person.otherAddr.copy")}'
-    );
+    $("#addresses").addrfields({
+            leftPrefix: "mailingAddr",
+            loadOrganizationUrl: "${createLink(controller: 'organization', action: 'get')}",
+            menuItems: [
+                {
+                    action: "loadFromOrganization", propPrefix: "billingAddr",
+                    side: "left", 
+                    text: "${message(code: 'person.addr.fromOrgBillingAddr')}"
+                },
+                {
+                    action: "loadFromOrganization", propPrefix: "shippingAddr",
+                    side: "left", 
+                    text: "${message(code: 'person.addr.fromOrgShippingAddr')}"
+                },
+                {
+                    action: "copy", side: "left", 
+                    text: "${message(code: 'person.mailingAddr.copy')}"
+                },
+                {
+                    action: "loadFromOrganization", propPrefix: "billingAddr",
+                    side: "right", 
+                    text: "${message(code: 'person.addr.fromOrgBillingAddr')}"
+                },
+                {
+                    action: "loadFromOrganization", propPrefix: "shippingAddr",
+                    side: "right", 
+                    text: "${message(code: 'person.addr.fromOrgShippingAddr')}"
+                },
+                {
+                    action: "copy", side: "right", 
+                    text: "${message(code: 'person.otherAddr.copy')}"
+                }
+            ],
+            organizationId: "#organization\\.id",
+            rightPrefix: "otherAddr"
+        });
 }(jQuery, SPRINGCRM));
 //]]></script>
 </content>
