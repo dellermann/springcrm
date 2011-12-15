@@ -425,8 +425,7 @@
 
     $("#organization").autocompleteex();
 
-    new SPRINGCRM.LightBox({imgDir: "${resource(dir:'img/lightbox')}"})
-        .activate("#picture");
+    $("#picture").lightbox({imgDir: "${resource(dir:'img/lightbox')}"});
     a = $('<a href="#">').click(function () {
             $("#pictureRemove").val(1);
             $(".document-preview").remove();

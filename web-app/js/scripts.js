@@ -27,64 +27,11 @@
 
     "use strict";
 
-    var LightBox = null,
-        RemoteList = null,
+    var RemoteList = null,
         jQuery = $;
 
 
     //== Classes ================================
-
-    /**
-     * Creates a application adapted lightbox instance.
-     *
-     * @param {Object} config           the lightbox configuration data; see
-     *                                  <a href="http://leandrovieira.com/projects/jquery/lightbox/" target="_blank">LightBox homepage</a>
-     *                                  for more details
-     * @param {String} config.imgDir    the path where all the images for the
-     *                                  buttons of the lightbox window are
-     *                                  stored
-     * @returns {Object}                the created LightBox instance
-     */
-    LightBox = function (config) {
-        var imgDir;
-
-        /* handle function call without new */
-        if (!(this instanceof LightBox)) {
-            return new LightBox(config);
-        }
-
-        config = config || {};
-        imgDir = config.imgDir || "img/lightbox";
-        config.imageLoading = config.imageLoading || imgDir + "/lightbox-ico-loading.gif";
-        config.imageBtnClose = config.imageBtnClose || imgDir + "/lightbox-btn-close.gif";
-        config.imageBtnPrev = config.imageBtnPrev || imgDir + "/lightbox-btn-prev.gif";
-        config.imageBtnNext = config.imageBtnNext || imgDir + "/lightbox-btn-next.gif";
-        this.config = config;
-    };
-
-    LightBox.prototype = {
-
-        //-- Public methods ---------------------
-
-        /**
-         * Activates the lightbox for the given selector.
-         *
-         * @param {String|JQueryObject} selector    either a selector or a
-         *                                          jQuery object for which the
-         *                                          lightbox should be
-         *                                          activated
-         * @returns {Object}                        this LightBox object
-         */
-        activate: function (selector) {
-            if (typeof(selector) === "string") {
-                selector = $(selector);
-            }
-            selector.lightBox(this.config);
-            return this;
-        }
-    };
-    SPRINGCRM.LightBox = LightBox;
-
 
     /**
      * Creates a set of list which load their content from the remote server.
@@ -1004,6 +951,29 @@
                         });
                 }
             }
+        }
+    });
+
+    $.widget("springcrm.lightbox", {
+        options: {
+            imgDir: "img/lightbox",
+            imageBtnClose: "lightbox-btn-close.gif",
+            imageBtnNext: "lightbox-btn-next.gif",
+            imageBtnPrev: "lightbox-btn-prev.gif",
+            imageLoading: "lightbox-ico-loading.gif"
+        },
+
+        _create: function () {
+            var o = {},
+                opts = this.options;
+
+            $.extend(o, opts, {
+                    imageBtnClose: opts.imgDir + "/" + opts.imageBtnClose,
+                    imageBtnNext: opts.imgDir + "/" + opts.imageBtnNext,
+                    imageBtnPrev: opts.imgDir + "/" + opts.imageBtnPrev,
+                    imageLoading: opts.imgDir + "/" + opts.imageLoading
+                });
+            this.element.lightBox(o);
         }
     });
 

@@ -328,8 +328,7 @@
   <script type="text/javascript">
   //<![CDATA[
   (function ($, SPRINGCRM) {
-      new SPRINGCRM.LightBox({imgDir: "${resource(dir:'img/lightbox')}"})
-          .activate("#picture");
+      $("#picture").lightbox({imgDir: "${resource(dir:'img/lightbox')}"});
       new SPRINGCRM.RemoteList("${url()}")
           .initialize();
   }(jQuery, SPRINGCRM));
