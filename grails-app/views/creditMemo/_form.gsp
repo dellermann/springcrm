@@ -366,99 +366,99 @@
     <table id="creditMemo-items" class="invoicing-items content-table">
       <thead>
         <tr>
-          <th id="invoice-items-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
-          <th id="invoice-items-number"><g:message code="invoicingTransaction.number.label" default="No." /></th>
-          <th id="invoice-items-quantity"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
-          <th id="invoice-items-unit"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
-          <th id="invoice-items-name"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
-          <th id="invoice-items-unit-price"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
-          <th id="invoice-items-total"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
-          <th id="invoice-items-tax"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
+          <th id="invoicing-items-header-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
+          <th id="invoicing-items-header-number"><g:message code="invoicingTransaction.number.label" default="No." /></th>
+          <th id="invoicing-items-header-quantity"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
+          <th id="invoicing-items-header-unit"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
+          <th id="invoicing-items-header-name"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
+          <th id="invoicing-items-header-unit-price"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
+          <th id="invoicing-items-header-total"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
+          <th id="invoicing-items-header-tax"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
           <th></th>
         </tr>
       </thead>
       <tfoot>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="creditMemo.subtotalNet.label" default="Subtotal excl. VAT" /></label></td>
-          <td headers="invoice-items-unitPrice"></td>
-          <td headers="invoice-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-net" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
-          <td headers="invoice-items-tax"></td>
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label><g:message code="creditMemo.subtotalNet.label" default="Subtotal excl. VAT" /></label></td>
+          <td headers="invoicing-items-header-unitPrice"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-net" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
+          <td headers="invoicing-items-header-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
-          <td headers="invoice-items-unitPrice"></td>
-          <td headers="invoice-items-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
-          <td headers="invoice-items-tax"></td>
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
+          <td headers="invoicing-items-header-unitPrice"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total"><strong><span id="invoicing-items-subtotal-gross" class="value">0,00</span>&nbsp;<g:currency /></strong></td>
+          <td headers="invoicing-items-header-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></label></td>
-          <td headers="invoice-items-unitPrice" class="invoicing-items-unit-price${hasErrors(bean: creditMemoInstance, field: 'discountPercent', ' error')}">
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></label></td>
+          <td headers="invoicing-items-header-unitPrice" class="invoicing-items-unit-price${hasErrors(bean: creditMemoInstance, field: 'discountPercent', ' error')}">
             <g:textField name="discountPercent" value="${fieldValue(bean: creditMemoInstance, field: 'discountPercent')}" size="8" />&nbsp;%<br />
             <g:hasErrors bean="${creditMemoInstance}" field="discountPercent">
               <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="discountPercent"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
           </td>
-          <td headers="invoice-items-total" class="invoicing-items-total"><span id="invoicing-items-discount-from-percent" class="value">0,00</span>&nbsp;<g:currency /></td>
-          <td headers="invoice-items-tax"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total"><span id="invoicing-items-discount-from-percent" class="value">0,00</span>&nbsp;<g:currency /></td>
+          <td headers="invoicing-items-header-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></label></td>
-          <td headers="invoice-items-unitPrice"></td>
-          <td headers="invoice-items-total" class="invoicing-items-total${hasErrors(bean: creditMemoInstance, field: 'discountAmount', ' error')}">
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label for="discountAmount"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></label></td>
+          <td headers="invoicing-items-header-unitPrice"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total${hasErrors(bean: creditMemoInstance, field: 'discountAmount', ' error')}">
             <g:textField name="discountAmount" value="${formatNumber(number: creditMemoInstance?.discountAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
             <g:hasErrors bean="${creditMemoInstance}" field="discountAmount">
               <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="discountAmount"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
           </td>
-          <td headers="invoice-items-tax"></td>
+          <td headers="invoicing-items-header-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></label></td>
-          <td headers="invoice-items-unitPrice"></td>
-          <td headers="invoice-items-total" class="invoicing-items-total${hasErrors(bean: creditMemoInstance, field: 'adjustment', ' error')}">
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label for="adjustment"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></label></td>
+          <td headers="invoicing-items-header-unitPrice"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total${hasErrors(bean: creditMemoInstance, field: 'adjustment', ' error')}">
             <g:textField name="adjustment" value="${formatNumber(number: creditMemoInstance?.adjustment, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
             <g:hasErrors bean="${creditMemoInstance}" field="adjustment">
               <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="adjustment"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
           </td>
-          <td headers="invoice-items-tax"></td>
+          <td headers="invoicing-items-header-tax"></td>
           <td></td>
         </tr>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label><g:message code="creditMemo.total.label" default="Total" /></label></td>
-          <td headers="invoice-items-unitPrice"></td>
-          <td headers="invoice-items-total" class="invoicing-items-total total"><span id="invoicing-items-total" class="value">0,00</span>&nbsp;<g:currency /></td>
-          <td headers="invoice-items-tax"></td>
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label><g:message code="creditMemo.total.label" default="Total" /></label></td>
+          <td headers="invoicing-items-header-unitPrice"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total total"><span id="invoicing-items-total" class="value">0,00</span>&nbsp;<g:currency /></td>
+          <td headers="invoicing-items-header-tax"></td>
           <td></td>
         </tr>
       </tfoot>
-      <tbody id="invoicing-items">
+      <tbody class="invoicing-items-body">
         <g:each in="${creditMemoInstance.items}" status="i" var="item">
         <tr>
-          <td headers="invoice-items-pos" class="invoicing-items-pos">${i + 1}.</td>
-          <td headers="invoice-items-number" class="invoicing-items-number">
+          <td headers="invoicing-items-header-pos" class="invoicing-items-pos">${i + 1}.</td>
+          <td headers="invoicing-items-header-number" class="invoicing-items-number">
             <input type="text" name="items[${i}].number" size="10" value="${item.number}" />
           </td>
-          <td headers="invoice-items-quantity" class="invoicing-items-quantity">
+          <td headers="invoicing-items-header-quantity" class="invoicing-items-quantity">
             <input type="text" name="items[${i}].quantity" size="4" value="${formatNumber(number: item.quantity, maxFractionDigits: 3)}" />
           </td>
-          <td headers="invoice-items-unit" class="invoicing-items-unit">
+          <td headers="invoicing-items-header-unit" class="invoicing-items-unit">
             <input type="text" name="items[${i}].unit" size="5" value="${item.unit}" />
           </td>
-          <td headers="invoice-items-name" class="invoicing-items-name">
+          <td headers="invoicing-items-header-name" class="invoicing-items-name">
             <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<a href="javascript:void 0;" class="select-btn-products"><img src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingTransaction.selector.products.title')}" title="${message(code: 'invoicingTransaction.selector.products.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<a href="javascript:void 0;" class="select-btn-services"><img src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingTransaction.selector.services.title')}" title="${message(code: 'invoicingTransaction.selector.services.title')}" width="16" height="16" style="vertical-align: middle;" /></a></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
           </td>
-          <td headers="invoice-items-unit-price" class="invoicing-items-unit-price">
+          <td headers="invoicing-items-header-unit-price" class="invoicing-items-unit-price">
             <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" class="currency" />&nbsp;<g:currency />
           </td> 
-          <td headers="invoice-items-total" class="invoicing-items-total">
+          <td headers="invoicing-items-header-total" class="invoicing-items-total">
             <span class="value">${formatNumber(number: item.total, minFractionDigits: 2)}</span>&nbsp;<g:currency />
           </td> 
-          <td headers="invoice-items-tax" class="invoicing-items-tax">
+          <td headers="invoicing-items-header-tax" class="invoicing-items-tax">
             <input type="text" name="items[${i}].tax" size="4" value="${formatNumber(number: item.tax, minFractionDigits: 1)}" />&nbsp;%
           </td>
           <td class="invoicing-items-buttons">
@@ -471,15 +471,15 @@
       </tbody>
       <tbody>
         <tr>
-          <td headers="invoice-items-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></label></td>
-          <td headers="invoice-items-unitPrice"></td>
-          <td headers="invoice-items-total" class="invoicing-items-total${hasErrors(bean: creditMemoInstance, field: 'shippingCosts', ' error')}">
+          <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label for="shippingCosts"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></label></td>
+          <td headers="invoicing-items-header-unitPrice"></td>
+          <td headers="invoicing-items-header-total" class="invoicing-items-total${hasErrors(bean: creditMemoInstance, field: 'shippingCosts', ' error')}">
             <g:textField name="shippingCosts" value="${formatNumber(number: creditMemoInstance?.shippingCosts, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
             <g:hasErrors bean="${creditMemoInstance}" field="shippingCosts">
               <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="shippingCosts"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>
           </td>
-          <td headers="invoice-items-tax" class="invoicing-items-tax${hasErrors(bean: creditMemoInstance, field: 'shippingTax', ' error')}">
+          <td headers="invoicing-items-header-tax" class="invoicing-items-tax${hasErrors(bean: creditMemoInstance, field: 'shippingTax', ' error')}">
             <g:textField name="shippingTax" value="${formatNumber(number: creditMemoInstance?.shippingTax, minFractionDigits: 1)}" size="4" />&nbsp;%<br />
             <g:hasErrors bean="${creditMemoInstance}" field="shippingTax">
               <span class="error-msg"><g:eachError bean="${creditMemoInstance}" field="shippingTax"><g:message error="${it}" /> </g:eachError></span>
@@ -606,15 +606,14 @@
             organizationId: "#organization\\.id",
             rightPrefix: "shippingAddr"
         });
-    
-    new SPRINGCRM.InvoicingItems({
-            baseName: "creditMemo", imgPath: "${resource(dir: 'img')}",
+
+    $("#creditMemo-items").invoicingitems({
+            imgPath: "${resource(dir: 'img')}",
             productListUrl: "${createControllerLink(controller:'product', action:'selectorList')}",
             serviceListUrl: "${createControllerLink(controller:'service', action:'selectorList')}",
-            units: units,
-            taxes: taxes
-        })
-        .init();
+            taxes: taxes,
+            units: units
+        });
 
     $stage = $("#stage");
     $stage.change(function () {

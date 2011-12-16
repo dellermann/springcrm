@@ -275,7 +275,7 @@
                 <td headers="quote-items-tax"></td>
               </tr>
             </tfoot>
-            <tbody id="invoicing-items">
+            <tbody>
               <g:each in="${salesOrderInstance.items}" status="i" var="item">
               <tr>
                 <td headers="quote-items-pos" class="invoicing-items-pos">${i + 1}.</td>
