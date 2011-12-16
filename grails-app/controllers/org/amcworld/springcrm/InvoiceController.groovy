@@ -5,7 +5,7 @@ import grails.converters.XML
 class InvoiceController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-	
+
 	def fopService
 	def seqNumberService
 
@@ -17,11 +17,12 @@ class InvoiceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [invoiceInstanceList: Invoice.list(params), invoiceInstanceTotal: Invoice.count()]
     }
-	
+
 	def listEmbedded = {
 		def l
 		def count
 		def linkParams
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
 			l = Invoice.findAllByOrganization(organizationInstance, params)
@@ -76,7 +77,7 @@ class InvoiceController {
 		}
         return [invoiceInstance: invoiceInstance]
     }
-	
+
 	def copy = {
 		def invoiceInstance = Invoice.get(params.id)
 		if (invoiceInstance) {
@@ -257,20 +258,20 @@ class InvoiceController {
 			]
 			String xml = (data as XML).toString()
 //			println xml
-			
+
 			GString fileName = "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
 			if (params.duplicate) {
 				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 			}
 			fileName += ".pdf"
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
 				new StringReader(xml), '/WEB-INF/data/fo/invoice-fo.xsl',
 				baos
 			)
 			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition', 
+			response.addHeader 'Content-Disposition',
 				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())

@@ -28,6 +28,7 @@ class PersonController {
 
 	def listEmbedded = {
 		def organizationInstance = Organization.get(params.organization)
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[personInstanceList:Person.findAllByOrganization(organizationInstance, params), personInstanceTotal:Person.countByOrganization(organizationInstance), linkParams:[organization:organizationInstance.id]]
 	}
 
@@ -36,7 +37,7 @@ class PersonController {
         personInstance.properties = params
         return [personInstance: personInstance]
     }
-	
+
 	def copy = {
 		def personInstance = Person.get(params.id)
 		if (personInstance) {
@@ -211,7 +212,7 @@ class PersonController {
 			}
 		}
 	}
-	
+
 	def gdatasync = {
 		if (googleDataContactService) {
 			if (params.id) {
@@ -237,7 +238,7 @@ class PersonController {
 			redirect(action: 'list')
 		}
 	}
-	
+
 	def ldapexport = {
 		if (ldapService) {
 			if (params.id) {

@@ -17,11 +17,12 @@ class SalesOrderController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [salesOrderInstanceList: SalesOrder.list(params), salesOrderInstanceTotal: SalesOrder.count()]
     }
-	
+
 	def listEmbedded = {
 		def l
 		def count
 		def linkParams
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
 			l = SalesOrder.findAllByOrganization(organizationInstance, params)
@@ -67,7 +68,7 @@ class SalesOrderController {
 		}
         return [salesOrderInstance: salesOrderInstance]
     }
-	
+
 	def copy = {
 		def salesOrderInstance = SalesOrder.get(params.id)
 		if (salesOrderInstance) {
@@ -190,7 +191,7 @@ class SalesOrderController {
 			}
         }
     }
-	
+
 	def find = {
 		Integer number = null
 		try {
@@ -241,7 +242,7 @@ class SalesOrderController {
 			]
 			String xml = (data as XML).toString()
 //			println xml
-			
+
 			GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
 			if (params.duplicate) {
 				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
@@ -254,7 +255,7 @@ class SalesOrderController {
 				baos
 			)
 			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition', 
+			response.addHeader 'Content-Disposition',
 				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())

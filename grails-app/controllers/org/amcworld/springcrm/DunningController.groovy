@@ -5,7 +5,7 @@ import grails.converters.XML
 class DunningController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-	
+
 	def fopService
 	def seqNumberService
 
@@ -22,6 +22,7 @@ class DunningController {
 		def l
 		def count
 		def linkParams
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
 			l = Dunning.findAllByOrganization(organizationInstance, params)
@@ -148,7 +149,7 @@ class DunningController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (dunningInstance.version > version) {
-                    
+
                     dunningInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'dunning.label', default: 'Dunning')] as Object[], "Another user has updated this Dunning while you were editing")
                     render(view: 'edit', model: [dunningInstance: dunningInstance])
                     return
@@ -280,20 +281,20 @@ class DunningController {
 			]
 			String xml = (data as XML).toString()
 //			println xml
-			
+
 			GString fileName = "${message(code: 'dunning.label')} ${dunningInstance.fullNumber}"
 			if (params.duplicate) {
 				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 			}
 			fileName += ".pdf"
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
 				new StringReader(xml), '/WEB-INF/data/fo/dunning-fo.xsl',
 				baos
 			)
 			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition', 
+			response.addHeader 'Content-Disposition',
 				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())

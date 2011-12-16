@@ -5,7 +5,7 @@ import grails.converters.XML
 class QuoteController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-	
+
 	def fopService
 	def seqNumberService
 
@@ -17,11 +17,12 @@ class QuoteController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [quoteInstanceList: Quote.list(params), quoteInstanceTotal: Quote.count()]
     }
-	
+
 	def listEmbedded = {
 		def l
 		def count
 		def linkParams
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
 			l = Quote.findAllByOrganization(organizationInstance, params)
@@ -56,7 +57,7 @@ class QuoteController {
 		}
         return [quoteInstance: quoteInstance]
     }
-	
+
 	def copy = {
 		def quoteInstance = Quote.get(params.id)
 		if (quoteInstance) {
@@ -180,7 +181,7 @@ class QuoteController {
 			}
         }
     }
-	
+
 	def find = {
 		Integer number = null
 		try {
@@ -231,19 +232,19 @@ class QuoteController {
 			]
 			String xml = (data as XML).toString()
 //			println xml
-			
+
 			GString fileName = "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
 			if (params.duplicate) {
 				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 			}
 			fileName += ".pdf"
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
 				new StringReader(xml), '/WEB-INF/data/fo/quote-fo.xsl', baos
 			)
 			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition', 
+			response.addHeader 'Content-Disposition',
 				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())

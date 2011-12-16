@@ -17,9 +17,10 @@ class PurchaseInvoiceController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [purchaseInvoiceInstanceList: PurchaseInvoice.list(params), purchaseInvoiceInstanceTotal: PurchaseInvoice.count()]
     }
-	
+
 	def listEmbedded = {
 		def organizationInstance = Organization.get(params.organization)
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[purchaseInvoiceInstanceList:PurchaseInvoice.findAllByVendor(organizationInstance, params), purchaseInvoiceInstanceTotal:PurchaseInvoice.countByVendor(organizationInstance), linkParams:[organization:organizationInstance.id]]
 	}
 
@@ -28,7 +29,7 @@ class PurchaseInvoiceController {
         purchaseInvoiceInstance.properties = params
         return [purchaseInvoiceInstance: purchaseInvoiceInstance]
     }
-	
+
 	def copy = {
 		def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
 		if (purchaseInvoiceInstance) {
@@ -84,7 +85,7 @@ class PurchaseInvoiceController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (purchaseInvoiceInstance.version > version) {
-                    
+
                     purchaseInvoiceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')] as Object[], "Another user has updated this PurchaseInvoice while you were editing")
                     render(view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
                     return
@@ -173,7 +174,7 @@ class PurchaseInvoiceController {
 			if (f.exists()) {
 				response.contentType = Magic.getMagicMatch(f, true).mimeType
 				response.contentLength = f.length()
-				response.addHeader 'Content-Disposition', 
+				response.addHeader 'Content-Disposition',
 					"attachment; filename=\"${doc}\""
 				response.outputStream << f.newInputStream()
 				return null

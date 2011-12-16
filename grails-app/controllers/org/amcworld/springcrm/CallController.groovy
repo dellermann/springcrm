@@ -17,11 +17,12 @@ class CallController {
 		}
         [callInstanceList: Call.list(params), callInstanceTotal: Call.count()]
     }
-	
+
 	def listEmbedded = {
 		def l
 		def count
 		def linkParams
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
 			l = Call.findAllByOrganization(organizationInstance, params)

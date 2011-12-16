@@ -22,6 +22,7 @@ class CreditMemoController {
 		def l
 		def count
 		def linkParams
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
 			l = CreditMemo.findAllByOrganization(organizationInstance, params)
@@ -147,7 +148,7 @@ class CreditMemoController {
             if (params.version) {
                 def version = params.version.toLong()
                 if (creditMemoInstance.version > version) {
-                    
+
                     creditMemoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'creditMemo.label', default: 'CreditMemo')] as Object[], "Another user has updated this CreditMemo while you were editing")
                     render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
                     return
@@ -260,20 +261,20 @@ class CreditMemoController {
 			]
 			String xml = (data as XML).toString()
 //			println xml
-			
+
 			GString fileName = "${message(code: 'creditMemo.label')} ${creditMemoInstance.fullNumber}"
 			if (params.duplicate) {
 				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 			}
 			fileName += ".pdf"
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
 				new StringReader(xml), '/WEB-INF/data/fo/credit-memo-fo.xsl',
 				baos
 			)
 			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition', 
+			response.addHeader 'Content-Disposition',
 				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())
