@@ -230,8 +230,7 @@
       </div>
       </g:if>
 
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'person', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'person', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="person.plural" /></h4>
           <div class="menu">
@@ -243,8 +242,7 @@
 
       <g:if test="${organizationInstance.isCustomer()}">
       <g:ifModuleAllowed modules="quote">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'quote', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'quote', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
@@ -256,8 +254,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'salesOrder', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'salesOrder', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
@@ -269,8 +266,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'invoice', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'invoice', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
@@ -283,8 +279,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'dunning', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'dunning', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
@@ -297,8 +292,7 @@
 
       <g:if test="${organizationInstance.isVendor()}">
       <g:ifModuleAllowed modules="purchaseInvoice">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'purchaseInvoice', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'purchaseInvoice', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="purchaseInvoice.plural" /></h4>
           <div class="menu">
@@ -311,22 +305,19 @@
       </g:if>
 
       <g:ifModuleAllowed modules="call">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'call', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'call', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
             <g:link controller="call" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
           </div>
         </div>
-        <div class="fieldset-content">
-        </div>
+        <div class="fieldset-content"></div>
       </div>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="note">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'note', action:'listEmbedded', params:[organization:organizationInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'note', action:'listEmbedded', params:[organization:organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">
@@ -345,10 +336,9 @@
   <content tag="additionalJavaScript">
   <script type="text/javascript">
   //<![CDATA[
-  (function (SPRINGCRM) {
-      new SPRINGCRM.RemoteList("${url()}")
-          .initialize();
-  }(SPRINGCRM));
+  (function () {
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }());
   //]]></script>
   </content>
 </body>

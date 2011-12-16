@@ -347,8 +347,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'creditMemo', action:'listEmbedded', params:[dunning:dunningInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'creditMemo', action:'listEmbedded', params:[dunning:dunningInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">
@@ -367,10 +366,9 @@
   <content tag="additionalJavaScript">
   <script type="text/javascript">
   //<![CDATA[
-  (function (SPRINGCRM) {
-      new SPRINGCRM.RemoteList("${url()}")
-          .initialize();
-  }(SPRINGCRM));
+  (function () {
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }());
   //]]></script>
   </content>
 </body>

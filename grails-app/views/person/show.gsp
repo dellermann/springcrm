@@ -241,8 +241,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="quote">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'quote', action:'listEmbedded', params:[person:personInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'quote', action:'listEmbedded', params:[person:personInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
@@ -254,8 +253,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'salesOrder', action:'listEmbedded', params:[person:personInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'salesOrder', action:'listEmbedded', params:[person:personInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
@@ -267,8 +265,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'invoice', action:'listEmbedded', params:[person:personInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'invoice', action:'listEmbedded', params:[person:personInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
@@ -280,8 +277,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'dunning', action:'listEmbedded', params:[person:personInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'dunning', action:'listEmbedded', params:[person:personInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
@@ -293,8 +289,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="call">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'call', action:'listEmbedded', params:[person:personInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'call', action:'listEmbedded', params:[person:personInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
@@ -306,8 +301,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="note">
-      <div class="fieldset" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/list-vocabulary">
-        <link itemprop="list-link" href="${createLink(controller:'note', action:'listEmbedded', params:[person:personInstance.id])}" />
+      <div class="fieldset remote-list" data-load-url="${createLink(controller:'note', action:'listEmbedded', params:[person:personInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">
@@ -327,11 +321,9 @@
   <script type="text/javascript" src="${resource(dir:'js', file:'jquery.lightbox.min.js')}"></script>
   <script type="text/javascript">
   //<![CDATA[
-  (function ($, SPRINGCRM) {
-      $("#picture").lightbox({imgDir: "${resource(dir:'img/lightbox')}"});
-      new SPRINGCRM.RemoteList("${url()}")
-          .initialize();
-  }(jQuery, SPRINGCRM));
+  (function () {
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }());
   //]]></script>
   </content>
 </body>
