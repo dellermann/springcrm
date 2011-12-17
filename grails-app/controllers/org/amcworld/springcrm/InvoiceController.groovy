@@ -1,6 +1,7 @@
 package org.amcworld.springcrm
 
 import grails.converters.XML
+import org.springframework.dao.DataIntegrityViolationException
 
 class InvoiceController {
 
@@ -9,16 +10,16 @@ class InvoiceController {
 	def fopService
 	def seqNumberService
 
-    def index = {
+    def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [invoiceInstanceList: Invoice.list(params), invoiceInstanceTotal: Invoice.count()]
     }
 
-	def listEmbedded = {
+	def listEmbedded() {
 		def l
 		def count
 		def linkParams
@@ -27,27 +28,27 @@ class InvoiceController {
 			def organizationInstance = Organization.get(params.organization)
 			l = Invoice.findAllByOrganization(organizationInstance, params)
 			count = Invoice.countByOrganization(organizationInstance)
-			linkParams = [organization:organizationInstance.id]
+			linkParams = [organization: organizationInstance.id]
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
 			l = Invoice.findAllByPerson(personInstance, params)
 			count = Invoice.countByPerson(personInstance)
-			linkParams = [person:personInstance.id]
+			linkParams = [person: personInstance.id]
 		} else if (params.quote) {
 			def quoteInstance = Quote.get(params.quote)
 			l = Invoice.findAllByQuote(quoteInstance, params)
 			count = Invoice.countByQuote(quoteInstance)
-			linkParams = [quote:quoteInstance.id]
+			linkParams = [quote: quoteInstance.id]
 		} else if (params.salesOrder) {
 			def salesOrderInstance = SalesOrder.get(params.salesOrder)
 			l = Invoice.findAllBySalesOrder(salesOrderInstance, params)
 			count = Invoice.countBySalesOrder(salesOrderInstance)
-			linkParams = [salesOrder:salesOrderInstance.id]
+			linkParams = [salesOrder: salesOrderInstance.id]
 		}
-		[invoiceInstanceList:l, invoiceInstanceTotal:count, linkParams:linkParams]
+		[invoiceInstanceList: l, invoiceInstanceTotal: count, linkParams: linkParams]
 	}
 
-    def create = {
+    def create() {
         def invoiceInstance
 		if (params.quote) {
 			def quoteInstance = Quote.get(params.quote)
@@ -78,24 +79,24 @@ class InvoiceController {
         return [invoiceInstance: invoiceInstance]
     }
 
-	def copy = {
+	def copy() {
 		def invoiceInstance = Invoice.get(params.id)
 		if (invoiceInstance) {
 			invoiceInstance = new Invoice(invoiceInstance)
-			render(view:'create', model:[invoiceInstance:invoiceInstance])
+			render(view: 'create', model: [invoiceInstance: invoiceInstance])
 		} else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
 			redirect(action: 'show', id: invoiceInstance.id)
 		}
 	}
 
-    def save = {
+    def save() {
         def invoiceInstance = new Invoice(params)
-		if (invoiceInstance.save(flush:true)) {
+		if (invoiceInstance.save(flush: true)) {
 			invoiceInstance.index()
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: invoiceInstance.id)
 			}
@@ -105,30 +106,30 @@ class InvoiceController {
         }
     }
 
-    def show = {
+    def show() {
         def invoiceInstance = Invoice.get(params.id)
         if (!invoiceInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
             redirect(action: 'list')
         } else {
             [invoiceInstance: invoiceInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def invoiceInstance = Invoice.get(params.id)
         if (!invoiceInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
-            redirect(action:'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
+            redirect(action: 'list')
         } else {
 			if (session.user.admin || invoiceInstance.stage.id < 902) {
 				return [invoiceInstance: invoiceInstance]
 			}
-			redirect(action:'list')
+			redirect(action: 'list')
         }
     }
 
-    def update = {
+    def update() {
         def invoiceInstance = Invoice.get(params.id)
         if (invoiceInstance) {
             if (params.version) {
@@ -163,9 +164,9 @@ class InvoiceController {
 			}
             if (!invoiceInstance.hasErrors() && invoiceInstance.save(flush: true)) {
 				invoiceInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])}"
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'show', id: invoiceInstance.id)
 				}
@@ -174,40 +175,40 @@ class InvoiceController {
                 render(view: 'edit', model: [invoiceInstance: invoiceInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def invoiceInstance = Invoice.get(params.id)
         if (invoiceInstance && params.confirmed) {
 			if (!session.user.admin && invoiceInstance.stage.id >= 902) {
-				redirect(action:'list')
+				redirect(action: 'list')
 			}
             try {
                 invoiceInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'invoice.label', default: 'Invoice')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'invoice.label', default: 'Invoice')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'invoice.label', default: 'Invoice')])}"
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'invoice.label', default: 'Invoice')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
         }
     }
 
-	def find = {
+	def find() {
 		Integer number = null
 		try {
 			number = params.name as Integer
@@ -228,33 +229,33 @@ class InvoiceController {
 			order('number', 'desc')
 		}
 
-		render(contentType:"text/json") {
+		render(contentType: "text/json") {
 			array {
 				for (i in list) {
-					invoice id:i.id, name:i.fullName
+					invoice id: i.id, name: i.fullName
 				}
 			}
 		}
 	}
 
-	def print = {
+	def print() {
         def invoiceInstance = Invoice.get(params.id)
         if (invoiceInstance) {
 			def data = [
-				transaction:invoiceInstance,
-				items:invoiceInstance.items,
-				organization:invoiceInstance.organization,
-				person:invoiceInstance.person,
-				user:session.user,
-				fullNumber:invoiceInstance.fullNumber,
-				taxRates:invoiceInstance.taxRateSums,
-				values:[
-			        subtotalNet:invoiceInstance.subtotalNet,
-					subtotalGross:invoiceInstance.subtotalGross,
-					discountPercentAmount:invoiceInstance.discountPercentAmount,
-					total:invoiceInstance.total
+				transaction: invoiceInstance,
+				items: invoiceInstance.items,
+				organization: invoiceInstance.organization,
+				person: invoiceInstance.person,
+				user: session.user,
+				fullNumber: invoiceInstance.fullNumber,
+				taxRates: invoiceInstance.taxRateSums,
+				values: [
+			        subtotalNet: invoiceInstance.subtotalNet,
+					subtotalGross: invoiceInstance.subtotalGross,
+					discountPercentAmount: invoiceInstance.discountPercentAmount,
+					total: invoiceInstance.total
 				],
-				watermark:params.duplicate ? 'duplicate' : ''
+				watermark: params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml
@@ -281,7 +282,7 @@ class InvoiceController {
 		}
 	}
 
-	def listUnpaidBills = {
+	def listUnpaidBills() {
 		InvoiceStage stage = InvoiceStage.get(902)
 		def c = Invoice.createCriteria()
 		def invoiceInstanceList = c.list {
@@ -291,6 +292,6 @@ class InvoiceController {
 			}
 			order('docDate', 'desc')
 		}
-		[invoiceInstanceList:invoiceInstanceList]
+		[invoiceInstanceList: invoiceInstanceList]
 	}
 }

@@ -1,6 +1,7 @@
 package org.amcworld.springcrm
 
 import grails.converters.XML
+import org.springframework.dao.DataIntegrityViolationException
 
 class SalesOrderController {
 
@@ -9,16 +10,16 @@ class SalesOrderController {
 	def fopService
 	def seqNumberService
 
-	def index = {
+	def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [salesOrderInstanceList: SalesOrder.list(params), salesOrderInstanceTotal: SalesOrder.count()]
     }
 
-	def listEmbedded = {
+	def listEmbedded() {
 		def l
 		def count
 		def linkParams
@@ -27,22 +28,22 @@ class SalesOrderController {
 			def organizationInstance = Organization.get(params.organization)
 			l = SalesOrder.findAllByOrganization(organizationInstance, params)
 			count = SalesOrder.countByOrganization(organizationInstance)
-			linkParams = [organization:organizationInstance.id]
+			linkParams = [organization: organizationInstance.id]
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
 			l = SalesOrder.findAllByPerson(personInstance, params)
 			count = SalesOrder.countByPerson(personInstance)
-			linkParams = [person:personInstance.id]
+			linkParams = [person: personInstance.id]
 		} else if (params.quote) {
 			def quoteInstance = Quote.get(params.quote)
 			l = SalesOrder.findAllByQuote(quoteInstance, params)
 			count = SalesOrder.countByQuote(quoteInstance)
-			linkParams = [quote:quoteInstance.id]
+			linkParams = [quote: quoteInstance.id]
 		}
-		[salesOrderInstanceList:l, salesOrderInstanceTotal:count, linkParams:linkParams]
+		[salesOrderInstanceList: l, salesOrderInstanceTotal: count, linkParams: linkParams]
 	}
 
-    def create = {
+    def create() {
         def salesOrderInstance
 		if (params.quote) {
 			def quoteInstance = Quote.get(params.quote)
@@ -69,24 +70,24 @@ class SalesOrderController {
         return [salesOrderInstance: salesOrderInstance]
     }
 
-	def copy = {
+	def copy() {
 		def salesOrderInstance = SalesOrder.get(params.id)
 		if (salesOrderInstance) {
 			salesOrderInstance = new SalesOrder(salesOrderInstance)
-			render(view:'create', model:[salesOrderInstance:salesOrderInstance])
+			render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
 		} else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
 			redirect(action: 'show', id: salesOrderInstance.id)
 		}
 	}
 
-    def save = {
+    def save() {
         def salesOrderInstance = new SalesOrder(params)
-        if (salesOrderInstance.save(flush:true)) {
+        if (salesOrderInstance.save(flush: true)) {
 			salesOrderInstance.index()
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: salesOrderInstance.id)
 			}
@@ -96,27 +97,27 @@ class SalesOrderController {
         }
     }
 
-    def show = {
+    def show() {
         def salesOrderInstance = SalesOrder.get(params.id)
         if (!salesOrderInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
             redirect(action: 'list')
         } else {
             [salesOrderInstance: salesOrderInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def salesOrderInstance = SalesOrder.get(params.id)
         if (!salesOrderInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
             redirect(action: 'list')
         } else {
             return [salesOrderInstance: salesOrderInstance]
         }
     }
 
-    def update = {
+    def update() {
         def salesOrderInstance = SalesOrder.get(params.id)
         if (salesOrderInstance) {
             if (params.version) {
@@ -151,9 +152,9 @@ class SalesOrderController {
 			}
             if (!salesOrderInstance.hasErrors() && salesOrderInstance.save(flush: true)) {
 				salesOrderInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])}"
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'show', id: salesOrderInstance.id)
 				}
@@ -162,37 +163,37 @@ class SalesOrderController {
                 render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def salesOrderInstance = SalesOrder.get(params.id)
         if (salesOrderInstance && params.confirmed) {
             try {
                 salesOrderInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])}"
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
         }
     }
 
-	def find = {
+	def find() {
 		Integer number = null
 		try {
 			number = params.name as Integer
@@ -213,32 +214,32 @@ class SalesOrderController {
 			order('number', 'desc')
 		}
 
-		render(contentType:"text/json") {
+		render(contentType: "text/json") {
 			array {
 				for (so in list) {
-					salesOrder id:so.id, name:so.fullName
+					salesOrder id: so.id, name: so.fullName
 				}
 			}
 		}
 	}
 
-	def print = {
+	def print() {
         def salesOrderInstance = SalesOrder.get(params.id)
         if (salesOrderInstance) {
 			def data = [
-				transaction:salesOrderInstance, items:salesOrderInstance.items,
-				organization:salesOrderInstance.organization,
-				person:salesOrderInstance.person,
-				user:session.user,
-				fullNumber:salesOrderInstance.fullNumber,
-				taxRates:salesOrderInstance.taxRateSums,
-				values:[
-			        subtotalNet:salesOrderInstance.subtotalNet,
-					subtotalGross:salesOrderInstance.subtotalGross,
-					discountPercentAmount:salesOrderInstance.discountPercentAmount,
-					total:salesOrderInstance.total
+				transaction: salesOrderInstance, items: salesOrderInstance.items,
+				organization: salesOrderInstance.organization,
+				person: salesOrderInstance.person,
+				user: session.user,
+				fullNumber: salesOrderInstance.fullNumber,
+				taxRates: salesOrderInstance.taxRateSums,
+				values: [
+			        subtotalNet: salesOrderInstance.subtotalNet,
+					subtotalGross: salesOrderInstance.subtotalGross,
+					discountPercentAmount: salesOrderInstance.discountPercentAmount,
+					total: salesOrderInstance.total
 				],
-				watermark:params.duplicate ? 'duplicate' : ''
+				watermark: params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml

@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="${resource(dir:'css', file:'styles.css')}" />
   <link rel="shortcut icon" href="${resource(dir:'img', file:'favicon.ico')}" type="image/x-icon" />
   <g:layoutHead />
-  <!--<g:javascript library="application" />-->
 </head>
 
 <body style="font-size: ${userSetting(key:'fontSize')}">

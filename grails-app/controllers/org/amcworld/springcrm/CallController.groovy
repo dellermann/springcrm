@@ -1,14 +1,16 @@
 package org.amcworld.springcrm
 
+import org.springframework.dao.DataIntegrityViolationException
+
 class CallController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
-    def index = {
+    def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.letter) {
 			int num = Call.countBySubjectLessThan(params.letter)
@@ -18,7 +20,7 @@ class CallController {
         [callInstanceList: Call.list(params), callInstanceTotal: Call.count()]
     }
 
-	def listEmbedded = {
+	def listEmbedded() {
 		def l
 		def count
 		def linkParams
@@ -27,17 +29,17 @@ class CallController {
 			def organizationInstance = Organization.get(params.organization)
 			l = Call.findAllByOrganization(organizationInstance, params)
 			count = Call.countByOrganization(organizationInstance)
-			linkParams = [organization:organizationInstance.id]
+			linkParams = [organization: organizationInstance.id]
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
 			l = Call.findAllByPerson(personInstance, params)
 			count = Call.countByPerson(personInstance)
-			linkParams = [person:personInstance.id]
+			linkParams = [person: personInstance.id]
 		}
-		[callInstanceList:l, callInstanceTotal:count, linkParams:linkParams]
+		[callInstanceList: l, callInstanceTotal: count, linkParams: linkParams]
 	}
 
-    def create = {
+    def create() {
         def callInstance = new Call()
         callInstance.properties = params
 		if (callInstance.person) {
@@ -49,24 +51,24 @@ class CallController {
         return [callInstance: callInstance]
     }
 
-	def copy = {
+	def copy() {
         def callInstance = Call.get(params.id)
         if (callInstance) {
 			callInstance = new Call(callInstance)
-			render(view:'create', model:[callInstance:callInstance])
+			render(view: 'create', model: [callInstance: callInstance])
         } else {
-            flash.message = "${message(code:'default.not.found.message', args:[message(code:'call.label', default:'Call'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
 			redirect(action: 'show', id: callInstance.id)
         }
 	}
 
-    def save = {
+    def save() {
         def callInstance = new Call(params)
         if (callInstance.save(flush: true)) {
 			callInstance.index()
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: callInstance.id)
 			}
@@ -75,27 +77,27 @@ class CallController {
         }
     }
 
-    def show = {
+    def show() {
         def callInstance = Call.get(params.id)
         if (!callInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
             redirect(action: 'list')
         } else {
             [callInstance: callInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def callInstance = Call.get(params.id)
         if (!callInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
             redirect(action: 'list')
         } else {
             return [callInstance: callInstance]
         }
     }
 
-    def update = {
+    def update() {
         def callInstance = Call.get(params.id)
         if (callInstance) {
             if (params.version) {
@@ -109,9 +111,9 @@ class CallController {
             callInstance.properties = params
             if (!callInstance.hasErrors() && callInstance.save(flush: true)) {
 				callInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])}"
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'show', id: callInstance.id)
 				}
@@ -119,30 +121,30 @@ class CallController {
                 render(view: 'edit', model: [callInstance: callInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def callInstance = Call.get(params.id)
         if (callInstance && params.confirmed) {
             try {
                 callInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])}"
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}

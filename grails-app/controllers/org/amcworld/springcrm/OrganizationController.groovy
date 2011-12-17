@@ -1,6 +1,7 @@
 package org.amcworld.springcrm
 
 import grails.converters.JSON
+import org.springframework.dao.DataIntegrityViolationException
 
 class OrganizationController {
 
@@ -8,11 +9,11 @@ class OrganizationController {
 
 	def seqNumberService
 
-    def index = {
+    def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.letter) {
 			int num = Organization.countByNameLessThan(params.letter)
@@ -32,30 +33,30 @@ class OrganizationController {
         [organizationInstanceList: list, organizationInstanceTotal: count]
     }
 
-    def create = {
+    def create() {
         def organizationInstance = new Organization()
         organizationInstance.properties = params
         return [organizationInstance: organizationInstance]
     }
-	
-	def copy = {
+
+	def copy() {
 		def organizationInstance = Organization.get(params.id)
 		if (organizationInstance) {
 			organizationInstance = new Organization(organizationInstance)
-			render(view:'create', model:[organizationInstance:organizationInstance])
+			render(view: 'create', model: [organizationInstance: organizationInstance])
 		} else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
 			redirect(action: 'show', id: organizationInstance.id)
 		}
 	}
 
-    def save = {
+    def save() {
         def organizationInstance = new Organization(params)
-        if (organizationInstance.save(flush:true)) {
+        if (organizationInstance.save(flush: true)) {
 			organizationInstance.index()
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: organizationInstance.id)
 			}
@@ -64,27 +65,27 @@ class OrganizationController {
         }
     }
 
-    def show = {
+    def show() {
         def organizationInstance = Organization.get(params.id)
         if (!organizationInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
             redirect(action: 'list')
         } else {
             [organizationInstance: organizationInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def organizationInstance = Organization.get(params.id)
         if (!organizationInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
             redirect(action: 'list')
         } else {
             return [organizationInstance: organizationInstance]
         }
     }
 
-    def update = {
+    def update() {
         def organizationInstance = Organization.get(params.id)
         if (organizationInstance) {
             if (params.version) {
@@ -101,74 +102,74 @@ class OrganizationController {
             organizationInstance.properties = params
             if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
 				organizationInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])}"
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
-					redirect(action: 'show', id: organizationInstance.id, params:[type:params.listType])
+					redirect(action: 'show', id: organizationInstance.id, params: [type: params.listType])
 				}
             } else {
                 render(view: 'edit', model: [organizationInstance: organizationInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def organizationInstance = Organization.get(params.id)
         if (organizationInstance && params.confirmed) {
             try {
                 organizationInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
-					redirect(action: 'list', params:[type:params.type])
+					redirect(action: 'list', params: [type: params.type])
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])}"
-                redirect(action: 'show', id: params.id, params:[type:params.type])
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])
+                redirect(action: 'show', id: params.id, params: [type: params.type])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
-				redirect(action: 'list', params:[type:params.type])
+				redirect(action: 'list', params: [type: params.type])
 			}
         }
     }
-	
-	def find = {
+
+	def find() {
 		def list;
 		def type = params.type
 		if (type) {
 			List<Byte> types = [new Byte(type), 3 as byte]
-			list = Organization.findAllByRecTypeInListAndNameLike(types, "%${params.name}%", [sort:'name'])
+			list = Organization.findAllByRecTypeInListAndNameLike(types, "%${params.name}%", [sort: 'name'])
 		} else {
-			list = Organization.findAllByNameLike("%${params.name}%", [sort:'name'])
+			list = Organization.findAllByNameLike("%${params.name}%", [sort: 'name'])
 		}
-		render(contentType:"text/json") {
+		render(contentType: "text/json") {
 			array {
 				for (org in list) {
-					organization id:org.id, name:org.name
+					organization id: org.id, name: org.name
 				}
 			}
 		}
 	}
-	
-	def get = {
+
+	def get() {
         def organizationInstance = Organization.get(params.id)
         if (organizationInstance) {
             render organizationInstance as JSON
         } else {
-			render(status:404)
+			render(status: 404)
         }
 	}
 
-	def getPhoneNumbers = {
+	def getPhoneNumbers() {
         def organizationInstance = Organization.get(params.id)
         if (organizationInstance) {
 			def phoneNumbers = [
@@ -178,7 +179,7 @@ class OrganizationController {
 			]
 			render phoneNumbers as JSON
         } else {
-			render(status:404)
+			render(status: 404)
         }
 	}
 }

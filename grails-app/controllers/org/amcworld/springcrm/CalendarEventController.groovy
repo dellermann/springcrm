@@ -1,21 +1,23 @@
 package org.amcworld.springcrm
 
+import org.springframework.dao.DataIntegrityViolationException
+
 class CalendarEventController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
-    def index = {
+    def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [calendarEventInstanceList: CalendarEvent.list(params), calendarEventInstanceTotal: CalendarEvent.count()]
     }
 
-	def calendar = {}
+	def calendar() {}
 
-	def listEmbedded = {
+	def listEmbedded() {
 		def l
 		def count
 		def linkParams
@@ -24,12 +26,12 @@ class CalendarEventController {
 			def organizationInstance = Organization.get(params.organization)
 			l = CalendarEvent.findAllByOrganization(organizationInstance, params)
 			count = CalendarEvent.countByOrganization(organizationInstance)
-			linkParams = [organization:organizationInstance.id]
+			linkParams = [organization: organizationInstance.id]
 		}
-		[calendarEventInstanceList:l, calendarEventInstanceTotal:count, linkParams:linkParams]
+		[calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
 	}
 
-	def listRange = {
+	def listRange() {
     	Date start = new Date((params.start as Long) * 1000L)
 		Date end = new Date((params.end as Long) * 1000L)
 		def c = CalendarEvent.createCriteria()
@@ -61,16 +63,16 @@ class CalendarEventController {
                 assert d > dOld
             }
         }
-		render(contentType:"text/json") {
+		render(contentType: "text/json") {
 			array {
 				for (ce in list) {
-					event id:ce.id, title:ce.subject, allDay:ce.allDay, start:ce.start, end:ce.end, url:createLink(controller:'calendarEvent', action:'show', id:ce.id)
+					event id: ce.id, title: ce.subject, allDay: ce.allDay, start: ce.start, end: ce.end, url: createLink(controller: 'calendarEvent', action: 'show', id: ce.id)
 				}
 			}
 		}
 	}
 
-    def create = {
+    def create() {
         def calendarEventInstance = new CalendarEvent()
         calendarEventInstance.properties = params
 		if (calendarEventInstance.organization) {
@@ -84,18 +86,18 @@ class CalendarEventController {
         return [calendarEventInstance: calendarEventInstance]
     }
 
-	def copy = {
+	def copy() {
 		def calendarEventInstance = CalendarEvent.get(params.id)
 		if (calendarEventInstance) {
 			calendarEventInstance = new CalendarEvent(calendarEventInstance)
-			render(view:'create', model:[calendarEventInstance:calendarEventInstance])
+			render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
 		} else {
-			flash.message = "${message(code:'default.not.found.message', args:[message(code:'calenderEvent.label', default:'Calendar event'), params.id])}"
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), params.id])
 			redirect(action: 'show', id: calendarEventInstance.id)
 		}
 	}
 
-    def save = {
+    def save() {
         def calendarEventInstance = new CalendarEvent(params)
         if (calendarEventInstance.validate()) {
 			refineCalendarEvent(calendarEventInstance)
@@ -103,9 +105,9 @@ class CalendarEventController {
 			calendarEventInstance.save(flush: true)
             saveReminders(calendarEventInstance)
 			calendarEventInstance.index()
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: calendarEventInstance.id)
 			}
@@ -114,20 +116,20 @@ class CalendarEventController {
         }
     }
 
-    def show = {
+    def show() {
         def calendarEventInstance = CalendarEvent.get(params.id)
         if (!calendarEventInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
             redirect(action: 'list')
         } else {
             [calendarEventInstance: calendarEventInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def calendarEventInstance = CalendarEvent.get(params.id)
         if (!calendarEventInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
             redirect(action: 'list')
         } else {
             def c = Reminder.createCriteria()
@@ -147,7 +149,7 @@ class CalendarEventController {
         }
     }
 
-    def update = {
+    def update() {
         def calendarEventInstance = CalendarEvent.get(params.id)
         if (calendarEventInstance) {
             if (params.version) {
@@ -165,9 +167,9 @@ class CalendarEventController {
 				calendarEventInstance.save(flush: true)
                 saveReminders(calendarEventInstance, session.user)
 				calendarEventInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])}"
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'show', id: calendarEventInstance.id)
 				}
@@ -175,30 +177,30 @@ class CalendarEventController {
                 render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def calendarEventInstance = CalendarEvent.get(params.id)
         if (calendarEventInstance && params.confirmed) {
             try {
                 calendarEventInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])}"
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}

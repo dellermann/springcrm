@@ -20,9 +20,9 @@ environments {
     }
     test {
         dataSource {
-			driverClassName = 'org.hsqldb.jdbcDriver'
+			driverClassName = 'org.h2.Driver'
             dbCreate = 'update'
-            url = 'jdbc:hsqldb:mem:testDb'
+            url = 'jdbc:h2:mem:testDb'
 			username = 'sa'
 			password = ''
         }

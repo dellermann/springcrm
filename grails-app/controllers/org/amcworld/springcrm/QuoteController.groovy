@@ -1,6 +1,7 @@
 package org.amcworld.springcrm
 
 import grails.converters.XML
+import org.springframework.dao.DataIntegrityViolationException
 
 class QuoteController {
 
@@ -9,16 +10,16 @@ class QuoteController {
 	def fopService
 	def seqNumberService
 
-    def index = {
+    def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [quoteInstanceList: Quote.list(params), quoteInstanceTotal: Quote.count()]
     }
 
-	def listEmbedded = {
+	def listEmbedded() {
 		def l
 		def count
 		def linkParams
@@ -27,17 +28,17 @@ class QuoteController {
 			def organizationInstance = Organization.get(params.organization)
 			l = Quote.findAllByOrganization(organizationInstance, params)
 			count = Quote.countByOrganization(organizationInstance)
-			linkParams = [organization:organizationInstance.id]
+			linkParams = [organization: organizationInstance.id]
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
 			l = Quote.findAllByPerson(personInstance, params)
 			count = Quote.countByPerson(personInstance)
-			linkParams = [person:personInstance.id]
+			linkParams = [person: personInstance.id]
 		}
-		[quoteInstanceList:l, quoteInstanceTotal:count, linkParams:linkParams]
+		[quoteInstanceList: l, quoteInstanceTotal: count, linkParams: linkParams]
 	}
 
-    def create = {
+    def create() {
         def quoteInstance = new Quote()
         quoteInstance.properties = params
 		Organization org = quoteInstance.organization
@@ -58,24 +59,24 @@ class QuoteController {
         return [quoteInstance: quoteInstance]
     }
 
-	def copy = {
+	def copy() {
 		def quoteInstance = Quote.get(params.id)
 		if (quoteInstance) {
 			quoteInstance = new Quote(quoteInstance)
-			render(view:'create', model:[quoteInstance:quoteInstance])
+			render(view: 'create', model: [quoteInstance: quoteInstance])
 		} else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])
 			redirect(action: 'show', id: quoteInstance.id)
 		}
 	}
 
-    def save = {
+    def save() {
         def quoteInstance = new Quote(params)
-        if (quoteInstance.save(flush:true)) {
+        if (quoteInstance.save(flush: true)) {
 			quoteInstance.index()
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: quoteInstance.id)
 			}
@@ -86,27 +87,27 @@ class QuoteController {
         }
     }
 
-    def show = {
+    def show() {
         def quoteInstance = Quote.get(params.id)
         if (!quoteInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])
             redirect(action: 'list')
         } else {
             [quoteInstance: quoteInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def quoteInstance = Quote.get(params.id)
         if (!quoteInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])
             redirect(action: 'list')
         } else {
             return [quoteInstance: quoteInstance]
         }
     }
 
-    def update = {
+    def update() {
         def quoteInstance = Quote.get(params.id)
         if (quoteInstance) {
             if (params.version) {
@@ -141,9 +142,9 @@ class QuoteController {
 			}
             if (!quoteInstance.hasErrors() && quoteInstance.save(flush: true)) {
 				quoteInstance.reindex()
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])}"
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'show', id: quoteInstance.id)
 				}
@@ -152,37 +153,37 @@ class QuoteController {
                 render(view: 'edit', model: [quoteInstance: quoteInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def quoteInstance = Quote.get(params.id)
         if (quoteInstance && params.confirmed) {
             try {
                 quoteInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])}"
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
         }
     }
 
-	def find = {
+	def find() {
 		Integer number = null
 		try {
 			number = params.name as Integer
@@ -203,32 +204,32 @@ class QuoteController {
 			order('number', 'desc')
 		}
 
-		render(contentType:"text/json") {
+		render(contentType: "text/json") {
 			array {
 				for (q in list) {
-					quote id:q.id, name:q.fullName
+					quote id: q.id, name: q.fullName
 				}
 			}
 		}
 	}
 
-	def print = {
+	def print() {
         def quoteInstance = Quote.get(params.id)
         if (quoteInstance) {
 			def data = [
-				transaction:quoteInstance, items:quoteInstance.items,
-				organization:quoteInstance.organization,
-				person:quoteInstance.person,
-				user:session.user,
-				fullNumber:quoteInstance.fullNumber,
-				taxRates:quoteInstance.taxRateSums,
-				values:[
-			        subtotalNet:quoteInstance.subtotalNet,
-					subtotalGross:quoteInstance.subtotalGross,
-					discountPercentAmount:quoteInstance.discountPercentAmount,
-					total:quoteInstance.total
+				transaction: quoteInstance, items: quoteInstance.items,
+				organization: quoteInstance.organization,
+				person: quoteInstance.person,
+				user: session.user,
+				fullNumber: quoteInstance.fullNumber,
+				taxRates: quoteInstance.taxRateSums,
+				values: [
+			        subtotalNet: quoteInstance.subtotalNet,
+					subtotalGross: quoteInstance.subtotalGross,
+					discountPercentAmount: quoteInstance.discountPercentAmount,
+					total: quoteInstance.total
 				],
-				watermark:params.duplicate ? 'duplicate' : ''
+				watermark: params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml

@@ -5,14 +5,14 @@ class NotificationController {
 	/**
 	 * Sends an error report to AMC World Technologies.
 	 */
-    def reportError = {
+    def reportError() {
 		sendMail {
 			multipart true
 			to 'error@amc-world.ath.cx'
 			from 'noreply@amc-world.ath.cx'
 			subject 'SpringCRM Fehlerbericht'
 			body '''Liebes AMC World Technologies Team,
-			
+
 bitte überprüft den folgenden Fehlerbericht.
 
 Mit freundlichen Grüßen
