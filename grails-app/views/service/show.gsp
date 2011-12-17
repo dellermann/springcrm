@@ -34,7 +34,7 @@
   </aside>
   <section id="content" class="with-action-bar">
     <g:if test="${flash.message}">
-    <div class="flash-message message">${flash.message}</div>
+    <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <h3>${serviceInstance?.toString()}</h3>
     <div class="data-sheet">

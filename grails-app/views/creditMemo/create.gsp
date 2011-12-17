@@ -20,7 +20,7 @@
   </div>
   <section id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message">${flash.message}</div>
+    <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <g:hasErrors bean="${creditMemoInstance}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>

@@ -1,24 +1,25 @@
 package org.amcworld.springcrm
 
 import grails.converters.XML
+import org.springframework.dao.DataIntegrityViolationException
 
 class DunningController {
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-	
+
 	def fopService
 	def seqNumberService
 
-    def index = {
+    def index() {
         redirect(action: 'list', params: params)
     }
 
-    def list = {
+    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [dunningInstanceList: Dunning.list(params), dunningInstanceTotal: Dunning.count()]
     }
 
-	def listEmbedded = {
+	def listEmbedded() {
 		def l
 		def count
 		def linkParams
@@ -26,22 +27,22 @@ class DunningController {
 			def organizationInstance = Organization.get(params.organization)
 			l = Dunning.findAllByOrganization(organizationInstance, params)
 			count = Dunning.countByOrganization(organizationInstance)
-			linkParams = [organization:organizationInstance.id]
+			linkParams = [organization: organizationInstance.id]
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
 			l = Dunning.findAllByPerson(personInstance, params)
 			count = Dunning.countByPerson(personInstance)
-			linkParams = [person:personInstance.id]
+			linkParams = [person: personInstance.id]
 		} else if (params.invoice) {
 			def invoiceInstance = Invoice.get(params.invoice)
 			l = Dunning.findAllByInvoice(invoiceInstance, params)
 			count = Dunning.countByInvoice(invoiceInstance)
-			linkParams = [invoice:invoiceInstance.id]
+			linkParams = [invoice: invoiceInstance.id]
 		}
-		[dunningInstanceList:l, dunningInstanceTotal:count, linkParams:linkParams]
+		[dunningInstanceList: l, dunningInstanceTotal: count, linkParams: linkParams]
 	}
 
-    def create = {
+    def create() {
         def dunningInstance
 		if (params.invoice) {
 			def invoiceInstance = Invoice.get(params.invoice)
@@ -86,30 +87,30 @@ class DunningController {
         return [dunningInstance: dunningInstance]
     }
 
-	def copy = {
+	def copy() {
 		def dunningInstance = Dunning.get(params.id)
 		if (dunningInstance) {
 			dunningInstance = new Dunning(dunningInstance)
-			render(view:'create', model:[dunningInstance:dunningInstance])
+			render(view: 'create', model: [dunningInstance: dunningInstance])
 		} else {
-			flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])}"
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
 			redirect(action: 'show', id: dunningInstance.id)
 		}
 	}
 
-    def save = {
+    def save() {
         def dunningInstance = new Dunning(params)
-        if (dunningInstance.save(flush:true)) {
+        if (dunningInstance.save(flush: true)) {
 			dunningInstance.index()
 
 			def invoiceInstance = dunningInstance.invoice
 			invoiceInstance.stage = InvoiceStage.get(904)
-			invoiceInstance.save(flush:true)
+			invoiceInstance.save(flush: true)
 			invoiceInstance.reindex()
 
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])}"
+            flash.message = message(code: 'default.created.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'show', id: dunningInstance.id)
 			}
@@ -119,36 +120,36 @@ class DunningController {
         }
     }
 
-    def show = {
+    def show() {
         def dunningInstance = Dunning.get(params.id)
         if (!dunningInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
             redirect(action: 'list')
         } else {
             [dunningInstance: dunningInstance]
         }
     }
 
-    def edit = {
+    def edit() {
         def dunningInstance = Dunning.get(params.id)
         if (!dunningInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
             redirect(action: 'list')
         } else {
 			if (session.user.admin || dunningInstance.stage.id < 2202) {
 				return [dunningInstance: dunningInstance]
 			}
-			redirect(action:'list')
+			redirect(action: 'list')
         }
     }
 
-    def update = {
+    def update() {
         def dunningInstance = Dunning.get(params.id)
         if (dunningInstance) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (dunningInstance.version > version) {
-                    
+
                     dunningInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'dunning.label', default: 'Dunning')] as Object[], "Another user has updated this Dunning while you were editing")
                     render(view: 'edit', model: [dunningInstance: dunningInstance])
                     return
@@ -181,12 +182,12 @@ class DunningController {
 
 				def invoiceInstance = dunningInstance.invoice
 				invoiceInstance.stage = InvoiceStage.get(904)
-				invoiceInstance.save(flush:true)
+				invoiceInstance.save(flush: true)
 				invoiceInstance.reindex()
 
-				flash.message = "${message(code: 'default.updated.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])}"
+				flash.message = message(code: 'default.updated.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'show', id: dunningInstance.id)
 				}
@@ -194,40 +195,40 @@ class DunningController {
                 render(view: 'edit', model: [dunningInstance: dunningInstance])
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
             redirect(action: 'list')
         }
     }
 
-    def delete = {
+    def delete() {
         def dunningInstance = Dunning.get(params.id)
         if (dunningInstance && params.confirmed) {
 			if (!session.user.admin && dunningInstance.stage.id >= 2202) {
-				redirect(action:'list')
+				redirect(action: 'list')
 			}
             try {
                 dunningInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'dunning.label', default: 'Dunning')])}"
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'dunning.label', default: 'Dunning')])
 				if (params.returnUrl) {
-					redirect(url:params.returnUrl)
+					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'dunning.label', default: 'Dunning')])}"
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'dunning.label', default: 'Dunning')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])}"
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
 			if (params.returnUrl) {
-				redirect(url:params.returnUrl)
+				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
         }
     }
 
-	def find = {
+	def find() {
 		Integer number = null
 		try {
 			number = params.name as Integer
@@ -248,52 +249,52 @@ class DunningController {
 			order('number', 'desc')
 		}
 
-		render(contentType:"text/json") {
+		render(contentType: "text/json") {
 			array {
 				for (d in list) {
-					dunning id:d.id, name:d.fullName
+					dunning id: d.id, name: d.fullName
 				}
 			}
 		}
 	}
 
-	def print = {
+	def print() {
         def dunningInstance = Dunning.get(params.id)
         if (dunningInstance) {
 			def data = [
-				transaction:dunningInstance,
-				items:dunningInstance.items,
-				organization:dunningInstance.organization,
-				person:dunningInstance.person,
-				invoice:dunningInstance.invoice,
-				invoiceFullNumber:dunningInstance.invoice.fullNumber,
-				user:session.user,
-				fullNumber:dunningInstance.fullNumber,
-				taxRates:dunningInstance.taxRateSums,
-				values:[
-			        subtotalNet:dunningInstance.subtotalNet,
-					subtotalGross:dunningInstance.subtotalGross,
-					discountPercentAmount:dunningInstance.discountPercentAmount,
-					total:dunningInstance.total
+				transaction: dunningInstance,
+				items: dunningInstance.items,
+				organization: dunningInstance.organization,
+				person: dunningInstance.person,
+				invoice: dunningInstance.invoice,
+				invoiceFullNumber: dunningInstance.invoice.fullNumber,
+				user: session.user,
+				fullNumber: dunningInstance.fullNumber,
+				taxRates: dunningInstance.taxRateSums,
+				values: [
+			        subtotalNet: dunningInstance.subtotalNet,
+					subtotalGross: dunningInstance.subtotalGross,
+					discountPercentAmount: dunningInstance.discountPercentAmount,
+					total: dunningInstance.total
 				],
-				watermark:params.duplicate ? 'duplicate' : ''
+				watermark: params.duplicate ? 'duplicate' : ''
 			]
 			String xml = (data as XML).toString()
 //			println xml
-			
+
 			GString fileName = "${message(code: 'dunning.label')} ${dunningInstance.fullNumber}"
 			if (params.duplicate) {
 				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 			}
 			fileName += ".pdf"
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream()
 			fopService.generatePdf(
 				new StringReader(xml), '/WEB-INF/data/fo/dunning-fo.xsl',
 				baos
 			)
 			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition', 
+			response.addHeader 'Content-Disposition',
 				"attachment; filename=\"${fileName}\""
 			response.contentLength = baos.size()
 			response.outputStream.write(baos.toByteArray())
@@ -305,9 +306,9 @@ class DunningController {
 
 	private InvoicingItem serviceToItem(Service s) {
 		return new InvoicingItem(
-			number:s.fullNumber, quantity:s.quantity, unit:s.unit.toString(),
-			name:s.name, description:s.description, unitPrice:s.unitPrice,
-			tax:s.taxClass.taxValue * 100
+			number: s.fullNumber, quantity: s.quantity, unit: s.unit.toString(),
+			name: s.name, description: s.description, unitPrice: s.unitPrice,
+			tax: s.taxClass.taxValue * 100
 		)
 	}
 }

@@ -6,7 +6,7 @@ class OverviewController {
 
 	def lruService
 
-    def index = {
+    def index() {
 		Map<Integer, List<Panel>> panels = new HashMap()
 		for (int i = 0; i < Panel.NUM_COLUMNS; i++) {
 			panels[i] = []
@@ -15,27 +15,27 @@ class OverviewController {
 		OverviewPanelRepository repository = OverviewPanelRepository.instance
 
 		List<Panel> l = Panel.findAllByUser(
-			session.user, [sort:'col']
+			session.user, [sort: 'col']
 		)
 		for (Panel panel : l) {
 			panel.panelDef = repository.getPanel(panel.panelId)
 			panels[panel.col][panel.pos] = panel
 		}
-		[panels:panels]
+		[panels: panels]
 	}
 
-	def listAvailablePanels = {
+	def listAvailablePanels() {
 		OverviewPanelRepository repository = OverviewPanelRepository.instance
 		Map<String, OverviewPanel> panels = repository.getPanels()
 		render panels as JSON
 	}
 
-	def lruList = {
+	def lruList() {
 		def lruList = lruService.retrieveLruEntries()
-		[lruList:lruList]
+		[lruList: lruList]
 	}
 
-	def addPanel = {
+	def addPanel() {
 		String panelId = params.panelId
 		int col = params.col as Integer
 		int pos = params.pos as Integer
@@ -51,17 +51,17 @@ class OverviewController {
 		}
 		for (Panel p in panels) {
 			p.pos++
-			p.save(flush:true)
+			p.save(flush: true)
 		}
 
 		/* insert new panel */
 		Panel panel = new Panel(
-			user:session.user, col:col, pos:pos, panelId:panelId
+			user: session.user, col: col, pos: pos, panelId: panelId
 		)
-		panel.save(flush:true)
+		panel.save(flush: true)
 	}
 
-	def movePanel = {
+	def movePanel() {
 		String panelId = params.panelId
 		int col = params.col as Integer
 		int pos = params.pos as Integer
@@ -80,7 +80,7 @@ class OverviewController {
 			}
 			for (Panel p in panels) {
 				p.pos--
-				p.save(flush:true)
+				p.save(flush: true)
 			}
 
 			/* move down all successors of the panel at new position */
@@ -94,22 +94,22 @@ class OverviewController {
 			}
 			for (Panel p in panels) {
 				p.pos++
-				p.save(flush:true)
+				p.save(flush: true)
 			}
 
 			/* save the panel */
 			panel.col = col
 			panel.pos = pos
-			panel.save(flush:true)
+			panel.save(flush: true)
 		}
-		render(status:200)
+		render(status: 200)
 	}
 
-	def removePanel = {
+	def removePanel() {
 		String panelId = params.panelId
 		Panel panel = Panel.findByUserAndPanelId(session.user, panelId)
 		if (panel) {
-			panel.delete(flush:true)
+			panel.delete(flush: true)
 
 			def c = Panel.createCriteria()
 			List<Panel> panels = c.list {
@@ -121,9 +121,9 @@ class OverviewController {
 			}
 			for (Panel p in panels) {
 				p.pos--
-				p.save(flush:true)
+				p.save(flush: true)
 			}
 		}
-		render(status:200)
+		render(status: 200)
 	}
 }

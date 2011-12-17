@@ -21,7 +21,7 @@
   </div>
   <section id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message">${flash.message}</div>
+    <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <div class="fc-header" style="margin-bottom: 1em; text-align: right;">
       <span class="fc-button fc-button-agendaDay ui-state-default ui-corner-left"><span class="fc-button-inner"><span class="fc-button-content">day</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-agendaWeek ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">week</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-month ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">month</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-list ui-state-default ui-corner-right ui-state-active"><span class="fc-button-inner"><span class="fc-button-content">Liste</span><span class="fc-button-effect"><span></span></span></span></span>
