@@ -20,7 +20,7 @@ class ServiceController {
 			params.sort = 'name'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-        [serviceInstanceList: Service.list(params), serviceInstanceTotal: Service.count()]
+        return [serviceInstanceList: Service.list(params), serviceInstanceTotal: Service.count()]
     }
 
 	def selectorList() {
@@ -44,7 +44,7 @@ class ServiceController {
 			list = Service.list(params)
 			count = Service.count()
 		}
-        [serviceInstanceList: list, serviceInstanceTotal: count]
+        return [serviceInstanceList: list, serviceInstanceTotal: count]
 	}
 
     def create() {
@@ -55,28 +55,30 @@ class ServiceController {
 
 	def copy() {
 		def serviceInstance = Service.get(params.id)
-		if (serviceInstance) {
-			serviceInstance = new Service(serviceInstance)
-			render(view: 'create', model: [serviceInstance: serviceInstance])
-		} else {
+		if (!serviceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])
-			redirect(action: 'show', id: serviceInstance.id)
-		}
+            redirect(action: 'list')
+            return
+        }
+
+		serviceInstance = new Service(serviceInstance)
+		render(view: 'create', model: [serviceInstance: serviceInstance])
 	}
 
     def save() {
         def serviceInstance = new Service(params)
-        if (serviceInstance.save(flush: true)) {
-			serviceInstance.index()
-            flash.message = message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: serviceInstance.id)
-			}
-        } else {
+        if (!serviceInstance.save(flush: true)) {
             render(view: 'create', model: [serviceInstance: serviceInstance])
+            return
         }
+
+		serviceInstance.index()
+        flash.message = message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: serviceInstance.id)
+		}
     }
 
     def show() {
@@ -84,9 +86,10 @@ class ServiceController {
         if (!serviceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])
             redirect(action: 'list')
-        } else {
-            [serviceInstance: serviceInstance]
+            return
         }
+
+        return [serviceInstance: serviceInstance]
     }
 
     def edit() {
@@ -94,41 +97,44 @@ class ServiceController {
         if (!serviceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])
             redirect(action: 'list')
-        } else {
-            return [serviceInstance: serviceInstance]
+            return
         }
+
+        return [serviceInstance: serviceInstance]
     }
 
     def update() {
         def serviceInstance = Service.get(params.id)
-        if (serviceInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (serviceInstance.version > version) {
-                    serviceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'service.label', default: 'Service')] as Object[], 'Another user has updated this Service while you were editing')
-                    render(view: 'edit', model: [serviceInstance: serviceInstance])
-                    return
-                }
-            }
-			if (params.autoNumber) {
-				params.number = serviceInstance.number
-			}
-            serviceInstance.properties = params
-            if (!serviceInstance.hasErrors() && serviceInstance.save(flush: true)) {
-				serviceInstance.reindex()
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: serviceInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [serviceInstance: serviceInstance])
-            }
-        } else {
+        if (!serviceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (serviceInstance.version > version) {
+                serviceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'service.label', default: 'Service')] as Object[], 'Another user has updated this Service while you were editing')
+                render(view: 'edit', model: [serviceInstance: serviceInstance])
+                return
+            }
+        }
+		if (params.autoNumber) {
+			params.number = serviceInstance.number
+		}
+        serviceInstance.properties = params
+        if (!serviceInstance.save(flush: true)) {
+            render(view: 'edit', model: [serviceInstance: serviceInstance])
+            return
+        }
+
+		serviceInstance.reindex()
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: serviceInstance.id)
+		}
     }
 
     def delete() {
@@ -160,13 +166,14 @@ class ServiceController {
         def serviceInstance = Service.get(params.id)
         if (!serviceInstance) {
 			render(status: 404)
-        } else {
-			JSON.use('deep') {
-				render(contentType: 'text/json') {
-					fullNumber = serviceInstance.fullNumber
-					inventoryItem = serviceInstance
-				}
-			}
+            return
         }
+
+		JSON.use('deep') {
+			render(contentType: 'text/json') {
+				fullNumber = serviceInstance.fullNumber
+				inventoryItem = serviceInstance
+			}
+		}
 	}
 }

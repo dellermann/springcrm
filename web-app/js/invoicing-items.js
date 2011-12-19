@@ -530,27 +530,23 @@
                 elems = this.form.elements,
                 fieldName,
                 fieldNames = this.INPUT_FIELD_NAMES,
-                i = 0,
-                j,
-                m,
+                i = -1,
                 name,
-                newName,
                 n = fieldNames.length,
                 val,
                 x = -1;
 
-            while (i < this.nextIndex) {
+            while (++i < this.nextIndex) {
                 name = this._getInputName(i);
 
                 del = true;
                 while (++x < n) {
                     fieldName = fieldNames[x];
                     e = elems[name + fieldName];
-                    if (e) {
+                    if (e && (fieldName !== "id")) {
                         val = e.value;
                         b = val === "";
-                        if ((fieldName === "id")
-                            || (fieldName === "quantity")
+                        if ((fieldName === "quantity")
                             || (fieldName === "unitPrice")
                             || (fieldName === "tax"))
                         {
@@ -564,23 +560,10 @@
                 }
 
                 if (del) {
-                    j = i;
-                    m = this.nextIndex;
-                    while (++j < m) {
-                        name = this._getInputName(j);
-                        newName = this._getInputName(j - 1);
-                        x = -1;
-                        while (++x < n) {
-                            fieldName = fieldNames[x];
-                            e = elems[name + fieldName];
-                            if (e) {
-                                e.name = newName + fieldName;
-                            }
-                        }
+                    e = elems[name + "id"];
+                    if (e) {
+                        e.value = "null";
                     }
-                    --this.nextIndex;
-                } else {
-                    ++i;
                 }
             }
             return true;

@@ -16,7 +16,7 @@ class SalesOrderController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [salesOrderInstanceList: SalesOrder.list(params), salesOrderInstanceTotal: SalesOrder.count()]
+        return [salesOrderInstanceList: SalesOrder.list(params), salesOrderInstanceTotal: SalesOrder.count()]
     }
 
 	def listEmbedded() {
@@ -40,7 +40,7 @@ class SalesOrderController {
 			count = SalesOrder.countByQuote(quoteInstance)
 			linkParams = [quote: quoteInstance.id]
 		}
-		[salesOrderInstanceList: l, salesOrderInstanceTotal: count, linkParams: linkParams]
+		return [salesOrderInstanceList: l, salesOrderInstanceTotal: count, linkParams: linkParams]
 	}
 
     def create() {
@@ -72,29 +72,31 @@ class SalesOrderController {
 
 	def copy() {
 		def salesOrderInstance = SalesOrder.get(params.id)
-		if (salesOrderInstance) {
-			salesOrderInstance = new SalesOrder(salesOrderInstance)
-			render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
-		} else {
+		if (!salesOrderInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
-			redirect(action: 'show', id: salesOrderInstance.id)
-		}
+            redirect(action: 'list')
+            return
+        }
+
+		salesOrderInstance = new SalesOrder(salesOrderInstance)
+		render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
 	}
 
     def save() {
         def salesOrderInstance = new SalesOrder(params)
-        if (salesOrderInstance.save(flush: true)) {
-			salesOrderInstance.index()
-            flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: salesOrderInstance.id)
-			}
-        } else {
-			log.debug(salesOrderInstance.errors)
+        if (!salesOrderInstance.save(flush: true)) {
+            log.debug(salesOrderInstance.errors)
             render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
+            return
         }
+
+		salesOrderInstance.index()
+        flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: salesOrderInstance.id)
+		}
     }
 
     def show() {
@@ -102,9 +104,10 @@ class SalesOrderController {
         if (!salesOrderInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
             redirect(action: 'list')
-        } else {
-            [salesOrderInstance: salesOrderInstance]
+            return
         }
+
+        return [salesOrderInstance: salesOrderInstance]
     }
 
     def edit() {
@@ -112,60 +115,46 @@ class SalesOrderController {
         if (!salesOrderInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
             redirect(action: 'list')
-        } else {
-            return [salesOrderInstance: salesOrderInstance]
+            return
         }
+
+        return [salesOrderInstance: salesOrderInstance]
     }
 
     def update() {
         def salesOrderInstance = SalesOrder.get(params.id)
-        if (salesOrderInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (salesOrderInstance.version > version) {
-                    salesOrderInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'salesOrder.label', default: 'SalesOrder')] as Object[], "Another user has updated this SalesOrder while you were editing")
-                    render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
-                    return
-                }
-            }
-			if (params.autoNumber) {
-				params.number = salesOrderInstance.number
-			}
-            salesOrderInstance.properties = params
-
-			/*
-			 * XXX 	This code is necessary because the default implementation
-			 * 		in Grails does not work. Either data binding or saving does
-			 * 		not work correctly if items were deleted and gaps in the
-			 * 		indices occurred (e. g. 0, 1, null, null, 4) or the items
-			 * 		were re-ordered. Then I observed cluttering in saved data
-			 * 		columns.
-			 * 		The following lines do not make me happy but they work. In
-			 * 		future, this problem may be fixed in Grails so we can
-			 * 		remove these lines.
-			 */
-			salesOrderInstance.items?.clear()
-			for (int i = 0; params."items[${i}]"; i++) {
-				if (params."items[${i}]".id != 'null') {
-					salesOrderInstance.addToItems(params."items[${i}]")
-				}
-			}
-            if (!salesOrderInstance.hasErrors() && salesOrderInstance.save(flush: true)) {
-				salesOrderInstance.reindex()
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: salesOrderInstance.id)
-				}
-            } else {
-				log.debug(salesOrderInstance.errors)
-                render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
-            }
-        } else {
+        if (!salesOrderInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (salesOrderInstance.version > version) {
+                salesOrderInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'salesOrder.label', default: 'SalesOrder')] as Object[], "Another user has updated this SalesOrder while you were editing")
+                render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
+                return
+            }
+        }
+		if (params.autoNumber) {
+			params.number = salesOrderInstance.number
+		}
+        salesOrderInstance.properties = params
+        salesOrderInstance.items?.retainAll { it != null }
+        if (!salesOrderInstance.save(flush: true)) {
+            log.debug(salesOrderInstance.errors)
+            render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
+            return
+        }
+
+		salesOrderInstance.reindex()
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: salesOrderInstance.id)
+		}
     }
 
     def delete() {
@@ -225,44 +214,45 @@ class SalesOrderController {
 
 	def print() {
         def salesOrderInstance = SalesOrder.get(params.id)
-        if (salesOrderInstance) {
-			def data = [
-				transaction: salesOrderInstance, items: salesOrderInstance.items,
-				organization: salesOrderInstance.organization,
-				person: salesOrderInstance.person,
-				user: session.user,
-				fullNumber: salesOrderInstance.fullNumber,
-				taxRates: salesOrderInstance.taxRateSums,
-				values: [
-			        subtotalNet: salesOrderInstance.subtotalNet,
-					subtotalGross: salesOrderInstance.subtotalGross,
-					discountPercentAmount: salesOrderInstance.discountPercentAmount,
-					total: salesOrderInstance.total
-				],
-				watermark: params.duplicate ? 'duplicate' : ''
-			]
-			String xml = (data as XML).toString()
-//			println xml
+        if (!salesOrderInstance) {
+            render(status: 404)
+            return
+        }
 
-			GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
-			if (params.duplicate) {
-				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-			}
-			fileName += ".pdf"
+		def data = [
+			transaction: salesOrderInstance, items: salesOrderInstance.items,
+			organization: salesOrderInstance.organization,
+			person: salesOrderInstance.person,
+			user: session.user,
+			fullNumber: salesOrderInstance.fullNumber,
+			taxRates: salesOrderInstance.taxRateSums,
+			values: [
+		        subtotalNet: salesOrderInstance.subtotalNet,
+				subtotalGross: salesOrderInstance.subtotalGross,
+				discountPercentAmount: salesOrderInstance.discountPercentAmount,
+				total: salesOrderInstance.total
+			],
+			watermark: params.duplicate ? 'duplicate' : ''
+		]
+		String xml = (data as XML).toString()
+//		println xml
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream()
-			fopService.generatePdf(
-				new StringReader(xml), '/WEB-INF/data/fo/sales-order-fo.xsl',
-				baos
-			)
-			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition',
-				"attachment; filename=\"${fileName}\""
-			response.contentLength = baos.size()
-			response.outputStream.write(baos.toByteArray())
-			response.outputStream.flush()
-		} else {
-			render(status: 404)
+		GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
+		if (params.duplicate) {
+			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 		}
+		fileName += ".pdf"
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream()
+		fopService.generatePdf(
+			new StringReader(xml), '/WEB-INF/data/fo/sales-order-fo.xsl',
+			baos
+		)
+		response.contentType = 'application/pdf'
+		response.addHeader 'Content-Disposition',
+			"attachment; filename=\"${fileName}\""
+		response.contentLength = baos.size()
+		response.outputStream.write(baos.toByteArray())
+		response.outputStream.flush()
 	}
 }

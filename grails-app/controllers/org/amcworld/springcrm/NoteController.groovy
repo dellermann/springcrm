@@ -19,7 +19,7 @@ class NoteController {
 			params.sort = 'title'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-        [noteInstanceList: Note.list(params), noteInstanceTotal: Note.count()]
+        return [noteInstanceList: Note.list(params), noteInstanceTotal: Note.count()]
     }
 
 	def listEmbedded() {
@@ -38,7 +38,7 @@ class NoteController {
 			count = Note.countByPerson(personInstance)
 			linkParams = [person: personInstance.id]
 		}
-		[noteInstanceList: l, noteInstanceTotal: count, linkParams: linkParams]
+		return [noteInstanceList: l, noteInstanceTotal: count, linkParams: linkParams]
 	}
 
     def create() {
@@ -49,28 +49,30 @@ class NoteController {
 
 	def copy() {
         def noteInstance = Note.get(params.id)
-        if (noteInstance) {
-			noteInstance = new Note(noteInstance)
-			render(view: 'create', model: [noteInstance: noteInstance])
-        } else {
+        if (!noteInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
-			redirect(action: 'show', id: noteInstance.id)
+            redirect(action: 'list')
+            return
         }
+
+		noteInstance = new Note(noteInstance)
+		render(view: 'create', model: [noteInstance: noteInstance])
 	}
 
     def save() {
         def noteInstance = new Note(params)
-        if (noteInstance.save(flush: true)) {
-			noteInstance.index()
-            flash.message = message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: noteInstance.id)
-			}
-        } else {
+        if (!noteInstance.save(flush: true)) {
             render(view: 'create', model: [noteInstance: noteInstance])
+            return
         }
+
+		noteInstance.index()
+        flash.message = message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: noteInstance.id)
+		}
     }
 
     def show() {
@@ -78,9 +80,10 @@ class NoteController {
         if (!noteInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
             redirect(action: 'list')
-        } else {
-            [noteInstance: noteInstance]
+            return
         }
+
+        return [noteInstance: noteInstance]
     }
 
     def edit() {
@@ -88,41 +91,44 @@ class NoteController {
         if (!noteInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
             redirect(action: 'list')
-        } else {
-            return [noteInstance: noteInstance]
+            return
         }
+
+        return [noteInstance: noteInstance]
     }
 
     def update() {
         def noteInstance = Note.get(params.id)
-        if (noteInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (noteInstance.version > version) {
-                    noteInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'note.label', default: 'Note')] as Object[], "Another user has updated this Note while you were editing")
-                    render(view: 'edit', model: [noteInstance: noteInstance])
-                    return
-                }
-            }
-			if (params.autoNumber) {
-				params.number = noteInstance.number
-			}
-            noteInstance.properties = params
-            if (!noteInstance.hasErrors() && noteInstance.save(flush: true)) {
-				noteInstance.reindex()
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: noteInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [noteInstance: noteInstance])
-            }
-        } else {
+        if (!noteInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (noteInstance.version > version) {
+                noteInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'note.label', default: 'Note')] as Object[], "Another user has updated this Note while you were editing")
+                render(view: 'edit', model: [noteInstance: noteInstance])
+                return
+            }
+        }
+		if (params.autoNumber) {
+			params.number = noteInstance.number
+		}
+        noteInstance.properties = params
+        if (!noteInstance.save(flush: true)) {
+            render(view: 'edit', model: [noteInstance: noteInstance])
+            return
+        }
+
+		noteInstance.reindex()
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: noteInstance.id)
+		}
     }
 
     def delete() {

@@ -24,13 +24,13 @@ class PersonController {
 			params.sort = 'lastName'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-		[personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
+		return [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
 	def listEmbedded() {
 		def organizationInstance = Organization.get(params.organization)
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		[personInstanceList: Person.findAllByOrganization(organizationInstance, params), personInstanceTotal: Person.countByOrganization(organizationInstance), linkParams: [organization: organizationInstance.id]]
+		return [personInstanceList: Person.findAllByOrganization(organizationInstance, params), personInstanceTotal: Person.countByOrganization(organizationInstance), linkParams: [organization: organizationInstance.id]]
 	}
 
     def create() {
@@ -41,31 +41,33 @@ class PersonController {
 
 	def copy() {
 		def personInstance = Person.get(params.id)
-		if (personInstance) {
-			personInstance = new Person(personInstance)
-			render(view: 'create', model: [personInstance: personInstance])
-		} else {
+		if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-			redirect(action: 'show', id: personInstance.id)
-		}
+            redirect(action: 'list')
+            return
+        }
+
+		personInstance = new Person(personInstance)
+		render(view: 'create', model: [personInstance: personInstance])
 	}
 
     def save() {
         def personInstance = new Person(params)
-        if (personInstance.save(flush: true)) {
-			personInstance.index()
-			if (ldapService) {
-				ldapService.save(personInstance)
-			}
-            flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-            	redirect(action: 'show', id: personInstance.id)
-			}
-        } else {
+        if (!personInstance.save(flush: true)) {
             render(view: 'create', model: [personInstance: personInstance])
+            return
         }
+
+		personInstance.index()
+		if (ldapService) {
+			ldapService.save(personInstance)
+		}
+        flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+        	redirect(action: 'show', id: personInstance.id)
+		}
     }
 
     def show() {
@@ -73,9 +75,10 @@ class PersonController {
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect(action: 'list')
-        } else {
-            [personInstance: personInstance]
+            return
         }
+
+        return [personInstance: personInstance]
     }
 
     def edit() {
@@ -83,50 +86,53 @@ class PersonController {
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect(action: 'list')
-        } else {
-            return [personInstance: personInstance]
+            return
         }
+
+        return [personInstance: personInstance]
     }
 
     def update() {
         def personInstance = Person.get(params.id)
-        if (personInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (personInstance.version > version) {
-                    personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
-                    render(view: 'edit', model: [personInstance: personInstance])
-                    return
-                }
-            }
-			byte [] picture = personInstance.picture
-			if (params.autoNumber) {
-				params.number = personInstance.number
-			}
-            personInstance.properties = params
-			if (params.pictureRemove == '1') {
-				personInstance.picture = null;
-			} else if (params.picture?.isEmpty()) {
-				personInstance.picture = picture
-			}
-            if (!personInstance.hasErrors() && personInstance.save(flush: true)) {
-				personInstance.reindex()
-				if (ldapService) {
-					ldapService.save(personInstance)
-				}
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: personInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [personInstance: personInstance])
-            }
-        } else {
+        if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (personInstance.version > version) {
+                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
+                render(view: 'edit', model: [personInstance: personInstance])
+                return
+            }
+        }
+		byte [] picture = personInstance.picture
+		if (params.autoNumber) {
+			params.number = personInstance.number
+		}
+        personInstance.properties = params
+		if (params.pictureRemove == '1') {
+			personInstance.picture = null;
+		} else if (params.picture?.isEmpty()) {
+			personInstance.picture = picture
+		}
+        if (!personInstance.save(flush: true)) {
+            render(view: 'edit', model: [personInstance: personInstance])
+            return
+        }
+
+		personInstance.reindex()
+		if (ldapService) {
+			ldapService.save(personInstance)
+		}
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: personInstance.id)
+		}
     }
 
     def delete() {
@@ -162,34 +168,36 @@ class PersonController {
 
 	def getPicture() {
         def personInstance = Person.get(params.id)
-        if (personInstance) {
-			response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
-			response.contentLength = personInstance.picture.length
-			response.outputStream << personInstance.picture
-			return null
-		} else {
-			render(status: 404)
-		}
+        if (!personInstance) {
+            render(status: 404)
+            return
+        }
+
+		response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
+		response.contentLength = personInstance.picture.length
+		response.outputStream << personInstance.picture
+		return null
 	}
 
 	def getPhoneNumbers() {
 		def personInstance = Person.get(params.id)
-		if (personInstance) {
-			def phoneNumbers = [
-				personInstance.phone,
-				personInstance.phoneHome,
-				personInstance.mobile,
-				personInstance.fax,
-				personInstance.phoneAssistant,
-				personInstance.phoneOther,
-				personInstance.organization.phone,
-				personInstance.organization.phoneOther,
-				personInstance.organization.fax
-			]
-			render phoneNumbers as JSON
-		} else {
-			render(status: 404)
-		}
+		if (!personInstance) {
+            render(status: 404)
+            return
+        }
+
+		def phoneNumbers = [
+			personInstance.phone,
+			personInstance.phoneHome,
+			personInstance.mobile,
+			personInstance.fax,
+			personInstance.phoneAssistant,
+			personInstance.phoneOther,
+			personInstance.organization.phone,
+			personInstance.organization.phoneOther,
+			personInstance.organization.fax
+		]
+		render phoneNumbers as JSON
 	}
 
 	def find() {
@@ -226,11 +234,11 @@ class PersonController {
 				}
 				redirect(action: 'show', id: params.id)
 				return
-			} else {
-				def personInstanceList = Person.list()
-				personInstanceList.each { googleDataContactService.sync(it) }
-				flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
 			}
+
+			def personInstanceList = Person.list()
+			personInstanceList.each { googleDataContactService.sync(it) }
+			flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
 			googleDataContactService.deleteMarkedEntries()
 		}
 		if (params.returnUrl) {
@@ -251,11 +259,12 @@ class PersonController {
 					flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
 				}
 				redirect(action: 'show', id: params.id)
-			} else {
-				def personInstanceList = Person.list()
-				personInstanceList.each { ldapService.save(it) }
-				flash.message = message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])
+                return
 			}
+
+			def personInstanceList = Person.list()
+			personInstanceList.each { ldapService.save(it) }
+			flash.message = message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])
 		}
 		if (params.returnUrl) {
 			redirect(url: params.returnUrl)

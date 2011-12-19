@@ -12,7 +12,7 @@ class CalendarEventController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [calendarEventInstanceList: CalendarEvent.list(params), calendarEventInstanceTotal: CalendarEvent.count()]
+        return [calendarEventInstanceList: CalendarEvent.list(params), calendarEventInstanceTotal: CalendarEvent.count()]
     }
 
 	def calendar() {}
@@ -28,7 +28,7 @@ class CalendarEventController {
 			count = CalendarEvent.countByOrganization(organizationInstance)
 			linkParams = [organization: organizationInstance.id]
 		}
-		[calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
+		return [calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
 	}
 
 	def listRange() {
@@ -88,32 +88,34 @@ class CalendarEventController {
 
 	def copy() {
 		def calendarEventInstance = CalendarEvent.get(params.id)
-		if (calendarEventInstance) {
-			calendarEventInstance = new CalendarEvent(calendarEventInstance)
-			render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
-		} else {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), params.id])
-			redirect(action: 'show', id: calendarEventInstance.id)
-		}
+		if (!calendarEventInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), params.id])
+            redirect(action: 'show', id: calendarEventInstance.id)
+            return
+        }
+
+		calendarEventInstance = new CalendarEvent(calendarEventInstance)
+		render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
 	}
 
     def save() {
         def calendarEventInstance = new CalendarEvent(params)
-        if (calendarEventInstance.validate()) {
-			refineCalendarEvent(calendarEventInstance)
-            calendarEventInstance.owner = session.user
-			calendarEventInstance.save(flush: true)
-            saveReminders(calendarEventInstance)
-			calendarEventInstance.index()
-            flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: calendarEventInstance.id)
-			}
-        } else {
+        if (!calendarEventInstance.validate()) {
             render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
+            return
         }
+
+		refineCalendarEvent(calendarEventInstance)
+        calendarEventInstance.owner = session.user
+		calendarEventInstance.save(flush: true)
+        saveReminders(calendarEventInstance)
+		calendarEventInstance.index()
+        flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: calendarEventInstance.id)
+		}
     }
 
     def show() {
@@ -121,9 +123,10 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
             redirect(action: 'list')
-        } else {
-            [calendarEventInstance: calendarEventInstance]
+            return
         }
+
+        return [calendarEventInstance: calendarEventInstance]
     }
 
     def edit() {
@@ -131,55 +134,58 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
             redirect(action: 'list')
-        } else {
-            def c = Reminder.createCriteria()
-            def l = c.list {
-                eq('user', session.user)
+            return
+        }
+
+        def c = Reminder.createCriteria()
+        def l = c.list {
+            eq('user', session.user)
+            eq('calendarEvent', calendarEventInstance)
+        }
+        if (l.isEmpty()) {
+            c = Reminder.createCriteria()
+            l = c.list {
+                isNull('user')
                 eq('calendarEvent', calendarEventInstance)
             }
-            if (l.isEmpty()) {
-                c = Reminder.createCriteria()
-                l = c.list {
-                    isNull('user')
-                    eq('calendarEvent', calendarEventInstance)
-                }
-            }
-            def reminderInstanceList = l*.rule
-            return [calendarEventInstance: calendarEventInstance, reminderInstanceList:reminderInstanceList.join(' ')]
         }
+        def reminderInstanceList = l*.rule
+        return [calendarEventInstance: calendarEventInstance, reminderInstanceList:reminderInstanceList.join(' ')]
     }
 
     def update() {
         def calendarEventInstance = CalendarEvent.get(params.id)
-        if (calendarEventInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (calendarEventInstance.version > version) {
-
-                    calendarEventInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'calendarEvent.label', default: 'CalendarEvent')] as Object[], "Another user has updated this CalendarEvent while you were editing")
-                    render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
-                    return
-                }
-            }
-            calendarEventInstance.properties = params
-	        if (calendarEventInstance.validate()) {
-				refineCalendarEvent(calendarEventInstance)
-				calendarEventInstance.save(flush: true)
-                saveReminders(calendarEventInstance, session.user)
-				calendarEventInstance.reindex()
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: calendarEventInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
-            }
-        } else {
+        if (!calendarEventInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (calendarEventInstance.version > version) {
+
+                calendarEventInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'calendarEvent.label', default: 'CalendarEvent')] as Object[], "Another user has updated this CalendarEvent while you were editing")
+                render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
+                return
+            }
+        }
+        calendarEventInstance.properties = params
+        if (!calendarEventInstance.validate()) {
+            render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
+            return
+        }
+
+		refineCalendarEvent(calendarEventInstance)
+		calendarEventInstance.save(flush: true)
+        saveReminders(calendarEventInstance, session.user)
+		calendarEventInstance.reindex()
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: calendarEventInstance.id)
+		}
     }
 
     def delete() {
@@ -268,7 +274,7 @@ class CalendarEventController {
 	}
 
     private void saveReminders(CalendarEvent calendarEventInstance,
-                                 User user = null)
+                               User user = null)
     {
         if (calendarEventInstance.owner.id == user?.id) {
             user = null

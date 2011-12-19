@@ -20,7 +20,7 @@ class ProductController {
 			params.sort = 'name'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-        [productInstanceList: Product.list(params), productInstanceTotal: Product.count()]
+        return [productInstanceList: Product.list(params), productInstanceTotal: Product.count()]
     }
 
 	def selectorList() {
@@ -36,6 +36,7 @@ class ProductController {
 			params.sort = 'name'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
+
 		def list, count;
 		if (params.search) {
 			list = Product.findAllByNameLike(searchFilter, params)
@@ -44,7 +45,7 @@ class ProductController {
 			list = Product.list(params)
 			count = Product.count()
 		}
-		[productInstanceList: list, productInstanceTotal: count]
+		return [productInstanceList: list, productInstanceTotal: count]
 	}
 
     def create() {
@@ -55,28 +56,30 @@ class ProductController {
 
 	def copy() {
 		def productInstance = Product.get(params.id)
-		if (productInstance) {
-			productInstance = new Product(productInstance)
-			render(view: 'create', model: [productInstance: productInstance])
-		} else {
+		if (!productInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])
-			redirect(action: 'show', id: productInstance.id)
-		}
+            redirect(action: 'list')
+            return
+        }
+
+		productInstance = new Product(productInstance)
+		render(view: 'create', model: [productInstance: productInstance])
 	}
 
     def save() {
         def productInstance = new Product(params)
-        if (productInstance.save(flush: true)) {
-			productInstance.index()
-            flash.message = message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: productInstance.id)
-			}
-        } else {
+        if (!productInstance.save(flush: true)) {
             render(view: 'create', model: [productInstance: productInstance])
+            return
         }
+
+		productInstance.index()
+        flash.message = message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: productInstance.id)
+		}
     }
 
     def show() {
@@ -84,9 +87,10 @@ class ProductController {
         if (!productInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])
             redirect(action: 'list')
-        } else {
-            [productInstance: productInstance]
+            return
         }
+
+        return [productInstance: productInstance]
     }
 
     def edit() {
@@ -94,41 +98,44 @@ class ProductController {
         if (!productInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])
             redirect(action: 'list')
-        } else {
-            return [productInstance: productInstance]
+            return
         }
+
+        return [productInstance: productInstance]
     }
 
     def update() {
         def productInstance = Product.get(params.id)
-        if (productInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (productInstance.version > version) {
-                    productInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'product.label', default: 'Product')] as Object[], 'Another user has updated this Product while you were editing')
-                    render(view: 'edit', model: [productInstance: productInstance])
-                    return
-                }
-            }
-			if (params.autoNumber) {
-				params.number = productInstance.number
-			}
-            productInstance.properties = params
-            if (!productInstance.hasErrors() && productInstance.save(flush: true)) {
-				productInstance.reindex()
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: productInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [productInstance: productInstance])
-            }
-        } else {
+        if (!productInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (productInstance.version > version) {
+                productInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'product.label', default: 'Product')] as Object[], 'Another user has updated this Product while you were editing')
+                render(view: 'edit', model: [productInstance: productInstance])
+                return
+            }
+        }
+		if (params.autoNumber) {
+			params.number = productInstance.number
+		}
+        productInstance.properties = params
+        if (!productInstance.save(flush: true)) {
+            render(view: 'edit', model: [productInstance: productInstance])
+            return
+        }
+
+		productInstance.reindex()
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: productInstance.id)
+		}
     }
 
     def delete() {
@@ -160,13 +167,14 @@ class ProductController {
         def productInstance = Product.get(params.id)
         if (!productInstance) {
 			render(status: 404)
-        } else {
-			JSON.use('deep') {
-				render(contentType: 'text/json') {
-					fullNumber = productInstance.fullNumber
-					inventoryItem = productInstance
-				}
-			}
+            return
         }
+
+		JSON.use('deep') {
+			render(contentType: 'text/json') {
+				fullNumber = productInstance.fullNumber
+				inventoryItem = productInstance
+			}
+		}
 	}
 }

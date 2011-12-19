@@ -21,7 +21,7 @@ class OverviewController {
 			panel.panelDef = repository.getPanel(panel.panelId)
 			panels[panel.col][panel.pos] = panel
 		}
-		[panels: panels]
+		return [panels: panels]
 	}
 
 	def listAvailablePanels() {
@@ -32,7 +32,7 @@ class OverviewController {
 
 	def lruList() {
 		def lruList = lruService.retrieveLruEntries()
-		[lruList: lruList]
+		return [lruList: lruList]
 	}
 
 	def addPanel() {

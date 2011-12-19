@@ -7,7 +7,7 @@ class ViewTagLib {
 	/**
 	 * Renders a date/time input field where the user may enter date and time
 	 * values according to the formatting rules of the current locale.
-	 * 
+	 *
 	 * @attr name REQUIRED	the name of the input field
 	 * @attr value			the value of the input field; this may be either a
 	 * 						Date or a Calendar object
@@ -52,7 +52,7 @@ class ViewTagLib {
 		}
 		out.println "<input type=\"hidden\" name=\"${name}\" value=\"${c ? formatDate(date:c, formatName:formatName) : ''}\" />"
 		out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${c ? formatDate(date: c, formatName: 'default.format.date') : ''}\" size=\"10\" class=\"date-input date-input-date\" />"
-		
+
 		if (precision >= PRECISION_RANKINGS['hour']) {
 			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${c ? formatDate(date: c, formatName: 'default.format.time') : ''}\" size=\"5\" class=\"date-input date-input-time\" />"
 		}
@@ -60,7 +60,7 @@ class ViewTagLib {
 
 	/**
 	 * Renders a number input field and an associated auto number checkbox.
-	 * 
+	 *
 	 * @attr value	the value of the number field
 	 * @attr prefix	the prefix to display in front of the number field
 	 * @attr suffix	the suffix to display after the number field
@@ -85,7 +85,7 @@ class ViewTagLib {
 	/**
 	 * Formats the given number as currency using the currency symbol from the
 	 * application configuration.
-	 * 
+	 *
 	 * @attr number REQUIRED	the number to format
 	 * @attr minFractionDigits	the minimum number of digits allowed in the
 	 * 							fraction portion of a number; defaults to 2
@@ -118,7 +118,7 @@ class ViewTagLib {
 	 * Renders a bar of letters which allows the user to switch to a page where
 	 * the elements with the property value with the respective initial letter
 	 * reside.
-	 * 
+	 *
 	 * @attr clazz REQUIRED			the class instance of the domain class that
 	 * 								letters are to render
 	 * @attr property REQUIRED		the name of the property that values are
@@ -142,7 +142,7 @@ class ViewTagLib {
 		String prop = attrs.property
 		String controller = attrs.controller ?: controllerName
 		String action = attrs.action ?: actionName
-		int numLetters = attrs.numLetters as int ?: 1
+		int numLetters = (attrs.numLetters ?: 1) as int
 		String separator = attrs.separator
 
 		GString sql = "select upper(substring(o.${prop}, 1, 1)) from ${cls.simpleName} as o"
@@ -186,7 +186,7 @@ class ViewTagLib {
 
 	/**
 	 * Converts LF and CR to HTML <br /> tags.
-	 * 
+	 *
 	 * @attr value	the value to convert; if not specified the body of the tag
 	 * 				is used
 	 */
@@ -205,7 +205,7 @@ class ViewTagLib {
 	/**
 	 * Creates a link to the former page (back link), if available, or creates
 	 * a link using the given attributes.
-	 * 
+	 *
 	 * @attr action		the name of the action to use in the link, if not
 	 * 					specified the default action will be linked
 	 * @attr controller	the name of the controller to use in the link, if not
@@ -234,7 +234,7 @@ class ViewTagLib {
 	/**
 	 * Returns the URL of the former page (back link), if available, or creates
 	 * the URL using the given attributes.
-	 * 
+	 *
 	 * @attr action		the name of the action to use in the link, if not
 	 * 					specified the default action will be linked
 	 * @attr controller	the name of the controller to use in the link, if not

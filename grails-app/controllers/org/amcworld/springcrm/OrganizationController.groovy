@@ -30,7 +30,7 @@ class OrganizationController {
 			list = Organization.list(params)
 			count = Organization.count()
 		}
-        [organizationInstanceList: list, organizationInstanceTotal: count]
+        return [organizationInstanceList: list, organizationInstanceTotal: count]
     }
 
     def create() {
@@ -41,28 +41,30 @@ class OrganizationController {
 
 	def copy() {
 		def organizationInstance = Organization.get(params.id)
-		if (organizationInstance) {
-			organizationInstance = new Organization(organizationInstance)
-			render(view: 'create', model: [organizationInstance: organizationInstance])
-		} else {
+		if (!organizationInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
-			redirect(action: 'show', id: organizationInstance.id)
-		}
+            redirect(action: 'list')
+            return
+        }
+
+		organizationInstance = new Organization(organizationInstance)
+		render(view: 'create', model: [organizationInstance: organizationInstance])
 	}
 
     def save() {
         def organizationInstance = new Organization(params)
-        if (organizationInstance.save(flush: true)) {
-			organizationInstance.index()
-            flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: organizationInstance.id)
-			}
-        } else {
+        if (!organizationInstance.save(flush: true)) {
             render(view: 'create', model: [organizationInstance: organizationInstance])
+            return
         }
+
+		organizationInstance.index()
+        flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: organizationInstance.id)
+		}
     }
 
     def show() {
@@ -70,9 +72,10 @@ class OrganizationController {
         if (!organizationInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
             redirect(action: 'list')
-        } else {
-            [organizationInstance: organizationInstance]
+            return
         }
+
+        return [organizationInstance: organizationInstance]
     }
 
     def edit() {
@@ -80,41 +83,44 @@ class OrganizationController {
         if (!organizationInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
             redirect(action: 'list')
-        } else {
-            return [organizationInstance: organizationInstance]
+            return
         }
+
+        return [organizationInstance: organizationInstance]
     }
 
     def update() {
         def organizationInstance = Organization.get(params.id)
-        if (organizationInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (organizationInstance.version > version) {
-                    organizationInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'organization.label', default: 'Organization')] as Object[], 'Another user has updated this Organization while you were editing')
-                    render(view: 'edit', model: [organizationInstance: organizationInstance])
-                    return
-                }
-            }
-			if (params.autoNumber) {
-				params.number = organizationInstance.number
-			}
-            organizationInstance.properties = params
-            if (!organizationInstance.hasErrors() && organizationInstance.save(flush: true)) {
-				organizationInstance.reindex()
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: organizationInstance.id, params: [type: params.listType])
-				}
-            } else {
-                render(view: 'edit', model: [organizationInstance: organizationInstance])
-            }
-        } else {
+        if (!organizationInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (organizationInstance.version > version) {
+                organizationInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'organization.label', default: 'Organization')] as Object[], 'Another user has updated this Organization while you were editing')
+                render(view: 'edit', model: [organizationInstance: organizationInstance])
+                return
+            }
+        }
+		if (params.autoNumber) {
+			params.number = organizationInstance.number
+		}
+        organizationInstance.properties = params
+        if (!organizationInstance.save(flush: true)) {
+            render(view: 'edit', model: [organizationInstance: organizationInstance])
+            return
+        }
+
+		organizationInstance.reindex()
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: organizationInstance.id, params: [type: params.listType])
+		}
     }
 
     def delete() {
@@ -162,24 +168,26 @@ class OrganizationController {
 
 	def get() {
         def organizationInstance = Organization.get(params.id)
-        if (organizationInstance) {
-            render organizationInstance as JSON
-        } else {
-			render(status: 404)
+        if (!organizationInstance) {
+            render(status: 404)
+            return
         }
+
+        render organizationInstance as JSON
 	}
 
 	def getPhoneNumbers() {
         def organizationInstance = Organization.get(params.id)
-        if (organizationInstance) {
-			def phoneNumbers = [
-				organizationInstance.phone,
-				organizationInstance.phoneOther,
-				organizationInstance.fax
-			]
-			render phoneNumbers as JSON
-        } else {
-			render(status: 404)
+        if (!organizationInstance) {
+            render(status: 404)
+            return
         }
+
+		def phoneNumbers = [
+			organizationInstance.phone,
+			organizationInstance.phoneOther,
+			organizationInstance.fax
+		]
+		render phoneNumbers as JSON
 	}
 }

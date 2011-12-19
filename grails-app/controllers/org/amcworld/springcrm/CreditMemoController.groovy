@@ -16,7 +16,7 @@ class CreditMemoController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [creditMemoInstanceList: CreditMemo.list(params), creditMemoInstanceTotal: CreditMemo.count()]
+        return [creditMemoInstanceList: CreditMemo.list(params), creditMemoInstanceTotal: CreditMemo.count()]
     }
 
 	def listEmbedded() {
@@ -45,7 +45,7 @@ class CreditMemoController {
 			count = CreditMemo.countByDunning(dunningInstance)
 			linkParams = [dunning: dunningInstance.id]
 		}
-		[creditMemoInstanceList: l, creditMemoInstanceTotal: count, linkParams: linkParams]
+		return [creditMemoInstanceList: l, creditMemoInstanceTotal: count, linkParams: linkParams]
 	}
 
     def create() {
@@ -82,42 +82,44 @@ class CreditMemoController {
 
 	def copy() {
 		def creditMemoInstance = CreditMemo.get(params.id)
-		if (creditMemoInstance) {
-			creditMemoInstance = new CreditMemo(creditMemoInstance)
-			render(view: 'create', model: [creditMemoInstance: creditMemoInstance])
-		} else {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
-			redirect(action: 'show', id: creditMemoInstance.id)
-		}
+		if (!creditMemoInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        creditMemoInstance = new CreditMemo(creditMemoInstance)
+		render(view: 'create', model: [creditMemoInstance: creditMemoInstance])
 	}
 
     def save() {
         def creditMemoInstance = new CreditMemo(params)
-        if (creditMemoInstance.save(flush: true)) {
-			creditMemoInstance.index()
-
-			def invoiceInstance = creditMemoInstance.invoice
-			if (invoiceInstance) {
-				invoiceInstance.stage = InvoiceStage.get(907)
-				invoiceInstance.save(flush: true)
-				invoiceInstance.reindex()
-			}
-			def dunningInstance = creditMemoInstance.dunning
-			if (dunningInstance) {
-				dunningInstance.stage = DunningStage.get(2206)
-				dunningInstance.save(flush: true)
-				dunningInstance.reindex()
-			}
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), creditMemoInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: creditMemoInstance.id)
-			}
-        } else {
+        if (!creditMemoInstance.save(flush: true)) {
             render(view: 'create', model: [creditMemoInstance: creditMemoInstance])
+            return
         }
+
+		creditMemoInstance.index()
+
+		def invoiceInstance = creditMemoInstance.invoice
+		if (invoiceInstance) {
+			invoiceInstance.stage = InvoiceStage.get(907)
+			invoiceInstance.save(flush: true)
+			invoiceInstance.reindex()
+		}
+		def dunningInstance = creditMemoInstance.dunning
+		if (dunningInstance) {
+			dunningInstance.stage = DunningStage.get(2206)
+			dunningInstance.save(flush: true)
+			dunningInstance.reindex()
+		}
+
+		flash.message = message(code: 'default.created.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), creditMemoInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: creditMemoInstance.id)
+		}
     }
 
     def show() {
@@ -125,9 +127,10 @@ class CreditMemoController {
         if (!creditMemoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
             redirect(action: 'list')
-        } else {
-            [creditMemoInstance: creditMemoInstance]
+            return
         }
+
+        return [creditMemoInstance: creditMemoInstance]
     }
 
     def edit() {
@@ -135,77 +138,63 @@ class CreditMemoController {
         if (!creditMemoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
             redirect(action: 'list')
-        } else {
-			if (session.user.admin || creditMemoInstance.stage.id < 2502) {
-				return [creditMemoInstance: creditMemoInstance]
-			}
-			redirect(action: 'list')
+            return
         }
+
+        if (session.user.admin || creditMemoInstance.stage.id < 2502) {
+			return [creditMemoInstance: creditMemoInstance]
+		}
+		redirect(action: 'list')
     }
 
     def update() {
         def creditMemoInstance = CreditMemo.get(params.id)
-        if (creditMemoInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (creditMemoInstance.version > version) {
-
-                    creditMemoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'creditMemo.label', default: 'CreditMemo')] as Object[], "Another user has updated this CreditMemo while you were editing")
-                    render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
-                    return
-                }
-            }
-			if (params.autoNumber) {
-				params.number = creditMemoInstance.number
-			}
-            creditMemoInstance.properties = params
-
-			/*
-			 * XXX 	This code is necessary because the default implementation
-			 * 		in Grails does not work. Either data binding or saving does
-			 * 		not work correctly if items were deleted and gaps in the
-			 * 		indices occurred (e. g. 0, 1, null, null, 4) or the items
-			 * 		were re-ordered. Then I observed cluttering in saved data
-			 * 		columns.
-			 * 		The following lines do not make me happy but they work. In
-			 * 		future, this problem may be fixed in Grails so we can
-			 * 		remove these lines.
-			 */
-			creditMemoInstance.items?.clear()
-			for (int i = 0; params."items[${i}]"; i++) {
-				if (params."items[${i}]".id != 'null') {
-					creditMemoInstance.addToItems(params."items[${i}]")
-				}
-			}
-            if (!creditMemoInstance.hasErrors() && creditMemoInstance.save(flush: true)) {
-				creditMemoInstance.reindex()
-
-				def invoiceInstance = creditMemoInstance.invoice
-				if (invoiceInstance) {
-					invoiceInstance.stage = InvoiceStage.get(907)
-					invoiceInstance.save(flush: true)
-					invoiceInstance.reindex()
-				}
-				def dunningInstance = creditMemoInstance.dunning
-				if (dunningInstance) {
-					dunningInstance.stage = DunningStage.get(2206)
-					dunningInstance.save(flush: true)
-					dunningInstance.reindex()
-				}
-
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), creditMemoInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: creditMemoInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
-            }
-        } else {
+        if (!creditMemoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (creditMemoInstance.version > version) {
+
+                creditMemoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'creditMemo.label', default: 'CreditMemo')] as Object[], "Another user has updated this CreditMemo while you were editing")
+                render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
+                return
+            }
+        }
+		if (params.autoNumber) {
+			params.number = creditMemoInstance.number
+		}
+        creditMemoInstance.properties = params
+        creditMemoInstance.items?.retainAll { it != null }
+        if (!creditMemoInstance.save(flush: true)) {
+            render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
+            return
+        }
+
+		creditMemoInstance.reindex()
+
+		def invoiceInstance = creditMemoInstance.invoice
+		if (invoiceInstance) {
+			invoiceInstance.stage = InvoiceStage.get(907)
+			invoiceInstance.save(flush: true)
+			invoiceInstance.reindex()
+		}
+		def dunningInstance = creditMemoInstance.dunning
+		if (dunningInstance) {
+			dunningInstance.stage = DunningStage.get(2206)
+			dunningInstance.save(flush: true)
+			dunningInstance.reindex()
+		}
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), creditMemoInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: creditMemoInstance.id)
+		}
     }
 
     def delete() {
@@ -238,50 +227,50 @@ class CreditMemoController {
 
 	def print() {
         def creditMemoInstance = CreditMemo.get(params.id)
-        if (creditMemoInstance) {
-			def data = [
-				transaction: creditMemoInstance,
-				items: creditMemoInstance.items,
-				organization: creditMemoInstance.organization,
-				person: creditMemoInstance.person,
-				invoice: creditMemoInstance.invoice,
-				invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
-				dunning: creditMemoInstance.dunning,
-				dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
-				user: session.user,
-				fullNumber: creditMemoInstance.fullNumber,
-				paymentMethod: creditMemoInstance.paymentMethod?.name,
-				taxRates: creditMemoInstance.taxRateSums,
-				values: [
-			        subtotalNet: creditMemoInstance.subtotalNet,
-					subtotalGross: creditMemoInstance.subtotalGross,
-					discountPercentAmount: creditMemoInstance.discountPercentAmount,
-					total: creditMemoInstance.total
-				],
-				watermark: params.duplicate ? 'duplicate' : ''
-			]
-			String xml = (data as XML).toString()
-//			println xml
+        if (!creditMemoInstance) {
+            render(status: 404)
+            return
+        }
 
-			GString fileName = "${message(code: 'creditMemo.label')} ${creditMemoInstance.fullNumber}"
-			if (params.duplicate) {
-				fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-			}
-			fileName += ".pdf"
+		def data = [
+			transaction: creditMemoInstance,
+			items: creditMemoInstance.items,
+			organization: creditMemoInstance.organization,
+			person: creditMemoInstance.person,
+			invoice: creditMemoInstance.invoice,
+			invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
+			dunning: creditMemoInstance.dunning,
+			dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
+			user: session.user,
+			fullNumber: creditMemoInstance.fullNumber,
+			paymentMethod: creditMemoInstance.paymentMethod?.name,
+			taxRates: creditMemoInstance.taxRateSums,
+			values: [
+		        subtotalNet: creditMemoInstance.subtotalNet,
+				subtotalGross: creditMemoInstance.subtotalGross,
+				discountPercentAmount: creditMemoInstance.discountPercentAmount,
+				total: creditMemoInstance.total
+			],
+			watermark: params.duplicate ? 'duplicate' : ''
+		]
+		String xml = (data as XML).toString()
+//		println xml
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream()
-			fopService.generatePdf(
-				new StringReader(xml), '/WEB-INF/data/fo/credit-memo-fo.xsl',
-				baos
-			)
-			response.contentType = 'application/pdf'
-			response.addHeader 'Content-Disposition',
-				"attachment; filename=\"${fileName}\""
-			response.contentLength = baos.size()
-			response.outputStream.write(baos.toByteArray())
-			response.outputStream.flush()
-		} else {
-			render(status: 404)
+		GString fileName = "${message(code: 'creditMemo.label')} ${creditMemoInstance.fullNumber}"
+		if (params.duplicate) {
+			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 		}
+		fileName += ".pdf"
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream()
+		fopService.generatePdf(
+			new StringReader(xml), '/WEB-INF/data/fo/credit-memo-fo.xsl', baos
+		)
+		response.contentType = 'application/pdf'
+		response.addHeader 'Content-Disposition',
+			"attachment; filename=\"${fileName}\""
+		response.contentLength = baos.size()
+		response.outputStream.write(baos.toByteArray())
+		response.outputStream.flush()
 	}
 }

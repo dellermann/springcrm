@@ -17,7 +17,7 @@ class UserController {
 			params.sort = 'userName'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-        [userInstanceList: User.list(params), userInstanceTotal: User.count()]
+        return [userInstanceList: User.list(params), userInstanceTotal: User.count()]
     }
 
     def create() {
@@ -28,16 +28,17 @@ class UserController {
 
     def save() {
         def userInstance = new User(params)
-        if (userInstance.save(flush: true)) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'show', id: userInstance.id)
-			}
-        } else {
+        if (!userInstance.save(flush: true)) {
             render(view: 'create', model: [userInstance: userInstance])
+            return
         }
+
+        flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: userInstance.id)
+		}
     }
 
     def show() {
@@ -45,9 +46,10 @@ class UserController {
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
             redirect(action: 'list')
-        } else {
-            [userInstance: userInstance]
+            return
         }
+
+        return [userInstance: userInstance]
     }
 
     def edit() {
@@ -55,41 +57,44 @@ class UserController {
         if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
             redirect(action: 'list')
-        } else {
-            return [userInstance: userInstance]
+            return
         }
+
+        return [userInstance: userInstance]
     }
 
     def update() {
         def userInstance = User.get(params.id)
-        if (userInstance) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (userInstance.version > version) {
-                    userInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'user.label', default: 'User')] as Object[], 'Another user has updated this User while you were editing')
-                    render(view: 'edit', model: [userInstance: userInstance])
-                    return
-                }
-            }
-			String passwd = userInstance.password
-            userInstance.properties = params
-			if (!params.password) {
-				userInstance.password = passwd
-			}
-            if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'show', id: userInstance.id)
-				}
-            } else {
-                render(view: 'edit', model: [userInstance: userInstance])
-            }
-        } else {
+        if (!userInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
             redirect(action: 'list')
+            return
         }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (userInstance.version > version) {
+                userInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'user.label', default: 'User')] as Object[], 'Another user has updated this User while you were editing')
+                render(view: 'edit', model: [userInstance: userInstance])
+                return
+            }
+        }
+		String passwd = userInstance.password
+        userInstance.properties = params
+		if (!params.password) {
+			userInstance.password = passwd
+		}
+        if (!userInstance.save(flush: true)) {
+            render(view: 'edit', model: [userInstance: userInstance])
+            return
+        }
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
+		if (params.returnUrl) {
+			redirect(url: params.returnUrl)
+		} else {
+			redirect(action: 'show', id: userInstance.id)
+		}
     }
 
     def delete() {
@@ -121,13 +126,14 @@ class UserController {
 
 	def authenticate() {
 		def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
-		if (userInstance) {
-			session.user = userInstance
-			redirect(uri: '/')
-		} else {
-			flash.message = message(code: 'user.authenticate.failed.message', default: 'Invalid user name or password. Please retry.')
-			redirect(action: 'login')
+		if (!userInstance) {
+            flash.message = message(code: 'user.authenticate.failed.message', default: 'Invalid user name or password. Please retry.')
+            redirect(action: 'login')
+            return
 		}
+
+		session.user = userInstance
+		redirect(uri: '/')
 	}
 
 	def logout() {
