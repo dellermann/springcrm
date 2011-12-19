@@ -1,152 +1,218 @@
 package org.amcworld.springcrm
 
 import grails.test.*
+import grails.test.mixin.*
 
-class CallControllerTests extends ControllerUnitTestCase {
-	
-	private static final String ERROR_MSG = 'error message'
+@TestFor(CallController)
+@Mock([Call, Organization, Person])
+class CallControllerTests {
 
-    protected void setUp() {
-        super.setUp()
-		controller.metaClass.message = { Map map -> return ERROR_MSG }
+    void setUp() {
+        def seqNumberService = mockFor(SeqNumberService)
+        seqNumberService.demand.nextNumber(0..10) { cls -> 1 }
 
-		def call1 = new Call(subject:'Call 1')
-		def call2 = new Call(subject:'Call 2')
-		mockDomain(Call, [call1, call2])
+        def org = new Organization(name: 'AMC World', phone: '+49 30 83214750')
+        org.seqNumberService = seqNumberService.createMock()
+        org.save(validate: false)
+
+        def p = new Person(
+            firstName: 'Daniel', lastName: 'Ellermann', phone: '+49 30 1234567'
+        )
+        p.seqNumberService = seqNumberService.createMock()
+        p.save(validate: false)
+
+        new Call(subject: 'Call 1', organization: org).save(validate: false)
+        new Call(subject: 'Call 2', organization: org, person: p).
+            save(validate: false)
+
         Call.metaClass.index = { -> }
 		Call.metaClass.reindex = { -> }
 	}
 
-    protected void tearDown() {
-        super.tearDown()
-    }
-
     void testIndex() {
 		controller.index()
-		assertEquals 'list', controller.redirectArgs['action']
+		assert '/call/list' == response.redirectedUrl
     }
-	
+
 	void testList() {
-		def map = controller.list()
-		assertEquals 2, map.callInstanceTotal
-		assertEquals 2, map.callInstanceList.size()
-		assertEquals 'Call 1', map.callInstanceList[0].subject
-		assertEquals 'Call 2', map.callInstanceList[1].subject
-	}
-	
-	void testCreate() {
-		def map = controller.create()
-		assertNotNull map.callInstance
-		assertNull map.callInstance.subject
+        def model = controller.list()
+		assert 2 == model.callInstanceTotal
+		assert 2 == model.callInstanceList.size()
+		assert 'Call 1' == model.callInstanceList[0].subject
+		assert 'Call 2' == model.callInstanceList[1].subject
 	}
 
-	void testCreateWithPerson() {
-		def s = '1234567890'
-		controller.params.person = new Person(
-			number:10000, firstName:'Daniel', lastName:'Ellermann',
-			phone:s
-		)
-		
-		def map = controller.create()
-		assertNotNull map.callInstance
-		assertNull map.callInstance.subject
-		assertEquals s, map.callInstance.phone
+    void testListEmbeddedByOrganization() {
+        params.organization = 1
+        def model = controller.listEmbedded()
+        assert 2 == model.callInstanceTotal
+        assert 2 == model.callInstanceList.size()
+        assert 'Call 1' == model.callInstanceList[0].subject
+        assert 'Call 2' == model.callInstanceList[1].subject
+    }
+
+    void testListEmbeddedByPerson() {
+        params.person = 1
+        def model = controller.listEmbedded()
+        assert 1 == model.callInstanceTotal
+        assert 1 == model.callInstanceList.size()
+        assert 'Call 2' == model.callInstanceList[0].subject
+    }
+
+	void testCreate() {
+		def model = controller.create()
+		assert null != model.callInstance
+		assert null == model.callInstance.subject
 	}
-	
-	void testCreateWithOrganization() {
-		def s = '1234567890'
-		controller.params.organization = new Organization(
-			number:10000, name:'AMC World Technologies GmbH', phone:s
-		)
-		
-		def map = controller.create()
-		assertNotNull map.callInstance
-		assertNull map.callInstance.subject
-		assertEquals s, map.callInstance.phone
-	}
+
+    void testCreateWithPerson() {
+        def s = '1234567890'
+        params.person = new Person(
+            number:10000, firstName:'Daniel', lastName:'Ellermann',
+            phone:s
+        )
+        def model = controller.create()
+        assert null != model.callInstance
+        assert null == model.callInstance.subject
+        assert s == model.callInstance.phone
+    }
+
+    void testCreateWithOrganization() {
+        def s = '1234567890'
+        params.organization = new Organization(
+            number:10000, name:'AMC World Technologies GmbH', phone:s
+        )
+        def model = controller.create()
+        assert null != model.callInstance
+        assert null == model.callInstance.subject
+        assert s == model.callInstance.phone
+    }
+
+    void testCopy() {
+        params.id = 1
+        controller.copy()
+        assert '/call/create' == view
+        assert 'Call 1' == model.callInstance.subject
+    }
+
+    void testCopyNonExisting() {
+        params.id = 10
+        controller.copy()
+        assert 'default.not.found.message' == flash.message
+        assert '/call/list' == response.redirectedUrl
+    }
 
 	void testSaveSuccessfully() {
-		controller.params.subject = 'Call 1'
-		controller.params.notes = 'Test'
-		controller.params.start = new Date()
-		controller.params.status = 'planned'
-		controller.params.type = 'incoming'
+		params.subject = 'Call 1'
+		params.notes = 'Test'
+		params.start = new Date()
+		params.status = 'planned'
+		params.type = 'incoming'
 		controller.save()
-		assertEquals 3, Call.count()
-		assertEquals 'show', controller.redirectArgs['action']
+		assert 3 == Call.count()
+		assert '/call/show/3' == response.redirectedUrl
 	}
-	
-	void testSaveFailed() {
-		controller.params.subject = ''
-		controller.params.notes = 'Test'
-		controller.params.start = new Date()
-		controller.params.status = 'foo'
-		controller.params.type = 'bar'
-		def map = controller.save()
-		assertEquals 2, Call.count()
-		assertEquals 'blank', map.callInstance.errors['subject']
-		assertEquals 'inList', map.callInstance.errors['status']
-		assertEquals 'inList', map.callInstance.errors['type']
-	}
-	
-	void testShow() {
-		controller.params.id = 2
-		def map = controller.show()
-		assertEquals 'Call 2', map.callInstance.subject
-		
-		controller.params.id = 10
-		controller.show()
-		assertEquals 'list', controller.redirectArgs['action']
-		assertEquals ERROR_MSG, controller.flash['message']
-	}
-	
-	void testEdit() {
-		controller.params.id = 1
-		def map = controller.edit()
-		assertEquals 'Call 1', map.callInstance.subject
 
-		controller.params.id = 10
-		controller.edit()
-		assertEquals 'list', controller.redirectArgs['action']
-		assertEquals ERROR_MSG, controller.flash['message']
+	void testSaveFailed() {
+		params.subject = ''
+		params.notes = 'Test'
+		params.start = new Date()
+		params.status = 'foo'
+		params.type = 'bar'
+		controller.save()
+        assert '/call/create' == view
+		assert 2 == Call.count()
+		assert 'call.subject.blank' in model.callInstance.errors['subject'].codes
+		assert 'call.status.not.inList' in model.callInstance.errors['status'].codes
+		assert 'call.type.not.inList' in model.callInstance.errors['type'].codes
 	}
-	
+
+	void testShow() {
+		params.id = 2
+		def model = controller.show()
+		assert 'Call 2' == model.callInstance.subject
+	}
+
+    void testShowNonExisting() {
+        params.id = 10
+        controller.show()
+        assert '/call/list' == response.redirectedUrl
+        assert 'default.not.found.message' == flash.message
+    }
+
+	void testEdit() {
+		params.id = 1
+		def model = controller.edit()
+		assert 'Call 1' == model.callInstance.subject
+	}
+
+    void testEditNonExisting() {
+        params.id = 10
+        controller.edit()
+        assert '/call/list' == response.redirectedUrl
+        assert 'default.not.found.message' == flash.message
+    }
+
 	void testUpdate() {
-		controller.params.id = 1
-		controller.params.subject = 'Call 3'
-		controller.params.notes = 'Test'
-		controller.params.start = new Date()
-		controller.params.status = 'planned'
-		controller.params.type = 'incoming'
+		params.id = 1
+		params.subject = 'Call 3'
+		params.notes = 'Test'
+		params.start = new Date()
+		params.status = 'planned'
+		params.type = 'incoming'
 		controller.update()
-		assertEquals 'show', controller.redirectArgs['action']
-		assertEquals 2, Call.count()
+		assert '/call/show/1' == response.redirectedUrl
+		assert 2 == Call.count()
 		def call = Call.get(1)
-		assertEquals 'Call 3', call.subject
-		assertEquals 'Test', call.notes
-		assertEquals 'planned', call.status
-		
-		controller.params.subject = ''
-		def map = controller.update()
-		assertEquals 2, Call.count()
-		assertEquals 'blank', map.callInstance.errors['subject']
-		
-		controller.params.id = 10
-		controller.update()
-		assertEquals 'list', controller.redirectArgs['action']
-		assertEquals ERROR_MSG, controller.flash['message']
+		assert 'Call 3' == call.subject
+		assert 'Test' == call.notes
+		assert 'planned' == call.status
 	}
-	
-	void testDelete() {
-		controller.params.id = 1
+
+    void testUpdateFailed() {
+        params.id = 1
+        params.subject = ''
+        params.notes = 'Test'
+        params.start = new Date()
+        params.status = 'planned'
+        params.type = 'incoming'
+        controller.update()
+        assert '/call/edit' == view
+        assert 2 == Call.count()
+        assert 'call.subject.blank' in model.callInstance.errors['subject'].codes
+    }
+
+    void testUpdateNonExisting() {
+        params.id = 10
+        controller.update()
+        assert '/call/list' == response.redirectedUrl
+        assert 'default.not.found.message' == flash.message
+    }
+
+    void testDeleteUnconfirmed() {
+        params.id = 1
+
+        controller.delete()
+        assert 2 == Call.count()
+        assert '/call/list' == response.redirectedUrl
+        assert 'default.not.found.message' == flash.message
+    }
+
+    void testDeleteConfirmed() {
+        params.id = 1
+        params.confirmed = true
+        controller.delete()
+        assert '/call/list' == response.redirectedUrl
+        assert 1 == Call.count()
+        assert null == Call.get(1)
+        assert null != Call.get(2)
+    }
+
+	void testDeleteNonExisting() {
+		params.id = 10
+        params.confirmed = true
 		controller.delete()
-		assertEquals 1, Call.count()
-		assertNull Call.get(1)
-		assertNotNull Call.get(2)
-		
-		controller.params.id = 10
-		controller.delete()
-		assertEquals 'list', controller.redirectArgs['action']
-		assertEquals ERROR_MSG, controller.flash['message']
+        assert '/call/list' == response.redirectedUrl
+		assert 'default.not.found.message' == flash.message
 	}
 }

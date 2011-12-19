@@ -198,7 +198,7 @@ class InvoicingTransaction {
 	/**
 	 * Gets the subtotal net value. It is computed by accumulating the total
 	 * values of the items plus the shipping costs.
-	 * 
+	 *
 	 * @return	the subtotal net value
 	 * @see		#getSubtotalGross()
 	 */
@@ -209,7 +209,7 @@ class InvoicingTransaction {
 	/**
 	 * Gets the subtotal gross value. It is computed by adding the tax values
 	 * to the subtotal net value.
-	 * 
+	 *
 	 * @return	the subtotal gross value
 	 * @see		#getSubtotalNet()
 	 */
@@ -221,7 +221,7 @@ class InvoicingTransaction {
 	 * Gets the discount amount which is granted when the user specifies a
 	 * discount percentage value. The percentage value is related to the
 	 * subtotal gross value.
-	 * 
+	 *
 	 * @return	the discount amount from the percentage value
 	 * @see		#getSubtotalGross()
 	 */
@@ -233,7 +233,7 @@ class InvoicingTransaction {
 	 * Computes a map of taxes used in this transaction. The key represents the
 	 * tax rate (a percentage value), the value the sum of tax values of all
 	 * items which belong to this tax rate.
-	 *  
+	 *
 	 * @return	the tax rates and their associated tax value sums
 	 */
 	Map<Double, BigDecimal> getTaxRateSums() {
@@ -276,7 +276,7 @@ class InvoicingTransaction {
 			}
 		}
 	}
-	
+
 	def beforeValidate() {
 		total = computeTotal()
 	}

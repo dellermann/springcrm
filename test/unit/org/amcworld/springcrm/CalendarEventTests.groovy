@@ -1,6 +1,7 @@
 package org.amcworld.springcrm
 
 import grails.test.*
+import grails.test.mixin.*
 
 class CalendarEventTests extends GrailsUnitTestCase {
 
