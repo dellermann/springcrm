@@ -121,8 +121,9 @@
                 $row.find(".invoicing-items-tax input")
             );
             if (jumpToNewRow) {
-//                $("html").scrollTop($tbody.find("tr:last").position().top);
-                $("html").scrollTop($row.position().top);
+                $("html").scrollTop(
+                        $row.position().top - $("#toolbar").outerHeight()
+                    );
             }
         },
 
@@ -524,7 +525,8 @@
         },
 
         _onSubmit: function () {
-            var b,
+            var $name = null,
+                b,
                 del,
                 e,
                 elems = this.form.elements,
@@ -551,6 +553,8 @@
                             || (fieldName === "tax"))
                         {
                             b = b || $.parseNumber(val) === 0;
+                        } else if (fieldName === "name") {
+                            $name = $(e);
                         }
                         del = del && b;
                         if (!del) {
@@ -560,6 +564,10 @@
                 }
 
                 if (del) {
+                    if ($name) {
+                        $name.parents("tr")
+                            .remove();
+                    }
                     e = elems[name + "id"];
                     if (e) {
                         e.value = "null";

@@ -91,11 +91,11 @@ article, aside, footer, header, hgroup, nav, section {
  *---------------------------------*/
 
 body {
-  font: 11px/1.231 "DejaVu Sans Condensed", "DejaVu Sans",
+  font: 11px/1.231 Arimo, "DejaVu Sans Condensed", "DejaVu Sans",
     "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
 }
 button, input, select, textarea {
-  font: 99% "DejaVu Sans Condensed", "DejaVu Sans", "Helvetica Neue LT Std", 
+  font: 99% Arimo, "DejaVu Sans Condensed", "DejaVu Sans", "Helvetica Neue LT Std", 
     Tahoma, Arial, sans-serif;
 }
 code, kbd, pre, samp, tt, xmp {
