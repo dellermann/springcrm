@@ -183,7 +183,7 @@
         <tr>
           <td headers="invoicing-items-header-name" colspan="5" class="invoicing-items-label"><label for="discountPercent"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></label></td>
           <td headers="invoicing-items-header-unitPrice" class="invoicing-items-unit-price${hasErrors(bean: purchaseInvoiceInstance, field: 'discountPercent', ' error')}">
-            <g:textField name="discountPercent" value="${fieldValue(bean: purchaseInvoiceInstance, field: 'discountPercent')}" size="8" />&nbsp;%<br />
+            <g:textField name="discountPercent" value="${fieldValue(bean: purchaseInvoiceInstance, field: 'discountPercent')}" size="8" />&nbsp;&#37;<br />
             <g:hasErrors bean="${purchaseInvoiceInstance}" field="discountPercent">
               <span class="error-msg"><g:eachError bean="${purchaseInvoiceInstance}" field="discountPercent"><g:message error="${it}" /> </g:eachError></span>
             </g:hasErrors>

@@ -234,7 +234,7 @@
               <g:if test="${quoteInstance?.discountPercent != 0}">
               <tr>
                 <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
-                <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatNumber(number: quoteInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
+                <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatNumber(number: quoteInstance?.discountPercent, minFractionDigits: 2)}&nbsp;&#37;</td>
                 <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: quoteInstance?.discountPercentAmount)}</td>
                 <td headers="quote-items-tax"></td>
               </tr>

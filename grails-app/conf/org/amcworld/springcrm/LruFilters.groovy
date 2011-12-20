@@ -5,7 +5,7 @@ class LruFilters {
 	def lruService
 
     def filters = {
-        lruRecord(controller:'*', action:'show|edit') {
+        lruRecord(controller: '*', action: 'show|edit') {
             after = { model ->
 				if (model) {
 	                def inst = model["${controllerName}Instance"]
@@ -15,6 +15,14 @@ class LruFilters {
 						)
 					}
 				}
+            }
+        }
+
+        lruRemove(controller: '*', action: 'delete') {
+            before = {
+                if (params.confirmed) {
+                    lruService.removeItem(controllerName, params.id as long)
+                }
             }
         }
     }
