@@ -28,21 +28,24 @@
   <script type="text/javascript" src="${resource(dir:'js', file:'fullcalendar.min.js')}"></script>
   <script type="text/javascript">
   //<![CDATA[
-  (function (window, SPRINGCRM) {
+  (function (window, SPRINGCRM, $) {
+
+      "use strict";
+
       var g = SPRINGCRM.getMessage;
 
       $("#calendar").fullCalendar({
-              allDayText: g("allDay"),
-              axisFormat: g("calendarAxisFormat"),
-              buttonText: g("calendarButtonText"),
-              columnFormat: g("calendarColumnFormat"),
+              allDayText: g("calendarEvent_allDay_label"),
+              axisFormat: g("calendarEvent_axis_format"),
+              buttonText: g("calendarEvent_button_text"),
+              columnFormat: g("calendarEvent_column_format"),
               dayClick: function (date, allDay) {
                   var params;
 
                   params = "start=" + encodeURIComponent(
-                          $.fullCalendar.formatDate(date, g("dateFormat")) + 
+                          $.fullCalendar.formatDate(date, g("default_format_date")) + 
                           " " +
-                          $.fullCalendar.formatDate(date, g("timeFormat"))
+                          $.fullCalendar.formatDate(date, g("default_format_time"))
                       ) + "&allDay=" + encodeURIComponent(String(allDay));
                   window.location.href = "${createLink(controller:'calendarEvent', action:'create')}?" + 
                       params;
@@ -65,8 +68,8 @@
               monthNames: g("monthNamesLong"),
               monthNamesShort: g("monthNamesShort"),
               theme: true,
-              timeFormat: g("calendarTimeFormat"),
-              titleFormat: g("calendarTitleFormat")
+              timeFormat: g("calendarEvent_time_format"),
+              titleFormat: g("calendarEvent_title_format")
           });
       $(".fc-header-right").append(
               '<span class="fc-button fc-button-list ui-state-default ' +
@@ -80,9 +83,9 @@
               window.location.href = "${createLink(controller:'calendarEvent', action:'list')}";
           })
           .hover(function () {
-              $(this).toggleClass("ui-state-hover")
+              $(this).toggleClass("ui-state-hover");
           });
-  }(window, SPRINGCRM));
+  }(window, SPRINGCRM, jQuery));
   //]]></script>
   </content>
 </body>

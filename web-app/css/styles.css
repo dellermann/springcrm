@@ -1542,11 +1542,11 @@ form .invoicing-items-pos {
 .drag-hover {
   background: #F0FFF0;
 }
-.panel {
+.springcrm-overviewpanels-panel {
   border: .1em solid #888;
   margin-bottom: 1em;
 }
-.panel-header {
+.springcrm-overviewpanels-panel-header {
   background: #97B42D;
   background: -khtml-gradient(
       linear, left top, left bottom, from(#B0C639), to(#80A322)
@@ -1556,7 +1556,7 @@ form .invoicing-items-pos {
       linear, left top, left bottom, from(#B0C639), to(#80A322)
     );
 }
-.panel-header h3 {
+.springcrm-overviewpanels-panel-header h3 {
   color: white !important;
   cursor: move;
   float: left;
@@ -1564,17 +1564,17 @@ form .invoicing-items-pos {
   padding: .8em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
-.panel-header a {
+.springcrm-overviewpanels-panel-header a {
   float: right;
   padding: .8em;
 }
-.panel-close-btn {
+.springcrm-overviewpanels-panel-close-btn {
   background: url("../img/close-panel.png") no-repeat 50% 50%;
   height: 16px;
   text-indent: -9999px;
   width: 16px;
 }
-.panel-content {
+.springcrm-overviewpanels-panel-content {
   overflow-y: auto;
   padding: .8em;
 }
@@ -1688,7 +1688,8 @@ form .invoicing-items-pos {
 /* clearance */
 #logo:after, #main-menu:after, #main-container:after,
   #main-container-header:after, .multicol-content:after, 
-  .header-with-menu:after, .letter-bar:after, .panel-header:after,
+  .header-with-menu:after, .letter-bar:after, 
+  .springcrm-overviewpanels-panel-header:after,
   #panel-list ol:after, footer:after
 {
   clear: both;

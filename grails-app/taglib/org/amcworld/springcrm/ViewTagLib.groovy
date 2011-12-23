@@ -260,29 +260,4 @@ class ViewTagLib {
 			createLink(attrs, body)
 		}
 	}
-
-	/**
-	 * Generates script tags to load JavaScript file which define the localized
-	 * string that are used in the application.
-	 */
-	def loadJsLocale = { attrs, body ->
-		out.println "<script type=\"text/javascript\" src=\"${resource(dir:'js/lang', file:'default.js')}\"></script>"
-		String l = ''
-		Locale locale = RCU.getLocale(request)
-		String s = locale.language
-		if (s) {
-			l += s
-			out.println "<script type=\"text/javascript\" src=\"${resource(dir:'js/lang', file:"${l}.js")}\"></script>"
-			s = locale.country
-			if (s) {
-				l += '-' + s.toLowerCase()
-				out.println "<script type=\"text/javascript\" src=\"${resource(dir:'js/lang', file:"${l}.js")}\"></script>"
-				s = locale.variant
-				if (s) {
-					l += '-' + s.toLowerCase()
-					out.println "<script type=\"text/javascript\" src=\"${resource(dir:'js/lang', file:"${l}.js")}\"></script>"
-				}
-			}
-		}
-	}
 }

@@ -5,11 +5,12 @@
 <head>
   <meta charset="utf-8" />
   <title><g:message code="default.login.title" /></title>
-  <link rel="stylesheet" href="${resource(dir:'css', file:'styles.css')}" />
-  <link rel="stylesheet" href="${resource(dir:'css/jquery/default', file:'jquery-ui-1.8.13.custom.css')}" />
-  <link rel="shortcut icon" href="${resource(dir:'img', file:'favicon.ico')}" type="image/x-icon" />
-  <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-  <g:set var="entitiesName" value="${message(code: 'user.plural', default: 'Users')}" />
+  <r:require modules="core" />
+  <r:layoutResources />
+  <r:external uri="/img/favicon.ico" />
+  <r:script disposition="defer">
+  $("#userName").trigger("focus");
+  </r:script>
 </head>
 
 <body>
@@ -46,7 +47,7 @@
             <div class="row">
               <div class="label"></div>
               <div class="field">
-                <g:submitButton class="button green" name="submit" value="${message(code:'default.button.login.label')}" />
+                <g:submitButton class="button green" name="submit" value="${message(code: 'default.button.login.label')}" />
               </div>
             </div>
           </fieldset>
@@ -56,6 +57,6 @@
     </div>
   </div>
 </section>
-<script type="text/javascript" src="${resource(dir:'js', file:'jquery-1.6.1.min.js')}"></script>
+<r:layoutResources />
 </body>
 </html>

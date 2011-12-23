@@ -59,6 +59,7 @@ class OverviewController {
 			user: session.user, col: col, pos: pos, panelId: panelId
 		)
 		panel.save(flush: true)
+        render(status: 200)
 	}
 
 	def movePanel() {

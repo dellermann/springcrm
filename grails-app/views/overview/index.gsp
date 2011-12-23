@@ -3,6 +3,14 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title>SpringCRM</title>
+  <r:require modules="overview" />
+  <r:script>
+  $(".overview-columns").overviewpanels({
+          addPanelUrl: "${createLink(controller: 'overview', action: 'addPanel')}",
+          movePanelUrl: "${createLink(controller: 'overview', action: 'movePanel')}",
+          removePanelUrl: "${createLink(controller: 'overview', action: 'removePanel')}"
+      });
+  </r:script>
 </head>
 
 <body>
@@ -20,33 +28,17 @@
     <g:each in="${(0..2)}" var="i">
       <section id="col-${i}" class="overview-column">
       <g:each in="${panels[i]}" var="panel">
-        <div id="${panel.panelId}" class="panel" itemscope="itemscope" itemtype="http://www.amc-world.de/data/xml/springcrm/panel-vocabulary">
-          <div class="panel-header">
+        <div id="${panel.panelId}" class="springcrm-overviewpanels-panel" data-panel-url="${createLink(controller: panel.panelDef.controller, action: panel.panelDef.action)}">
+          <div class="springcrm-overviewpanels-panel-header">
             <h3>${panel.panelDef.title}</h3>
-            <g:link controller="overview" action="removePanel" class="panel-close-btn">×</g:link>
+            <g:link controller="overview" action="removePanel" class="springcrm-overviewpanels-panel-close-btn">ï¿½</g:link>
           </div>
-          <link itemprop="panel-link" href="${createLink(controller:panel.panelDef.controller, action:panel.panelDef.action)}" />
-          <div class="panel-content" style="${panel.panelDef.style}"></div>
+          <div class="springcrm-overviewpanels-panel-content" style="${panel.panelDef.style}"></div>
         </div>
       </g:each>
       </section>
     </g:each>
     </div>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript" src="${resource(dir:'js', file:'overview.js')}"></script>
-  <script type="text/javascript">
-  (function (SPRINGCRM) {
-      new SPRINGCRM.OverviewPanels({
-              addPanelUrl: "${createLink(controller:'overview', action:'addPanel')}",
-              columnSel: ".overview-column",
-              movePanelUrl: "${createLink(controller:'overview', action:'movePanel')}",
-              panelSel: ".panel",
-              removePanelUrl: "${createLink(controller:'overview', action:'removePanel')}"
-          })
-          .initialize();
-  }(SPRINGCRM));
-  </script>
-  </content>
 </body>
 </html>

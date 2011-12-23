@@ -87,13 +87,13 @@
             if (!format) {
                 format = "";
                 if ((type === "date") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("dateFormat");
+                    format += SPRINGCRM.getMessage("default_format_date");
                 }
                 if (type === "datetime") {
                     format += " ";
                 }
                 if ((type === "time") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("timeFormat");
+                    format += SPRINGCRM.getMessage("default_format_time");
                 }
             }
 
@@ -221,13 +221,13 @@
             if (!format) {
                 format = "";
                 if ((type === "date") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("dateFormat");
+                    format += SPRINGCRM.getMessage("default_format_date");
                 }
                 if (type === "datetime") {
                     format += " ";
                 }
                 if ((type === "time") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("timeFormat");
+                    format += SPRINGCRM.getMessage("default_format_time");
                 }
             }
             baseYear = baseYear || 35;
@@ -714,7 +714,7 @@
                 f,
                 gaf = this._getField,
                 i = -1,
-                msg = SPRINGCRM.getMessage("copyAddressWarning_" + toPrefix),
+                msg = SPRINGCRM.getMessage("default_copyAddressWarning_" + toPrefix),
                 n = addrFields.length;
 
             if (!this._doesExist(toPrefix) || this.options.confirm(msg)) {
@@ -772,7 +772,7 @@
             var addrFields = this.ADDRESS_FIELDS,
                 f,
                 i = -1,
-                msg = SPRINGCRM.getMessage("copyAddressWarning_" + prefix),
+                msg = SPRINGCRM.getMessage("default_copyAddressWarning_" + prefix),
                 opts = this.options,
                 n = addrFields.length;
 
@@ -927,7 +927,7 @@
             if ($toolbar !== null) {
                 $document.scroll(onScrollDocument);
             }
-            $("#search").hint(SPRINGCRM.getMessage("search"))
+            $("#search").hint(SPRINGCRM.getMessage("default_search_label"))
                 .next("a")
                 .click(onClickSubmitSearchForm);
             $("#quick-access").change(onChangeQuickAccess);
@@ -1046,7 +1046,9 @@
                 res,
                 url;
 
-            res = window.confirm(SPRINGCRM.getMessage('deleteConfirmMsg'));
+            res = window.confirm(
+                    SPRINGCRM.getMessage('default_delete_confirm_msg')
+                );
             if (res) {
                 url = $this.attr("href");
                 if (url.indexOf("?") < 0) {

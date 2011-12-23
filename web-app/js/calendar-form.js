@@ -80,11 +80,12 @@
             }
             s += '<option value="' + o + '"' +
                 ((o === value) ? ' selected="selected"' : '') + '>' +
-                String(v) + ' ' + g("reminder_" + u) + '</option>';
+                String(v) + ' ' + g("calendarEvent_reminder_unit_" + u) +
+                '</option>';
         }
         return '<li><select>' + s + '</select> ' +
-            '<a href="#" class="button small red">' + g('reminder_del') +
-            '</a></li>';
+            '<a href="#" class="button small red">' +
+            g('calendarEvent_reminder_delete_label') + '</a></li>';
     };
 
     initRecurrenceTypes = function () {

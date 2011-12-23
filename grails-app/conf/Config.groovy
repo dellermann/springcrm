@@ -1,13 +1,13 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
+// grails.config.locations = [ "classpath: ${appName}-config.properties",
+//                             "classpath: ${appName}-config.groovy",
+//                             "file: ${userHome}/.grails/${appName}-config.properties",
+//                             "file: ${userHome}/.grails/${appName}-config.groovy"]
 
 // if(System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
+//    grails.config.locations << "file: " + System.properties["${appName}.config.location"]
 // }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
@@ -76,7 +76,7 @@ log4j = {
     // appender:
     //
     //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
+    //    console name: 'stdout', layout: pattern(conversionPattern: '%c{2} %m%n')
     //}
 
     error  	'org.codehaus.groovy.grails.web.servlet',  //  controllers
@@ -92,7 +92,7 @@ log4j = {
 			'net.sf.ehcache.hibernate'
 
     warn   	'org.mortbay.log'
-	
+
 	debug	'org.amcworld.springcrm.InvoiceController',
 			'org.amcworld.springcrm.QuoteController',
 			'org.amcworld.springcrm.SalesOrderController'
@@ -103,6 +103,6 @@ grails {
 	mail {
 		host = '192.168.0.1'
 		port = 25
-		props = ['mail.smtp.auth':'false']
+		props = ['mail.smtp.auth': 'false']
 	}
 }

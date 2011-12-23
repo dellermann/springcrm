@@ -75,28 +75,32 @@
   <script type="text/javascript" src="${resource(dir:'js', file:'fullcalendar.min.js')}"></script>
   <script type="text/javascript">
   //<![CDATA[
-  (function (window, SPRINGCRM) {
-      var g = SPRINGCRM.getMessage;
+  (function (window, SPRINGCRM, $) {
+
+      "use strict";
+
+      var g = SPRINGCRM.getMessage,
+          location = window.location;
 
       $(".fc-button-agendaDay").click(function () {
-              window.location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaDay'])}";
+              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaDay'])}";
           })
           .find(".fc-button-content")
-              .text(g("calendarButtonText").day);
+              .text(g("calendarEvent_button_text").day);
       $(".fc-button-agendaWeek").click(function () {
-              window.location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaWeek'])}";
+              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaWeek'])}";
           })
           .find(".fc-button-content")
-              .text(g("calendarButtonText").week);
+              .text(g("calendarEvent_button_text").week);
       $(".fc-button-month").click(function () {
-              window.location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'month'])}";
+              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'month'])}";
           })
           .find(".fc-button-content")
-              .text(g("calendarButtonText").month);
+              .text(g("calendarEvent_button_text").month);
       $(".fc-button").hover(function () {
-              $(this).toggleClass("ui-state-hover")
+              $(this).toggleClass("ui-state-hover");
           });
-  }(window, SPRINGCRM));
+  }(window, SPRINGCRM, jQuery));
   //]]></script>
   </content>
 </body>

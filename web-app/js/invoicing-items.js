@@ -72,15 +72,18 @@
             if (opts.productListUrl && imgPath) {
                 s += '&nbsp;<a href="javascript:void 0;" ' +
                     'class="select-btn-products"><img src="' + imgPath +
-                    '/products.png" alt="' + gm("productSel") + '" title="' +
-                    gm("productSel") + '" width="16" height="16" ' +
+                    '/products.png" alt="' +
+                    gm("invoicingTransaction_product_sel") + '" title="' +
+                    gm("invoicingTransaction_product_sel") +
+                    '" width="16" height="16" ' +
                     'style="vertical-align: middle;" /></a>';
             }
             if (opts.serviceListUrl && imgPath) {
                 s += '&nbsp;<a href="javascript:void 0;" ' +
                     'class="select-btn-services">' +
                     '<img src="' + imgPath + '/services.png" alt="' +
-                    gm("serviceSel") + '" title="' + gm("serviceSel") +
+                    gm("invoicingTransaction_service_sel") + '" title="' +
+                    gm("invoicingTransaction_service_sel") +
                     '" width="16" height="16" ' +
                     'style="vertical-align: middle;" /></a>';
             }
@@ -101,14 +104,17 @@
                 '<td class="invoicing-items-buttons">';
             if (imgPath) {
                 s += '<a href="javascript:void 0;" class="up-btn"><img src="' +
-                    imgPath + '/up.png" alt="' + gm("upBtn") + '" title="' +
-                    gm("upBtn") + '" width="16" height="16" /></a>' +
+                    imgPath + '/up.png" alt="' + gm("default_btn_up") +
+                    '" title="' + gm("default_btn_up") +
+                    '" width="16" height="16" /></a>' +
                     '<a href="javascript:void 0;" class="down-btn"><img src="' +
-                    imgPath + '/down.png" alt="' + gm("downBtn") + '" title="' +
-                    gm("downBtn") + '" width="16" height="16" /></a>' +
+                    imgPath + '/down.png" alt="' + gm("default_btn_down") +
+                    '" title="' + gm("default_btn_down") +
+                    '" width="16" height="16" /></a>' +
                     '<a href="javascript:void 0;" class="remove-btn">' +
                     '<img src="' + imgPath + '/remove.png" alt="' +
-                    gm("removeBtn") + '" title="' + gm("removeBtn") +
+                    gm("default_delete_label") + '" title="' +
+                    gm("default_delete_label") +
                     '" width="16" height="16" /></a>';
             }
             s += '</td></tr>';
@@ -227,7 +233,7 @@
                 s += '<tr class="tax-rate-sum">' +
                     '<td headers="invoicing-items-header-name" ' +
                     'colspan="5" class="invoicing-items-label"><label>' +
-                    gm("taxRateLabel").replace(
+                    gm("invoicingTransaction_taxRate_label").replace(
                         /\{0\}/, $.formatNumber(tr.taxRate, 1)
                     ) +
                     '</label></td>' +
@@ -477,7 +483,7 @@
                     var data = null,
                         search = $form.get(0).search.value;
 
-                    if ((search !== SPRINGCRM.getMessage("search")) &&
+                    if ((search !== SPRINGCRM.getMessage("default_search_label")) &&
                         (search !== ""))
                     {
                         data = { search: search };
@@ -520,7 +526,7 @@
                 },
                 this
             ));
-            $("#selector-search").hint(SPRINGCRM.getMessage("search"));
+            $("#selector-search").hint(SPRINGCRM.getMessage("default_search_label"));
             $selector.dialog({ minWidth: 700, minHeight: 400, modal: true });
         },
 

@@ -220,7 +220,7 @@ class InvoiceController {
 			order('number', 'desc')
 		}
 
-		render(contentType: "text/json") {
+		render(contentType: 'text/json') {
 			array {
 				for (i in list) {
 					invoice id: i.id, name: i.fullName
