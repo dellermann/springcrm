@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Organization" %>
 <html>
 <head>
@@ -15,6 +14,14 @@
   <g:set var="entitiesName" value="${message(code: 'organization.plural', default: 'Organizations')}" />
   </g:else>
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <r:script>//<![CDATA[
+  (function ($) {
+
+      "use strict";
+
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }(jQuery));
+  //]]></r:script>
 </head>
 
 <body>
@@ -22,7 +29,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="list" class="white" params="[type:params.type]"><g:message code="default.button.list.label" /></g:link></li>
+        <li><g:link action="list" class="white" params="[type: params.type]"><g:message code="default.button.list.label" /></g:link></li>
         <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <li><g:link action="edit" id="${organizationInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${organizationInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
@@ -333,13 +340,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: organizationInstance?.dateCreated), formatDate(date: organizationInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript">
-  //<![CDATA[
-  (function () {
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }());
-  //]]></script>
-  </content>
 </body>
 </html>

@@ -1,3 +1,4 @@
+<r:require modules="organizationForm" />
 <fieldset>
   <h4><g:message code="organization.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -374,42 +375,3 @@
     </div>
   </div>
 </fieldset>
-<content tag="additionalJavaScript">
-<script type="text/javascript">
-//<![CDATA[
-(function(SPRINGCRM) {
-    var $recType = $("#recType");
-
-    $("#addresses").addrfields({
-            leftPrefix: "billingAddr",
-            menuItems: [
-                {
-                    action: "copy", side: "left", 
-                    text: "${message(code: 'organization.billingAddr.copy')}"
-                },
-                {
-                    action: "copy", side: "right", 
-                    text: "${message(code: 'organization.shippingAddr.copy')}"
-                }
-            ],
-            rightPrefix: "shippingAddr"
-        });
-
-    $(".rec-type").click(function () {
-            var $this = $(this);
-
-            if (this.checked) {
-                $recType.val($recType.val() | $this.val());
-            } else {
-                $recType.val($recType.val() & ~$this.val());
-            }
-        }).each(function () {
-            var $this = $(this);
-
-            if ($recType.val() & $this.val()) {
-                $this.attr("checked", "checked");
-            }
-        });
-}(SPRINGCRM));
-//]]></script>
-</content>

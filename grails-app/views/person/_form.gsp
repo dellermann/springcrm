@@ -1,3 +1,4 @@
+<r:require modules="personForm" />
 <fieldset>
   <h4><g:message code="person.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -121,7 +122,7 @@
           <input type="file" name="picture" /><br />
           <g:if test="${personInstance?.picture}">
           <div class="document-preview">
-            <a id="picture" href="${createLink(action:'getPicture', id:personInstance?.id)}"><img src="${createLink(action:'getPicture', id:personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a>
+            <a id="picture" href="${createLink(action: 'getPicture', id: personInstance?.id)}" data-img-dir="${resource(dir: 'img/lightbox')}"><img src="${createLink(action: 'getPicture', id: personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a>
           </div>
           <ul class="document-preview-links">
             <li class="document-delete"><g:message code="person.picture.delete" /></li>
@@ -232,7 +233,7 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content" id="addresses">
+<div class="multicol-content" id="addresses" data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
   <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
@@ -416,59 +417,3 @@
     </div>
   </div>
 </fieldset>
-<content tag="additionalJavaScript">
-<script type="text/javascript" src="${resource(dir:'js', file:'jquery.lightbox.min.js')}"></script>
-<script type="text/javascript">
-//<![CDATA[
-(function($, SPRINGCRM) {
-    var a;
-
-    $("#organization").autocompleteex();
-
-    $("#picture").lightbox({imgDir: "${resource(dir:'img/lightbox')}"});
-    a = $('<a href="#">').click(function () {
-            $("#pictureRemove").val(1);
-            $(".document-preview").remove();
-            $(".document-preview-links").remove();
-        });
-    $(".document-delete").wrapInner(a);
-
-    $("#addresses").addrfields({
-            leftPrefix: "mailingAddr",
-            loadOrganizationUrl: "${createLink(controller: 'organization', action: 'get')}",
-            menuItems: [
-                {
-                    action: "loadFromOrganization", propPrefix: "billingAddr",
-                    side: "left", 
-                    text: "${message(code: 'person.addr.fromOrgBillingAddr')}"
-                },
-                {
-                    action: "loadFromOrganization", propPrefix: "shippingAddr",
-                    side: "left", 
-                    text: "${message(code: 'person.addr.fromOrgShippingAddr')}"
-                },
-                {
-                    action: "copy", side: "left", 
-                    text: "${message(code: 'person.mailingAddr.copy')}"
-                },
-                {
-                    action: "loadFromOrganization", propPrefix: "billingAddr",
-                    side: "right", 
-                    text: "${message(code: 'person.addr.fromOrgBillingAddr')}"
-                },
-                {
-                    action: "loadFromOrganization", propPrefix: "shippingAddr",
-                    side: "right", 
-                    text: "${message(code: 'person.addr.fromOrgShippingAddr')}"
-                },
-                {
-                    action: "copy", side: "right", 
-                    text: "${message(code: 'person.otherAddr.copy')}"
-                }
-            ],
-            organizationId: "#organization\\.id",
-            rightPrefix: "otherAddr"
-        });
-}(jQuery, SPRINGCRM));
-//]]></script>
-</content>

@@ -23,7 +23,7 @@
  */
 
 
-(function ($, SPRINGCRM) {
+(function ($, $L) {
 
     "use strict";
 
@@ -31,10 +31,12 @@
             "1m", "5m", "10m", "15m", "20m", "30m", "45m", "1h", "2h", "3h",
             "4h", "5h", "6h", "8h", "12h", "1d", "2d", "3d", "1w", "2w", "4w"
         ],
+        $LANG = $L,
         $tabs = $("#tabs-recurrence-type"),
         computeReminderSelector,
         initRecurrenceTypes,
         initReminders,
+        jQuery = $,
         onChangeAllDay,
         onChangeRecurrenceEndType,
         onChangeTab,
@@ -48,7 +50,7 @@
     //-- Functions ------------------------------
 
     computeReminderSelector = function (value) {
-        var g = SPRINGCRM.getMessage,
+        var $L = $LANG,
             i = -1,
             n,
             o,
@@ -80,16 +82,17 @@
             }
             s += '<option value="' + o + '"' +
                 ((o === value) ? ' selected="selected"' : '') + '>' +
-                String(v) + ' ' + g("calendarEvent_reminder_unit_" + u) +
+                String(v) + ' ' + $L("calendarEvent.reminder.unit." + u) +
                 '</option>';
         }
         return '<li><select>' + s + '</select> ' +
             '<a href="#" class="button small red">' +
-            g('calendarEvent_reminder_delete_label') + '</a></li>';
+            $L('calendarEvent.reminder.delete.label') + '</a></li>';
     };
 
     initRecurrenceTypes = function () {
-        var i = -1,
+        var $ = jQuery,
+            i = -1,
             n,
             recurType,
             wds;
@@ -130,14 +133,15 @@
     };
 
     initReminders = function () {
-        var i = -1,
+        var $ = jQuery,
+            i = -1,
             n,
             reminders,
             s = "",
             val = $("#reminders").val();
 
         if (val !== "") {
-            reminders = val.split(/ /),
+            reminders = val.split(/ /);
             n = reminders.length;
             if (n > 0) {
                 s += '<ul>';
@@ -153,13 +157,16 @@
     };
 
     onChangeAllDay = function () {
-        var checked = this.checked;
+        var $ = jQuery,
+            checked = this.checked;
 
         $("#start-time").toggleEnable(!checked);
         $("#end-time").toggleEnable(!checked);
     };
 
     onChangeRecurrenceEndType = function () {
+        var $ = jQuery;
+
         switch (this.id) {
         case "recurrence.endType-until":
             $("#recurrence\\.until-date").enable()
@@ -179,7 +186,8 @@
     };
 
     onChangeTab = function (event) {
-        var $target = $(event.target),
+        var $ = jQuery,
+            $target = $(event.target),
             id,
             val;
 
@@ -197,7 +205,8 @@
     };
 
     onClickReminderAddBtn = function () {
-        var $sel = $("#reminder-selectors"),
+        var $ = jQuery,
+            $sel = $("#reminder-selectors"),
             $ul = $sel.find("ul"),
             s = computeReminderSelector();
 
@@ -210,7 +219,8 @@
     };
 
     onClickReminderSelectors = function (event) {
-        var $target,
+        var $ = jQuery,
+            $target,
             target = event.target;
 
         $target = $(target);
@@ -245,6 +255,8 @@
     };
 
     onSelectOrganization = function (value) {
+        var $ = jQuery;
+
         $.getJSON(
                 $("#organization").attr("data-get-url"),
                 { id: value },
@@ -253,7 +265,8 @@
     };
 
     onSubmitForm = function () {
-        var recurType,
+        var $ = jQuery,
+            recurType,
             reminders = [],
             val,
             wds;
@@ -321,4 +334,4 @@
     /* initialize reminders */
     initReminders();
 
-}(jQuery, SPRINGCRM));
+}(jQuery, $L));

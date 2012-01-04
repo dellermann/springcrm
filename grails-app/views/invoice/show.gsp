@@ -7,6 +7,14 @@
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <r:script>//<![CDATA[
+  (function ($) {
+
+      "use strict";
+
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }(jQuery));
+  //]]></r:script>
 </head>
 
 <body>
@@ -382,13 +390,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: invoiceInstance?.dateCreated), formatDate(date: invoiceInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript">
-  //<![CDATA[
-  (function () {
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }());
-  //]]></script>
-  </content>
 </body>
 </html>

@@ -7,6 +7,14 @@
   <g:set var="entityName" value="${message(code: 'salesOrder.label', default: 'SalesOrder')}" />
   <g:set var="entitiesName" value="${message(code: 'salesOrder.plural', default: 'SalesOrders')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <r:script>//<![CDATA[
+  (function ($) {
+
+      "use strict";
+
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }(jQuery));
+  //]]></r:script>
 </head>
 
 <body>
@@ -346,13 +354,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: salesOrderInstance?.dateCreated), formatDate(date: salesOrderInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript">
-  //<![CDATA[
-  (function () {
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }());
-  //]]></script>
-  </content>
 </body>
 </html>

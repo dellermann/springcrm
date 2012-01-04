@@ -29,6 +29,5 @@
   </div>
 </section>
 <r:layoutResources />
-<g:pageProperty name="page.additionalJavaScript" />
 </body>
 </html>

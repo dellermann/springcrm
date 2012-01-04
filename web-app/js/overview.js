@@ -1,6 +1,25 @@
+/**
+ * overview.js
+ * Scripting for the overview page.
+ *
+ * $Id: styles.css 1234 2011-06-21 20:24:44Z dellermann $
+ *
+ * Copyright (c) 2011, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 (function ($) {
 
     "use strict";
+
+    var jQuery = $;
 
     $.widget("springcrm.overviewpanels", {
         options: {
@@ -26,10 +45,18 @@
         },
 
         _create: function () {
-            var $columns,
+            var $ = jQuery,
+                $columns,
+                elem = this.element,
                 opts = this.options,
                 self = this;
 
+            opts.addPanelUrl = opts.addPanelUrl
+                || elem.attr("data-add-panel-url");
+            opts.movePanelUrl = opts.movePanelUrl
+                || elem.attr("data-move-panel-url");
+            opts.removePanelUrl = opts.removePanelUrl
+                || elem.attr("data-remove-panel-url");
             this.$panels = $(opts.panels, this.element).each(function () {
                     self._initPanel(this);
                 });
@@ -53,7 +80,8 @@
         },
 
         _initPanel: function (panel) {
-            var $a,
+            var $ = jQuery,
+                $a,
                 $panel = $(panel),
                 baseClass = this.widgetBaseClass,
                 url;
@@ -84,7 +112,8 @@
         },
 
         _onClickAddPanel: function (event) {
-            var url;
+            var $ = jQuery,
+                url;
 
             if (this.availablePanels) {
                 this._onShowPanelList();
@@ -254,7 +283,8 @@
         },
 
         _onRemovePanel: function (event) {
-            var $a = $(event.target),
+            var $ = jQuery,
+                $a = $(event.target),
                 $parent = $a.parents(this.options.panels),
                 panelId = $parent.attr("id"),
                 url = $a.attr("href");
@@ -270,7 +300,8 @@
         },
 
         _refreshPanelList: function () {
-            var d = null,
+            var $ = jQuery,
+                d = null,
                 data = this.availablePanels,
                 html = "";
 

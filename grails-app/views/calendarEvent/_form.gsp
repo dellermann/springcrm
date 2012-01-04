@@ -1,3 +1,4 @@
+<r:require modules="calendarForm" />
 <fieldset>
   <h4><g:message code="calendarEvent.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -227,6 +228,3 @@
     </div>
   </div>
 </fieldset>
-<content tag="additionalJavaScript">
-<script type="text/javascript" src="${resource(dir: 'js', file: 'calendar-form.js')}"></script>
-</content>

@@ -1,3 +1,27 @@
+<r:require modules="invoicingTransactionForm" />
+<r:script>//<![CDATA[
+(function (SPRINGCRM, $) {
+
+    "use strict";
+
+    var it = SPRINGCRM.invoicingTransaction;
+
+    it.init({
+            checkStageTransition: false,
+            form: $("#creditMemo-form"),
+            imgPath: "${resource(dir: 'img')}",
+            productListUrl: "${createControllerLink(controller: 'product', action: 'selectorList')}",
+            serviceListUrl: "${createControllerLink(controller: 'service', action: 'selectorList')}",
+            stageValues: {
+                payment: 803,
+                shipping: 802
+            }
+        });
+    $("#quote").autocompleteex({
+            loadParameters: it.getOrganizationId
+        });
+}(SPRINGCRM, jQuery));
+//]]></r:script>
 <fieldset>
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -146,7 +170,7 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content" id="addresses">
+<div class="multicol-content" id="addresses" data-load-organization-url="${createLink(controller: 'organization', action: 'get')}>
   <div class="col col-l left-address">
     <fieldset>
       <div class="header-with-menu">
@@ -343,7 +367,7 @@
     <input type="hidden" name="items[${i}].id" value="${item.id}" />
     </g:if>
     </g:each>
-    <table id="sales-order-items" class="invoicing-items content-table">
+    <table id="sales-order-items" class="invoicing-items content-table" data-tax-items="${taxClasses*.taxValue.join(',')}" data-units="${units*.name.join(',')}">
       <thead>
         <tr>
           <th id="invoicing-items-header-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
@@ -523,96 +547,3 @@
     </div>
   </div>
 </fieldset>
-<content tag="additionalJavaScript">
-<script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
-<script type="text/javascript">//<![CDATA[
-(function (SPRINGCRM, $) {
-
-    "use strict";
-
-    var $stage,
-        addrFields,
-        getOrganizationId,
-        taxes,
-        units;
-    
-    taxes = [ <g:each in="${taxClasses}">${it.taxValue}, </g:each> ];
-    units = [ <g:each in="${units}">"${it.name}", </g:each> ];
-
-    getOrganizationId = function () {
-        return { organization: $("#organization\\.id").val() };
-    };
-
-    $("#organization").autocompleteex({
-            select: function () {
-                $("#addresses")
-                    .addrfields("loadFromOrganizationToLeft", "billingAddr")
-                    .addrfields("loadFromOrganizationToRight", "shippingAddr");
-            }
-        });
-    $("#person").autocompleteex({
-            loadParameters: getOrganizationId
-        });
-    $("#quote").autocompleteex({
-            loadParameters: getOrganizationId
-        });
-
-    $("#addresses").addrfields({
-            leftPrefix: "billingAddr",
-            loadOrganizationUrl: "${createLink(controller: 'organization', action: 'get')}",
-            menuItems: [
-                {
-                    action: "copy", side: "left", 
-                    text: "${message(code: 'invoicingTransaction.billingAddr.copy')}"
-                },
-                {
-                    action: "loadFromOrganization", propPrefix: "billingAddr",
-                    side: "left", 
-                    text: "${message(code: 'invoicingTransaction.addr.fromOrgBillingAddr')}"
-                },
-                {
-                    action: "copy", side: "right", 
-                    text: "${message(code: 'invoicingTransaction.shippingAddr.copy')}"
-                },
-                {
-                    action: "loadFromOrganization", propPrefix: "shippingAddr",
-                    side: "right", 
-                    text: "${message(code: 'invoicingTransaction.addr.fromOrgShippingAddr')}"
-                }
-            ],
-            organizationId: "#organization\\.id",
-            rightPrefix: "shippingAddr"
-        });
-
-    $("#sales-order-items").invoicingitems({
-            imgPath: "${resource(dir: 'img')}",
-            productListUrl: "${createControllerLink(controller:'product', action:'selectorList')}",
-            serviceListUrl: "${createControllerLink(controller:'service', action:'selectorList')}",
-            taxes: taxes,
-            units: units
-        });
-
-    $stage = $("#stage\\.id");
-    $stage.change(function () {
-        switch ($(this).val()) {
-        case "802":
-            $("#shippingDate-date").populateDate();
-            break;
-        case "803":
-            $("#deliveryDate-date").populateDate();
-            break;
-        }
-    });
-    $("#shippingDate-date").change(function () {
-        if ($(this).val() !== "" && $stage.val() < 802) {
-            $stage.val(802);
-        }
-    });
-    $("#deliveryDate-date").change(function () {
-        if ($(this).val() !== "" && $stage.val() < 803) {
-            $stage.val(803);
-        }
-    });
-}(SPRINGCRM, jQuery));
-//]]></script>
-</content>

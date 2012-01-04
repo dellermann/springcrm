@@ -1381,67 +1381,6 @@ form .invoicing-items-pos {
   width: 16px;
 }
 
-/* override jQuery styles */
-.ui-menu-item {
-  list-style: none;
-}
-.ui-autocomplete {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
-  max-height: 150px;
-  max-width: 300px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding-right: 20px;
-  -khtml-border-radius-topleft: 0 !important;
-  -khtml-border-radius-topright: 0 !important;
-  -moz-border-radius-topleft: 0 !important;
-  -moz-border-radius-topright: 0 !important;
-  -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
-  -webkit-border-radius-topleft: 0 !important;
-  -webkit-border-radius-topright: 0 !important;
-  -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, .6);
-}
-.ui-accordion .ui-accordion-header {
-  margin-bottom: 0 !important;
-}
-.ui-tabs {
-  background: transparent;
-  border: none;
-  padding: 0;
-}
-.ui-tabs .ui-widget-header {
-  background: none;
-  border: none;
-}
-.ui-tabs .ui-tabs-nav {
-  padding: 0;
-}
-.ui-tabs .ui-tabs-nav li {
-  border-left-style: none;
-  margin-right: 0;
-}
-.ui-tabs .ui-tabs-nav li:first-child {
-  border-left-style: solid;
-}
-.ui-tabs .ui-tabs-nav li a {
-  padding: .5em;
-}
-.ui-tabs-nav input {
-  float: left;
-  margin: .5em 0 0 .5em;
-}
-.ui-tabs .ui-corner-all {
-  border-radius: 0;
-}
-.ui-tabs .ui-tabs-panel {
-  border: 1px solid #888;
-}
-.ui-tabs-panel p:last-child {
-  margin-bottom: 0;
-}
-
 /* login page */
 #login {
   display: table;

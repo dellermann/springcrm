@@ -1,3 +1,28 @@
+<r:require modules="purchaseInvoicingForm" />
+<r:script>//<![CDATA[
+(function (SPRINGCRM, $) {
+
+    "use strict";
+
+    var it = SPRINGCRM.invoicingTransaction;
+
+    it.initPurchaseInvoice({
+            checkStageTransition: false,
+            form: $("#purchaseInvoice-form"),
+            imgPath: "${resource(dir: 'img')}",
+            loadVendorsUrl: "${createLink(controller: 'organization', action: 'find', params: [type: 2])}",
+            stageValues: {
+                shipping: 2102
+            }
+        });
+    $("#invoice").autocompleteex({
+            loadParameters: it.getOrganizationId
+        });
+    $("#dunning").autocompleteex({
+            loadParameters: it.getOrganizationId
+        });
+}(SPRINGCRM, jQuery));
+//]]></r:script>
 <fieldset>
   <h4><g:message code="purchaseInvoice.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -151,7 +176,7 @@
     <input type="hidden" name="items[${i}].id" value="${item.id}" />
     </g:if>
     </g:each>
-    <table id="purchaseInvoice-items" class="invoicing-items content-table">
+    <table id="purchaseInvoice-items" class="invoicing-items content-table" data-tax-items="${taxClasses*.taxValue.join(',')}" data-units="${units*.name.join(',')}">
       <thead>
         <tr>
           <th id="invoicing-items-header-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
@@ -244,7 +269,7 @@
             <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" class="currency" />&nbsp;<g:currency />
           </td> 
           <td headers="invoicing-items-header-total" class="invoicing-items-total">
-            <span class="value">${formatNumber(number: item.total, minFractionDigits: 2)}</span>&nbsp;<g:currency />
+            <span class="value"><g:formatNumber number="${item.total}" minFractionDigits="2" /></span>&nbsp;<g:currency />
           </td> 
           <td headers="invoicing-items-header-tax" class="invoicing-items-tax">
             <input type="text" name="items[${i}].tax" size="4" value="${formatNumber(number: item.tax, minFractionDigits: 1)}" />&nbsp;%
@@ -301,69 +326,3 @@
     </div>
   </div>
 </fieldset>
-<content tag="additionalJavaScript">
-<script type="text/javascript" src="${resource(dir: 'js', file: 'invoicing-items.js')}"></script>
-<script type="text/javascript">
-//<![CDATA[
-(function (SPRINGCRM, $) {
-
-    "use strict";
-
-    var $stage,
-        a,
-        taxes,
-        units;
-    
-    taxes = [ <g:each in="${taxClasses}">${it.taxValue}, </g:each> ];
-    units = [ <g:each in="${units}">"${it.name}", </g:each> ];
-
-    $("#vendorName").autocomplete({
-            select: function (event, ui) {
-                var item = ui.item;
-
-                $(event.target).val(item.label);
-                $("#vendor-id").val(item.value);
-                return false;
-            },
-            source: function (request, response) {
-                $.ajax({
-                    data: { name: request.term }, dataType: "json",
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            return { label: item.name, value: item.id };
-                        }));
-                    },
-                    url: "${createLink(controller:'organization', action:'find', params:[type:2])}"
-                });
-            }
-        });
-
-    $("#purchaseInvoice-items").invoicingitems({
-            imgPath: "${resource(dir: 'img')}",
-            taxes: taxes,
-            units: units
-        });
-
-    a = $('<a href="#">').click(function () {
-            $("#fileRemove").val(1);
-            $(".document-preview").remove();
-            $(".document-preview-links").remove();
-        });
-    $(".document-delete").wrapInner(a);
-
-    $stage = $("#stage\\.id");
-    $stage.change(function () {
-        switch ($(this).val()) {
-        case "2102":
-            $("#paymentDate-date").populateDate();
-            break;
-        }
-    });
-    $("#paymentDate-date").change(function () {
-        if ($(this).val() !== "" && $stage.val() < 2102) {
-            $stage.val(2102);
-        }
-    });
-}(SPRINGCRM, jQuery));
-//]]></script>
-</content>

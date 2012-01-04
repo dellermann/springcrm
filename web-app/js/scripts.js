@@ -23,11 +23,12 @@
  */
 
 
-(function (window, SPRINGCRM, $) {
+(function (window, SPRINGCRM, $L, $) {
 
     "use strict";
 
-    var jQuery = $;
+    var $LANG = $L,
+        jQuery = $;
 
 
     //== jQuery extensions ======================
@@ -70,7 +71,8 @@
          * @function
          */
         formatDate: function (d, type, format) {
-            var delimiter,
+            var $L = $LANG,
+                delimiter,
                 f = function (x) {
                     var s = x.toFixed();
                     if (s.length < 2) {
@@ -87,13 +89,13 @@
             if (!format) {
                 format = "";
                 if ((type === "date") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("default_format_date");
+                    format += $L("default.format.date");
                 }
                 if (type === "datetime") {
                     format += " ";
                 }
                 if ((type === "time") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("default_format_time");
+                    format += $L("default.format.time");
                 }
             }
 
@@ -204,7 +206,8 @@
          * @function
          */
         parseDate: function (s, type, format, baseYear) {
-            var day = 1,
+            var $L = $LANG,
+                day = 1,
                 hours = 0,
                 minutes = 0,
                 month = 0,
@@ -221,13 +224,13 @@
             if (!format) {
                 format = "";
                 if ((type === "date") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("default_format_date");
+                    format += $L("default.format.date");
                 }
                 if (type === "datetime") {
                     format += " ";
                 }
                 if ((type === "time") || (type === "datetime")) {
-                    format += SPRINGCRM.getMessage("default_format_time");
+                    format += $L("default.format.time");
                 }
             }
             baseYear = baseYear || 35;
@@ -488,7 +491,8 @@
         },
 
         _create: function () {
-            var baseClass = this.widgetBaseClass,
+            var $ = jQuery,
+                baseClass = this.widgetBaseClass,
                 clsCombobox = baseClass + "-combobox",
                 el = this.element,
                 opts = this.options,
@@ -514,7 +518,8 @@
         },
 
         _getValueInput: function () {
-            var el = this.element,
+            var $ = jQuery,
+                el = this.element,
                 name,
                 v = this.options.valueInput,
                 valueInput = null;
@@ -539,13 +544,15 @@
         },
 
         _load: function (request, response) {
-            var opts = this.options,
+            var $,
+                opts = this.options,
                 p = opts.loadParameters,
                 params,
                 self = this,
                 url = opts.url;
 
             if (url) {
+                $ = jQuery;
                 params = {};
                 if (p) {
                     params = $.isFunction(p) ? p.call(this) : p;
@@ -655,7 +662,8 @@
         ],
 
         addMenuItemCopy: function (side, text) {
-            var f = (side === "left") ? this.copyToLeft : this.copyToRight;
+            var $ = jQuery,
+                f = (side === "left") ? this.copyToLeft : this.copyToRight;
 
             $("<li/>", {
                     text: text,
@@ -714,7 +722,7 @@
                 f,
                 gaf = this._getField,
                 i = -1,
-                msg = SPRINGCRM.getMessage("default_copyAddressWarning_" + toPrefix),
+                msg = $L("default.copyAddressWarning." + toPrefix),
                 n = addrFields.length;
 
             if (!this._doesExist(toPrefix) || this.options.confirm(msg)) {
@@ -735,6 +743,10 @@
 
             this.leftMenu = el.find(opts.leftMenuSelector);
             this.rightMenu = el.find(opts.rightMenuSelector);
+            if (!opts.loadOrganizationUrl) {
+                opts.loadOrganizationUrl =
+                    el.attr("data-load-organization-url");
+            }
 
             menuItems = opts.menuItems;
             n = menuItems.length;
@@ -772,7 +784,7 @@
             var addrFields = this.ADDRESS_FIELDS,
                 f,
                 i = -1,
-                msg = SPRINGCRM.getMessage("default_copyAddressWarning_" + prefix),
+                msg = $L("default.copyAddressWarning." + prefix),
                 opts = this.options,
                 n = addrFields.length;
 
@@ -796,7 +808,8 @@
         },
 
         _loadFromOrganization: function (prefix, propPrefix) {
-            var id = null,
+            var $,
+                id = null,
                 organizationId,
                 opts = this.options,
                 self = this,
@@ -805,6 +818,7 @@
             organizationId = opts.organizationId;
             url = opts.loadOrganizationUrl;
             if (url && organizationId) {
+                $ = jQuery;
                 if ($.isFunction(organizationId)) {
                     id = organizationId.call(this);
                 } else if (organizationId.constructor === String) {
@@ -867,7 +881,8 @@
             el.find(this.options.container)
                 .load(
                     url, function () {
-                        var element = el,
+                        var $ = jQuery,
+                            element = el,
                             returnUrl = opts.returnUrl;
 
                         element.find("thead a")
@@ -899,7 +914,8 @@
     //== INITIALIZATION =========================
 
     SPRINGCRM.page = (function () {
-        var $document = $(window.document),
+        var $ = jQuery,
+            $document = $(window.document),
             $spinner = $("#spinner"),
             $toolbar = $("#toolbar-container"),
             init,
@@ -927,7 +943,7 @@
             if ($toolbar !== null) {
                 $document.scroll(onScrollDocument);
             }
-            $("#search").hint(SPRINGCRM.getMessage("default_search_label"))
+            $("#search").hint($L("default.search.label"))
                 .next("a")
                 .click(onClickSubmitSearchForm);
             $("#quick-access").change(onChangeQuickAccess);
@@ -961,6 +977,8 @@
          * @protected
          */
         initAjaxEvents = function () {
+            var $ = jQuery;
+
             $spinner.ajaxSend(function () { $(this).show(); })
                 .ajaxComplete(function () { $(this).hide(); });
         };
@@ -1046,9 +1064,7 @@
                 res,
                 url;
 
-            res = window.confirm(
-                    SPRINGCRM.getMessage('default_delete_confirm_msg')
-                );
+            res = window.confirm($L('default.delete.confirm.msg'));
             if (res) {
                 url = $this.attr("href");
                 if (url.indexOf("?") < 0) {
@@ -1147,6 +1163,6 @@
         };
     }());
 
-}(this, SPRINGCRM, jQuery));
+}(this, SPRINGCRM, $L, jQuery));
 
 // vim:set ts=4 sw=4 sts=4:

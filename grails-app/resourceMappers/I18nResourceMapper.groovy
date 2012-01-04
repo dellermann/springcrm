@@ -38,7 +38,7 @@ class I18nResourceMapper {
             String s = messageSource.getMessage('default.bidi.test', null, LCH.getLocale())
             msgs['calendarRTL'] = !(new Bidi(s, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT).isLeftToRight())
 
-            StringBuilder buf = new StringBuilder('SPRINGCRM.addMessages({\n')
+            StringBuilder buf = new StringBuilder('$L.addMessages({\n')
             for (String key : msgs.keySet()) {
                 buf << '    ' << key << ': ' << msgs[key] << ',\n'
             }

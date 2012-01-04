@@ -8,7 +8,6 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
-  <link rel="stylesheet" href="${resource(dir:'css', file:'jquery.lightbox.css')}" media="screen" />
 </head>
 
 <body>

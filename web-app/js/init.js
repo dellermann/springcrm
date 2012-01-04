@@ -23,50 +23,18 @@
  */
 
 
-/**
- * Contains all JavaScript code for the SpringCRM application.
- *
- * @namespace   Contains all JavaScript code for the SpringCRM application.
- */
-var SPRINGCRM = SPRINGCRM || (function ($) {
+var $L = function (key) {
+
+        "use strict";
+
+        return $L._messages[key.replace(/\./g, "_")];
+    },
+    SPRINGCRM = SPRINGCRM || {};
+
+$L._messages = {};
+$L.addMessages = function (msgs) {
 
     "use strict";
 
-    var addMessages,
-        getMessage,
-        messages = {};
-
-    /**
-     * Adds the given messages to the internal message store.
-     *
-     * @name SPRINGCRM.addMessages
-     * @param {Object} msgs the messages to add; the messages must be
-     *                      key/value pairs
-     * @function
-     * @static
-     */
-    addMessages = function (msgs) {
-        $.extend(messages, msgs);
-    };
-
-    /**
-     * Gets the message with the given key from the internal message store.
-     *
-     * @name SPRINGCRM.getMessage
-     * @param {String} key  the given message key
-     * @returns {String}    the internationalized message;
-     *                      <code>undefined</code> if no message with the
-     *                      given key was found
-     * @function
-     * @static
-     */
-    getMessage = function (key) {
-        return messages[key];
-    };
-
-
-    return {
-        addMessages: addMessages,
-        getMessage: getMessage
-    };
-}(jQuery));
+    jQuery.extend($L._messages, msgs);
+};

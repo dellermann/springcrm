@@ -5,11 +5,7 @@
   <title>SpringCRM</title>
   <r:require modules="overview" />
   <r:script>
-  $(".overview-columns").overviewpanels({
-          addPanelUrl: "${createLink(controller: 'overview', action: 'addPanel')}",
-          movePanelUrl: "${createLink(controller: 'overview', action: 'movePanel')}",
-          removePanelUrl: "${createLink(controller: 'overview', action: 'removePanel')}"
-      });
+  $(".overview-columns").overviewpanels();
   </r:script>
 </head>
 
@@ -24,7 +20,7 @@
   </div>
   <section id="content" style="left: 0; position: relative; top: 0;">
     <div id="panel-list"></div>
-    <div class="overview-columns">
+    <div class="overview-columns" data-add-panel-url="${createLink(controller: 'overview', action: 'addPanel')}" data-move-panel-url="${createLink(controller: 'overview', action: 'movePanel')}" data-remove-panel-url="${createLink(controller: 'overview', action: 'removePanel')}">
     <g:each in="${(0..2)}" var="i">
       <section id="col-${i}" class="overview-column">
       <g:each in="${panels[i]}" var="panel">

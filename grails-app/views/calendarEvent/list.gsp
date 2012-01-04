@@ -7,7 +7,35 @@
   <g:set var="entityName" value="${message(code: 'calendarEvent.label', default: 'CalendarEvent')}" />
   <g:set var="entitiesName" value="${message(code: 'calendarEvent.plural', default: 'CalendarEvents')}" />
   <title>${entitiesName}</title>
-  <link rel="stylesheet" href="${resource(dir:'css', file:'fullcalendar.css')}" />
+  <r:require modules="calendarView" />
+  <r:script>
+  //<![CDATA[
+  (function (window, $L, $) {
+
+      "use strict";
+
+      var location = window.location;
+
+      $(".fc-button-agendaDay").click(function () {
+              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaDay'])}";
+          })
+          .find(".fc-button-content")
+              .text($L("calendarEvent.button.text").day);
+      $(".fc-button-agendaWeek").click(function () {
+              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaWeek'])}";
+          })
+          .find(".fc-button-content")
+              .text($L("calendarEvent.button.text").week);
+      $(".fc-button-month").click(function () {
+              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'month'])}";
+          })
+          .find(".fc-button-content")
+              .text($L("calendarEvent.button.text").month);
+      $(".fc-button").hover(function () {
+              $(this).toggleClass("ui-state-hover");
+          });
+  }(window, $L, jQuery));
+  //]]></r:script>
 </head>
 
 <body>
@@ -71,37 +99,5 @@
       </div>
     </g:else>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript" src="${resource(dir:'js', file:'fullcalendar.min.js')}"></script>
-  <script type="text/javascript">
-  //<![CDATA[
-  (function (window, SPRINGCRM, $) {
-
-      "use strict";
-
-      var g = SPRINGCRM.getMessage,
-          location = window.location;
-
-      $(".fc-button-agendaDay").click(function () {
-              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaDay'])}";
-          })
-          .find(".fc-button-content")
-              .text(g("calendarEvent_button_text").day);
-      $(".fc-button-agendaWeek").click(function () {
-              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaWeek'])}";
-          })
-          .find(".fc-button-content")
-              .text(g("calendarEvent_button_text").week);
-      $(".fc-button-month").click(function () {
-              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'month'])}";
-          })
-          .find(".fc-button-content")
-              .text(g("calendarEvent_button_text").month);
-      $(".fc-button").hover(function () {
-              $(this).toggleClass("ui-state-hover");
-          });
-  }(window, SPRINGCRM, jQuery));
-  //]]></script>
-  </content>
 </body>
 </html>

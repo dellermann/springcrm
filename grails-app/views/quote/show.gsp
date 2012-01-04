@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Quote" %>
 <html>
 <head>
@@ -7,6 +6,14 @@
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <r:script>//<![CDATA[
+  (function ($) {
+
+      "use strict";
+
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }(jQuery));
+  //]]></r:script>
 </head>
 
 <body>
@@ -345,13 +352,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: quoteInstance?.dateCreated), formatDate(date: quoteInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript">
-  //<![CDATA[
-  (function () {
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }());
-  //]]></script>
-  </content>
 </body>
 </html>

@@ -23,9 +23,12 @@
  */
 
 
-(function (SPRINGCRM, $) {
+(function ($, $L) {
 
     "use strict";
+
+    var $LANG = $L,
+        jQuery = $;
 
     $.widget("springcrm.invoicingitems", {
         INPUT_FIELD_NAMES: [
@@ -44,10 +47,11 @@
         },
 
         _addItem: function (jumpToNewRow) {
-            var $row,
+            var $ = jQuery,
+                $L = $LANG,
+                $row,
                 $tbody = this.$tbodyItems,
                 currency,
-                gm = SPRINGCRM.getMessage,
                 imgPath,
                 index = this.nextIndex++,
                 opts = this.options,
@@ -73,8 +77,8 @@
                 s += '&nbsp;<a href="javascript:void 0;" ' +
                     'class="select-btn-products"><img src="' + imgPath +
                     '/products.png" alt="' +
-                    gm("invoicingTransaction_product_sel") + '" title="' +
-                    gm("invoicingTransaction_product_sel") +
+                    $L("invoicingTransaction.product.sel") + '" title="' +
+                    $L("invoicingTransaction.product.sel") +
                     '" width="16" height="16" ' +
                     'style="vertical-align: middle;" /></a>';
             }
@@ -82,8 +86,8 @@
                 s += '&nbsp;<a href="javascript:void 0;" ' +
                     'class="select-btn-services">' +
                     '<img src="' + imgPath + '/services.png" alt="' +
-                    gm("invoicingTransaction_service_sel") + '" title="' +
-                    gm("invoicingTransaction_service_sel") +
+                    $L("invoicingTransaction.service.sel") + '" title="' +
+                    $L("invoicingTransaction.service.sel") +
                     '" width="16" height="16" ' +
                     'style="vertical-align: middle;" /></a>';
             }
@@ -99,22 +103,22 @@
                 '<span class="value">0,00</span>&nbsp;' + currency + '</td>' +
                 '<td headers="invoicing-items-header-tax" ' +
                 'class="invoicing-items-tax">' +
-                '<input type="text" name="' +this._getInputName(index, "tax") +
+                '<input type="text" name="' + this._getInputName(index, "tax") +
                 '" size="4" />&nbsp;%</td>' +
                 '<td class="invoicing-items-buttons">';
             if (imgPath) {
                 s += '<a href="javascript:void 0;" class="up-btn"><img src="' +
-                    imgPath + '/up.png" alt="' + gm("default_btn_up") +
-                    '" title="' + gm("default_btn_up") +
+                    imgPath + '/up.png" alt="' + $L("default.btn.up") +
+                    '" title="' + $L("default.btn.up") +
                     '" width="16" height="16" /></a>' +
                     '<a href="javascript:void 0;" class="down-btn"><img src="' +
-                    imgPath + '/down.png" alt="' + gm("default_btn_down") +
-                    '" title="' + gm("default_btn_down") +
+                    imgPath + '/down.png" alt="' + $L("default.btn.down") +
+                    '" title="' + $L("default.btn.down") +
                     '" width="16" height="16" /></a>' +
                     '<a href="javascript:void 0;" class="remove-btn">' +
                     '<img src="' + imgPath + '/remove.png" alt="' +
-                    gm("default_delete_label") + '" title="' +
-                    gm("default_delete_label") +
+                    $L("default.delete.label") + '" title="' +
+                    $L("default.delete.label") +
                     '" width="16" height="16" /></a>';
             }
             s += '</td></tr>';
@@ -151,7 +155,8 @@
         },
 
         _computeFooterValues: function () {
-            var adjustment,
+            var $ = jQuery,
+                adjustment,
                 discount,
                 discountPercent,
                 shippingCosts,
@@ -180,8 +185,9 @@
         },
 
         _computeTaxValues: function () {
-            var currency = this.options.currency,
-                gm = SPRINGCRM.getMessage,
+            var $ = jQuery,
+                $L = $LANG,
+                currency = this.options.currency,
                 i = -1,
                 n,
                 s = "",
@@ -233,7 +239,7 @@
                 s += '<tr class="tax-rate-sum">' +
                     '<td headers="invoicing-items-header-name" ' +
                     'colspan="5" class="invoicing-items-label"><label>' +
-                    gm("invoicingTransaction_taxRate_label").replace(
+                    $L("invoicingTransaction.taxRate.label").replace(
                         /\{0\}/, $.formatNumber(tr.taxRate, 1)
                     ) +
                     '</label></td>' +
@@ -256,7 +262,8 @@
         },
 
         _create: function () {
-            var $form,
+            var $ = jQuery,
+                $form,
                 $tbodyItems,
                 el = this.element,
                 numItems,
@@ -407,7 +414,8 @@
         },
 
         _onChange: function (event) {
-            var $tr,
+            var $ = jQuery,
+                $tr,
                 input = event.target,
                 parts,
                 index,
@@ -459,7 +467,8 @@
         },
 
         _onFocusIn: function (event) {
-            var $target = $(event.target),
+            var $ = jQuery,
+                $target = $(event.target),
                 val;
 
             if ($target.hasClass("currency")) {
@@ -469,7 +478,8 @@
         },
 
         _onFocusOut: function (event) {
-            var $target = $(event.target);
+            var $ = jQuery,
+                $target = $(event.target);
 
             if ($target.hasClass("currency")) {
                 $target.val($.formatCurrency($.parseNumber($target.val())));
@@ -477,13 +487,14 @@
         },
 
         _onLoadInventorySelector: function (html, type, index) {
-            var $form = null,
+            var $ = jQuery,
+                $form = null,
                 $selector,
                 getData = function () {
                     var data = null,
                         search = $form.get(0).search.value;
 
-                    if ((search !== SPRINGCRM.getMessage("default_search_label")) &&
+                    if ((search !== $L("default.search.label")) &&
                         (search !== ""))
                     {
                         data = { search: search };
@@ -526,7 +537,7 @@
                 },
                 this
             ));
-            $("#selector-search").hint(SPRINGCRM.getMessage("default_search_label"));
+            $("#selector-search").hint($L("default.search.label"));
             $selector.dialog({ minWidth: 700, minHeight: 400, modal: true });
         },
 
@@ -584,11 +595,14 @@
         },
 
         _prepareTaxes: function (taxes) {
-            var i = -1,
-                n = taxes.length,
+            var $,
+                i = -1,
+                n,
                 tax;
 
             if (taxes) {
+                $ = jQuery;
+                n = taxes.length;
                 while (++i < n) {
                     tax = taxes[i];
                     if (typeof(tax) === "number") {
@@ -612,7 +626,8 @@
         },
 
         _removeRow: function ($tr) {
-            var el,
+            var $ = jQuery,
+                el,
                 index = this._getRowIndex($tr),
                 pos = this._getRowPosition($tr);
 
@@ -733,4 +748,4 @@
         }
     });
 
-}(SPRINGCRM, jQuery));
+}(jQuery, $L));

@@ -47,7 +47,18 @@
     'default.format.date',
     'default.format.time',
     'default.search.label',
+    'invoicingTransaction.addr.fromOrgBillingAddr',
+    'invoicingTransaction.addr.fromOrgShippingAddr',
+    'invoicingTransaction.billingAddr.copy',
+    'invoicingTransaction.changeState.label',
     'invoicingTransaction.product.sel',
     'invoicingTransaction.service.sel',
-    'invoicingTransaction.taxRate.label'
+    'invoicingTransaction.shippingAddr.copy',
+    'invoicingTransaction.taxRate.label',
+    'organization.billingAddr.copy',
+    'organization.shippingAddr.copy',
+    'person.addr.fromOrgBillingAddr',
+    'person.addr.fromOrgShippingAddr',
+    'person.mailingAddr.copy',
+    'person.otherAddr.copy'
 ];

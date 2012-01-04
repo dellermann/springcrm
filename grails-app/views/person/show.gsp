@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Person" %>
 <html>
 <head>
@@ -7,7 +6,18 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <link rel="stylesheet" href="${resource(dir:'css', file:'jquery.lightbox.css')}" media="screen" />
+  <r:require modules="personShow" />
+  <r:script>//<![CDATA[
+  (function ($) {
+
+      "use strict";
+
+      $("#picture").lightbox({
+              imgDir: "${resource(dir: 'img/lightbox')}"
+          });
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  }(jQuery));
+  //]]></r:script>
 </head>
 
 <body>
@@ -93,7 +103,7 @@
             <g:if test="${personInstance?.picture}">
             <div class="row">
               <div class="label"><g:message code="person.picture.label" default="Picture" /></div>
-              <div class="field"><a id="picture" href="${createLink(action:'getPicture', id:personInstance?.id)}"><img src="${createLink(action:'getPicture', id:personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a></div>
+              <div class="field"><a id="picture" href="${createLink(action: 'getPicture', id: personInstance?.id)}"><img src="${createLink(action: 'getPicture', id: personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a></div>
             </div>
             </g:if>
           </div>
@@ -317,14 +327,5 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: personInstance?.dateCreated), formatDate(date: personInstance?.lastUpdated)]" />
     </p>
   </section>
-  <content tag="additionalJavaScript">
-  <script type="text/javascript" src="${resource(dir:'js', file:'jquery.lightbox.min.js')}"></script>
-  <script type="text/javascript">
-  //<![CDATA[
-  (function () {
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }());
-  //]]></script>
-  </content>
 </body>
 </html>

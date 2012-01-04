@@ -1,3 +1,4 @@
+<r:require modules="callForm" />
 <fieldset>
   <h4><g:message code="call.fieldset.general.label" /></h4>
   <div class="multicol-content">
@@ -61,7 +62,7 @@
           <label for="subject"><g:message code="call.phone.label" default="Phone" /></label>
         </div>
         <div class="field${hasErrors(bean: callInstance, field: 'phone', ' error')}">
-          <g:textField name="phone" value="${callInstance?.phone}" size="40" /><br />
+          <g:textField name="phone" value="${callInstance?.phone}" size="40" data-load-person-phone-numbers-url="${createLink(controller:'person', action:'getPhoneNumbers')}" data-load-organization-phone-numbers-url="${createLink(controller:'organization', action:'getPhoneNumbers')}" /><br />
           <g:hasErrors bean="${callInstance}" field="subject">
             <span class="error-msg"><g:eachError bean="${callInstance}" field="phone"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
@@ -110,77 +111,3 @@
     </div>
   </div>
 </fieldset>
-<content tag="additionalJavaScript">
-<script type="text/javascript">
-//<![CDATA[
-(function (SPRINGCRM) {
-    var onLoadPhoneNumbers,
-        phoneNumbers;
-
-    onLoadPhoneNumbers = function (request, response) {
-        var data = {},
-            term = request.term.toLowerCase(),
-            url;
-    
-        if ($("#person\\.id").val()) {
-            url = "${createLink(controller:'person', action:'getPhoneNumbers')}";
-            data.id = $("#person\\.id").val();
-        } else if ($("#organization\\.id").val()) {
-            url = "${createLink(controller:'organization', action:'getPhoneNumbers')}";
-            data.id = $("#organization\\.id").val();
-        }
-        if (!phoneNumbers) {
-            if (url) {
-                $.getJSON(url, data, function (data) {
-                        var d,
-                            i = -1,
-                            l = [],
-                            n = data.length,
-                            respData = [],
-                            t = term,
-                            val;
-    
-                        while (++i < n) {
-                            d = data[i];
-                            if (d) {
-                                val = d.toLowerCase();
-                                if (val) {
-                                    l.push(val);
-                                    if (val.indexOf(t) >= 0) {
-                                        respData.push(val);
-                                    }
-                                }
-                            }
-                        }
-                        phoneNumbers = l;
-                        response(respData);
-                    });
-            }
-        } else {
-            response($.grep(
-                phoneNumbers, function (val) {
-                    return val.indexOf(term) >= 0;
-                }
-            ));
-        }
-    };
-    
-    $("#organization").autocompleteex({
-            select: function () {
-                phoneNumbers = undefined;
-            }
-        });
-    $("#person").autocompleteex({
-            loadParameters: function () {
-                return { organization: $("#organization\\.id").val() };
-            },
-            select: function () {
-                phoneNumbers = undefined;
-            }
-        });
-    $("#phone").autocomplete({
-            source: onLoadPhoneNumbers
-        });
-}(SPRINGCRM));
-//]]></script>
-</content>

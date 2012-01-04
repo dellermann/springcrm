@@ -1,4 +1,4 @@
-SPRINGCRM.addMessages({
+$L.addMessages({
     calendarEvent_allDay_label: "ganztägig",
     calendarEvent_axis_format: "H:mm",
     calendarEvent_button_text: {
@@ -41,9 +41,20 @@ SPRINGCRM.addMessages({
     default_format_date: "dd.MM.yyyy",
     default_format_time: "HH:mm",
     default_search_label: "Suche…",
+    invoicingTransaction_addr_fromOrgBillingAddr: "Rechnungsanschrift der Organisation",
+    invoicingTransaction_addr_fromOrgShippingAddr: "Lieferanschrift der Organisation",
+    invoicingTransaction_billingAddr_copy: "Von Lieferanschrift kopieren ←",
+    invoicingTransaction_changeState_label: "Sie sind dabei den Rechnungsstatus auf versendet oder höher zu ändern. Dadurch kann die Rechnung nicht mehr bearbeitet oder gelöscht werden. Sind Sie sicher?",
     invoicingTransaction_product_sel: "Produkte auswählen",
     invoicingTransaction_service_sel: "Dienstleistungen auswählen",
+    invoicingTransaction_shippingAddr_copy: "→ Von Rechnungsanschrift kopieren",
     invoicingTransaction_taxRate_label: "{0} % MwSt.",
+    organization_billingAddr_copy: "Von Lieferanschrift kopieren ←",
+    organization_shippingAddr_copy: "→ Von Rechnungsanschrift kopieren",
+    person_addr_fromOrgBillingAddr: "Rechnungsanschrift der Organisation",
+    person_addr_fromOrgShippingAddr: "Lieferanschrift der Organisation",
+    person_mailingAddr_copy: "Von anderer Anschrift kopieren ←",
+    person_otherAddr_copy: "→ Von Postanschrift kopieren",
     monthNamesLong: [ "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember", "" ],
     monthNamesShort: [ "Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez", "" ],
     weekdaysLong: [ "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag" ],
