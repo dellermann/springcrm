@@ -9,7 +9,7 @@ modules = {
         dependsOn 'core'
 
         resource '/css/fullcalendar.css'
-        resource '/js/fullcalendar.min.js'
+        resource url: '/js/fullcalendar.min.js', exclude: 'minify'
     }
 
     calendarViewCalendar {
@@ -25,7 +25,7 @@ modules = {
     }
 
     core {
-        dependsOn 'jquery, jquery-ui'
+        dependsOn 'jquery-ui'
 
         resource '/css/styles.css'
         resource '/css/jquery-ui-springcrm.css'
@@ -45,9 +45,8 @@ modules = {
     }
 
     noteForm {
-        dependsOn 'core'
+        dependsOn 'core, tinyMce'
 
-        resource url: '/js/tiny_mce/jquery.tinymce.js', disposition: 'defer'
         resource '/js/note-form.js'
     }
 
@@ -83,20 +82,31 @@ modules = {
         resource '/js/purchase-invoice-form.js'
     }
 
+    tinyMce {
+        resource url: '/js/tiny_mce/jquery.tinymce.js', exclude: 'minify'
+    }
+
 
     //-- Overrides ------------------------------
 
     overrides {
         jquery {
+            defaultBundle 'jquery'
+
             resource id: 'js', disposition: 'defer'
         }
         'jquery-dev' {
+            defaultBundle 'jquery-dev'
+
             resource id: 'js', disposition: 'defer'
         }
         'jquery-ui' {
+            defaultBundle 'jquery'
+
             resource id: 'js', disposition: 'defer'
         }
         'jquery-ui-dev' {
+            defaultBundle 'jquery-dev'
             dependsOn 'jquery-dev, jquery-theme'
 
             resource id: 'js', disposition: 'defer'

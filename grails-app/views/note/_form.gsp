@@ -65,7 +65,7 @@
           <label for="content"><g:message code="note.content.label" default="Content" /></label>
         </div>
         <div class="field${hasErrors(bean: noteInstance, field: 'content', ' error')}">
-          <g:textArea id="note-content" name="content" cols="80" rows="10" value="${noteInstance?.content}" data-rte-script="${r.resource(uri: '/js/tiny_mce/tiny_mce.js')}" /><br />
+          <g:textArea id="note-content" name="content" cols="80" rows="10" value="${noteInstance?.content}" data-rte-script="${request.contextPath}/js/tiny_mce/tiny_mce.js" /><br />
           <g:hasErrors bean="${noteInstance}" field="content">
             <span class="error-msg"><g:eachError bean="${noteInstance}" field="content"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
