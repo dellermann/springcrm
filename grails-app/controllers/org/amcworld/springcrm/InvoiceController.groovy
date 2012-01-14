@@ -133,10 +133,26 @@ class InvoiceController {
 		redirect(action: 'list')
     }
 
+    def editPayment() {
+        def invoiceInstance = Invoice.get(params.id)
+        if (!invoiceInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        return [invoiceInstance: invoiceInstance]
+    }
+
     def update() {
         def invoiceInstance = Invoice.get(params.id)
         if (!invoiceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        if (!session.user.admin && invoiceInstance.stage.id >= 902) {
             redirect(action: 'list')
             return
         }
@@ -171,11 +187,47 @@ class InvoiceController {
 		}
     }
 
+    def updatePayment() {
+        def invoiceInstance = Invoice.get(params.id)
+        if (!invoiceInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'invoice.label', default: 'Invoice'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (invoiceInstance.version > version) {
+                invoiceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'invoice.label', default: 'Invoice')] as Object[], "Another user has updated this Invoice while you were editing")
+                render(view: 'edit', model: [invoiceInstance: invoiceInstance])
+                return
+            }
+        }
+
+        invoiceInstance.properties = params.findAll { it.key in ['stage.id', 'paymentDate', 'paymentAmount', 'paymentMethod.id'] }
+
+        if (!invoiceInstance.save(flush: true)) {
+            log.debug(invoiceInstance.errors)
+            render(view: 'edit', model: [invoiceInstance: invoiceInstance])
+            return
+        }
+
+        invoiceInstance.reindex()
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'show', id: invoiceInstance.id)
+        }
+    }
+
     def delete() {
         def invoiceInstance = Invoice.get(params.id)
         if (invoiceInstance && params.confirmed) {
 			if (!session.user.admin && invoiceInstance.stage.id >= 902) {
 				redirect(action: 'list')
+                return
 			}
             try {
                 invoiceInstance.delete(flush: true)

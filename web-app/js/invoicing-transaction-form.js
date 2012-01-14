@@ -6,6 +6,8 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
         $addresses = $("#addresses"),
         getOrganizationId,
         init,
+        initConfig = null,
+        initStageValues,
         jQuery = $,
         onChangePaymentDate = null,
         onChangeShippingDate = null,
@@ -22,26 +24,10 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
         var $ = jQuery,
             $L = $LANG,
             $invoicingItems = $(".invoicing-items"),
-            stageValues,
             taxes,
             units;
 
-        config = $.extend(
-                {
-                    checkStageTransition: true,
-                    form: null,
-                    imgPath: null,
-                    loadOrganizationUrl: null,
-                    productListUrl: null,
-                    serviceListUrl: null,
-                    stageValues: {
-                        payment: null,
-                        shipping: null
-                    }
-                },
-                config
-            );
-        this.config = config;
+        config = initConfig.call(this, config);
 
         taxes = $invoicingItems.attr("data-tax-items")
             .split(",");
@@ -91,6 +77,36 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
                 rightPrefix: "shippingAddr"
             });
 
+        initStageValues();
+
+        return this;
+    };
+
+    initConfig = function (config) {
+        config = $.extend(
+                {
+                    checkStageTransition: true,
+                    form: null,
+                    imgPath: null,
+                    loadOrganizationUrl: null,
+                    productListUrl: null,
+                    serviceListUrl: null,
+                    stageValues: {
+                        payment: null,
+                        shipping: null
+                    }
+                },
+                config
+            );
+        this.config = config;
+        return config;
+    };
+
+    initStageValues = function (config) {
+        var $ = jQuery,
+            stageValues;
+
+        config = config ? initConfig.call(this, config) : this.config;
         stageValues = config.stageValues;
         if (stageValues) {
             $("#stage").change($.proxy(onChangeStage, this));
@@ -98,7 +114,7 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
                 $("#shippingDate-date")
                     .change($.proxy(onChangeShippingDate, this));
                 if (config.checkStageTransition) {
-                    $("#creditMemo-form").submit($.proxy(onSubmitForm, this));
+                    config.form.submit($.proxy(onSubmitForm, this));
                 }
             }
             if (stageValues.payment) {
@@ -131,7 +147,7 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
     onChangeStage = function (event) {
         var stageValues = this.config.stageValues;
 
-        switch ($(event.target).val()) {
+        switch (parseInt($(event.target).val(), 10)) {
         case stageValues.shipping:
             $("#shippingDate-date").populateDate();
             break;
@@ -171,6 +187,7 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
 
     return {
         getOrganizationId: getOrganizationId,
-        init: init
+        init: init,
+        initStageValues: initStageValues
     };
 }(window, jQuery, $L));

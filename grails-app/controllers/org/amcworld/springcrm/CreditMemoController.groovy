@@ -114,7 +114,7 @@ class CreditMemoController {
 			dunningInstance.reindex()
 		}
 
-		flash.message = message(code: 'default.created.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), creditMemoInstance.toString()])
+		flash.message = message(code: 'default.created.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), creditMemoInstance.toString()])
 		if (params.returnUrl) {
 			redirect(url: params.returnUrl)
 		} else {
@@ -125,7 +125,7 @@ class CreditMemoController {
     def show() {
         def creditMemoInstance = CreditMemo.get(params.id)
         if (!creditMemoInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
             redirect(action: 'list')
             return
         }
@@ -136,7 +136,7 @@ class CreditMemoController {
     def edit() {
         def creditMemoInstance = CreditMemo.get(params.id)
         if (!creditMemoInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
             redirect(action: 'list')
             return
         }
@@ -147,10 +147,26 @@ class CreditMemoController {
 		redirect(action: 'list')
     }
 
+    def editPayment() {
+        def creditMemoInstance = CreditMemo.get(params.id)
+        if (!creditMemoInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        return [creditMemoInstance: creditMemoInstance]
+    }
+
     def update() {
         def creditMemoInstance = CreditMemo.get(params.id)
         if (!creditMemoInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        if (!session.user.admin && creditMemoInstance.stage.id >= 2502) {
             redirect(action: 'list')
             return
         }
@@ -159,7 +175,7 @@ class CreditMemoController {
             def version = params.version.toLong()
             if (creditMemoInstance.version > version) {
 
-                creditMemoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'creditMemo.label', default: 'CreditMemo')] as Object[], "Another user has updated this CreditMemo while you were editing")
+                creditMemoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'creditMemo.label', default: 'Credit memo')] as Object[], "Another user has updated this CreditMemo while you were editing")
                 render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
                 return
             }
@@ -189,7 +205,7 @@ class CreditMemoController {
 			dunningInstance.reindex()
 		}
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), creditMemoInstance.toString()])
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), creditMemoInstance.toString()])
 		if (params.returnUrl) {
 			redirect(url: params.returnUrl)
 		} else {
@@ -197,26 +213,62 @@ class CreditMemoController {
 		}
     }
 
+    def updatePayment() {
+        def creditMemoInstance = CreditMemo.get(params.id)
+        if (!creditMemoInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (creditMemoInstance.version > version) {
+
+                creditMemoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'creditMemo.label', default: 'Credit memo')] as Object[], "Another user has updated this CreditMemo while you were editing")
+                render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
+                return
+            }
+        }
+
+        creditMemoInstance.properties = params.findAll { it.key in ['stage.id', 'paymentDate', 'paymentAmount', 'paymentMethod.id'] }
+
+        if (!creditMemoInstance.save(flush: true)) {
+            render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
+            return
+        }
+
+        creditMemoInstance.reindex()
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), creditMemoInstance.toString()])
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'show', id: creditMemoInstance.id)
+        }
+    }
+
     def delete() {
         def creditMemoInstance = CreditMemo.get(params.id)
         if (creditMemoInstance && params.confirmed) {
 			if (!session.user.admin && creditMemoInstance.stage.id >= 2502) {
 				redirect(action: 'list')
+                return
 			}
             try {
                 creditMemoInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo')])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'creditMemo.label', default: 'Credit memo')])
 				if (params.returnUrl) {
 					redirect(url: params.returnUrl)
 				} else {
 					redirect(action: 'list')
 				}
             } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo')])
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'creditMemo.label', default: 'Credit memo')])
                 redirect(action: 'show', id: params.id)
             }
         } else {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'CreditMemo'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {

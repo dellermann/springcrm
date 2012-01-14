@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.CreditMemo" %>
 <html>
 <head>
@@ -18,6 +17,9 @@
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
         <li><g:link action="edit" id="${creditMemoInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         </g:if>
+        <g:else>
+        <li><g:link action="editPayment" id="${creditMemoInstance.id}" class="green"><g:message code="invoicingTransaction.button.editPayment.label" /></g:link></li>
+        </g:else>
         <li><g:link action="copy" id="${creditMemoInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
         <li><g:link action="delete" id="${creditMemoInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>

@@ -26,6 +26,9 @@
         <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
         <li><g:link action="edit" id="${invoiceInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         </g:if>
+        <g:else>
+        <li><g:link action="editPayment" id="${invoiceInstance.id}" class="green"><g:message code="invoicingTransaction.button.editPayment.label" /></g:link></li>
+        </g:else>
         <li><g:link action="copy" id="${invoiceInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
         <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
         <li><g:link action="delete" id="${invoiceInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>

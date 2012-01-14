@@ -148,10 +148,26 @@ class DunningController {
 		redirect(action: 'list')
     }
 
+    def editPayment() {
+        def dunningInstance = Dunning.get(params.id)
+        if (!dunningInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        return [dunningInstance: dunningInstance]
+    }
+
     def update() {
         def dunningInstance = Dunning.get(params.id)
         if (!dunningInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        if (!session.user.admin && dunningInstance.stage.id >= 2202) {
             redirect(action: 'list')
             return
         }
@@ -190,11 +206,47 @@ class DunningController {
 		}
     }
 
+    def updatePayment() {
+        def dunningInstance = Dunning.get(params.id)
+        if (!dunningInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
+            redirect(action: 'list')
+            return
+        }
+
+        if (params.version) {
+            def version = params.version.toLong()
+            if (dunningInstance.version > version) {
+
+                dunningInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'dunning.label', default: 'Dunning')] as Object[], "Another user has updated this Dunning while you were editing")
+                render(view: 'edit', model: [dunningInstance: dunningInstance])
+                return
+            }
+        }
+
+        dunningInstance.properties = params.findAll { it.key in ['stage.id', 'paymentDate', 'paymentAmount', 'paymentMethod.id'] }
+
+        if (!dunningInstance.save(flush: true)) {
+            render(view: 'edit', model: [dunningInstance: dunningInstance])
+            return
+        }
+
+        dunningInstance.reindex()
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'show', id: dunningInstance.id)
+        }
+    }
+
     def delete() {
         def dunningInstance = Dunning.get(params.id)
         if (dunningInstance && params.confirmed) {
 			if (!session.user.admin && dunningInstance.stage.id >= 2202) {
 				redirect(action: 'list')
+                return
 			}
             try {
                 dunningInstance.delete(flush: true)

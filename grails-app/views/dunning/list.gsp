@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Dunning" %>
 <html>
 <head>
@@ -53,6 +52,9 @@
             <g:link action="edit" id="${dunningInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${dunningInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
             </g:if>
+            <g:else>
+            <g:link action="editPayment" id="${dunningInstance.id}" class="button small green"><g:message code="invoicingTransaction.button.editPayment.label" /></g:link>
+            </g:else>
           </td>
         </tr>
       </g:each>

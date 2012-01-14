@@ -94,7 +94,7 @@
         </div>
         <div class="field${hasErrors(bean: dunningInstance, field: 'stage', ' error')}">
           <input type="hidden" id="old-stage" value="${session.user.admin ? 0 : dunningInstance?.stage?.id}" />
-          <g:select name="stage.id" from="${org.amcworld.springcrm.DunningStage.list()}" optionKey="id" value="${dunningInstance?.stage?.id}" /><br />
+          <g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.DunningStage.list()}" optionKey="id" value="${dunningInstance?.stage?.id}" /><br />
           <g:hasErrors bean="${dunningInstance}" field="stage">
             <span class="error-msg"><g:eachError bean="${dunningInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
