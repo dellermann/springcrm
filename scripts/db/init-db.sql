@@ -1,4 +1,4 @@
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 --
@@ -70,7 +70,10 @@ VALUES
 	(501, 0, 'elektronisch', 20, 'org.amcworld.springcrm.Carrier'),
 	(502, 0, 'DHL', 30, 'org.amcworld.springcrm.Carrier'),
 	(503, 0, 'DPD', 40, 'org.amcworld.springcrm.Carrier'),
-	(504, 0, 'UPS', 50, 'org.amcworld.springcrm.Carrier');
+	(504, 0, 'UPS', 50, 'org.amcworld.springcrm.Carrier'),
+	(505, 0, 'Deutsche Post', 60, 'org.amcworld.springcrm.Carrier'),
+	(506, 0, 'Hermes', 70, 'org.amcworld.springcrm.Carrier'),
+	(507, 0, 'FedEx', 80, 'org.amcworld.springcrm.Carrier');
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES

@@ -1,16 +1,16 @@
 <nav>
   <ul id="main-menu">
     <li>
-      <a href="#">Home</a>
+      <a href="#"><g:message code="menu.home" default="Home" /></a>
       <ul>
-        <li><a href="${createLink(uri: '/')}">Startseite</a></li>
+        <li><g:link uri="/"><g:message code="menu.sub.homepage" default="Home page" /></g:link></li>
         <g:ifModuleAllowed modules="calendar"><li><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="call"><li><g:link controller="call"><g:message code="call.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>
     </li>
     <li>
-      <a href="#">Marketing</a>
+      <a href="#"><g:message code="menu.marketing" default="Marketing" /></a>
       <ul>
         <!--<li><a href="#">Kampagnen</a></li>-->
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
@@ -24,7 +24,7 @@
       </ul>
     </li>
     <li>
-      <a href="#">Vertrieb</a>
+      <a href="#"><g:message code="menu.sales" default="Sales" /></a>
       <ul>
         <!--<li><a href="#">Leads</a></li>-->
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
@@ -38,7 +38,7 @@
       </ul>
     </li>
     <li>
-      <a href="#">Support</a>
+      <a href="#"><g:message code="menu.support" default="Support" /></a>
       <ul>
         <!--<li><a href="#">Trouble Tickets</a></li>
         <li><a href="#">Wissensbasis</a></li>-->
@@ -50,7 +50,7 @@
       </ul>
     </li>
     <li>
-      <a href="#">Bestand</a>
+      <a href="#"><g:message code="menu.assets" default="Assets" /></a>
       <ul>
         <g:ifModuleAllowed modules="product"><li><g:link controller="product"><g:message code="product.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="service"><li><g:link controller="service"><g:message code="service.plural" /></g:link></li></g:ifModuleAllowed>
@@ -71,9 +71,10 @@
     </li>
     <g:ifAdmin>
     <li>
-      <a href="#">Einstellungen</a>
+      <a href="#"><g:message code="menu.settings" default="Settings" /></a>
       <ul>
         <li><g:link controller="user"><g:message code="user.plural" /></g:link></li>
+        <li><g:link controller="config"><g:message code="config.title" /></g:link></li>
       </ul>
     </li>
     </g:ifAdmin>

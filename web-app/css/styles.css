@@ -1588,6 +1588,37 @@ form .invoicing-items-pos {
   padding-right: 4em;
 }
 
+/* configuration pages */
+.configuration-overview dl {
+  background-repeat: no-repeat;
+  margin-bottom: 1.5em;
+  min-height: 64px;
+  padding-left: 80px;
+}
+.configuration-overview dt {
+  font-size: 108%;
+  margin-bottom: .5em;
+  padding-top: .5em;
+}
+.configuration-overview dd {
+  margin-left: 0;
+}
+#configuration-currency {
+  background-image: url("../img/configuration/currency.png");
+}
+#configuration-ldap {
+  background-image: url("../img/configuration/network.png");
+}
+#configuration-sel-values {
+  background-image: url("../img/configuration/list.png");
+}
+#configuration-seq-numbers {
+  background-image: url("../img/configuration/numbers.png");
+}
+#configuration-tax-rates {
+  background-image: url("../img/configuration/tax-rates.png");
+}
+
 /* search results */
 .searchresults-number {
   margin-bottom: 2em;

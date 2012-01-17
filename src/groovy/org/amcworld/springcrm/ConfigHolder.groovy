@@ -26,14 +26,7 @@ class ConfigHolder {
 	}
 
 	synchronized Object getConfig(String name) {
-		Config config = cache[name]
-		if (config == null) {
-			config = Config.findByName(name)
-			if (config != null) {
-				cache[name] = config
-			}
-		}
-		return config?.value
+		return getConfigObject(name)?.value
 	}
 
 	static synchronized ConfigHolder getInstance() {
@@ -48,12 +41,26 @@ class ConfigHolder {
 	}
 
 	synchronized void setConfig(String name, Object value) {
-		Config config = getConfig(name)
+		Config config = getConfigObject(name)
 		if (config == null) {
-			config = new Config(name:name)
+			config = new Config(name: name)
 			cache[name] = config
 		}
 		config.value = value
-		config.save(flush:true)
+		config.save(flush: true)
 	}
+
+
+    //-- Non-public methods ---------------------
+
+    protected Config getConfigObject(String name) {
+        Config config = cache[name]
+        if (config == null) {
+            config = Config.findByName(name)
+            if (config != null) {
+                cache[name] = config
+            }
+        }
+        return config
+    }
 }
