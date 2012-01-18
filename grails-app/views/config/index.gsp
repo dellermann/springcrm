@@ -16,8 +16,8 @@
     <div class="multicol-content configuration-overview">
       <div class="col col-l">
         <dl id="configuration-currency">
-          <dt><g:link controller="config" action="show" params="[page: 'currency']">Währung</g:link></dt>
-          <dd>Einstellungen zur Währung.</dd>
+          <dt><g:link controller="config" action="show" params="[page: 'currency']"><g:message code="config.currency.title" default="Currency" /></g:link></dt>
+          <dd><g:message code="config.currency.description" /></dd>
         </dl>
         <dl id="configuration-tax-rates">
           <dt><g:link controller="config" action="show" params="[page: 'taxRates']">Steuersätze</g:link></dt>
@@ -26,9 +26,8 @@
       </div>
       <div class="col col-r">
         <dl id="configuration-ldap">
-          <dt><g:link controller="config" action="show" params="[page: 'ldap']">LDAP-Server</g:link></dt>
-          <dd>Einstellungen zum LDAP-Server für die Synchronisation von
-          Kontakten.</dd>
+          <dt><g:link controller="config" action="show" params="[page: 'ldap']"><g:message code="config.ldap.title" default="LDAP server" /></g:link></dt>
+          <dd><g:message code="config.ldap.description" /></dd>
         </dl>
         <dl id="configuration-sel-values">
           <dt>Editor für Auswahllisten</dt>

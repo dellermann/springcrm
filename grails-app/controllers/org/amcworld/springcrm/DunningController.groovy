@@ -71,14 +71,14 @@ class DunningController {
 		}
 
 		ConfigHolder config = ConfigHolder.instance
-		Integer serviceId = config['serviceIdDunningCharge']
+		Integer serviceId = config['serviceIdDunningCharge'] as Integer
 		if (serviceId) {
 			def service = Service.get(serviceId)
 			if (service) {
 				dunningInstance.addToItems(serviceToItem(service))
 			}
 		}
-		serviceId = config['serviceIdDefaultInterest']
+		serviceId = config['serviceIdDefaultInterest'] as Integer
 		if (serviceId) {
 			def service = Service.get(serviceId)
 			if (service) {

@@ -8,13 +8,13 @@ class LdapService {
 	//-- Class variables ------------------------
 
     static transactional = false
-	
-	
+
+
 	//-- Public methods -------------------------
 
 	/**
 	 * Deletes the given person from the LDAP directory.
-	 * 
+	 *
 	 * @param p	the person to delete
 	 */
 	void delete(Person p) {
@@ -34,7 +34,7 @@ class LdapService {
 	/**
 	 * Saves the given person to the LDAP directory. The method either creates
 	 * or updates an entry in the directory.
-	 * 
+	 *
 	 * @param p	the person to save
 	 */
 	void save(Person p) {
@@ -58,7 +58,7 @@ class LdapService {
 				if (i > 1) {
 					cn << ' ' << i
 				}
-				cn << ',' << config['ldapContactDn']
+				cn << ',' << config['ldapContactDn'] as String
 				try {
 					log.debug "Trying to save DN ${cn} to LDAP..."
 					ldap.add(cn.toString(), attrs)
@@ -77,7 +77,7 @@ class LdapService {
 	/**
 	 * Converts the given person to an attribute map which can be transferred
 	 * to the LDAP directory.
-	 * 
+	 *
 	 * @param p	the person to convert
 	 * @return	the attribute map containing the person property values
 	 * 			suitable for LDAP
@@ -175,11 +175,11 @@ class LdapService {
 		}
 		return attrs
 	}
-	
+
 	/**
 	 * Gets the configuration data from the application wide configuration
 	 * holder.
-	 * 
+	 *
 	 * @return	the configuration holder
 	 */
 	protected ConfigHolder getConfig() {
@@ -190,21 +190,23 @@ class LdapService {
 	 * Gets the connection handle to the LDAP server. The attributes such as
 	 * host name, port, bind name, and password are obtained from the
 	 * configuration holder.
-	 * 
+	 *
 	 * @return	the LDAP server connection; <code>null</code> if no LDAP server
 	 * 			is configured
 	 */
 	protected LDAP getLdap() {
 		LDAP ldap = null
-		String host = config['ldapHost']
+		String host = config['ldapHost'] as String
 		if (host) {
 			StringBuilder buf = new StringBuilder('ldap://')
 			buf << host
-			if (config['ldapPort']) {
-				buf << ':' << config['ldapPort']
+            Integer port = config['ldapPort'] as Integer
+			if (port) {
+				buf << ':' << port
 			}
 			ldap = LDAP.newInstance(
-				buf.toString(), config['ldapBindDn'], config['ldapBindPasswd']
+				buf.toString(), config['ldapBindDn'] as String,
+                config['ldapBindPasswd'] as String
 		    )
 		}
 		return ldap

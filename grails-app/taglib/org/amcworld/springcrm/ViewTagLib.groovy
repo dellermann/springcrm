@@ -98,7 +98,8 @@ class ViewTagLib {
 			def map = new HashMap(attrs)
 			map.number = number
 			map.type = 'currency'
-			map.currencySymbol = ConfigHolder.instance['currency'] ?: '€'
+			map.currencySymbol =
+                ConfigHolder.instance['currency'] as String ?: '€'
 			map.groupingUsed = attrs.groupingUsed ?: true
 			map.minFractionDigits = attrs.minFractionDigits ?: 2
 			out << formatNumber(map)
@@ -111,7 +112,7 @@ class ViewTagLib {
 	 * Renders the currency symbol from the application configuration.
 	 */
 	def currency = {
-		out << ConfigHolder.instance['currency'] ?: '€'
+		out << ConfigHolder.instance['currency'] as String ?: '€'
 	}
 
 	/**

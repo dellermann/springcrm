@@ -964,6 +964,10 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
 .fieldset-content {
   padding: 0 1em;
 }
+.field-hint {
+  font-size: 93%;
+  padding-left: 1.5em;
+}
 .checkbox-area {
   margin: 0;
 }
