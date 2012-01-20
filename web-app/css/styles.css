@@ -1622,6 +1622,40 @@ form .invoicing-items-pos {
 #configuration-tax-rates {
   background-image: url("../img/configuration/tax-rates.png");
 }
+.sel-values-list {
+  min-width: 25em;
+}
+.sel-values-list ul {
+  margin: 0;
+}
+.sel-values-list li {
+  line-height: 16px;
+  list-style-type: none;
+  margin-bottom: .3em;
+  min-height: 16px;
+  padding: .5em 1em;
+}
+.sel-values-list li a {
+  background-repeat: no-repeat;
+  float: right;
+  height: 16px;
+  padding-left: 4px;
+  text-indent: -9999px;
+  width: 16px;
+}
+.sel-values-list .edit-btn {
+  background-image: url("../img/edit.png");
+}
+.sel-values-list .delete-btn {
+  background-image: url("../img/remove.png");
+}
+.sel-values-list .button {
+  margin-top: 1em;
+}
+.sel-values-list .add-btn {
+  margin-left: 0;
+  margin-right: .5em;
+}
 
 /* search results */
 .searchresults-number {
@@ -1664,7 +1698,7 @@ form .invoicing-items-pos {
   #main-container-header:after, .multicol-content:after, 
   .header-with-menu:after, .letter-bar:after, 
   .springcrm-overviewpanels-panel-header:after,
-  #panel-list ol:after, footer:after
+  .sel-values-list li:after, #panel-list ol:after, footer:after
 {
   clear: both;
   content: ".";

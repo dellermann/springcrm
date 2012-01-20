@@ -24,6 +24,17 @@ modules = {
         resource '/js/call-form.js'
     }
 
+    config {
+        dependsOn 'core'
+    }
+
+    configSelValues {
+        dependsOn 'config'
+        defaultBundle 'config'
+
+        resource '/js/config-sel-values.js'
+    }
+
     core {
         dependsOn 'jquery-ui'
 
