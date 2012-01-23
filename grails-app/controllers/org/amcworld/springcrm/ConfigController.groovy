@@ -1,8 +1,9 @@
 package org.amcworld.springcrm
 
 import grails.converters.JSON
-
 import org.codehaus.groovy.grails.commons.GrailsClass;
+import org.codehaus.groovy.grails.web.json.JSONObject
+
 
 class ConfigController {
 
@@ -43,11 +44,53 @@ class ConfigController {
         }
     }
 
+    def loadTaxRates() {
+        def list = TaxClass.list(sort: 'orderId')
+        render(contentType: 'text/json') {
+            array {
+                for (i in list) {
+                    item id: i.ident(), name: (i.taxValue * 100d).round(2)
+                }
+            }
+        }
+    }
+
     def saveSelValues() {
-        Class<?> cls = typeClass
-        def list = request.JSON
-        for (item in list) {
-            println item.dump()
+        for (Map.Entry item in params.selValues?.entrySet()) {
+            def data = JSON.parse(item.value)
+            println item.key + ': ' + data.dump()
+        }
+//        Class<?> cls = typeClass
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'index')
+        }
+    }
+
+    def saveTaxRates() {
+        String taxRates = params.selValues?.taxRates
+        if (taxRates) {
+            int orderId = 10
+            def list = JSON.parse(taxRates)
+            for (def item in list) {
+                def entry = (item.id < 0) ? new TaxClass() : TaxClass.get(item.id)
+                if (item.isNull('name')) {
+                    entry.delete(flush: true)
+                } else {
+                    entry.name = "${item.name} %"
+                    entry.orderId = orderId
+                    entry.taxValue = (item.name as Double) / 100d
+                    entry.save(flush: true)
+                    orderId += 10
+                }
+            }
+        }
+
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'index')
         }
     }
 

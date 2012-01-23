@@ -20,7 +20,7 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <g:form name="config-form" action="save" params="[returnUrl: params.returnUrl]">
+    <g:form name="config-form" action="saveTaxRates" params="[returnUrl: params.returnUrl]">
       <fieldset>
         <h4><g:message code="config.fieldset.taxRates.label" default="Available tax rates" /></h4>
         <div class="fieldset-content">
@@ -29,7 +29,7 @@
               <label><g:message code="config.taxRates.label" default="Tax rates" /></label>
             </div>
             <div class="field${hasErrors(bean: configData, field: 'taxRates', ' error')}">
-              <div id="tax-rates-list" class="sel-values-list" data-load-sel-values-url="${createLink(action: 'loadSelValues', params: [type: 'taxClass'])}" data-save-sel-values-url="${createLink(action: 'saveSelValues', params: [type: 'taxClass'])}">
+              <div id="tax-rates-list" class="sel-values-list" data-list-type="taxRates" data-load-sel-values-url="${createLink(action: 'loadTaxRates')}">
               </div>
               <g:hasErrors bean="${configData}" field="taxRates">
                 <span class="error-msg"><g:eachError bean="${configData}" field="taxRates"><g:message error="${it}" /> </g:eachError></span>

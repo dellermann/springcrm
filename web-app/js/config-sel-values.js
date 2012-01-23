@@ -5,7 +5,10 @@
     var $LANG = $L,
         jQuery = $,
         addItem,
+        hideEditField,
+        itemsToRemove = [],
         onBlurItemInput,
+        onChangeSortable,
         onClickAddItem,
         onClickItemList,
         onClickRestoreList,
@@ -14,6 +17,7 @@
         onLoadedSelValues,
         onSubmitForm,
         restoreList = null,
+        setDirty = null,
         showEditField = null,
         submitList = null;
 
@@ -26,57 +30,82 @@
             $li;
 
         item = item || { id: -1, name: "" };
-        $li = $("<li/>").addClass("ui-state-default")
-            .appendTo($ul);
+        $li = $('<li class="ui-state-default"/>').appendTo($ul);
         if (item.id) {
             $li.attr("data-item-id", item.id);
         }
-        $("<span/>").text(item.name)
+        $('<span class="value"/>').text(item.name)
             .appendTo($li);
-        $('<a href="#"/>').text($L("default.btn.remove"))
-            .addClass("delete-btn")
-            .appendTo($li);
-        $('<a href="#"/>').text($L("default.btn.edit"))
-            .addClass("edit-btn")
-            .appendTo($li);
+        if (item.id) {
+            $('<a href="#" class="delete-btn"/>').text($L("default.btn.remove"))
+                .appendTo($li);
+            $('<a href="#" class="edit-btn"/>').text($L("default.btn.edit"))
+                .appendTo($li);
+        }
         return $li;
     };
 
-    onBlurItemInput = function () {
-        var $this = $(this),
+    hideEditField = function () {
+        this.parent()
+            .remove();
+    };
+
+    onBlurItemInput = function (event, cancel) {
+        var $li,
+            $span,
+            $this = $(this),
             val = $this.val();
 
-        if (val === "") {
-            $this.parents("li")
-                .remove();
+        $li = $this.parents("li");
+        if ((val === "") && !cancel) {
+            $li.remove();
         } else {
-            $this.prevAll("span")
-                    .text(val)
-                    .show()
-                .end()
-                .nextAll(".edit-btn")
-                    .show()
-                .end()
-                .remove();
+            $span = $li.find(".value")
+                .show();
+            if (!cancel) {
+                $span.text(val);
+            }
+            $li.find(".edit-btn")
+                .show();
+            hideEditField.call($this);
         }
     };
 
-    onClickAddItem = function () {
-        var $li;
+    onChangeSortable = function () {
+        setDirty.call($(this), true);
+    };
 
-        $li = addItem($(this).parents(".sel-values-list").find("ul"));
-        showEditField.call($li.find("span"));
+    onClickAddItem = function () {
+        var $li,
+            $ul;
+
+        $ul = $(this).parents(".sel-values-list")
+            .find("ul");
+        setDirty.call($ul, true);
+        $li = addItem($ul);
+        showEditField.call($li.find(".value"));
     };
 
     onClickItemList = function (event) {
-        var $target = $(event.target);
+        var $ = jQuery,
+            $li,
+            $target = $(event.target),
+            $this = $(this),
+            id;
 
         if ($target.hasClass("edit-btn")) {
-            showEditField.call($target.prevAll("span"));
+            showEditField.call($target.prevAll(".value"));
+            setDirty.call($this, true);
             return false;
         } else if ($target.hasClass("delete-btn")) {
-            $target.parents("li")
-                .remove();
+            $li = $target.parents("li");
+            id = $li.attr("data-item-id");
+            if (id && (id != "-1")) {
+                itemsToRemove.push(parseInt(id, 10));
+            }
+            $li.remove();
+            setDirty.call($this, true);
+            return false;
         }
 
         return true;
@@ -87,20 +116,28 @@
     };
 
     onDblClickItemList = function (event) {
-        var $li = $(event.target).parents("li").andSelf();
+        var $ = jQuery,
+            $li = $(event.target).parents("li").andSelf();
 
-        if ($li.find("input").length === 0) {
-            showEditField.call(
-                    $li.find("span")
-                );
+        if ($li.find("input").length === 0 && $li.attr("data-item-id")) {
+            showEditField.call($li.find(".value"));
+            setDirty.call($(this), true);
         }
     };
 
     onKeyPressItem = function (event) {
-        if (event.which === 13) {
-            $(this).triggerHandler("blur");
+        var $this = $(this);
+
+        switch (event.keyCode) {
+        case 13:        // Enter/Return
+            $this.trigger("blur");
+            return false;
+        case 27:        // Esc
+            $this.trigger("blur", [ true ]);
             return false;
         }
+
+        return true;
     };
 
     onLoadedSelValues = function (data) {
@@ -114,19 +151,21 @@
             .click(onClickItemList)
             .dblclick(onDblClickItemList)
             .appendTo(this);
+        setDirty.call($ul, false);
         while (++i < n) {
             addItem($ul, data[i]);
         }
         $ul.sortable({
+                change: onChangeSortable,
                 forcePlaceholderSize: true,
                 placeholder: "ui-state-highlight"
             });
-        $('<a href="#"/>').text($L("default.btn.add"))
-            .addClass("button medium green add-btn")
+        $('<a href="#" class="button medium green add-btn"/>')
+            .text($L("default.btn.add"))
             .click(onClickAddItem)
             .appendTo(this);
-        $('<a href="#"/>').text($L("config.restoreList.label"))
-            .addClass("button medium orange restore-btn")
+        $('<a href="#" class="button medium orange restore-btn"/>')
+            .text($L("config.restoreList.label"))
             .click(onClickRestoreList)
             .appendTo(this);
     };
@@ -145,37 +184,51 @@
             );
     };
 
+    setDirty = function (dirty) {
+        this.data("dirty", dirty);
+    };
+
     submitList = function () {
         var $ = jQuery,
             $this = $(this),
-            data = [];
+            $ul = $this.find("ul"),
+            data = [],
+            i = -1,
+            itr = itemsToRemove,
+            n = itr.length;
 
-        $this.find("li")
-            .each(function () {
-                var $this = $(this),
-                    itemId = $this.attr("data-item-id");
+        if ($ul.data("dirty")) {
+            $ul.find("li")
+                .each(function () {
+                    var $this = $(this),
+                        itemId = $this.attr("data-item-id");
 
-                if (itemId) {
-                    data.push({
-                            id: parseInt(itemId, 10),
-                            name: $this.find("span").text()
-                        });
-                }
-            });
-        $.ajax({
-                contentType: "application/json;charset=UTF-8",
-                data: JSON.stringify(data),
-                dataType: "json",
-                type: "POST",
-                url: $this.attr("data-save-sel-values-url")
-            });
+                    if (itemId) {
+                        data.push({
+                                id: parseInt(itemId, 10),
+                                name: $this.find(".value").text()
+                            });
+                    }
+                });
+            while (++i < n) {
+                data.push({ id: itr[i], name: null });
+            }
+            $('<input type="hidden"/>')
+                .attr("name", "selValues." + $this.attr("data-list-type"))
+                .val($.toJSON(data))
+                .appendTo($this);
+            setDirty.call($ul, false);
+        }
     };
 
     showEditField = function () {
+        var $span;
+
+        $span = $('<span class="input"/>').insertAfter(this);
         $("<input/>", { type: "text", value: this.text() })
             .blur(onBlurItemInput)
             .keypress(onKeyPressItem)
-            .insertAfter(this)
+            .appendTo($span)
             .focus();
         this.hide()
             .nextAll(".edit-btn")

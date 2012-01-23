@@ -36,7 +36,7 @@ modules = {
     }
 
     core {
-        dependsOn 'jquery-ui'
+        dependsOn 'jquery-ui, jquery-json'
 
         resource '/css/styles.css'
         resource '/css/jquery-ui-springcrm.css'
@@ -110,6 +110,11 @@ modules = {
             defaultBundle 'jquery-dev'
 
             resource id: 'js', disposition: 'defer'
+        }
+        'jquery-json' {
+            defaultBundle 'jquery'
+
+            resource id: 'jquery-json', exclude: 'minify'
         }
         'jquery-ui' {
             defaultBundle 'jquery'
