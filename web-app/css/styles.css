@@ -4,7 +4,7 @@
  *
  * $Id$
  *
- * Copyright (c) 2011, AMC World Technologies GmbH
+ * Copyright (c) 2011-2012, AMC World Technologies GmbH
  * Fischerinsel 1, D-10179 Berlin, Deutschland
  * All Rights Reserved.
  *
@@ -1623,6 +1623,7 @@ form .invoicing-items-pos {
   background-image: url("../img/configuration/tax-rates.png");
 }
 .sel-values-list {
+  margin-bottom: 2em;
   min-width: 25em;
 }
 .sel-values-list ul {

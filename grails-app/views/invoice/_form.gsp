@@ -409,7 +409,7 @@
     <input type="hidden" name="items[${i}].id" value="${item.id}" />
     </g:if>
     </g:each>
-    <table id="invoice-items" class="invoicing-items content-table" data-tax-items="${taxClasses*.taxValue.join(',')}" data-units="${units*.name.join(',')}">
+    <table id="invoice-items" class="invoicing-items content-table" data-tax-items="${taxRates*.taxValue.join(',')}" data-units="${units*.name.join(',')}">
       <thead>
         <tr>
           <th id="invoicing-items-header-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>

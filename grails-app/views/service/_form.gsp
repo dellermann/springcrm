@@ -77,12 +77,12 @@
     <div class="col col-r">
       <div class="row">
         <div class="label">
-          <label for="taxClass"><g:message code="service.taxClass.label" default="Tax Class" /></label>
+          <label for="taxRate"><g:message code="service.taxRate.label" default="Tax Class" /></label>
         </div>
-        <div class="field${hasErrors(bean: serviceInstance, field: 'taxClass', ' error')}">
-          <g:select name="taxClass.id" from="${org.amcworld.springcrm.TaxClass.list()}" optionKey="id" value="${serviceInstance?.taxClass?.id}" noSelection="['null': '']" /><br />
-          <g:hasErrors bean="${serviceInstance}" field="taxClass">
-            <span class="error-msg"><g:eachError bean="${serviceInstance}" field="taxClass"><g:message error="${it}" /> </g:eachError></span>
+        <div class="field${hasErrors(bean: serviceInstance, field: 'taxRate', ' error')}">
+          <g:select name="taxRate.id" from="${org.amcworld.springcrm.TaxRate.list()}" optionKey="id" value="${serviceInstance?.taxRate?.id}" noSelection="['null': '']" /><br />
+          <g:hasErrors bean="${serviceInstance}" field="taxRate">
+            <span class="error-msg"><g:eachError bean="${serviceInstance}" field="taxRate"><g:message error="${it}" /> </g:eachError></span>
           </g:hasErrors>
         </div>
       </div>

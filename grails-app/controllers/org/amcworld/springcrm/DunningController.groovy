@@ -350,7 +350,7 @@ class DunningController {
 		return new InvoicingItem(
 			number: s.fullNumber, quantity: s.quantity, unit: s.unit.toString(),
 			name: s.name, description: s.description, unitPrice: s.unitPrice,
-			tax: s.taxClass.taxValue * 100
+			tax: s.taxRate.taxValue * 100
 		)
 	}
 }

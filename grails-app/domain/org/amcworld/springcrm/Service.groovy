@@ -3,23 +3,23 @@ package org.amcworld.springcrm
 class Service {
 
     static constraints = {
-		number(unique:true)
-		name(blank:false)
-		category(nullable:true)
-		quantity(min:0.0d)
-		unit(nullable:true)
-		unitPrice(scale:2, min:0.0d)
-		taxClass(nullable:true)
-		commission(min:0.0d)
-		salesStart(nullable:true)
-		salesEnd(nullable:true)
-        description(widget:'textarea', nullable:true)
+		number(unique: true)
+		name(blank: false)
+		category(nullable: true)
+		quantity(min: 0.0d)
+		unit(nullable: true)
+		unitPrice(scale: 2, min: 0.0d)
+		taxRate(nullable: true)
+		commission(min: 0.0d)
+		salesStart(nullable: true)
+		salesEnd(nullable: true)
+        description(widget: 'textarea', nullable: true)
 		dateCreated()
 		lastUpdated()
     }
 	static mapping = {
 		sort 'number'
-		description type:'text'
+		description type: 'text'
     }
 	static searchable = true
 	static transients = ['fullNumber']
@@ -32,7 +32,7 @@ class Service {
 	double quantity
 	Unit unit
 	double unitPrice
-	TaxClass taxClass
+	TaxRate taxRate
 	double commission
 	Date salesStart
 	Date salesEnd
@@ -48,7 +48,7 @@ class Service {
 		quantity = s.quantity
 		unit = s.unit
 		unitPrice = s.unitPrice
-		taxClass = s.taxClass
+		taxRate = s.taxRate
 		commission = s.commission
 		salesStart = s.salesStart
 		salesEnd = s.salesEnd

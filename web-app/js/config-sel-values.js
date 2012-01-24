@@ -100,7 +100,7 @@
         } else if ($target.hasClass("delete-btn")) {
             $li = $target.parents("li");
             id = $li.attr("data-item-id");
-            if (id && (id != "-1")) {
+            if (id && (id !== "-1")) {
                 itemsToRemove.push(parseInt(id, 10));
             }
             $li.remove();

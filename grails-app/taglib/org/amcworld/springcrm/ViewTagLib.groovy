@@ -112,7 +112,7 @@ class ViewTagLib {
 	 * Renders the currency symbol from the application configuration.
 	 */
 	def currency = {
-		out << ConfigHolder.instance['currency'] as String ?: '€'
+		out << (ConfigHolder.instance['currency'] as String) ?: '€'
 	}
 
 	/**

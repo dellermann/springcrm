@@ -677,7 +677,7 @@
                         .find(".invoicing-items-total .value")
                             .text($.formatCurrency(qty * unitPrice));
                     els[prefix + "tax"].value =
-                        $.formatNumber(item.taxClass.taxValue * 100.0, 1);
+                        $.formatNumber(item.taxRate.taxValue * 100.0, 1);
                     self._computeFooterValues();
                     $("#inventory-selector-" + type).dialog("close");
                 }

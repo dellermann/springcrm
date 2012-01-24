@@ -61,8 +61,8 @@ VALUES
 
 INSERT INTO sel_value (id, version, name, order_id, class, tax_value)
 VALUES
-	(400, 0, '19 %', 10, 'org.amcworld.springcrm.TaxClass', 0.19),
-	(401, 0, '7 %', 20, 'org.amcworld.springcrm.TaxClass', 0.07);
+	(400, 0, '19 %', 10, 'org.amcworld.springcrm.TaxRate', 0.19),
+	(401, 0, '7 %', 20, 'org.amcworld.springcrm.TaxRate', 0.07);
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES

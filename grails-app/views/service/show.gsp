@@ -74,8 +74,8 @@
           </div>
           <div class="col col-r">
             <div class="row">
-              <div class="label"><g:message code="service.taxClass.label" default="Tax Class" /></div>
-              <div class="field">${serviceInstance?.taxClass?.encodeAsHTML()}</div>
+              <div class="label"><g:message code="service.taxRate.label" default="Tax Class" /></div>
+              <div class="field">${serviceInstance?.taxRate?.encodeAsHTML()}</div>
             </div>
             
             <div class="row">

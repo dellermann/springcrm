@@ -20,8 +20,8 @@
           <dd><g:message code="config.currency.description" /></dd>
         </dl>
         <dl id="configuration-tax-rates">
-          <dt><g:link controller="config" action="show" params="[page: 'taxRates']">Steuersätze</g:link></dt>
-          <dd>Liste der Steuersätze für Produkte und Dienstleistungen.</dd>
+          <dt><g:link controller="config" action="show" params="[page: 'taxRates']"><g:message code="config.taxRates.title" default="Tax rates"/></g:link></dt>
+          <dd><g:message code="config.taxRates.description" /></dd>
         </dl>
       </div>
       <div class="col col-r">
@@ -30,8 +30,8 @@
           <dd><g:message code="config.ldap.description" /></dd>
         </dl>
         <dl id="configuration-sel-values">
-          <dt>Editor für Auswahllisten</dt>
-          <dd>Ermöglicht die Änderung der Werte von Auswahllisten.</dd>
+          <dt><g:link controller="config" action="show" params="[page: 'selValues']"><g:message code="config.selValues.title" default="Editor for selector values" /></g:link></dt>
+          <dd><g:message code="config.selValues.description" /></dd>
         </dl>
         <dl id="configuration-seq-numbers">
           <dt>Nummerierungen</dt>

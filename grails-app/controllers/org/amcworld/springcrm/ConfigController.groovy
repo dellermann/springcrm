@@ -34,7 +34,7 @@ class ConfigController {
     }
 
     def loadSelValues() {
-        def list = typeClass.list(sort: 'orderId')
+        def list = getTypeClass(params.type).list(sort: 'orderId')
         render(contentType: 'text/json') {
             array {
                 for (i in list) {
@@ -45,7 +45,7 @@ class ConfigController {
     }
 
     def loadTaxRates() {
-        def list = TaxClass.list(sort: 'orderId')
+        def list = TaxRate.list(sort: 'orderId')
         render(contentType: 'text/json') {
             array {
                 for (i in list) {
@@ -56,11 +56,23 @@ class ConfigController {
     }
 
     def saveSelValues() {
-        for (Map.Entry item in params.selValues?.entrySet()) {
-            def data = JSON.parse(item.value)
-            println item.key + ': ' + data.dump()
+        for (Map.Entry entry in params.selValues?.entrySet()) {
+            int orderId = 10
+            Class<?> cls = getTypeClass(entry.key)
+            def list = JSON.parse(entry.value)
+            for (def item in list) {
+                def selValue = (item.id < 0) ? cls.newInstance() : cls.get(item.id)
+                if (item.isNull('name')) {
+                    selValue.delete(flush: true)
+                } else {
+                    selValue.name = item.name
+                    selValue.orderId = orderId
+                    selValue.save(flush: true)
+                    orderId += 10
+                }
+            }
         }
-//        Class<?> cls = typeClass
+
         if (params.returnUrl) {
             redirect(url: params.returnUrl)
         } else {
@@ -74,7 +86,7 @@ class ConfigController {
             int orderId = 10
             def list = JSON.parse(taxRates)
             for (def item in list) {
-                def entry = (item.id < 0) ? new TaxClass() : TaxClass.get(item.id)
+                def entry = (item.id < 0) ? new TaxRate() : TaxRate.get(item.id)
                 if (item.isNull('name')) {
                     entry.delete(flush: true)
                 } else {
@@ -94,11 +106,11 @@ class ConfigController {
         }
     }
 
-    private Class<?> getTypeClass() {
-        GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName('Domain', params.type)
+    private Class<?> getTypeClass(String type) {
+        GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
         Class<?> cls = gc.clazz
         if (!SelValue.isAssignableFrom(cls)) {
-            throw new IllegalArgumentException("Type ${params.type} must be of type SelValue.")
+            throw new IllegalArgumentException("Type ${type} must be of type SelValue.")
         }
         return cls
     }

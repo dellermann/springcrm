@@ -89,8 +89,8 @@
             </div>
             
             <div class="row">
-              <div class="label"><g:message code="product.taxClass.label" default="Tax class" /></div>
-              <div class="field">${productInstance?.taxClass?.encodeAsHTML()}</div>
+              <div class="label"><g:message code="product.taxRate.label" default="Tax class" /></div>
+              <div class="field">${productInstance?.taxRate?.encodeAsHTML()}</div>
             </div>
 
             <div class="row">

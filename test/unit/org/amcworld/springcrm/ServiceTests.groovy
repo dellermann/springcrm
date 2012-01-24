@@ -23,7 +23,7 @@ class ServiceTests extends GrailsUnitTestCase {
         assertEquals 1.5, sv.quantity
         assertNull sv.unit
         assertEquals 60.5, sv.unitPrice
-        assertNull sv.taxClass
+        assertNull sv.taxRate
         assertEquals 0, sv.commission
         assertNull sv.salesStart
         assertNull sv.salesEnd
@@ -44,39 +44,39 @@ class ServiceTests extends GrailsUnitTestCase {
         assertEquals 0, sv.unit.orderId
     }
 
-    void testTaxClass() {
+    void testTaxRate() {
         Service sv = new Service()
-        sv.taxClass = new TaxClass(name:'19%')
-        assertEquals '19%', sv.taxClass.name
-        assertEquals 0, sv.taxClass.orderId
+        sv.taxRate = new TaxRate(name:'19%')
+        assertEquals '19%', sv.taxRate.name
+        assertEquals 0, sv.taxRate.orderId
     }
-	
+
 	void testBlankConstraints() {
 		mockForConstraintsTests Service
 		def validationFields = ['name']
 		Service sv = new Service()
 		assertFalse sv.validate(validationFields)
 		assertEquals 'nullable', sv.errors['name']
-		
+
 		sv = new Service(name:'')
 		assertFalse sv.validate(validationFields)
 		assertEquals 'blank', sv.errors['name']
-		
+
 		sv = new Service(name:'TYPO3 Installation')
 		assertTrue sv.validate(validationFields)
 	}
-	
+
 	void testUniqueConstraints() {
 		def s1 = new Service(number:10000, name:'foo')
 		def s2 = new Service(number:10010, name:'bar')
 		mockDomain(Service, [s1, s2])
-		
+
 		def badService = new Service(number:10000, name:'whee')
 		assertNull badService.save()
 		assertEquals 2, Service.count()
 		assertEquals 'unique', badService.errors['number']
 		assertNull badService.errors['name']
-		
+
 		def goodService = new Service(
 			number:10020, name:'foo2', unit:'m', unitPrice:2.3
 		)
@@ -92,24 +92,24 @@ class ServiceTests extends GrailsUnitTestCase {
 		assertEquals 'min', sv.errors['quantity']
 		assertEquals 'min', sv.errors['unitPrice']
 		assertEquals 'min', sv.errors['commission']
-		
+
 		sv = new Service(quantity:0, unitPrice:0.01, commission:0)
 		assertTrue sv.validate(validationFields)
 	}
-	
+
 	void testFullNumber() {
 		def seqNumber = new SeqNumber(controllerName:'service', nextNumber:10002, prefix:'S', suffix:'')
 		mockDomain(SeqNumber, [seqNumber])
-		
+
         Service sv = new Service(number:10000, name:'Installation of TYPO3')
 		sv.seqNumberService = new SeqNumberService()
 		assertEquals 'S-10000', sv.fullNumber
 	}
-	
+
 	void testToString() {
         Service sv = new Service(number:10000, name:'Installation of TYPO3')
 		assertToString sv, 'Installation of TYPO3'
-		
+
 		sv = new Service()
 		assertToString sv, ''
 	}

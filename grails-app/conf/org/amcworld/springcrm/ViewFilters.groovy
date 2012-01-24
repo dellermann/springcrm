@@ -7,7 +7,7 @@ class ViewFilters {
 	def dependsOn = [LoginFilters]
 
 	def filters = {
-		pagination(controller:'*', action:'list') {
+		pagination(controller: '*', action: 'list') {
 			def sessionKey = { String name ->
 				String key = name + controllerName.capitalize()
 				if (params.type)  key += params.type
@@ -23,9 +23,9 @@ class ViewFilters {
 				/* store or restore offset */
 				String key = sessionKey('offset')
 				f('offset', session, key)
-				
+
 				/* compute number of entries of the associated domain */
-				GrailsClass cls = 
+				GrailsClass cls =
 					grailsApplication.getArtefactByLogicalPropertyName(
 						'Domain', controllerName
 					)
@@ -40,19 +40,19 @@ class ViewFilters {
 				User user = User.get(session.user.id)
 				f('sort', user.settings, "sort${name}")
 				f('order', user.settings, "order${name}")
-				user.save(flush:true)
+				user.save(flush: true)
 			}
-			
+
 			after = {
 				session[sessionKey('offset')] = params.offset
 			}
 		}
 
-		invoicingItems(controller:'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action:'create|edit') {
+		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action: 'create|edit') {
 			after = { model ->
 				if (model) {
-					model.units = Unit.list(sort:'orderId')
-					model.taxClasses = TaxClass.list(sort:'orderId')
+					model.units = Unit.list(sort: 'orderId')
+					model.taxRates = TaxRate.list(sort: 'orderId')
 				}
 			}
 		}
