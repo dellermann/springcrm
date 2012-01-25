@@ -12,6 +12,7 @@
         onClickAddItem,
         onClickItemList,
         onClickRestoreList,
+        onClickSortList,
         onDblClickItemList,
         onKeyPressItem = null,
         onLoadedSelValues,
@@ -29,18 +30,19 @@
             $L = $LANG,
             $li;
 
-        item = item || { id: -1, name: "" };
-        $li = $('<li class="ui-state-default"/>').appendTo($ul);
-        if (item.id) {
-            $li.attr("data-item-id", item.id);
-        }
+        item = item || { id: -1, name: "", disabled: false };
+        $li = $('<li class="ui-state-default"/>')
+            .attr("data-item-id", item.id)
+            .appendTo($ul);
         $('<span class="value"/>').text(item.name)
             .appendTo($li);
-        if (item.id) {
+        if (!item.disabled) {
             $('<a href="#" class="delete-btn"/>').text($L("default.btn.remove"))
                 .appendTo($li);
             $('<a href="#" class="edit-btn"/>').text($L("default.btn.edit"))
                 .appendTo($li);
+        } else {
+            $li.attr("data-item-disabled", "true");
         }
         return $li;
     };
@@ -57,6 +59,17 @@
             val = $this.val();
 
         $li = $this.parents("li");
+        if (!cancel) {
+            $li.siblings()
+                .each(function () {
+                    if ($(this).find(".value").text() === val) {
+                        cancel = true;
+                        val = "";
+                        return false;
+                    }
+                    return true;
+                });
+        }
         if ((val === "") && !cancel) {
             $li.remove();
         } else {
@@ -84,6 +97,7 @@
         setDirty.call($ul, true);
         $li = addItem($ul);
         showEditField.call($li.find(".value"));
+        return false;
     };
 
     onClickItemList = function (event) {
@@ -113,13 +127,26 @@
 
     onClickRestoreList = function () {
         restoreList.call($(this).parents(".sel-values-list"));
+        return false;
+    };
+
+    onClickSortList = function () {
+        var $ = jQuery,
+            $li;
+
+        $li = $(this).parents(".sel-values-list")
+            .find("li");
+        $li.sortElements(function (li1, li2) {
+                return $(li1).text() > $(li2).text() ? 1 : -1;
+            });
+        return false;
     };
 
     onDblClickItemList = function (event) {
         var $ = jQuery,
             $li = $(event.target).parents("li").andSelf();
 
-        if ($li.find("input").length === 0 && $li.attr("data-item-id")) {
+        if ($li.find("input").length === 0 && !$li.attr("data-item-disabled")) {
             showEditField.call($li.find(".value"));
             setDirty.call($(this), true);
         }
@@ -142,15 +169,17 @@
 
     onLoadedSelValues = function (data) {
         var $ = jQuery,
+            $div,
             $ul,
             i = -1,
             n = data.length;
 
         this.empty();
+        $div = $('<div class="scroll-pane"/>').appendTo(this);
         $ul = $("<ul/>")
             .click(onClickItemList)
             .dblclick(onDblClickItemList)
-            .appendTo(this);
+            .appendTo($div);
         setDirty.call($ul, false);
         while (++i < n) {
             addItem($ul, data[i]);
@@ -161,12 +190,16 @@
                 placeholder: "ui-state-highlight"
             });
         $('<a href="#" class="button medium green add-btn"/>')
-            .text($L("default.btn.add"))
+            .text($L("default.btn.add.short"))
             .click(onClickAddItem)
             .appendTo(this);
         $('<a href="#" class="button medium orange restore-btn"/>')
             .text($L("config.restoreList.label"))
             .click(onClickRestoreList)
+            .appendTo(this);
+        $('<a href="#" class="button medium white sort-btn"/>')
+            .text($L("default.btn.sort.short"))
+            .click(onClickSortList)
             .appendTo(this);
     };
 
@@ -201,17 +234,16 @@
             $ul.find("li")
                 .each(function () {
                     var $this = $(this),
-                        itemId = $this.attr("data-item-id");
+                        item = {};
 
-                    if (itemId) {
-                        data.push({
-                                id: parseInt(itemId, 10),
-                                name: $this.find(".value").text()
-                            });
+                    item.id = parseInt($this.attr("data-item-id"), 10);
+                    if (!$this.attr("data-item-disabled")) {
+                        item.name = $this.find(".value").text();
                     }
+                    data.push(item);
                 });
             while (++i < n) {
-                data.push({ id: itr[i], name: null });
+                data.push({ id: itr[i], remove: true });
             }
             $('<input type="hidden"/>')
                 .attr("name", "selValues." + $this.attr("data-list-type"))

@@ -1626,8 +1626,12 @@ form .invoicing-items-pos {
   margin-bottom: 2em;
   min-width: 25em;
 }
+.sel-values-list .scroll-pane {
+  max-height: 20em;
+  overflow-y: scroll;
+}
 .sel-values-list ul {
-  margin: 0;
+  margin: 0 .5em 0 0;
 }
 .sel-values-list li {
   line-height: 16px;
@@ -1635,6 +1639,9 @@ form .invoicing-items-pos {
   margin-bottom: .3em;
   min-height: 16px;
   padding: .5em 1em;
+}
+.sel-values-list li:last-child {
+  margin-bottom: 0;
 }
 .sel-values-list li a {
   background-repeat: no-repeat;
@@ -1652,10 +1659,10 @@ form .invoicing-items-pos {
 }
 .sel-values-list .button {
   margin-top: 1em;
+  margin-left: .5em;
 }
 .sel-values-list .add-btn {
   margin-left: 0;
-  margin-right: .5em;
 }
 #tax-rates-list span:after {
   content: " %";

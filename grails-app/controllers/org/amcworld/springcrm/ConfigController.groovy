@@ -7,7 +7,10 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 class ConfigController {
 
-    protected static final List<Long> READONLY_IDS = [ 600L, 601L, 602L, 603L, 604L ]
+    protected static final List<Long> READONLY_IDS = [
+        *600L..604L, *800L..804L, *900L..907L, *2100L..2103L, *2200L..2206L,
+        *2500L..2504L
+    ]
 
     def index() {}
 
@@ -38,7 +41,7 @@ class ConfigController {
         render(contentType: 'text/json') {
             array {
                 for (i in list) {
-                    item id: (i.ident() in READONLY_IDS) ? null : i.ident(), name: i.name
+                    item id: i.ident(), name: i.name, disabled: i.ident() in READONLY_IDS
                 }
             }
         }
@@ -61,11 +64,14 @@ class ConfigController {
             Class<?> cls = getTypeClass(entry.key)
             def list = JSON.parse(entry.value)
             for (def item in list) {
-                def selValue = (item.id < 0) ? cls.newInstance() : cls.get(item.id)
-                if (item.isNull('name')) {
+                Long id = item.id as Long
+                def selValue = (id < 0L) ? cls.newInstance() : cls.get(id)
+                if (item.remove) {
                     selValue.delete(flush: true)
                 } else {
-                    selValue.name = item.name
+                    if (!(id in READONLY_IDS)) {
+                        selValue.name = item.name
+                    }
                     selValue.orderId = orderId
                     selValue.save(flush: true)
                     orderId += 10
