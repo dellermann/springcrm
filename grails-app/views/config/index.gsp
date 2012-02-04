@@ -34,9 +34,8 @@
           <dd><g:message code="config.selValues.description" /></dd>
         </dl>
         <dl id="configuration-seq-numbers">
-          <dt>Nummerierungen</dt>
-          <dd>Änderungen an Nummernschemata für Datensätze (Organisationen,
-          Personen usw.).</dd>
+          <dt><g:link controller="config" action="loadSeqNumbers"><g:message code="config.seqNumbers.title" default="Sequence numbers" /></g:link></dt>
+          <dd><g:message code="config.seqNumbers.description" /></dd>
         </dl>
       </div>
     </div>

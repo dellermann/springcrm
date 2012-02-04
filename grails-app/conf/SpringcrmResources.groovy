@@ -35,6 +35,13 @@ modules = {
         resource '/js/config-sel-values.js'
     }
 
+    configSeqNumbers {
+        dependsOn 'config'
+        defaultBundle 'config'
+
+        resource '/js/config-seq-numbers.js'
+    }
+
     core {
         dependsOn 'jquery-ui, jquery-json'
 

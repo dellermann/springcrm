@@ -994,8 +994,12 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
 }
 
 /* form controls */
-button, input[type=button], input[type=file], input[type=password], 
-  input[type=reset], input[type=submit], input[type=text], select, textarea
+button, input[type=button], input[type=date], input[type=datetime], 
+  input[type=datetime-local], input[type=email], input[type=file],
+  input[type=month], input[type=number], input[type=password], 
+  input[type=range], input[type=reset], input[type=search], input[type=submit], 
+  input[type=tel], input[type=text], input[type=time], input[type=url],
+  input[type=week], select, textarea
 {
   background: #F0F0F0;
   border: .1em solid #6C8F18;
@@ -1666,6 +1670,26 @@ form .invoicing-items-pos {
 }
 #tax-rates-list span:after {
   content: " %";
+}
+#seq-numbers-header-name {
+  width: 13em;
+}
+#seq-numbers-header-prefix, #seq-numbers-header-suffix {
+  width: 6em;
+}
+#seq-numbers-header-start-value, #seq-numbers-header-end-value {
+  width: 9em;
+}
+#seq-numbers td:first-child, #seq-numbers td:last-child {
+  padding-top: .8em;
+}
+#seq-numbers td:nth-child(2), #seq-numbers td:nth-child(3), 
+  #seq-numbers td:nth-child(4), #seq-numbers td:nth-child(5)
+{
+  text-align: center;
+}
+#seq-numbers td {
+  vertical-align: top;
 }
 
 /* search results */

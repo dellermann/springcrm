@@ -58,6 +58,11 @@ class ConfigController {
         }
     }
 
+    def loadSeqNumbers() {
+        def list = SeqNumber.list()
+        render(view: 'seqNumbers', model: [seqNumberList: list])
+    }
+
     def saveSelValues() {
         for (Map.Entry entry in params.selValues?.entrySet()) {
             int orderId = 10
@@ -103,6 +108,31 @@ class ConfigController {
                     orderId += 10
                 }
             }
+        }
+
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'index')
+        }
+    }
+
+    def saveSeqNumbers() {
+        def l = []
+        boolean hasErrors = false
+        for (entry in params.seqNumbers) {
+            try {
+                Long id = Long.valueOf(entry.key)
+                SeqNumber seqNumber = SeqNumber.get(id)
+                seqNumber.properties['prefix', 'suffix', 'startValue', 'endValue'] = entry.value
+                l.add(seqNumber)
+                hasErrors |= (seqNumber.save(flush: true) == null)
+            } catch (NumberFormatException e) { /* ignored */ }
+        }
+        if (hasErrors) {
+            l.sort { it.ident() }
+            render(view: 'seqNumbers', model: [seqNumberList: l])
+            return
         }
 
         if (params.returnUrl) {
