@@ -3,31 +3,31 @@ package org.amcworld.springcrm
 class Call {
 
     static constraints = {
-		subject(blank:false)
-		notes(widget:'textarea')
-		organization(nullable:true)
-		person(nullable:true)
-		phone(maxSize:40, nullable:true)
+		subject(blank: false)
+		notes(widget: 'textarea')
+		organization(nullable: true)
+		person(nullable: true)
+		phone(maxSize: 40, nullable: true)
 		start()
-		type(inList:['incoming', 'outgoing'])
-		status(inList:['planned', 'completed', 'acknowledged', 'cancelled'])
+		type(nullable: false)
+		status(nullable: false)
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization:Organization, person:Person ]
+    static belongsTo = [ organization: Organization, person: Person ]
 	static mapping = {
-		sort start:'desc'
+		sort start: 'desc'
 		table 'phone_call'
-		notes type:'text'
+		notes type: 'text'
     }
 	static searchable = true
-	
+
 	String subject
 	String notes
 	String phone
 	Date start = new Date()
-	String type
-	String status
+	CallType type
+	CallStatus status
 	Date dateCreated
 	Date lastUpdated
 
@@ -47,4 +47,12 @@ class Call {
 	String toString() {
 		return subject
 	}
+}
+
+enum CallType {
+    incoming, outgoing
+}
+
+enum CallStatus {
+    planned, completed, acknowledged, cancelled
 }

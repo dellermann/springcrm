@@ -16,7 +16,7 @@
   <g:layoutHead />
 </head>
 
-<body style="font-size: ${userSetting(key:'fontSize')}">
+<body style="font-size: ${userSetting(key: 'fontSize')}">
 <section>
   <g:render template="/layouts/header" />
   <g:render template="/layouts/nav" />

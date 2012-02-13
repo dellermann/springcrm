@@ -6,14 +6,14 @@ class Dunning extends InvoicingTransaction {
 		level()
 		stage()
 		dueDatePayment()
-		paymentDate(nullable:true)
-		paymentAmount(nullable:true, min:0.0, scale:2)
-		paymentMethod(nullable:true)
+		paymentDate(nullable: true)
+		paymentAmount(nullable: true, min: 0.0, scale: 2, widget: 'currency')
+		paymentMethod(nullable: true)
 		invoice()
     }
-	static belongsTo = [invoice:Invoice]
+	static belongsTo = [invoice: Invoice]
 	static mapping = {
-		stage column:'dunning_stage_id'
+		stage column: 'dunning_stage_id'
 	}
 	static searchable = true
 

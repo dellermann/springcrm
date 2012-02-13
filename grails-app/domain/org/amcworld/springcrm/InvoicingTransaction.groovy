@@ -5,49 +5,49 @@ import static java.math.RoundingMode.HALF_UP
 class InvoicingTransaction {
 
     static constraints = {
-		number(unique:'type')
-		type(blank:false, nullable:false, maxSize:1)
-		subject(blank:false)
+		number(unique: 'type', widget: 'autonumber')
+		type(blank: false, nullable: false, maxSize: 1)
+		subject(blank: false)
 		organization()
-		person(nullable:true)
+		person(nullable: true)
 		docDate()
-		carrier(nullable:true)
-		shippingDate(nullable:true)
-        billingAddrStreet(widget:'textarea', nullable:true)
-        billingAddrPoBox(nullable:true)
-        billingAddrPostalCode(nullable:true)
-        billingAddrLocation(nullable:true)
-        billingAddrState(nullable:true)
-        billingAddrCountry(nullable:true)
-        shippingAddrStreet(widget:'textarea', nullable:true)
-        shippingAddrPoBox(nullable:true)
-        shippingAddrPostalCode(nullable:true)
-        shippingAddrLocation(nullable:true)
-        shippingAddrState(nullable:true)
-        shippingAddrCountry(nullable:true)
-		headerText(widget:'textarea', nullable:true)
-		items(minSize:1)
-		footerText(widget:'textarea', nullable:true)
-		discountPercent(scale:2, min:0.0, nullable:true)
-		discountAmount(scale:2, min:0.0, nullable:true)
-		shippingCosts(scale:2, min:0.0, nullable:true)
-        shippingTax(scale:1, min:0.0, nullable:true)
-		adjustment(scale:2, nullable:true)
-		total(scale:2)
-        notes(widget:'textarea', nullable:true)
+		carrier(nullable: true)
+		shippingDate(nullable: true)
+        billingAddrStreet(nullable: true, widget: 'textarea')
+        billingAddrPoBox(nullable: true)
+        billingAddrPostalCode(nullable: true)
+        billingAddrLocation(nullable: true)
+        billingAddrState(nullable: true)
+        billingAddrCountry(nullable: true)
+        shippingAddrStreet(nullable: true, widget: 'textarea')
+        shippingAddrPoBox(nullable: true)
+        shippingAddrPostalCode(nullable: true)
+        shippingAddrLocation(nullable: true)
+        shippingAddrState(nullable: true)
+        shippingAddrCountry(nullable: true)
+		headerText(nullable: true, widget: 'textarea')
+		items(minSize: 1)
+		footerText(nullable: true, widget: 'textarea')
+		discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
+		discountAmount(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+		shippingCosts(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+        shippingTax(nullable: true, scale: 1, min: 0.0, widget: 'percent')
+		adjustment(nullable: true, scale: 2, widget: 'currency')
+		total(scale: 2)
+        notes(nullable: true, widget: 'textarea')
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization:Organization, person:Person ]
+    static belongsTo = [ organization: Organization, person: Person ]
 	static hasMany = [
-		items:InvoicingItem,
-		termsAndConditions:TermsAndConditions
+		items: InvoicingItem,
+		termsAndConditions: TermsAndConditions
 	]
 	static mapping = {
-		items cascade:'all-delete-orphan'
-		headerText type:'text'
-		footerText type:'text'
-		notes type:'text'
+		items cascade: 'all-delete-orphan'
+		headerText type: 'text'
+		footerText type: 'text'
+		notes type: 'text'
 		sort 'number'
 		order 'desc'
 	}
@@ -203,7 +203,7 @@ class InvoicingTransaction {
 	 * @see		#getSubtotalGross()
 	 */
 	BigDecimal getSubtotalNet() {
-		return items.total.sum() + getShippingCosts()
+		return items ? (items.total.sum() + getShippingCosts()) : 0
 	}
 
 	/**
@@ -214,7 +214,7 @@ class InvoicingTransaction {
 	 * @see		#getSubtotalNet()
 	 */
 	BigDecimal getSubtotalGross() {
-		return subtotalNet + taxRateSums.values().sum()
+		return taxRateSums ? (subtotalNet + taxRateSums.values().sum()) : 0
 	}
 
 	/**
@@ -238,14 +238,16 @@ class InvoicingTransaction {
 	 */
 	Map<Double, BigDecimal> getTaxRateSums() {
 		Map<Double, BigDecimal> res = [:]
-		for (item in items) {
-			double tax = (item.tax != null) ? item.tax.toDouble() : 0.0
-			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
-		}
-		if (getShippingTax() != 0 && getShippingCosts() != 0) {
-			double tax = getShippingTax().toDouble()
-			res[tax] = (res[tax] ?: 0.0) + getShippingCosts() * tax / 100.0
-		}
+        if (items) {
+    		for (item in items) {
+    			double tax = (item.tax != null) ? item.tax.toDouble() : 0.0
+    			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
+    		}
+    		if (getShippingTax() != 0 && getShippingCosts() != 0) {
+    			double tax = getShippingTax().toDouble()
+    			res[tax] = (res[tax] ?: 0.0) + getShippingCosts() * tax / 100.0
+    		}
+        }
 		return res.sort { e1, e2 -> e1.key <=> e2.key }
 	}
 

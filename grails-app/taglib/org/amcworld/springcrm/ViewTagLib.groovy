@@ -20,7 +20,7 @@ class ViewTagLib {
 
 		/* obtain precision */
 		final PRECISION_RANKINGS = [
-			'year':0, 'month':10, 'day':20, 'hour':30, 'minute':40
+			'year': 0, 'month': 10, 'day': 20, 'hour': 30, 'minute': 40
 		]
 		int precision = PRECISION_RANKINGS['minute']
 		if (attrs.precision) {
@@ -50,8 +50,8 @@ class ViewTagLib {
 		} else {
 			formatName = 'default.format.date'
 		}
-		out.println "<input type=\"hidden\" name=\"${name}\" value=\"${c ? formatDate(date:c, formatName:formatName) : ''}\" />"
-		out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${c ? formatDate(date: c, formatName: 'default.format.date') : ''}\" size=\"10\" class=\"date-input date-input-date\" />"
+		out.println "<input type=\"hidden\" name=\"${name}\" value=\"${c ? formatDate(date: c, formatName: formatName) : ''}\" />"
+		out.println "<input type=\"date\" name=\"${name}_date\" id=\"${id}-date\" value=\"${c ? formatDate(date: c, formatName: 'default.format.date') : ''}\" size=\"10\" class=\"date-input date-input-date\" />"
 
 		if (precision >= PRECISION_RANKINGS['hour']) {
 			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${c ? formatDate(date: c, formatName: 'default.format.time') : ''}\" size=\"5\" class=\"date-input date-input-time\" />"
@@ -69,16 +69,16 @@ class ViewTagLib {
 		if (attrs.prefix) {
 			out << attrs.prefix << '-'
 		}
-		out << textField(name:'number', value:attrs.value, size:10)
+		out << textField(name: 'number', value: attrs.value, size: 10)
 		if (attrs.suffix) {
 			out << '-' << attrs.suffix
 		}
 		boolean checked = true
 		if (params._autoNumber != null) checked = params.autoNumber
 		out << '<span class="auto-number">'
-		out << checkBox(name:'autoNumber', checked:checked)
+		out << checkBox(name: 'autoNumber', checked: checked)
 		out << '<label for="autoNumber">'
-		out << message(code:'default.number.auto.label')
+		out << message(code: 'default.number.auto.label')
 		out << '</label></span>'
 	}
 
@@ -154,7 +154,7 @@ class ViewTagLib {
 		List<String> letters = cls.'executeQuery'(sql)
 
 		String availableLetters = message(
-			code:'default.letters', default:'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+			code: 'default.letters', default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		)
 		int n = availableLetters.size()
 		def items = []
@@ -167,7 +167,7 @@ class ViewTagLib {
 			StringBuilder buf = new StringBuilder('<li')
 			buf << (inList ? ' class="available"' : '') << '>'
 			if (inList) {
-				buf << "<a href=\"${createLink(controller:controller, action:action, params:[letter:availableLetters[i]])}\">"
+				buf << "<a href=\"${createLink(controller: controller, action: action, params: [letter: availableLetters[i]])}\">"
 			}
 			if (separator && numLetters > 2) {
 				buf << availableLetters[i] << separator << availableLetters[Math.min(n, i + numLetters) - 1]
@@ -200,7 +200,7 @@ class ViewTagLib {
 	 * Returns the URL of the current page including all request parameters.
 	 */
 	def url = { attrs, body ->
-		out << createLink(action:actionName, params:params)
+		out << createLink(action: actionName, params: params)
 	}
 
 	/**

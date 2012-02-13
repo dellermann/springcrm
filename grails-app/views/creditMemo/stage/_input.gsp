@@ -1,0 +1,2 @@
+<input type="hidden" id="old-stage" value="${session.user.admin ? 0 : bean?.stage?.id}" />
+<g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.CreditMemoStage.list()}" optionKey="id" value="${bean?.stage?.id}" />

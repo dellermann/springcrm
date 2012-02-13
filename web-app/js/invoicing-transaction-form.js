@@ -7,7 +7,7 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
         getOrganizationId,
         init,
         initConfig = null,
-        initStageValues,
+        initStageValues = null,
         jQuery = $,
         onChangePaymentDate = null,
         onChangeShippingDate = null,
@@ -77,7 +77,7 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
                 rightPrefix: "shippingAddr"
             });
 
-        initStageValues();
+        initStageValues.call(this);
 
         return this;
     };

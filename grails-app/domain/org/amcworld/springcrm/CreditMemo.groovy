@@ -4,23 +4,23 @@ class CreditMemo extends InvoicingTransaction {
 
     static constraints = {
 		stage()
-		paymentDate(nullable:true)
-		paymentAmount(nullable:true, min:0.0, scale:2)
-		paymentMethod(nullable:true)
-		invoice(nullable:true)
-		dunning(nullable:true)
+		paymentDate(nullable: true)
+		paymentAmount(nullable: true, min: 0.0, scale: 2, widget: 'currency')
+		paymentMethod(nullable: true)
+		invoice(nullable: true)
+		dunning(nullable: true)
     }
-	static belongsTo = [ invoice:Invoice, dunning:Dunning ]
+	static belongsTo = [ invoice: Invoice, dunning: Dunning ]
 	static mapping = {
-		stage column:'credit_memo_stage_id'
+		stage column: 'credit_memo_stage_id'
 	}
 	static searchable = true
 
-	CreditMemoStage stage	
+	CreditMemoStage stage
 	Date paymentDate
 	BigDecimal paymentAmount
 	PaymentMethod paymentMethod
-	
+
 	{
 		type = 'C'
 	}

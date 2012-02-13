@@ -1,0 +1,1 @@
+<g:select name="${property}" from="${org.amcworld.springcrm.TermsAndConditions.list()}" optionKey="id" value="${bean?."${property}"*.id}" multiple="true" />

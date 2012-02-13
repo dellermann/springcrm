@@ -7,23 +7,23 @@ import org.springframework.context.MessageSourceResolvable
 class CalendarEvent {
 
     static constraints = {
-		subject(nullable:false, blank:false)
-		location(nullable:true)
-		description(nullable:true)
-		start(nullable:false)
-		end(nullable:false)
+		subject(nullable: false, blank: false, widget: 'autonumber')
+		location(nullable: true)
+		description(nullable: true)
+		start(nullable: false)
+		end(nullable: false)
 		allDay()
-		recurrence(nullable:false)
-		organization(nullable:true)
-        owner(nullable:false)
+		recurrence(nullable: false)
+		organization(nullable: true)
+        owner(nullable: false)
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization:Organization, owner:User ]
+    static belongsTo = [ organization: Organization, owner: User ]
 	static embedded = [ 'recurrence' ]
 	static mapping = {
 		sort 'start'
-		description type:'text'
+		description type: 'text'
 	}
 	static searchable = true
 
@@ -53,10 +53,10 @@ class CalendarEvent {
 
     CalendarEvent eventAtDate(Date d) {
         def res = new CalendarEvent([
-            subject:subject, location:location, description:description,
-            start:d, end:new Date(d.time + end.time - start.time),
-            allDay:allDay, organization:organization, owner:owner,
-            dateCreated:dateCreated, lastUpdated:lastUpdated
+            subject: subject, location: location, description: description,
+            start: d, end: new Date(d.time + end.time - start.time),
+            allDay: allDay, organization: organization, owner: owner,
+            dateCreated: dateCreated, lastUpdated: lastUpdated
         ])
         res.setId(ident())
         return res
@@ -70,13 +70,13 @@ class CalendarEvent {
 class RecurrenceData implements MessageSourceResolvable {
 
     static constraints = {
-		type(nullable:false, inList:[0, 10, 30, 40, 50, 60, 70])
-		until(nullable:true)
-		interval(nullable:false, min:1)
-		monthDay(nullable:true, range:1..31)
-		weekdays(nullable:true, maxSize:13)
-		weekdayOrd(nullable:true, range:-5..5)
-		month(nullable:true, range:1..12)
+		type(nullable: false, inList: [0, 10, 30, 40, 50, 60, 70])
+		until(nullable: true)
+		interval(nullable: false, min: 1)
+		monthDay(nullable: true, range: 1..31)
+		weekdays(nullable: true, maxSize: 13)
+		weekdayOrd(nullable: true, range: -5..5)
+		month(nullable: true, range: 1..12)
     }
 	static transients = [
 		'weekdaysAsList', 'weekdayNamesAsList', 'weekdayNames', 'monthName',
