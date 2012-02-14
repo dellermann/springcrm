@@ -1,5 +1,5 @@
 <g:applyLayout name="field">
-  <g:if test="${constraints.widget == 'textarea'}">
+  <g:if test="${'textarea' == constraints?.widget}">
   <g:textArea name="${property}" cols="${cols ?: 80}" rows="${rows ?: 5}" value="${value}" /><br />
   </g:if>
   <g:else>

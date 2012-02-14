@@ -4,11 +4,11 @@ class Quote extends InvoicingTransaction {
 
     static constraints = {
 		stage()
-		validUntil(nullable:true)
+		validUntil(nullable: true)
     }
-    static hasMany = [salesOrders:SalesOrder, invoices:Invoice]
+    static hasMany = [salesOrders: SalesOrder, invoices: Invoice]
 	static mapping = {
-		stage column:'quote_stage_id'
+		stage column: 'quote_stage_id'
 	}
 	static searchable = true
 

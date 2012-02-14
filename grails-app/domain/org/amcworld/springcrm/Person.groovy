@@ -3,49 +3,49 @@ package org.amcworld.springcrm
 class Person {
 
     static constraints = {
-        number(unique:true)
+        number(unique: true, widget: 'autonumber')
         organization()
-        salutation(nullable:true)
-        firstName(blank:false)
-        lastName(blank:false)
-        mailingAddrStreet(widget:'textarea', nullable:true)
-        mailingAddrPoBox(nullable:true)
-        mailingAddrPostalCode(nullable:true)
-        mailingAddrLocation(nullable:true)
-        mailingAddrState(nullable:true)
-        mailingAddrCountry(nullable:true)
-        otherAddrStreet(widget:'textarea', nullable:true)
-        otherAddrPoBox(nullable:true)
-        otherAddrPostalCode(nullable:true)
-        otherAddrLocation(nullable:true)
-        otherAddrState(nullable:true)
-        otherAddrCountry(nullable:true)
-        phone(maxSize:40, nullable:true)
-        phoneHome(maxSize:40, nullable:true)
-        mobile(maxSize:40, nullable:true)
-        fax(maxSize:40, nullable:true)
-        phoneAssistant(maxSize:40, nullable:true)
-        phoneOther(maxSize:40, nullable:true)
-        email1(email:true, nullable:true)
-        email2(email:true, nullable:true)
-        jobTitle(nullable:true)
-        department(nullable:true)
-        assistant(nullable:true)
-        birthday(nullable:true)
-        notes(widget:'textarea', nullable:true)
-		picture(nullable:true, maxSize:1048576)
+        salutation(nullable: true)
+        firstName(blank: false)
+        lastName(blank: false)
+        mailingAddrStreet(nullable: true, widget: 'textarea')
+        mailingAddrPoBox(nullable: true)
+        mailingAddrPostalCode(nullable: true)
+        mailingAddrLocation(nullable: true)
+        mailingAddrState(nullable: true)
+        mailingAddrCountry(nullable: true)
+        otherAddrStreet(nullable: true, widget: 'textarea')
+        otherAddrPoBox(nullable: true)
+        otherAddrPostalCode(nullable: true)
+        otherAddrLocation(nullable: true)
+        otherAddrState(nullable: true)
+        otherAddrCountry(nullable: true)
+        phone(nullable: true, maxSize: 40)
+        phoneHome(nullable: true, maxSize: 40)
+        mobile(nullable: true, maxSize: 40)
+        fax(nullable: true, maxSize: 40)
+        phoneAssistant(nullable: true, maxSize: 40)
+        phoneOther(nullable: true, maxSize: 40)
+        email1(nullable: true, email: true)
+        email2(nullable: true, email: true)
+        jobTitle(nullable: true)
+        department(nullable: true)
+        assistant(nullable: true)
+        birthday(nullable: true)
+        notes(nullable: true, widget: 'textarea')
+		picture(nullable: true, maxSize: 1048576)
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [organization:Organization]
+    static belongsTo = [organization: Organization]
     static hasMany = [
-		calls:Call, noteEntries:Note, quotes:Quote, salesOrders:SalesOrder,
-		invoices:Invoice
+		calls: Call, noteEntries: Note, quotes: Quote, salesOrders: SalesOrder,
+		invoices: Invoice
 	]
 	static mapping = {
-		calls column:'Person'
+		calls column: 'Person'
 		sort 'lastName'
-		notes type:'text'
+		notes type: 'text'
 	}
 	static searchable = true
 	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']

@@ -30,10 +30,16 @@
     <div class="col col-l">
       <f:field bean="${creditMemoInstance}" property="number" />
       <f:field bean="${creditMemoInstance}" property="subject" />
+      <g:ifModuleAllowed modules="contact">
       <f:field bean="${creditMemoInstance}" property="organization" />
       <f:field bean="${creditMemoInstance}" property="person" />
+      </g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="invoice">
       <f:field bean="${creditMemoInstance}" property="invoice" />
+      </g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="dunning">
       <f:field bean="${creditMemoInstance}" property="dunning" />
+      </g:ifModuleAllowed>
       <f:field bean="${creditMemoInstance}" property="stage" />
     </div>
     <div class="col col-r">
@@ -112,6 +118,6 @@
 <fieldset>
   <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
   <div class="fieldset-content">
-    <f:field bean="${creditMemoInstance}" property="footerText" cols="80" rows="5" />
+    <f:field bean="${creditMemoInstance}" property="notes" cols="80" rows="5" />
   </div>
 </fieldset>

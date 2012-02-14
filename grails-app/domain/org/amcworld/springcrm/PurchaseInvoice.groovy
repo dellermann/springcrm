@@ -5,33 +5,33 @@ import static java.math.RoundingMode.HALF_UP
 class PurchaseInvoice {
 
     static constraints = {
-		number(blank:false, nullable:false)
-		subject(blank:false, nullable:false)
-		vendor(nullable:true)
-		vendorName(blank:false, nullable:false)
+		number(blank: false, nullable: false)
+		subject(blank: false, nullable: false)
+		vendor(nullable: true)
+		vendorName(blank: false, nullable: false)
 		docDate()
 		dueDate()
 		stage()
-		paymentDate(nullable:true)
-		paymentAmount(nullable:true)
-		paymentMethod(nullable:true)
-		items(minSize:1)
-		notes(widget:'textarea', nullable:true)
-		documentFile(nullable:true)
-		discountPercent(scale:2, min:0.0, nullable:true)
-		discountAmount(scale:2, min:0.0, nullable:true)
-		shippingCosts(scale:2, min:0.0, nullable:true)
-        shippingTax(scale:1, min:0.0, nullable:true)
-		adjustment(scale:2, nullable:true)
-		total(scale:2)
+		paymentDate(nullable: true)
+		paymentAmount(nullable: true, widget: 'currency')
+		paymentMethod(nullable: true)
+		items(minSize: 1)
+		notes(nullable: true, widget: 'textarea')
+		documentFile(nullable: true)
+		discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
+		discountAmount(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+		shippingCosts(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+        shippingTax(nullable: true, scale: 1, min: 0.0, widget: 'percent')
+		adjustment(nullable: true, scale: 2, widget: 'currency')
+		total(scale: 2)
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ vendor:Organization ]
-	static hasMany = [ items:PurchaseInvoiceItem ]
+    static belongsTo = [ vendor: Organization ]
+	static hasMany = [ items: PurchaseInvoiceItem ]
 	static mapping = {
-		items cascade:'all-delete-orphan'
-		notes type:'text'
+		items cascade: 'all-delete-orphan'
+		notes type: 'text'
 	}
 	static searchable = true
 	static transients = [
@@ -139,7 +139,7 @@ class PurchaseInvoice {
 	 * @return	the tax rates and their associated tax value sums
 	 */
 	Map<Double, BigDecimal> getTaxRateSums() {
-		Map<Double, BigDecimal> res = [:]
+		Map<Double, BigDecimal> res = [: ]
 		for (item in items) {
 			double tax = item.tax.toDouble()
 			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
@@ -165,7 +165,7 @@ class PurchaseInvoice {
 	String toString() {
 		return subject
 	}
-	
+
 	def beforeValidate() {
 		total = computeTotal()
 	}

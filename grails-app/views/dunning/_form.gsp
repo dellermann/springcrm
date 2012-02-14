@@ -110,6 +110,6 @@
 <fieldset>
   <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
   <div class="fieldset-content">
-    <f:field bean="${dunningInstance}" property="footerText" cols="80" rows="5" />
+    <f:field bean="${dunningInstance}" property="notes" cols="80" rows="5" />
   </div>
 </fieldset>

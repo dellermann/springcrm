@@ -1,0 +1,1 @@
+<g:select name="allowedModulesAsList" from="${org.amcworld.springcrm.Modules.moduleNames}" valueMessagePrefix="module" value="${userInstance?.allowedModulesAsList}" multiple="true" size="7" />

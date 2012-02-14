@@ -3,17 +3,17 @@ package org.amcworld.springcrm
 class Service {
 
     static constraints = {
-		number(unique: true)
+		number(unique: true, widget: 'autonumber')
 		name(blank: false)
 		category(nullable: true)
-		quantity(min: 0.0d)
+		quantity(min: 0.0)
 		unit(nullable: true)
-		unitPrice(scale: 2, min: 0.0d)
+		unitPrice(scale: 2, min: 0.0, widget: 'currency')
 		taxRate(nullable: true)
-		commission(min: 0.0d)
+		commission(nullable: true, min: 0.0, widget: 'percent')
 		salesStart(nullable: true)
 		salesEnd(nullable: true)
-        description(widget: 'textarea', nullable: true)
+        description(nullable: true, widget: 'textarea')
 		dateCreated()
 		lastUpdated()
     }
@@ -29,11 +29,11 @@ class Service {
 	int number
 	String name
 	ServiceCategory category
-	double quantity
+	BigDecimal quantity
 	Unit unit
-	double unitPrice
+	BigDecimal unitPrice
 	TaxRate taxRate
-	double commission
+	BigDecimal commission
 	Date salesStart
 	Date salesEnd
 	String description

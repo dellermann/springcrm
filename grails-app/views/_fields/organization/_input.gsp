@@ -1,2 +1,2 @@
-<input type="text" id="organization" value="${bean?.organization?.name}" size="35" data-find-url="${createLink(controller: 'organization', action: 'find')}" />
-<input type="hidden" name="organization.id" id="organization.id" value="${bean?.organization?.id}" />
+<input type="text" id="${property}" value="${bean?."${property}"?.name}" size="35" data-find-url="${createLink(controller: 'organization', action: 'find')}" />
+<input type="hidden" name="${property}.id" id="${property}.id" value="${bean?."${property}"?.id}" />

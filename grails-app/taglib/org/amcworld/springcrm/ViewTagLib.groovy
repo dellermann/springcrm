@@ -54,7 +54,7 @@ class ViewTagLib {
 		out.println "<input type=\"date\" name=\"${name}_date\" id=\"${id}-date\" value=\"${c ? formatDate(date: c, formatName: 'default.format.date') : ''}\" size=\"10\" class=\"date-input date-input-date\" />"
 
 		if (precision >= PRECISION_RANKINGS['hour']) {
-			out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${c ? formatDate(date: c, formatName: 'default.format.time') : ''}\" size=\"5\" class=\"date-input date-input-time\" />"
+			out.println "<input type=\"time\" name=\"${name}_time\" id=\"${id}-time\" value=\"${c ? formatDate(date: c, formatName: 'default.format.time') : ''}\" size=\"5\" class=\"date-input date-input-time\" />"
 		}
 	}
 

@@ -2,22 +2,22 @@ package org.amcworld.springcrm
 
 class InvoicingItem {
 
-	static belongsTo = [invoicingTransaction:InvoicingTransaction]
+	static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
-		number(blank:false)
-		quantity(min:0.0)
+		number(blank: false)
+		quantity(min: 0.0)
 		unit()
-		name(blank:false)
-		description(nullable:true)
-		unitPrice(scale:2)
-		tax(scale:1, min:0.0, nullable:false)
+		name(blank: false)
+		description(nullable: true)
+		unitPrice(scale: 2, widget: 'currency')
+		tax(nullable: false, scale: 1, min: 0.0, widget: 'percent')
     }
 	static mapping = {
-		description type:'text'
+		description type: 'text'
 	}
-	static searchable = [only:['number', 'name', 'description']]
+	static searchable = [only: ['number', 'name', 'description']]
 	static transients = ['total']
-		
+
 	String number
 	BigDecimal quantity
 	String unit
@@ -25,7 +25,7 @@ class InvoicingItem {
 	String description
 	BigDecimal unitPrice
 	BigDecimal tax
-	
+
 	InvoicingItem() {}
 
 	InvoicingItem(InvoicingItem i) {
@@ -37,19 +37,19 @@ class InvoicingItem {
 		unitPrice = i.unitPrice
 		tax = i.tax
 	}
-	
+
 	BigDecimal getQuantity() {
 		return quantity ?: 0
 	}
-	
+
 	BigDecimal getUnitPrice() {
 		return unitPrice ?: 0
 	}
-	
+
 	BigDecimal getTotal() {
 		return getQuantity() * getUnitPrice()
 	}
-	
+
 	String toString() {
 		return name
 	}

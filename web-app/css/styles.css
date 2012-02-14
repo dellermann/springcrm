@@ -1007,7 +1007,12 @@ button, input[type=button], input[type=date], input[type=datetime],
   -moz-border-radius: .2em;
   -webkit-border-radius: .2em;
 }
-input[type=text], input[type=password], textarea {
+input[type=date], input[type=datetime], input[type=datetime-local], 
+  input[type=email], input[type=file], input[type=month], input[type=number], 
+  input[type=password], input[type=range], input[type=search], input[type=tel], 
+  input[type=text], input[type=time], input[type=url], input[type=week], 
+  textarea 
+{
   padding: .1em .2em;
 }
 input[type=text]:focus, input[type=password]:focus, select:focus, 

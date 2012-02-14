@@ -3,46 +3,46 @@ package org.amcworld.springcrm
 class Organization {
 
     static constraints = {
-        number(unique:'recType')
-		recType(range:1..3)
-        name(blank:false)
-        billingAddrStreet(widget:'textarea', nullable:true)
-        billingAddrPoBox(nullable:true)
-        billingAddrPostalCode(nullable:true)
-        billingAddrLocation(nullable:true)
-        billingAddrState(nullable:true)
-        billingAddrCountry(nullable:true)
-        shippingAddrStreet(widget:'textarea', nullable:true)
-        shippingAddrPoBox(nullable:true)
-        shippingAddrPostalCode(nullable:true)
-        shippingAddrLocation(nullable:true)
-        shippingAddrState(nullable:true)
-        shippingAddrCountry(nullable:true)
-        phone(maxSize:40, nullable:true)
-        fax(maxSize:40, nullable:true)
-        phoneOther(maxSize:40, nullable:true)
-        email1(email:true, nullable:true)
-        email2(email:true, nullable:true)
-        website(url:/\s*/, nullable:true)
-		legalForm(nullable:true)
-        type(nullable:true)
-        industry(nullable:true)
-        owner(nullable:true)
-        numEmployees(nullable:true)
-        rating(nullable:true)
-        notes(widget:'textarea', nullable:true)
+        number(unique: 'recType', widget: 'autonumber')
+		recType(range: 1..3)
+        name(blank: false)
+        billingAddrStreet(nullable: true, widget: 'textarea')
+        billingAddrPoBox(nullable: true)
+        billingAddrPostalCode(nullable: true)
+        billingAddrLocation(nullable: true)
+        billingAddrState(nullable: true)
+        billingAddrCountry(nullable: true)
+        shippingAddrStreet(nullable: true, widget: 'textarea')
+        shippingAddrPoBox(nullable: true)
+        shippingAddrPostalCode(nullable: true)
+        shippingAddrLocation(nullable: true)
+        shippingAddrState(nullable: true)
+        shippingAddrCountry(nullable: true)
+        phone(nullable: true, maxSize: 40)
+        fax(nullable: true, maxSize: 40)
+        phoneOther(nullable: true, maxSize: 40)
+        email1(nullable: true, email: true)
+        email2(nullable: true, email: true)
+        website(nullable: true, url: /\s*/)
+		legalForm(nullable: true)
+        type(nullable: true)
+        industry(nullable: true)
+        owner(nullable: true)
+        numEmployees(nullable: true)
+        rating(nullable: true)
+        notes(nullable: true, widget: 'textarea')
 		dateCreated()
 		lastUpdated()
     }
     static hasMany = [
-		persons:Person, calls:Call, noteEntries:Note, quotes:Quote,
-		salesOrders:SalesOrder, invoices:Invoice,
-		purchaseInvoices:PurchaseInvoice
+		persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
+		salesOrders: SalesOrder, invoices: Invoice,
+		purchaseInvoices: PurchaseInvoice
 	]
 	static mapping = {
-		calls column:'Organization'
+		calls column: 'Organization'
 		sort 'name'
-		notes type:'text'
+		notes type: 'text'
 	}
 	static searchable = true
 	static transients = [

@@ -3,21 +3,21 @@ package org.amcworld.springcrm
 class Product {
 
     static constraints = {
-		number(unique: true)
+		number(unique: true, widget: 'autonumber')
 		name(blank: false)
 		category(nullable: true)
 		manufacturer(nullable: true)
 		retailer(nullable: true)
-		quantity(min: 0.0d)
+		quantity(min: 0.0)
 		unit(nullable: true)
-		unitPrice(scale: 2, min: 0.0d)
+		unitPrice(scale: 2, min: 0.0, widget: 'currency')
 		taxRate(nullable: true)
-		purchasePrice(nullable: true, scale: 2, min: 0.0)
+		purchasePrice(nullable: true, scale: 2, min: 0.0, widget: 'currency')
 		weight(nullable: true, min: 0.0)
-		commission(min: 0.0d)
+		commission(nullable: true, min: 0.0, widget: 'percent')
 		salesStart(nullable: true)
 		salesEnd(nullable: true)
-        description(widget: 'textarea', nullable: true)
+        description(nullable: true, widget: 'textarea')
 		dateCreated()
 		lastUpdated()
     }
@@ -35,13 +35,13 @@ class Product {
 	ProductCategory category
 	String manufacturer
 	String retailer
-	double quantity
+	BigDecimal quantity
 	Unit unit
-	double unitPrice
+	BigDecimal unitPrice
 	TaxRate taxRate
 	BigDecimal purchasePrice
 	BigDecimal weight
-	double commission
+	BigDecimal commission
 	Date salesStart
 	Date salesEnd
 	String description

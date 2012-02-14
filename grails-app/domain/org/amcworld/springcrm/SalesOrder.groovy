@@ -4,14 +4,14 @@ class SalesOrder extends InvoicingTransaction {
 
     static constraints = {
 		stage()
-		dueDate(nullable:true)
-		deliveryDate(nullable:true)
-		quote(nullable:true)
+		dueDate(nullable: true)
+		deliveryDate(nullable: true)
+		quote(nullable: true)
     }
-    static belongsTo = [quote:Quote]
-    static hasMany = [invoices:Invoice]
+    static belongsTo = [quote: Quote]
+    static hasMany = [invoices: Invoice]
 	static mapping = {
-		stage column:'so_stage_id'
+		stage column: 'so_stage_id'
 	}
 	static searchable = true
 

@@ -3,23 +3,23 @@ package org.amcworld.springcrm
 class User {
 
     static constraints = {
-		userName(blank:false, nullable:false, unique:true)
-		password(blank:false, password:true)
-		firstName(blank:false)
-		lastName(blank:false)
-        phone(maxSize:40, nullable:true)
-        phoneHome(maxSize:40, nullable:true)
-        mobile(maxSize:40, nullable:true)
-        fax(maxSize:40, nullable:true)
-        email(blank:false, nullable:false, email:true)
+		userName(nullable: false, blank: false, unique: true)
+		password(blank: false, password: true)
+		firstName(blank: false)
+		lastName(blank: false)
+        phone(nullable: true, maxSize: 40)
+        phoneHome(nullable: true, maxSize: 40)
+        mobile(nullable: true, maxSize: 40)
+        fax(nullable: true, maxSize: 40)
+        email(nullable: true, blank: false, email: true)
 		admin()
-		allowedModules(nullable:true)
+		allowedModules(nullable: true)
 		settings()
 		dateCreated()
 		lastUpdated()
     }
 	static mapping = {
-		allowedModules type:'text'
+		allowedModules type: 'text'
     }
 	static transients = [
 		'fullName', 'allowedModulesAsList', 'allowedControllers'
