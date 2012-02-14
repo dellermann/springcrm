@@ -3,16 +3,20 @@
   <h4><g:message code="calendarEvent.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${calendarEventInstance}" property="subject" />
-      <f:field bean="${calendarEventInstance}" property="start" precision="minute" />
-      <f:field bean="${calendarEventInstance}" property="end" precision="minute" />
-      <f:field bean="${calendarEventInstance}" property="allDay" />
+      <div class="form">
+        <f:field bean="${calendarEventInstance}" property="subject" />
+        <f:field bean="${calendarEventInstance}" property="start" precision="minute" />
+        <f:field bean="${calendarEventInstance}" property="end" precision="minute" />
+        <f:field bean="${calendarEventInstance}" property="allDay" />
+      </div>
     </div>
     <div class="col col-r">
-      <g:ifModuleAllowed modules="contact">
-      <f:field bean="${calendarEventInstance}" property="organization" />
-      </g:ifModuleAllowed>
-      <f:field bean="${calendarEventInstance}" property="location" />
+      <div class="form">
+        <g:ifModuleAllowed modules="contact">
+        <f:field bean="${calendarEventInstance}" property="organization" />
+        </g:ifModuleAllowed>
+        <f:field bean="${calendarEventInstance}" property="location" />
+      </div>
     </div>
   </div>
 </fieldset>

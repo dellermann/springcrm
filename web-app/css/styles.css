@@ -905,14 +905,13 @@ footer {
 }
 
 /* page layout */
+.multicol-content {
+  display: table;
+}
 .col {
+  display: table-cell;
+  vertical-align: top;
   width: 50%;
-}
-.col-l {
-  float: left;
-}
-.col-r {
-  float: right;
 }
 
 /* lists */
@@ -925,7 +924,7 @@ footer {
 }
 
 /* form layout */
-.data-sheet, .multicol-content .col, .form-fragment {
+.data-sheet, .form, .form-fragment {
   display: table;
 }
 .data-sheet {

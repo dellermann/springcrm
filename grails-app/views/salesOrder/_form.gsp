@@ -26,21 +26,25 @@
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${salesOrderInstance}" property="number" />
-      <f:field bean="${salesOrderInstance}" property="subject" />
-      <f:field bean="${salesOrderInstance}" property="organization" />
-      <f:field bean="${salesOrderInstance}" property="person" />
-      <g:ifModuleAllowed modules="quote">
-      <f:field bean="${salesOrderInstance}" property="quote" />
-      </g:ifModuleAllowed>
-      <f:field bean="${salesOrderInstance}" property="stage" />
+      <div class="form">
+        <f:field bean="${salesOrderInstance}" property="number" />
+        <f:field bean="${salesOrderInstance}" property="subject" />
+        <f:field bean="${salesOrderInstance}" property="organization" />
+        <f:field bean="${salesOrderInstance}" property="person" />
+        <g:ifModuleAllowed modules="quote">
+        <f:field bean="${salesOrderInstance}" property="quote" />
+        </g:ifModuleAllowed>
+        <f:field bean="${salesOrderInstance}" property="stage" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${salesOrderInstance}" property="docDate" />
-      <f:field bean="${salesOrderInstance}" property="dueDate" />
-      <f:field bean="${salesOrderInstance}" property="shippingDate" />
-      <f:field bean="${salesOrderInstance}" property="carrier" />
-      <f:field bean="${salesOrderInstance}" property="deliveryDate" />
+      <div class="form">
+        <f:field bean="${salesOrderInstance}" property="docDate" />
+        <f:field bean="${salesOrderInstance}" property="dueDate" />
+        <f:field bean="${salesOrderInstance}" property="shippingDate" />
+        <f:field bean="${salesOrderInstance}" property="carrier" />
+        <f:field bean="${salesOrderInstance}" property="deliveryDate" />
+      </div>
     </div>
   </div>
 </fieldset>

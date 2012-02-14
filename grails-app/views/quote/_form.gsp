@@ -20,17 +20,21 @@
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${quoteInstance}" property="number" />
-      <f:field bean="${quoteInstance}" property="subject" />
-      <f:field bean="${quoteInstance}" property="organization" />
-      <f:field bean="${quoteInstance}" property="person" />
-      <f:field bean="${quoteInstance}" property="stage" />
+      <div class="form">
+        <f:field bean="${quoteInstance}" property="number" />
+        <f:field bean="${quoteInstance}" property="subject" />
+        <f:field bean="${quoteInstance}" property="organization" />
+        <f:field bean="${quoteInstance}" property="person" />
+        <f:field bean="${quoteInstance}" property="stage" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${quoteInstance}" property="docDate" />
-      <f:field bean="${quoteInstance}" property="validUntil" />
-      <f:field bean="${quoteInstance}" property="shippingDate" />
-      <f:field bean="${quoteInstance}" property="carrier" />
+      <div class="form">
+        <f:field bean="${quoteInstance}" property="docDate" />
+        <f:field bean="${quoteInstance}" property="validUntil" />
+        <f:field bean="${quoteInstance}" property="shippingDate" />
+        <f:field bean="${quoteInstance}" property="carrier" />
+      </div>
     </div>
   </div>
 </fieldset>

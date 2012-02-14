@@ -3,17 +3,21 @@
   <h4><g:message code="call.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${callInstance}" property="subject" />
-      <f:field bean="${callInstance}" property="start" precision="minute" />
+      <div class="form">
+        <f:field bean="${callInstance}" property="subject" />
+        <f:field bean="${callInstance}" property="start" precision="minute" />
+      </div>
     </div>
     <div class="col col-r">
-      <g:ifModuleAllowed modules="contact">
-      <f:field bean="${callInstance}" property="organization" />
-      <f:field bean="${callInstance}" property="person" />
-      </g:ifModuleAllowed>
-      <f:field bean="${callInstance}" property="phone" />
-      <f:field bean="${callInstance}" property="type" />
-      <f:field bean="${callInstance}" property="status" />
+      <div class="form">
+        <g:ifModuleAllowed modules="contact">
+        <f:field bean="${callInstance}" property="organization" />
+        <f:field bean="${callInstance}" property="person" />
+        </g:ifModuleAllowed>
+        <f:field bean="${callInstance}" property="phone" />
+        <f:field bean="${callInstance}" property="type" />
+        <f:field bean="${callInstance}" property="status" />
+      </div>
     </div>
   </div>
 </fieldset>

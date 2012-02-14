@@ -1,11 +1,12 @@
 <nav>
   <ul id="main-menu">
     <li>
-      <a href="#"><g:message code="menu.home" default="Home" /></a>
+      <g:link uri="/"><g:message code="menu.home" default="Home" /></g:link>
       <ul>
         <li><g:link uri="/"><g:message code="menu.sub.homepage" default="Home page" /></g:link></li>
         <g:ifModuleAllowed modules="calendar"><li><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="call"><li><g:link controller="call"><g:message code="call.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="note"><li><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>
     </li>
@@ -16,11 +17,9 @@
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
-        <li><hr /></li>
         <!--<li><a href="#">Leads</a></li>
         <li><a href="#">Kalender</a></li>
         <li><a href="#">Postfach</a></li>-->
-        <g:ifModuleAllowed modules="note"><li><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifModuleAllowed>
       </ul>
     </li>
     <li>

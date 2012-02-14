@@ -3,12 +3,16 @@
   <h4><g:message code="note.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${noteInstance}" property="number" />
-      <f:field bean="${noteInstance}" property="title" />
+      <div class="form">
+        <f:field bean="${noteInstance}" property="number" />
+        <f:field bean="${noteInstance}" property="title" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${noteInstance}" property="organization" />
-      <f:field bean="${noteInstance}" property="person" />
+      <div class="form">
+        <f:field bean="${noteInstance}" property="organization" />
+        <f:field bean="${noteInstance}" property="person" />
+      </div>
     </div>
   </div>
 </fieldset>

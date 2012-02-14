@@ -28,27 +28,31 @@
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${creditMemoInstance}" property="number" />
-      <f:field bean="${creditMemoInstance}" property="subject" />
-      <g:ifModuleAllowed modules="contact">
-      <f:field bean="${creditMemoInstance}" property="organization" />
-      <f:field bean="${creditMemoInstance}" property="person" />
-      </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="invoice">
-      <f:field bean="${creditMemoInstance}" property="invoice" />
-      </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="dunning">
-      <f:field bean="${creditMemoInstance}" property="dunning" />
-      </g:ifModuleAllowed>
-      <f:field bean="${creditMemoInstance}" property="stage" />
+      <div class="form">
+        <f:field bean="${creditMemoInstance}" property="number" />
+        <f:field bean="${creditMemoInstance}" property="subject" />
+        <g:ifModuleAllowed modules="contact">
+        <f:field bean="${creditMemoInstance}" property="organization" />
+        <f:field bean="${creditMemoInstance}" property="person" />
+        </g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="invoice">
+        <f:field bean="${creditMemoInstance}" property="invoice" />
+        </g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="dunning">
+        <f:field bean="${creditMemoInstance}" property="dunning" />
+        </g:ifModuleAllowed>
+        <f:field bean="${creditMemoInstance}" property="stage" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${creditMemoInstance}" property="docDate" />
-      <f:field bean="${creditMemoInstance}" property="shippingDate" />
-      <f:field bean="${creditMemoInstance}" property="carrier" />
-      <f:field bean="${creditMemoInstance}" property="paymentDate" />
-      <f:field bean="${creditMemoInstance}" property="paymentAmount" />
-      <f:field bean="${creditMemoInstance}" property="paymentMethod" />
+      <div class="form">
+        <f:field bean="${creditMemoInstance}" property="docDate" />
+        <f:field bean="${creditMemoInstance}" property="shippingDate" />
+        <f:field bean="${creditMemoInstance}" property="carrier" />
+        <f:field bean="${creditMemoInstance}" property="paymentDate" />
+        <f:field bean="${creditMemoInstance}" property="paymentAmount" />
+        <f:field bean="${creditMemoInstance}" property="paymentMethod" />
+      </div>
     </div>
   </div>
 </fieldset>

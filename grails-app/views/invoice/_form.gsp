@@ -28,26 +28,30 @@
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${invoiceInstance}" property="number" />
-      <f:field bean="${invoiceInstance}" property="subject" />
-      <f:field bean="${invoiceInstance}" property="organization" />
-      <f:field bean="${invoiceInstance}" property="person" />
-      <g:ifModuleAllowed modules="quote">
-      <f:field bean="${invoiceInstance}" property="quote" />
-      </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="salesOrder">
-      <f:field bean="${invoiceInstance}" property="salesOrder" />
-      </g:ifModuleAllowed>
-      <f:field bean="${invoiceInstance}" property="stage" />
+      <div class="form">
+        <f:field bean="${invoiceInstance}" property="number" />
+        <f:field bean="${invoiceInstance}" property="subject" />
+        <f:field bean="${invoiceInstance}" property="organization" />
+        <f:field bean="${invoiceInstance}" property="person" />
+        <g:ifModuleAllowed modules="quote">
+        <f:field bean="${invoiceInstance}" property="quote" />
+        </g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="salesOrder">
+        <f:field bean="${invoiceInstance}" property="salesOrder" />
+        </g:ifModuleAllowed>
+        <f:field bean="${invoiceInstance}" property="stage" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${invoiceInstance}" property="docDate" />
-      <f:field bean="${invoiceInstance}" property="dueDatePayment" />
-      <f:field bean="${invoiceInstance}" property="shippingDate" />
-      <f:field bean="${invoiceInstance}" property="carrier" />
-      <f:field bean="${invoiceInstance}" property="paymentDate" />
-      <f:field bean="${invoiceInstance}" property="paymentAmount" />
-      <f:field bean="${invoiceInstance}" property="paymentMethod" />
+      <div class="form">
+        <f:field bean="${invoiceInstance}" property="docDate" />
+        <f:field bean="${invoiceInstance}" property="dueDatePayment" />
+        <f:field bean="${invoiceInstance}" property="shippingDate" />
+        <f:field bean="${invoiceInstance}" property="carrier" />
+        <f:field bean="${invoiceInstance}" property="paymentDate" />
+        <f:field bean="${invoiceInstance}" property="paymentAmount" />
+        <f:field bean="${invoiceInstance}" property="paymentMethod" />
+      </div>
     </div>
   </div>
 </fieldset>

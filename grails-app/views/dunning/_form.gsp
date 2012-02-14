@@ -25,22 +25,26 @@
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${dunningInstance}" property="number" />
-      <f:field bean="${dunningInstance}" property="subject" />
-      <f:field bean="${dunningInstance}" property="organization" />
-      <f:field bean="${dunningInstance}" property="person" />
-      <f:field bean="${dunningInstance}" property="invoice" />
-      <f:field bean="${dunningInstance}" property="stage" />
-      <f:field bean="${dunningInstance}" property="level" />
+      <div class="form">
+        <f:field bean="${dunningInstance}" property="number" />
+        <f:field bean="${dunningInstance}" property="subject" />
+        <f:field bean="${dunningInstance}" property="organization" />
+        <f:field bean="${dunningInstance}" property="person" />
+        <f:field bean="${dunningInstance}" property="invoice" />
+        <f:field bean="${dunningInstance}" property="stage" />
+        <f:field bean="${dunningInstance}" property="level" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${dunningInstance}" property="docDate" />
-      <f:field bean="${dunningInstance}" property="dueDatePayment" />
-      <f:field bean="${dunningInstance}" property="shippingDate" />
-      <f:field bean="${dunningInstance}" property="carrier" />
-      <f:field bean="${dunningInstance}" property="paymentDate" />
-      <f:field bean="${dunningInstance}" property="paymentAmount" />
-      <f:field bean="${dunningInstance}" property="paymentMethod" />
+      <div class="form">
+        <f:field bean="${dunningInstance}" property="docDate" />
+        <f:field bean="${dunningInstance}" property="dueDatePayment" />
+        <f:field bean="${dunningInstance}" property="shippingDate" />
+        <f:field bean="${dunningInstance}" property="carrier" />
+        <f:field bean="${dunningInstance}" property="paymentDate" />
+        <f:field bean="${dunningInstance}" property="paymentAmount" />
+        <f:field bean="${dunningInstance}" property="paymentMethod" />
+      </div>
     </div>
   </div>
 </fieldset>

@@ -24,15 +24,17 @@
         <h4><g:message code="config.fieldset.currency.label" default="Currency settings" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label">
-                <label for="number"><g:message code="config.currencySymbol.label" default="Currency symbol" /></label>
-              </div>
-              <div class="field${hasErrors(bean: configData, field: 'currency', ' error')}">
-                <g:textField name="config.currency" value="${configData.currency}" size="5" />
-                <g:hasErrors bean="${configData}" field="currency">
-                  <span class="error-msg"><g:eachError bean="${configData}" field="currency"><g:message error="${it}" /> </g:eachError></span>
-                </g:hasErrors>
+            <div class="form">
+              <div class="row">
+                <div class="label">
+                  <label for="number"><g:message code="config.currencySymbol.label" default="Currency symbol" /></label>
+                </div>
+                <div class="field${hasErrors(bean: configData, field: 'currency', ' error')}">
+                  <g:textField name="config.currency" value="${configData.currency}" size="5" />
+                  <g:hasErrors bean="${configData}" field="currency">
+                    <span class="error-msg"><g:eachError bean="${configData}" field="currency"><g:message error="${it}" /> </g:eachError></span>
+                  </g:hasErrors>
+                </div>
               </div>
             </div>
           </div>

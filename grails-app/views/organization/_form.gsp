@@ -3,23 +3,27 @@
   <h4><g:message code="organization.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${organizationInstance}" property="number" />
-      <f:field bean="${organizationInstance}" property="recType" />
-      <f:field bean="${organizationInstance}" property="name" />
-      <f:field bean="${organizationInstance}" property="legalForm" />
-      <f:field bean="${organizationInstance}" property="type" />
-      <f:field bean="${organizationInstance}" property="industry" />
-      <f:field bean="${organizationInstance}" property="rating" />
+      <div class="form">
+        <f:field bean="${organizationInstance}" property="number" />
+        <f:field bean="${organizationInstance}" property="recType" />
+        <f:field bean="${organizationInstance}" property="name" />
+        <f:field bean="${organizationInstance}" property="legalForm" />
+        <f:field bean="${organizationInstance}" property="type" />
+        <f:field bean="${organizationInstance}" property="industry" />
+        <f:field bean="${organizationInstance}" property="rating" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${organizationInstance}" property="phone" />
-      <f:field bean="${organizationInstance}" property="fax" />
-      <f:field bean="${organizationInstance}" property="phoneOther" />
-      <f:field bean="${organizationInstance}" property="email1" />
-      <f:field bean="${organizationInstance}" property="email2" />
-      <f:field bean="${organizationInstance}" property="website" />
-      <f:field bean="${organizationInstance}" property="owner" />
-      <f:field bean="${organizationInstance}" property="numEmployees" size="10" />
+      <div class="form">
+        <f:field bean="${organizationInstance}" property="phone" />
+        <f:field bean="${organizationInstance}" property="fax" />
+        <f:field bean="${organizationInstance}" property="phoneOther" />
+        <f:field bean="${organizationInstance}" property="email1" />
+        <f:field bean="${organizationInstance}" property="email2" />
+        <f:field bean="${organizationInstance}" property="website" />
+        <f:field bean="${organizationInstance}" property="owner" />
+        <f:field bean="${organizationInstance}" property="numEmployees" size="10" />
+      </div>
     </div>
   </div>
 </fieldset>

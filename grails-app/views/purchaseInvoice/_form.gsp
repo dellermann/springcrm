@@ -27,20 +27,24 @@
   <h4><g:message code="purchaseInvoice.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${purchaseInvoiceInstance}" property="number" />
-      <f:field bean="${purchaseInvoiceInstance}" property="subject" />
-      <g:ifModuleAllowed modules="contact">
-      <f:field bean="${purchaseInvoiceInstance}" property="vendor" />
-      </g:ifModuleAllowed>
-      <f:field bean="${purchaseInvoiceInstance}" property="documentFile" />
-      <f:field bean="${purchaseInvoiceInstance}" property="stage" />
+      <div class="form">
+        <f:field bean="${purchaseInvoiceInstance}" property="number" />
+        <f:field bean="${purchaseInvoiceInstance}" property="subject" />
+        <g:ifModuleAllowed modules="contact">
+        <f:field bean="${purchaseInvoiceInstance}" property="vendor" />
+        </g:ifModuleAllowed>
+        <f:field bean="${purchaseInvoiceInstance}" property="documentFile" />
+        <f:field bean="${purchaseInvoiceInstance}" property="stage" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${purchaseInvoiceInstance}" property="docDate" />
-      <f:field bean="${purchaseInvoiceInstance}" property="dueDate" />
-      <f:field bean="${purchaseInvoiceInstance}" property="paymentDate" />
-      <f:field bean="${purchaseInvoiceInstance}" property="paymentAmount" />
-      <f:field bean="${purchaseInvoiceInstance}" property="paymentMethod" />
+      <div class="form">
+        <f:field bean="${purchaseInvoiceInstance}" property="docDate" />
+        <f:field bean="${purchaseInvoiceInstance}" property="dueDate" />
+        <f:field bean="${purchaseInvoiceInstance}" property="paymentDate" />
+        <f:field bean="${purchaseInvoiceInstance}" property="paymentAmount" />
+        <f:field bean="${purchaseInvoiceInstance}" property="paymentMethod" />
+      </div>
     </div>
   </div>
 </fieldset>

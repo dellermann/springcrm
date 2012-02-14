@@ -3,26 +3,30 @@
   <h4><g:message code="person.fieldset.general.label" /></h4>
   <div class="multicol-content">
     <div class="col col-l">
-      <f:field bean="${personInstance}" property="number" />
-      <f:field bean="${personInstance}" property="salutation" />
-      <f:field bean="${personInstance}" property="firstName" />
-      <f:field bean="${personInstance}" property="lastName" />
-      <f:field bean="${personInstance}" property="organization" />
-      <f:field bean="${personInstance}" property="department" />
-      <f:field bean="${personInstance}" property="jobTitle" />
-      <f:field bean="${personInstance}" property="assistant" />
-      <f:field bean="${personInstance}" property="birthday" />
-      <f:field bean="${personInstance}" property="picture" />
+      <div class="form">
+        <f:field bean="${personInstance}" property="number" />
+        <f:field bean="${personInstance}" property="salutation" />
+        <f:field bean="${personInstance}" property="firstName" />
+        <f:field bean="${personInstance}" property="lastName" />
+        <f:field bean="${personInstance}" property="organization" />
+        <f:field bean="${personInstance}" property="department" />
+        <f:field bean="${personInstance}" property="jobTitle" />
+        <f:field bean="${personInstance}" property="assistant" />
+        <f:field bean="${personInstance}" property="birthday" />
+        <f:field bean="${personInstance}" property="picture" />
+      </div>
     </div>
     <div class="col col-r">
-      <f:field bean="${personInstance}" property="phone" />
-      <f:field bean="${personInstance}" property="phoneHome" />
-      <f:field bean="${personInstance}" property="mobile" />
-      <f:field bean="${personInstance}" property="fax" />
-      <f:field bean="${personInstance}" property="phoneAssistant" />
-      <f:field bean="${personInstance}" property="phoneOther" />
-      <f:field bean="${personInstance}" property="email1" />
-      <f:field bean="${personInstance}" property="email2" />
+      <div class="form">
+        <f:field bean="${personInstance}" property="phone" />
+        <f:field bean="${personInstance}" property="phoneHome" />
+        <f:field bean="${personInstance}" property="mobile" />
+        <f:field bean="${personInstance}" property="fax" />
+        <f:field bean="${personInstance}" property="phoneAssistant" />
+        <f:field bean="${personInstance}" property="phoneOther" />
+        <f:field bean="${personInstance}" property="email1" />
+        <f:field bean="${personInstance}" property="email2" />
+      </div>
     </div>
   </div>
 </fieldset>
