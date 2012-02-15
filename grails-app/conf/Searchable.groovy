@@ -55,7 +55,7 @@ searchable {
      *
      * Documentation for Compass settings is here: http://www.compass-project.org/docs/2.1.0M2/reference/html/core-settings.html
      */
-    compassSettings = [:]
+    compassSettings = [: ]
 
     /**
      * Default mapping property exclusions
@@ -79,7 +79,7 @@ searchable {
      * simple class types that can be represented as Strings (rather than references
      * or components) AND only required if overriding the built-in format.
      */
-    defaultFormats = [:]
+    defaultFormats = [: ]
 
     /**
      * Set default options for each SearchableService/Domain-class method, by method name.
@@ -120,7 +120,7 @@ searchable {
      * automatically (using Compass::GPS)?
      *
      * If false, you must manage the index manually using index/unindex/reindex
-     * 
+     *
      * XXX This value had to be set to false because the plugin threw an error
      * 	   when one-to-many relations were saved
      */
@@ -166,6 +166,16 @@ environments {
     production {
         searchable {
             // add your production settings here
+        }
+    }
+
+    live {
+        searchable {
+            // disable bulk index on startup
+            bulkIndexOnStartup = false
+
+            // use faster in-memory index
+            compassConnection = "ram://test-index"
         }
     }
 }

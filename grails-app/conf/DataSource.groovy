@@ -39,4 +39,10 @@ environments {
 			}
         }
     }
+    live {
+        dataSource {
+            dbCreate = 'none'
+            url = 'jdbc:mysql://localhost/springcrm_old?autoreconnect=true'
+        }
+    }
 }

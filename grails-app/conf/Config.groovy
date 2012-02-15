@@ -67,7 +67,9 @@ environments {
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
     }
-
+    live {
+        grails.serverURL = "http://localhost:8080/${appName}"
+    }
 }
 
 // log4j configuration
