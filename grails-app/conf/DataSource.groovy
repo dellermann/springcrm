@@ -42,7 +42,7 @@ environments {
     live {
         dataSource {
             dbCreate = 'none'
-            url = 'jdbc:mysql://localhost/springcrm_old?autoreconnect=true'
+            url = 'jdbc:mysql://db.amc-world.home/springcrm?autoreconnect=true'
         }
     }
 }

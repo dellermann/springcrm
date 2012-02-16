@@ -59,7 +59,6 @@ springcrm {
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.changeme.com"
     }
     development {
         grails.serverURL = "http://localhost:8080/${appName}"
@@ -68,7 +67,7 @@ environments {
         grails.serverURL = "http://localhost:8080/${appName}"
     }
     live {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "https://crm.amc-world.ath.cx/springcrm"
     }
 }
 
