@@ -3,8 +3,8 @@ package org.amcworld.springcrm
 class LoginFilters {
 
     def filters = {
-        login(controller: '*', controllerExclude: 'i18n', action: '*',
-              actionExclude: 'login|authenticate')
+        login(controller: '*', controllerExclude: 'i18n|install',
+              action: '*', actionExclude: 'login|authenticate')
         {
             before = {
 				if (!session?.user) {
@@ -15,7 +15,7 @@ class LoginFilters {
         }
 
 		permission(controller: '*',
-                   controllerExclude: 'notification|searchable|overview|i18n',
+                   controllerExclude: 'notification|searchable|overview|i18n|install',
                    action: '*',
                    actionExclude: 'login|authenticate|logout')
         {

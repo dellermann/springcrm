@@ -401,7 +401,7 @@ body {
 }
 #main-container h2 ~ nav {
   float: right;
-  width: 75%;
+  width: 50%;
 }
 #toolbar-container.fixed {
   left: 0;
@@ -1701,6 +1701,75 @@ form .invoicing-items-pos {
   margin-bottom: 2em;
 }
 
+/* the installer */
+#install-progress {
+  background: #97B42D;
+  background: -khtml-gradient(
+      linear, left top, left bottom, from(#B0C639), to(#80A322)
+    );
+  background: -moz-linear-gradient(top, #B0C639, #80A322);
+  background: -webkit-gradient(
+      linear, left top, left bottom, from(#B0C639), to(#80A322)
+    );
+  left: 0;
+  margin: 2em 0 0;
+  position: relative;
+  top: 0;
+}
+#install-progress li {
+  float: left;
+  list-style: none;
+  margin-bottom: 0;
+}
+#install-progress li.current {
+  background: #7B9C21;
+  background: -khtml-gradient(
+      linear, left top, left bottom, from(#9FBA31), to(#597F12)
+    );
+  background: -moz-linear-gradient(top, #9FBA31, #597F12);
+  background: -webkit-gradient(
+      linear, left top, left bottom, from(#9FBA31), to(#597F12)
+    );
+}
+#install-progress a {
+  background-image: url("../img/arrows-right.png");
+  background-repeat: no-repeat;
+  background-position: right center;
+  color: white;
+  display: block;
+  font-weight: bold;
+  left: 0;
+  margin-right: -4px;
+  padding: .6em 1.9em .6em 1.5em;
+  position: relative;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
+  top: 0;
+  z-index: 1;
+}
+#install-progress li:last-child a {
+  background-image: none;
+}
+.install-description {
+  margin-bottom: 2em;
+  width: 75%;
+}
+.warning {
+  background: #DDD;
+  border: .1em solid #CC171D;
+  border-radius: .3em;
+  color: #CC171D;
+  margin-top: 2em;
+  padding: 1em;
+  width: 75%;
+  -khtml-border-radius: .3em;
+  -moz-border-radius: .3em;
+  -webkit-border-radius: .3em;
+}
+.warning p:last-child {
+  margin-bottom: 0;
+}
+
+
 
 /*-----------------------------------
  *
@@ -1737,7 +1806,8 @@ form .invoicing-items-pos {
   #main-container-header:after, .multicol-content:after, 
   .header-with-menu:after, .letter-bar:after, 
   .springcrm-overviewpanels-panel-header:after,
-  .sel-values-list li:after, #panel-list ol:after, footer:after
+  .sel-values-list li:after, #panel-list ol:after, footer:after,
+  #install-progress:after
 {
   clear: both;
   content: ".";
