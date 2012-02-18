@@ -17,7 +17,7 @@ class Config {
         case Calendar:
             return Date.parseToStringDate(value).toCalendar()
         default:
-            return value.asType(type)
+            return value?.asType(type)
         }
     }
 
