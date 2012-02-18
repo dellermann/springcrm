@@ -10,11 +10,15 @@ class InstallService {
     ServletContext servletContext = SCH.servletContext
 
     boolean isInstallerDisabled() {
-        return !lockFile.exists()
+        return !enableFile.exists()
+    }
+
+    void enableInstaller() {
+        enableFile.createNewFile()
     }
 
     void disableInstaller() {
-        lockFile.delete()
+        enableFile.delete()
     }
 
     List<String> getBaseDataPackages() {
@@ -36,7 +40,7 @@ class InstallService {
         return new File(servletContext.getRealPath('/WEB-INF/data/install'))
     }
 
-    private File getLockFile() {
+    private File getEnableFile() {
         return new File(servletContext.getRealPath('/WEB-INF/data/install'), 'ENABLE_INSTALLER')
     }
 }

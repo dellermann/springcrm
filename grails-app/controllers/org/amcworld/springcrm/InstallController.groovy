@@ -38,7 +38,13 @@ class InstallController {
     }
 
     def finish() {
-        installService.disableInstaller()
         return [step: 3]
+    }
+
+    def finishSave() {
+        installService.disableInstaller()
+        Config installStatus = new Config(name: 'installStatus', value: 1)
+        installStatus.save(flush: true)
+        redirect(uri: '/')
     }
 }

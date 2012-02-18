@@ -10,7 +10,8 @@
     <h2><g:message code="install.finish.title" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link uri="/" class="green"><g:message code="install.btn.finish.label" /></g:link></li>
+        <li><g:link action="installBaseData" class="white"><g:message code="install.btn.previous.label" /></g:link></li>
+        <li><g:link action="finishSave" class="green"><g:message code="install.btn.finish.label" /></g:link></li>
       </ul>
     </nav>
   </div>
