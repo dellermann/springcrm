@@ -57,6 +57,7 @@
     </div>
   </div>
 </section>
+<script src="${createLink(controller: 'i18n', action: 'index')}"></script>
 <r:layoutResources />
 </body>
 </html>

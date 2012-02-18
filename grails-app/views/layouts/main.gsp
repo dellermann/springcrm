@@ -28,6 +28,7 @@
     <r:img uri="/img/spinner.gif" alt="${message(code: 'default.spinner.alt', default: 'Loading data…')}" />
   </div>
 </section>
+<script src="${createLink(controller: 'i18n', action: 'index')}"></script>
 <r:layoutResources />
 </body>
 </html>

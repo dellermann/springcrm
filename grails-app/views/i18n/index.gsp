@@ -1,0 +1,1 @@
+<%@ page contentType="text/javascript; charset=utf-8" %>var $L=function(key){"use strict";return $L._messages[key.replace(/\./g, "_")];},SPRINGCRM = SPRINGCRM || {};$L._messages={<g:each in="${messages}" var="msg">${msg.key}:${msg.value},</g:each>};
