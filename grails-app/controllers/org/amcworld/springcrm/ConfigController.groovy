@@ -1,16 +1,30 @@
 package org.amcworld.springcrm
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.commons.GrailsClass;
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.codehaus.groovy.grails.commons.GrailsClass
 
 
+/**
+ * The class {@code ConfigController} handles actions to configure system
+ * settings such as client data, currency, selection values etc.
+ *
+ * @author  Daniel Ellermann
+ * @version 0.9
+ */
 class ConfigController {
 
+    //-- Constants ------------------------------
+
+    /**
+     * A list of IDs of selector values which are considered read-only.
+     */
     protected static final List<Long> READONLY_IDS = [
         *600L..604L, *800L..804L, *900L..907L, *2100L..2103L, *2200L..2206L,
         *2500L..2504L
     ]
+
+
+    //-- Public methods -------------------------
 
     def index() {}
 
@@ -34,6 +48,20 @@ class ConfigController {
         } else {
             redirect(action: 'index')
         }
+    }
+
+    def loadClient() {
+        return [client: Client.load()]
+    }
+
+    def saveClient(Client client) {
+        if (client.hasErrors()) {
+            render(view: 'loadClient', model: [client: client])
+            return
+        }
+
+        client.save()
+        redirect(action: 'index')
     }
 
     def loadSelValues() {
@@ -142,6 +170,17 @@ class ConfigController {
         }
     }
 
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets the class for the given type of selector values.
+     *
+     * @param type  the name of the type; the targeted domain model class must
+     *              be a subclass of {@code SelValue}
+     * @return      the class of the selector value
+     * @see         SelValue
+     */
     private Class<?> getTypeClass(String type) {
         GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
         Class<?> cls = gc.clazz

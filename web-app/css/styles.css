@@ -1624,6 +1624,9 @@ form .invoicing-items-pos {
 .configuration-overview dd {
   margin-left: 0;
 }
+#configuration-client {
+  background-image: url("../img/configuration/client.png");
+}
 #configuration-currency {
   background-image: url("../img/configuration/currency.png");
 }
