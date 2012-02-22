@@ -96,7 +96,7 @@ class QuoteController {
             return
         }
 
-        return [quoteInstance: quoteInstance]
+        return [quoteInstance: quoteInstance, printTemplates: fopService.templateNames]
     }
 
     def edit() {
@@ -221,7 +221,8 @@ class QuoteController {
 				discountPercentAmount: quoteInstance.discountPercentAmount,
 				total: quoteInstance.total
 			],
-			watermark: params.duplicate ? 'duplicate' : ''
+			watermark: params.duplicate ? 'duplicate' : '',
+            client: Client.loadAsMap()
 		]
 		String xml = (data as XML).toString()
 //		println xml
@@ -232,15 +233,6 @@ class QuoteController {
 		}
 		fileName += ".pdf"
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream()
-		fopService.generatePdf(
-			new StringReader(xml), '/WEB-INF/data/fo/quote-fo.xsl', baos
-		)
-		response.contentType = 'application/pdf'
-		response.addHeader 'Content-Disposition',
-			"attachment; filename=\"${fileName}\""
-		response.contentLength = baos.size()
-		response.outputStream.write(baos.toByteArray())
-		response.outputStream.flush()
+        fopService.outputPdf(xml, 'quote', params.template, response, fileName)
 	}
 }

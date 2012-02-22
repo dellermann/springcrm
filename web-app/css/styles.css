@@ -116,7 +116,6 @@ table {
 
 /* general body settings */
 html {
-  /*color: #2f4e10;*/
   color: #444;
 }
 
@@ -517,6 +516,9 @@ body {
   list-style: none;
   margin-bottom: .5em;
 }
+#action-bar .menu a {
+  text-align: center;
+}
 #action-bar .button {
   box-sizing: border-box;
   width: 100%;
@@ -876,6 +878,7 @@ footer {
   margin: 0;
   position: absolute;
   right: 0;
+  z-index: 3;
   -khtml-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .6);
@@ -898,6 +901,7 @@ footer {
   padding: 0;
 }
 .menu a {
+  color: #444;
   text-align: left;
 }
 .menu .with-link a {
@@ -1078,8 +1082,13 @@ button.springcrm-autocompleteex-combobox {
 .auto-number label {
   top: -.4em !important;
 }
-.error input[type=text], .error input[type=password], .error select, 
-  .error textarea
+.error input[type=date], .error input[type=datetime], 
+  .error input[type=datetime-local], .error input[type=email], 
+  .error input[type=file], .error input[type=month], .error input[type=number],
+  .error input[type=password], .error input[type=range], 
+  .error input[type=search], .error input[type=tel], .error input[type=text], 
+  .error input[type=time], .error input[type=url], .error input[type=week],
+  .error select, .error textarea 
 {
   border: .1em solid #B51419;
 }

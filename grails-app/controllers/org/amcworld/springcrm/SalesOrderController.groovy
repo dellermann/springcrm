@@ -107,7 +107,7 @@ class SalesOrderController {
             return
         }
 
-        return [salesOrderInstance: salesOrderInstance]
+        return [salesOrderInstance: salesOrderInstance, printTemplates: fopService.templateNames]
     }
 
     def edit() {
@@ -232,7 +232,8 @@ class SalesOrderController {
 				discountPercentAmount: salesOrderInstance.discountPercentAmount,
 				total: salesOrderInstance.total
 			],
-			watermark: params.duplicate ? 'duplicate' : ''
+			watermark: params.duplicate ? 'duplicate' : '',
+            client: Client.loadAsMap()
 		]
 		String xml = (data as XML).toString()
 //		println xml
@@ -243,16 +244,8 @@ class SalesOrderController {
 		}
 		fileName += ".pdf"
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream()
-		fopService.generatePdf(
-			new StringReader(xml), '/WEB-INF/data/fo/sales-order-fo.xsl',
-			baos
-		)
-		response.contentType = 'application/pdf'
-		response.addHeader 'Content-Disposition',
-			"attachment; filename=\"${fileName}\""
-		response.contentLength = baos.size()
-		response.outputStream.write(baos.toByteArray())
-		response.outputStream.flush()
+        fopService.outputPdf(
+            xml, 'sales-order', params.template, response, fileName
+        )
 	}
 }

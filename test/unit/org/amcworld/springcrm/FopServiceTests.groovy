@@ -3,16 +3,21 @@ package org.amcworld.springcrm
 import grails.test.*
 
 class FopServiceTests extends GrailsUnitTestCase {
-
-    protected void setUp() {
-        super.setUp()
-    }
-
-    protected void tearDown() {
-        super.tearDown()
-    }
-
-    void testSomething() {
-
-    }
+//
+//    def fopService
+//
+//    protected void setUp() {
+//        super.setUp()
+//        fopService = mockFor(FopService)
+//    }
+//
+//    protected void tearDown() {
+//        super.tearDown()
+//    }
+//
+//    void testGetSystemTemplateDir() {
+//        File f = fopService.demand.systemTemplateDir
+//        assert f != null
+//        println f
+//    }
 }

@@ -131,7 +131,7 @@ class DunningController {
             return
         }
 
-        return [dunningInstance: dunningInstance]
+        return [dunningInstance: dunningInstance, printTemplates: fopService.templateNames]
     }
 
     def edit() {
@@ -323,7 +323,8 @@ class DunningController {
 				discountPercentAmount: dunningInstance.discountPercentAmount,
 				total: dunningInstance.total
 			],
-			watermark: params.duplicate ? 'duplicate' : ''
+			watermark: params.duplicate ? 'duplicate' : '',
+            client: Client.loadAsMap()
 		]
 		String xml = (data as XML).toString()
 //        println xml
@@ -334,16 +335,9 @@ class DunningController {
 		}
 		fileName += ".pdf"
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream()
-		fopService.generatePdf(
-			new StringReader(xml), '/WEB-INF/data/fo/dunning-fo.xsl', baos
-		)
-		response.contentType = 'application/pdf'
-		response.addHeader 'Content-Disposition',
-			"attachment; filename=\"${fileName}\""
-		response.contentLength = baos.size()
-		response.outputStream.write(baos.toByteArray())
-		response.outputStream.flush()
+        fopService.outputPdf(
+            xml, 'dunning', params.template, response, fileName
+        )
 	}
 
 	private InvoicingItem serviceToItem(Service s) {

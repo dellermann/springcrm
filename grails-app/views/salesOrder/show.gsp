@@ -32,8 +32,8 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><g:link action="print" id="${salesOrderInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label" /></g:link></li>
-      <li><g:link action="print" id="${salesOrderInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label" /></g:link></li>
+      <li class="menu"><g:link action="print" id="${salesOrderInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${salesOrderInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></li>
+      <li class="menu"><g:link action="print" id="${salesOrderInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${salesOrderInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></li>
       <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice" action="create" params="[salesOrder:salesOrderInstance?.id]" class="button medium white"><g:message code="salesOrder.button.createInvoice" /></g:link></li></g:ifModuleAllowed>
     </ul>
   </aside>

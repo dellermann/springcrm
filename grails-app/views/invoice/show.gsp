@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Invoice" %>
 <html>
 <head>
@@ -39,10 +38,10 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><g:link action="print" id="${invoiceInstance?.id}" class="button medium white" target="_blank"><g:message code="default.button.print.label" /></g:link></li>
-      <li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate:1]" class="button medium white" target="_blank"><g:message code="invoicingTransaction.button.printDuplicate.label" /></g:link></li>
-      <g:ifModuleAllowed modules="dunning"><li><g:link controller="dunning" action="create" params="[invoice:invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createDunning" /></g:link></li></g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo" action="create" params="[invoice:invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createCreditMemo" /></g:link></li></g:ifModuleAllowed>
+      <li class="menu"><g:link action="print" id="${invoiceInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${invoiceInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></li>
+      <li class="menu"><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></li>
+      <g:ifModuleAllowed modules="dunning"><li><g:link controller="dunning" action="create" params="[invoice: invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createDunning" /></g:link></li></g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo" action="create" params="[invoice: invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createCreditMemo" /></g:link></li></g:ifModuleAllowed>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -365,11 +364,11 @@
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'dunning', action:'listEmbedded', params:[invoice:invoiceInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params:[invoice: invoiceInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
-            <g:link controller="dunning" action="create" params="[invoice:invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
+            <g:link controller="dunning" action="create" params="[invoice: invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -377,11 +376,11 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'creditMemo', action:'listEmbedded', params:[invoice:invoiceInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [invoice: invoiceInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">
-            <g:link controller="creditMemo" action="create" params="[invoice:invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'creditMemo.label')]" /></g:link>
+            <g:link controller="creditMemo" action="create" params="[invoice: invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'creditMemo.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>

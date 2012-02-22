@@ -10,7 +10,7 @@
     <h2><g:message code="install.createAdmin.title" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="index" class="white"><g:message code="install.btn.previous.label" /></g:link></li>
+        <li><g:link action="clientData" class="white"><g:message code="install.btn.previous.label" /></g:link></li>
         <li><a href="#" class="green submit-btn" data-form="user-form"><g:message code="install.btn.next.label" /></a></li>
       </ul>
     </nav>

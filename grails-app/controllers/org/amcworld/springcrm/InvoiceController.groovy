@@ -116,7 +116,7 @@ class InvoiceController {
             return
         }
 
-        return [invoiceInstance: invoiceInstance]
+        return [invoiceInstance: invoiceInstance, printTemplates: fopService.templateNames]
     }
 
     def edit() {
@@ -302,27 +302,22 @@ class InvoiceController {
 				discountPercentAmount: invoiceInstance.discountPercentAmount,
 				total: invoiceInstance.total
 			],
-			watermark: params.duplicate ? 'duplicate' : ''
+			watermark: params.duplicate ? 'duplicate' : '',
+            client: Client.loadAsMap()
 		]
 		String xml = (data as XML).toString()
 //		println xml
 
-		GString fileName = "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
+		GString fileName =
+            "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
 		if (params.duplicate) {
 			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
 		}
 		fileName += ".pdf"
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream()
-		fopService.generatePdf(
-			new StringReader(xml), '/WEB-INF/data/fo/invoice-fo.xsl', baos
-		)
-		response.contentType = 'application/pdf'
-		response.addHeader 'Content-Disposition',
-			"attachment; filename=\"${fileName}\""
-		response.contentLength = baos.size()
-		response.outputStream.write(baos.toByteArray())
-		response.outputStream.flush()
+        fopService.outputPdf(
+            xml, 'invoice', params.template, response, fileName
+        )
 	}
 
 	def listUnpaidBills() {

@@ -3,15 +3,16 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format">
-  <xsl:import href="servlet-context:/WEB-INF/data/fo/header.xsl"/>
-  <xsl:import href="servlet-context:/WEB-INF/data/fo/footer.xsl"/>
-  <xsl:import href="servlet-context:/WEB-INF/data/fo/terms-and-conditions.xsl"/>
-  <xsl:import href="servlet-context:/WEB-INF/data/fo/utilities.xsl"/>
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/header.xsl"/>
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/footer.xsl"/>
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/terms-and-conditions.xsl"/>
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/utilities.xsl"/>
 
   <xsl:key name="entries" match="/map/entry" use="@key"/>
   <xsl:key name="values" match="/map/entry[@key='values']/entry" use="@key"/>
   <xsl:key name="items" match="/map/entry[@key='items']/invoicingItem"
            use="@id"/>
+  <xsl:key name="client" match="/map/entry[@key='client']/entry" use="@key"/>
   <xsl:decimal-format decimal-separator="," grouping-separator="."/>
   
 
@@ -23,21 +24,21 @@
       
       <fo:page-sequence master-reference="default" language="de"
                         hyphenate="true">
-        <xsl:call-template name="header-berlin"/>
-        <xsl:call-template name="footer-berlin">
+        <xsl:call-template name="header"/>
+        <xsl:call-template name="footer">
           <xsl:with-param name="barcode">
             <xsl:value-of select="key('entries', 'fullNumber')"/>
           </xsl:with-param>
         </xsl:call-template>
         <fo:static-content flow-name="first-page-margin">
           <fo:block margin-left="32mm" margin-top="80mm">
-            <fo:external-graphic src="url('servlet-context:/WEB-INF/data/fo/img/fold-marker.png')"
+            <fo:external-graphic src="url('servlet-context:/WEB-INF/data/print/default/img/fold-marker.png')"
                                  content-width="1.5mm" content-height="1.5mm"/>
           </fo:block>
         </fo:static-content>
         <fo:static-content flow-name="rest-page-footer"
-                           font-family="Frutiger LT 57 Cn" font-size="7pt"
-                           color="#333">
+                           font-family="Helvetica" font-size="7pt"
+                           color="#000">
           <fo:block text-align="center">
             <xsl:text>— Seite </xsl:text>
             <fo:page-number/>
@@ -138,7 +139,7 @@
   </xsl:template>
 
   <xsl:template match="entry[@key='subtotalNet']">
-    <fo:table-row border-before-color="#333" border-before-style="solid"
+    <fo:table-row border-before-color="#000" border-before-style="solid"
                   border-before-width="0.5pt">
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
@@ -160,7 +161,7 @@
   </xsl:template>
 
   <xsl:template match="entry[@key='subtotalGross']">
-    <fo:table-row border-before-color="#333" border-before-style="solid"
+    <fo:table-row border-before-color="#000" border-before-style="solid"
                   border-before-width="0.5pt">
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
@@ -328,7 +329,7 @@
         <fo:region-body space-before="20mm" space-after="16mm"
                         margin-left="2mm" width="156mm">
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
-            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/fo/img/copy-watermark.png')</xsl:attribute>
+            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/print/default/img/copy-watermark.png')</xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
             <xsl:attribute name="background-repeat">repeat-y</xsl:attribute>
           </xsl:if>
@@ -342,7 +343,7 @@
                              master-name="rest-page">
         <fo:region-body space-after="10mm">
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
-            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/fo/img/copy-watermark.png')</xsl:attribute>
+            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/print/default/img/copy-watermark.png')</xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
             <xsl:attribute name="background-repeat">repeat-y</xsl:attribute>
           </xsl:if>
@@ -371,13 +372,19 @@
   <xsl:template name="address-field">
     <fo:block-container absolute-position="absolute" top="15mm"
                         left="0" width="60mm" height="35mm"
-                        font-family="Frutiger LT 57 Cn"
-                        color="#333">
-      <fo:block font-size="7pt" border-after-color="#333"
+                        font-family="Helvetica"
+                        color="#000">
+      <fo:block font-size="7pt" border-after-color="#000"
                 border-after-style="solid"
                 border-after-width="0.05pt" space-after="5mm"
                 padding-after="0.5mm" text-align="center">
-        AMC World Technologies GmbH · Fischerinsel 1 · 10179 Berlin
+        <xsl:value-of select="key('client', 'name')"/>
+        <xsl:text> · </xsl:text>
+        <xsl:value-of select="key('client', 'street')"/>
+        <xsl:text> · </xsl:text>
+        <xsl:value-of select="key('client', 'postalCode')"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="key('client', 'location')"/>
       </fo:block>
       <xsl:apply-templates select="key('entries', 'organization')"/>
       <xsl:apply-templates select="billingAddrStreet"/>
@@ -391,8 +398,8 @@
 
     <fo:block-container absolute-position="absolute" top="23.5mm"
                         right="0" width="60mm" height="26mm"
-                        font-family="Frutiger LT 57 Cn"
-                        font-size="9pt" color="#333">
+                        font-family="Helvetica"
+                        font-size="9pt" color="#000">
       <fo:table table-layout="fixed" width="100%">
         <fo:table-column column-number="1" column-width="30mm"/>
         <fo:table-column column-number="2" column-width="30mm"/>
@@ -445,11 +452,12 @@
     <xsl:param name="transaction-type-label"/>
     <xsl:param name="additional-text"/>
 
-    <fo:block-container font-family="Frutiger LT 57 Cn"
+    <fo:block-container font-family="Helvetica"
                         font-size="9pt" space-before="79mm"
-                        padding-start="2mm" color="#333">
+                        padding-start="2mm" color="#000">
       <fo:block text-align="right">
-        <xsl:text>Berlin, den </xsl:text>
+        <xsl:value-of select="key('client', 'location')"/>
+        <xsl:text>, den </xsl:text>
         <xsl:call-template name="format-date-long">
           <xsl:with-param name="date" select="docDate"/>
         </xsl:call-template>
@@ -470,8 +478,8 @@
   
   <xsl:template name="items">
     <fo:table table-layout="fixed" width="100%" space-after="5mm"
-              font-family="Frutiger LT 57 Cn" font-size="9pt" color="#333"
-              border-color="#333" border-width="1pt"
+              font-family="Helvetica" font-size="9pt" color="#000"
+              border-color="#000" border-width="1pt"
               border-before-style="solid" border-after-style="solid"
               table-omit-footer-at-break="true">
       <fo:table-column column-number="1" column-width="9mm"/>
@@ -480,7 +488,7 @@
       <fo:table-column column-number="4" column-width="22mm"/>
       <fo:table-column column-number="5" column-width="22mm"/>
       <fo:table-header font-weight="bold" text-align="center">
-        <fo:table-row border-after-color="#333" border-after-style="solid"
+        <fo:table-row border-after-color="#000" border-after-style="solid"
                       border-after-width="0.5pt">
           <fo:table-cell padding="0.5mm 1mm">
             <fo:block>Pos.</fo:block>
@@ -523,6 +531,6 @@
       <xsl:text> </xsl:text>
       <xsl:value-of select="key('entries', 'user')/lastName"/>
     </fo:block>
-    <fo:block>AMC World Technologies</fo:block>
+    <fo:block><xsl:value-of select="key('client', 'name')"/></fo:block>
   </xsl:template>
 </xsl:stylesheet>

@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format">
-  <xsl:import href="servlet-context:/WEB-INF/data/fo/invoicing-transaction.xsl"/>
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/invoicing-transaction.xsl"/>
 
   <xsl:param name="sum-label">Angebotssumme</xsl:param>
 
@@ -26,8 +26,8 @@
     <xsl:call-template name="items"/>
 
     <!-- footer text -->
-    <fo:block-container font-family="Frutiger LT 57 Cn" font-size="9pt"
-                        color="#333" line-height="140%"
+    <fo:block-container font-family="Helvetica" font-size="9pt"
+                        color="#000" line-height="140%"
                         keep-together.within-page="always">
       <xsl:apply-templates select="footerText"/>
       <fo:block space-after="5mm">

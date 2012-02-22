@@ -1,2 +1,3 @@
 target/
 target-eclipse/
+web-app/WEB-INF/data/install/ENABLE_INSTALLER
