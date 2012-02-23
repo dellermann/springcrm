@@ -1,6 +1,6 @@
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.commons.GrailsClass;
+import org.codehaus.groovy.grails.commons.GrailsClass
 
 class ViewFilters {
 
@@ -48,7 +48,7 @@ class ViewFilters {
 			}
 		}
 
-		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action: 'create|edit') {
+		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action: 'create|edit|copy') {
 			after = { model ->
 				if (model) {
 					model.units = Unit.list(sort: 'orderId')
