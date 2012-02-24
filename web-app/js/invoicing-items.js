@@ -553,12 +553,13 @@
                 name,
                 n = fieldNames.length,
                 val,
-                x = -1;
+                x;
 
             while (++i < this.nextIndex) {
                 name = this._getInputName(i);
 
                 del = true;
+                x = -1;
                 while (++x < n) {
                     fieldName = fieldNames[x];
                     e = elems[name + fieldName];
