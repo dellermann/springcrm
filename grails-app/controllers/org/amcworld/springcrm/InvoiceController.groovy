@@ -168,8 +168,31 @@ class InvoiceController {
 		if (params.autoNumber) {
 			params.number = invoiceInstance.number
 		}
+
+        /*
+         * The original implementation which worked in Grails 2.0.0.
+         */
         invoiceInstance.properties = params
-        invoiceInstance.items?.retainAll { it != null }
+//        invoiceInstance.items?.retainAll { it != null }
+
+        /*
+         * XXX  This code is necessary because the default implementation
+         *      in Grails does not work.  The above lines worked in Grails
+         *      2.0.0.  Now, either data binding or saving does not work
+         *      correctly if items were deleted and gaps in the indices
+         *      occurred (e. g. 0, 1, null, null, 4) or the items were
+         *      re-ordered.  Then I observed cluttering in saved data
+         *      columns.
+         *      The following lines do not make me happy but they work.
+         *      In future, this problem hopefully will be fixed in Grails
+         *      so we can remove these lines.
+         */
+        invoiceInstance.items?.clear()
+        for (int i = 0; params."items[${i}]"; i++) {
+            if (params."items[${i}]".id != 'null') {
+                invoiceInstance.addToItems(params."items[${i}]")
+            }
+        }
 
         if (!invoiceInstance.save(flush: true)) {
             log.debug(invoiceInstance.errors)

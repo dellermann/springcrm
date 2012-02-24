@@ -171,11 +171,11 @@ environments {
 
     live {
         searchable {
-            // disable bulk index on startup
-            bulkIndexOnStartup = false
-
-            // use faster in-memory index
-            compassConnection = "ram://test-index"
+//            // disable bulk index on startup
+//            bulkIndexOnStartup = false
+//
+//            // use faster in-memory index
+//            compassConnection = "ram://test-index"
         }
     }
 }
