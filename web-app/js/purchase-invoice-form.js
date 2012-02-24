@@ -38,7 +38,7 @@
             item = ui.item;
 
         $("#vendor").val(item.label);
-        $("#vendor.id").val(item.value);
+        $("#vendor\\.id").val(item.value);
         return false;
     };
 
@@ -47,7 +47,7 @@
 
         this.init(config);
 
-        $("#vendor").autocomplete({
+        $("#vendorName").autocomplete({
                 focus: $.proxy(onFocusVendor, this),
                 select: $.proxy(onSelectVendor, this),
                 source: $.proxy(onLoadVendors, this)

@@ -49,6 +49,7 @@ class PurchaseInvoiceController {
 			purchaseInvoiceInstance.documentFile = fileService.storeFile(params.file)
 		}
         if (!purchaseInvoiceInstance.save(flush: true)) {
+            log.debug(purchaseInvoiceInstance.errors)
             render(view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
             return
         }
@@ -140,6 +141,7 @@ class PurchaseInvoiceController {
         }
 
         if (!purchaseInvoiceInstance.save(flush: true)) {
+            log.debug(purchaseInvoiceInstance.errors)
             render(view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
             return
         }
