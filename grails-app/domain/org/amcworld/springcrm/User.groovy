@@ -20,6 +20,7 @@ class User {
     }
 	static mapping = {
 		allowedModules type: 'text'
+        table 'user_data'
     }
 	static transients = [
 		'fullName', 'allowedModulesAsList', 'allowedControllers'

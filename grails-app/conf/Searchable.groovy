@@ -1,21 +1,38 @@
+/*
+ * Searchable.groovy
+ *
+ * Copyright (c) 2011-2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 /**
- * This {@link groovy.util.ConfigObject} script provides Grails Searchable Plugin configuration.
+ * This {@link groovy.util.ConfigObject} script provides Grails searchable
+ * plugin configuration.
  *
- * You can use the "environments" section at the end of the file to define per-environment
- * configuration.
+ * You can use the "environments" section at the end of the file to define
+ * per-environment configuration.
  *
- * Note it is NOT required to add a reference to this file in Config.groovy; it is loaded by
- * the plugin itself.
+ * Note it is NOT required to add a reference to this file in Config.groovy;
+ * it is loaded by the plugin itself.
  *
  * Available properties in the binding are:
  *
- * @param userHome The current user's home directory.
- *                 Same as System.properties['user.home']
- * @param appName The Grails environment (ie, "development", "test", "production").
- *                Same as System.properties['grails.env']
- * @param appVersion The version of your application
- * @param grailsEnv The Grails environment (ie, "development", "test", "production").
- *                  Same as System.properties['grails.env']
+ * @param userHome      the current user's home directory; same as
+ *                      {@code System.properties['user.home']}
+ * @param appName       the Grails environment (i. e., "development", "test",
+ *                      "production"); same as
+ *                      {@code System.properties['grails.env']}
+ * @param appVersion    the version of your application
+ * @param grailsEnv     the Grails environment (i. e., "development", "test",
+ *                      "production"); same as
+ *                      {@code System.properties['grails.env']}
  *
  * You can also use System.properties to refer to other JVM properties.
  *
@@ -31,9 +48,9 @@ searchable {
      *
      * The default is "${user.home}/.grails/projects/${app.name}/searchable-index/${grails.env}"
      */
-    compassConnection = new File(
-        "${userHome}/.grails/projects/${appName}/searchable-index/${grailsEnv}"
-    ).absolutePath
+    compassConnection =
+        new File("${userHome}/.${appName}/searchable-index/${grailsEnv}").
+            absolutePath
 
     /**
      * Any settings you wish to pass to Compass
@@ -66,7 +83,7 @@ searchable {
      * This does not apply for classes using "searchable = [only/except: [...]]"
      * or mapping by closure
      */
-    defaultExcludedProperties = ["password"]
+    defaultExcludedProperties = ['password']
 
     /**
      * Default property formats
@@ -111,7 +128,7 @@ searchable {
      * http://grails.org/Searchable+Plugin
      */
     defaultMethodOptions = [
-        search: [reload: false, escape: false, offset: 0, max: 10, defaultOperator: "and"],
+        search: [reload: false, escape: false, offset: 0, max: 10, defaultOperator: 'and'],
         suggestQuery: [userFriendly: true]
     ]
 
@@ -137,7 +154,7 @@ searchable {
      * If you use BootStrap.groovy to insert your data then you should use "true",
      * which means do a non-forking, otherwise "fork" is recommended
      */
-    bulkIndexOnStartup = true
+    bulkIndexOnStartup = 'fork'
 
     /**
      * Should index locks be removed (if present) at startup?
@@ -145,37 +162,21 @@ searchable {
     releaseLocksOnStartup = true
 }
 
-// per-environment settings
+/* environment specific settings */
 environments {
+
+    /* development environment */
     development {
         searchable {
-            // development is default; inherits from above
+            bulkIndexOnStartup = false
         }
     }
 
+    /* test environment */
     test {
         searchable {
-            // disable bulk index on startup
             bulkIndexOnStartup = false
-
-            // use faster in-memory index
             compassConnection = "ram://test-index"
-        }
-    }
-
-    production {
-        searchable {
-            // add your production settings here
-        }
-    }
-
-    live {
-        searchable {
-//            // disable bulk index on startup
-//            bulkIndexOnStartup = false
-//
-//            // use faster in-memory index
-//            compassConnection = "ram://test-index"
         }
     }
 }

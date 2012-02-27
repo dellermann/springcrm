@@ -24,6 +24,8 @@ class CalendarEvent {
 	static mapping = {
 		sort 'start'
 		description type: 'text'
+        end column: 'end_time'
+        start column: 'start_time'
 	}
 	static searchable = true
 

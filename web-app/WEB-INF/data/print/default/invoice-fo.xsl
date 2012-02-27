@@ -36,19 +36,28 @@
         <xsl:call-template name="format-date-long">
           <xsl:with-param name="date" select="dueDatePayment"/>
         </xsl:call-template>
-        <xsl:text> auf das folgende Konto ein:</xsl:text>
+        <xsl:choose>
+          <xsl:when test="(key('client', 'bankName') != '') and (key('client', 'accountNumber') != '') and (key('client', 'bankCode') != '')">
+            <xsl:text> auf das folgende Konto ein:</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>.</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </fo:block>
-      <fo:block font-weight="bold">
-        <xsl:value-of select="key('client', 'bankName')"/>
-      </fo:block>
-      <fo:block>
-        <xsl:text>Kontonummer: </xsl:text>
-        <xsl:value-of select="key('client', 'accountNumber')"/>
-      </fo:block>
-      <fo:block space-after="5mm">
-        <xsl:text>Bankleitzahl: </xsl:text>
-        <xsl:value-of select="key('client', 'bankCode')"/>
-      </fo:block>
+      <xsl:if test="(key('client', 'bankName') != '') and (key('client', 'accountNumber') != '') and (key('client', 'bankCode') != '')">
+        <fo:block font-weight="bold">
+          <xsl:value-of select="key('client', 'bankName')"/>
+        </fo:block>
+        <fo:block>
+          <xsl:text>Kontonummer: </xsl:text>
+          <xsl:value-of select="key('client', 'accountNumber')"/>
+        </fo:block>
+        <fo:block space-after="5mm">
+          <xsl:text>Bankleitzahl: </xsl:text>
+          <xsl:value-of select="key('client', 'bankCode')"/>
+        </fo:block>
+      </xsl:if>
       <fo:block space-after="5mm">
         <xsl:text>Rechnungsdatum ist gleich Lieferdatum. Es gelten unsere
         Allgemeinen Geschäftsbedingungen. Für weitere Fragen stehen wir gern

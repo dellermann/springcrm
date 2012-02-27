@@ -3,8 +3,8 @@ package org.amcworld.springcrm
 import java.text.Bidi
 import java.text.DateFormatSymbols
 
-import java.io.File;
-import java.util.Map;
+import java.io.File
+import java.util.Map
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 class I18nController {
@@ -12,8 +12,7 @@ class I18nController {
     def index() {
         def msgs = [ : ]
 
-        File input = new File(servletContext.getRealPath('/js/i18n/i18n-source.js'))
-        loadMessages(input, msgs)
+        loadMessages(servletContext.getResourceAsStream('/js/i18n/i18n-source.js'), msgs)
 
         def dfs = DateFormatSymbols.getInstance(LCH.locale)
         msgs['monthNamesLong'] = '[ "' << dfs.months.join('", "') << '" ]'
@@ -29,7 +28,7 @@ class I18nController {
         render(contentType: 'text/javascript; charset=utf-8', view: 'index', model: [messages: msgs])
     }
 
-    protected void loadMessages(File input, Map<String, String> msgs) {
+    protected void loadMessages(InputStream input, Map<String, String> msgs) {
         input.eachLine {
             if (it ==~ /^\s*$/ || it ==~ /^\s*\/\/.*$/ || it ==~ /^\s*[\[\]].*$/) {
                 return

@@ -10,7 +10,7 @@ class ViewFilters {
 		pagination(controller: '*', action: 'list') {
 			def sessionKey = { String name ->
 				String key = name + controllerName.capitalize()
-				if (params.type)  key += params.type
+				if (params.type) key += params.type
 				return key
 			}
 

@@ -29,8 +29,13 @@ import groovy.sql.Sql
  */
 class InstallController {
 
+    //-- Instance variables ---------------------
+
     def sessionFactory
     def installService
+
+
+    //-- Public methods -------------------------
 
     def index() {}
 
@@ -67,11 +72,9 @@ class InstallController {
     }
 
     def installBaseDataSave() {
-        File f = installService.loadPackage(params.package)
+        InputStream is = installService.loadPackage(params.package)
         Sql sql = new Sql(sessionFactory.currentSession.connection())
-        f.eachLine {
-            sql.execute(it)
-        }
+        is.eachLine { sql.execute(it) }
         redirect(action: 'finish')
     }
 
