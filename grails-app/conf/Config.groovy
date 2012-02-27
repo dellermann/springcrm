@@ -120,7 +120,9 @@ environments {
     production {}
 
     /* live enviroment on the AMC World server */
-    live {}
+    live {
+        grails.plugin.databasemigration.updateOnStart = true
+    }
 
     /* standalone environment for demonstration purposes */
     standalone {

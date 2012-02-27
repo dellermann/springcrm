@@ -24,7 +24,7 @@ class ViewTagLib {
 		]
 		int precision = PRECISION_RANKINGS['minute']
 		if (attrs.precision) {
-			precision = PRECISION_RANKINGS[attrs.precision];
+			precision = PRECISION_RANKINGS[attrs.precision]
 		} else if (grailsApplication.config.grails.tags.dateInput.default.precision) {
 			precision = PRECISION_RANKINGS[grailsApplication.config.grails.tags.dateInput.default.precision]
 		}
@@ -204,10 +204,10 @@ class ViewTagLib {
 	}
 
 	/**
-	 * Returns the URL of the current page including all request parameters.
+	 * Generates the URL of the current page including all request parameters.
 	 */
 	def url = { attrs, body ->
-		out << createLink(action: actionName, params: params)
+		out << createLink(action: actionName, params: params, absolute: true)
 	}
 
 	/**
