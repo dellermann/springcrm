@@ -1,8 +1,30 @@
+/*
+ * LdapService.groovy
+ *
+ * Copyright (c) 2011-2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import javax.naming.NameAlreadyBoundException
 import org.apache.directory.groovyldap.LDAP
 
+
+/**
+ * The class {@code LdapService} contains methods to communicate with an LDAP
+ * server and store person data.
+ *
+ * @author  Daniel Ellermann
+ * @version 0.9
+ */
 class LdapService {
 
 	//-- Class variables ------------------------
@@ -58,7 +80,7 @@ class LdapService {
 				if (i > 1) {
 					cn << ' ' << i
 				}
-				cn << ',' << config['ldapContactDn'] as String
+				cn << ',' << (config['ldapContactDn'] as String)
 				try {
 					log.debug "Trying to save DN ${cn} to LDAP..."
 					ldap.add(cn.toString(), attrs)

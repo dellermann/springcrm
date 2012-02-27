@@ -125,9 +125,7 @@ environments {
     }
 
     /* standalone environment for demonstration purposes */
-    standalone {
-//        grails.logging.jul.usebridge = false
-    }
+    standalone {}
 }
 
 /* logger configuration */
