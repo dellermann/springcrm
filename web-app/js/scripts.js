@@ -2,9 +2,7 @@
  * scripts.js
  * General scripting.
  *
- * $Id$
- *
- * Copyright (c) 2011, AMC World Technologies GmbH
+ * Copyright (c) 2011-2012, AMC World Technologies GmbH
  * Fischerinsel 1, D-10179 Berlin, Deutschland
  * All Rights Reserved.
  *
@@ -529,6 +527,7 @@
             labelProp: "name",
             loadParameters: {},
             lookupUrl: null,
+            noSelectValue: "null",
             url: null,
             valueInput: null,
             valueProp: "id"
@@ -623,8 +622,17 @@
         },
 
         _onBlur: function () {
-            this.valueInput.val(this.oldValue);
-            this.element.val(this.oldLabel);
+            var el = this.element,
+                val,
+                valueInput = this.valueInput;
+
+            val = el.val();
+            if (val === "") {
+                valueInput.val(this.options.noSelectValue);
+            } else {
+                valueInput.val(this.oldValue);
+                el.val(this.oldLabel);
+            }
         },
 
         _onClickComboboxBtn: function (event) {
