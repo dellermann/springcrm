@@ -1,9 +1,7 @@
 /*
  * Client.groovy
  *
- * $Id: $
- *
- * Copyright (c) 2011, AMC World Technologies GmbH
+ * Copyright (c) 2012, AMC World Technologies GmbH
  * Fischerinsel 1, D-10179 Berlin, Deutschland
  * All Rights Reserved.
  *

@@ -39,13 +39,24 @@ class InstallController {
 
     def index() {}
 
+    def installBaseData() {
+        return [packages: installService.getBaseDataPackages(), step: 1]
+    }
+
+    def installBaseDataSave() {
+        InputStream is = installService.loadPackage(params.package)
+        Sql sql = new Sql(sessionFactory.currentSession.connection())
+        is.eachLine { sql.execute(it) }
+        redirect(action: 'clientData')
+    }
+
     def clientData() {
-        return [client: Client.load(), step: 1]
+        return [client: Client.load(), step: 2]
     }
 
     def clientDataSave(Client client) {
         if (client.hasErrors()) {
-            render(view: 'clientData', model: [client: client, step: 1])
+            render(view: 'clientData', model: [client: client, step: 2])
             return
         }
         client.save()
@@ -53,28 +64,17 @@ class InstallController {
     }
 
     def createAdmin() {
-        return [userInstance: new User(), step: 2]
+        return [userInstance: new User(), step: 3]
     }
 
     def createAdminSave() {
         def userInstance = new User(params)
         userInstance.admin = true
         if (!userInstance.save(flush: true)) {
-            render(view: 'createAdmin', model: [userInstance: userInstance, step: 1])
+            render(view: 'createAdmin', model: [userInstance: userInstance, step: 3])
             return
         }
 
-        redirect(action: 'installBaseData')
-    }
-
-    def installBaseData() {
-        return [packages: installService.getBaseDataPackages(), step: 3]
-    }
-
-    def installBaseDataSave() {
-        InputStream is = installService.loadPackage(params.package)
-        Sql sql = new Sql(sessionFactory.currentSession.connection())
-        is.eachLine { sql.execute(it) }
         redirect(action: 'finish')
     }
 

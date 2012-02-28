@@ -16,8 +16,6 @@
 dataSource {
     pooled = true
     driverClassName = 'com.mysql.jdbc.Driver'
-    username = 'projects'
-    password = 'haluni21'
 }
 
 /* Cache settings */
@@ -35,6 +33,8 @@ environments {
         dataSource {
             dbCreate = 'none'   // updated by database-migration plugin
             url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
+            username = 'projects'
+            password = 'haluni21'
         }
     }
 
@@ -54,6 +54,8 @@ environments {
         dataSource {
             dbCreate = 'update'
             url = 'jdbc:mysql://localhost/springcrm'
+            username = 'springcrm'
+            password = 'springcrm'
             properties {
                 validationQuery = 'select 1'
                 testWhileIdle = true
@@ -67,6 +69,13 @@ environments {
         dataSource {
             dbCreate = 'none'   // updated by database-migration plugin
             url = 'jdbc:mysql://db.amc-world.home/springcrm?autoreconnect=true'
+            username = 'projects'
+            password = 'haluni21'
+            properties {
+                validationQuery = 'select 1'
+                testWhileIdle = true
+                timeBetweenEvictionRunsMillis = 60000
+            }
         }
     }
 
@@ -75,9 +84,14 @@ environments {
         dataSource {
             driverClassName = 'org.h2.Driver'
             dbCreate = 'update'
-            url = 'jdbc:h2:file:${userHome}/.${appName}/database/springcrm'
+            url = "jdbc:h2:file:${userHome}/.${appName}/database/springcrm"
             username = 'springcrm'
             password = ''
+            properties {
+                validationQuery = 'select 1'
+                testWhileIdle = true
+                timeBetweenEvictionRunsMillis = 60000
+            }
         }
     }
 }
