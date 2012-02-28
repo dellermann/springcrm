@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.amc-world.de/data/xml/springcrm" 
+        xmlns:tns="http://www.amc-world.de/data/xml/springcrm" 
+        elementFormDefault="qualified">
+  <annotation>
+    <documentation>Schema for the error reports of SpringCRM.
+
+Copyright © 2012, AMC World Technologies GmbH</documentation>
+  </annotation>
+
+
+  <!-- ==========================================
+
+    ELEMENTS
+
+  =========================================== -->
+
+  <element name="error-report" type="tns:error-report-type">
+    <annotation>
+      <documentation>Defines an error report of SpringCRM.</documentation>
+    </annotation>
+  </element>
+
+  <element name="report-version" type="NMTOKEN">
+    <annotation>
+      <documentation>The internal version of the error report. It is used to distinguish changes in the report structure.</documentation>
+    </annotation>
+  </element>
+
+  <element name="application" type="tns:application-type">
+    <annotation>
+      <documentation>Any data about the application itself.</documentation>
+    </annotation>
+  </element>
+
+  <element name="version" type="NMTOKEN">
+    <annotation>
+      <documentation>The version number of the application.</documentation>
+    </annotation>
+  </element>
+
+  <element name="build-number" type="unsignedLong">
+    <annotation>
+      <documentation>The sequence number indicating the build of the application.</documentation>
+    </annotation>
+  </element>
+
+  <element name="build-date" type="dateTime">
+    <annotation>
+      <documentation>The date and time of the build of the application.</documentation>
+    </annotation>
+  </element>
+
+  <element name="build-profile" type="tns:build-profile-type">
+    <annotation>
+      <documentation>The profile (environment) for which the application was built.</documentation>
+    </annotation>
+  </element>
+
+  <element name="customer" type="tns:customer-type">
+    <annotation>
+      <documentation>Information about the customer who submits the error report. These information may be used to contact the customer for further questions.</documentation>
+    </annotation>
+  </element>
+
+  <element name="name" type="normalizedString">
+    <annotation>
+      <documentation>The name of the customer who submits the error report.</documentation>
+    </annotation>
+  </element>
+
+  <element name="email" type="normalizedString">
+    <annotation>
+      <documentation>The e-mail address of the customer who submits the error report.</documentation>
+    </annotation>
+  </element>
+
+  <element name="description" type="string">
+    <annotation>
+      <documentation>A description of the error written by the customer.</documentation>
+    </annotation>
+  </element>
+
+  <element name="details" type="tns:details-type">
+    <annotation>
+      <documentation>Detailed, application-specific information about the error.</documentation>
+    </annotation>
+  </element>
+
+  <element name="status-code" type="unsignedLong">
+    <annotation>
+      <documentation>The HTTP error code which was send when the error was caused, normally 500.</documentation>
+    </annotation>
+  </element>
+
+  <element name="message" type="string">
+    <annotation>
+      <documentation>A detailed error message.</documentation>
+    </annotation>
+  </element>
+
+  <element name="servlet" type="normalizedString">
+    <annotation>
+      <documentation>The servlet where the error occurred, mostly "grails".</documentation>
+    </annotation>
+  </element>
+
+  <element name="uri" type="anyURI">
+    <annotation>
+      <documentation>The URI which was called when the error occurred.</documentation>
+    </annotation>
+  </element>
+
+  <element name="exception" type="tns:exception-type">
+    <annotation>
+      <documentation>Detailed information about the exception, if any.</documentation>
+    </annotation>
+  </element>
+
+  <element name="caused-by" type="string">
+    <annotation>
+      <documentation>A detailed error message of the causing exception.</documentation>
+    </annotation>
+  </element>
+
+  <element name="class-name" type="NMTOKEN">
+    <annotation>
+      <documentation>The name of the class where the exception occurred.</documentation>
+    </annotation>
+  </element>
+
+  <element name="line-number" type="unsignedLong">
+    <annotation>
+      <documentation>The line number where the exception occurred.</documentation>
+    </annotation>
+  </element>
+
+  <element name="code-snippet" type="string">
+    <annotation>
+      <documentation>Any code snippets around the location where the exception occurred.</documentation>
+    </annotation>
+  </element>
+
+  <element name="stack-trace" type="string">
+    <annotation>
+      <documentation>The stack trace of the exception.</documentation>
+    </annotation>
+  </element>
+
+
+  <!-- ==========================================
+
+    TYPE DEFINITIONS
+
+  =========================================== -->
+
+  <complexType name="error-report-type">
+    <sequence>
+      <element ref="tns:report-version"/>
+      <element ref="tns:application"/>
+      <element ref="tns:customer"/>
+      <element ref="tns:description"/>
+      <element ref="tns:details"/>
+      <element ref="tns:exception" minOccurs="0"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="application-type">
+    <sequence>
+      <element ref="tns:version"/>
+      <element ref="tns:build-number"/>
+      <element ref="tns:build-date"/>
+      <element ref="tns:build-profile"/>
+    </sequence>
+  </complexType>
+  
+  <simpleType name="build-profile-type">
+    <restriction base="NCName">
+      <enumeration value="development"/>
+      <enumeration value="test"/>
+      <enumeration value="production"/>
+      <enumeration value="live"/>
+      <enumeration value="standalone"/>
+    </restriction>
+  </simpleType>
+
+  <complexType name="customer-type">
+    <sequence>
+      <element ref="tns:name"/>
+      <element ref="tns:email"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="details-type">
+    <sequence>
+      <element ref="tns:status-code"/>
+      <element ref="tns:message"/>
+      <element ref="tns:servlet"/>
+      <element ref="tns:uri"/>
+    </sequence>
+  </complexType>
+
+  <complexType name="exception-type">
+    <sequence>
+      <element ref="tns:message"/>
+      <element ref="tns:caused-by"/>
+      <element ref="tns:class-name"/>
+      <element ref="tns:line-number"/>
+      <element ref="tns:code-snippet"/>
+      <element ref="tns:stack-trace"/>
+    </sequence>
+  </complexType>
+</schema>
