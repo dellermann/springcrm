@@ -1,19 +1,44 @@
+/*
+ * GoogleDataContactService.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
-import com.google.gdata.data.Link;
-
-import net.sf.jmimemagic.Magic;
-
+import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.client.GoogleService
 import com.google.gdata.client.Service.GDataRequest
-import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.data.contacts.*
 import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.extensions.*
 import com.google.gdata.data.extensions.Organization as GDataOrg
+import com.google.gdata.data.Link
 import com.google.gdata.util.ContentType
 import javax.servlet.http.HttpSession
+import net.sf.jmimemagic.Magic
 
+
+/**
+ * The class {@code GoogleDataContactService} sends person records to Google.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
 	//-- Class variables ------------------------
@@ -25,9 +50,9 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 	//-- Instance variables ---------------------
 
 	private ContactsService contactsService
-	
 
-	//-- Class initializer ----------------------
+
+    //-- Instance initializer -------------------
 
 	{
 		entryClass = ContactEntry
@@ -203,10 +228,10 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 			GDataRequest request = service.createRequest(
 				GDataRequest.RequestType.UPDATE, new URL(photoLink.href),
 				new ContentType(Magic.getMagicMatch(p.picture).mimeType)
-			);
+			)
 			request.setEtag(photoLink.getEtag())
-			request.requestStream.write(p.picture);
-			request.execute();
+			request.requestStream.write(p.picture)
+			request.execute()
 		} else {
 			service.delete(new URL(photoLink.href), photoLink.getEtag())
 		}
@@ -220,7 +245,7 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 	/**
 	 * Initializes and returns the Google Data service for contacts. The method
 	 * expects the session variable <code>gdataToken</code> to be set.
-	 * 
+	 *
 	 * @return	the Google Data contacts service
 	 */
 	protected GoogleService getService() {

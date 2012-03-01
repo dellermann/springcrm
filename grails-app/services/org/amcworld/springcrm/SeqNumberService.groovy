@@ -1,12 +1,46 @@
+/*
+ * SeqNumberService.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
 import org.codehaus.groovy.grails.commons.ArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.transaction.annotation.Transactional
 
+
+/**
+ * The class {@code SeqNumberService} cares about a sequential numbering of
+ * content items.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class SeqNumberService {
 
+    //-- Class variables ------------------------
+
     static transactional = true
+
+
+    //-- Instance variables ---------------------
+
 	def grailsApplication
 
 
@@ -15,7 +49,7 @@ class SeqNumberService {
 	/**
 	 * Retrieves the next available sequence number for the given controller
 	 * name.
-	 * 
+	 *
 	 * @param controllerName	the given controller name
 	 * @return					the next available sequence number
 	 */
@@ -43,7 +77,7 @@ class SeqNumberService {
 	/**
 	 * Retrieves the next available sequence number for the controller which is
 	 * associated to the given class.
-	 * 
+	 *
 	 * @param cls	the given class
 	 * @return		the next available sequence number
 	 */
@@ -55,7 +89,7 @@ class SeqNumberService {
 	/**
 	 * Returns the next sequence number for the given controller formatted with
 	 * prefix and suffix, if any.
-	 * 
+	 *
 	 * @param controllerName	the given controller name
 	 * @return					the formatted next sequence number
 	 */
@@ -63,11 +97,11 @@ class SeqNumberService {
 	String nextFullNumber(String controllerName) {
 		return formatNumber([controllerName:controllerName])
 	}
-	
+
 	/**
 	 * Returns the next sequence number for the controller which is associated
 	 * to the given class formatted with prefix and suffix, if any.
-	 * 
+	 *
 	 * @param cls	the given class
 	 * @return		the formatted next sequence number
 	 */
@@ -78,7 +112,7 @@ class SeqNumberService {
 
 	/**
 	 * Loads the sequence number data for the given controller.
-	 *  
+	 *
 	 * @param controllerName	the given controller name
 	 * @return					the sequence number data; <code>null</code> if
 	 * 							no such data are stored for the given
@@ -88,11 +122,11 @@ class SeqNumberService {
 	SeqNumber loadSeqNumber(String controllerName) {
 		return SeqNumber.findByControllerName(controllerName)
 	}
-	
+
 	/**
 	 * Loads the sequence number data for the controller which is associated to
 	 * the given class.
-	 *  
+	 *
 	 * @param controllerName	the given class
 	 * @return					the sequence number data; <code>null</code> if
 	 * 							no such data are stored for the controller
@@ -105,7 +139,7 @@ class SeqNumberService {
 	/**
 	 * Formats the given sequence number as specified in the number schema for
 	 * the given controller.
-	 * 
+	 *
 	 * @param controllerName	the given controller name
 	 * @param number			the given number
 	 * @return					the formatted number
@@ -114,11 +148,11 @@ class SeqNumberService {
 	String format(String controllerName, int number) {
 		return formatNumber([controllerName:controllerName, number:number])
 	}
-	
+
 	/**
 	 * Formats the given sequence number as specified in the number schema for
 	 * the controller which is associated to the given class.
-	 * 
+	 *
 	 * @param cls		the given class
 	 * @param number	the given number
 	 * @return			the formatted number
@@ -127,11 +161,11 @@ class SeqNumberService {
 	String format(Class cls, int number) {
 		return format(classToControllerName(cls), number)
 	}
-	
+
 	/**
 	 * Formats the given sequence number with the prefix which is defined for
 	 * the given controller.
-	 * 
+	 *
 	 * @param controllerName	the given controller name
 	 * @param number			the given number
 	 * @return					the formatted number
@@ -142,11 +176,11 @@ class SeqNumberService {
 			[controllerName:controllerName, number:number, withSuffix:false]
 		)
 	}
-	
+
 	/**
 	 * Formats the given sequence number with the prefix which is defined for
 	 * the controller which is associated to the given class.
-	 * 
+	 *
 	 * @param cls		the given class
 	 * @param number	the given number
 	 * @return			the formatted number
@@ -159,7 +193,7 @@ class SeqNumberService {
 	/**
 	 * Formats the given sequence number with the suffix which is defined for
 	 * the given controller.
-	 * 
+	 *
 	 * @param controllerName	the given controller name
 	 * @param number			the given number
 	 * @return					the formatted number
@@ -170,11 +204,11 @@ class SeqNumberService {
 			[controllerName:controllerName, number:number, withPrefix:false]
 		)
 	}
-	
+
 	/**
 	 * Formats the given sequence number with the suffix which is defined for
 	 * the controller which is associated to the given class.
-	 * 
+	 *
 	 * @param cls		the given class
 	 * @param number	the given number
 	 * @return			the formatted number
@@ -190,7 +224,7 @@ class SeqNumberService {
 	/**
 	 * Obtains the name of the controller which is associated to the given
 	 * class.
-	 * 
+	 *
 	 * @param cls	the given class
 	 * @return		the associated controller name
 	 */
@@ -202,7 +236,7 @@ class SeqNumberService {
 
 	/**
 	 * Formats a sequence number as specified in the given arguments.
-	 * 
+	 *
 	 * @param controllerName	the name of the controller that sequence number
 	 * 							is to return
 	 * @param number			the number to format; if not specified the next

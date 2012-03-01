@@ -1,13 +1,43 @@
+/*
+ * I18nController.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
+import java.io.File
 import java.text.Bidi
 import java.text.DateFormatSymbols
-
-import java.io.File
 import java.util.Map
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
+
+/**
+ * The class {@code I18nController} contains actions that produce a localized
+ * JavaScript file from message keys defined in
+ * {@code /js/i18n/i18n-source.js}.
+ *
+ * @author  Daniel Ellermann
+ * @version 0.9
+ */
 class I18nController {
+
+    //-- Public methods -------------------------
 
     def index() {
         def msgs = [ : ]
@@ -27,6 +57,9 @@ class I18nController {
 
         render(contentType: 'text/javascript; charset=utf-8', view: 'index', model: [messages: msgs])
     }
+
+
+    //-- Non-public methods ---------------------
 
     protected void loadMessages(InputStream input, Map<String, String> msgs) {
         input.eachLine {
@@ -53,8 +86,7 @@ class I18nController {
         }
     }
 
-    protected String renderMessages(String [] l, String keyPrefix = '')
-    {
+    protected String renderMessages(String [] l, String keyPrefix = '') {
         def msgs = [ : ]
         for (String key : l) {
             String msgKey = keyPrefix

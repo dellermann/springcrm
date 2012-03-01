@@ -1,19 +1,38 @@
+/*
+ * GoogleDataService.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
-
-import javax.servlet.http.HttpSession
-
-import org.springframework.web.context.request.RequestContextHolder
 
 import com.google.gdata.client.GoogleService
 import com.google.gdata.data.BaseEntry
-import com.google.gdata.data.contacts.ContactEntry;
+import com.google.gdata.data.contacts.ContactEntry
+import javax.servlet.http.HttpSession
+import org.springframework.web.context.request.RequestContextHolder
+
 
 /**
  * The class <code>GoogleDataService</code> represents a service which is able
  * to exchange data with Google Data.
- * 
+ *
  * @author		Daniel Ellermann
- * @version		0.9.0
+ * @version		0.9
  * @param <E>	the type of domain model classes which are handled by this
  * 				service
  * @param <G>	the type of Google Data entries which are handled by this
@@ -48,7 +67,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	 * 				values; if <code>null</code> a new entry is to create
 	 * @return		the converted Google Data entry
 	 */
-	abstract G convertToGoogle(E item, G entry = null);
+	abstract G convertToGoogle(E item, G entry = null)
 
 	/**
 	 * Deletes the given Google Data entry.
@@ -58,7 +77,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	void delete(G entry) {
 		entry.delete()
 	}
-	
+
 	/**
 	 * Deletes all entries which are marked as deleted in the synchronization
 	 * status table.
@@ -74,7 +93,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 			it.delete(flush:true)
 		}
 	}
-	
+
 	/**
 	 * Inserts the given Google Data entry into the remote repository.
 	 *
@@ -88,7 +107,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	/**
 	 * Marks the given item as deleted in the synchronization status table. It
 	 * will be deleted during the next Google data synchronization.
-	 * 
+	 *
 	 * @param item	the item to mark as deleted
 	 */
 	void markDeleted(E item) {
@@ -99,7 +118,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 			status.save(flush:true)
 		}
 	}
-	
+
 	/**
 	 * Retrieves the Google Data entry with the given URL and class.
 	 *
@@ -116,7 +135,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 		}
 		return res
 	}
-	
+
 	/**
 	 * Synchronizes the given item with Google Data. If an associated Google
 	 * Data item is set already it is updated. Otherwise, an new entry is
@@ -180,32 +199,32 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 		)
 		status.save(flush:true)
 	}
-	
+
 	/**
 	 * Updates the last synchronization time stamp and stores the given
 	 * synchronization status. This method should be called after updating an
 	 * existing Google Data entry.
-	 * 
+	 *
 	 * @param status	the status to update
 	 */
 	protected void afterUpdate(GoogleDataSyncStatus status) {
 		status.lastSync = new Date()
 		status.save(flush:true)
 	}
-	
+
 	/**
 	 * Returns all entries from the synchronization status table where were
 	 * marked as deleted.
-	 * 
+	 *
 	 * @return	the synchronization status entries which are marked as deleted
 	 */
 	protected List<GoogleDataSyncStatus> findDeletedItems() {
 		return GoogleDataSyncStatus.findAllByDeleted(true)
 	}
-	
+
 	/**
 	 * Returns the synchronization status entry for the given item.
-	 * 
+	 *
 	 * @param item	the given item
 	 * @return		the synchronization status entry; <code>null</code> if no
 	 * 				such entry exists for the given item
@@ -218,8 +237,8 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 			eq('itemId', item.id)
 		}
 	}
-	
-	protected abstract GoogleService getService();
+
+	protected abstract GoogleService getService()
 
 	/**
 	 * Returns access to the user session.

@@ -1,10 +1,40 @@
+/*
+ * CalendarEvent.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
 import java.text.DateFormatSymbols
 import org.springframework.context.MessageSourceResolvable
 
 
+/**
+ * The class {@code CalendarEvent} represents an entry in the calendar, that
+ * is, an appointment.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ * @see     Reminder
+ */
 class CalendarEvent {
+
+    //-- Class variables ------------------------
 
     static constraints = {
 		subject(nullable: false, blank: false, widget: 'autonumber')
@@ -29,6 +59,9 @@ class CalendarEvent {
 	}
 	static searchable = true
 
+
+    //-- Instance variables ---------------------
+
 	String subject
 	String location
 	String description
@@ -38,6 +71,9 @@ class CalendarEvent {
 	RecurrenceData recurrence = new RecurrenceData()
 	Date dateCreated
 	Date lastUpdated
+
+
+    //-- Constructors ---------------------------
 
 	CalendarEvent() {}
 
@@ -69,7 +105,17 @@ class CalendarEvent {
 	}
 }
 
+
+/**
+ * The class {@code RecurrenceData} represents the data of recurring calendar
+ * events.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class RecurrenceData implements MessageSourceResolvable {
+
+    //-- Class variables ------------------------
 
     static constraints = {
 		type(nullable: false, inList: [0, 10, 30, 40, 50, 60, 70])
@@ -85,6 +131,9 @@ class RecurrenceData implements MessageSourceResolvable {
 		'arguments', 'codes', 'defaultMessage'
 	]
 
+
+    //-- Instance variables ---------------------
+
 	int type = 0
 	Date until
 	int interval = 1
@@ -92,6 +141,9 @@ class RecurrenceData implements MessageSourceResolvable {
 	String weekdays
 	Integer weekdayOrd = 0
 	Integer month
+
+
+    //-- Constructors ---------------------------
 
 	RecurrenceData() {}
 
@@ -105,6 +157,9 @@ class RecurrenceData implements MessageSourceResolvable {
 		weekdayOrd = c.weekdayOrd
 		month = c.month
 	}
+
+
+    //-- Public methods -------------------------
 
 	List<Integer> getWeekdaysAsList() {
 		List<Integer> res = null

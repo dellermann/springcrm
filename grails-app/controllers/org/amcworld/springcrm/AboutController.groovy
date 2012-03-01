@@ -1,5 +1,5 @@
 /*
- * Panel.groovy
+ * AboutController.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -22,44 +22,17 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code Panel} contains data about a panel on the overview page.
+ * The class {@code AboutController} contains actions which display pages in
+ * the "about" section, such as legal notices and system information.
  *
  * @author	Daniel Ellermann
  * @version 0.9
  */
-class Panel {
-
-    //-- Constants ------------------------------
-
-	public static final int NUM_COLUMNS = 3i
-
-
-    //-- Class variables ------------------------
-
-    static constraints = {
-		user()
-		col(range: 0..NUM_COLUMNS - 1)
-		pos(min: 0)
-		panelId(nullable: false, blank: false)
-    }
-	static mapping = {
-		version false
-	}
-	static transients = ['panelDef']
-
-
-    //-- Instance variables ---------------------
-
-	User user
-	int col
-	int pos
-	String panelId
-	OverviewPanel panelDef
-
+class AboutController {
 
     //-- Public methods -------------------------
 
-	String toString() {
-		return "${user.userName}-${panelId}"
-	}
+    def index() {}
+
+    def sysInfo() {}
 }

@@ -2,8 +2,6 @@
  * styles.css
  * SpringCRM stylesheet
  *
- * $Id$
- *
  * Copyright (c) 2011-2012, AMC World Technologies GmbH
  * Fischerinsel 1, D-10179 Berlin, Deutschland
  * All Rights Reserved.
@@ -148,11 +146,11 @@ h1 {
 h2 {
   font-size: 116%;
   font-weight: bold;
-  margin: 1em 0 1.2em;
+  margin: 1.5em 0 1em;
 }
 h3 {
   font-size: 108%;
-  margin-bottom: 10px;
+  margin: 1.5em 0 1em;
 }
 h4 {
   background: #BBB;
@@ -555,6 +553,17 @@ footer {
 }
 .springcrm-fontsize-selector li.springcrm-fontsize-current {
   color: #567B0F;
+}
+#footer-menu {
+  border-left: .1em solid #888;
+  float: left;
+  margin: 0 0 0 1em;
+  padding-left: .6em;
+}
+#footer-menu li {
+  display: inline;
+  list-style: none;
+  padding-left: 1ex;
 }
 #copyright {
   float: right;
@@ -1781,6 +1790,25 @@ form .invoicing-items-pos {
   margin-bottom: 0;
 }
 
+/* about */
+.about {
+  width: 75%;
+}
+.about h3 {
+  margin: 1.5em 0 1em !important;
+}
+#app-title {
+  color: #6C8F18;
+  font-size: 197%;
+  margin-bottom: .7em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+}
+.license-text {
+  border: .1em solid #444;
+  height: 40em;
+  overflow-y: scroll;
+  padding: 1em;
+}
 
 
 /*-----------------------------------

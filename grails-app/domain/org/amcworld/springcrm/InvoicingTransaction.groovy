@@ -1,12 +1,42 @@
+/*
+ * InvoicingTransaction.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
 import static java.math.RoundingMode.HALF_UP
 
+
+/**
+ * The class {@code InvoicingTransaction} acts as a base class of invoicing
+ * transactions such as invoices, quotes etc.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class InvoicingTransaction {
+
+    //-- Class variables ------------------------
 
     static constraints = {
 		number(unique: 'type', widget: 'autonumber')
-		type(blank: false, nullable: false, maxSize: 1)
+		type(nullable: false, blank: false, maxSize: 1)
 		subject(blank: false)
 		organization()
 		person(nullable: true)
@@ -57,6 +87,9 @@ class InvoicingTransaction {
 		'subtotalGross', 'discountPercentAmount', 'taxRateSums'
 	]
 
+
+    //-- Instance variables ---------------------
+
 	def seqNumberService
 
 	int number
@@ -90,6 +123,9 @@ class InvoicingTransaction {
 	Date dateCreated
 	Date lastUpdated
 
+
+    //-- Constructors ---------------------------
+
 	InvoicingTransaction() {}
 
 	InvoicingTransaction(InvoicingTransaction i) {
@@ -122,6 +158,9 @@ class InvoicingTransaction {
 		notes = i.notes
 		termsAndConditions = i.termsAndConditions
 	}
+
+
+    //-- Public methods -------------------------
 
 	String getFullNumber() {
 		String s = seqNumberService.formatWithPrefix(getClass(), number)

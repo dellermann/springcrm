@@ -1,6 +1,36 @@
+/*
+ * Organization.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
+
+/**
+ * The class {@code Organization} represents an organization, either a
+ * customer or a vendor.
+ *
+ * @author  Daniel Ellermann
+ * @version 0.9
+ */
 class Organization {
+
+    //-- Class variables ------------------------
 
     static constraints = {
         number(unique: 'recType', widget: 'autonumber')
@@ -50,6 +80,9 @@ class Organization {
 		'vendor'
 	]
 
+
+    //-- Instance variables ---------------------
+
 	def seqNumberService
 
     int number
@@ -83,6 +116,9 @@ class Organization {
 	Date dateCreated
 	Date lastUpdated
 
+
+    //-- Constructors ---------------------------
+
 	Organization() {}
 
 	Organization(Organization org) {
@@ -114,6 +150,9 @@ class Organization {
 		rating = org.rating
 		notes = org.notes
 	}
+
+
+    //-- Public methods -------------------------
 
 	String getFullNumber() {
 		return seqNumberService.format(getClass(), number)
@@ -176,11 +215,11 @@ class Organization {
     }
 
 	boolean isCustomer() {
-		return (this.recType & 1) != 0;
+		return (this.recType & 1) != 0
 	}
 
 	boolean isVendor() {
-		return (this.recType & 2) != 0;
+		return (this.recType & 2) != 0
 	}
 
     String toString() {

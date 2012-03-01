@@ -1,17 +1,50 @@
+/*
+ * LruEntry.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
+
+/**
+ * The class {@code LruEntry} stores the data of an entry in the last recently
+ * used (LRU) list.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class LruEntry {
+
+    //-- Class variables ------------------------
 
     static constraints = {
 		user()
-		controller(blank:false, nullable:false)
-		itemId(unique:['user', 'controller'])
+		controller(nullable: false, blank: false)
+		itemId(unique: ['user', 'controller'])
 		pos()
-		name(blank:true, nullable:true)
+		name(nullable: true, blank: true)
     }
 	static mapping = {
 		version false
 	}
+
+
+    //-- Instance variables ---------------------
 
 	User user
 	String controller

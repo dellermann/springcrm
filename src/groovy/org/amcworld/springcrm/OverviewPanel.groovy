@@ -1,14 +1,34 @@
+/*
+ * OverviewPanel.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
 import org.codehaus.groovy.grails.commons.ApplicationHolder
 
+
 /**
  * The class {@code OverviewPanel} stores information about a panel which can
  * be used on the overview page.
- * 
+ *
  * @author	Daniel Ellermann
- * @version 0.9.9
- * @since	0.9.9
+ * @version 0.9
  */
 class OverviewPanel {
 
@@ -20,13 +40,13 @@ class OverviewPanel {
 	private String defTitle
 	private String style
 	private Map<Locale, String> localizedTitles
-	
-	
+
+
 	//-- Constructors ---------------------------
 
 	/**
 	 * Creates a new overview page panel instance with the given data.
-	 * 
+	 *
 	 * @param controller	the name of the controller which is called to
 	 * 						generate the content of the panel
 	 * @param action		the name of the action which is called to generate
@@ -50,7 +70,7 @@ class OverviewPanel {
 	/**
 	 * Gets the name of the controller which is called to generate the content
 	 * of the panel.
-	 * 
+	 *
 	 * @return	the name of the controller
 	 */
 	String getController() {
@@ -60,7 +80,7 @@ class OverviewPanel {
 	/**
 	 * Gets the name of the action which is called to generate the content of
 	 * the panel.
-	 * 
+	 *
 	 * @return	the name of the action
 	 */
 	String getAction() {
@@ -69,7 +89,7 @@ class OverviewPanel {
 
 	/**
 	 * Gets any CSS style attributes which are applied to the panel.
-	 * 
+	 *
 	 * @return	the CSS styles
 	 */
 	String getStyle() {
@@ -79,7 +99,7 @@ class OverviewPanel {
 	String getUrl() {
 		if (!url) {
 			def g = ApplicationHolder.application.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
-			url = g.createLink(controller:controller, action:action)
+			url = g.createLink(controller: controller, action: action)
 		}
 		return url
 	}
@@ -89,7 +109,7 @@ class OverviewPanel {
 
 	/**
 	 * Adds a title in the given language.
-	 * 
+	 *
 	 * @param locale	the locale representing the given language
 	 * @param title		the title
 	 */
@@ -99,7 +119,7 @@ class OverviewPanel {
 
 	/**
 	 * Adds a title in the given language.
-	 * 
+	 *
 	 * @param locale	the locale ID representing the given language; the ID
 	 * 					must be specified in the form
 	 * 					{@code language[-country[-variant]]}
@@ -111,7 +131,7 @@ class OverviewPanel {
 
 	/**
 	 * Gets the title in the given language or in the default language.
-	 * 
+	 *
 	 * @param locale	the locale representing the given language; if
 	 * 					<code>null</code> the default locale is used
 	 * @return			the title in that language
