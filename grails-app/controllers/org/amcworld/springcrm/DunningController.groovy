@@ -1,14 +1,43 @@
+/*
+ * DunningController.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import grails.converters.XML
 import org.springframework.dao.DataIntegrityViolationException
 
+
+/**
+ * The class {@code DunningController} contains actions which manage dunnings.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class DunningController {
+
+    //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
+
+    //-- Instance variables ---------------------
+
 	def fopService
 	def seqNumberService
+
+
+    //-- Public methods -------------------------
 
     def index() {
         redirect(action: 'list', params: params)
@@ -107,6 +136,7 @@ class DunningController {
             render(view: 'create', model: [dunningInstance: dunningInstance])
             return
         }
+        params.id = dunningInstance.ident()
 
         dunningInstance.index()
 
@@ -363,6 +393,9 @@ class DunningController {
             xml, 'dunning', params.template, response, fileName
         )
 	}
+
+
+    //-- Non-public methods ---------------------
 
 	private InvoicingItem serviceToItem(Service s) {
 		return new InvoicingItem(

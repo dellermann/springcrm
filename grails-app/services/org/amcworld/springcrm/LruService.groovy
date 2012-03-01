@@ -1,8 +1,30 @@
+/*
+ * LruService.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
 
+
+/**
+ * The class {@code LruService} contains service methods to handle LRU (last
+ * recently used) entries.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class LruService {
 
 	//-- Class variables ------------------------
@@ -26,7 +48,7 @@ class LruService {
 	 * @param name			the descriptive name which is displayed in the LRU
 	 * 						list
 	 */
-    def recordItem(String controller, long id, String name) {
+    void recordItem(String controller, long id, String name) {
 		User user = session.user
 
 		/* check whether or not this entry already exists */
@@ -70,6 +92,7 @@ class LruService {
 
 			/* set the last position for the LRU entry to move */
 			lruEntry.pos = maxPos
+            lruEntry.name = name
 			lruEntry.save(flush: true)
 		} else {
 

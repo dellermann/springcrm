@@ -1,3 +1,17 @@
+/*
+ * PersonController.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import com.google.gdata.data.extensions.*
@@ -5,13 +19,29 @@ import grails.converters.JSON
 import net.sf.jmimemagic.Magic
 import org.springframework.dao.DataIntegrityViolationException
 
+
+/**
+ * The class {@code PersonController} contains actions which manage persons
+ * that belong to an organization.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class PersonController {
 
+    //-- Class variables ------------------------
+
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Instance variables ---------------------
 
 	def seqNumberService
 	def googleDataContactService
 	def ldapService
+
+
+    //-- Public methods -------------------------
 
     def index() {
         redirect(action: 'list', params: params)
@@ -57,6 +87,7 @@ class PersonController {
             render(view: 'create', model: [personInstance: personInstance])
             return
         }
+        params.id = personInstance.ident()
 
 		personInstance.index()
 		if (ldapService) {
@@ -114,7 +145,7 @@ class PersonController {
 		}
         personInstance.properties = params
 		if (params.pictureRemove == '1') {
-			personInstance.picture = null;
+			personInstance.picture = null
 		} else if (params.picture?.isEmpty()) {
 			personInstance.picture = picture
 		}

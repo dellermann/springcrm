@@ -1,10 +1,37 @@
+/*
+ * UserController.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import org.springframework.dao.DataIntegrityViolationException
 
+
+/**
+ * The class {@code UserController} contains methods which manager the users of
+ * the application.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class UserController {
 
+    //-- Class variables ------------------------
+
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Public methods -------------------------
 
     def index() {
         redirect(action: 'list', params: params)
@@ -32,6 +59,7 @@ class UserController {
             render(view: 'create', model: [userInstance: userInstance])
             return
         }
+        params.id = userInstance.ident()
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
 		if (params.returnUrl) {

@@ -1,10 +1,37 @@
+/*
+ * CalendarEventController.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import org.springframework.dao.DataIntegrityViolationException
 
+
+/**
+ * The class {@code CalendarEventController} contains actions which manage
+ * calendar events and reminders.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class CalendarEventController {
 
+    //-- Class variables ------------------------
+
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Public methods -------------------------
 
     def index() {
         redirect(action: 'list', params: params)
@@ -104,6 +131,7 @@ class CalendarEventController {
             render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
             return
         }
+        params.id = calendarEventInstance.ident()
 
 		refineCalendarEvent(calendarEventInstance)
         calendarEventInstance.owner = session.user
@@ -245,6 +273,9 @@ class CalendarEventController {
             }
         }
     }
+
+
+    //-- Non-public methods ---------------------
 
 	private void refineCalendarEvent(CalendarEvent calendarEventInstance) {
 		def helper = new RecurCalendarEventHelper(

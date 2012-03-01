@@ -1,13 +1,42 @@
+/*
+ * ServiceController.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException
 
+
+/**
+ * The class {@code ServiceController} contains actions which manage services.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class ServiceController {
+
+    //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
+
+    //-- Instance variables ---------------------
+
 	def seqNumberService
+
+
+    //-- Public methods -------------------------
 
     def index() {
         redirect(action: 'list', params: params)
@@ -36,7 +65,7 @@ class ServiceController {
 			params.sort = 'name'
 			params.offset = Math.floor(num / params.max) * params.max
 		}
-		def list, count;
+		def list, count
 		if (params.search) {
 			list = Service.findAllByNameLike(searchFilter, params)
 			count = Service.countByNameLike(searchFilter)
@@ -71,6 +100,7 @@ class ServiceController {
             render(view: 'create', model: [serviceInstance: serviceInstance])
             return
         }
+        params.id = serviceInstance.ident()
 
 		serviceInstance.index()
         flash.message = message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])

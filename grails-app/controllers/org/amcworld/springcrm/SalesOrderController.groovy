@@ -1,14 +1,44 @@
+/*
+ * SalesOrderController.groovy
+ *
+ * Copyright (c) 2012, AMC World Technologies GmbH
+ * Fischerinsel 1, D-10179 Berlin, Deutschland
+ * All Rights Reserved.
+ *
+ * This software is the confidential and proprietary information of AMC World
+ * Technologies GmbH ("Confidential Information"). You shall not disclose such
+ * Confidential Information and shall use it only in accordance with the terms
+ * of the license agreement you entered into with AMC World Technologies GmbH.
+ */
+
+
 package org.amcworld.springcrm
 
 import grails.converters.XML
 import org.springframework.dao.DataIntegrityViolationException
 
+
+/**
+ * The class {@code SalesOrderController} contains actions which manage sales
+ * orders.
+ *
+ * @author	Daniel Ellermann
+ * @version 0.9
+ */
 class SalesOrderController {
+
+    //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
+
+    //-- Instance variables ---------------------
+
 	def fopService
 	def seqNumberService
+
+
+    //-- Public methods -------------------------
 
 	def index() {
         redirect(action: 'list', params: params)
@@ -89,6 +119,7 @@ class SalesOrderController {
             render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
             return
         }
+        params.id = salesOrderInstance.ident()
 
 		salesOrderInstance.index()
         flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
