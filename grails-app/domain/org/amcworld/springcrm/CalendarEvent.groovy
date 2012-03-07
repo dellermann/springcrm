@@ -49,8 +49,8 @@ class CalendarEvent {
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization: Organization, owner: User ]
-	static embedded = [ 'recurrence' ]
+    static belongsTo = [organization: Organization, owner: User]
+	static embedded = ['recurrence']
 	static mapping = {
 		sort 'start'
 		description type: 'text'
@@ -88,6 +88,9 @@ class CalendarEvent {
         organization = c.organization
         owner = c.owner
 	}
+
+
+    //-- Public methods -------------------------
 
     CalendarEvent eventAtDate(Date d) {
         def res = new CalendarEvent([
@@ -148,14 +151,13 @@ class RecurrenceData implements MessageSourceResolvable {
 	RecurrenceData() {}
 
 	RecurrenceData(RecurrenceData rd) {
-		type = c.type
-		until = c.until
-		cnt = c.cnt
-		interval = c.interval
-		monthDay = c.monthDay
-		weekdays = c.weekdays
-		weekdayOrd = c.weekdayOrd
-		month = c.month
+		type = rd.type
+		until = rd.until
+		interval = rd.interval
+		monthDay = rd.monthDay
+		weekdays = rd.weekdays
+		weekdayOrd = rd.weekdayOrd
+		month = rd.month
 	}
 
 

@@ -57,9 +57,11 @@ class CalendarEventController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
-			l = CalendarEvent.findAllByOrganization(organizationInstance, params)
-			count = CalendarEvent.countByOrganization(organizationInstance)
-			linkParams = [organization: organizationInstance.id]
+            if (organizationInstance) {
+    			l = CalendarEvent.findAllByOrganization(organizationInstance, params)
+    			count = CalendarEvent.countByOrganization(organizationInstance)
+    			linkParams = [organization: organizationInstance.id]
+            }
 		}
 		return [calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
 	}
@@ -123,7 +125,7 @@ class CalendarEventController {
 		def calendarEventInstance = CalendarEvent.get(params.id)
 		if (!calendarEventInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), params.id])
-            redirect(action: 'show', id: calendarEventInstance.id)
+            redirect(action: 'show', id: params.id)
             return
         }
 
@@ -133,6 +135,7 @@ class CalendarEventController {
 
     def save() {
         def calendarEventInstance = new CalendarEvent(params)
+        calendarEventInstance.owner = session.user
         if (!calendarEventInstance.validate()) {
             render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
             return
@@ -184,7 +187,7 @@ class CalendarEventController {
             }
         }
         def reminderInstanceList = l*.rule
-        return [calendarEventInstance: calendarEventInstance, reminderInstanceList:reminderInstanceList.join(' ')]
+        return [calendarEventInstance: calendarEventInstance, reminderInstanceList: reminderInstanceList.join(' ')]
     }
 
     def update() {

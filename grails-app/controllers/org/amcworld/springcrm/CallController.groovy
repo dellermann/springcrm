@@ -48,7 +48,7 @@ class CallController {
 		if (params.letter) {
 			int num = Call.countBySubjectLessThan(params.letter)
 			params.sort = 'subject'
-			params.offset = Math.floor(num / params.max) * params.max
+			params.offset = (Math.floor(num / params.max) * params.max) as Integer
 		}
         return [callInstanceList: Call.list(params), callInstanceTotal: Call.count()]
     }
@@ -60,14 +60,18 @@ class CallController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
-			l = Call.findAllByOrganization(organizationInstance, params)
-			count = Call.countByOrganization(organizationInstance)
-			linkParams = [organization: organizationInstance.id]
+            if (organizationInstance) {
+    			l = Call.findAllByOrganization(organizationInstance, params)
+    			count = Call.countByOrganization(organizationInstance)
+    			linkParams = [organization: organizationInstance.id]
+            }
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
-			l = Call.findAllByPerson(personInstance, params)
-			count = Call.countByPerson(personInstance)
-			linkParams = [person: personInstance.id]
+            if (personInstance) {
+    			l = Call.findAllByPerson(personInstance, params)
+    			count = Call.countByPerson(personInstance)
+    			linkParams = [person: personInstance.id]
+            }
 		}
 		return [callInstanceList: l, callInstanceTotal: count, linkParams: linkParams]
 	}
@@ -88,7 +92,7 @@ class CallController {
         def callInstance = Call.get(params.id)
         if (!callInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
-            redirect(action: 'list')
+            redirect(action: 'show', id: params.id)
             return
         }
 

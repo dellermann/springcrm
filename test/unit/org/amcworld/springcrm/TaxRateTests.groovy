@@ -1,32 +1,50 @@
+/*
+ * TaxRateTests.groovy
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package org.amcworld.springcrm
 
-import grails.test.*
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
 
-class TaxRateTests extends GrailsUnitTestCase {
 
-    protected void setUp() {
-        super.setUp()
-    }
+/**
+ * The class {@code TaxRateTests} contains the unit test cases for
+ * {@code TaxRate}.
+ *
+ * @author  Daniel Ellermann
+ * @version 0.9
+ */
+@TestFor(TaxRate)
+@Mock(TaxRate)
+class TaxRateTests {
 
-    protected void tearDown() {
-        super.tearDown()
-    }
+    //-- Public methods -------------------------
 
-    void testConstruct() {
-        TaxRate tc = new TaxRate(name:'19%', orderId:80, taxValue:19)
-        assertEquals '19%', tc.name
-        assertEquals 80, tc.orderId
-		assertEquals 19, tc.taxValue
-    }
-	
 	void testMinConstraints() {
-		mockForConstraintsTests TaxRate
+		mockForConstraintsTests(TaxRate)
 		def validationFields = ['taxValue']
-		TaxRate tc = new TaxRate(taxValue:-0.5)
-		assertFalse tc.validate(validationFields)
-		assertEquals 'min', tc.errors['taxValue']
-		
-		tc = new TaxRate(taxValue:0)
-		assertTrue tc.validate(validationFields)
+		def taxRate = new TaxRate(taxValue:-0.5)
+		assert !taxRate.validate(validationFields)
+        assert 'min' == taxRate.errors['taxValue']
+
+		taxRate = new TaxRate(taxValue:0)
+		assert taxRate.validate(validationFields)
 	}
 }

@@ -167,6 +167,11 @@ log4j = {
         'grails.app.controllers.org.amcworld.springcrm.InvoiceController',
         'grails.app.controllers.org.amcworld.springcrm.PurchaseInvoiceController',
         'grails.app.controllers.org.amcworld.springcrm.QuoteController',
-        'grails.app.controllers.org.amcworld.springcrm.SalesOrderController'
+        'grails.app.controllers.org.amcworld.springcrm.SalesOrderController',
+        environments {
+            test {
+                'grails.app.controllers.org.amcworld.springcrm'
+            }
+        }
     )
 }

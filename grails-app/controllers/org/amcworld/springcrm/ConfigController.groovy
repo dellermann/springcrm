@@ -49,8 +49,8 @@ class ConfigController {
     def index() {}
 
     def show() {
-        def configData = Config.list()
-        Map<String, Object> config = [:]
+        def configData = ConfigHolder.instance.allConfig
+        Map<String, Object> config = [: ]
         configData.each { config[it.name] = it.value }
 
         render(view: params.page, model: [configData: config])

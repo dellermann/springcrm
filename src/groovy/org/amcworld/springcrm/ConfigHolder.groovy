@@ -35,33 +35,18 @@ class ConfigHolder {
 	private static ConfigHolder instance
 
 
-	//-- Instance variables ---------------------
-
-	private Map<String, Config> cache
-
-
-	//-- Constructors ---------------------------
-
-	private ConfigHolder() {
-		cache = new HashMap<String, Config>()
-	}
-
-
 	//-- Public methods -------------------------
 
-	synchronized Config getAt(String name) {
+    List<Config> getAllConfig() {
+        return Config.list()
+    }
+
+	Config getAt(String name) {
 		return getConfig(name)
 	}
 
-	synchronized Config getConfig(String name) {
-        Config config = cache[name]
-        if (config == null) {
-            config = Config.findByName(name)
-            if (config != null) {
-                cache[name] = config
-            }
-        }
-        return config
+	Config getConfig(String name) {
+        return Config.findByName(name)
 	}
 
 	static synchronized ConfigHolder getInstance() {
@@ -71,15 +56,14 @@ class ConfigHolder {
 		return instance
 	}
 
-	synchronized void putAt(String name, String value) {
+	void putAt(String name, String value) {
 		setConfig(name, value)
 	}
 
-	synchronized void setConfig(String name, String value) {
+	void setConfig(String name, String value) {
 		Config config = getConfig(name)
 		if (config == null) {
 			config = new Config(name: name)
-			cache[name] = config
 		}
 		config.value = value
 		config.save(flush: true)
