@@ -35,7 +35,7 @@ class NoteTests extends GrailsUnitTestCase {
 		assertEquals 'Daniel', note.person.firstName
 		assertEquals 'Ellermann', note.person.lastName
 	}
-	
+
 	void testBlankConstraints() {
 		mockForConstraintsTests Note
 		def validationFields = ['title', 'content']
@@ -43,26 +43,26 @@ class NoteTests extends GrailsUnitTestCase {
 		assertFalse note.validate(validationFields)
 		assertEquals 'nullable', note.errors['title']
 		assertEquals 'nullable', note.errors['content']
-		
+
 		note = new Note(title:'')
 		assertFalse note.validate(['title'])
 		assertEquals 'blank', note.errors['title']
-		
+
 		note = new Note(title:'Test note', content:'This is a test.')
 		assertTrue note.validate(validationFields)
 	}
-	
+
 	void testUniqueConstraints() {
 		def note1 = new Note(number:10000, title:'Note 1')
 		def note2 = new Note(number:10010, title:'Note 2')
 		mockDomain(Note, [note1, note2])
-		
+
 		def badNote = new Note(number:10000, title:'Note 3')
 		assertNull badNote.save()
 		assertEquals 2, Note.count()
 		assertEquals 'unique', badNote.errors['number']
 		assertNull badNote.errors['title']
-		
+
 		def goodNote = new Note(number:10020, title:'Note 4', content:'Test')
 		assertNotNull goodNote.save()
 		assertEquals 3, Note.count()
@@ -75,20 +75,20 @@ class NoteTests extends GrailsUnitTestCase {
 		def note = new Note(title:s)
 		assertFalse note.validate(validationFields)
 		assertEquals 'maxSize', note.errors['title']
-		
+
 		s = '1234567890' * 20
 		note = new Note(title:s)
 		assertTrue note.validate(validationFields)
-		
+
 		s = 'Test note'
 		note = new Note(title:s)
 		assertTrue note.validate(validationFields)
 	}
 
 	void testFullNumber() {
-		def seqNumber = new SeqNumber(controllerName:'note', nextNumber:10002, prefix:'N', suffix:'')
-		mockDomain(SeqNumber, [seqNumber])
-		
+//		def seqNumber = new SeqNumber(controllerName:'note', nextNumber:10002, prefix:'N', suffix:'')
+//		mockDomain(SeqNumber, [seqNumber])
+
 		def note = new Note(number:10000)
 		note.seqNumberService = new SeqNumberService()
 		assertEquals 'N-10000', note.fullNumber
@@ -103,7 +103,7 @@ class NoteTests extends GrailsUnitTestCase {
 	void testToString() {
         def note = new Note(title:'Test note', content:'This is a test.')
 		assertToString note, 'Test note'
-		
+
 		note = new Note()
 		assertToString note, ''
 	}

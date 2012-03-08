@@ -32,7 +32,7 @@ import grails.test.mixin.TestFor
  * @version 0.9
  */
 @TestFor(ConfigController)
-@Mock(Config)
+@Mock([Config, Salutation, QuoteStage, TaxRate, SeqNumber])
 class ConfigControllerTests {
 
     //-- Public methods -------------------------
@@ -89,6 +89,163 @@ class ConfigControllerTests {
         assert '15' == configHolder['int-val'].value
     }
 
+    void testLoadClient() {
+        def model = controller.loadClient()
+        assert null != model
+    }
+
+    void testSaveClientSuccess() {
+        def client = mockCommandObject(Client)
+        client.name = 'AMC World Technologies GmbH'
+        client.street = 'Fischerinsel 1'
+        client.postalCode = '10179'
+        client.location = 'Berlin'
+        client.phone = '+49 30 8321475-0'
+        client.email = 'info@amc-world.de'
+        client.validate()
+        controller.saveClient(client)
+        assert '/config/index' == response.redirectedUrl
+    }
+
+    void testSaveClientError() {
+        def client = mockCommandObject(Client)
+        client.name = 'AMC World Technologies GmbH'
+        client.street = ''
+        client.validate()
+        controller.saveClient(client)
+        assert '/config/loadClient' == view
+        assert 'AMC World Technologies GmbH' == model.client.name
+        assert '' == model.client.street
+    }
+
+    void testLoadSelValuesEnabled() {
+        makeSelValuesFixture()
+        makeTaxRatesFixture()
+        params.type = 'salutation'
+        controller.loadSelValues()
+        assert 3 == response.json.size()
+        assert 'Mr.' == response.json[0].name
+        assert !response.json[0].disabled
+        assert 'Mrs.' == response.json[1].name
+        assert !response.json[1].disabled
+    }
+
+    /*
+     * Check for disabled does not work because the fixture does not store the
+     * IDs of the SelValue objects.
+     */
+//    void testLoadSelValuesDisabled() {
+//        makeSelValuesFixture()
+//        params.type = 'quoteStage'
+//        controller.loadSelValues()
+//        assert 5 == response.json.size()
+//        assert 600 == response.json[0].id
+//        assert 'created' == response.json[0].name
+//        assert response.json[0].disabled
+//        assert 601 == response.json[1].id
+//        assert 'revised' == response.json[1].name
+//        assert response.json[1].disabled
+//    }
+
+    void testSaveSelValuesEnabled() {
+        makeSelValuesFixture()
+        params.selValues = [
+            salutation: '[{id: 1, name: "Herr"}, {id: 2, name: "Frau"}, {id: 3, remove: true}]'
+        ]
+        controller.saveSelValues()
+        assert '/config/index' == response.redirectedUrl
+        assert 2 == Salutation.count()
+        assert 'Herr' == Salutation.get(1).name
+        assert 10 == Salutation.get(1).orderId
+        assert 'Frau' == Salutation.get(2).name
+        assert 20 == Salutation.get(2).orderId
+        assert 5 == QuoteStage.count()
+    }
+
+    /*
+     * Check for disabled does not work because the fixture does not store the
+     * IDs of the SelValue objects.
+     */
+//    void testSaveSelValuesDisabled() {
+//        makeSelValuesFixture()
+//        params.selValues = [
+//            quoteStage: '[{id: 600, name: "erstellt"}, {id: 601, name: "durchgesehen"}]'
+//        ]
+//        controller.saveSelValues()
+//        assert '/config/index' == response.redirectedUrl
+//        assert 2 == Salutation.count()
+//        assert 'Herr' == Salutation.get(1).name
+//        assert 'Frau' == Salutation.get(2).name
+//        assert 5 == QuoteStage.count()
+//    }
+
+    void testLoadTaxRates() {
+        makeSelValuesFixture()
+        makeTaxRatesFixture()
+        controller.loadTaxRates()
+        assert 2 == response.json.size()
+        assert 7 == response.json[0].name
+        assert 19 == response.json[1].name
+    }
+
+    void testSaveTaxRates() {
+        makeTaxRatesFixture()
+        params.selValues = [
+            taxRates: '[{id: 1, name: "8"}, {id: 2, name: null}, {id: -1, name: "20"}]'
+        ]
+        controller.saveTaxRates()
+        assert '/config/index' == response.redirectedUrl
+        assert 2 == TaxRate.count()
+        def taxRate = TaxRate.get(1)
+        assert null != taxRate
+        assert '8 %' == taxRate.name
+        assert 10 == taxRate.orderId
+        assert 0.08 == taxRate.taxValue
+        assert null == TaxRate.get(2)
+        taxRate = TaxRate.get(3)
+        assert null != taxRate
+        assert '20 %' == taxRate.name
+        assert 20 == taxRate.orderId
+        assert 0.2 == taxRate.taxValue
+    }
+
+    void testLoadSeqNumbers() {
+        makeSeqNumberFixture()
+        controller.loadSeqNumbers()
+        assert '/config/seqNumbers' == view
+        assert null != model.seqNumberList
+        assert 2 == model.seqNumberList.size()
+    }
+
+    void testSaveSeqNumbersSuccess() {
+        makeSeqNumberFixture()
+        params.seqNumbers = [
+            '1': [prefix: 'A', suffix: '', startValue: 30000, endValue: 99999],
+            '2': [prefix: 'R', suffix: '', startValue: 40000, endValue: 99999]
+        ]
+        controller.saveSeqNumbers()
+        assert '/config/index' == response.redirectedUrl
+        assert 2 == SeqNumber.count()
+        def seq = SeqNumber.get(1)
+        assert 'A' == seq.prefix
+        assert 30000 == seq.startValue
+        seq = SeqNumber.get(2)
+        assert 'R' == seq.prefix
+        assert 40000 == seq.startValue
+    }
+
+    void testSaveSeqNumbersError() {
+        makeSeqNumberFixture()
+        params.seqNumbers = [
+            '1': [prefix: 'A', suffix: 'XXXXXX', startValue: 30000, endValue: 99999],
+            '2': [prefix: 'R', suffix: '', startValue: 40000, endValue: 99999]
+        ]
+        controller.saveSeqNumbers()
+        assert '/config/seqNumbers' == view
+        assert null != model.seqNumberList
+        assert 2 == model.seqNumberList.size()
+    }
+
 
     //-- Non-public methods ---------------------
 
@@ -100,6 +257,43 @@ class ConfigControllerTests {
                 [name: 'int-val', value: '15'],
                 [name: 'float-val', value: '8.45'],
                 [name: 'boolean-val', value: 'true']
+            ]
+        )
+    }
+
+    protected void makeSelValuesFixture() {
+        mockDomain(
+            Salutation, [
+                [name: 'Mr.', orderId: 10],
+                [name: 'Mrs.', orderId: 20],
+                [name: 'Ms.', orderId: 30]
+            ]
+        )
+        mockDomain(
+            QuoteStage, [
+                [id: 600, name: 'created', orderId: 10],
+                [id: 601, name: 'revised', orderId: 20],
+                [id: 602, name: 'sent', orderId: 30],
+                [id: 603, name: 'accepted', orderId: 40],
+                [id: 604, name: 'rejected', orderId: 50]
+            ]
+        )
+    }
+
+    protected void makeTaxRatesFixture() {
+        mockDomain(
+            TaxRate, [
+                [name: '7 %', orderId: 10, taxValue: 0.07d],
+                [name: '19 %', orderId: 20, taxValue: 0.19d]
+            ]
+        )
+    }
+
+    protected void makeSeqNumberFixture() {
+        mockDomain(
+            SeqNumber, [
+                [controllerName: 'quote', prefix: 'Q', startValue: 10000i, endValue: 99999i],
+                [controllerName: 'invoice', prefix: 'I', startValue: 20000i, endValue: 99999i]
             ]
         )
     }

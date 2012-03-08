@@ -68,4 +68,8 @@ class Config {
     int hashCode() {
         return name.hashCode()
     }
+
+    String toString() {
+        return name
+    }
 }

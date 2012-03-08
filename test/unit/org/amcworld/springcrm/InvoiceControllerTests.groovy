@@ -4,7 +4,7 @@ import grails.test.*
 import org.springframework.transaction.TransactionStatus
 
 class InvoiceControllerTests extends ControllerUnitTestCase {
-	
+
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
@@ -20,10 +20,10 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		mockDomain(Invoice, [q1, q2])
 		Invoice.metaClass.index = { -> }
 		Invoice.metaClass.reindex = { -> }
-		
-		def seqNumber = new SeqNumber(controllerName:'invoice', nextNumber:10002, prefix:'I', suffix:'')
-		mockDomain(SeqNumber, [seqNumber])
-		
+
+//		def seqNumber = new SeqNumber(controllerName:'invoice', nextNumber:10002, prefix:'I', suffix:'')
+//		mockDomain(SeqNumber, [seqNumber])
+
 		controller.seqNumberService = new SeqNumberService()
     }
 
@@ -35,7 +35,7 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		controller.index()
 		assertEquals 'list', controller.redirectArgs['action']
     }
-	
+
 	void testList() {
 		def map = controller.list()
 		assertEquals 2, map.invoiceInstanceTotal
@@ -43,7 +43,7 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'Invoice 1', map.invoiceInstanceList[0].subject
 		assertEquals 'Invoice 2', map.invoiceInstanceList[1].subject
 	}
-	
+
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.invoiceInstance
@@ -64,7 +64,7 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		SeqNumber seqNumber = SeqNumber.findByControllerName('invoice')
 		assertEquals 10003, seqNumber.nextNumber
 	}
-	
+
 	void testSaveFailed() {
 		controller.params.number = 10001
 		controller.params.subject = ''
@@ -77,18 +77,18 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'unique', map.invoiceInstance.errors['number']
 		assertEquals 'blank', map.invoiceInstance.errors['subject']
 	}
-	
+
 	void testShow() {
 		controller.params.id = 2
 		def map = controller.show()
 		assertEquals 'Invoice 2', map.invoiceInstance.subject
-		
+
 		controller.params.id = 10
 		controller.show()
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testEdit() {
 		controller.params.id = 1
 		def map = controller.edit()
@@ -99,7 +99,7 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testUpdate() {
 		controller.params.id = 1
 		controller.params.number = 10000
@@ -118,25 +118,25 @@ class InvoiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 10000, invoice.number
 		assertEquals 'Invoice 3', invoice.subject
 		assertEquals 'Test', invoice.headerText
-		
+
 		controller.params.subject = ''
 		def map = controller.update()
 		assertEquals 2, Invoice.count()
 		assertEquals 'blank', map.invoiceInstance.errors['subject']
-		
+
 		controller.params.id = 10
 		controller.update()
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testDelete() {
 		controller.params.id = 1
 		controller.delete()
 		assertEquals 1, Invoice.count()
 		assertNull Invoice.get(1)
 		assertNotNull Invoice.get(2)
-		
+
 		controller.params.id = 10
 		controller.delete()
 		assertEquals 'list', controller.redirectArgs['action']

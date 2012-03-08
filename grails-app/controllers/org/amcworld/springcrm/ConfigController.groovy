@@ -95,22 +95,6 @@ class ConfigController {
         }
     }
 
-    def loadTaxRates() {
-        def list = TaxRate.list(sort: 'orderId')
-        render(contentType: 'text/json') {
-            array {
-                for (i in list) {
-                    item id: i.ident(), name: (i.taxValue * 100d).round(2)
-                }
-            }
-        }
-    }
-
-    def loadSeqNumbers() {
-        def list = SeqNumber.list()
-        render(view: 'seqNumbers', model: [seqNumberList: list])
-    }
-
     def saveSelValues() {
         for (Map.Entry entry in params.selValues?.entrySet()) {
             int orderId = 10
@@ -136,6 +120,17 @@ class ConfigController {
             redirect(url: params.returnUrl)
         } else {
             redirect(action: 'index')
+        }
+    }
+
+    def loadTaxRates() {
+        def list = TaxRate.list(sort: 'orderId')
+        render(contentType: 'text/json') {
+            array {
+                for (i in list) {
+                    item id: i.ident(), name: (i.taxValue * 100d).round(2)
+                }
+            }
         }
     }
 
@@ -165,10 +160,15 @@ class ConfigController {
         }
     }
 
+    def loadSeqNumbers() {
+        def list = SeqNumber.list()
+        render(view: 'seqNumbers', model: [seqNumberList: list])
+    }
+
     def saveSeqNumbers() {
         def l = []
         boolean hasErrors = false
-        for (entry in params.seqNumbers) {
+        for (def entry in params.seqNumbers) {
             try {
                 Long id = Long.valueOf(entry.key)
                 SeqNumber seqNumber = SeqNumber.get(id)
@@ -203,6 +203,9 @@ class ConfigController {
      */
     private Class<?> getTypeClass(String type) {
         GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
+        if (!gc) {
+            throw new IllegalArgumentException("Type ${type} is no valid type for a domain class.")
+        }
         Class<?> cls = gc.clazz
         if (!SelValue.isAssignableFrom(cls)) {
             throw new IllegalArgumentException("Type ${type} must be of type SelValue.")

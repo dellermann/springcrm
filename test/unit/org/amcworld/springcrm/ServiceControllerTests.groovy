@@ -5,7 +5,7 @@ import grails.test.*
 import org.springframework.transaction.TransactionStatus
 
 class ServiceControllerTests extends ControllerUnitTestCase {
-	
+
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
@@ -21,10 +21,10 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		mockDomain(Service, [s1, s2])
 		Service.metaClass.index = { -> }
 		Service.metaClass.reindex = { -> }
-		
-		def seqNumber = new SeqNumber(controllerName:'service', nextNumber:10002, prefix:'S', suffix:'')
-		mockDomain(SeqNumber, [seqNumber])
-		
+
+//		def seqNumber = new SeqNumber(controllerName:'service', nextNumber:10002, prefix:'S', suffix:'')
+//		mockDomain(SeqNumber, [seqNumber])
+
 		controller.seqNumberService = new SeqNumberService()
     }
 
@@ -36,7 +36,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		controller.index()
 		assertEquals 'list', controller.redirectArgs['action']
     }
-	
+
 	void testList() {
 		def map = controller.list()
 		assertEquals 2, map.serviceInstanceTotal
@@ -44,7 +44,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'Service 1', map.serviceInstanceList[0].name
 		assertEquals 'Service 2', map.serviceInstanceList[1].name
 	}
-	
+
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.serviceInstance
@@ -62,7 +62,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		SeqNumber seqNumber = SeqNumber.findByControllerName('service')
 		assertEquals 10003, seqNumber.nextNumber
 	}
-	
+
 	void testSaveFailed() {
 		controller.params.number = 10001
 		controller.params.name = ''
@@ -73,18 +73,18 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'unique', map.serviceInstance.errors['number']
 		assertEquals 'blank', map.serviceInstance.errors['name']
 	}
-	
+
 	void testShow() {
 		controller.params.id = 2
 		def map = controller.show()
 		assertEquals 'Service 2', map.serviceInstance.name
-		
+
 		controller.params.id = 10
 		controller.show()
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testEdit() {
 		controller.params.id = 1
 		def map = controller.edit()
@@ -95,7 +95,7 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testUpdate() {
 		controller.params.id = 1
 		controller.params.number = 10000
@@ -112,25 +112,25 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		assertEquals 'Service 3', p.name
 		assertEquals 35, p.quantity
 		assertEquals 4.7d, p.unitPrice
-		
+
 		controller.params.name = ''
 		def map = controller.update()
 		assertEquals 2, Service.count()
 		assertEquals 'blank', map.serviceInstance.errors['name']
-		
+
 		controller.params.id = 10
 		controller.update()
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testDelete() {
 		controller.params.id = 1
 		controller.delete()
 		assertEquals 1, Service.count()
 		assertNull Service.get(1)
 		assertNotNull Service.get(2)
-		
+
 		controller.params.id = 10
 		controller.delete()
 		assertEquals 'list', controller.redirectArgs['action']

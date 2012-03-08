@@ -4,7 +4,7 @@ import grails.test.*
 import org.springframework.transaction.TransactionStatus
 
 class SalesOrderControllerTests extends ControllerUnitTestCase {
-	
+
 	private static final String ERROR_MSG = 'error message'
 
     protected void setUp() {
@@ -20,10 +20,10 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		mockDomain(SalesOrder, [q1, q2])
 		SalesOrder.metaClass.index = { -> }
 		SalesOrder.metaClass.reindex = { -> }
-		
-		def seqNumber = new SeqNumber(controllerName:'salesOrder', nextNumber:10002, prefix:'S', suffix:'')
-		mockDomain(SeqNumber, [seqNumber])
-		
+
+//		def seqNumber = new SeqNumber(controllerName:'salesOrder', nextNumber:10002, prefix:'S', suffix:'')
+//		mockDomain(SeqNumber, [seqNumber])
+
 		controller.seqNumberService = new SeqNumberService()
     }
 
@@ -35,7 +35,7 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		controller.index()
 		assertEquals 'list', controller.redirectArgs['action']
     }
-	
+
 	void testList() {
 		def map = controller.list()
 		assertEquals 2, map.salesOrderInstanceTotal
@@ -43,7 +43,7 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		assertEquals 'Sales order 1', map.salesOrderInstanceList[0].subject
 		assertEquals 'Sales order 2', map.salesOrderInstanceList[1].subject
 	}
-	
+
 	void testCreate() {
 		def map = controller.create()
 		assertNotNull map.salesOrderInstance
@@ -63,7 +63,7 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		SeqNumber seqNumber = SeqNumber.findByControllerName('salesOrder')
 		assertEquals 10003, seqNumber.nextNumber
 	}
-	
+
 	void testSaveFailed() {
 		controller.params.number = 10001
 		controller.params.subject = ''
@@ -76,18 +76,18 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		assertEquals 'unique', map.salesOrderInstance.errors['number']
 		assertEquals 'blank', map.salesOrderInstance.errors['subject']
 	}
-	
+
 	void testShow() {
 		controller.params.id = 2
 		def map = controller.show()
 		assertEquals 'Sales order 2', map.salesOrderInstance.subject
-		
+
 		controller.params.id = 10
 		controller.show()
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testEdit() {
 		controller.params.id = 1
 		def map = controller.edit()
@@ -98,7 +98,7 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testUpdate() {
 		controller.params.id = 1
 		controller.params.number = 10000
@@ -116,25 +116,25 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		assertEquals 10000, so.number
 		assertEquals 'Sales order 3', so.subject
 		assertEquals 'Test', so.headerText
-		
+
 		controller.params.subject = ''
 		def map = controller.update()
 		assertEquals 2, SalesOrder.count()
 		assertEquals 'blank', map.salesOrderInstance.errors['subject']
-		
+
 		controller.params.id = 10
 		controller.update()
 		assertEquals 'list', controller.redirectArgs['action']
 		assertEquals ERROR_MSG, controller.flash['message']
 	}
-	
+
 	void testDelete() {
 		controller.params.id = 1
 		controller.delete()
 		assertEquals 1, SalesOrder.count()
 		assertNull SalesOrder.get(1)
 		assertNotNull SalesOrder.get(2)
-		
+
 		controller.params.id = 10
 		controller.delete()
 		assertEquals 'list', controller.redirectArgs['action']

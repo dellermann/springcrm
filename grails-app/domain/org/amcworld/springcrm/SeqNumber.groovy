@@ -48,4 +48,11 @@ class SeqNumber {
 	String suffix = ''
 	int startValue = 10000i
 	int endValue = 99999i
+
+
+    //-- Public methods -------------------------
+
+    String toString() {
+        return controllerName
+    }
 }

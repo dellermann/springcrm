@@ -21,10 +21,10 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		mockDomain(Quote, [q1, q2])
 		Quote.metaClass.index = { -> }
 		Quote.metaClass.reindex = { -> }
-		
-		def seqNumber = new SeqNumber(controllerName:'quote', nextNumber:10002, prefix:'Q', suffix:'')
-		mockDomain(SeqNumber, [seqNumber])
-		
+
+//		def seqNumber = new SeqNumber(controllerName:'quote', nextNumber:10002, prefix:'Q', suffix:'')
+//		mockDomain(SeqNumber, [seqNumber])
+
 		controller.seqNumberService = new SeqNumberService()
     }
 
@@ -82,7 +82,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		controller.params.id = 2
 		def map = controller.show()
 		assertEquals 'Quote 2', map.quoteInstance.subject
-		
+
 		controller.params.id = 10
 		controller.show()
 		assertEquals 'list', controller.redirectArgs['action']
@@ -117,12 +117,12 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 10000, quote.number
 		assertEquals 'Quote 3', quote.subject
 		assertEquals 'Test', quote.headerText
-		
+
 		controller.params.subject = ''
 		def map = controller.update()
 		assertEquals 2, Quote.count()
 		assertEquals 'blank', map.quoteInstance.errors['subject']
-		
+
 		controller.params.id = 10
 		controller.update()
 		assertEquals 'list', controller.redirectArgs['action']
@@ -163,7 +163,7 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		assertEquals 1, Quote.count()
 		assertNull Quote.get(1)
 		assertNotNull Quote.get(2)
-		
+
 		controller.params.id = 10
 		controller.delete()
 		assertEquals 'list', controller.redirectArgs['action']
