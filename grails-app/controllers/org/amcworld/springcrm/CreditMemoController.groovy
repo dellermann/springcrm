@@ -62,24 +62,32 @@ class CreditMemoController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
-			l = CreditMemo.findAllByOrganization(organizationInstance, params)
-			count = CreditMemo.countByOrganization(organizationInstance)
-			linkParams = [organization: organizationInstance.id]
+            if (organizationInstance) {
+    			l = CreditMemo.findAllByOrganization(organizationInstance, params)
+    			count = CreditMemo.countByOrganization(organizationInstance)
+    			linkParams = [organization: organizationInstance.id]
+            }
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
-			l = CreditMemo.findAllByPerson(personInstance, params)
-			count = CreditMemo.countByPerson(personInstance)
-			linkParams = [person: personInstance.id]
+            if (personInstance) {
+    			l = CreditMemo.findAllByPerson(personInstance, params)
+    			count = CreditMemo.countByPerson(personInstance)
+    			linkParams = [person: personInstance.id]
+            }
 		} else if (params.invoice) {
 			def invoiceInstance = Invoice.get(params.invoice)
-			l = CreditMemo.findAllByInvoice(invoiceInstance, params)
-			count = CreditMemo.countByInvoice(invoiceInstance)
-			linkParams = [invoice: invoiceInstance.id]
+            if (invoiceInstance) {
+    			l = CreditMemo.findAllByInvoice(invoiceInstance, params)
+    			count = CreditMemo.countByInvoice(invoiceInstance)
+    			linkParams = [invoice: invoiceInstance.id]
+            }
 		} else if (params.dunning) {
 			def dunningInstance = Dunning.get(params.dunning)
-			l = CreditMemo.findAllByDunning(dunningInstance, params)
-			count = CreditMemo.countByDunning(dunningInstance)
-			linkParams = [dunning: dunningInstance.id]
+            if (dunningInstance) {
+    			l = CreditMemo.findAllByDunning(dunningInstance, params)
+    			count = CreditMemo.countByDunning(dunningInstance)
+    			linkParams = [dunning: dunningInstance.id]
+            }
 		}
 		return [creditMemoInstanceList: l, creditMemoInstanceTotal: count, linkParams: linkParams]
 	}
@@ -120,7 +128,7 @@ class CreditMemoController {
 		def creditMemoInstance = CreditMemo.get(params.id)
 		if (!creditMemoInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), params.id])
-            redirect(action: 'list')
+            redirect(action: 'show', id: params.id)
             return
         }
 

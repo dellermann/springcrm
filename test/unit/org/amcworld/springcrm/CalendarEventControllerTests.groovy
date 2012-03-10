@@ -69,7 +69,7 @@ class CalendarEventControllerTests {
 
     void testListNonEmpty() {
         def d = new Date()
-        def calendarEvent = makeCalendarEventFixture(d)
+        makeCalendarEventFixture(d)
         def model = controller.list()
         assert null != model.calendarEventInstanceList
         assert 1 == model.calendarEventInstanceList.size()
@@ -261,6 +261,10 @@ class CalendarEventControllerTests {
         assert 'default.updated.message' == flash.message
         assert '/calendarEvent/show/1' == response.redirectedUrl
         assert 1 == CalendarEvent.count()
+        def calendarEvent = CalendarEvent.get(1)
+        assert 'Test 2' == calendarEvent.subject
+        assert d == calendarEvent.start
+        assert d == calendarEvent.end
     }
 
     void testUpdateError() {

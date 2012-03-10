@@ -104,7 +104,9 @@ class ConfigController {
                 Long id = item.id as Long
                 def selValue = (id < 0L) ? cls.newInstance() : cls.get(id)
                 if (item.remove) {
-                    selValue.delete(flush: true)
+                    if (!(id in READONLY_IDS)) {
+                        selValue.delete(flush: true)
+                    }
                 } else {
                     if (!(id in READONLY_IDS)) {
                         selValue.name = item.name

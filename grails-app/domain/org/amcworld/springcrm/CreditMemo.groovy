@@ -39,7 +39,7 @@ class CreditMemo extends InvoicingTransaction {
 		invoice(nullable: true)
 		dunning(nullable: true)
     }
-	static belongsTo = [ invoice: Invoice, dunning: Dunning ]
+	static belongsTo = [invoice: Invoice, dunning: Dunning]
 	static mapping = {
 		stage column: 'credit_memo_stage_id'
 	}
@@ -67,11 +67,13 @@ class CreditMemo extends InvoicingTransaction {
 
 	CreditMemo(Invoice i) {
 		super(i)
+        subject = ''
 		invoice = i
 	}
 
 	CreditMemo(Dunning d) {
 		super(d)
+        subject = ''
 		dunning = d
 	}
 

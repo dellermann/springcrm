@@ -41,6 +41,7 @@ class Invoice extends InvoicingTransaction {
 		salesOrder(nullable: true)
     }
     static belongsTo = [quote: Quote, salesOrder: SalesOrder]
+    static hasMany = [creditMemos: CreditMemo, dunnings: Dunning]
 	static mapping = {
 		stage column: 'invoice_stage_id'
 	}

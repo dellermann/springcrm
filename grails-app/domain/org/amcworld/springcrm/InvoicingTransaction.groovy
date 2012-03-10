@@ -68,7 +68,7 @@ class InvoicingTransaction {
 		dateCreated()
 		lastUpdated()
     }
-    static belongsTo = [ organization: Organization, person: Person ]
+    static belongsTo = [organization: Organization, person: Person]
 	static hasMany = [
 		items: InvoicingItem,
 		termsAndConditions: TermsAndConditions

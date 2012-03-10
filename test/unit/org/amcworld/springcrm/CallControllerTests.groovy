@@ -308,6 +308,7 @@ class CallControllerTests {
         assert 'default.updated.message' == flash.message
         assert '/call/show/1' == response.redirectedUrl
         assert 1 == Call.count()
+        assert 'Test 2' == Call.get(1).subject
     }
 
     void testUpdateError() {

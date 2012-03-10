@@ -66,8 +66,8 @@ class Organization {
     }
     static hasMany = [
 		persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
-		salesOrders: SalesOrder, invoices: Invoice,
-		purchaseInvoices: PurchaseInvoice
+		salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
+        dunnings: Dunning, purchaseInvoices: PurchaseInvoice
 	]
 	static mapping = {
 		calls column: 'Organization'

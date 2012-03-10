@@ -130,54 +130,50 @@ class ConfigControllerTests {
         assert !response.json[1].disabled
     }
 
-    /*
-     * Check for disabled does not work because the fixture does not store the
-     * IDs of the SelValue objects.
-     */
-//    void testLoadSelValuesDisabled() {
-//        makeSelValuesFixture()
-//        params.type = 'quoteStage'
-//        controller.loadSelValues()
-//        assert 5 == response.json.size()
-//        assert 600 == response.json[0].id
-//        assert 'created' == response.json[0].name
-//        assert response.json[0].disabled
-//        assert 601 == response.json[1].id
-//        assert 'revised' == response.json[1].name
-//        assert response.json[1].disabled
-//    }
+    void testLoadSelValuesDisabled() {
+        makeSelValuesFixture()
+        params.type = 'quoteStage'
+        controller.loadSelValues()
+        assert 5 == response.json.size()
+        assert 600 == response.json[0].id
+        assert 'created' == response.json[0].name
+        assert response.json[0].disabled
+        assert 601 == response.json[1].id
+        assert 'revised' == response.json[1].name
+        assert response.json[1].disabled
+    }
 
     void testSaveSelValuesEnabled() {
         makeSelValuesFixture()
         params.selValues = [
-            salutation: '[{id: 1, name: "Herr"}, {id: 2, name: "Frau"}, {id: 3, remove: true}]'
+            salutation: '[{id: 2, name: "Frau"}, {id: 1, name: "Herr"}, {id: 3, remove: true}]'
         ]
         controller.saveSelValues()
         assert '/config/index' == response.redirectedUrl
         assert 2 == Salutation.count()
         assert 'Herr' == Salutation.get(1).name
-        assert 10 == Salutation.get(1).orderId
+        assert 20 == Salutation.get(1).orderId
         assert 'Frau' == Salutation.get(2).name
-        assert 20 == Salutation.get(2).orderId
+        assert 10 == Salutation.get(2).orderId
         assert 5 == QuoteStage.count()
     }
 
-    /*
-     * Check for disabled does not work because the fixture does not store the
-     * IDs of the SelValue objects.
-     */
-//    void testSaveSelValuesDisabled() {
-//        makeSelValuesFixture()
-//        params.selValues = [
-//            quoteStage: '[{id: 600, name: "erstellt"}, {id: 601, name: "durchgesehen"}]'
-//        ]
-//        controller.saveSelValues()
-//        assert '/config/index' == response.redirectedUrl
-//        assert 2 == Salutation.count()
-//        assert 'Herr' == Salutation.get(1).name
-//        assert 'Frau' == Salutation.get(2).name
-//        assert 5 == QuoteStage.count()
-//    }
+    void testSaveSelValuesDisabled() {
+        makeSelValuesFixture()
+        params.selValues = [
+            quoteStage: '[{id: 601, name: "durchgesehen"}, {id: 600, name: "erstellt"}, {id: 602, remove: true}]'
+        ]
+        controller.saveSelValues()
+        assert '/config/index' == response.redirectedUrl
+        assert 3 == Salutation.count()
+        assert 5 == QuoteStage.count()
+        assert 'created' == QuoteStage.get(600).name
+        assert 20 == QuoteStage.get(600).orderId
+        assert 'revised' == QuoteStage.get(601).name
+        assert 10 == QuoteStage.get(601).orderId
+        assert 'sent' == QuoteStage.get(602).name
+        assert 30 == QuoteStage.get(602).orderId
+    }
 
     void testLoadTaxRates() {
         makeSelValuesFixture()
@@ -269,15 +265,30 @@ class ConfigControllerTests {
                 [name: 'Ms.', orderId: 30]
             ]
         )
-        mockDomain(
-            QuoteStage, [
-                [id: 600, name: 'created', orderId: 10],
-                [id: 601, name: 'revised', orderId: 20],
-                [id: 602, name: 'sent', orderId: 30],
-                [id: 603, name: 'accepted', orderId: 40],
-                [id: 604, name: 'rejected', orderId: 50]
-            ]
-        )
+
+        /*
+         * Implementation notes: currently, we cannot call something like this:
+         *   new InvoiceStage(id: 900, name: 'created')
+         * In this case the ID is null. We must set it afterwards otherwise it
+         * is not stored.
+         */
+        def l = []
+        def stage = new QuoteStage(name: 'created', orderId: 10)
+        stage.id = 600
+        l << stage
+        stage = new QuoteStage(name: 'revised', orderId: 20)
+        stage.id = 601
+        l << stage
+        stage = new QuoteStage(name: 'sent', orderId: 30)
+        stage.id = 602
+        l << stage
+        stage = new QuoteStage(name: 'accepted', orderId: 40)
+        stage.id = 603
+        l << stage
+        stage = new QuoteStage(name: 'rejected', orderId: 50)
+        stage.id = 604
+        l << stage
+        mockDomain(QuoteStage, l)
     }
 
     protected void makeTaxRatesFixture() {
