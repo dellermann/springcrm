@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.util.Date
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 
@@ -39,7 +38,6 @@ class CallTests {
 
     void testConstructor() {
         def call = new Call()
-        assert null != call
         assert null != call.start
     }
 
@@ -54,7 +52,6 @@ class CallTests {
             person: person, phone: '123456789', start: d
         )
         def anotherCall = new Call(call)
-        assert null != anotherCall
         assert 'Test' == anotherCall.subject
         assert 'Test call' == anotherCall.notes
         assert null != anotherCall.organization

@@ -163,7 +163,7 @@ class InvoicingTransaction {
     //-- Public methods -------------------------
 
 	String getFullNumber() {
-		String s = seqNumberService.formatWithPrefix(getClass(), number)
+		String s = seqNumberService ? seqNumberService.formatWithPrefix(getClass(), number) : ''
 		if (organization) {
 			s += '-' + organization.number
 		}

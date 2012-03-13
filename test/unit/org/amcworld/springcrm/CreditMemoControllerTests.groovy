@@ -43,6 +43,10 @@ class CreditMemoControllerTests {
 //        seqNumberService.demand.nextNumber(0..10) { cls -> seqNumber++ }
 //        InvoicingTransaction.metaClass.seqNumberService = seqNumberService.createMock()
 
+        SeqNumberService.metaClass.formatWithPrefix = { -> '10000' }
+        Client.metaClass.static.loadAsMap = { -> [: ] }
+        grails.converters.XML.metaClass.static.toString = { -> '' }
+
         CreditMemo.metaClass.index = { -> }
         CreditMemo.metaClass.reindex = { -> }
         Invoice.metaClass.reindex = { -> }
@@ -376,8 +380,61 @@ class CreditMemoControllerTests {
         assert '/creditMemo/list' == response.redirectedUrl
     }
 
-    void testEditPayment() {
-        // TODO
+    void testEditForbiddenByNonAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        params.id = creditMemo.id
+        controller.edit()
+        assert '/creditMemo/list' == response.redirectedUrl
+    }
+
+    void testEditForbiddenByAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        session.user.admin = true
+        params.id = creditMemo.id
+        def model = controller.edit()
+        assert null != model.creditMemoInstance
+    }
+
+    void testEditPaymentNonAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        params.id = creditMemo.id
+        def model = controller.editPayment()
+        assert null != model.creditMemoInstance
+    }
+
+    void testEditPaymentAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        session.user.admin = true
+        params.id = creditMemo.id
+        def model = controller.editPayment()
+        assert null != model.creditMemoInstance
+    }
+
+    void testEditPaymentNonExisting() {
+        params.id = 1000
+        def model = controller.editPayment()
+        assert 'default.not.found.message' == flash.message
+        assert '/creditMemo/list' == response.redirectedUrl
     }
 
     void testUpdateSuccess() {
@@ -421,6 +478,140 @@ class CreditMemoControllerTests {
         assert '/creditMemo/list' == response.redirectedUrl
     }
 
+    void testUpdateForbiddenByNonAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        params.id = creditMemo.id
+        params.subject = 'Test credit memo forbidden'
+        controller.update()
+        assert '/creditMemo/list' == response.redirectedUrl
+    }
+
+    void testUpdateForbiddenByAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        session.user.admin = true
+        params.id = creditMemo.id
+        params.subject = 'Test 2'
+        params.'items[0]' = new InvoicingItem(number: 'S-10000', quantity: 10.0, unit: 'h', name: 'Test entry 1a', unitPrice: 153.0, tax: 19.0)
+        params.'items[1]' = new InvoicingItem(number: 'S-10001', quantity: 1.0, unit: 'pc.', name: 'Test entry 2a', unitPrice: 140.0, tax: 19.0)
+        params.'items[2]' = new InvoicingItem(number: 'P-20140', quantity: 2.0, unit: 'pc.', name: 'Test entry 3a', unitPrice: 599.0, tax: 19.0)
+        controller.update()
+        assert 'default.updated.message' == flash.message
+        assert '/creditMemo/show/' + creditMemo.id == response.redirectedUrl
+        assert 1 == CreditMemo.count()
+        creditMemo = CreditMemo.findByType('C')
+        assert 'Test 2' == creditMemo.subject
+    }
+
+    void testUpdatePaymentByNonAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        params.id = creditMemo.id
+        params.subject = 'Test 2'
+        params.'stage.id' = 2503
+        def d = new Date()
+        params.paymentDate = d
+        params.paymentAmount = 1470.10
+        controller.updatePayment()
+        assert 'default.updated.message' == flash.message
+        assert '/creditMemo/show/' + creditMemo.id == response.redirectedUrl
+        assert 1 == CreditMemo.count()
+        creditMemo = CreditMemo.findByType('C')
+        assert 'Test credit memo' == creditMemo.subject
+        assert 2503 == creditMemo.stage.id
+        assert d == creditMemo.paymentDate
+        assert 1470.10 == creditMemo.paymentAmount
+    }
+
+    void testUpdatePaymentByAdmin() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        session.user.admin = true
+        params.id = creditMemo.id
+        params.subject = 'Test 2'
+        params.'stage.id' = 2503
+        def d = new Date()
+        params.paymentDate = d
+        params.paymentAmount = 1470.10
+        controller.updatePayment()
+        assert 'default.updated.message' == flash.message
+        assert '/creditMemo/show/' + creditMemo.id == response.redirectedUrl
+        assert 1 == CreditMemo.count()
+        creditMemo = CreditMemo.findByType('C')
+        assert 'Test credit memo' == creditMemo.subject
+        assert 2503 == creditMemo.stage.id
+        assert d == creditMemo.paymentDate
+        assert 1470.10 == creditMemo.paymentAmount
+    }
+
+    void testUpdatePaymentByNonAdminWithReturnUrl() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        params.id = creditMemo.id
+        params.subject = 'Test 2'
+        params.'stage.id' = 2503
+        def d = new Date()
+        params.paymentDate = d
+        params.paymentAmount = 1470.10
+        params.returnUrl = '/organization/show/5'
+        controller.updatePayment()
+        assert 'default.updated.message' == flash.message
+        assert '/organization/show/5' == response.redirectedUrl
+        assert 1 == CreditMemo.count()
+        creditMemo = CreditMemo.findByType('C')
+        assert 'Test credit memo' == creditMemo.subject
+        assert 2503 == creditMemo.stage.id
+        assert d == creditMemo.paymentDate
+        assert 1470.10 == creditMemo.paymentAmount
+    }
+
+    void testUpdatePaymentByAdminWithReturnUrl() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        creditMemo.stage = new CreditMemoStage(name: 'sent')
+        creditMemo.stage.id = 2502
+        creditMemo.save()
+
+        session.user.admin = true
+        params.id = creditMemo.id
+        params.subject = 'Test 2'
+        params.'stage.id' = 2503
+        def d = new Date()
+        params.paymentDate = d
+        params.paymentAmount = 1470.10
+        params.returnUrl = '/organization/show/5'
+        controller.updatePayment()
+        assert 'default.updated.message' == flash.message
+        assert '/organization/show/5' == response.redirectedUrl
+        assert 1 == CreditMemo.count()
+        creditMemo = CreditMemo.findByType('C')
+        assert 'Test credit memo' == creditMemo.subject
+        assert 2503 == creditMemo.stage.id
+        assert d == creditMemo.paymentDate
+        assert 1470.10 == creditMemo.paymentAmount
+    }
+
     void testUpdateWithReturnUrl() {
         def d = new Date()
         makeCreditMemoFixture(d)
@@ -445,6 +636,69 @@ class CreditMemoControllerTests {
          */
 //        assert 3 == creditMemo.items.size()
         assert 0 < creditMemo.items.size()
+    }
+
+    void testDeleteExistingConfirmed() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        params.id = creditMemo.id
+        params.confirmed = true
+        controller.delete()
+        assert 'default.deleted.message' == flash.message
+        assert '/creditMemo/list' == response.redirectedUrl
+        assert 0 == CreditMemo.countByType('C')
+    }
+
+    void testDeleteExistingUnconfirmed() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        params.id = creditMemo.id
+        controller.delete()
+        assert 'default.not.found.message' == flash.message
+        assert '/creditMemo/list' == response.redirectedUrl
+        assert 1 == CreditMemo.countByType('C')
+    }
+
+    void testDeleteNonExisting() {
+        params.id = 1000
+        params.confirmed = true
+        controller.delete()
+        assert 'default.not.found.message' == flash.message
+        assert '/creditMemo/list' == response.redirectedUrl
+    }
+
+    void testDeleteWithReturnUrlConfirmed() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        params.id = creditMemo.id
+        params.confirmed = true
+        params.returnUrl = '/organization/show/5'
+        controller.delete()
+        assert 'default.deleted.message' == flash.message
+        assert '/organization/show/5' == response.redirectedUrl
+        assert 0 == CreditMemo.countByType('C')
+    }
+
+    void testDeleteWithReturnUrlUnconfirmed() {
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        params.id = creditMemo.id
+        params.returnUrl = '/organization/show/5'
+        controller.delete()
+        assert 'default.not.found.message' == flash.message
+        assert '/organization/show/5' == response.redirectedUrl
+        assert 1 == CreditMemo.countByType('C')
+    }
+
+    void testPrintExisting() {
+        def control = mockFor(FopService)
+        control.demand.outputPdf(1) {}
+        controller.fopService = control.createMock()
+
+        makeCreditMemoFixture()
+        def creditMemo = CreditMemo.findByType('C')
+        params.id = creditMemo.id
+        controller.print()
     }
 
 

@@ -39,7 +39,6 @@ class CalendarEventTests {
 
     void testConstructor() {
         def calendarEvent = new CalendarEvent()
-        assert null != calendarEvent
         assert null != calendarEvent.recurrence
     }
 
@@ -53,7 +52,6 @@ class CalendarEventTests {
             owner: new User(userName: 'dellermann')
         )
         def anotherCalendarEvent = new CalendarEvent(calendarEvent)
-        assert null != anotherCalendarEvent
         assert 'Test' == anotherCalendarEvent.subject
         assert 'Berlin' == anotherCalendarEvent.location
         assert 'Test calendar event' == anotherCalendarEvent.description

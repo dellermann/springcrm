@@ -61,19 +61,25 @@ class DunningController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		if (params.organization) {
 			def organizationInstance = Organization.get(params.organization)
-			l = Dunning.findAllByOrganization(organizationInstance, params)
-			count = Dunning.countByOrganization(organizationInstance)
-			linkParams = [organization: organizationInstance.id]
+            if (organizationInstance) {
+    			l = Dunning.findAllByOrganization(organizationInstance, params)
+    			count = Dunning.countByOrganization(organizationInstance)
+    			linkParams = [organization: organizationInstance.id]
+            }
 		} else if (params.person) {
 			def personInstance = Person.get(params.person)
-			l = Dunning.findAllByPerson(personInstance, params)
-			count = Dunning.countByPerson(personInstance)
-			linkParams = [person: personInstance.id]
+            if (personInstance) {
+    			l = Dunning.findAllByPerson(personInstance, params)
+    			count = Dunning.countByPerson(personInstance)
+    			linkParams = [person: personInstance.id]
+            }
 		} else if (params.invoice) {
 			def invoiceInstance = Invoice.get(params.invoice)
-			l = Dunning.findAllByInvoice(invoiceInstance, params)
-			count = Dunning.countByInvoice(invoiceInstance)
-			linkParams = [invoice: invoiceInstance.id]
+            if (invoiceInstance) {
+    			l = Dunning.findAllByInvoice(invoiceInstance, params)
+    			count = Dunning.countByInvoice(invoiceInstance)
+    			linkParams = [invoice: invoiceInstance.id]
+            }
 		}
 		return [dunningInstanceList: l, dunningInstanceTotal: count, linkParams: linkParams]
 	}
@@ -106,16 +112,16 @@ class DunningController {
 		}
 
 		ConfigHolder config = ConfigHolder.instance
-		Integer serviceId = config['serviceIdDunningCharge'] as Integer
+		def serviceId = config['serviceIdDunningCharge']
 		if (serviceId) {
-			def service = Service.get(serviceId)
+			def service = Service.get(serviceId as Integer)
 			if (service) {
 				dunningInstance.addToItems(serviceToItem(service))
 			}
 		}
-		serviceId = config['serviceIdDefaultInterest'] as Integer
+		serviceId = config['serviceIdDefaultInterest']
 		if (serviceId) {
-			def service = Service.get(serviceId)
+			def service = Service.get(serviceId as Integer)
 			if (service) {
 				dunningInstance.addToItems(serviceToItem(service))
 			}
@@ -127,7 +133,7 @@ class DunningController {
 		def dunningInstance = Dunning.get(params.id)
 		if (!dunningInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'dunning.label', default: 'Dunning'), params.id])
-            redirect(action: 'list')
+            redirect(action: 'show', id: params.id)
             return
         }
 
@@ -138,7 +144,6 @@ class DunningController {
     def save() {
         def dunningInstance = new Dunning(params)
         if (!dunningInstance.save(flush: true)) {
-            log.debug(dunningInstance.errors)
             render(view: 'create', model: [dunningInstance: dunningInstance])
             return
         }

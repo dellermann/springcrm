@@ -300,7 +300,7 @@ class CreditMemoController {
             }
         }
 
-        creditMemoInstance.properties = params.findAll { it.key in ['stage.id', 'paymentDate', 'paymentAmount', 'paymentMethod.id'] }
+        creditMemoInstance.properties['stage.id', 'paymentDate', 'paymentAmount', 'paymentMethod.id'] = params
 
         if (!creditMemoInstance.save(flush: true)) {
             render(view: 'edit', model: [creditMemoInstance: creditMemoInstance])
