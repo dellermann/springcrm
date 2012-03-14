@@ -1529,7 +1529,7 @@ form .invoicing-items-pos {
   color: white !important;
   cursor: move;
   float: left;
-  margin-bottom: 0 !important;
+  margin: 0 !important;
   padding: .8em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }

@@ -92,6 +92,7 @@ grails.spring.bean.packages = []
 grails.exceptionresolver.params.exclude = ['password']
 
 /* Settings for database migration */
+grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
 /* mail configuration */
@@ -114,21 +115,20 @@ environments {
 
     /* development environment */
     development {
-        grails.plugin.databasemigration.updateOnStart = true
+//        grails.plugin.databasemigration.updateOnStart = false
     }
 
     /* test environment */
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
+        grails.plugin.databasemigration.updateOnStart = false
     }
 
     /* production (deployment) environment */
     production {}
 
     /* live enviroment on the AMC World server */
-    live {
-        grails.plugin.databasemigration.updateOnStart = true
-    }
+    live {}
 
     /* standalone environment for demonstration purposes */
     standalone {}

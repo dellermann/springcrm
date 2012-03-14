@@ -1,0 +1,1408 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!--
+
+ db-2012-03-13.xml
+
+ Copyright (c) 2011-2012, Daniel Ellermann
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-1">
+    <createTable tableName="calendar_event">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="calendar_evenPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="all_day" type="bit">
+        <constraints nullable="false"/>
+      </column>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="end_time" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="location" type="varchar(255)"/>
+      <column name="organization_id" type="bigint"/>
+      <column name="owner_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="recurrence_interval" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="recurrence_month" type="integer"/>
+      <column name="recurrence_month_day" type="integer"/>
+      <column name="recurrence_type" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="recurrence_until" type="datetime"/>
+      <column name="recurrence_weekday_ord" type="integer"/>
+      <column name="recurrence_weekdays" type="varchar(13)"/>
+      <column name="start_time" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="subject" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-2">
+    <createTable tableName="config">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="configPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="value" type="varchar(255)"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-3">
+    <createTable tableName="google_data_sync_status">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="google_data_sPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="deleted" type="bit">
+        <constraints nullable="false"/>
+      </column>
+      <column name="item_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_sync" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="url" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-4">
+    <createTable tableName="invoicing_item">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="invoicing_itePK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="invoicing_transaction_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="number" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tax" type="decimal(19,1)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="unit" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="unit_price" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="items_idx" type="integer"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-5">
+    <createTable tableName="invoicing_transaction">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="invoicing_traPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adjustment" type="decimal(19,2)"/>
+      <column name="billing_addr_country" type="varchar(255)"/>
+      <column name="billing_addr_location" type="varchar(255)"/>
+      <column name="billing_addr_po_box" type="varchar(255)"/>
+      <column name="billing_addr_postal_code" type="varchar(255)"/>
+      <column name="billing_addr_state" type="varchar(255)"/>
+      <column name="billing_addr_street" type="varchar(255)"/>
+      <column name="carrier_id" type="bigint"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="discount_amount" type="decimal(19,2)"/>
+      <column name="discount_percent" type="decimal(19,2)"/>
+      <column name="doc_date" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="footer_text" type="longtext"/>
+      <column name="header_text" type="longtext"/>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notes" type="longtext"/>
+      <column name="number" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="organization_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="person_id" type="bigint"/>
+      <column name="shipping_addr_country" type="varchar(255)"/>
+      <column name="shipping_addr_location" type="varchar(255)"/>
+      <column name="shipping_addr_po_box" type="varchar(255)"/>
+      <column name="shipping_addr_postal_code" type="varchar(255)"/>
+      <column name="shipping_addr_state" type="varchar(255)"/>
+      <column name="shipping_addr_street" type="varchar(255)"/>
+      <column name="shipping_costs" type="decimal(19,2)"/>
+      <column name="shipping_date" type="datetime"/>
+      <column name="shipping_tax" type="decimal(19,1)"/>
+      <column name="subject" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="total" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="varchar(1)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="class" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="delivery_date" type="datetime"/>
+      <column name="due_date" type="datetime"/>
+      <column name="quote_id" type="bigint"/>
+      <column name="so_stage_id" type="bigint"/>
+      <column name="due_date_payment" type="datetime"/>
+      <column name="payment_amount" type="decimal(19,2)"/>
+      <column name="payment_date" type="datetime"/>
+      <column name="payment_method_id" type="bigint"/>
+      <column name="sales_order_id" type="bigint"/>
+      <column name="invoice_stage_id" type="bigint"/>
+      <column name="invoice_id" type="bigint"/>
+      <column name="level_id" type="bigint"/>
+      <column name="dunning_stage_id" type="bigint"/>
+      <column name="quote_stage_id" type="bigint"/>
+      <column name="valid_until" type="datetime"/>
+      <column name="dunning_id" type="bigint"/>
+      <column name="credit_memo_stage_id" type="bigint"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-6">
+    <createTable tableName="invoicing_transaction_terms_and_conditions">
+      <column name="invoicing_transaction_terms_and_conditions_id"
+        type="bigint"/>
+      <column name="terms_and_conditions_id" type="bigint"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-7">
+    <createTable tableName="ldap_sync_status">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="ldap_sync_staPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="dn" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="item_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_sync" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-8">
+    <createTable tableName="lru_entry">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="lru_entryPK"/>
+      </column>
+      <column name="controller" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="item_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(255)"/>
+      <column name="pos" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-9">
+    <createTable tableName="note">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="notePK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="content" type="longtext">
+        <constraints nullable="false"/>
+      </column>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="number" type="integer">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="organization_id" type="bigint"/>
+      <column name="person_id" type="bigint"/>
+      <column name="title" type="varchar(200)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-10">
+    <createTable tableName="organization">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="organizationPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="billing_addr_country" type="varchar(255)"/>
+      <column name="billing_addr_location" type="varchar(255)"/>
+      <column name="billing_addr_po_box" type="varchar(255)"/>
+      <column name="billing_addr_postal_code" type="varchar(255)"/>
+      <column name="billing_addr_state" type="varchar(255)"/>
+      <column name="billing_addr_street" type="varchar(255)"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email1" type="varchar(255)"/>
+      <column name="email2" type="varchar(255)"/>
+      <column name="fax" type="varchar(40)"/>
+      <column name="industry_id" type="bigint"/>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="legal_form" type="varchar(255)"/>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notes" type="longtext"/>
+      <column name="num_employees" type="varchar(255)"/>
+      <column name="number" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="owner" type="varchar(255)"/>
+      <column name="phone" type="varchar(40)"/>
+      <column name="phone_other" type="varchar(40)"/>
+      <column name="rating_id" type="bigint"/>
+      <column name="rec_type" type="tinyint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="shipping_addr_country" type="varchar(255)"/>
+      <column name="shipping_addr_location" type="varchar(255)"/>
+      <column name="shipping_addr_po_box" type="varchar(255)"/>
+      <column name="shipping_addr_postal_code" type="varchar(255)"/>
+      <column name="shipping_addr_state" type="varchar(255)"/>
+      <column name="shipping_addr_street" type="varchar(255)"/>
+      <column name="type_id" type="bigint"/>
+      <column name="website" type="varchar(255)"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-11">
+    <createTable tableName="panel">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="panelPK"/>
+      </column>
+      <column name="col" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="panel_id" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="pos" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-12">
+    <createTable tableName="person">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="personPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="assistant" type="varchar(255)"/>
+      <column name="birthday" type="datetime"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="department" type="varchar(255)"/>
+      <column name="email1" type="varchar(255)"/>
+      <column name="email2" type="varchar(255)"/>
+      <column name="fax" type="varchar(40)"/>
+      <column name="first_name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="job_title" type="varchar(255)"/>
+      <column name="last_name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="mailing_addr_country" type="varchar(255)"/>
+      <column name="mailing_addr_location" type="varchar(255)"/>
+      <column name="mailing_addr_po_box" type="varchar(255)"/>
+      <column name="mailing_addr_postal_code" type="varchar(255)"/>
+      <column name="mailing_addr_state" type="varchar(255)"/>
+      <column name="mailing_addr_street" type="varchar(255)"/>
+      <column name="mobile" type="varchar(40)"/>
+      <column name="notes" type="longtext"/>
+      <column name="number" type="integer">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="organization_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="other_addr_country" type="varchar(255)"/>
+      <column name="other_addr_location" type="varchar(255)"/>
+      <column name="other_addr_po_box" type="varchar(255)"/>
+      <column name="other_addr_postal_code" type="varchar(255)"/>
+      <column name="other_addr_state" type="varchar(255)"/>
+      <column name="other_addr_street" type="varchar(255)"/>
+      <column name="phone" type="varchar(40)"/>
+      <column name="phone_assistant" type="varchar(40)"/>
+      <column name="phone_home" type="varchar(40)"/>
+      <column name="phone_other" type="varchar(40)"/>
+      <column name="picture" type="mediumblob"/>
+      <column name="salutation_id" type="bigint"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-13">
+    <createTable tableName="phone_call">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="phone_callPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notes" type="longtext">
+        <constraints nullable="false"/>
+      </column>
+      <column name="organization_id" type="bigint"/>
+      <column name="person_id" type="bigint"/>
+      <column name="phone" type="varchar(40)"/>
+      <column name="start" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="status" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="subject" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-14">
+    <createTable tableName="product">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="productPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="category_id" type="bigint"/>
+      <column name="commission" type="decimal(19,2)"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="manufacturer" type="varchar(255)"/>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="number" type="integer">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="purchase_price" type="decimal(19,2)"/>
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="retailer" type="varchar(255)"/>
+      <column name="sales_end" type="datetime"/>
+      <column name="sales_start" type="datetime"/>
+      <column name="tax_rate_id" type="bigint"/>
+      <column name="unit_id" type="bigint"/>
+      <column name="unit_price" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="weight" type="decimal(19,2)"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-15">
+    <createTable tableName="purchase_invoice">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="purchase_invoPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="adjustment" type="decimal(19,2)"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="discount_amount" type="decimal(19,2)"/>
+      <column name="discount_percent" type="decimal(19,2)"/>
+      <column name="doc_date" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="document_file" type="varchar(255)"/>
+      <column name="due_date" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="notes" type="longtext"/>
+      <column name="number" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="payment_amount" type="decimal(19,2)"/>
+      <column name="payment_date" type="datetime"/>
+      <column name="payment_method_id" type="bigint"/>
+      <column name="shipping_costs" type="decimal(19,2)"/>
+      <column name="shipping_tax" type="decimal(19,1)"/>
+      <column name="stage_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="subject" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="total" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="vendor_id" type="bigint"/>
+      <column name="vendor_name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-16">
+    <createTable tableName="purchase_invoice_item">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="purchase_invoPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="varchar(255)"/>
+      <column name="invoice_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="number" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tax" type="decimal(19,1)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="unit" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="unit_price" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="items_idx" type="integer"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-17">
+    <createTable tableName="reminder">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="reminderPK"/>
+      </column>
+      <column name="calendar_event_id" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="next_reminder" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="unit" type="varchar(1)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="user_id" type="bigint"/>
+      <column name="value" type="integer">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-18">
+    <createTable tableName="sel_value">
+      <column name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="sel_valuePK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="order_id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="class" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="tax_value" type="double precision(19, 2)"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-19">
+    <createTable tableName="seq_number">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="seq_numberPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="controller_name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="end_value" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="prefix" type="varchar(5)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="start_value" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="suffix" type="varchar(5)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-20">
+    <createTable tableName="service">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="servicePK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="category_id" type="bigint"/>
+      <column name="commission" type="decimal(19,2)"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="longtext"/>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="number" type="integer">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="sales_end" type="datetime"/>
+      <column name="sales_start" type="datetime"/>
+      <column name="tax_rate_id" type="bigint"/>
+      <column name="unit_id" type="bigint"/>
+      <column name="unit_price" type="decimal(19,2)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-21">
+    <createTable tableName="user_data">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="user_dataPK"/>
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="admin" type="bit">
+        <constraints nullable="false"/>
+      </column>
+      <column name="allowed_modules" type="longtext"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="fax" type="varchar(40)"/>
+      <column name="first_name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_name" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="mobile" type="varchar(40)"/>
+      <column name="password" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="phone" type="varchar(40)"/>
+      <column name="phone_home" type="varchar(40)"/>
+      <column name="user_name" type="varchar(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-22">
+    <createTable tableName="user_data_settings">
+      <column name="settings" type="bigint"/>
+      <column name="settings_idx" type="varchar(255)"/>
+      <column name="settings_elt" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-23">
+    <createIndex indexName="FK2A9BEA598466B320" tableName="calendar_event">
+      <column name="organization_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-24">
+    <createIndex indexName="FK2A9BEA59DC0B6238" tableName="calendar_event">
+      <column name="owner_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-25">
+    <createIndex indexName="FK7A34DA477024B220"
+      tableName="google_data_sync_status">
+      <column name="user_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-26">
+    <createIndex indexName="FKCF5EC5886BC3566B" tableName="invoicing_item">
+      <column name="invoicing_transaction_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-27">
+    <createIndex indexName="FK44B5CAC913DBA780"
+      tableName="invoicing_transaction">
+      <column name="credit_memo_stage_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-28">
+    <createIndex indexName="FK44B5CAC9257B68B4"
+      tableName="invoicing_transaction">
+      <column name="carrier_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-29">
+    <createIndex indexName="FK44B5CAC92B8F89DD"
+      tableName="invoicing_transaction">
+      <column name="dunning_stage_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-30">
+    <createIndex indexName="FK44B5CAC9354E73CF"
+      tableName="invoicing_transaction">
+      <column name="level_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-31">
+    <createIndex indexName="FK44B5CAC96FB140B4"
+      tableName="invoicing_transaction">
+      <column name="quote_id"/>
+    </createIndex>
+  </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-32">
+    <createIndex indexName="FK44B5CAC98466B320"
+      tableName="invoicing_transaction">
+      <column name="organization_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-33">
+    <createIndex indexName="FK44B5CAC99346B214"
+      tableName="invoicing_transaction">
+      <column name="dunning_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-34">
+    <createIndex indexName="FK44B5CAC9A91976E7"
+      tableName="invoicing_transaction">
+      <column name="sales_order_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-35">
+    <createIndex indexName="FK44B5CAC9BB290094"
+      tableName="invoicing_transaction">
+      <column name="invoice_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-36">
+    <createIndex indexName="FK44B5CAC9C4EFC2F5"
+      tableName="invoicing_transaction">
+      <column name="so_stage_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-37">
+    <createIndex indexName="FK44B5CAC9CEECCCE5"
+      tableName="invoicing_transaction">
+      <column name="invoice_stage_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-38">
+    <createIndex indexName="FK44B5CAC9E696B207"
+      tableName="invoicing_transaction">
+      <column name="quote_stage_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-39">
+    <createIndex indexName="FK44B5CAC9F1C1460"
+      tableName="invoicing_transaction">
+      <column name="person_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-40">
+    <createIndex indexName="FK44B5CAC9F806AF41"
+      tableName="invoicing_transaction">
+      <column name="payment_method_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-41">
+    <createIndex indexName="unique-number" tableName="invoicing_transaction">
+      <column name="type"/>
+      <column name="number"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-42">
+    <createIndex indexName="FKC357738E61189250"
+      tableName="invoicing_transaction_terms_and_conditions">
+      <column name="terms_and_conditions_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-43">
+    <createIndex indexName="FKC357738EAA3A3B86"
+      tableName="invoicing_transaction_terms_and_conditions">
+      <column name="invoicing_transaction_terms_and_conditions_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-44">
+    <createIndex indexName="FKA43D4FE27024B220" tableName="lru_entry">
+      <column name="user_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-45">
+    <createIndex indexName="unique-item_id" tableName="lru_entry">
+      <column name="controller"/>
+      <column name="user_id"/>
+      <column name="item_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-46">
+    <createIndex indexName="FK33AFF28466B320" tableName="note">
+      <column name="organization_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-47">
+    <createIndex indexName="FK33AFF2F1C1460" tableName="note">
+      <column name="person_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-48">
+    <createIndex indexName="number_unique_1331663349887" tableName="note"
+      unique="true">
+      <column name="number"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-49">
+    <createIndex indexName="FK4644ED3359B47A78" tableName="organization">
+      <column name="type_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-50">
+    <createIndex indexName="FK4644ED33BCD40240" tableName="organization">
+      <column name="industry_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-51">
+    <createIndex indexName="FK4644ED33F3FD0F60" tableName="organization">
+      <column name="rating_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-52">
+    <createIndex indexName="unique-number" tableName="organization">
+      <column name="rec_type"/>
+      <column name="number"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-53">
+    <createIndex indexName="FK6580A047024B220" tableName="panel">
+      <column name="user_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-54">
+    <createIndex indexName="FKC4E39B558466B320" tableName="person">
+      <column name="organization_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-55">
+    <createIndex indexName="FKC4E39B55DD23A680" tableName="person">
+      <column name="salutation_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-56">
+    <createIndex indexName="number_unique_1331663349899" tableName="person"
+      unique="true">
+      <column name="number"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-57">
+    <createIndex indexName="FK93412A8F8466B320" tableName="phone_call">
+      <column name="organization_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-58">
+    <createIndex indexName="FK93412A8FF1C1460" tableName="phone_call">
+      <column name="person_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-59">
+    <createIndex indexName="FKED8DCCEF67D5AB80" tableName="product">
+      <column name="unit_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-60">
+    <createIndex indexName="FKED8DCCEFC7AFB16B" tableName="product">
+      <column name="tax_rate_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-61">
+    <createIndex indexName="FKED8DCCEFE9949B03" tableName="product">
+      <column name="category_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-62">
+    <createIndex indexName="number_unique_1331663349905" tableName="product"
+      unique="true">
+      <column name="number"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-63">
+    <createIndex indexName="FK5ABE5DEFA555D5B4" tableName="purchase_invoice">
+      <column name="stage_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-64">
+    <createIndex indexName="FK5ABE5DEFF49B86EB" tableName="purchase_invoice">
+      <column name="vendor_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-65">
+    <createIndex indexName="FK5ABE5DEFF806AF41" tableName="purchase_invoice">
+      <column name="payment_method_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-66">
+    <createIndex indexName="FKFBF6336329E58653"
+      tableName="purchase_invoice_item">
+      <column name="invoice_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-67">
+    <createIndex indexName="FKE116C0727024B220" tableName="reminder">
+      <column name="user_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-68">
+    <createIndex indexName="FKE116C072DCB8B137" tableName="reminder">
+      <column name="calendar_event_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-69">
+    <createIndex indexName="FK7643C6B52A2F6EC9" tableName="service">
+      <column name="category_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-70">
+    <createIndex indexName="FK7643C6B567D5AB80" tableName="service">
+      <column name="unit_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-71">
+    <createIndex indexName="FK7643C6B5C7AFB16B" tableName="service">
+      <column name="tax_rate_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-72">
+    <createIndex indexName="number_unique_1331663349921" tableName="service"
+      unique="true">
+      <column name="number"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-73">
+    <createIndex indexName="user_name_unique_1331663349924"
+      tableName="user_data" unique="true">
+      <column name="user_name"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-74">
+    <addForeignKeyConstraint baseColumnNames="organization_id"
+      baseTableName="calendar_event" constraintName="FK2A9BEA598466B320"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="organization" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-75">
+    <addForeignKeyConstraint baseColumnNames="owner_id"
+      baseTableName="calendar_event" constraintName="FK2A9BEA59DC0B6238"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-76">
+    <addForeignKeyConstraint baseColumnNames="user_id"
+      baseTableName="google_data_sync_status"
+      constraintName="FK7A34DA477024B220" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-77">
+    <addForeignKeyConstraint baseColumnNames="invoicing_transaction_id"
+      baseTableName="invoicing_item" constraintName="FKCF5EC5886BC3566B"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="invoicing_transaction"
+      referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-78">
+    <addForeignKeyConstraint baseColumnNames="carrier_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9257B68B4"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-79">
+    <addForeignKeyConstraint baseColumnNames="credit_memo_stage_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC913DBA780"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-80">
+    <addForeignKeyConstraint baseColumnNames="dunning_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC99346B214"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="invoicing_transaction"
+      referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-81">
+    <addForeignKeyConstraint baseColumnNames="dunning_stage_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC92B8F89DD"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-82">
+    <addForeignKeyConstraint baseColumnNames="invoice_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9BB290094"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="invoicing_transaction"
+      referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-83">
+    <addForeignKeyConstraint baseColumnNames="invoice_stage_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9CEECCCE5"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-84">
+    <addForeignKeyConstraint baseColumnNames="level_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9354E73CF"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-85">
+    <addForeignKeyConstraint baseColumnNames="organization_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC98466B320"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="organization" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-86">
+    <addForeignKeyConstraint baseColumnNames="payment_method_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9F806AF41"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-87">
+    <addForeignKeyConstraint baseColumnNames="person_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9F1C1460"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="person" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-88">
+    <addForeignKeyConstraint baseColumnNames="quote_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC96FB140B4"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="invoicing_transaction"
+      referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-89">
+    <addForeignKeyConstraint baseColumnNames="quote_stage_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9E696B207"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-90">
+    <addForeignKeyConstraint baseColumnNames="sales_order_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9A91976E7"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="invoicing_transaction"
+      referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-91">
+    <addForeignKeyConstraint baseColumnNames="so_stage_id"
+      baseTableName="invoicing_transaction" constraintName="FK44B5CAC9C4EFC2F5"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-92">
+    <addForeignKeyConstraint
+      baseColumnNames="invoicing_transaction_terms_and_conditions_id"
+      baseTableName="invoicing_transaction_terms_and_conditions"
+      constraintName="FKC357738EAA3A3B86" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="invoicing_transaction"
+      referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-93">
+    <addForeignKeyConstraint baseColumnNames="terms_and_conditions_id"
+      baseTableName="invoicing_transaction_terms_and_conditions"
+      constraintName="FKC357738E61189250" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-94">
+    <addForeignKeyConstraint baseColumnNames="user_id"
+      baseTableName="lru_entry" constraintName="FKA43D4FE27024B220"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-95">
+    <addForeignKeyConstraint baseColumnNames="organization_id"
+      baseTableName="note" constraintName="FK33AFF28466B320" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="organization" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-96">
+    <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="note"
+      constraintName="FK33AFF2F1C1460" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="person" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-97">
+    <addForeignKeyConstraint baseColumnNames="industry_id"
+      baseTableName="organization" constraintName="FK4644ED33BCD40240"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-98">
+    <addForeignKeyConstraint baseColumnNames="rating_id"
+      baseTableName="organization" constraintName="FK4644ED33F3FD0F60"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-99">
+    <addForeignKeyConstraint baseColumnNames="type_id"
+      baseTableName="organization" constraintName="FK4644ED3359B47A78"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-100">
+    <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="panel"
+      constraintName="FK6580A047024B220" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-101">
+    <addForeignKeyConstraint baseColumnNames="organization_id"
+      baseTableName="person" constraintName="FKC4E39B558466B320"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="organization" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-102">
+    <addForeignKeyConstraint baseColumnNames="salutation_id"
+      baseTableName="person" constraintName="FKC4E39B55DD23A680"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-103">
+    <addForeignKeyConstraint baseColumnNames="organization_id"
+      baseTableName="phone_call" constraintName="FK93412A8F8466B320"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="organization" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-104">
+    <addForeignKeyConstraint baseColumnNames="person_id"
+      baseTableName="phone_call" constraintName="FK93412A8FF1C1460"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="person" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-105">
+    <addForeignKeyConstraint baseColumnNames="category_id"
+      baseTableName="product" constraintName="FKED8DCCEFE9949B03"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-106">
+    <addForeignKeyConstraint baseColumnNames="tax_rate_id"
+      baseTableName="product" constraintName="FKED8DCCEFC7AFB16B"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-107">
+    <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="product"
+      constraintName="FKED8DCCEF67D5AB80" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-108">
+    <addForeignKeyConstraint baseColumnNames="payment_method_id"
+      baseTableName="purchase_invoice" constraintName="FK5ABE5DEFF806AF41"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-109">
+    <addForeignKeyConstraint baseColumnNames="stage_id"
+      baseTableName="purchase_invoice" constraintName="FK5ABE5DEFA555D5B4"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-110">
+    <addForeignKeyConstraint baseColumnNames="vendor_id"
+      baseTableName="purchase_invoice" constraintName="FK5ABE5DEFF49B86EB"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="organization" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-111">
+    <addForeignKeyConstraint baseColumnNames="invoice_id"
+      baseTableName="purchase_invoice_item" constraintName="FKFBF6336329E58653"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="purchase_invoice" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-112">
+    <addForeignKeyConstraint baseColumnNames="calendar_event_id"
+      baseTableName="reminder" constraintName="FKE116C072DCB8B137"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="calendar_event" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-113">
+    <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="reminder"
+      constraintName="FKE116C0727024B220" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-114">
+    <addForeignKeyConstraint baseColumnNames="category_id"
+      baseTableName="service" constraintName="FK7643C6B52A2F6EC9"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-115">
+    <addForeignKeyConstraint baseColumnNames="tax_rate_id"
+      baseTableName="service" constraintName="FK7643C6B5C7AFB16B"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20120313-116">
+    <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="service"
+      constraintName="FK7643C6B567D5AB80" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false"/>
+  </changeSet>
+</databaseChangeLog>

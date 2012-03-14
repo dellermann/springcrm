@@ -156,7 +156,13 @@ class UserController {
         }
     }
 
-	def login() {}
+	def login() {
+        def installStatus = org.amcworld.springcrm.Config.findByName('installStatus')
+        if (!installStatus || !installStatus.value) {
+            redirect(controller: 'install', action: 'index')
+            return
+        }
+    }
 
 	def authenticate() {
 		def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
