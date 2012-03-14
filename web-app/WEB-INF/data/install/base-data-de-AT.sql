@@ -26,7 +26,7 @@ INSERT INTO sel_value (id, version, name, order_id, class, tax_value) VALUES (40
 INSERT INTO sel_value (id, version, name, order_id, class, tax_value) VALUES (403, 0, '19 %', 40, 'org.amcworld.springcrm.TaxRate', 0.19)
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (500, 0, 'Abholung', 10, 'org.amcworld.springcrm.Carrier')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (501, 0, 'elektronisch', 20, 'org.amcworld.springcrm.Carrier')
-INSERT INTO sel_value (id, version, name, order_id, class) VALUES (505, 0, 'Österreichische Post', 30, 'org.amcworld.springcrm.Carrier')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (502, 0, 'Österreichische Post', 30, 'org.amcworld.springcrm.Carrier')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (503, 0, 'DHL', 40, 'org.amcworld.springcrm.Carrier')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (504, 0, 'UPS', 50, 'org.amcworld.springcrm.Carrier')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (505, 0, 'FedEx', 60, 'org.amcworld.springcrm.Carrier')

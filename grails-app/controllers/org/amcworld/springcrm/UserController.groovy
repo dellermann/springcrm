@@ -37,6 +37,11 @@ class UserController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
+    //-- Instance variables ---------------------
+
+    def installService
+
+
     //-- Public methods -------------------------
 
     def index() {
@@ -159,6 +164,7 @@ class UserController {
 	def login() {
         def installStatus = org.amcworld.springcrm.Config.findByName('installStatus')
         if (!installStatus || !installStatus.value) {
+            installService.enableInstaller()
             redirect(controller: 'install', action: 'index')
             return
         }

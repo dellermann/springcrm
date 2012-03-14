@@ -33,7 +33,6 @@ class BootStrap {
     //-- Instance variables ---------------------
 
 	def exceptionHandler
-    def installService
 
 
     //-- Public methods -------------------------
@@ -42,11 +41,6 @@ class BootStrap {
 		exceptionHandler.exceptionMappings = [
 			'java.lang.Exception': '/error'
 		]
-
-        def installStatus = org.amcworld.springcrm.Config.findByName('installStatus')
-        if (!installStatus || !installStatus.value) {
-            installService.enableInstaller()
-        }
 
 		OverviewPanelRepository opr = OverviewPanelRepository.instance
 		opr.initialize(servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml'))
