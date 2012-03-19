@@ -46,6 +46,7 @@ class InstallService {
 
     //-- Instance variables ---------------------
 
+    def grailsApplication
     ServletContext servletContext = SCH.servletContext
 
 
@@ -53,8 +54,9 @@ class InstallService {
 
     /**
      * Checks whether or not the installer is enabled.  The installer is enable
-     * if there is a file {@code ENABLE_INSTALLER} in
-     * {@code .springcrm/install/} in the user's home directory.
+     * if there is a file {@code ENABLE_INSTALLER} in the installer directory
+     * as specified in the configuration file in key
+     * {@code springcrm.dir.installer}.
      *
      * @return  {@code true} if the installer is enabled; {@code false}
      *          otherwise
@@ -65,17 +67,19 @@ class InstallService {
 
     /**
      * Enables the installer by creating the installer enable file
-     * {@code ENABLE_INSTALLER} in {@code .springcrm/install/} in the user's
-     * home directory.
+     * {@code ENABLE_INSTALLER} in the installer directory as specified in the
+     * configuration file in key {@code springcrm.dir.installer}.
      */
     void enableInstaller() {
+        log.error(enableFile)
+        println "Installer enable file: ${enableFile}"
         enableFile.createNewFile()
     }
 
     /**
      * Disables the installer by deleting the installer enable file
-     * {@code ENABLE_INSTALLER} in {@code .springcrm/install/} in the user's
-     * home directory.
+     * {@code ENABLE_INSTALLER} in the installer directory as specified in the
+     * configuration file in key {@code springcrm.dir.installer}.
      */
     void disableInstaller() {
         enableFile.delete()
@@ -118,15 +122,16 @@ class InstallService {
 
     /**
      * Gets the object representing the installer enable file.  This file is
-     * stored in {@code .springcrm/install/} in the user's home directory.
+     * stored in the installer directory as specified in the configuration
+     * file in key {@code springcrm.dir.installer}.
      *
      * @return  the installer enable file
      */
     protected File getEnableFile() {
-        def f = new File("${System.getProperty('user.home')}/.springcrm/install")
-        if (!f.exists()) {
-            f.mkdirs()
+        def dir = new File(grailsApplication.config.springcrm.dir.installer)
+        if (!dir.exists()) {
+            dir.mkdirs()
         }
-        return new File(f, 'ENABLE_INSTALLER')
+        return new File(dir, 'ENABLE_INSTALLER')
     }
 }

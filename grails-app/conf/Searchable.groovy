@@ -55,7 +55,7 @@ searchable {
      * The default is "${user.home}/.grails/projects/${app.name}/searchable-index/${grails.env}"
      */
     compassConnection =
-        new File("${userHome}/.${appName}/searchable-index/${grailsEnv}").
+        new File("${grailsApplication.config.springcrm.dir.searchableIndex}/${grailsEnv}").
             absolutePath
 
     /**

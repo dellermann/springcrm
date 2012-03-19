@@ -171,7 +171,7 @@ class FopService {
      * @return  the user print template directory
      */
     File getUserTemplateDir() {
-        return new File("${System.getProperty('user.home')}/.springcrm/print")
+        return new File(grailsApplication.config.springcrm.dir.print)
     }
 
     /**

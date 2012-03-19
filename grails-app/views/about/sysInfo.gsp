@@ -2,12 +2,12 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
-  <title><g:message code="about.sysInfo" default="About" /></title>
+  <title><g:message code="about.sysInfo" default="System information" /></title>
 </head>
 
 <body>
   <div id="main-container-header">
-    <h2><g:message code="about.title" default="About" /></h2>
+    <h2><g:message code="about.sysInfo" default="System information" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><g:link action="index" class="white"><g:message code="about.back.label" default="Back" /></g:link></li>
@@ -32,9 +32,9 @@
     <p><g:message code="about.sysInfo.cpus" args="${[Runtime.runtime.availableProcessors()]}" /></p>
     
     <h3><g:message code="about.sysInfo.pathes" /></h3>
+    <p><g:message code="about.sysInfo.appHome" args="${[grailsApplication.config.springcrm.dir.base]}" /></p>
     <p><g:message code="about.sysInfo.userDir" args="${[System.getProperty('user.dir')]}" /></p>
     <p><g:message code="about.sysInfo.userHome" args="${[System.getProperty('user.home')]}" /></p>
-    <p><g:message code="about.sysInfo.appHome" args="${[System.getProperty('user.home') + '/.springcrm']}" /></p>
     <p><g:message code="about.sysInfo.tempDir" args="${[System.getProperty('java.io.tmpdir')]}" /></p>
     <p><g:message code="about.sysInfo.classPath" args="${[System.getProperty('java.class.path')]}" /></p>
     <p><g:message code="about.sysInfo.libraryPath" args="${[System.getProperty('java.library.path')]}" /></p>

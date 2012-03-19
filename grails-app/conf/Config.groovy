@@ -105,8 +105,20 @@ grails {
 }
 
 /* SpringCRM settings */
+springcrm.dir.base = "${userHome}/.${appName}"
+if (System.getenv('SPRINGCRM_HOME')) {
+    springcrm.dir.base = System.getenv('SPRINGCRM_HOME')
+}
+if (System.properties["${appName}.dir.base"]) {
+    springcrm.dir.base = System.properties["${appName}.dir.base"]
+}
 springcrm {
-    documents.base = "${System.getProperty('user.home')}/.${appName}/documents"
+    dir {
+        documents = "${grailsApplication.config.springcrm.dir.base}/documents"
+        installer = "${grailsApplication.config.springcrm.dir.base}/install"
+        print = "${grailsApplication.config.springcrm.dir.base}/print"
+        searchableIndex = "${grailsApplication.config.springcrm.dir.base}/searchable-index"
+    }
     lruList.numEntries = 10
 }
 
