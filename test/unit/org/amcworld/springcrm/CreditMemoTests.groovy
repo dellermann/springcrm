@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.util.Date
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 
@@ -125,6 +124,8 @@ class CreditMemoTests {
 //    }
 
     void testConstraints() {
+        mockForConstraintsTests(CreditMemo)
+
         def d = new Date()
         makeOrganizationFixture()
         def org = Organization.get(1)
@@ -134,7 +135,7 @@ class CreditMemoTests {
         assert !creditMemo.validate()
         assert 'nullable' == creditMemo.errors['stage']
 
-        creditMemo = new CreditMemo(number: 20000, subject: 'Test credit memo', organization: org, person: person, docDate: d, total: 1789.76, new CreditMemoStage(name: 'created'))
+        creditMemo = new CreditMemo(number: 20000, subject: 'Test credit memo', organization: org, person: person, docDate: d, total: 1789.76, stage: new CreditMemoStage(name: 'created'))
         assert creditMemo.validate()
     }
 

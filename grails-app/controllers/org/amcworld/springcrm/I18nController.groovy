@@ -40,7 +40,7 @@ class I18nController {
     //-- Public methods -------------------------
 
     def index() {
-        def msgs = [ : ]
+        def msgs = [: ]
 
         loadMessages(servletContext.getResourceAsStream('/js/i18n/i18n-source.js'), msgs)
 
