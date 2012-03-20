@@ -40,10 +40,10 @@
   <aside id="action-bar">
     <h4><g:message code="default.actions" /></h4>
     <ul>
-      <li><g:link controller="call" action="create" params="['organization.id':organizationInstance?.id, returnUrl:url()]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link></li>
+      <li><g:link controller="call" action="create" params="['organization.id': organizationInstance?.id, returnUrl: url()]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link></li>
       <g:if test="${organizationInstance.isCustomer()}">
-      <li><g:link controller="quote" action="create" params="['organization.id':organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link></li>
-      <li><g:link controller="invoice" action="create" params="['organization.id':organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link></li>
+      <li><g:link controller="quote" action="create" params="['organization.id': organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link></li>
+      <li><g:link controller="invoice" action="create" params="['organization.id': organizationInstance.id]" class="button medium white"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link></li>
       </g:if>
     </ul>
   </aside>
@@ -237,11 +237,11 @@
       </div>
       </g:if>
 
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'person', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'person', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="person.plural" /></h4>
           <div class="menu">
-            <g:link controller="person" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'person.label')]" /></g:link>
+            <g:link controller="person" action="create" params="['organization.id': organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'person.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -249,11 +249,11 @@
 
       <g:if test="${organizationInstance.isCustomer()}">
       <g:ifModuleAllowed modules="quote">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'quote', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'quote', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
-            <g:link controller="quote" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
+            <g:link controller="quote" action="create" params="['organization.id': organizationInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'quote.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -261,11 +261,11 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'salesOrder', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
-            <g:link controller="salesOrder" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
+            <g:link controller="salesOrder" action="create" params="['organization.id': organizationInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -273,11 +273,11 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'invoice', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
-            <g:link controller="invoice" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+            <g:link controller="invoice" action="create" params="['organization.id': organizationInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -286,11 +286,11 @@
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'dunning', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
-            <g:link controller="dunning" action="create" params="['organization.id':organizationInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
+            <g:link controller="dunning" action="create" params="['organization.id': organizationInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -299,11 +299,11 @@
 
       <g:if test="${organizationInstance.isVendor()}">
       <g:ifModuleAllowed modules="purchaseInvoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'purchaseInvoice', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'purchaseInvoice', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="purchaseInvoice.plural" /></h4>
           <div class="menu">
-            <g:link controller="purchaseInvoice" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'purchaseInvoice.label')]" /></g:link>
+            <g:link controller="purchaseInvoice" action="create" params="['organization.id': organizationInstance.id, returnUrl: url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'purchaseInvoice.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -312,11 +312,11 @@
       </g:if>
 
       <g:ifModuleAllowed modules="call">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'call', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'call', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
-            <g:link controller="call" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
+            <g:link controller="call" action="create" params="['organization.id': organizationInstance.id, returnUrl: url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'call.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -324,11 +324,11 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="note">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'note', action:'listEmbedded', params:[organization:organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'note', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">
-            <g:link controller="note" action="create" params="['organization.id':organizationInstance.id, returnUrl:url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
+            <g:link controller="note" action="create" params="['organization.id': organizationInstance.id, returnUrl: url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'note.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>

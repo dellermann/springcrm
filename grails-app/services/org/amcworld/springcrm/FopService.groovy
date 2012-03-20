@@ -66,8 +66,9 @@ class FopService {
 
     //-- Instance variables ---------------------
 
-	ServletContext servletContext = SCH.servletContext
+    def grailsApplication
     def messageSource
+	ServletContext servletContext = SCH.servletContext
 
 
     //-- Public methods -------------------------

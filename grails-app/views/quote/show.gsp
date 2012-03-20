@@ -33,8 +33,8 @@
     <ul>
       <li class="menu"><g:link action="print" id="${quoteInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${quoteInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></li>
       <li class="menu"><g:link action="print" id="${quoteInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${quoteInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></li>
-      <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder" action="create" params="[quote:quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createSalesOrder" /></g:link></li></g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice" action="create" params="[quote:quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createInvoice" /></g:link></li></g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder" action="create" params="[quote: quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createSalesOrder" /></g:link></li></g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice" action="create" params="[quote: quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createInvoice" /></g:link></li></g:ifModuleAllowed>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -324,11 +324,11 @@
       </g:if>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'salesOrder', action:'listEmbedded', params:[quote:quoteInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded', params: [quote: quoteInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
-            <g:link controller="salesOrder" action="create" params="[quote:quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
+            <g:link controller="salesOrder" action="create" params="[quote: quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>
@@ -336,11 +336,11 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'invoice', action:'listEmbedded', params:[quote:quoteInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded', params: [quote: quoteInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
-            <g:link controller="invoice" action="create" params="[quote:quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+            <g:link controller="invoice" action="create" params="[quote: quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>

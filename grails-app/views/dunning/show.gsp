@@ -41,7 +41,7 @@
     <ul>
       <li class="menu"><g:link action="print" id="${dunningInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${dunningInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></li>
       <li class="menu"><g:link action="print" id="${dunningInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><ul style="display: none;"><g:each in="${printTemplates}"><li><g:link action="print" id="${dunningInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></li>
-      <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo" action="create" params="[dunning:dunningInstance?.id]" class="button medium white"><g:message code="invoice.button.createCreditMemo" /></g:link></li></g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo" action="create" params="[dunning: dunningInstance?.id]" class="button medium white"><g:message code="invoice.button.createCreditMemo" /></g:link></li></g:ifModuleAllowed>
     </ul>
   </aside>
   <section id="content" class="with-action-bar">
@@ -358,11 +358,11 @@
       </g:if>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller:'creditMemo', action:'listEmbedded', params:[dunning:dunningInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [dunning: dunningInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">
-            <g:link controller="creditMemo" action="create" params="[dunning:dunningInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'creditMemo.label')]" /></g:link>
+            <g:link controller="creditMemo" action="create" params="[dunning: dunningInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'creditMemo.label')]" /></g:link>
           </div>
         </div>
         <div class="fieldset-content"></div>

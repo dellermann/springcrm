@@ -112,12 +112,13 @@ if (System.getenv('SPRINGCRM_HOME')) {
 if (System.properties["${appName}.dir.base"]) {
     springcrm.dir.base = System.properties["${appName}.dir.base"]
 }
+grails.config.locations << "file: ${springcrm.dir.base}/config.properties"
 springcrm {
     dir {
-        documents = "${grailsApplication.config.springcrm.dir.base}/documents"
-        installer = "${grailsApplication.config.springcrm.dir.base}/install"
-        print = "${grailsApplication.config.springcrm.dir.base}/print"
-        searchableIndex = "${grailsApplication.config.springcrm.dir.base}/searchable-index"
+        documents = "${springcrm.dir.base}/documents"
+        installer = "${springcrm.dir.base}/install"
+        print = "${springcrm.dir.base}/print"
+        searchableIndex = "${springcrm.dir.base}/searchable-index"
     }
     lruList.numEntries = 10
 }

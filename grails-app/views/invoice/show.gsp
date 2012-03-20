@@ -6,14 +6,14 @@
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <r:script>//<![CDATA[
+  <r:script>/*<![CDATA[*/
   (function ($) {
 
       "use strict";
 
       $(".remote-list").remotelist({ returnUrl: "${url()}" });
   }(jQuery));
-  //]]></r:script>
+  /*]]>*/</r:script>
 </head>
 
 <body>
@@ -364,7 +364,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params:[invoice: invoiceInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params: [invoice: invoiceInstance.id])}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
