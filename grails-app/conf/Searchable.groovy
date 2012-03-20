@@ -47,6 +47,15 @@
  */
 searchable {
 
+    baseDir = "${userHome}/.${appName}"
+    if (System.getenv('SPRINGCRM_HOME')) {
+        baseDir = System.getenv('SPRINGCRM_HOME')
+    }
+    if (System.properties["${appName}.dir.base"]) {
+        baseDir = System.properties["${appName}.dir.base"]
+    }
+    baseDir += '/searchable-index'
+
     /**
      * The location of the Compass index
      *
@@ -54,9 +63,7 @@ searchable {
      *
      * The default is "${user.home}/.grails/projects/${app.name}/searchable-index/${grails.env}"
      */
-    compassConnection =
-        new File("${grailsApplication.config.springcrm.dir.searchableIndex}/${grailsEnv}").
-            absolutePath
+    compassConnection = new File("${baseDir}/${grailsEnv}").absolutePath
 
     /**
      * Any settings you wish to pass to Compass

@@ -118,7 +118,6 @@ springcrm {
         documents = "${springcrm.dir.base}/documents"
         installer = "${springcrm.dir.base}/install"
         print = "${springcrm.dir.base}/print"
-        searchableIndex = "${springcrm.dir.base}/searchable-index"
     }
     lruList.numEntries = 10
 }
@@ -127,9 +126,7 @@ springcrm {
 environments {
 
     /* development environment */
-    development {
-//        grails.plugin.databasemigration.updateOnStart = false
-    }
+    development {}
 
     /* test environment */
     test {

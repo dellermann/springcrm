@@ -298,6 +298,18 @@
       </div>
       </g:ifModuleAllowed>
 
+      <g:ifModuleAllowed modules="creditMemo">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [person: personInstance.id])}">
+        <div class="header-with-menu">
+          <h4><g:message code="creditMemo.plural" /></h4>
+          <div class="menu">
+            <g:link controller="creditMemo" action="create" params="['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'creditMemo.label')]" /></g:link>
+          </div>
+        </div>
+        <div class="fieldset-content"></div>
+      </div>
+      </g:ifModuleAllowed>
+
       <g:ifModuleAllowed modules="call">
       <div class="fieldset remote-list" data-load-url="${createLink(controller: 'call', action: 'listEmbedded', params: [person: personInstance.id])}">
         <div class="header-with-menu">
