@@ -41,7 +41,7 @@
     <h3>${creditMemoInstance?.toString()}</h3>
     <div class="data-sheet">
       <div class="fieldset">
-        <h4><g:message code="creditMemo.fieldset.general.label" /></h4>
+        <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
             <div class="row">
