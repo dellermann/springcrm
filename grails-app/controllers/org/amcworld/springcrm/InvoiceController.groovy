@@ -383,8 +383,16 @@ class InvoiceController {
 		InvoiceStage stage = InvoiceStage.get(902)
 		def c = Invoice.createCriteria()
 		def invoiceInstanceList = c.list {
-			eq('stage', stage)
 			and {
+                or {
+                    eq('stage', InvoiceStage.get(902))
+                    and {
+                    eq('stage', InvoiceStage.get(903))
+                    ltProperty('paymentAmount', 'total')
+                    }
+                    eq('stage', InvoiceStage.get(904))
+                    eq('stage', InvoiceStage.get(905))
+                }
 				le('dueDatePayment', new Date())
 			}
 			order('docDate', 'desc')
