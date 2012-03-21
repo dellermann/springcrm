@@ -1,17 +1,20 @@
-/**
+/*
  * invoicing-items.js
- * Scripting for invoicing items in quotes, orders, and invoices.
  *
- * $Id: styles.css 1234 2011-06-21 20:24:44Z dellermann $
+ * Copyright (c) 2011-2012, Daniel Ellermann
  *
- * Copyright (c) 2011, AMC World Technologies GmbH
- * Fischerinsel 1, D-10179 Berlin, Deutschland
- * All Rights Reserved.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This software is the confidential and proprietary information of AMC World
- * Technologies GmbH ("Confidential Information"). You shall not disclose such
- * Confidential Information and shall use it only in accordance with the terms
- * of the license agreement you entered into with AMC World Technologies GmbH.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
