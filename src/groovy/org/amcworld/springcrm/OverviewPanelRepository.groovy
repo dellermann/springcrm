@@ -95,7 +95,7 @@ class OverviewPanelRepository {
 		for (def p in rep.panel) {
 			def panel = new OverviewPanel(
 				p.controller.text(), p.action.text(),
-				p.title.findAll { !it.@lang }[0].text(),
+				p.title.findAll { !it.@lang.text() }[0].text(),
 				p.style?.text()
 			)
 			p.title.each {

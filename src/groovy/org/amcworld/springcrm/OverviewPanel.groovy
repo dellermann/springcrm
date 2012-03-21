@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.commons.ApplicationHolder
-
 
 /**
  * The class {@code OverviewPanel} stores information about a panel which can
@@ -34,12 +32,13 @@ class OverviewPanel {
 
 	//-- Instance variables ---------------------
 
-	private String controller
-	private String action
-	private String url
-	private String defTitle
-	private String style
-	private Map<Locale, String> localizedTitles
+    def grailsApplication
+	String controller
+	String action
+	String url
+	String defTitle
+	String style
+	Map<Locale, String> localizedTitles
 
 
 	//-- Constructors ---------------------------
@@ -96,9 +95,14 @@ class OverviewPanel {
 		return style
 	}
 
+    /**
+     * Gets the URL which is called to obtain the content of the panel.
+     *
+     * @return  the content loading URL
+     */
 	String getUrl() {
 		if (!url) {
-			def g = ApplicationHolder.application.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+			def g = grailsApplication.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
 			url = g.createLink(controller: controller, action: action)
 		}
 		return url

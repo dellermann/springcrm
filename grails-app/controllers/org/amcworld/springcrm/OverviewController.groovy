@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.JSON
+import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
 /**
@@ -59,8 +59,17 @@ class OverviewController {
 
 	def listAvailablePanels() {
 		OverviewPanelRepository repository = OverviewPanelRepository.instance
-		Map<String, OverviewPanel> panels = repository.getPanels()
-		render panels as JSON
+        def locale = LCH.locale
+		render(contentType: 'text/json') {
+            for (def entry in repository.panels) {
+                setProperty(entry.key, {
+                    def p = entry.value
+                    title = p.getTitle(locale)
+                    url = p.url
+                    style = p.style
+                })
+            }
+        }
 	}
 
 	def lruList() {

@@ -26,7 +26,7 @@
       <g:each in="${panels[i]}" var="panel">
         <div id="${panel.panelId}" class="springcrm-overviewpanels-panel" data-panel-url="${createLink(controller: panel.panelDef.controller, action: panel.panelDef.action)}">
           <div class="springcrm-overviewpanels-panel-header">
-            <h3>${panel.panelDef.title}</h3>
+            <h3>${panel.panelDef.getTitle(org.springframework.context.i18n.LocaleContextHolder.locale)}</h3>
             <g:link controller="overview" action="removePanel" class="springcrm-overviewpanels-panel-close-btn">�</g:link>
           </div>
           <div class="springcrm-overviewpanels-panel-content" style="${panel.panelDef.style}"></div>
