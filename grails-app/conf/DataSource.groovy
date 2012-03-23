@@ -20,6 +20,7 @@
 
 /* General data source settings */
 dataSource {
+    dbCreate = 'none'   // updated by database-migration plugin
     pooled = true
     driverClassName = 'com.mysql.jdbc.Driver'
 }
@@ -37,7 +38,6 @@ environments {
     /* development environment */
     development {
         dataSource {
-            dbCreate = 'none'   // updated by database-migration plugin
             url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
             username = 'projects'
             password = 'haluni21'
@@ -58,7 +58,6 @@ environments {
     /* production (deployment) environment */
     production {
         dataSource {
-            dbCreate = 'update'
             url = 'jdbc:mysql://localhost/springcrm'
             username = 'springcrm'
             password = 'springcrm'
@@ -73,7 +72,6 @@ environments {
     /* live enviroment on the AMC World server */
     live {
         dataSource {
-            dbCreate = 'none'   // updated by database-migration plugin
             url = 'jdbc:mysql://db.amc-world.home/springcrm?autoreconnect=true'
             username = 'projects'
             password = 'haluni21'
@@ -89,7 +87,6 @@ environments {
     standalone {
         dataSource {
             driverClassName = 'org.h2.Driver'
-            dbCreate = 'update'
             url = "jdbc:h2:file:${userHome}/.${appName}/database/springcrm"
             username = 'springcrm'
             password = ''

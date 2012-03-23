@@ -644,7 +644,7 @@
       <column name="class" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="tax_value" type="double precision(19, 2)"/>
+      <column name="tax_value" type="decimal(19, 2)"/>
     </createTable>
   </changeSet>
 
@@ -886,7 +886,7 @@
   </changeSet>
 
   <changeSet author="d.ellermann@amc-world.de" id="20120313-41">
-    <createIndex indexName="unique-number" tableName="invoicing_transaction">
+    <createIndex indexName="unique_number_invoicing_transaction" tableName="invoicing_transaction">
       <column name="type"/>
       <column name="number"/>
     </createIndex>
@@ -913,7 +913,7 @@
   </changeSet>
 
   <changeSet author="d.ellermann@amc-world.de" id="20120313-45">
-    <createIndex indexName="unique-item_id" tableName="lru_entry">
+    <createIndex indexName="unique_item_id" tableName="lru_entry">
       <column name="controller"/>
       <column name="user_id"/>
       <column name="item_id"/>
@@ -958,7 +958,7 @@
   </changeSet>
 
   <changeSet author="d.ellermann@amc-world.de" id="20120313-52">
-    <createIndex indexName="unique-number" tableName="organization">
+    <createIndex indexName="unique_number_organization" tableName="organization">
       <column name="rec_type"/>
       <column name="number"/>
     </createIndex>
