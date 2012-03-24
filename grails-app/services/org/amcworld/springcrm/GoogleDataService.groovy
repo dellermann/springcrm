@@ -20,9 +20,13 @@
 
 package org.amcworld.springcrm
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson.JacksonFactory
+import com.google.api.services.calendar.CalendarScopes
 import com.google.gdata.client.GoogleService
 import com.google.gdata.data.BaseEntry
-import com.google.gdata.data.contacts.ContactEntry
 import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
 

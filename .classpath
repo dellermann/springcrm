@@ -242,5 +242,10 @@
 			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.7.0-beta.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/google-api-client-1.7.0-beta-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/google-oauth-client-1.7.0-beta.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/dependencies/google-oauth-client-1.7.0-beta-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/google-http-client-1.7.0-beta.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/dependencies/google-http-client-1.7.0-beta-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/google-api-calendar-v3-rev3-java-1.4.0-beta.jar" sourcepath="/home/dellermann/Downloads/calendar/google-api-calendar-v3-rev3-java-1.4.0-beta-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/guava-11.0.1.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/dependencies/guava-11.0.1-sources.jar"/>
 	<classpathentry kind="output" path="target-eclipse/classes"/>
 </classpath>

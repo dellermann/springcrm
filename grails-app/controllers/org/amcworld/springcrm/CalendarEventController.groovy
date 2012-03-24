@@ -20,6 +20,11 @@
 
 package org.amcworld.springcrm
 
+import com.google.api.services.calendar.CalendarScopes
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson.JacksonFactory
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -250,7 +255,7 @@ class CalendarEventController {
         }
     }
 
-    def reminders = {
+    def reminders() {
         def c = Reminder.createCriteria()
         def l = c.list {
             and {
@@ -277,7 +282,7 @@ class CalendarEventController {
         render(contentType:"text/json") {
             array {
                 for (Reminder r in list) {
-                    reminder title:r.calendarEvent.subject, allDay:r.calendarEvent.allDay, start:r.calendarEvent.start, end:r.calendarEvent.end, url:createLink(controller:'calendarEvent', action:'show', id:r.calendarEvent.id)
+                    reminder title: r.calendarEvent.subject, allDay: r.calendarEvent.allDay, start: r.calendarEvent.start, end: r.calendarEvent.end, url: createLink(controller: 'calendarEvent', action: 'show', id: r.calendarEvent.id)
                 }
             }
         }

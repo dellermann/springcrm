@@ -20,6 +20,11 @@
 
 package org.amcworld.springcrm
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson.JacksonFactory
+import com.google.api.services.calendar.CalendarScopes
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -39,6 +44,7 @@ class UserController {
 
     //-- Instance variables ---------------------
 
+    def googleOAuthService
     def installService
 
 
@@ -197,4 +203,27 @@ class UserController {
 		dbUser.save(flush: true)
 		render(status: 200)
 	}
+
+    def authGoogle() {
+        def uri = googleOAuthService.getAuthorizationUrl(
+            createLink(controller: controllerName, action: 'authGoogleResponse', absolute: true)
+        )
+        redirect(uri: uri)
+    }
+
+    def authGoogleResponse() {
+        if (params.error) {
+            flash.message = message(code: 'user.google.authenticate.failed.message')
+            redirect(action: 'authGoogle')
+            return
+        }
+
+        def tokenResponse = googleOAuthService.requestAccessToken(
+            params.code,
+            createLink(controller: controllerName, action: 'authGoogleResponse', absolute: true)
+        )
+        googleOAuthService.createAndStoreCredential(session.user.userName, tokenResponse)
+        flash.message = message(code: 'user.google.authenticate.succeeded.message')
+        redirect(action: 'index')
+    }
 }
