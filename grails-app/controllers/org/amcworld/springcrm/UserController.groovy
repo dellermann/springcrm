@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -36,6 +37,11 @@ import org.springframework.dao.DataIntegrityViolationException
  * @version 0.9
  */
 class UserController {
+
+    //-- Constants ------------------------------
+
+    static final String [] AVAILABLE_LANGUAGES = ['de', 'en']
+
 
     //-- Class variables ------------------------
 
@@ -185,6 +191,10 @@ class UserController {
 		}
 
 		session.user = userInstance
+        def language = userInstance.settings['language']
+        if (language) {
+            session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(language)
+        }
 		redirect(uri: '/')
 	}
 
@@ -196,34 +206,72 @@ class UserController {
 	}
 
 	def storeSetting() {
-		User sessionUser = session.user
-		User dbUser = User.get(sessionUser.id)
-		sessionUser.settings[params.key] = params.value
-		dbUser.settings[params.key] = params.value
-		dbUser.save(flush: true)
+        storeUserSetting(params.key, params.value)
 		render(status: 200)
 	}
 
-    def authGoogle() {
+    def settingsIndex() {}
+
+    def settingsLanguage() {
+        Map<String, String> locales = [: ]
+        for (String code : AVAILABLE_LANGUAGES) {
+            Locale l = new Locale(code)
+            locales[code] = l.getDisplayLanguage(l)
+        }
+        Locale currLocale = session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] ?: Locale.default
+        return [locales: locales, currentLocale: currLocale.language]
+    }
+
+    def settingsLanguageSave() {
+        storeUserSetting('language', params.language)
+        session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(params.language)
+        redirect(action: 'settingsIndex')
+    }
+
+    def settingsGoogleAuth() {
+        Credential cred = googleOAuthService.loadCredential(session.user.userName)
+        return [authorized: cred != null]
+    }
+
+    def settingsGoogleAuthRequest() {
         def uri = googleOAuthService.getAuthorizationUrl(
-            createLink(controller: controllerName, action: 'authGoogleResponse', absolute: true)
+            createLink(controller: controllerName, action: 'settingsGoogleAuthResponse', absolute: true)
         )
         redirect(uri: uri)
     }
 
-    def authGoogleResponse() {
+    def settingsGoogleAuthResponse() {
         if (params.error) {
-            flash.message = message(code: 'user.google.authenticate.failed.message')
+            flash.message = message(code: 'user.settings.googleAuth.failed.message')
             redirect(action: 'authGoogle')
             return
         }
 
         def tokenResponse = googleOAuthService.requestAccessToken(
             params.code,
-            createLink(controller: controllerName, action: 'authGoogleResponse', absolute: true)
+            createLink(controller: controllerName, action: 'settingsGoogleAuthResponse', absolute: true)
         )
         googleOAuthService.createAndStoreCredential(session.user.userName, tokenResponse)
-        flash.message = message(code: 'user.google.authenticate.succeeded.message')
-        redirect(action: 'index')
+        flash.message = message(code: 'user.settings.googleAuth.succeeded.message')
+        redirect(action: 'settingsIndex')
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Stores the given user setting to the database and the session user
+     * instance.
+     *
+     * @param key   the key of the setting
+     * @param value the value to store
+     * @since       1.0
+     */
+    protected void storeUserSetting(String key, String value) {
+        User sessionUser = session.user
+        User dbUser = User.get(sessionUser.id)
+        sessionUser.settings[key] = value
+        dbUser.settings[key] = value
+        dbUser.save(flush: true)
     }
 }

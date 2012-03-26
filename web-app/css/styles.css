@@ -1644,6 +1644,12 @@ form .invoicing-items-pos {
 #configuration-currency {
   background-image: url("../img/configuration/currency.png");
 }
+#configuration-google-auth {
+  background-image: url("../img/configuration/google-auth.png");
+}
+#configuration-language {
+  background-image: url("../img/configuration/language.png");
+}
 #configuration-ldap {
   background-image: url("../img/configuration/network.png");
 }

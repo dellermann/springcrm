@@ -68,15 +68,16 @@
         <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo"><g:message code="creditMemo.plural" /></g:link></li></g:ifModuleAllowed>
       </ul>
     </li>
-    <g:ifAdmin>
     <li>
       <a href="#"><g:message code="menu.settings" default="Settings" /></a>
       <ul>
+        <g:ifAdmin>
         <li><g:link controller="user"><g:message code="user.plural" /></g:link></li>
         <li><g:link controller="config"><g:message code="config.title" /></g:link></li>
+        </g:ifAdmin>
+        <li><g:link controller="user" action="settingsIndex"><g:message code="user.settings.title" /></g:link></li>
       </ul>
     </li>
-    </g:ifAdmin>
     <li>
       <select id="quick-access">
         <option value=""><g:message code="default.quickMenu" /></option>
