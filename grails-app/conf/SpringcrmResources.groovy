@@ -72,6 +72,12 @@ modules = {
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
 
+    error {
+        dependsOn 'jquery-ui'
+
+        resource '/js/error-page.js'
+    }
+
     invoicingTransactionForm {
         dependsOn 'core'
         defaultBundle 'invoicing-transaction-form'

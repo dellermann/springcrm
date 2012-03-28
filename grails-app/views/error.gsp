@@ -3,6 +3,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title>SpringCRM</title>
+  <r:require modules="error" />
   <r:external uri="/img/favicon.ico" />
 </head>
 
@@ -78,7 +79,7 @@
 
     <h3><a href="#"><g:message code="error.exception.form.title" /></a></h3>
     <div>
-      <form id="bugreport-form" name="bugreport-form">
+      <form id="bugreport-form" name="bugreport-form" data-report-error-url="${createLink(controller: 'notification', action: 'reportError')}">
         <fieldset>
           <div class="row">
             <div class="label">
@@ -146,61 +147,5 @@
     </div>
   </div>
 </section>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-1.7.1.min.js')}"></script>
-<script type="text/javascript" src="${resource(dir: 'js', file: 'jquery-ui-1.8.16.custom.min.js')}"></script>
-<script type="text/javascript">
-//<![CDATA[
-(function($) {
-
-    "use strict";
-
-    var FIELDS = ["name", "email", "description"],
-        $form = $("#bugreport-form"),
-        $reportData = $("#report-data"),
-        origText,
-        rewriteXml,
-        submitForm;
-
-    rewriteXml = function() {
-        var f,
-            fields = FIELDS,
-            i = -1,
-            n = fields.length,
-            text = origText,
-            value;
-
-        while (++i < n) {
-            f = fields[i];
-            value = $($form[0].elements[f]).val()
-                .replace("&", "&amp;")
-                .replace("<", "&lt;");
-            text = text.replace("%" + f + "%", value);
-        }
-        $reportData.text(text);
-        return text;
-    };
-    submitForm = function() {
-        var xml;
-
-        xml = rewriteXml();
-        $.ajax({
-            data: {xml: xml},
-            dataType: "html",
-            success: function(html) {
-                $form.replaceWith(html);
-            },
-            url: "${createLink(controller: 'notification', action: 'reportError')}"
-        });
-    };
-
-    origText = $reportData.text();
-    $("#accordion").accordion({ active: 2 });
-    $form.change(rewriteXml)
-        .find("button")
-            .click(submitForm);
-    rewriteXml();
-}(jQuery));
-//]]>
-</script>
 </body>
 </html>
