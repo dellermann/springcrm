@@ -29,9 +29,11 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
         initConfig = null,
         initStageValues = null,
         jQuery = $,
+        onChangePaymentAmount = null,
         onChangePaymentDate = null,
         onChangeShippingDate = null,
         onChangeStage = null,
+        onClickStillUnpaid = null,
         onSelectOrganization = null,
         onSubmitForm = null,
         organizationId = "#organization\\.id";
@@ -67,6 +69,9 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
         $("#person").autocompleteex({
                 loadParameters: getOrganizationId
             });
+        $("#paymentAmount").change(onChangePaymentAmount)
+            .trigger("change");
+        $("#still-unpaid").click(onClickStillUnpaid);
 
         $addresses.addrfields({
                 leftPrefix: "billingAddr",
@@ -146,6 +151,22 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
         return this;
     };
 
+    onChangePaymentAmount = function () {
+        var $ = jQuery,
+            totalVal = $("#invoicing-items-total").text(),
+            val = $(this).val();
+
+        val = $.parseNumber(totalVal) - $.parseNumber(val);
+        $("#still-unpaid")
+            .removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much")
+            .addClass(
+                (val > 0) ? "still-unpaid-unpaid"
+                    : ((val < 0) ? "still-unpaid-too-much" : "still-unpaid-paid")
+            )
+            .find("span")
+                .text($.formatCurrency(val));
+    };
+
     onChangePaymentDate = function (event) {
         var $stage = $("#stage"),
             v = this.config.stageValues.payment;
@@ -175,6 +196,12 @@ SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
             $("#paymentDate-date").populateDate();
             break;
         }
+    };
+
+    onClickStillUnpaid = function () {
+        $("#paymentAmount").val($("#invoicing-items-total").text())
+            .trigger("change");
+        return false;
     };
 
     onSelectOrganization = function () {

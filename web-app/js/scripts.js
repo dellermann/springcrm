@@ -166,9 +166,12 @@
          */
         formatNumber: function (x, n) {
             var i,
-                s;
+                s,
+                sgn;
 
             x *= 1;
+            sgn = (x < 0) ? '-' : '';
+            x = Math.abs(x);
             s = (n === null) ? x.toString() : x.toFixed(n);
             s = s.replace(/\./, ",");
             i = s.lastIndexOf(",") - 3;
@@ -176,7 +179,7 @@
                 s = s.substring(0, i) + "." + s.substring(i);
                 i -= 3;
             }
-            return s;
+            return sgn + s;
         },
 
         /**

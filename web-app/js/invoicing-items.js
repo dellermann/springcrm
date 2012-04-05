@@ -185,6 +185,7 @@
             total = this.subtotalGross - discount + adjustment;
             this.total = total;
             this.$total.text($.formatCurrency(total));
+            $("#paymentAmount").trigger("change");
         },
 
         _computeTaxValues: function () {
@@ -334,9 +335,9 @@
             if (parts) {
                 parts.shift();
                 return parts;
-            } else {
-                return null;
             }
+
+            return null;
         },
 
         _getInputName: function (index, name, suffix) {

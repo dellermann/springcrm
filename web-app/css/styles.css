@@ -1601,6 +1601,20 @@ form .invoicing-items-pos {
   background-image: url("../img/remove.png");
 }
 
+/* invoicing stuff */
+#still-unpaid:hover {
+  text-decoration: underline;
+}
+.still-unpaid-unpaid, .still-unpaid-unpaid:hover {
+  color: #800;
+}
+.still-unpaid-paid, .still-unpaid-paid:hover {
+  color: #080;
+}
+.still-unpaid-too-much, .still-unpaid-too-much:hover {
+  color: #880;
+}
+
 /* calendar */
 #tabs-recurrence-type label {
   display: inline;
