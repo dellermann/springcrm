@@ -23,12 +23,16 @@ grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir = 'target/test-reports'
 grails.project.war.file = "target/${appName}.war"
 grails.project.dependency.resolution = {
+
     // inherit Grails' default dependencies
-    inherits("global") {
+    inherits('global') {
         // uncomment to disable ehcache
         // excludes 'ehcache'
+        // excludes 'xml-apis', 'commons-logging'
     }
+
     log 'warn' // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+
     repositories {
         grailsPlugins()
         grailsHome()
@@ -37,15 +41,50 @@ grails.project.dependency.resolution = {
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         //mavenLocal()
-        //mavenCentral()
+        mavenCentral()
+        mavenRepo 'http://mavenrepo.google-api-java-client.googlecode.com/hg/'
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
-    dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        // runtime 'mysql:mysql-connector-java:5.1.13'
+    dependencies {
+
+        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
+        /*
+         * XXX These dependencies conflict in the transient dependency
+         * jackson-core-asl with the cloudfoundry plugin
+         *
+        compile(
+            'com.google.api-client:google-api-client:1.7.0-beta',
+            'com.google.apis:google-api-services-calendar:v3-rev3-1.4.0-beta',
+            'com.google.oauth-client:google-oauth-client:1.7.0-beta'
+        )
+         *
+         * this works:
+        compile(
+            'jmimemagic:jmimemagic:0.1.2'
+        )
+         *
+         * XXX Including FOP dependencies does not work because the xml-apis
+         * are loaded twice.
+         *
+        compile('org.apache.xmlgraphics:fop:1.0') {
+            excludes([group: 'xml-apis', name: 'xml-apis'], [group: 'xml-resolver', name: 'xml-resolver'])
+        }
+         *
+         * this works without problems:
+         *
+        runtime(
+            'net.sf.offo:fop-hyph:1.2'
+        )
+         *
+         * this works, too:
+        runtime(
+            'mysql:mysql-connector-java:5.1.19'
+        )
+         *
+         */
     }
 }
