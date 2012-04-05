@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.CreditMemo" %>
 <html>
 <head>
@@ -28,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${creditMemoInstance?.toString()}</h3>
-    <g:form name="creditMemo-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
+    <g:form name="creditMemo-form" action="update" method="post" params="[returnUrl: params.returnUrl]">
       <g:hiddenField name="id" value="${creditMemoInstance?.id}" />
       <g:hiddenField name="version" value="${creditMemoInstance?.version}" />
       <g:render template="/creditMemo/form" />

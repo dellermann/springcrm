@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.Quote" %>
 <html>
 <head>
@@ -28,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${quoteInstance?.toString()}</h3>
-    <g:form name="quote-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
+    <g:form name="quote-form" action="update" method="post" params="[returnUrl: params.returnUrl]">
       <g:hiddenField name="id" value="${quoteInstance?.id}" />
       <g:hiddenField name="version" value="${quoteInstance?.version}" />
       <g:render template="/quote/form" />

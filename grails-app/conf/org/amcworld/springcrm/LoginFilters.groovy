@@ -47,7 +47,7 @@ class LoginFilters {
 		permission(controller: '*',
                    controllerExclude: 'notification|searchable|overview|i18n|install',
                    action: '*',
-                   actionExclude: 'login|authenticate|logout')
+                   actionExclude: 'login|authenticate|logout|settings*')
         {
 			before = {
 				User user = session?.user

@@ -26,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3><g:message code="dunning.new.label" default="New ${entityName}" /></h3>
-    <g:form name="dunning-form" action="save" params="[returnUrl:params.returnUrl]">
+    <g:form name="dunning-form" action="save" params="[returnUrl: params.returnUrl]">
       <g:render template="/dunning/form" />
     </g:form>
   </section>

@@ -11,7 +11,6 @@
 	<classpathentry kind="src" path="test/integration"/>
 	<classpathentry kind="src" path="test/unit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="com.springsource.sts.grails.core.CLASSPATH_CONTAINER"/>
 	<classpathentry kind="src" path=".link_to_grails_plugins/cloud-foundry-1.2.1/grails-app/taglib">
 		<attributes>
 			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
@@ -68,6 +67,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path=".link_to_grails_plugins/fields-1.0.4/src/groovy">
+		<attributes>
+			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path=".link_to_grails_plugins/hibernate-2.0.3/grails-app/i18n">
 		<attributes>
 			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
@@ -232,20 +236,6 @@
 			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="BuildConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy" kind="src" path=".link_to_grails_plugins/webxml-1.4.1/grails-app/conf">
-		<attributes>
-			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/webxml-1.4.1/src/groovy">
-		<attributes>
-			<attribute name="com.springsource.sts.grails.core.SOURCE_FOLDER" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="lib/google-api-client-1.7.0-beta.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/google-api-client-1.7.0-beta-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-oauth-client-1.7.0-beta.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/dependencies/google-oauth-client-1.7.0-beta-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-http-client-1.7.0-beta.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/dependencies/google-http-client-1.7.0-beta-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/google-api-calendar-v3-rev3-java-1.4.0-beta.jar" sourcepath="/home/dellermann/Downloads/calendar/google-api-calendar-v3-rev3-java-1.4.0-beta-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/guava-11.0.1.jar" sourcepath="/home/dellermann/Downloads/google-api-java-client-1.7.0-beta/dependencies/guava-11.0.1-sources.jar"/>
+	<classpathentry kind="con" path="com.springsource.sts.grails.core.CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="target-eclipse/classes"/>
 </classpath>

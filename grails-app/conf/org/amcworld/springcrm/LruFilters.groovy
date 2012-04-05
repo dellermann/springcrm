@@ -57,15 +57,17 @@ class LruFilters {
 
         lruUpdate(controller: '*', action: 'save|update') {
             after = {
-                GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
-                    'Domain', controllerName
-                )
-                long id = params.id as long
-                def instance = cls.clazz.'get'(id)
-                if (instance) {
-                    lruService.recordItem(
-                        controllerName, id, instance.toString()
+                if (params.id) {
+                    GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
+                        'Domain', controllerName
                     )
+                    long id = params.id as long
+                    def instance = cls.clazz.'get'(id)
+                    if (instance) {
+                        lruService.recordItem(
+                            controllerName, id, instance.toString()
+                        )
+                    }
                 }
             }
         }

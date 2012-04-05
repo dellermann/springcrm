@@ -1,5 +1,5 @@
 <r:require modules="invoicingTransactionForm" />
-<r:script>//<![CDATA[
+<r:script>/*<![CDATA[*/
 (function (SPRINGCRM, $) {
 
     "use strict";
@@ -20,7 +20,7 @@
             loadParameters: it.getOrganizationId
         });
 }(SPRINGCRM, jQuery));
-//]]></r:script>
+/*]]>*/</r:script>
 <fieldset>
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
   <div class="multicol-content">

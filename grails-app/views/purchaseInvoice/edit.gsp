@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.PurchaseInvoice" %>
 <html>
 <head>
@@ -28,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${purchaseInvoiceInstance?.toString()}</h3>
-    <g:uploadForm name="purchaseInvoice-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
+    <g:uploadForm name="purchaseInvoice-form" action="update" method="post" params="[returnUrl: params.returnUrl]">
       <g:hiddenField name="id" value="${purchaseInvoiceInstance?.id}" />
       <g:hiddenField name="version" value="${purchaseInvoiceInstance?.version}" />
       <g:render template="/purchaseInvoice/form" />

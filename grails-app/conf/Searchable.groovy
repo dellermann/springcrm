@@ -176,6 +176,14 @@ environments {
         }
     }
 
+    /* CloudFoundry environment */
+    cloud {
+        searchable {
+            bulkIndexOnStartup = false
+            compassConnection = "ram://test-index"
+        }
+    }
+
     /* test environment */
     test {
         searchable {

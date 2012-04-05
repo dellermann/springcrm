@@ -140,6 +140,9 @@ environments {
     /* live enviroment on the AMC World server */
     live {}
 
+    /* CloudFoundry environment */
+    cloud {}
+
     /* standalone environment for demonstration purposes */
     standalone {}
 }
@@ -150,6 +153,7 @@ log4j = {
 //        console name: 'stdout', layout: pattern(conversionPattern: '%c{2} %m%n')
         environments {
             live {
+//                file name: 'file', file: '/var/log/tomcat-5.5/springcrm.log'
                 file name: 'stacktrace', file: '/var/log/tomcat-5.5/stacktrace.log'
             }
         }
@@ -178,10 +182,11 @@ log4j = {
         'grails.app.controllers.org.amcworld.springcrm.PurchaseInvoiceController',
         'grails.app.controllers.org.amcworld.springcrm.QuoteController',
         'grails.app.controllers.org.amcworld.springcrm.SalesOrderController',
-        environments {
-            test {
-                'grails.app.controllers.org.amcworld.springcrm'
-            }
-        }
     )
+
+    environments {
+        test {
+            debug 'grails.app.controllers.org.amcworld.springcrm'
+        }
+    }
 }

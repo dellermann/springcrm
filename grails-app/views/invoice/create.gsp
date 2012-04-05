@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.Invoice" %>
 <html>
 <head>
@@ -28,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3><g:message code="invoice.new.label" default="New ${entityName}" /></h3>
-    <g:form name="invoice-form" action="save" params="[returnUrl:params.returnUrl]">
+    <g:form name="invoice-form" action="save" params="[returnUrl: params.returnUrl]">
       <g:render template="/invoice/form" />
     </g:form>
   </section>

@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.Dunning" %>
 <html>
 <head>
@@ -28,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${dunningInstance?.toString()}</h3>
-    <g:form name="dunning-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
+    <g:form name="dunning-form" action="update" method="post" params="[returnUrl: params.returnUrl]">
       <g:hiddenField name="id" value="${dunningInstance?.id}" />
       <g:hiddenField name="version" value="${dunningInstance?.version}" />
       <g:render template="/dunning/form" />
