@@ -123,17 +123,19 @@ class ViewTagLib {
 	 * Formats the given number as currency using the currency symbol from the
 	 * application configuration.
 	 *
-	 * @attr number REQUIRED	the number to format
-	 * @attr minFractionDigits	the minimum number of digits allowed in the
-	 * 							fraction portion of a number; defaults to 2
-	 * @attr groupingUsed		whether or not grouping will be used in this
-	 * 							format; defaults to true
+	 * @attr number REQUIRED   the number to format
+	 * @attr minFractionDigits the minimum number of digits allowed in the
+	 *                         fraction portion of a number; defaults to 2
+	 * @attr groupingUsed      whether or not grouping will be used in this
+	 *                         format; defaults to true
+	 * @attr displayZero       if true zero values are displayed, otherwise an
+	 *                         empty string is generated
 	 */
 	def formatCurrency = { attrs, body ->
 		def number = attrs.number
-		if (number) {
+		if (number || attrs.displayZero) {
 			def map = new HashMap(attrs)
-			map.number = number
+			map.number = number ?: 0
 			map.type = 'currency'
 			map.currencySymbol =
                 ConfigHolder.instance['currency'] as String ?: '€'
@@ -141,7 +143,7 @@ class ViewTagLib {
 			map.minFractionDigits = attrs.minFractionDigits ?: 2
 			out << formatNumber(map)
 		} else {
-			out << ""
+			out << ''
 		}
 	}
 

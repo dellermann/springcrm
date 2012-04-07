@@ -1131,10 +1131,10 @@ tbody tr th:first-child {
 .content-table {
   width: 100%;
 }
-.content-table tr {
+.content-table tbody tr, .content-table tfoot tr {
   background: #DDD;
 }
-.content-table tr:nth-child(2n) {
+.content-table tbody tr:nth-child(2n), .content-table tfoot tr:nth-child(2n) {
   background: #EEE;
 }
 .content-table thead tr {
@@ -1156,6 +1156,8 @@ tbody tr th:first-child {
 }
 .content-table td:last-child, .content-table th:last-child {
   border-right: none;
+}
+.content-table td:last-child {
   text-align: right;
   white-space: nowrap;
 }
@@ -1360,12 +1362,15 @@ form .invoicing-items-pos {
   background: #DDD;
   padding: .1em;
 }
-.letter-bar .available:hover {
+.letter-bar .available:hover, .letter-bar .current {
   background: #AAA;
 }
 .letter-bar a {
   display: block;
   padding: .1em .4em;
+}
+.letter-bar .current a {
+  font-weight: bold;
 }
 .simple-ordered-list {
   margin: 0;
@@ -1637,6 +1642,25 @@ form .invoicing-items-pos {
   padding-right: 4em;
 }
 
+/* reports */
+.report tfoot td {
+  font-weight: bold;
+}
+.filter-bar {
+  margin-bottom: 2em;
+}
+#month-selector {
+  float: left;
+  margin: 0;
+  width: 75%;
+}
+#year-selector {
+  float: left;
+  margin-left: 2em;
+  margin-top: .3em;
+  min-width: 10em;
+}
+
 /* configuration pages */
 .configuration-overview dl {
   background-repeat: no-repeat;
@@ -1871,8 +1895,8 @@ form .invoicing-items-pos {
   #main-container-header:after, .multicol-content:after, 
   .header-with-menu:after, .letter-bar:after, 
   .springcrm-overviewpanels-panel-header:after,
-  .sel-values-list li:after, #panel-list ol:after, footer:after,
-  #install-progress:after
+  .sel-values-list li:after, #panel-list ol:after, .filter-bar:after,
+  footer:after, #install-progress:after
 {
   clear: both;
   content: ".";

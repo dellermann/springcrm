@@ -65,7 +65,8 @@ modules = {
     core {
         dependsOn 'jquery-ui, jquery-json'
 
-        resource '/css/styles.css'
+        resource url: '/css/styles.css', attrs: [ media: 'all' ]
+        resource url: '/css/print.css', attrs: [ media: 'print' ]
         resource '/css/jquery-ui-springcrm.css'
         resource '/js/jquery.ui.datepicker-de.js'
         resource '/js/scripts.js'
@@ -122,6 +123,12 @@ modules = {
         defaultBundle 'invoicing-transaction-form'
 
         resource '/js/purchase-invoice-form.js'
+    }
+
+    reportSalesJournal {
+        dependsOn 'core'
+
+        resource '/js/report-sales-journal.js'
     }
 
     tinyMce {

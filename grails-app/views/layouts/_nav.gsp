@@ -69,6 +69,12 @@
       </ul>
     </li>
     <li>
+      <a href="#"><g:message code="menu.reports" default="Reports" /></a>
+      <ul>
+        <li><g:link controller="report" action="salesJournal"><g:message code="report.salesJournal.title" default="Sales journal" /></g:link></li>
+      </ul>
+    </li>
+    <li>
       <a href="#"><g:message code="menu.settings" default="Settings" /></a>
       <ul>
         <g:ifAdmin>

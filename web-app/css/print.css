@@ -1,0 +1,81 @@
+/*
+ * print.css
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+/*-----------------------------------
+ *
+ * Font settings (from YUI)
+ *
+ *---------------------------------*/
+
+body {
+  font-size: 10pt;
+}
+
+
+/*-----------------------------------
+ *
+ * General settings
+ *
+ *---------------------------------*/
+ 
+a {
+  color: #444;
+}
+
+
+/*-----------------------------------
+ *
+ * Page elements
+ *
+ *---------------------------------*/
+
+#login-area, #search-area, #main-menu, #toolbar, .filter-bar, #font-size-sel, 
+  #footer-menu 
+{
+  display: none;
+}
+
+#main-container {
+  background: transparent;
+  min-height: 0;
+  padding: 2em 0 0;
+}
+
+
+/*-----------------------------------
+ *
+ * Content elements
+ *
+ *---------------------------------*/
+
+/* content tables */
+.content-table {
+  border-bottom: .5pt solid #606060;
+  border-top: .5pt solid #606060;
+}
+.content-table td, .content-table th {
+  border-right: none;
+}
+.content-table thead tr:last-child th {
+  border-bottom: .5pt solid #606060;
+}
+.content-table tfoot tr:first-child td {
+  border-top: .5pt solid #606060;
+}
