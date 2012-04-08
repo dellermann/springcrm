@@ -65,6 +65,7 @@ modules = {
     core {
         dependsOn 'jquery-ui, jquery-json'
 
+        resource url: '/css/reset.css', attrs: [ media: 'all' ]
         resource url: '/css/styles.css', attrs: [ media: 'all' ]
         resource url: '/css/print.css', attrs: [ media: 'print' ]
         resource '/css/jquery-ui-springcrm.css'

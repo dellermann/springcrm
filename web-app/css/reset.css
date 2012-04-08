@@ -1,0 +1,83 @@
+/*
+ * reset.css
+ *
+ * Copyright (c) 2011-2012, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+html {
+  color: black;
+  background: white;
+}
+blockquote, body, button, code, dd, div, dl, dt, fieldset, form, input, legend, 
+  li, ol, p, pre, td, textarea, th, ul
+{
+  margin: 0;
+  padding: 0;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+fieldset, iframe, img, table {
+  border: none;
+}
+address, caption, cite, code, dfn, em, optgroup, strong, th, var {
+  font-style: inherit;
+  font-weight: inherit;
+}
+del, ins {
+  text-decoration: none;
+}
+li {
+  list-style: none;
+}
+caption, th {
+  text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+q:after, q:before {
+  content: "";
+}
+abbr, acronym {
+  border: none;
+  font-variant: normal;
+}
+sup {
+  vertical-align: baseline;
+}
+sub {
+  vertical-align: baseline;
+}
+legend {
+  color: black;   /* because legend doesn't inherit in IE */
+}
+button, input, optgroup, option, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+}
+
+/* support unknown HTML5 elements */
+article, aside, footer, header, hgroup, nav, section {
+  display: block;
+}
