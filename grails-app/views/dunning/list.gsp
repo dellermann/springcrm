@@ -43,7 +43,7 @@
           <td><g:link action="show" id="${dunningInstance.id}">${fieldValue(bean: dunningInstance, field: "fullNumber")}</g:link></td>
           <td><g:link action="show" id="${dunningInstance.id}">${fieldValue(bean: dunningInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${dunningInstance.organization?.id}">${fieldValue(bean: dunningInstance, field: "organization")}</g:link></td>
-          <td>${fieldValue(bean: dunningInstance, field: "stage")}</td>
+          <td class="payment-state-${dunningInstance?.paymentStateColor}">${fieldValue(bean: dunningInstance, field: "stage")}</td>
           <td style="text-align: center;"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
           <td style="text-align: center;"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
           <td style="text-align: right;"><g:formatCurrency number="${dunningInstance?.total}" /></td>

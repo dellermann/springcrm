@@ -46,7 +46,7 @@ class Invoice extends InvoicingTransaction {
 		stage column: 'invoice_stage_id'
 	}
 	static searchable = true
-    static transients = ['stateColor']
+    static transients = ['paymentStateColor']
 
 
     //-- Instance variables ---------------------
@@ -88,25 +88,33 @@ class Invoice extends InvoicingTransaction {
 
     //-- Public methods -------------------------
 
-    String getStateColor() {
+    /**
+     * Gets the name of a color indicating the payment state of this invoice.
+     *
+     * @return  the indicator color
+     */
+    String getPaymentStateColor() {
         String color = 'white'
         switch (stage?.id) {
-        case 907:
+        case 907:                       // cancelled
             color = 'green'
             break
-        case 906:
+        case 906:                       // booked out
             color = 'black'
             break
-        case 905:
+        case 905:                       // cashing
             color = 'blue'
             break
-        case 904:
+        case 904:                       // dunned
             color = 'purple'
             break
-        case 903:
+        case 903:                       // paid
             color = 'green'
-            break
-        case 902:
+            if ((paymentAmount ?: 0) - (total ?: 0) >= 0) {
+                break
+            }
+            // else fall through
+        case 902:                       // delivered
             Date d = new Date()
             if (d >= dueDatePayment - 3) {
                 if (d <= dueDatePayment) {

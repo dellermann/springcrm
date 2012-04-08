@@ -18,7 +18,7 @@
       <td><input type="checkbox" id="invoice-multop-${invoiceInstance.id}" class="multop-sel-item" /></td>
       <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
       <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
-      <td>${fieldValue(bean: invoiceInstance, field: "stage")}</td>
+      <td class="payment-state-${invoiceInstance?.paymentStateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
       <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
       <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
       <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.total}" /></td>

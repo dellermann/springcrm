@@ -57,16 +57,24 @@ class ReportController {
             start[MONTH] = cal.getMinimum(MONTH)
             end[MONTH] = cal.getActualMaximum(MONTH)
         }
-        def query = Invoice.where {
-            (docDate >= start.time) && (docDate <= end.time)
-        }
 
         def l = Invoice.list(sort: 'docDate', max: 1)
         int yearStart = l[0].docDate[YEAR]
         l = Invoice.list(sort: 'docDate', order: 'desc', max: 1)
         int yearEnd = l[0].docDate[YEAR]
+        l = Dunning.list(sort: 'docDate', max: 1)
+        yearStart = Math.min(yearStart, l[0].docDate[YEAR])
+        l = Dunning.list(sort: 'docDate', order: 'desc', max: 1)
+        yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
 
+        def query = Invoice.where {
+            (docDate >= start.time) && (docDate <= end.time)
+        }
         l = query.list(sort: 'number')
+        query = Dunning.where {
+            (docDate >= start.time) && (docDate <= end.time)
+        }
+        l += query.list(sort: 'number')
         def total = l*.total.sum()
         def totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 

@@ -45,6 +45,7 @@ class Dunning extends InvoicingTransaction {
 		stage column: 'dunning_stage_id'
 	}
 	static searchable = true
+    static transients = ['paymentStateColor']
 
 
     //-- Instance variables ---------------------
@@ -86,4 +87,46 @@ class Dunning extends InvoicingTransaction {
 		paymentMethod = d.paymentMethod
 		invoice = d.invoice
 	}
+
+
+    //-- Public methods -------------------------
+
+    /**
+     * Gets the name of a color indicating the payment state of this dunning.
+     *
+     * @return  the indicator color
+     */
+    String getPaymentStateColor() {
+        String color = 'white'
+        switch (stage?.id) {
+        case 2206:                      // cancelled
+            color = 'green'
+            break
+        case 2205:                      // booked out
+            color = 'black'
+            break
+        case 2204:                      // cashing
+            color = 'blue'
+            break
+        case 2203:                      // paid
+            color = 'green'
+            if ((paymentAmount ?: 0) - (total ?: 0) >= 0) {
+                break
+            }
+            // else fall through
+        case 2202:                      // delivered
+            Date d = new Date()
+            if (d >= dueDatePayment - 3) {
+                if (d <= dueDatePayment) {
+                    color = 'yellow'
+                } else if (d <= dueDatePayment + 3) {
+                    color = 'orange'
+                } else {
+                    color = 'red'
+                }
+            }
+            break
+        }
+        return color
+    }
 }

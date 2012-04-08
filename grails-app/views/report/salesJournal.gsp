@@ -83,7 +83,7 @@
           <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></td>
           <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.paymentAmount}" /></td>
           <td style="text-align: right;"><g:formatCurrency number="${(invoiceInstance?.paymentAmount ?: 0) - (invoiceInstance?.total ?: 0)}" displayZero="true" /></td>
-          <td style="text-align: center;" class="invoice-state-${invoiceInstance?.stateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
+          <td style="text-align: center;" class="payment-state-${invoiceInstance?.paymentStateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
         </tr>
       </g:each>
       </tbody>
