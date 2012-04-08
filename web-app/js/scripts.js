@@ -984,6 +984,7 @@
             onChangeDateInput = null,
             onChangeQuickAccess = null,
             onClickDeleteBtn = null,
+            onClickPrintBtn = null,
             onClickSubmitSearchForm = null,
             onMenuHover = null,
             onScrollDocument = null,
@@ -1008,6 +1009,7 @@
                 .click(onClickSubmitSearchForm);
             $("#quick-access").change(onChangeQuickAccess);
             $("#main-menu > li").hover(onMenuHover);
+            $("#print-btn").click(onClickPrintBtn);
             $(".menu").hover(onMenuHover);
             $(".submit-btn").click(onSubmitForm);
             $(".delete-btn").click(onClickDeleteBtn);
@@ -1135,6 +1137,10 @@
                 $this.attr("href", url + "confirmed=1");
             }
             return res;
+        };
+
+        onClickPrintBtn = function () {
+            window.print();
         };
 
         onClickSubmitSearchForm = function () {

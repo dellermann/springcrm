@@ -5,6 +5,13 @@
   <meta name="layout" content="main" />
   <title><g:message code="report.salesJournal.title" /></title>
   <r:require modules="reportSalesJournal" />
+  <style>
+  @media print {
+    @page {
+      size: landscape;
+    }
+  }
+  </style>
 </head>
 
 <body>
@@ -12,7 +19,7 @@
     <h2><g:message code="report.salesJournal.title" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="#" class="white"><g:message code="default.button.print.label" /></a></li>
+        <li><a id="print-btn" href="#" class="white"><g:message code="default.button.print.label" /></a></li>
       </ul>
     </nav>
   </div>
@@ -76,7 +83,7 @@
           <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></td>
           <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.paymentAmount}" /></td>
           <td style="text-align: right;"><g:formatCurrency number="${(invoiceInstance?.paymentAmount ?: 0) - (invoiceInstance?.total ?: 0)}" displayZero="true" /></td>
-          <td style="text-align: center;">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
+          <td style="text-align: center;" class="invoice-state-${invoiceInstance?.stateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
         </tr>
       </g:each>
       </tbody>

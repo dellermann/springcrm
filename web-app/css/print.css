@@ -39,6 +39,10 @@ a {
   color: #444;
 }
 
+body {
+  margin: 0;
+}
+
 
 /*-----------------------------------
  *
@@ -46,16 +50,32 @@ a {
  *
  *---------------------------------*/
 
+/* hide areas */
 #login-area, #search-area, #main-menu, #toolbar, .filter-bar, #font-size-sel, 
   #footer-menu 
 {
   display: none;
 }
 
+/* the logo */
+#logo {
+  margin: 0;
+}
+#logo a {
+  height: auto;
+}
+#logo strong {
+  padding-left: 0;
+}
+
+/* the main content */
 #main-container {
   background: transparent;
   min-height: 0;
-  padding: 2em 0 0;
+  padding: 0 0 2em;
+}
+#main-container-header {
+  border-bottom: none;
 }
 
 

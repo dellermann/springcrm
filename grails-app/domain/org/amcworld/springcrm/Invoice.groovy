@@ -46,6 +46,7 @@ class Invoice extends InvoicingTransaction {
 		stage column: 'invoice_stage_id'
 	}
 	static searchable = true
+    static transients = ['stateColor']
 
 
     //-- Instance variables ---------------------
@@ -83,4 +84,41 @@ class Invoice extends InvoicingTransaction {
 		quote = i.quote
 		salesOrder = i.salesOrder
 	}
+
+
+    //-- Public methods -------------------------
+
+    String getStateColor() {
+        String color = 'white'
+        switch (stage?.id) {
+        case 907:
+            color = 'green'
+            break
+        case 906:
+            color = 'black'
+            break
+        case 905:
+            color = 'blue'
+            break
+        case 904:
+            color = 'purple'
+            break
+        case 903:
+            color = 'green'
+            break
+        case 902:
+            Date d = new Date()
+            if (d >= dueDatePayment - 3) {
+                if (d <= dueDatePayment) {
+                    color = 'yellow'
+                } else if (d <= dueDatePayment + 3) {
+                    color = 'orange'
+                } else {
+                    color = 'red'
+                }
+            }
+            break
+        }
+        return color
+    }
 }

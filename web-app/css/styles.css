@@ -1607,6 +1607,29 @@ form .invoicing-items-pos {
 }
 
 /* invoicing stuff */
+.invoice-state-green {
+  background: rgba(183, 255, 29, .6);
+}
+.invoice-state-yellow {
+  background: rgba(255, 238, 28, .6);
+}
+.invoice-state-orange {
+  background: rgba(255, 190, 28, .6);
+}
+.invoice-state-red {
+  background: rgba(255, 93, 2, .6);
+}
+.invoice-state-purple {
+  background: rgba(145, 0, 245, .6);
+  color: white;
+}
+.invoice-state-blue {
+  background: rgba(38, 125, 254, .6);
+}
+.invoice-state-black {
+  background: rgba(0, 7, 24, .6);
+  color: white;
+}
 #still-unpaid:hover {
   text-decoration: underline;
 }
