@@ -26,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3><g:message code="${domainClass.propertyName}.new.label" default="New \${entityName}" /></h3>
-    <g:form name="${domainClass.propertyName}-form" action="save" params="[returnUrl:params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
+    <g:form name="${domainClass.propertyName}-form" action="save" params="[returnUrl: params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
       <g:render template="form"/>
     </g:form>
   </section>

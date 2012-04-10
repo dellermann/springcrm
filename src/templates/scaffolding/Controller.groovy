@@ -23,7 +23,8 @@ class ${className}Controller {
             render(view: 'create', model: [${propertyName}: ${propertyName}])
             return
         }
-
+        params.id = ${propertyName}.ident()
+        
 		flash.message = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.toString()])
         if (params.returnUrl) {
             redirect(url: params.returnUrl)
@@ -65,9 +66,7 @@ class ${className}Controller {
         if (params.version) {
             def version = params.version.toLong()
             if (${propertyName}.version > version) {<% def lowerCaseName = grails.util.GrailsNameUtils.getPropertyName(className) %>
-                ${propertyName}.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                          [message(code: '${domainClass.propertyName}.label', default: '${className}')] as Object[],
-                          "Another user has updated this ${className} while you were editing")
+                ${propertyName}.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: '${domainClass.propertyName}.label', default: '${className}')] as Object[], 'Another user has updated this ${className} while you were editing')
                 render(view: 'edit', model: [${propertyName}: ${propertyName}])
                 return
             }

@@ -1,5 +1,5 @@
 /*
- * changelog.groovy
+ * project-form.js
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,9 +18,17 @@
  */
 
 
-databaseChangeLog = {
-//    include file: 'db-2012-02-14.xml'
-//    include file: 'db-2012-02-25.xml'
-    include file: 'db-2012-03-13.xml'
-	include file: 'db-2012-04-10.xml'
-}
+(function ($) {
+
+    "use strict";
+
+    var $organizationId = $("#organization\\.id");
+
+    $("#organization").autocompleteex();
+    $("#person").autocompleteex({
+            loadParameters: function () {
+                return { organization: $organizationId.val() };
+            }
+        });
+
+}(jQuery));

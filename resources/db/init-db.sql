@@ -195,6 +195,15 @@ VALUES
   (2502, 0, 'versendet', 30, 'org.amcworld.springcrm.CreditMemoStage'),
   (2503, 0, 'bezahlt', 40, 'org.amcworld.springcrm.CreditMemoStage'),
   (2504, 0, 'storniert', 50, 'org.amcworld.springcrm.CreditMemoStage');
+  
+INSERT INTO sel_value (id, version, name, order_id, class)
+VALUES
+  (2600, 0, 'in Bearbeitung', 10, 'org.amcworld.springcrm.ProjectStatus'),
+  (2601, 0, 'pausiert', 20, 'org.amcworld.springcrm.ProjectStatus'),
+  (2602, 0, 'wartet auf Kunden', 30, 'org.amcworld.springcrm.ProjectStatus'),
+  (2603, 0, 'wartet auf Lieferanten', 40, 'org.amcworld.springcrm.ProjectStatus'),
+  (2604, 0, 'abgeschlossen', 50, 'org.amcworld.springcrm.ProjectStatus'),
+  (2605, 0, 'abgebrochen', 60, 'org.amcworld.springcrm.ProjectStatus');
 
 INSERT INTO sel_value (id, version, name, order_id, class)
 VALUES
@@ -234,7 +243,8 @@ VALUES
 	(7, 0, 'organization', 99999, 'O', 10000, ''),
 	(8, 0, 'person', 99999, 'E', 10000, ''),
 	(9, 0, 'note', 99999, 'N', 10000, ''),
-	(10, 0, 'creditMemo', 99999, 'G', 10000, '');
+	(10, 0, 'creditMemo', 99999, 'G', 10000, ''),
+	(11, 0, 'project', 99999, 'J', 10000, '');
 
 
 --

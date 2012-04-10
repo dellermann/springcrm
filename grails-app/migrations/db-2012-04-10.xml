@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!--
+
+ db-2012-04-10.xml
+
+ Copyright (c) 2011-2012, Daniel Ellermann
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-1">
+    <createTable tableName="project">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="projectPK" />
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="description" type="longtext" />
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="number" type="integer">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="organization_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="person_id" type="bigint" />
+      <column name="phase" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="status_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="title" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-2">
+    <addNotNullConstraint columnDataType="datetime"
+      columnName="end_time" tableName="calendar_event" />
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-3">
+    <addNotNullConstraint columnDataType="datetime"
+      columnName="start_time" tableName="calendar_event" />
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-4">
+    <addNotNullConstraint columnDataType="bit"
+      columnName="admin" tableName="user_data" />
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-5">
+    <createIndex indexName="FKED904B192B4AEB6D" tableName="project">
+      <column name="status_id" />
+    </createIndex>
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-6">
+    <createIndex indexName="FKED904B198466B320" tableName="project">
+      <column name="organization_id" />
+    </createIndex>
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-7">
+    <createIndex indexName="FKED904B19F1C1460" tableName="project">
+      <column name="person_id" />
+    </createIndex>
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-8">
+    <createIndex indexName="number_unique_1334089339833"
+      tableName="project" unique="true">
+      <column name="number" />
+    </createIndex>
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-9">
+    <addForeignKeyConstraint baseColumnNames="organization_id"
+      baseTableName="project" constraintName="FKED904B198466B320"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="organization"
+      referencesUniqueColumn="false" />
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-10">
+    <addForeignKeyConstraint baseColumnNames="person_id"
+      baseTableName="project" constraintName="FKED904B19F1C1460"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="person"
+      referencesUniqueColumn="false" />
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-11">
+    <addForeignKeyConstraint baseColumnNames="status_id"
+      baseTableName="project" constraintName="FKED904B192B4AEB6D"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sel_value"
+      referencesUniqueColumn="false" />
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-12">
+    <insert tableName="sel_value">
+      <column name="id" valueNumeric="2600"/>
+      <column name="version" valueNumeric="0"/>
+      <column name="name" value="in Bearbeitung"/>
+      <column name="order_id" valueNumeric="10"/>
+      <column name="class" value="org.amcworld.springcrm.ProjectStatus"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" valueNumeric="2601"/>
+      <column name="version" valueNumeric="0"/>
+      <column name="name" value="pausiert"/>
+      <column name="order_id" valueNumeric="20"/>
+      <column name="class" value="org.amcworld.springcrm.ProjectStatus"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" valueNumeric="2602"/>
+      <column name="version" valueNumeric="0"/>
+      <column name="name" value="wartet auf Kunden"/>
+      <column name="order_id" valueNumeric="30"/>
+      <column name="class" value="org.amcworld.springcrm.ProjectStatus"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" valueNumeric="2603"/>
+      <column name="version" valueNumeric="0"/>
+      <column name="name" value="wartet auf Lieferanten"/>
+      <column name="order_id" valueNumeric="40"/>
+      <column name="class" value="org.amcworld.springcrm.ProjectStatus"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" valueNumeric="2604"/>
+      <column name="version" valueNumeric="0"/>
+      <column name="name" value="abgeschlossen"/>
+      <column name="order_id" valueNumeric="50"/>
+      <column name="class" value="org.amcworld.springcrm.ProjectStatus"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" valueNumeric="2605"/>
+      <column name="version" valueNumeric="0"/>
+      <column name="name" value="abgebrochen"/>
+      <column name="order_id" valueNumeric="60"/>
+      <column name="class" value="org.amcworld.springcrm.ProjectStatus"/>
+    </insert>
+  </changeSet>
+  
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-13">
+    <insert tableName="seq_number">
+      <column name="version" valueNumeric="0"/>
+      <column name="controller_name" value="project"/>
+      <column name="end_value" valueNumeric="99999"/>
+      <column name="prefix" value="J"/>
+      <column name="start_value" valueNumeric="10000"/>
+      <column name="suffix" value=""/>
+    </insert>
+  </changeSet>
+</databaseChangeLog>

@@ -1,5 +1,5 @@
 /*
- * changelog.groovy
+ * ProjectStatus.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,9 +18,13 @@
  */
 
 
-databaseChangeLog = {
-//    include file: 'db-2012-02-14.xml'
-//    include file: 'db-2012-02-25.xml'
-    include file: 'db-2012-03-13.xml'
-	include file: 'db-2012-04-10.xml'
-}
+package org.amcworld.springcrm
+
+
+/**
+ * The class {@code ProjectStatus} represents the status of projects.
+ *
+ * @author  Daniel Ellermann
+ * @version 1.0
+ */
+class ProjectStatus extends SelValue {}

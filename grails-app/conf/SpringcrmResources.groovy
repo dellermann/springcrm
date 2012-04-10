@@ -119,6 +119,12 @@ modules = {
         resource '/js/jquery.lightbox.min.js'
     }
 
+    projectForm {
+        dependsOn 'core'
+
+        resource '/js/project-form.js'
+    }
+
     purchaseInvoicingForm {
         dependsOn 'invoicingTransactionForm'
         defaultBundle 'invoicing-transaction-form'

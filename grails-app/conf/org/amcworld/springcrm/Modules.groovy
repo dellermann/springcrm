@@ -47,6 +47,7 @@ class Modules {
 		invoice: ['organization', 'invoice'],
 		note: ['note'],
 		product: ['product'],
+        project: ['organization', 'project'],
 		purchaseInvoice: ['purchaseInvoice'],
 		quote: ['organization', 'quote'],
 		salesOrder: ['organization', 'salesOrder'],

@@ -26,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>\${${propertyName}?.toString()}</h3>
-    <g:form name="${domainClass.propertyName}-form" action="update" method="post" params="[returnUrl:params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
+    <g:form name="${domainClass.propertyName}-form" action="update" method="post" params="[returnUrl: params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
       <g:hiddenField name="id" value="\${${propertyName}?.id}" />
       <g:hiddenField name="version" value="\${${propertyName}?.version}" />
       <g:render template="form"/>
