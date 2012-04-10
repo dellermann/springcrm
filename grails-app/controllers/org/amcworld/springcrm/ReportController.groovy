@@ -79,7 +79,7 @@ class ReportController {
         def totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 
         return [
-            invoiceInstanceList: l, currentDate: cal.time,
+            invoicingTransactionInstanceList: l, currentDate: cal.time,
             currentMonth: month, currentYear: year,
             yearStart: yearStart, yearEnd: yearEnd, total: total,
             totalPaymentAmount: totalPaymentAmount

@@ -1450,7 +1450,7 @@ form .invoicing-items-pos {
 }
 #login #outer-container {
   display: table;
-  margin: 8em auto 0;
+  margin: 0 auto;
 }
 #login #inner-container {
   display: table-cell;

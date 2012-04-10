@@ -60,7 +60,7 @@
           <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label.short', default: 'Stage')}" />
         </tr>
       </thead>
-      <g:if test="${invoiceInstanceList}">
+      <g:if test="${invoicingTransactionInstanceList}">
       <tfoot>
         <tr>
           <td colspan="4" style="text-align: right;"><g:message code="report.salesJournal.total.label" default="Total" /></td>
@@ -72,18 +72,18 @@
       </tfoot>
       </g:if>
       <tbody>
-      <g:each in="${invoiceInstanceList}" status="i" var="invoiceInstance">
+      <g:each in="${invoicingTransactionInstanceList}" status="i" var="invoicingTransactionInstance">
         <tr>
-          <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
-          <td><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</g:link></td>
-          <td><g:link controller="organization" action="show" id="${invoiceInstance.organization?.id}">${fieldValue(bean: invoiceInstance, field: "organization")}</g:link></td>
-          <td><g:link action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
-          <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-          <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
-          <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></td>
-          <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.paymentAmount}" /></td>
-          <td style="text-align: right;"><g:formatCurrency number="${(invoiceInstance?.paymentAmount ?: 0) - (invoiceInstance?.total ?: 0)}" displayZero="true" /></td>
-          <td style="text-align: center;" class="payment-state-${invoiceInstance?.paymentStateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
+          <td style="text-align: center;"><g:formatDate date="${invoicingTransactionInstance?.docDate}" formatName="default.format.date" /></td>
+          <td><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : 'dunning'}" action="show" id="${invoicingTransactionInstance.id}">${fieldValue(bean: invoicingTransactionInstance, field: "fullNumber")}</g:link></td>
+          <td><g:link controller="organization" action="show" id="${invoicingTransactionInstance.organization?.id}">${fieldValue(bean: invoicingTransactionInstance, field: "organization")}</g:link></td>
+          <td><g:link action="show" id="${invoicingTransactionInstance.id}">${fieldValue(bean: invoicingTransactionInstance, field: "subject")}</g:link></td>
+          <td style="text-align: center;"><g:formatDate date="${invoicingTransactionInstance?.dueDatePayment}" formatName="default.format.date" /></td>
+          <td style="text-align: right;"><g:formatCurrency number="${invoicingTransactionInstance?.total}" /></td>
+          <td style="text-align: center;"><g:formatDate date="${invoicingTransactionInstance?.paymentDate}" formatName="default.format.date" /></td>
+          <td style="text-align: right;"><g:formatCurrency number="${invoicingTransactionInstance?.paymentAmount}" /></td>
+          <td style="text-align: right;"><g:formatCurrency number="${(invoicingTransactionInstance?.paymentAmount ?: 0) - (invoicingTransactionInstance?.total ?: 0)}" displayZero="true" /></td>
+          <td style="text-align: center;" class="payment-state-${invoicingTransactionInstance?.paymentStateColor}">${fieldValue(bean: invoicingTransactionInstance, field: "stage")}</td>
         </tr>
       </g:each>
       </tbody>
