@@ -22,28 +22,34 @@
 
     "use strict";
 
-    var jQuery = $,
+    var changePhase,
+        jQuery = $,
         onClick;
+
+    changePhase = function (phaseName) {
+        var $ = jQuery;
+
+        $.get(
+                $("#project-phases").attr("data-set-phase-url"),
+                { phase: phaseName }
+            );
+    };
 
     onClick = function (event) {
         var $ = jQuery,
+            $section,
             $target = $(event.target),
             phaseName,
             res = true;
 
-        if ($target.is(".project-phases h5")) {
+        $section = $target.parents("section");
+        phaseName = $section.attr("data-phase");
+        if ($target.is("#project-phases h5")) {
             $("#project-phase").text($target.text());
-            phaseName = $target.parents("section")
+            $section.addClass("current")
                 .siblings()
-                    .removeClass("current")
-                .end()
-                .addClass("current")
-                .attr("data-phase");
-            $.get(
-                    $target.parents(".project-phases")
-                        .attr("data-set-phase-url"),
-                    { phase: phaseName }
-                );
+                    .removeClass("current");
+            changePhase(phaseName);
             res = false;
         } else if ($target.is(".project-phase-actions-create")) {
             $("#create-project-item-dialog").dialog({
@@ -51,14 +57,8 @@
                 })
                 .find("a")
                     .click(function () {
-                        var $this = $(this),
-                            phaseName,
-                            url = $this.attr("href");
-
-                        phaseName = $target.parents("section")
-                            .attr("data-phase");
-                        window.location.href = url + "&projectPhase="
-                            + phaseName;
+                        window.location.href =
+                            $(this).attr("href") + "&projectPhase=" + phaseName;
                         return false;
                     });
             res = false;
@@ -66,5 +66,5 @@
         return res;
     };
 
-    $(".project-phases").click(onClick);
+    $("#project-phases").click(onClick);
 }(window, jQuery));

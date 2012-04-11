@@ -74,12 +74,14 @@ class SeqNumberFilters {
 			}
 			after = { model ->
 				if (model) {
-					def inst = model["${controllerName}Instance"]
-					if (inst) {
-						if (inst.number == 0) {
-							inst.number = seqNumberService.nextNumber(controllerName)
-						}
-					}
+                    try {
+    					def inst = model["${controllerName}Instance"]
+    					if (inst) {
+    						if (inst.number == 0) {
+    							inst.number = seqNumberService.nextNumber(controllerName)
+    						}
+    					}
+                    } catch (MissingPropertyException e) { /* ignored */ }
 				}
 			}
 		}

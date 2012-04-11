@@ -92,7 +92,7 @@ class ${className}Controller {
         if (!${propertyName}) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), params.id])
             if (params.returnUrl) {
-                redirect(url:params.returnUrl)
+                redirect(url: params.returnUrl)
             } else {
                 redirect(action: 'list')
             }
@@ -103,7 +103,7 @@ class ${className}Controller {
             ${propertyName}.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}')])
             if (params.returnUrl) {
-                redirect(url:params.returnUrl)
+                redirect(url: params.returnUrl)
             } else {
                 redirect(action: 'list')
             }

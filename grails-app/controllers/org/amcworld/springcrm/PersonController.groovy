@@ -174,32 +174,34 @@ class PersonController {
 
     def delete() {
         def personInstance = Person.get(params.id)
-        if (personInstance && params.confirmed) {
-            try {
-                personInstance.delete(flush: true)
-				if (googleDataContactService) {
-					googleDataContactService.markDeleted(personInstance)
-				}
-				if (ldapService) {
-					ldapService.delete(personInstance)
-				}
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            personInstance.delete(flush: true)
+			if (googleDataContactService) {
+				googleDataContactService.markDeleted(personInstance)
+			}
+			if (ldapService) {
+				ldapService.delete(personInstance)
+			}
+
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])
+            redirect(action: 'show', id: params.id)
         }
     }
 

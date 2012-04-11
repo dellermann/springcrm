@@ -175,26 +175,27 @@ class ServiceController {
 
     def delete() {
         def serviceInstance = Service.get(params.id)
-        if (serviceInstance && params.confirmed) {
-            try {
-                serviceInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'service.label', default: 'Service')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'service.label', default: 'Service')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!serviceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            serviceInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'service.label', default: 'Service')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'service.label', default: 'Service')])
+            redirect(action: 'show', id: params.id)
         }
     }
 

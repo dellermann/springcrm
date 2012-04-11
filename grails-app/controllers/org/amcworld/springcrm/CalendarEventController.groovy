@@ -232,26 +232,27 @@ class CalendarEventController {
 
     def delete() {
         def calendarEventInstance = CalendarEvent.get(params.id)
-        if (calendarEventInstance && params.confirmed) {
-            try {
-                calendarEventInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!calendarEventInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            calendarEventInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
+            redirect(action: 'show', id: params.id)
         }
     }
 

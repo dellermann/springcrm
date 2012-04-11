@@ -208,26 +208,27 @@ class QuoteController {
 
     def delete() {
         def quoteInstance = Quote.get(params.id)
-        if (quoteInstance && params.confirmed) {
-            try {
-                quoteInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!quoteInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            quoteInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
+            redirect(action: 'show', id: params.id)
         }
     }
 

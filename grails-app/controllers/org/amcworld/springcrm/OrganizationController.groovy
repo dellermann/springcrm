@@ -162,26 +162,27 @@ class OrganizationController {
 
     def delete() {
         def organizationInstance = Organization.get(params.id)
-        if (organizationInstance && params.confirmed) {
-            try {
-                organizationInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list', params: [type: params.type])
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])
-                redirect(action: 'show', id: params.id, params: [type: params.type])
-            }
-        } else {
+        if (!organizationInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list', params: [type: params.type])
+            }
+            return
+        }
+
+        try {
+            organizationInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list', params: [type: params.type])
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization')])
+            redirect(action: 'show', id: params.id, params: [type: params.type])
         }
     }
 

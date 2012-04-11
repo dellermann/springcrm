@@ -172,26 +172,27 @@ class CallController {
 
     def delete() {
         def callInstance = Call.get(params.id)
-        if (callInstance && params.confirmed) {
-            try {
-                callInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!callInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            callInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])
+            redirect(action: 'show', id: params.id)
         }
     }
 }

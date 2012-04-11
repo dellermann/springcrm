@@ -169,26 +169,27 @@ class NoteController {
 
     def delete() {
         def noteInstance = Note.get(params.id)
-        if (noteInstance && params.confirmed) {
-            try {
-                noteInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'note.label', default: 'Note')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'note.label', default: 'Note')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!noteInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            noteInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'note.label', default: 'Note')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'note.label', default: 'Note')])
+            redirect(action: 'show', id: params.id)
         }
     }
 }

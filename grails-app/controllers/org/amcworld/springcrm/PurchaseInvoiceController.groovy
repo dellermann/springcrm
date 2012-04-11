@@ -194,29 +194,30 @@ class PurchaseInvoiceController {
 
     def delete() {
         def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
-        if (purchaseInvoiceInstance && params.confirmed) {
-			if (purchaseInvoiceInstance.documentFile) {
-				fileService.removeFile(purchaseInvoiceInstance.documentFile)
-			}
-            try {
-                purchaseInvoiceInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!purchaseInvoiceInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+		if (purchaseInvoiceInstance.documentFile) {
+			fileService.removeFile(purchaseInvoiceInstance.documentFile)
+		}
+        try {
+            purchaseInvoiceInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
+            redirect(action: 'show', id: params.id)
         }
     }
 

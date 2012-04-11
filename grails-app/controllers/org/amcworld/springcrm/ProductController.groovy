@@ -176,26 +176,27 @@ class ProductController {
 
     def delete() {
         def productInstance = Product.get(params.id)
-        if (productInstance && params.confirmed) {
-            try {
-                productInstance.delete(flush: true)
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'product.label', default: 'Product')])
-				if (params.returnUrl) {
-					redirect(url: params.returnUrl)
-				} else {
-					redirect(action: 'list')
-				}
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'product.label', default: 'Product')])
-                redirect(action: 'show', id: params.id)
-            }
-        } else {
+        if (!productInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), params.id])
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
+            return
+        }
+
+        try {
+            productInstance.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'product.label', default: 'Product')])
 			if (params.returnUrl) {
 				redirect(url: params.returnUrl)
 			} else {
 				redirect(action: 'list')
 			}
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'product.label', default: 'Product')])
+            redirect(action: 'show', id: params.id)
         }
     }
 

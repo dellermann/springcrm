@@ -108,7 +108,27 @@ class ProjectController {
             return
         }
 
-        return [projectInstance: projectInstance]
+        def c = ProjectItem.createCriteria()
+        def l = c.list {
+            eq('project', projectInstance)
+            and {
+                order('phase', 'asc')
+                order('controller', 'asc')
+            }
+        }
+
+        def projectItems = [: ]
+        l.each {
+            def phase = it.phase
+            def items = projectItems[phase]
+            if (!items) {
+                items = []
+                projectItems[phase] = items
+            }
+            items << it
+        }
+
+        return [projectInstance: projectInstance, projectItems: projectItems]
     }
 
     def edit() {
@@ -161,7 +181,7 @@ class ProjectController {
         if (!projectInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])
             if (params.returnUrl) {
-                redirect(url:params.returnUrl)
+                redirect(url: params.returnUrl)
             } else {
                 redirect(action: 'list')
             }
@@ -172,7 +192,7 @@ class ProjectController {
             projectInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project')])
             if (params.returnUrl) {
-                redirect(url:params.returnUrl)
+                redirect(url: params.returnUrl)
             } else {
                 redirect(action: 'list')
             }

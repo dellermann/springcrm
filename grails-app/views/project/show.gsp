@@ -93,7 +93,7 @@
       <div class="fieldset">
         <h4><g:message code="project.fieldset.procedure.label" /></h4>
         <div class="fieldset-content">
-          <div class="project-phases" data-set-phase-url="${createLink(action: 'setPhase', id: projectInstance.id)}">
+          <div id="project-phases" data-set-phase-url="${createLink(action: 'setPhase', id: projectInstance.id)}">
             <g:each var="phase" in="${org.amcworld.springcrm.ProjectPhase.class.enumConstants}">
             <section class="${(phase == projectInstance.phase) ? 'current' : ''}" data-phase="${phase.name()}">
               <h5 id="project-phase-${phase.name()}"><g:message code="project.phase.${phase}" default="${phase.toString()}" /></h5>
@@ -102,11 +102,11 @@
                   <li class="project-phase-actions-create green button small"><g:message code="project.item.create.label" default="Create item" /></li>
                   <li class="project-phase-actions-select white button small"><g:message code="project.item.select.label" default="Select item" /></li>
                 </ul>
-                <g:set var="items" value="${projectInstance.items.findAll { it.phase == phase }}" />
+                <g:set var="items" value="${projectItems[phase]}" />
                 <g:if test="${items}">
                 <ul class="project-phase-items">
                   <g:each in="${items}" var="item">
-                    <li><g:link controller="${item.controller}" action="show" id="${item.itemId}">${item.title}</g:link></li>
+                    <li><g:link controller="${item.controller}" action="show" id="${item.itemId}" class="data-type data-type-${item.controller}">${item.title}</g:link></li>
                   </g:each>
                 </ul>
                 </g:if>

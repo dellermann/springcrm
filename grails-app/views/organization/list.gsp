@@ -64,7 +64,7 @@
       </tbody>
     </table>
     <div class="paginator">
-      <g:paginate total="${organizationInstanceTotal}" params="[type:params.type]" />
+      <g:paginate total="${organizationInstanceTotal}" params="[type: params.type]" />
     </div>
     </g:if>
     <g:else>

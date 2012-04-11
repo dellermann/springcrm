@@ -1424,6 +1424,60 @@ form .invoicing-items-pos {
   width: 16px;
 }
 
+/* type icons */
+.data-type {
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  line-height: 16px;
+  padding-left: 22px;
+}
+.data-type-calendarEvent {
+  background-image: url("../img/type/calendar-event.png")
+}
+.data-type-call {
+  background-image: url("../img/type/call.png")
+}
+.data-type-creditMemo {
+  background-image: url("../img/type/credit-memo.png")
+}
+.data-type-dunning {
+  background-image: url("../img/type/dunning.png")
+}
+.data-type-invoice {
+  background-image: url("../img/type/invoice.png")
+}
+.data-type-note {
+  background-image: url("../img/type/note.png")
+}
+.data-type-organization {
+  background-image: url("../img/type/organization.png")
+}
+.data-type-person {
+  background-image: url("../img/type/person.png")
+}
+.data-type-product {
+  background-image: url("../img/type/product.png")
+}
+.data-type-project {
+  background-image: url("../img/type/project.png")
+}
+.data-type-purchaseInvoice {
+  background-image: url("../img/type/purchase-invoice.png")
+}
+.data-type-quote {
+  background-image: url("../img/type/quote.png")
+}
+.data-type-salesOrder {
+  background-image: url("../img/type/sales-order.png")
+}
+.data-type-service {
+  background-image: url("../img/type/service.png")
+}
+.data-type-user {
+  background-image: url("../img/type/user.png")
+}
+
 /* login page */
 #login aside {
   background: #EEE;
@@ -1666,24 +1720,24 @@ form .invoicing-items-pos {
 }
 
 /* projects */
-.project-phases {
+#project-phases {
   display: table;
   width: 100%;
 }
-.project-phases section {
+#project-phases section {
   display: table-row;
 }
-.project-phases section:last-child {
+#project-phases section:last-child {
   height: 5em;
 }
-.project-phases section:last-child div {
+#project-phases section:last-child div {
   width: 0; 
   height: 0;
   border-top: 5em solid #6C8F18;
   border-left: 7em solid transparent; 
   border-right: 7em solid transparent; 
 }
-.project-phases h5 {
+#project-phases h5 {
   background: #6C8F18;
   border-bottom: .1em solid white;
   color: white;
@@ -1692,13 +1746,20 @@ form .invoicing-items-pos {
   padding: 2em;
   width: 10em;
 }
-.project-phases .current h5 {
+#project-phases .current h5 {
   background: #2F4E10;
 }
 .project-phase-content {
   border-bottom: .1em solid #BBB;
   display: table-cell;
   padding: 1em 0 1em 2em;
+}
+.project-phase-content ul {
+  margin: 0;
+}
+.project-phase-content li {
+  list-style: none;
+  margin-bottom: .5em;
 }
 .project-phase-actions {
   margin: 0 0 1em;

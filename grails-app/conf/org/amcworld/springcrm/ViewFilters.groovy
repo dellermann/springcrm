@@ -75,6 +75,23 @@ class ViewFilters {
 			}
 		}
 
+        deleteConfirm(controller: '*', action: 'delete') {
+            before = {
+
+                /*
+                 * Normally, no delete action request without confirmed
+                 * parameter should be received because the JavaScript does not
+                 * send the request if the user has not confirmed the deletion.
+                 * However, crafted URLs or programming errors may cause this
+                 * situation happen.  If so, we simply redirect to the list
+                 * view.
+                 */
+                if (!params.confirmed) {
+                    redirect(controller: controllerName, action: 'list')
+                }
+            }
+        }
+
 		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action: 'create|edit|copy|save|update') {
 			after = { model ->
 				if (model) {
