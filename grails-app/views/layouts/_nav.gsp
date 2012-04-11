@@ -46,6 +46,7 @@
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="note"><li><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifModuleAllowed>
+        <li><hr /></li>
         <g:ifModuleAllowed modules="project"><li><g:link controller="project"><g:message code="project.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>

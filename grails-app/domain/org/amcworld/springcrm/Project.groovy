@@ -38,13 +38,14 @@ class Project {
         dateCreated()
         lastUpdated()
     }
-    static belongsTo = [ organization: Organization, person: Person ]
+    static belongsTo = [organization: Organization, person: Person]
+    static hasMany = [items: ProjectItem]
     static mapping = {
         sort 'title'
         description type: 'text'
     }
     static searchable = true
-    static transients = [ 'fullNumber' ]
+    static transients = ['fullNumber']
 
 
     //-- Instance variables ---------------------

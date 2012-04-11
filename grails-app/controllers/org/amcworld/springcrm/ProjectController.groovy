@@ -181,4 +181,12 @@ class ProjectController {
             redirect(action: 'show', id: params.id)
         }
     }
+
+    def setPhase() {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            projectInstance.phase = ProjectPhase.valueOf(params.phase)
+            projectInstance.save(flush: true)
+        }
+    }
 }

@@ -125,6 +125,12 @@ modules = {
         resource '/js/project-form.js'
     }
 
+    projectShow {
+        dependsOn 'core'
+
+        resource '/js/project-show.js'
+    }
+
     purchaseInvoicingForm {
         dependsOn 'invoicingTransactionForm'
         defaultBundle 'invoicing-transaction-form'

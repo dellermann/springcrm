@@ -27,6 +27,8 @@
     </g:hasErrors>
     <h3><g:message code="salesOrder.new.label" default="New ${entityName}" /></h3>
     <g:form name="sales-order-form" action="save" params="[returnUrl: params.returnUrl]">
+      <g:hiddenField name="project" value="${project}" />
+      <g:hiddenField name="projectPhase" value="${projectPhase}" />
       <g:render template="/salesOrder/form" />
     </g:form>
   </section>

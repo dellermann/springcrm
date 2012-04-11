@@ -27,6 +27,8 @@
     </g:hasErrors>
     <h3><g:message code="purchaseInvoice.new.label" default="New ${entityName}" /></h3>
     <g:uploadForm name="purchaseInvoice-form" action="save" params="[returnUrl: params.returnUrl]">
+      <g:hiddenField name="project" value="${project}" />
+      <g:hiddenField name="projectPhase" value="${projectPhase}" />
       <g:render template="/purchaseInvoice/form" />
     </g:uploadForm>
   </section>

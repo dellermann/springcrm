@@ -37,7 +37,9 @@
       <column name="date_created" type="datetime">
         <constraints nullable="false" />
       </column>
-      <column name="description" type="longtext" />
+      <column name="description" type="longtext">
+        <constraints nullable="false" />
+      </column>
       <column name="last_updated" type="datetime">
         <constraints nullable="false" />
       </column>
@@ -61,46 +63,31 @@
   </changeSet>
   
   <changeSet author="d.ellermann@amc-world.de" id="20120410-2">
-    <addNotNullConstraint columnDataType="datetime"
-      columnName="end_time" tableName="calendar_event" />
-  </changeSet>
-  
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-3">
-    <addNotNullConstraint columnDataType="datetime"
-      columnName="start_time" tableName="calendar_event" />
-  </changeSet>
-  
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-4">
-    <addNotNullConstraint columnDataType="bit"
-      columnName="admin" tableName="user_data" />
-  </changeSet>
-  
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-5">
     <createIndex indexName="FKED904B192B4AEB6D" tableName="project">
       <column name="status_id" />
     </createIndex>
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-6">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-3">
     <createIndex indexName="FKED904B198466B320" tableName="project">
       <column name="organization_id" />
     </createIndex>
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-7">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-4">
     <createIndex indexName="FKED904B19F1C1460" tableName="project">
       <column name="person_id" />
     </createIndex>
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-8">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-5">
     <createIndex indexName="number_unique_1334089339833"
       tableName="project" unique="true">
       <column name="number" />
     </createIndex>
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-9">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-6">
     <addForeignKeyConstraint baseColumnNames="organization_id"
       baseTableName="project" constraintName="FKED904B198466B320"
       deferrable="false" initiallyDeferred="false"
@@ -108,7 +95,7 @@
       referencesUniqueColumn="false" />
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-10">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-7">
     <addForeignKeyConstraint baseColumnNames="person_id"
       baseTableName="project" constraintName="FKED904B19F1C1460"
       deferrable="false" initiallyDeferred="false"
@@ -116,7 +103,7 @@
       referencesUniqueColumn="false" />
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-11">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-8">
     <addForeignKeyConstraint baseColumnNames="status_id"
       baseTableName="project" constraintName="FKED904B192B4AEB6D"
       deferrable="false" initiallyDeferred="false"
@@ -124,7 +111,7 @@
       referencesUniqueColumn="false" />
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-12">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-9">
     <insert tableName="sel_value">
       <column name="id" valueNumeric="2600"/>
       <column name="version" valueNumeric="0"/>
@@ -169,7 +156,7 @@
     </insert>
   </changeSet>
   
-  <changeSet author="d.ellermann@amc-world.de" id="20120410-13">
+  <changeSet author="d.ellermann@amc-world.de" id="20120410-10">
     <insert tableName="seq_number">
       <column name="version" valueNumeric="0"/>
       <column name="controller_name" value="project"/>

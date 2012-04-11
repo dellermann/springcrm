@@ -1425,18 +1425,6 @@ form .invoicing-items-pos {
 }
 
 /* login page */
-#login {
-  display: table;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-#login body {
-  display: table-cell;
-  padding: 0;
-  vertical-align: middle;
-}
 #login aside {
   background: #EEE;
   border-bottom: .1em solid #6C8F18;
@@ -1450,7 +1438,7 @@ form .invoicing-items-pos {
 }
 #login #outer-container {
   display: table;
-  margin: 0 auto;
+  margin: 10em auto 0;
 }
 #login #inner-container {
   display: table-cell;
@@ -1675,6 +1663,61 @@ form .invoicing-items-pos {
 }
 #reminder-selectors option {
   padding-right: 4em;
+}
+
+/* projects */
+.project-phases {
+  display: table;
+  width: 100%;
+}
+.project-phases section {
+  display: table-row;
+}
+.project-phases section:last-child {
+  height: 5em;
+}
+.project-phases section:last-child div {
+  width: 0; 
+  height: 0;
+  border-top: 5em solid #6C8F18;
+  border-left: 7em solid transparent; 
+  border-right: 7em solid transparent; 
+}
+.project-phases h5 {
+  background: #6C8F18;
+  border-bottom: .1em solid white;
+  color: white;
+  cursor: pointer;
+  display: table-cell;
+  padding: 2em;
+  width: 10em;
+}
+.project-phases .current h5 {
+  background: #2F4E10;
+}
+.project-phase-content {
+  border-bottom: .1em solid #BBB;
+  display: table-cell;
+  padding: 1em 0 1em 2em;
+}
+.project-phase-actions {
+  margin: 0 0 1em;
+  padding-bottom: 1em;
+  text-align: right;
+}
+.project-phase-actions li {
+  cursor: pointer;
+  display: inline;
+}
+#create-project-item-dialog ul {
+  margin: 1em 0;
+}
+#create-project-item-dialog li {
+  list-style: none;
+  margin-bottom: .2em;
+}
+#create-project-item-dialog li a {
+  display: block;
 }
 
 /* reports */
