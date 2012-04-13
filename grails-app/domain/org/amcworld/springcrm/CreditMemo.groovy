@@ -67,7 +67,6 @@ class CreditMemo extends InvoicingTransaction {
 
 	CreditMemo(Invoice i) {
 		super(i)
-        subject = ''
         headerText = ''
         footerText = ''
 		invoice = i
@@ -75,7 +74,6 @@ class CreditMemo extends InvoicingTransaction {
 
 	CreditMemo(Dunning d) {
 		super(d)
-        subject = ''
         headerText = ''
         footerText = ''
 		dunning = d
