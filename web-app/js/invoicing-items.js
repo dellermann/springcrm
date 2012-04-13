@@ -328,15 +328,15 @@
         },
 
         _getInputIndexAndName: function (input) {
-            var parts;
+            var parts,
+                res = null;
 
             parts = input.name.match(this.inputRegExp);
             if (parts) {
                 parts.shift();
-                return parts;
-            } else {
-                return null;
+                res = parts;
             }
+            return res;
         },
 
         _getInputName: function (index, name, suffix) {
@@ -586,8 +586,7 @@
 
                 if (del) {
                     if ($name) {
-                        $name.parents("tr")
-                            .remove();
+                        this._removeRow($name.parents("tr"));
                     }
                     e = elems[name + "id"];
                     if (e) {
@@ -632,8 +631,10 @@
         _removeRow: function ($tr) {
             var $ = jQuery,
                 el,
+                fieldPrefix = this.options.fieldNamePrefix,
                 index = this._getRowIndex($tr),
-                pos = this._getRowPosition($tr);
+                pos = this._getRowPosition($tr),
+                re = this.inputRegExp;
 
             /* unset the ID value to cause Grails delete the record */
             el = this._getInput(index, "id");
@@ -641,11 +642,33 @@
                 el.value = "null";
             }
 
-            /* fix row position labels of all successing rows */
+            /* fix row position labels and input names of all successing rows */
             $tr.nextAll()
                     .each(function (i) {
-                        $(this).find("td:first-child")
-                            .text(String(pos + i + 1) + ".");
+                        var $this = $(this),
+                            idx = index,
+                            p = pos,
+                            prefix = fieldPrefix,
+                            regexp = re;
+
+                        $this.find("td:first-child")
+                            .text(String(p + i + 1) + ".");
+
+                        /*
+                         * input names are fixed after deleting new items, only
+                         */
+                        if (!el) {
+                            $this.find(":input")
+                                .each(function () {
+                                    var parts = this.name.match(regexp);
+
+                                    if (parts) {
+                                        this.name = prefix + "["
+                                            + String(idx + i) + "]."
+                                            + parts[2];
+                                    }
+                                });
+                        }
                     })
                 .end()
                 .remove();
