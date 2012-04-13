@@ -71,7 +71,6 @@ class Dunning extends InvoicingTransaction {
 	Dunning(Invoice i) {
 		super(i)
 		invoice = i
-        subject = ''
         headerText = ''
         footerText = ''
 	}
