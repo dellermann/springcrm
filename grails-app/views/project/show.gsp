@@ -117,18 +117,27 @@
           </div>
         </div>
       </div>
+      <g:set var="controllers" value="['quote', 'salesOrder', 'invoice', 'creditMemo', 'dunning', 'purchaseInvoice', 'calendarEvent', 'call', 'note']" />
       <div id="create-project-item-dialog" title="${message(code: 'project.item.create.title', default: 'Create project item')}" style="display: none;">
         <ul>
-          <li><g:link controller="quote" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="quote.label" default="Quote" /></g:link></li>
-          <li><g:link controller="salesOrder" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="salesOrder.label" default="Sales order" /></g:link></li>
-          <li><g:link controller="invoice" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="invoice.label" default="Invoice" /></g:link></li>
-          <li><g:link controller="creditMemo" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="creditMemo.label" default="Credit memo" /></g:link></li>
-          <li><g:link controller="dunning" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="dunning.label" default="Dunning" /></g:link></li>
-          <li><g:link controller="purchaseInvoice" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="purchaseInvoice.label" default="Purchase invoice" /></g:link></li>
-          <li><g:link controller="calendarEvent" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="calendarEvent.label" default="Calendar event" /></g:link></li>
-          <li><g:link controller="call" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="call.label" default="Phone call" /></g:link></li>
-          <li><g:link controller="note" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="note.label" default="Note" /></g:link></li>
+          <g:each var="controller" in="${controllers}">
+          <li><g:link controller="${controller}" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="${controller}.label" default="${controller}" /></g:link></li>
+          </g:each>
         </ul>
+      </div>
+      <div id="select-project-item-dialog" title="${message(code: 'project.item.select.title', default: 'Select project item')}" style="display: none;">
+        <div class="row">
+          <div class="label"><label for="select-project-item-type-selector"><g:message code="project.item.select.type.label" default="Type" /></label></div>
+          <div class="field">
+            <select id="select-project-item-type-selector">
+            <g:each in="${controllers}">
+              <option value="${createLink(controller: it, action: 'list')}" data-controller="${it}"><g:message code="${it}.plural" default="${it}" /></option>
+            </g:each>
+            </select>
+          </div>
+        </div>
+        <h2></h2>
+        <div id="select-project-item-list"></div>
       </div>
     </div>
 

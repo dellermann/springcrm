@@ -1780,6 +1780,15 @@ form .invoicing-items-pos {
 #create-project-item-dialog li a {
   display: block;
 }
+#select-project-item-dialog .label {
+  width: auto;
+}
+#select-project-item-list {
+  margin-top: 1em;
+}
+#select-project-item-list .content-table a {
+  color: #567B0F;
+}
 
 /* reports */
 .report tfoot td {
