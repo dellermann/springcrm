@@ -44,9 +44,9 @@
           <td><g:link action="show" id="${creditMemoInstance.id}">${fieldValue(bean: creditMemoInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${creditMemoInstance.organization?.id}">${fieldValue(bean: creditMemoInstance, field: "organization")}</g:link></td>
           <td>${fieldValue(bean: creditMemoInstance, field: "stage")}</td>
-          <td style="text-align: center;"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
-          <td style="text-align: center;"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>
-          <td style="text-align: right;"><g:formatCurrency number="${creditMemoInstance?.total}" /></td>
+          <td class="align-center"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
+          <td class="align-center"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>
+          <td class="align-right"><g:formatCurrency number="${creditMemoInstance?.total}" /></td>
           <td>
             <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
             <g:link action="edit" id="${creditMemoInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

@@ -19,9 +19,9 @@
       <td><g:link controller="quote" action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
       <td><g:link controller="quote" action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
       <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
-      <td style="text-align: center;"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
-      <td style="text-align: center;"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
-      <td style="text-align: right;"><g:formatCurrency number="${quoteInstance?.total}" /></td>
+      <td class="align-center"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
+      <td class="align-center"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
+      <td class="align-right"><g:formatCurrency number="${quoteInstance?.total}" /></td>
       <td>
         <g:link controller="quote" action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
         <g:link controller="quote" action="delete" id="${quoteInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

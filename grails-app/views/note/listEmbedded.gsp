@@ -13,7 +13,7 @@
   <g:each in="${noteInstanceList}" status="i" var="noteInstance">
     <tr>
       <td><input type="checkbox" id="note-multop-${noteInstance.id}" class="multop-sel-item" /></td>
-      <td style="text-align: center;"><g:link controller="note" action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
+      <td class="align-center"><g:link controller="note" action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
       <td><g:link controller="note" action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "title")}</g:link></td>
       <td><g:link controller="person" action="show" id="${noteInstance.person?.id}">${fieldValue(bean: noteInstance, field: "person")}</g:link></td>
       <td>

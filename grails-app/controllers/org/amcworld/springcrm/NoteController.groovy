@@ -27,7 +27,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code NoteController} contains actions which manage notes.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class NoteController {
 
@@ -49,12 +49,25 @@ class NoteController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
 		if (params.letter) {
 			int num = Note.countByTitleLessThan(params.letter)
 			params.sort = 'title'
 			params.offset = Math.floor(num / params.max) * params.max
+            params.search = null
 		}
-        return [noteInstanceList: Note.list(params), noteInstanceTotal: Note.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = Note.findAllByTitleLike(searchFilter, params)
+            count = Note.countByTitleLike(searchFilter)
+        } else {
+            list = Note.list(params)
+            count = Note.count()
+        }
+
+        return [noteInstanceList: list, noteInstanceTotal: count]
     }
 
 	def listEmbedded() {

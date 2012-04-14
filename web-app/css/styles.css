@@ -520,6 +520,17 @@ footer {
  * Content elements
  *
  *---------------------------------*/
+
+/* general styles */
+.align-left {
+  text-align: left;
+}
+.align-center {
+  text-align: center;
+}
+.align-right {
+  text-align: right;
+}
  
 /* headers */
 .header-with-menu {
@@ -1779,6 +1790,17 @@ form .invoicing-items-pos {
 }
 #create-project-item-dialog li a {
   display: block;
+}
+#select-project-item-dialog .dialog-toolbar {
+  display: table;
+  margin-top: .5em;
+  width: 100%;
+}
+#select-project-item-dialog .search-field {
+  text-align: center;
+}
+#select-project-item-dialog .submit-field {
+  text-align: right;
 }
 #select-project-item-dialog .label {
   width: auto;

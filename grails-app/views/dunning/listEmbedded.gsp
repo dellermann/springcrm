@@ -19,9 +19,9 @@
       <td><g:link controller="dunning" action="show" id="${dunningInstance.id}">${fieldValue(bean: dunningInstance, field: "fullNumber")}</g:link></td>
       <td><g:link controller="dunning" action="show" id="${dunningInstance.id}">${fieldValue(bean: dunningInstance, field: "subject")}</g:link></td>
       <td class="payment-state-${dunningInstance?.paymentStateColor}">${fieldValue(bean: dunningInstance, field: "stage")}</td>
-      <td style="text-align: center;"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
-      <td style="text-align: center;"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-      <td style="text-align: right;"><g:formatCurrency number="${dunningInstance?.total}" /></td>
+      <td class="align-center"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
+      <td class="align-center"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
+      <td class="align-right"><g:formatCurrency number="${dunningInstance?.total}" /></td>
       <td>
         <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
         <g:link controller="dunning" action="edit" id="${dunningInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

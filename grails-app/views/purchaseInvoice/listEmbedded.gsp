@@ -19,9 +19,9 @@
       <td><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</g:link></td>
       <td><g:link controller="purchaseInvoice" action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</g:link></td>
       <td>${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
-      <td style="text-align: center;"><g:formatDate date="${purchaseInvoiceInstance?.docDate}" formatName="default.format.date" /></td>
-      <td style="text-align: center;"><g:formatDate date="${purchaseInvoiceInstance?.dueDate}" formatName="default.format.date" /></td>
-      <td style="text-align: right;"><g:formatCurrency number="${purchaseInvoiceInstance.total}" /></td>
+      <td class="align-center"><g:formatDate date="${purchaseInvoiceInstance?.docDate}" formatName="default.format.date" /></td>
+      <td class="align-center"><g:formatDate date="${purchaseInvoiceInstance?.dueDate}" formatName="default.format.date" /></td>
+      <td class="align-right"><g:formatCurrency number="${purchaseInvoiceInstance.total}" /></td>
       <td>
         <g:link controller="purchaseInvoice" action="edit" id="${purchaseInvoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
         <g:link controller="purchaseInvoice" action="delete" id="${purchaseInvoiceInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

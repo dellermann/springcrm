@@ -27,12 +27,12 @@
   <g:each in="${serviceInstanceList}" status="i" var="serviceInstance">
     <tr>
       <!--<td><input type="checkbox" id="service-multop-${serviceInstance.id}" class="multop-sel-item" /></td>-->
-      <td style="text-align: center;"><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "fullNumber")}</g:link></td>
+      <td class="align-center"><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "fullNumber")}</g:link></td>
       <td><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "name")}</g:link></td>
       <td>${fieldValue(bean: serviceInstance, field: "category")}</td>
-      <td style="text-align: right;">${fieldValue(bean: serviceInstance, field: "quantity")}</td>
+      <td class="align-right">${fieldValue(bean: serviceInstance, field: "quantity")}</td>
       <td>${fieldValue(bean: serviceInstance, field: "unit")}</td>
-      <td style="text-align: right;">${formatCurrency(number: serviceInstance?.unitPrice)}</td>
+      <td class="align-right">${formatCurrency(number: serviceInstance?.unitPrice)}</td>
     </tr>
   </g:each>
   </tbody>

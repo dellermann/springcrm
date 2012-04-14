@@ -16,12 +16,12 @@
   <g:each in="${projectInstanceList}" status="i" var="projectInstance">
     <tr>
       <td><input type="checkbox" id="project-multop-${projectInstance.id}" class="multop-sel-item" /></td>
-      <td style="text-align: center;"><g:link controller="project" action="show" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "fullNumber")}</g:link></td>
+      <td class="align-center"><g:link controller="project" action="show" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "fullNumber")}</g:link></td>
       <td><g:link controller="project" action="show" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "title")}</g:link></td>
       <g:ifModuleAllowed modules="contact"><td><g:link controller="organization" action="show" id="${projectInstance.organization?.id}">${fieldValue(bean: projectInstance, field: "organization")}</g:link></td></g:ifModuleAllowed>
       <g:ifModuleAllowed modules="contact"><td><g:link controller="person" action="show" id="${projectInstance.person?.id}">${fieldValue(bean: projectInstance, field: "person")}</g:link></td></g:ifModuleAllowed>
       <td><g:message code="project.phase.${fieldValue(bean: projectInstance, field: "phase")}" default="${projectInstance.phase.toString()}" /></td>
-      <td style="text-align: center;">${fieldValue(bean: projectInstance, field: "status")}</td>
+      <td class="align-center">${fieldValue(bean: projectInstance, field: "status")}</td>
       <td>
         <g:link controller="project" action="edit" id="${projectInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
         <g:link controller="project" action="delete" id="${projectInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

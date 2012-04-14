@@ -29,7 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * orders.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class SalesOrderController {
 
@@ -52,7 +52,18 @@ class SalesOrderController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [salesOrderInstanceList: SalesOrder.list(params), salesOrderInstanceTotal: SalesOrder.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = SalesOrder.findAllBySubjectLike(searchFilter, params)
+            count = SalesOrder.countBySubjectLike(searchFilter)
+        } else {
+            list = SalesOrder.list(params)
+            count = SalesOrder.count()
+        }
+
+        return [salesOrderInstanceList: list, salesOrderInstanceTotal: count]
     }
 
 	def listEmbedded() {

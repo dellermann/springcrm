@@ -28,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class InvoiceController {
 
@@ -51,7 +51,18 @@ class InvoiceController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [invoiceInstanceList: Invoice.list(params), invoiceInstanceTotal: Invoice.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = Invoice.findAllBySubjectLike(searchFilter, params)
+            count = Invoice.countBySubjectLike(searchFilter)
+        } else {
+            list = Invoice.list(params)
+            count = Invoice.count()
+        }
+
+        return [invoiceInstanceList: list, invoiceInstanceTotal: count]
     }
 
 	def listEmbedded() {

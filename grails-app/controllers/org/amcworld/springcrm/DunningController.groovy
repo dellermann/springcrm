@@ -28,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code DunningController} contains actions which manage dunnings.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class DunningController {
 
@@ -51,7 +51,18 @@ class DunningController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [dunningInstanceList: Dunning.list(params), dunningInstanceTotal: Dunning.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = Dunning.findAllBySubjectLike(searchFilter, params)
+            count = Dunning.countBySubjectLike(searchFilter)
+        } else {
+            list = Dunning.list(params)
+            count = Dunning.count()
+        }
+
+        return [dunningInstanceList: list, dunningInstanceTotal: count]
     }
 
 	def listEmbedded() {

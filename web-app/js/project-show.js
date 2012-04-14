@@ -28,9 +28,12 @@
         onChangeTopCheckbox = null,
         onChangeType = null,
         onClick,
+        onClickAddBtn = null,
+        onClickLink,
         onClickSelectItem = null,
         onLoadedList = null,
         onOpenSelectDlg = null,
+        onSubmittedSelectedItems = null,
         submitSelectedItems;
 
     changePhase = function (phaseName) {
@@ -43,7 +46,9 @@
     };
 
     loadList = function (url) {
-        $("#select-project-item-list").load(url + " #content", onLoadedList);
+        $("#select-project-item-list").load(
+                url, { view: 'selector' }, onLoadedList
+            );
     };
 
     onChangeTopCheckbox = function () {
@@ -97,61 +102,78 @@
         return res;
     };
 
+    onClickAddBtn = function () {
+        var $ = jQuery,
+            ids = [];
+
+        $("#select-project-item-list tbody :checked").each(function () {
+                ids.push($(this).parents("tr").data("item-id"));
+            });
+        submitSelectedItems(ids);
+        $("#select-project-item-dialog").dialog("close");
+        return false;
+    };
+
+    onClickLink = function () {
+        loadList($(this).attr("href"));
+        return false;
+    };
+
     onClickSelectItem = function () {
         var itemId;
 
         itemId = $(this).parents("tr")
-            .find("td:first-child input:checkbox")
-            .data("id");
+            .data("item-id");
         submitSelectedItems([ itemId ]);
         $("#select-project-item-dialog").dialog("close");
         return false;
     };
 
     onLoadedList = function () {
-        var $ = jQuery,
-            $a,
-            $list = $("#select-project-item-list"),
-            $table = $list.find(".content-table");
+        var $ = jQuery;
 
-        $table.find("td:last-child")
-                .remove()
+        $("#select-project-item-list")
+            .find(".content-table th input:checkbox")
+                .change(onChangeTopCheckbox)
             .end()
-            .find("th:last-child")
-                .remove()
-            .end()
-            .find("tbody a")
+            .find("a")
                 .each(function () {
                     var $this = $(this);
 
-                    $this.replaceWith($this.html());
-                })
-            .end()
-            .find("th input:checkbox")
-                .change(onChangeTopCheckbox);
-        $list.find("a")
-                .click(function () {
-                    loadList($(this).attr("href"));
-                    return false;
+                    if ($this.is(".content-table tbody a")) {
+                        $this.click(onClickSelectItem);
+                    } else {
+                        $this.click(onClickLink);
+                    }
                 });
-        $a = $('<a href="#"/>')
-            .click(onClickSelectItem);
-        $table.find("tbody td:nth-child(2)")
-            .wrapInner($a);
     };
 
     onOpenSelectDlg = function () {
         $("#select-project-item-type-selector").change(onChangeType)
             .trigger("change");
+        $("#select-project-item-add-btn").click(onClickAddBtn);
+    };
+
+    onSubmittedSelectedItems = function () {
+        window.location.reload(true);
     };
 
     submitSelectedItems = function (ids) {
-        var controller,
-            phaseName = $("#select-project-item-dialog").data("phase");
+        var $ = jQuery,
+            $dialog = $("#select-project-item-dialog"),
+            controller,
+            phaseName = $dialog.data("phase"),
+            url = $dialog.data("submit-url");
 
         controller = $("#select-project-item-type-selector :selected")
             .data("controller");
-        alert("Selected " + phaseName + "/" + controller + "/" + ids);
+        $.post(
+                url, {
+                    projectPhase: phaseName, controllerName: controller,
+                    itemIds: ids.join()
+                },
+                onSubmittedSelectedItems
+            );
     };
 
     $("#project-phases").click(onClick);

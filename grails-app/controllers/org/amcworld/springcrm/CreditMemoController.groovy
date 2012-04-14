@@ -29,7 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * memos.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class CreditMemoController {
 
@@ -52,7 +52,18 @@ class CreditMemoController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [creditMemoInstanceList: CreditMemo.list(params), creditMemoInstanceTotal: CreditMemo.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = CreditMemo.findAllBySubjectLike(searchFilter, params)
+            count = CreditMemo.countBySubjectLike(searchFilter)
+        } else {
+            list = CreditMemo.list(params)
+            count = CreditMemo.count()
+        }
+
+        return [creditMemoInstanceList: list, creditMemoInstanceTotal: count]
     }
 
 	def listEmbedded() {

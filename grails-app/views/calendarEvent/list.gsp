@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.CalendarEvent" %>
 <html>
 <head>
@@ -17,17 +16,17 @@
       var location = window.location;
 
       $(".fc-button-agendaDay").click(function () {
-              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaDay'])}";
+              location.href = "${createLink(controller: 'calendarEvent', action: 'calendar', params: [view: 'agendaDay'])}";
           })
           .find(".fc-button-content")
               .text($L("calendarEvent.button.text").day);
       $(".fc-button-agendaWeek").click(function () {
-              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'agendaWeek'])}";
+              location.href = "${createLink(controller: 'calendarEvent', action: 'calendar', params: [view: 'agendaWeek'])}";
           })
           .find(".fc-button-content")
               .text($L("calendarEvent.button.text").week);
       $(".fc-button-month").click(function () {
-              location.href = "${createLink(controller:'calendarEvent', action:'calendar', params:[view:'month'])}";
+              location.href = "${createLink(controller: 'calendarEvent', action: 'calendar', params: [view: 'month'])}";
           })
           .find(".fc-button-content")
               .text($L("calendarEvent.button.text").month);
@@ -52,7 +51,7 @@
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <div class="fc-header" style="margin-bottom: 1em; text-align: right;">
-      <span class="fc-button fc-button-agendaDay ui-state-default ui-corner-left"><span class="fc-button-inner"><span class="fc-button-content">day</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-agendaWeek ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">week</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-month ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">month</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-list ui-state-default ui-corner-right ui-state-active"><span class="fc-button-inner"><span class="fc-button-content">Liste</span><span class="fc-button-effect"><span></span></span></span></span>
+      <span class="fc-button fc-button-agendaDay ui-state-default ui-corner-left"><span class="fc-button-inner"><span class="fc-button-content">day</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-agendaWeek ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">week</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-month ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">month</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-list ui-state-default ui-corner-right ui-state-active"><span class="fc-button-inner"><span class="fc-button-content"><g:message code="calendarEvent.button.text.list" default="list" /></span><span class="fc-button-effect"><span></span></span></span></span>
     </div>
     <g:if test="${calendarEventInstanceList}">
     <table class="content-table">
@@ -73,8 +72,8 @@
         <tr>
           <td><input type="checkbox" id="calendarEvent-multop-${calendarEventInstance.id}" class="multop-sel-item" /></td>
           <td><g:link action="show" id="${calendarEventInstance.id}">${fieldValue(bean: calendarEventInstance, field: "subject")}</g:link></td>
-          <td style="text-align: center;"><g:formatDate date="${calendarEventInstance.start}" /></td>
-          <td style="text-align: center;"><g:formatDate date="${calendarEventInstance.end}" /></td>
+          <td class="align-center"><g:formatDate date="${calendarEventInstance.start}" /></td>
+          <td class="align-center"><g:formatDate date="${calendarEventInstance.end}" /></td>
           <td><g:message message="${calendarEventInstance.recurrence}" /></td>
           <g:ifModuleAllowed modules="contact"><td><g:link controller="organization" action="show" id="${calendarEventInstance.organization?.id}">${fieldValue(bean: calendarEventInstance, field: "organization")}</g:link></td></g:ifModuleAllowed>
           <td>${fieldValue(bean: calendarEventInstance, field: "location")}</td>

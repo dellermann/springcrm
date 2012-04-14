@@ -29,7 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * purchase invoices.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class PurchaseInvoiceController {
 
@@ -52,7 +52,18 @@ class PurchaseInvoiceController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [purchaseInvoiceInstanceList: PurchaseInvoice.list(params), purchaseInvoiceInstanceTotal: PurchaseInvoice.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = PurchaseInvoice.findAllBySubjectLike(searchFilter, params)
+            count = PurchaseInvoice.countBySubjectLike(searchFilter)
+        } else {
+            list = PurchaseInvoice.list(params)
+            count = PurchaseInvoice.count()
+        }
+
+        return [purchaseInvoiceInstanceList: list, purchaseInvoiceInstanceTotal: count]
     }
 
 	def listEmbedded() {

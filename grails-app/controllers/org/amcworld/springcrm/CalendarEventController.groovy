@@ -33,7 +33,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * calendar events and reminders.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class CalendarEventController {
 
@@ -50,7 +50,18 @@ class CalendarEventController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [calendarEventInstanceList: CalendarEvent.list(params), calendarEventInstanceTotal: CalendarEvent.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = CalendarEvent.findAllBySubjectLike(searchFilter, params)
+            count = CalendarEvent.countBySubjectLike(searchFilter)
+        } else {
+            list = CalendarEvent.list(params)
+            count = CalendarEvent.count()
+        }
+
+        return [calendarEventInstanceList: list, calendarEventInstanceTotal: count]
     }
 
 	def calendar() {}

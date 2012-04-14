@@ -28,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class QuoteController {
 
@@ -51,7 +51,18 @@ class QuoteController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [quoteInstanceList: Quote.list(params), quoteInstanceTotal: Quote.count()]
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = Quote.findAllBySubjectLike(searchFilter, params)
+            count = Quote.countBySubjectLike(searchFilter)
+        } else {
+            list = Quote.list(params)
+            count = Quote.count()
+        }
+
+        return [quoteInstanceList: list, quoteInstanceTotal: count]
     }
 
 	def listEmbedded() {

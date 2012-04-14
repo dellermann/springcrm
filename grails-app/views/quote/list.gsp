@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Quote" %>
 <html>
 <head>
@@ -39,15 +38,15 @@
       </thead>
       <tbody>
       <g:each in="${quoteInstanceList}" status="i" var="quoteInstance">
-        <tr>
+        <tr data-item-id="${quoteInstance.id}">
           <td><input type="checkbox" id="quote-multop-${quoteInstance.id}" class="multop-sel-item" /></td>
           <td><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
           <td><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${quoteInstance.organization?.id}">${fieldValue(bean: quoteInstance, field: "organization")}</g:link></td>
           <td>${fieldValue(bean: quoteInstance, field: "stage")}</td>
-          <td style="text-align: center;"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
-          <td style="text-align: center;"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
-          <td style="text-align: right;"><g:formatCurrency number="${quoteInstance?.total}" /></td>
+          <td class="align-center"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
+          <td class="align-center"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
+          <td class="align-right"><g:formatCurrency number="${quoteInstance?.total}" /></td>
           <td>
             <g:link action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${quoteInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

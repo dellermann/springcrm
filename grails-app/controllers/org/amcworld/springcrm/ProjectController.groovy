@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -208,5 +209,29 @@ class ProjectController {
             projectInstance.phase = ProjectPhase.valueOf(params.phase)
             projectInstance.save(flush: true)
         }
+    }
+
+    def addSelectedItems() {
+        def project = Project.get(params.long('project'))
+        if (project) {
+            ProjectPhase projectPhase = ProjectPhase.valueOf(params.projectPhase)
+            String controllerName = params.controllerName
+            GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
+                'Domain', controllerName
+            )
+            params.itemIds.split(',').each {
+                long itemId = it as long
+                def itemInstance = cls.clazz.'get'(itemId)
+                if (itemInstance) {
+                    def projectItem = new ProjectItem(
+                        project: project, phase: projectPhase,
+                        controller: controllerName, itemId: itemId,
+                        title: itemInstance.toString()
+                    )
+                    projectItem.save(flush: true)
+                }
+            }
+        }
+        render(status: 200)
     }
 }

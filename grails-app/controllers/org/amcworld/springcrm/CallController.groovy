@@ -28,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * associated to an organization or person.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class CallController {
 
@@ -45,12 +45,25 @@ class CallController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.letter) {
-			int num = Call.countBySubjectLessThan(params.letter)
-			params.sort = 'subject'
-			params.offset = (Math.floor(num / params.max) * params.max) as Integer
-		}
-        return [callInstanceList: Call.list(params), callInstanceTotal: Call.count()]
+
+        if (params.letter) {
+            int num = Call.countBySubjectLessThan(params.letter)
+            params.sort = 'subject'
+            params.offset = (Math.floor(num / params.max) * params.max) as Integer
+            params.search = null
+        }
+
+        def list, count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = Call.findAllBySubjectLike(searchFilter, params)
+            count = Call.countBySubjectLike(searchFilter)
+        } else {
+            list = Call.list(params)
+            count = Call.count()
+        }
+
+        return [callInstanceList: list, callInstanceTotal: count]
     }
 
 	def listEmbedded() {

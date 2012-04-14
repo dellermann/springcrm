@@ -44,9 +44,9 @@
           <td><g:link action="show" id="${invoiceInstance.id}">${fieldValue(bean: invoiceInstance, field: "subject")}</g:link></td>
           <td><g:link controller="organization" action="show" id="${invoiceInstance.organization?.id}">${fieldValue(bean: invoiceInstance, field: "organization")}</g:link></td>
           <td class="payment-state-${invoiceInstance?.paymentStateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
-          <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
-          <td style="text-align: center;"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-          <td style="text-align: right;"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
+          <td class="align-center"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
+          <td class="align-center"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
+          <td class="align-right"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
           <td>
             <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
             <g:link action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

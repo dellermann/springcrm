@@ -125,15 +125,24 @@
           </g:each>
         </ul>
       </div>
-      <div id="select-project-item-dialog" title="${message(code: 'project.item.select.title', default: 'Select project item')}" style="display: none;">
-        <div class="row">
-          <div class="label"><label for="select-project-item-type-selector"><g:message code="project.item.select.type.label" default="Type" /></label></div>
-          <div class="field">
-            <select id="select-project-item-type-selector">
-            <g:each in="${controllers}">
-              <option value="${createLink(controller: it, action: 'list')}" data-controller="${it}"><g:message code="${it}.plural" default="${it}" /></option>
-            </g:each>
-            </select>
+      <div id="select-project-item-dialog" title="${message(code: 'project.item.select.title', default: 'Select project item')}" style="display: none;" data-submit-url="${createLink(action: 'addSelectedItems', params: [project: projectInstance.id])}">
+        <div class="dialog-toolbar">
+          <div class="row">
+            <div class="label"><label for="select-project-item-type-selector"><g:message code="project.item.select.type.label" default="Type" /></label></div>
+            <div class="field">
+              <select id="select-project-item-type-selector">
+              <g:each in="${controllers}">
+                <option value="${createLink(controller: it, action: 'list')}" data-controller="${it}"><g:message code="${it}.plural" default="${it}" /></option>
+              </g:each>
+              </select>
+            </div>
+            <div class="field search-field selector-toolbar-search">
+              <input type="text" id="selector-search" />
+              <button type="button" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
+            </div>
+            <div class="field submit-field">
+              <a id="select-project-item-add-btn" href="#" class="green button small"><g:message code="project.item.select.add.btn" default="Add selected" /></a>            
+            </div>
           </div>
         </div>
         <h2></h2>

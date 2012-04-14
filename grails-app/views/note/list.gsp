@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Note" %>
 <html>
 <head>
@@ -39,7 +38,7 @@
       <g:each in="${noteInstanceList}" status="i" var="noteInstance">
         <tr>
           <td><input type="checkbox" id="note-multop-${noteInstance.id}" class="multop-sel-item" /></td>
-          <td style="text-align: center;"><g:link action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
+          <td class="align-center"><g:link action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "fullNumber")}</g:link></td>
           <td><g:link action="show" id="${noteInstance.id}">${fieldValue(bean: noteInstance, field: "title")}</g:link></td>
           <g:ifModuleAllowed modules="contact"><td><g:link controller="organization" action="show" id="${noteInstance.organization?.id}">${fieldValue(bean: noteInstance, field: "organization")}</g:link></td></g:ifModuleAllowed>
           <g:ifModuleAllowed modules="contact"><td><g:link controller="person" action="show" id="${noteInstance.person?.id}">${fieldValue(bean: noteInstance, field: "person")}</g:link></td></g:ifModuleAllowed>

@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Product" %>
 <html>
 <head>
@@ -41,12 +40,12 @@
       <g:each in="${productInstanceList}" status="i" var="productInstance">
         <tr>
           <td><input type="checkbox" id="product-multop-${productInstance.id}" class="multop-sel-item" /></td>
-          <td style="text-align: center;"><g:link action="show" id="${productInstance.id}">${fieldValue(bean: productInstance, field: "fullNumber")}</g:link></td>
+          <td class="align-center"><g:link action="show" id="${productInstance.id}">${fieldValue(bean: productInstance, field: "fullNumber")}</g:link></td>
           <td><g:link action="show" id="${productInstance.id}">${fieldValue(bean: productInstance, field: "name")}</g:link></td>
           <td>${fieldValue(bean: productInstance, field: "category")}</td>
-          <td style="text-align: right;">${fieldValue(bean: productInstance, field: "quantity")}</td>
+          <td class="align-right">${fieldValue(bean: productInstance, field: "quantity")}</td>
           <td>${fieldValue(bean: productInstance, field: "unit")}</td>
-          <td style="text-align: right;">${formatCurrency(number: productInstance?.unitPrice)}</td>
+          <td class="align-right">${formatCurrency(number: productInstance?.unitPrice)}</td>
           <td>
             <g:link action="edit" id="${productInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${productInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
