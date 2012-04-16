@@ -378,7 +378,7 @@ class InvoiceController {
             client: Client.loadAsMap()
 		]
 		String xml = (data as XML).toString()
-//		println xml
+		println xml
 
 		GString fileName =
             "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"

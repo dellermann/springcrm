@@ -1678,8 +1678,8 @@ form .invoicing-items-pos {
   background: rgba(255, 190, 28, .6);
 }
 .payment-state-red {
-  background: rgb(255, 93, 2);
-  background: rgba(255, 93, 2, .6);
+  background: rgb(255, 30, 2);
+  background: rgba(255, 30, 2, .6);
 }
 .payment-state-purple {
   background: rgb(145, 0, 245);
@@ -1731,6 +1731,42 @@ form .invoicing-items-pos {
 }
 
 /* projects */
+.project-status-2600 {
+  background: rgb(183, 255, 29);
+  background: rgba(183, 255, 29, .6);
+}
+.project-status-2601 {
+  background: rgb(255, 30, 2);
+  background: rgba(255, 30, 2, .6);
+}
+.project-status-2602 {
+  background: rgb(255, 238, 28);
+  background: rgba(255, 238, 28, .6);
+}
+.project-status-2603 {
+  background: rgb(255, 190, 28);
+  background: rgba(255, 190, 28, .6);
+}
+.project-status-2604 {
+  background: rgb(128, 128, 128);
+  background: rgba(128, 128, 128, .6);
+}
+.project-status-2605 {
+  background: rgb(0, 7, 24);
+  background: rgba(0, 7, 24, .6);
+  color: white;
+}
+#project-status {
+  min-width: 15em;
+}
+#project-status-indicator {
+  border: .1em solid #444;
+  font-size: 131%;
+  font-weight: bold;
+  padding: 3em 1em;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+}
 #project-phases {
   display: table;
   width: 100%;

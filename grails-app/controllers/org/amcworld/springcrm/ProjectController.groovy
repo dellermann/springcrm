@@ -211,6 +211,17 @@ class ProjectController {
         }
     }
 
+    def setStatus() {
+        def projectInstance = Project.get(params.id)
+        if (projectInstance) {
+            def status = ProjectStatus.get(params.status)
+            if (status) {
+                projectInstance.status = status
+                projectInstance.save(flush: true)
+            }
+        }
+    }
+
     def addSelectedItems() {
         def project = Project.get(params.long('project'))
         if (project) {

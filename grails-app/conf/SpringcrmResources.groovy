@@ -88,6 +88,13 @@ modules = {
         resource '/js/invoicing-transaction-form.js'
     }
 
+    'jquery-ui-selectmenu' {
+        dependsOn 'jquery-ui'
+
+        resource '/css/jquery/default/jquery.ui.selectmenu.css'
+        resource '/js/jquery.ui.selectmenu.js'
+    }
+
     noteForm {
         dependsOn 'core, tinyMce'
 
@@ -126,7 +133,7 @@ modules = {
     }
 
     projectShow {
-        dependsOn 'core'
+        dependsOn 'core, jquery-ui-selectmenu'
 
         resource '/js/project-show.js'
     }

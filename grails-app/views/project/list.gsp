@@ -44,7 +44,7 @@
           <g:ifModuleAllowed modules="contact"><td><g:link controller="organization" action="show" id="${projectInstance.organization?.id}">${fieldValue(bean: projectInstance, field: "organization")}</g:link></td></g:ifModuleAllowed>
           <g:ifModuleAllowed modules="contact"><td><g:link controller="person" action="show" id="${projectInstance.person?.id}">${fieldValue(bean: projectInstance, field: "person")}</g:link></td></g:ifModuleAllowed>
           <td><g:message code="project.phase.${fieldValue(bean: projectInstance, field: "phase")}" default="${projectInstance.phase.toString()}" /></td>
-          <td class="align-center">${fieldValue(bean: projectInstance, field: "status")}</td>
+          <td class="align-center project-status-${projectInstance.status.id}">${fieldValue(bean: projectInstance, field: "status")}</td>
           <td>
             <g:link action="edit" id="${projectInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${projectInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

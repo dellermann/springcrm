@@ -33,6 +33,7 @@
         onClickSelectItem = null,
         onLoadedList = null,
         onOpenSelectDlg = null,
+        onSelectProjectStatus,
         onSubmittedSelectedItems = null,
         submitSelectedItems;
 
@@ -154,6 +155,16 @@
         $("#select-project-item-add-btn").click(onClickAddBtn);
     };
 
+    onSelectProjectStatus = function () {
+        var $this = $(this),
+            status = $this.val();
+
+        $.get($this.data("submit-url"), { status: status });
+        $("#project-status-indicator")
+            .attr("class", "project-status-" + status)
+            .text($this.find(":selected").text());
+    };
+
     onSubmittedSelectedItems = function () {
         window.location.reload(true);
     };
@@ -177,4 +188,10 @@
     };
 
     $("#project-phases").click(onClick);
+    $("#project-status").selectmenu({
+            dropdown: false,
+            menuWidth: 200,
+            select: onSelectProjectStatus,
+            style: "popup"
+        });
 }(window, jQuery));

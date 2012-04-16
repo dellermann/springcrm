@@ -31,6 +31,8 @@
       <li><a href="#" class="button medium white">[Action button]</a></li>
     </ul>
     -->
+    <h4><g:message code="project.status.label" default="Status" /></h4>
+    <div id="project-status-indicator" class="project-status-${projectInstance.status?.id}">${projectInstance.status?.name}</div>
   </aside>
   <section id="content" class="with-action-bar">
     <g:if test="${flash.message}">
@@ -59,7 +61,9 @@
             
             <div class="row">
               <div class="label"><g:message code="project.status.label" default="Status" /></div>
-              <div class="field">${projectInstance?.status?.encodeAsHTML()}</div>
+              <div class="field">
+                <g:select name="project-status" from="${org.amcworld.springcrm.ProjectStatus.list()}" optionKey="id" value="${projectInstance.status.id}" data-submit-url="${createLink(action: 'setStatus', id: projectInstance.id)}" />
+              </div>
             </div>
           </div>
           <div class="col col-r">

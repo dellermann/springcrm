@@ -56,9 +56,7 @@
   
   <xsl:template match="headerText">
     <xsl:if test="string() != ''">
-      <fo:block space-after="5mm">
-        Sehr geehrte Damen und Herren,
-      </fo:block>
+      <fo:block space-after="5mm">Sehr geehrte Damen und Herren,</fo:block>
       <fo:block space-after="5mm">
         <xsl:value-of select="."/>
       </fo:block>
@@ -68,6 +66,23 @@
   <xsl:template match="entry[@key='organization']">
     <fo:block font-size="9pt" space-after="2mm">
       <xsl:value-of select="name"/>
+    </fo:block>
+  </xsl:template>
+
+  <xsl:template match="entry[@key='person']">
+    <fo:block font-size="9pt" space-after="2mm">
+      <xsl:text>z. Hd. </xsl:text>
+      <xsl:choose>
+        <xsl:when test="salutation/@id = 1">
+          <xsl:text>Herrn </xsl:text>
+        </xsl:when>
+        <xsl:when test="salutation/@id = 2">
+          <xsl:text>Frau </xsl:text>
+        </xsl:when>
+      </xsl:choose>
+      <xsl:value-of select="firstName"/>
+      <xsl:text> </xsl:text>
+      <xsl:value-of select="lastName"/>
     </fo:block>
   </xsl:template>
 
@@ -387,6 +402,9 @@
         <xsl:value-of select="key('client', 'location')"/>
       </fo:block>
       <xsl:apply-templates select="key('entries', 'organization')"/>
+      <xsl:if test="key('entries', 'person')">
+        <xsl:apply-templates select="key('entries', 'person')"/>
+      </xsl:if>
       <xsl:apply-templates select="billingAddrStreet"/>
       <xsl:apply-templates select="billingAddrLocation"/>
     </fo:block-container>
