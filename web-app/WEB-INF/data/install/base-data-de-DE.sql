@@ -120,6 +120,12 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2501, 0, 'dur
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2502, 0, 'versendet', 30, 'org.amcworld.springcrm.CreditMemoStage')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2503, 0, 'bezahlt', 40, 'org.amcworld.springcrm.CreditMemoStage')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2504, 0, 'storniert', 50, 'org.amcworld.springcrm.CreditMemoStage')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2600, 0, 'in Bearbeitung', 10, 'org.amcworld.springcrm.ProjectStatus');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2601, 0, 'pausiert', 20, 'org.amcworld.springcrm.ProjectStatus');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2602, 0, 'wartet auf Kunden', 30, 'org.amcworld.springcrm.ProjectStatus');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2603, 0, 'wartet auf Lieferanten', 40, 'org.amcworld.springcrm.ProjectStatus');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2604, 0, 'abgeschlossen', 50, 'org.amcworld.springcrm.ProjectStatus');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2605, 0, 'abgebrochen', 60, 'org.amcworld.springcrm.ProjectStatus');
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory')
 DELETE FROM seq_number
@@ -133,6 +139,7 @@ INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_v
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (8, 0, 'person', 99999, 'E', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (9, 0, 'note', 99999, 'N', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (10, 0, 'creditMemo', 99999, 'G', 10000, '')
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (11, 0, 'project', 99999, 'J', 10000, '')
 DELETE FROM config
 INSERT INTO config (version, name, value) VALUES (0, 'currency', '€')
 INSERT INTO config (version, name, value) VALUES (0, 'ldapBindDn', NULL)

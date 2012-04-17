@@ -29,7 +29,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class ConfigController {
 
@@ -40,7 +40,7 @@ class ConfigController {
      */
     protected static final List<Long> READONLY_IDS = [
         *600L..604L, *800L..804L, *900L..907L, *2100L..2103L, *2200L..2206L,
-        *2500L..2504L
+        *2500L..2504L, *2600L..2605L
     ]
 
 
