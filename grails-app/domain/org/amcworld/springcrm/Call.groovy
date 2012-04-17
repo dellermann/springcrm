@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Call} represents a phone call.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Call {
 
@@ -48,6 +48,7 @@ class Call {
 		sort start: 'desc'
 		table 'phone_call'
 		notes type: 'text'
+        subject index: 'subject'
     }
 	static searchable = true
 

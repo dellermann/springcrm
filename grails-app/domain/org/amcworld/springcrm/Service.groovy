@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Service} represents a service from the service catalog.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  * @see     Product
  */
 class Service {
@@ -48,8 +48,9 @@ class Service {
 		lastUpdated()
     }
 	static mapping = {
-		sort 'number'
 		description type: 'text'
+        name index: 'name'
+        sort 'number'
     }
 	static searchable = true
 	static transients = ['fullNumber']

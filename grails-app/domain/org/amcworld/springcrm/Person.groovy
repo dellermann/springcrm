@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Person} represents a person of an organization.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Person {
 
@@ -73,8 +73,10 @@ class Person {
 	]
 	static mapping = {
 		calls column: 'Person'
-		sort 'lastName'
+        firstName index: 'first_name'
+        lastName index: 'last_name'
 		notes type: 'text'
+        sort 'lastName'
 	}
 	static searchable = true
 	static transients = ['fullNumber', 'fullName', 'mailingAddr', 'otherAddr']

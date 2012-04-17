@@ -26,13 +26,16 @@ package org.amcworld.springcrm
  * a content item with LDAP.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class LdapSyncStatus {
 
     //-- Class variables ------------------------
 
     static constraints = {}
+    static mapping = {
+        itemId index: 'item_id'
+    }
 
 
     //-- Instance variables ---------------------

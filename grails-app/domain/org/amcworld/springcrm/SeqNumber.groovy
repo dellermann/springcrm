@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * number various content items.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class SeqNumber {
 
@@ -38,6 +38,9 @@ class SeqNumber {
 		suffix(maxSize: 5)
 		startValue(min: 0)
 		endValue(min: 0)
+    }
+    static mapping = {
+        controllerName index: 'controller_name'
     }
 
 

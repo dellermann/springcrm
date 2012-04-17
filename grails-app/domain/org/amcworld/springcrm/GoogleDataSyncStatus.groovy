@@ -26,13 +26,16 @@ package org.amcworld.springcrm
  * synchronization state of a content item with Google.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class GoogleDataSyncStatus {
 
     //-- Class variables ------------------------
 
     static constraints = {}
+    static mapping = {
+        deleted index: 'deleted'
+    }
 
 
     //-- Instance variables ---------------------

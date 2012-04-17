@@ -27,7 +27,7 @@ import static java.math.RoundingMode.HALF_UP
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class PurchaseInvoice {
 
@@ -61,6 +61,7 @@ class PurchaseInvoice {
 	static mapping = {
 		items cascade: 'all-delete-orphan'
 		notes type: 'text'
+        subject index: 'subject'
 	}
 	static searchable = true
 	static transients = [

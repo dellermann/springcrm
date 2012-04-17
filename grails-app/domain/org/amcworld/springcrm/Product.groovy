@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Product} represents a product.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  * @see     Service
  */
 class Product {
@@ -52,8 +52,9 @@ class Product {
 		lastUpdated()
     }
 	static mapping = {
+        description type: 'text'
+        name index: 'name'
 		sort 'number'
-		description type: 'text'
     }
 	static searchable = true
 	static transients = ['fullNumber']

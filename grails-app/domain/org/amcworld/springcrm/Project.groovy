@@ -30,7 +30,7 @@ class Project {
     static constraints = {
         number(unique: true, widget: 'autonumber')
         title(nullable: false, blank: false)
-        description(widget: 'textarea')
+        description(nullable: true, widget: 'textarea')
         organization()
         person(nullable: true)
         phase(nullable: false)

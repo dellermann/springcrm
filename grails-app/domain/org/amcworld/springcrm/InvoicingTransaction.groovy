@@ -28,7 +28,7 @@ import static java.math.RoundingMode.HALF_UP
  * transactions such as invoices, quotes etc.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class InvoicingTransaction {
 
@@ -79,6 +79,7 @@ class InvoicingTransaction {
 		footerText type: 'text'
 		notes type: 'text'
 		sort 'number'
+        subject index: 'subject'
 		order 'desc'
 	}
 	static searchable = true

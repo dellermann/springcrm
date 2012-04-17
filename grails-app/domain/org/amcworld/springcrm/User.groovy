@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class User {
 
@@ -49,7 +49,9 @@ class User {
     }
 	static mapping = {
 		allowedModules type: 'text'
+        settings index: 'settings_idx'
         table 'user_data'
+        userName index: 'user_name'
     }
 	static transients = [
 		'fullName', 'allowedModulesAsList', 'allowedControllers'

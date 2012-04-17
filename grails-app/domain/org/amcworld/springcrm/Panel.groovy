@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Panel} contains data about a panel on the overview page.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Panel {
 
@@ -43,6 +43,7 @@ class Panel {
 		panelId(nullable: false, blank: false)
     }
 	static mapping = {
+        panelId index: 'panel_id'
 		version false
 	}
 	static transients = ['panelDef']

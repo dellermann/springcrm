@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * customer or a vendor.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Organization {
 
@@ -72,7 +72,9 @@ class Organization {
 	static mapping = {
 		calls column: 'Organization'
 		sort 'name'
+        name index: 'name'
 		notes type: 'text'
+        recType index: 'rec_type'
 	}
 	static searchable = true
 	static transients = [

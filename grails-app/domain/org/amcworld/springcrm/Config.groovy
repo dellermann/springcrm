@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Config} represents a system configuration information.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Config {
 
@@ -34,6 +34,9 @@ class Config {
     static constraints = {
 		name(nullable: false, blank: false)
 		value(nullable: true)
+    }
+    static mapping = {
+        name index: 'name'
     }
 
 

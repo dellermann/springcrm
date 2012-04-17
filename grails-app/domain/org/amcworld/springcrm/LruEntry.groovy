@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * used (LRU) list.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class LruEntry {
 

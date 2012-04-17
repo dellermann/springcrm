@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Note} represents a note.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Note {
 
@@ -44,6 +44,7 @@ class Note {
 	static mapping = {
 		sort 'title'
 		content type: 'text'
+        title index: 'title'
 	}
 	static searchable = true
 	static transients = [ 'fullNumber' ]

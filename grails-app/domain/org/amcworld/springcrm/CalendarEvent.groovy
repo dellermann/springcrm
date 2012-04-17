@@ -29,7 +29,7 @@ import org.springframework.context.MessageSourceResolvable
  * is, an appointment.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  * @see     Reminder
  */
 class CalendarEvent {
@@ -56,6 +56,7 @@ class CalendarEvent {
 		description type: 'text'
         end column: 'end_time'
         start column: 'start_time'
+        subject index: 'subject'
 	}
 	static searchable = true
 
