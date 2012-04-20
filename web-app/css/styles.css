@@ -1665,6 +1665,12 @@ form .invoicing-items-pos {
 }
 
 /* invoicing transaction stuff */
+.balance-state-green {
+  color: #080;
+}
+.balance-state-red {
+  color: #800;
+}
 .payment-state-green {
   background: rgb(183, 255, 29);
   background: rgba(183, 255, 29, .6);
@@ -1859,6 +1865,11 @@ form .invoicing-items-pos {
   float: left;
   margin: 0;
   width: 75%;
+}
+#month-selector li {
+  height: 2.2em;
+  padding: 0 .1em;
+  vertical-align: middle;
 }
 #year-selector {
   float: left;

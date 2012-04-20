@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Dunning} represents a dunning which belongs to an invoice.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Dunning extends InvoicingTransaction {
 
@@ -41,11 +41,14 @@ class Dunning extends InvoicingTransaction {
 		invoice()
     }
 	static belongsTo = [invoice: Invoice]
+    static hasMany = [creditMemos: CreditMemo]
 	static mapping = {
 		stage column: 'dunning_stage_id'
 	}
 	static searchable = true
-    static transients = ['paymentStateColor']
+    static transients = [
+        'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+    ]
 
 
     //-- Instance variables ---------------------
@@ -91,15 +94,65 @@ class Dunning extends InvoicingTransaction {
     //-- Public methods -------------------------
 
     /**
-     * Gets the name of a color indicating the payment state of this dunning.
+     * Gets the balance of this dunning, that is the difference between the
+     * payment amount and the dunning total sum.
+     * <p>
+     * Note that the dunning balance does not take any credit memos into
+     * account.  Use method {@code getClosingBalance} for it.
+     *
+     * @return  the dunning balance
+     * @since   1.0
+     * @see     #getClosingBalance()
+     */
+    BigDecimal getBalance() {
+        return (paymentAmount ?: 0) - (total ?: 0)
+    }
+
+    /**
+     * Gets the closing balance of this dunning.  The closing balance is
+     * calculated from the dunning balance minus the sum of the balances of
+     * all credit memos associated to this dunning.  A negative balance
+     * indicates a claim to the customer, a positive one indicates a credit of
+     * the customer.
+     *
+     * @return  the closing balance
+     * @since   1.0
+     * @see     #getBalance()
+     */
+    BigDecimal getClosingBalance() {
+        return balance - (creditMemos ? creditMemos*.balance.sum() : 0)
+    }
+
+    /**
+     * Gets the name of a color indicating the status of the balance of this
+     * dunning.  This property is usually use to compute CSS classes in the
+     * views.
      *
      * @return  the indicator color
+     * @since   1.0
+     */
+    String getBalanceColor() {
+        String color = 'default'
+        if (closingBalance < 0) {
+            color = 'red'
+        } else if (closingBalance > 0) {
+            color = 'green'
+        }
+        return color
+    }
+
+    /**
+     * Gets the name of a color indicating the payment state of this dunning.
+     * This property is usually use to compute CSS classes in the views.
+     *
+     * @return  the indicator color
+     * @since   1.0
      */
     String getPaymentStateColor() {
-        String color = 'white'
+        String color = 'default'
         switch (stage?.id) {
         case 2206:                      // cancelled
-            color = 'green'
+            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
             break
         case 2205:                      // booked out
             color = 'black'
@@ -108,23 +161,36 @@ class Dunning extends InvoicingTransaction {
             color = 'blue'
             break
         case 2203:                      // paid
-            color = 'green'
-            if ((paymentAmount ?: 0) - (total ?: 0) >= 0) {
-                break
-            }
-            // else fall through
-        case 2202:                      // delivered
-            Date d = new Date()
-            if (d >= dueDatePayment - 3) {
-                if (d <= dueDatePayment) {
-                    color = 'yellow'
-                } else if (d <= dueDatePayment + 3) {
-                    color = 'orange'
-                } else {
-                    color = 'red'
-                }
-            }
+            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
             break
+        case 2202:                      // delivered
+            color = colorIndicatorByDate()
+            break
+        }
+        return color
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Returns the color indicator for the payment state depending on the
+     * current date and its relation to the due date of payment.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    protected String colorIndicatorByDate() {
+        String color = 'default'
+        Date d = new Date()
+        if (d >= dueDatePayment - 3) {
+            if (d <= dueDatePayment) {
+                color = 'yellow'
+            } else if (d <= dueDatePayment + 3) {
+                color = 'orange'
+            } else {
+                color = 'red'
+            }
         }
         return color
     }

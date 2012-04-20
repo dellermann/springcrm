@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code CreditMemo} represents a credit memo.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class CreditMemo extends InvoicingTransaction {
 
@@ -44,6 +44,9 @@ class CreditMemo extends InvoicingTransaction {
 		stage column: 'credit_memo_stage_id'
 	}
 	static searchable = true
+    static transients = [
+        'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+    ]
 
 
     //-- Instance variables ---------------------
@@ -84,4 +87,67 @@ class CreditMemo extends InvoicingTransaction {
 		invoice = cm.invoice
 		dunning = cm.dunning
 	}
+
+
+    //-- Public methods -------------------------
+
+    /**
+     * Gets the balance of this credit memo, that is the difference between the
+     * payment amount and the invoice total sum.
+     *
+     * @return  the credit memo balance
+     * @since   1.0
+     * @see     #getClosingBalance()
+     */
+    BigDecimal getBalance() {
+        return (paymentAmount ?: 0) - (total ?: 0)
+    }
+
+    /**
+     * Gets the closing balance of the invoice or dunning associated to this
+     * credit memo.  The closing balance is calculated from the balance of the
+     * associated invoice or dunning minus the sum of the balances of all its
+     * credit memos.  A negative balance indicates a claim to the customer, a
+     * positive one indicates a credit of the customer.
+     *
+     * @return  the closing balance
+     * @since   1.0
+     * @see     #getBalance()
+     */
+    BigDecimal getClosingBalance() {
+        return (invoice ? invoice : dunning).closingBalance
+    }
+
+    /**
+     * Gets the name of a color indicating the status of the balance of this
+     * invoice.  This property is usually use to compute CSS classes in the
+     * views.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    String getBalanceColor() {
+        String color = 'default'
+        if (closingBalance > 0) {
+            color = 'red'
+        } else if (closingBalance < 0) {
+            color = 'green'
+        }
+        return color
+    }
+
+    /**
+     * Gets the name of a color indicating the payment state of this credit
+     * memo.
+     *
+     * @return  the indicator color
+     */
+    String getPaymentStateColor() {
+        String color = 'default'
+        def id = stage?.id ?: 0
+        if ((id >= 2502) && (id <= 2504)) {     // cancelled, paid, delivered
+            color = (closingBalance >= 0) ? 'green' : 'red'
+        }
+        return color
+    }
 }

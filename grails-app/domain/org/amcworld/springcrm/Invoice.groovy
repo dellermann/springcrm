@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Invoice} represents an invoice.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Invoice extends InvoicingTransaction {
 
@@ -46,7 +46,9 @@ class Invoice extends InvoicingTransaction {
 		stage column: 'invoice_stage_id'
 	}
 	static searchable = true
-    static transients = ['paymentStateColor']
+    static transients = [
+        'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+    ]
 
 
     //-- Instance variables ---------------------
@@ -89,15 +91,65 @@ class Invoice extends InvoicingTransaction {
     //-- Public methods -------------------------
 
     /**
-     * Gets the name of a color indicating the payment state of this invoice.
+     * Gets the balance of this invoice, that is the difference between the
+     * payment amount and the invoice total sum.
+     * <p>
+     * Note that the invoice balance does not take any credit memos into
+     * account.  Use method {@code getClosingBalance} for it.
+     *
+     * @return  the invoice balance
+     * @since   1.0
+     * @see     #getClosingBalance()
+     */
+    BigDecimal getBalance() {
+        return (paymentAmount ?: 0) - (total ?: 0)
+    }
+
+    /**
+     * Gets the closing balance of this invoice.  The closing balance is
+     * calculated from the invoice balance minus the sum of the balances of
+     * all credit memos associated to this invoice.  A negative balance
+     * indicates a claim to the customer, a positive one indicates a credit of
+     * the customer.
+     *
+     * @return  the closing balance
+     * @since   1.0
+     * @see     #getBalance()
+     */
+    BigDecimal getClosingBalance() {
+        return balance - (creditMemos ? creditMemos*.balance.sum() : 0)
+    }
+
+    /**
+     * Gets the name of a color indicating the status of the balance of this
+     * invoice.  This property is usually use to compute CSS classes in the
+     * views.
      *
      * @return  the indicator color
+     * @since   1.0
+     */
+    String getBalanceColor() {
+        String color = 'default'
+        if (closingBalance < 0) {
+            color = 'red'
+        } else if (closingBalance > 0) {
+            color = 'green'
+        }
+        return color
+    }
+
+    /**
+     * Gets the name of a color indicating the payment state of this invoice.
+     * This property is usually use to compute CSS classes in the views.
+     *
+     * @return  the indicator color
+     * @since   1.0
      */
     String getPaymentStateColor() {
-        String color = 'white'
+        String color = 'default'
         switch (stage?.id) {
         case 907:                       // cancelled
-            color = 'green'
+            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
             break
         case 906:                       // booked out
             color = 'black'
@@ -109,23 +161,36 @@ class Invoice extends InvoicingTransaction {
             color = 'purple'
             break
         case 903:                       // paid
-            color = 'green'
-            if ((paymentAmount ?: 0) - (total ?: 0) >= 0) {
-                break
-            }
-            // else fall through
-        case 902:                       // delivered
-            Date d = new Date()
-            if (d >= dueDatePayment - 3) {
-                if (d <= dueDatePayment) {
-                    color = 'yellow'
-                } else if (d <= dueDatePayment + 3) {
-                    color = 'orange'
-                } else {
-                    color = 'red'
-                }
-            }
+            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
             break
+        case 902:                       // delivered
+            color = colorIndicatorByDate()
+            break
+        }
+        return color
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Returns the color indicator for the payment state depending on the
+     * current date and its relation to the due date of payment.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    protected String colorIndicatorByDate() {
+        String color = 'default'
+        Date d = new Date()
+        if (d >= dueDatePayment - 3) {
+            if (d <= dueDatePayment) {
+                color = 'yellow'
+            } else if (d <= dueDatePayment + 3) {
+                color = 'orange'
+            } else {
+                color = 'red'
+            }
         }
         return color
     }

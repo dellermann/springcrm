@@ -402,7 +402,7 @@
         <xsl:value-of select="key('client', 'location')"/>
       </fo:block>
       <xsl:apply-templates select="key('entries', 'organization')"/>
-      <xsl:if test="key('entries', 'person')">
+      <xsl:if test="key('entries', 'person')/lastName">
         <xsl:apply-templates select="key('entries', 'person')"/>
       </xsl:if>
       <xsl:apply-templates select="billingAddrStreet"/>

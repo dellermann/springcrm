@@ -54,5 +54,6 @@
     };
 
     $("#month-selector").click(onClickMonthSelector);
-    $("#year-selector").change(onChangeYearSelector);
+    $("#year-selector").selectmenu()
+        .change(onChangeYearSelector);
 }(window, jQuery));

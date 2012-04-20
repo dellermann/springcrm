@@ -146,7 +146,7 @@ modules = {
     }
 
     reportSalesJournal {
-        dependsOn 'core'
+        dependsOn 'core, jquery-ui-selectmenu'
 
         resource '/js/report-sales-journal.js'
     }

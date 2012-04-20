@@ -66,6 +66,10 @@ class ReportController {
         yearStart = Math.min(yearStart, l[0].docDate[YEAR])
         l = Dunning.list(sort: 'docDate', order: 'desc', max: 1)
         yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
+        l = CreditMemo.list(sort: 'docDate', max: 1)
+        yearStart = Math.min(yearStart, l[0].docDate[YEAR])
+        l = CreditMemo.list(sort: 'docDate', order: 'desc', max: 1)
+        yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
 
         def query = Invoice.where {
             (docDate >= start.time) && (docDate <= end.time)
@@ -78,6 +82,16 @@ class ReportController {
         def total = l*.total.sum()
         def totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 
+        query = CreditMemo.where {
+            (docDate >= start.time) && (docDate <= end.time)
+        }
+        def creditMemos = query.list(sort: 'number')
+        if (creditMemos) {
+            l += creditMemos
+            total -= creditMemos*.total.sum()
+            totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
+        }
+        
         return [
             invoicingTransactionInstanceList: l, currentDate: cal.time,
             currentMonth: month, currentYear: year,
