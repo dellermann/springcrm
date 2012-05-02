@@ -38,12 +38,12 @@
                 fc.formatDate(date, $L("default.format.time"))
             ) +
             "&allDay=" + encodeURIComponent(String(allDay));
-        window.location.href = $calendar.attr("data-create-event-url") + "?" +
+        window.location.href = $calendar.data("create-event-url") + "?" +
             params;
     };
 
     onClickListViewBtn = function () {
-        window.location.href = $calendar.attr("data-list-view-url");
+        window.location.href = $calendar.data("list-view-url");
     };
 
     onHoverListViewBtn = function () {
@@ -58,8 +58,8 @@
             dayClick: onClickDay,
             dayNames: $L("weekdaysLong"),
             dayNamesShort: $L("weekdaysShort"),
-            defaultView: $calendar.attr("data-current-view"),
-            eventSources: [{ url: $calendar.attr("data-load-events-url") }],
+            defaultView: $calendar.data("current-view"),
+            eventSources: [{ url: $calendar.data("load-events-url") }],
             firstDay: $L("calendarFirstDay"),
             isRTL: $L("calendarRTL"),
             header: {

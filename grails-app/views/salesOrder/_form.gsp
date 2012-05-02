@@ -1,26 +1,24 @@
 <r:require modules="invoicingTransactionForm" />
 <r:script>/*<![CDATA[*/
-(function (SPRINGCRM, $) {
+(function ($) {
 
     "use strict";
-
-    var it = SPRINGCRM.invoicingTransaction;
-
-    it.init({
+    
+    var params;
+    
+    params = $("#sales-order-form").invoicingtransaction({
             checkStageTransition: false,
-            form: $("#creditMemo-form"),
-            imgPath: "${resource(dir: 'img')}",
-            productListUrl: "${createControllerLink(controller: 'product', action: 'selectorList')}",
-            serviceListUrl: "${createControllerLink(controller: 'service', action: 'selectorList')}",
             stageValues: {
                 payment: 803,
                 shipping: 802
-            }
-        });
+            },
+            type: "S"
+        })
+        .invoicingtransaction("getOrganizationId");
     $("#quote").autocompleteex({
-            loadParameters: it.getOrganizationId
+            loadParameters: params
         });
-}(SPRINGCRM, jQuery));
+}(jQuery));
 /*]]>*/</r:script>
 <fieldset>
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>

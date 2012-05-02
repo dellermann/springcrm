@@ -93,14 +93,14 @@ class CreditMemo extends InvoicingTransaction {
 
     /**
      * Gets the balance of this credit memo, that is the difference between the
-     * payment amount and the invoice total sum.
+     * credit memo total sum and the payment amount.
      *
      * @return  the credit memo balance
      * @since   1.0
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        return (paymentAmount ?: 0) - (total ?: 0)
+        return (total ?: 0) - (paymentAmount ?: 0)
     }
 
     /**
@@ -113,6 +113,8 @@ class CreditMemo extends InvoicingTransaction {
      * @return  the closing balance
      * @since   1.0
      * @see     #getBalance()
+     * @see     Invoice#getClosingBalance()
+     * @see     Dunning#getClosingBalance()
      */
     BigDecimal getClosingBalance() {
         return (invoice ? invoice : dunning).closingBalance

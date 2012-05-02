@@ -1,27 +1,27 @@
 <r:require modules="purchaseInvoicingForm" />
 <r:script>/*<![CDATA[*/
-(function (SPRINGCRM, $) {
+(function ($) {
 
     "use strict";
-
-    var it = SPRINGCRM.invoicingTransaction;
-
-    it.initPurchaseInvoice({
+    
+    var params;
+    
+    params = $("#purchaseInvoice-form").purchaseinvoice({
             checkStageTransition: false,
-            form: $("#purchaseInvoice-form"),
-            imgPath: "${resource(dir: 'img')}",
             loadVendorsUrl: "${createLink(controller: 'organization', action: 'find', params: [type: 2])}",
             stageValues: {
-                shipping: 2102
-            }
-        });
+                payment: 2102
+            },
+            type: "P"
+        })
+        .purchaseinvoice("getOrganizationId");
     $("#invoice").autocompleteex({
-            loadParameters: it.getOrganizationId
+            loadParameters: params
         });
     $("#dunning").autocompleteex({
-            loadParameters: it.getOrganizationId
+            loadParameters: params
         });
-}(SPRINGCRM, jQuery));
+}(jQuery));
 /*]]>*/</r:script>
 <fieldset>
   <h4><g:message code="purchaseInvoice.fieldset.general.label" /></h4>

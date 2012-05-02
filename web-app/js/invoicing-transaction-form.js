@@ -18,223 +18,222 @@
  */
 
 
-SPRINGCRM.invoicingTransaction = (function (window, $, $L) {
+(function (window, $, $L) {
 
     "use strict";
 
     var $LANG = $L,
-        $addresses = $("#addresses"),
-        getOrganizationId,
-        init,
-        initConfig = null,
-        initStageValues = null,
-        jQuery = $,
-        onChangePaymentAmount = null,
-        onChangePaymentDate = null,
-        onChangeShippingDate = null,
-        onChangeStage = null,
-        onClickStillUnpaid = null,
-        onSelectOrganization = null,
-        onSubmitForm = null,
-        organizationId = "#organization\\.id";
+        jQuery = $;
 
-    getOrganizationId = function () {
-        return { organization: $(organizationId).val() };
-    };
+    $.widget("springcrm.invoicingtransaction", {
 
-    init = function (config) {
-        var $ = jQuery,
-            $L = $LANG,
-            $invoicingItems = $(".invoicing-items"),
-            taxes,
-            units;
+        getOrganizationId: function () {
+            return { organization: $(this.options.organizationId).val() };
+        },
 
-        config = initConfig.call(this, config);
+        options: {
+            checkStageTransition: true,
+            organizationId: "#organization\\.id",
+            stageValues: null
+        },
 
-        taxes = $invoicingItems.attr("data-tax-items")
-            .split(",");
-        units = $invoicingItems.attr("data-units")
-            .split(",");
-        $invoicingItems.invoicingitems({
-                imgPath: config.imgPath,
-                productListUrl: config.productListUrl,
-                serviceListUrl: config.serviceListUrl,
-                taxes: taxes,
-                units: units
-            });
+        _create: function () {
+            var $ = jQuery,
+                $L = $LANG,
+                el = this.element;
 
-        $("#organization").autocompleteex({
-                select: onSelectOrganization
-            });
-        $("#person").autocompleteex({
-                loadParameters: getOrganizationId
-            });
-        $("#paymentAmount").change(onChangePaymentAmount)
-            .trigger("change");
-        $("#still-unpaid").click(onClickStillUnpaid);
+            el.find(".invoicing-items")
+                    .invoicingitems()
+                .end()
+                .find("#organization")
+                    .autocompleteex({
+                        select: $.proxy(this._onSelectOrganization, this)
+                    })
+                .end()
+                .find("#person")
+                    .autocompleteex({
+                        loadParameters: this.getOrganizationId
+                    });
+            this.$stillUnpaid = el.find("#still-unpaid")
+                .click($.proxy(this._onClickStillUnpaid, this));
+            this.$paymentAmount = el.find("#paymentAmount")
+                .change($.proxy(this._onChangePaymentAmount, this));
+            this.$paymentAmount.trigger("change");
+            this.$addresses = el.find("#addresses")
+                .addrfields({
+                    leftPrefix: "billingAddr",
+                    menuItems: [
+                        {
+                            action: "copy", side: "left",
+                            text: $L("invoicingTransaction.billingAddr.copy")
+                        },
+                        {
+                            action: "loadFromOrganization",
+                            propPrefix: "billingAddr",
+                            side: "left",
+                            text: $L("invoicingTransaction.addr.fromOrgBillingAddr")
+                        },
+                        {
+                            action: "copy", side: "right",
+                            text: $L("invoicingTransaction.shippingAddr.copy")
+                        },
+                        {
+                            action: "loadFromOrganization",
+                            propPrefix: "shippingAddr",
+                            side: "right",
+                            text: $L("invoicingTransaction.addr.fromOrgShippingAddr")
+                        }
+                    ],
+                    organizationId: this.options.organizationId,
+                    rightPrefix: "shippingAddr"
+                });
+            this.$stage = el.find("#stage");
+            this.$shippingDate = $("#shippingDate-date");
+            this.$paymentDate = $("#paymentDate-date");
 
-        $addresses.addrfields({
-                leftPrefix: "billingAddr",
-                loadOrganizationUrl: config.loadOrganizationUrl,
-                menuItems: [
-                    {
-                        action: "copy", side: "left",
-                        text: $L("invoicingTransaction.billingAddr.copy")
-                    },
-                    {
-                        action: "loadFromOrganization",
-                        propPrefix: "billingAddr",
-                        side: "left",
-                        text: $L("invoicingTransaction.addr.fromOrgBillingAddr")
-                    },
-                    {
-                        action: "copy", side: "right",
-                        text: $L("invoicingTransaction.shippingAddr.copy")
-                    },
-                    {
-                        action: "loadFromOrganization",
-                        propPrefix: "shippingAddr",
-                        side: "right",
-                        text: $L("invoicingTransaction.addr.fromOrgShippingAddr")
+            this._initStageValues();
+        },
+
+        _getModifiedClosingBalance: function ($a) {
+            $a = $a || this.$stillUnpaid;
+            return parseFloat($a.data("closing-balance"));
+        },
+
+        _getTotal: function () {
+            var $ = jQuery;
+
+            return $.parseNumber($("#invoicing-items-total").text());
+        },
+
+        _getUnpaid: function () {
+            var sgn = (this.options.type === "C") ? 1 : -1;
+
+            return -sgn * (
+                    this._getTotal()
+                    + sgn * $.parseNumber(this.$paymentAmount.val())
+                    - this._getModifiedClosingBalance(this.$stillUnpaid)
+                );
+        },
+
+        _initStageValues: function () {
+            var $ = jQuery,
+                opts = this.options,
+                stageValues;
+
+            stageValues = opts.stageValues;
+            if (stageValues) {
+                this.$stage.change($.proxy(this._onChangeStage, this));
+                if (stageValues.shipping) {
+                    this.$shippingDate
+                        .change($.proxy(this._onChangeShippingDate, this));
+                    if (opts.checkStageTransition) {
+                        this.element.submit($.proxy(this._onSubmitForm, this));
                     }
-                ],
-                organizationId: organizationId,
-                rightPrefix: "shippingAddr"
-            });
-
-        initStageValues.call(this);
-
-        return this;
-    };
-
-    initConfig = function (config) {
-        config = $.extend(
-                {
-                    checkStageTransition: true,
-                    form: null,
-                    imgPath: null,
-                    loadOrganizationUrl: null,
-                    productListUrl: null,
-                    serviceListUrl: null,
-                    stageValues: {
-                        payment: null,
-                        shipping: null
-                    }
-                },
-                config
-            );
-        this.config = config;
-        return config;
-    };
-
-    initStageValues = function (config) {
-        var $ = jQuery,
-            stageValues;
-
-        config = config ? initConfig.call(this, config) : this.config;
-        stageValues = config.stageValues;
-        if (stageValues) {
-            $("#stage").change($.proxy(onChangeStage, this));
-            if (stageValues.shipping) {
-                $("#shippingDate-date")
-                    .change($.proxy(onChangeShippingDate, this));
-                if (config.checkStageTransition) {
-                    config.form.submit($.proxy(onSubmitForm, this));
+                }
+                if (stageValues.payment) {
+                    this.$paymentDate
+                        .change($.proxy(this._onChangePaymentDate, this));
                 }
             }
-            if (stageValues.payment) {
-                $("#paymentDate-date")
-                    .change($.proxy(onChangePaymentDate, this));
+
+            return this;
+        },
+
+        _onChangePaymentAmount: function () {
+            var $ = jQuery,
+                $stillUnpaid = this.$stillUnpaid,
+                val = this._getUnpaid();
+
+            $stillUnpaid
+                .removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much")
+                .addClass(
+                    (val > 0) ? "still-unpaid-unpaid"
+                        : ((val < 0) ? "still-unpaid-too-much" : "still-unpaid-paid")
+                )
+                .find("span")
+                    .text($.formatCurrency(val));
+        },
+
+        _onChangePaymentDate: function (event) {
+            var $stage = this.$stage,
+                v = this.options.stageValues.payment;
+
+            if ($(event.target).val() !== "" && $stage.val() < v) {
+                $stage.val(v);
             }
-        }
+        },
 
-        return this;
-    };
+        _onChangeShippingDate: function (event) {
+            var $stage = this.$stage,
+                v = this.options.stageValues.shipping;
 
-    onChangePaymentAmount = function () {
-        var $ = jQuery,
-            totalVal = $("#invoicing-items-total").text(),
-            val = $(this).val();
+            if ($(event.target).val() !== "" && $stage.val() < v) {
+                $stage.val(v);
+            }
+        },
 
-        val = $.parseNumber(totalVal) - $.parseNumber(val);
-        $("#still-unpaid")
-            .removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much")
-            .addClass(
-                (val > 0) ? "still-unpaid-unpaid"
-                    : ((val < 0) ? "still-unpaid-too-much" : "still-unpaid-paid")
-            )
-            .find("span")
-                .text($.formatCurrency(val));
-    };
+        _onChangeStage: function (event) {
+            var stageValues = this.options.stageValues;
 
-    onChangePaymentDate = function (event) {
-        var $stage = $("#stage"),
-            v = this.config.stageValues.payment;
+            switch (parseInt($(event.target).val(), 10)) {
+            case stageValues.shipping:
+                this.$shippingDate
+                    .populateDate();
+                break;
+            case stageValues.payment:
+                this.$paymentDate
+                    .populateDate();
+                break;
+            }
+        },
 
-        if ($(event.target).val() !== "" && $stage.val() < v) {
-            $stage.val(v);
-        }
-    };
+        _onClickStillUnpaid: function (event) {
+            var $ = jQuery,
+                $paymentAmount = this.$paymentAmount,
+                unpaid = this._getUnpaid(),
+                val;
 
-    onChangeShippingDate = function (event) {
-        var $stage = $("#stage"),
-            v = this.config.stageValues.shipping;
-
-        if ($(event.target).val() !== "" && $stage.val() < v) {
-            $stage.val(v);
-        }
-    };
-
-    onChangeStage = function (event) {
-        var stageValues = this.config.stageValues;
-
-        switch (parseInt($(event.target).val(), 10)) {
-        case stageValues.shipping:
-            $("#shippingDate-date").populateDate();
-            break;
-        case stageValues.payment:
-            $("#paymentDate-date").populateDate();
-            break;
-        }
-    };
-
-    onClickStillUnpaid = function () {
-        $("#paymentAmount").val($("#invoicing-items-total").text())
-            .trigger("change");
-        return false;
-    };
-
-    onSelectOrganization = function () {
-        $addresses.addrfields("loadFromOrganizationToLeft", "billingAddr")
-            .addrfields("loadFromOrganizationToRight", "shippingAddr");
-    };
-
-    onSubmitForm = function () {
-        var $oldStage = $("#old-stage"),
-            newVal,
-            oldVal,
-            res = true,
-            shippingStageValue = this.config.stageValues.shipping;
-
-        if ($oldStage.length) {
-            oldVal = $oldStage.val();
-            if (oldVal > 0) {
-                newVal = $("#stage").val();
-                if ((oldVal < shippingStageValue)
-                    && (newVal >= shippingStageValue))
-                {
-                    res = window.confirm(
-                        $L("invoicingTransaction.changeState.label")
-                    );
+            if (unpaid > 0) {
+                val = this._getTotal()
+                    - this._getModifiedClosingBalance($(event.currentTarget));
+                if (this.options.type === "C") {
+                    val = 2 * $.parseNumber($paymentAmount.val()) - val;
+                }
+                if (val) {
+                    $paymentAmount.val($.formatCurrency(val))
+                        .trigger("change");
                 }
             }
-        }
-        return res;
-    };
+            return false;
+        },
 
-    return {
-        getOrganizationId: getOrganizationId,
-        init: init,
-        initStageValues: initStageValues
-    };
+        _onSelectOrganization: function () {
+            this.$addresses
+                .addrfields("loadFromOrganizationToLeft", "billingAddr")
+                .addrfields("loadFromOrganizationToRight", "shippingAddr");
+        },
+
+        _onSubmitForm: function () {
+            var $oldStage = $("#old-stage"),
+                newVal,
+                oldVal,
+                res = true,
+                shippingStageValue = this.options.stageValues.shipping;
+
+            if ($oldStage.length) {
+                oldVal = $oldStage.val();
+                if (oldVal > 0) {
+                    newVal = this.$stage.val();
+                    if ((oldVal < shippingStageValue)
+                        && (newVal >= shippingStageValue))
+                    {
+                        res = window.confirm(
+                            $L("invoicingTransaction.changeState.label")
+                        );
+                    }
+                }
+            }
+            return res;
+        }
+    });
 }(window, jQuery, $L));

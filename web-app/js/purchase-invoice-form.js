@@ -18,67 +18,74 @@
  */
 
 
-(function (SPRINGCRM, $) {
+(function ($) {
 
     "use strict";
 
-    var initPurchaseInvoice,
-        jQuery = $,
-        onClickFileRemove,
-        onFocusVendor,
-        onLoadVendors,
-        onSelectVendor;
+    var jQuery = $;
 
-    onClickFileRemove = function () {
-        var $ = jQuery;
+    $.widget("springcrm.purchaseinvoice", $.springcrm.invoicingtransaction, {
 
-        $("#fileRemove").val(1);
-        $(".document-preview").remove();
-        $(".document-preview-links").remove();
-    };
+        options: {
+            loadVendorsUrl: null
+        },
 
-    onFocusVendor = function (event, ui) {
-        $(event.target).val(ui.item.label);
-        return false;
-    };
+        _create: function () {
+            var $ = jQuery;
 
-    onLoadVendors = function (request, response) {
-        $.getJSON(
-                this.config.loadVendorsUrl, { name: request.term },
-                function (data) {
-                    response($.map(data, function (item) {
-                        return { label: item.name, value: item.id };
-                    }));
-                }
-            );
-    };
+            $.springcrm.invoicingtransaction.prototype._create.call(this);
+            this.element
+                .find(".invoicing-items")
+                    .invoicingitems(
+                        "option",
+                        { productListUrl: null, serviceListUrl: null }
+                    );
+            $("#vendorName").autocomplete({
+                    focus: this._onFocusVendor,
+                    select: this._onSelectVendor,
+                    source: $.proxy(this._onLoadVendors, this)
+                });
+            $(".document-delete").wrapInner(
+                    $('<a href="#">').click(this._onClickFileRemove)
+                );
+        },
 
-    onSelectVendor = function (event, ui) {
-        var $ = jQuery,
-            item = ui.item;
+        _onClickFileRemove: function () {
+            var $ = jQuery;
 
-        $("#vendor").val(item.label);
-        $("#vendor\\.id").val(item.value);
-        return false;
-    };
+            $("#fileRemove").val(1);
+            $(".document-preview").remove();
+            $(".document-preview-links").remove();
+        },
 
-    initPurchaseInvoice = function (config) {
-        var $ = jQuery;
+        _onFocusVendor: function (event, ui) {
+            $(event.target).val(ui.item.label);
+            return false;
+        },
 
-        this.init(config);
+        _onLoadVendors: function (request, response) {
+            var $ = jQuery,
+                url = this.options.loadVendorsUrl;
 
-        $("#vendorName").autocomplete({
-                focus: $.proxy(onFocusVendor, this),
-                select: $.proxy(onSelectVendor, this),
-                source: $.proxy(onLoadVendors, this)
-            });
-        $(".document-delete").wrapInner(
-                $('<a href="#">').click(onClickFileRemove)
-            );
-    };
+            if (url) {
+                $.getJSON(
+                        url, { name: request.term },
+                        function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.name, value: item.id };
+                            }));
+                        }
+                    );
+            }
+        },
 
-    $.extend(SPRINGCRM.invoicingTransaction, {
-        initPurchaseInvoice: initPurchaseInvoice
+        _onSelectVendor: function (event, ui) {
+            var $ = jQuery,
+                item = ui.item;
+
+            $("#vendor").val(item.label);
+            $("#vendor\\.id").val(item.value);
+            return false;
+        }
     });
-
-}(SPRINGCRM, jQuery));
+}(jQuery));

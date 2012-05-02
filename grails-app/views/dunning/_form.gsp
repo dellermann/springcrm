@@ -1,25 +1,23 @@
 <r:require modules="invoicingTransactionForm" />
 <r:script>/*<![CDATA[*/
-(function (SPRINGCRM, $) {
+(function ($) {
 
     "use strict";
+    
+    var params;
 
-    var it = SPRINGCRM.invoicingTransaction;
-
-    it.init({
-            form: $("#dunning-form"),
-            imgPath: "${resource(dir: 'img')}",
-            productListUrl: "${createControllerLink(controller: 'product', action: 'selectorList')}",
-            serviceListUrl: "${createControllerLink(controller: 'service', action: 'selectorList')}",
+    params = $("#dunning-form").invoicingtransaction({
             stageValues: {
                 payment: 2203,
                 shipping: 2202
-            }
-        });
+            },
+            type: "D"
+        })
+        .invoicingtransaction("getOrganizationId");
     $("#invoice").autocompleteex({
-            loadParameters: it.getOrganizationId
+            loadParameters: params
         });
-}(SPRINGCRM, jQuery));
+}(jQuery));
 /*]]>*/</r:script>
 <fieldset>
   <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>

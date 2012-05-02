@@ -22,7 +22,7 @@
  * @fileOverview    Contains general classes which are used within this
  *                  application.
  * @author          Daniel Ellermann
- * @version         0.9
+ * @version         1.0
  */
 
 
@@ -689,7 +689,7 @@
                 url;
 
             if (!opts.source) {
-                url = opts.url || el.attr("data-find-url");
+                url = opts.url || el.data("find-url");
                 if (url) {
                     opts.url = url;
                     opts.source = $.proxy(this._load, this);
@@ -804,8 +804,7 @@
             this.leftMenu = el.find(opts.leftMenuSelector);
             this.rightMenu = el.find(opts.rightMenuSelector);
             if (!opts.loadOrganizationUrl) {
-                opts.loadOrganizationUrl =
-                    el.attr("data-load-organization-url");
+                opts.loadOrganizationUrl = el.data("load-organization-url");
             }
 
             menuItems = opts.menuItems;
@@ -926,7 +925,7 @@
         },
 
         _create: function () {
-            var url = this.element.attr("data-load-url");
+            var url = this.element.data("load-url");
 
             if (url) {
                 this._loadContent(url);
@@ -1201,7 +1200,7 @@
         onSubmitForm = function () {
             var $ = jQuery;
 
-            $("#" + $(this).attr("data-form")).submit();
+            $("#" + $(this).data("form")).submit();
             return false;
         };
 

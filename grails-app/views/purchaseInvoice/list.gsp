@@ -33,6 +33,7 @@
           <g:sortableColumn property="docDate" title="${message(code: 'purchaseInvoice.docDate.label.short', default: 'Doc Date')}" />
           <g:sortableColumn property="dueDate" title="${message(code: 'purchaseInvoice.dueDate.label', default: 'Due Date')}" />
           <g:sortableColumn property="total" title="${message(code: 'purchaseInvoice.total.label.short', default: 'Total')}" style="width: 6em;" />
+          <g:sortableColumn property="balance" title="${message(code: 'invoicingTransaction.closingBalance.label', default: 'Closing balance')}" style="width: 6em;" />
           <th></th>
         </tr>
       </thead>
@@ -43,10 +44,11 @@
           <td><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</g:link></td>
           <td><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</g:link></td>
           <td><g:if test="${purchaseInvoiceInstance?.vendor}"><g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:link></g:if><g:else>${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:else></td>
-          <td>${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
+          <td class="payment-state-${purchaseInvoiceInstance?.paymentStateColor}">${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
           <td class="align-center"><g:formatDate date="${purchaseInvoiceInstance.docDate}" formatName="default.format.date" /></td>
           <td class="align-center"><g:formatDate date="${purchaseInvoiceInstance.dueDate}" formatName="default.format.date" /></td>
           <td class="align-right"><g:formatCurrency number="${purchaseInvoiceInstance.total}" /></td>
+          <td class="align-right balance-state-${purchaseInvoiceInstance?.balanceColor}"><g:formatCurrency number="${purchaseInvoiceInstance?.balance}" displayZero="true" /></td>
           <td>
             <g:link action="edit" id="${purchaseInvoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${purchaseInvoiceInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

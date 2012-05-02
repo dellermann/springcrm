@@ -34,7 +34,7 @@
         .tinymce({
             language: "de",
             plugins: "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,advlist",
-            script_url: $noteContent.attr("data-rte-script"),
+            script_url: $noteContent.data("rte-script"),
             skin: /*"o2k7",*/ "springcrm",
             skin_variant: "silver",
             theme: "advanced",

@@ -96,6 +96,7 @@
         <g:ifModuleAllowed modules="quote"><option value="${createLink(controller: 'quote', action: 'create')}"><g:message code="default.quickMenu.quote" /></option></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="salesOrder"><option value="${createLink(controller: 'salesOrder', action: 'create')}"><g:message code="default.quickMenu.salesOrder" /></option></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="invoice"><option value="${createLink(controller: 'invoice', action: 'create')}"><g:message code="default.quickMenu.invoice" /></option></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="purchaseInvoice"><option value="${createLink(controller: 'purchaseInvoice', action: 'create')}"><g:message code="default.quickMenu.purchaseInvoice" /></option></g:ifModuleAllowed>
         <!--<option>Neue Aufgabe</option>
         <option>Neues Dokument</option>-->
       </select>

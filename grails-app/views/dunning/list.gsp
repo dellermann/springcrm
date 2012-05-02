@@ -33,6 +33,7 @@
           <g:sortableColumn property="docDate" title="${message(code: 'dunning.docDate.label.short', default: 'Date')}" />
           <g:sortableColumn property="dueDatePayment" title="${message(code: 'dunning.dueDatePayment.label', default: 'Due date of payment')}" />
           <g:sortableColumn property="total" title="${message(code: 'dunning.total.label.short', default: 'Total')}" style="width: 6em;" />
+          <g:sortableColumn property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label', default: 'Closing balance')}" style="width: 6em;" />
           <th style="width: 11.5em;"></th>
         </tr>
       </thead>
@@ -47,6 +48,7 @@
           <td class="align-center"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="align-center"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
           <td class="align-right"><g:formatCurrency number="${dunningInstance?.total}" /></td>
+          <td class="align-right balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" /></td>
           <td>
             <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
             <g:link action="edit" id="${dunningInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

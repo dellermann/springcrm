@@ -65,7 +65,8 @@ class PurchaseInvoice {
 	}
 	static searchable = true
 	static transients = [
-		'subtotalNet', 'subtotalGross', 'discountPercentAmount', 'taxRateSums'
+		'balance', 'balanceColor', 'discountPercentAmount',
+        'paymentStateColor', 'subtotalNet', 'subtotalGross', 'taxRateSums'
 	]
 
 
@@ -201,6 +202,56 @@ class PurchaseInvoice {
 			getAdjustment()
 	}
 
+    /**
+     * Gets the balance of this purchase invoice, that is the difference
+     * between the payment amount and the invoice total sum.
+     *
+     * @return  the purchase invoice balance
+     * @since   1.0
+     */
+    BigDecimal getBalance() {
+        return (paymentAmount ?: 0) - (total ?: 0)
+    }
+
+    /**
+     * Gets the name of a color indicating the status of the balance of this
+     * purchase invoice.  This property is usually use to compute CSS classes
+     * in the views.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    String getBalanceColor() {
+        String color = 'default'
+        if (balance < 0) {
+            color = 'red'
+        } else if (balance > 0) {
+            color = 'green'
+        }
+        return color
+    }
+
+    /**
+     * Gets the name of a color indicating the payment state of this purchase
+     * invoice.  This property is usually use to compute CSS classes in the
+     * views.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    String getPaymentStateColor() {
+        String color = 'default'
+        switch (stage?.id) {
+        case 2103:                       // rejected
+            color = 'purple'
+            break
+        case 2102:                       // paid
+            color = (balance >= 0) ? 'green' : colorIndicatorByDate()
+            break
+        }
+        return color
+    }
+
 	String toString() {
 		return subject
 	}
@@ -216,4 +267,29 @@ class PurchaseInvoice {
 	def beforeUpdate() {
 		total = computeTotal()
 	}
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Returns the color indicator for the payment state depending on the
+     * current date and its relation to the due date of payment.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    protected String colorIndicatorByDate() {
+        String color = 'default'
+        Date d = new Date()
+        if (d >= dueDate - 3) {
+            if (d <= dueDate) {
+                color = 'yellow'
+            } else if (d <= dueDate + 3) {
+                color = 'orange'
+            } else {
+                color = 'red'
+            }
+        }
+        return color
+    }
 }

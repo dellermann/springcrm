@@ -58,7 +58,7 @@
             success: function(html) {
                 $f.replaceWith(html);
             },
-            url: $f.attr("data-report-error-url")
+            url: $f.data("report-error-url")
         });
     };
 

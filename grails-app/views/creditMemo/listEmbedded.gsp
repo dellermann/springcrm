@@ -9,6 +9,7 @@
       <g:sortableColumn property="docDate" title="${message(code: 'creditMemo.docDate.label.short', default: 'Date')}" params="${linkParams}" />
       <g:sortableColumn property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label', default: 'Payment date')}" params="${linkParams}" />
       <g:sortableColumn property="total" title="${message(code: 'creditMemo.total.label.short', default: 'Total')}" style="width: 6em;" />
+      <g:sortableColumn property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label', default: 'Closing balance')}" style="width: 6em;" />
       <th></th>
     </tr>
   </thead>
@@ -18,10 +19,11 @@
       <td><input type="checkbox" id="creditMemo-multop-${creditMemoInstance.id}" class="multop-sel-item" /></td>
       <td><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}">${fieldValue(bean: creditMemoInstance, field: "fullNumber")}</g:link></td>
       <td><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}">${fieldValue(bean: creditMemoInstance, field: "subject")}</g:link></td>
-      <td>${fieldValue(bean: creditMemoInstance, field: "stage")}</td>
+      <td class="payment-state-${creditMemoInstance?.paymentStateColor}">${fieldValue(bean: creditMemoInstance, field: "stage")}</td>
       <td class="align-center"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
       <td class="align-center"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>
       <td class="align-right"><g:formatCurrency number="${creditMemoInstance?.total}" /></td>
+      <td class="align-right balance-state-${creditMemoInstance?.balanceColor}"><g:formatCurrency number="${creditMemoInstance?.closingBalance}" displayZero="true" /></td>
       <td>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
         <g:link controller="creditMemo" action="edit" id="${creditMemoInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

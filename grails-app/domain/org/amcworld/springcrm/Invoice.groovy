@@ -107,7 +107,7 @@ class Invoice extends InvoicingTransaction {
 
     /**
      * Gets the closing balance of this invoice.  The closing balance is
-     * calculated from the invoice balance minus the sum of the balances of
+     * calculated from the invoice balance plus the sum of the balances of
      * all credit memos associated to this invoice.  A negative balance
      * indicates a claim to the customer, a positive one indicates a credit of
      * the customer.
@@ -117,7 +117,7 @@ class Invoice extends InvoicingTransaction {
      * @see     #getBalance()
      */
     BigDecimal getClosingBalance() {
-        return balance - (creditMemos ? creditMemos*.balance.sum() : 0)
+        return balance + (creditMemos ? creditMemos*.balance.sum() : 0)
     }
 
     /**

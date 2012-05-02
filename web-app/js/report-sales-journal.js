@@ -46,7 +46,7 @@
             url = $monthLink.find("a").attr("href");
 
         params = {
-            month: $monthLink.attr("data-month"),
+            month: $monthLink.data("month"),
             year: $("#year-selector").val()
         };
         url += (/\?/.test(url) ? "&" : "?") + $.param(params);

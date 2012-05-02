@@ -55,11 +55,11 @@
                 self = this;
 
             opts.addPanelUrl = opts.addPanelUrl
-                || elem.attr("data-add-panel-url");
+                || elem.data("add-panel-url");
             opts.movePanelUrl = opts.movePanelUrl
-                || elem.attr("data-move-panel-url");
+                || elem.data("move-panel-url");
             opts.removePanelUrl = opts.removePanelUrl
-                || elem.attr("data-remove-panel-url");
+                || elem.data("remove-panel-url");
             this.$panels = $(opts.panels, this.element).each(function () {
                     self._initPanel(this);
                 });
@@ -89,7 +89,7 @@
                 baseClass = this.widgetBaseClass,
                 url;
 
-            url = $panel.attr("data-panel-url");
+            url = $panel.data("panel-url");
             if (url) {
                 $.ajax({
                     dataType: "html",

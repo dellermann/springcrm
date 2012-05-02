@@ -9,6 +9,7 @@
       <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label.short', default: 'Date')}" params="${linkParams}" />
       <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label', default: 'Due date of payment')}" params="${linkParams}" />
       <g:sortableColumn property="total" title="${message(code: 'invoice.total.label.short', default: 'Total')}" style="width: 6em;" />
+      <g:sortableColumn property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label', default: 'Closing balance')}" style="width: 6em;" />
       <th></th>
     </tr>
   </thead>
@@ -22,6 +23,7 @@
       <td class="align-center"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
       <td class="align-center"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
       <td class="align-right"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
+      <td class="align-right balance-state-${invoiceInstance?.balanceColor}"><g:formatCurrency number="${invoiceInstance?.closingBalance}" displayZero="true" /></td>
       <td>
         <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
         <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

@@ -41,7 +41,7 @@
         var $ = jQuery;
 
         $.get(
-                $("#project-phases").attr("data-set-phase-url"),
+                $("#project-phases").data("set-phase-url"),
                 { phase: phaseName }
             );
     };
@@ -75,7 +75,7 @@
             res = true;
 
         $section = $target.parents("section");
-        phaseName = $section.attr("data-phase");
+        phaseName = $section.data("phase");
         if ($target.is("#project-phases h5")) {
             $("#project-phase").text($target.text());
             $section.addClass("current")

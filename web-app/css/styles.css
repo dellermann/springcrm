@@ -25,12 +25,12 @@
  *---------------------------------*/
 
 body {
-  font: 11px/1.231 Arimo, "DejaVu Sans Condensed", "DejaVu Sans",
+  font: 11px/1.231 "Varela Round", "DejaVu Sans Condensed", "DejaVu Sans",
     "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
 }
 button, input, select, textarea {
-  font: 99% Arimo, "DejaVu Sans Condensed", "DejaVu Sans", "Helvetica Neue LT Std", 
-    Tahoma, Arial, sans-serif;
+  font: 99% "Varela Round", "DejaVu Sans Condensed", "DejaVu Sans", 
+    "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
 }
 code, kbd, pre, samp, tt, xmp {
   font-family: "Liberation Mono", "Lucida Console", "Courier New", Courier,

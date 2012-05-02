@@ -22,7 +22,7 @@
  * @fileOverview    Contains a class to handle invoicing items in quotes,
  *                  sales order, invoices etc.
  * @author          Daniel Ellermann
- * @version         0.9
+ * @version         1.0
  */
 
 
@@ -42,11 +42,11 @@
         options: {
             currency: "€",
             fieldNamePrefix: "items",
-            imgPath: null,
-            productListUrl: null,
-            serviceListUrl: null,
-            taxes: null,
-            units: null
+            imgPath: $(".invoicing-items").data("img-path"),
+            productListUrl: $(".invoicing-items").data("product-list-url"),
+            serviceListUrl: $(".invoicing-items").data("service-list-url"),
+            taxes: $(".invoicing-items").data("tax-items").split(","),
+            units: $(".invoicing-items").data("units").split(",")
         },
 
         _addItem: function (jumpToNewRow) {

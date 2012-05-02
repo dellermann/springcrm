@@ -52,7 +52,7 @@
 
         item = item || { id: -1, name: "", disabled: false };
         $li = $('<li class="ui-state-default"/>')
-            .attr("data-item-id", item.id)
+            .data("item-id", item.id)
             .appendTo($ul);
         $('<span class="value"/>').text(item.name)
             .appendTo($li);
@@ -62,7 +62,7 @@
             $('<a href="#" class="edit-btn"/>').text($L("default.btn.edit"))
                 .appendTo($li);
         } else {
-            $li.attr("data-item-disabled", "true");
+            $li.data("item-disabled", "true");
         }
         return $li;
     };
@@ -133,7 +133,7 @@
             return false;
         } else if ($target.hasClass("delete-btn")) {
             $li = $target.parents("li");
-            id = $li.attr("data-item-id");
+            id = $li.data("item-id");
             if (id && (id !== "-1")) {
                 itemsToRemove.push(parseInt(id, 10));
             }
@@ -166,7 +166,7 @@
         var $ = jQuery,
             $li = $(event.target).parents("li").andSelf();
 
-        if ($li.find("input").length === 0 && !$li.attr("data-item-disabled")) {
+        if ($li.find("input").length === 0 && !$li.data("item-disabled")) {
             showEditField.call($li.find(".value"));
             setDirty.call($(this), true);
         }
@@ -232,7 +232,7 @@
             $this = $(this);
 
         $.getJSON(
-                $this.attr("data-load-sel-values-url"), null,
+                $this.data("load-sel-values-url"), null,
                 $.proxy(onLoadedSelValues, $this)
             );
     };
@@ -256,8 +256,8 @@
                     var $this = $(this),
                         item = {};
 
-                    item.id = parseInt($this.attr("data-item-id"), 10);
-                    if (!$this.attr("data-item-disabled")) {
+                    item.id = parseInt($this.data("item-id"), 10);
+                    if (!$this.data("item-disabled")) {
                         item.name = $this.find(".value").text();
                     }
                     data.push(item);
@@ -266,7 +266,7 @@
                 data.push({ id: itr[i], remove: true });
             }
             $('<input type="hidden"/>')
-                .attr("name", "selValues." + $this.attr("data-list-type"))
+                .attr("name", "selValues." + $this.data("list-type"))
                 .val($.toJSON(data))
                 .appendTo($this);
             setDirty.call($ul, false);

@@ -60,10 +60,10 @@
             url = null;
 
         if ($personId.val()) {
-            url = $phone.attr("data-load-person-phone-numbers-url");
+            url = $phone.data("load-person-phone-numbers-url");
             data.id = $personId.val();
         } else if ($orgId.val()) {
-            url = $phone.attr("data-load-organization-phone-numbers-url");
+            url = $phone.data("load-organization-phone-numbers-url");
             data.id = $orgId.val();
         }
         if (!phoneNumbers) {

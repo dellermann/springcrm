@@ -35,7 +35,7 @@
 
     $picture = $("#picture");
     $picture.lightbox({
-            imgDir: $picture.attr("data-img-dir")
+            imgDir: $picture.data("img-dir")
         });
     $(".document-delete").wrapInner(
             $('<a href="#">').click(onClickDeleteDocumentLink)

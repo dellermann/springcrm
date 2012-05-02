@@ -22,7 +22,7 @@
  * @fileOverview    Contains general classes which are used within this
  *                  application.
  * @author          Daniel Ellermann
- * @version         0.9
+ * @version         1.0
  */
 
 
@@ -261,7 +261,7 @@
         var $ = jQuery;
 
         $.getJSON(
-                $("#organization").attr("data-get-url"),
+                $("#organization").data("get-url"),
                 { id: value },
                 onLoadedOrganization
             );

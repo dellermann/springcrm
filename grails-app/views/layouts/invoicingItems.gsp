@@ -3,7 +3,12 @@
 <input type="hidden" name="items[${i}].id" value="${item.id}" />
 </g:if>
 </g:each>
-<table id="${pageProperty(name: 'tableId')}" class="invoicing-items content-table" data-tax-items="${taxRates*.taxValue.join(',')}" data-units="${units*.name.join(',')}">
+<table id="${pageProperty(name: 'tableId')}" class="invoicing-items content-table" 
+       data-tax-items="${taxRates*.taxValue.join(',')}"
+       data-units="${units*.name.join(',')}"
+       data-img-path="${resource(dir: 'img')}"
+       data-product-list-url="${createControllerLink(controller: 'product', action: 'selectorList')}"
+       data-service-list-url="${createControllerLink(controller: 'service', action: 'selectorList')}">
   <thead>
     <tr>
       <th id="invoicing-items-header-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>

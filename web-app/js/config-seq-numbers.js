@@ -28,7 +28,7 @@
         renderExample = null;
 
     checkAddOrgNumber = function () {
-        var ctrlName = "," + $(this).attr("data-controller-name") + ",",
+        var ctrlName = "," + $(this).data("controller-name") + ",",
             ctrlNames = ",quote,salesOrder,invoice,dunning,creditMemo,";
 
         return ctrlNames.indexOf(ctrlName) >= 0;
@@ -62,7 +62,7 @@
             $tr = $target.parents("tr");
 
         renderExample.call($tr);
-        if ($tr.attr("data-controller-name") === "organization") {
+        if ($tr.data("controller-name") === "organization") {
             $tr.siblings()
                 .each(function () {
                     var $this = $(this);
