@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Person" %>
 <html>
 <head>
@@ -34,27 +33,27 @@
     <table class="content-table">
       <thead>
         <tr>
-          <th><input type="checkbox" id="person-multop-sel" class="multop-sel" /></th>
-          <g:sortableColumn property="number" title="${message(code: 'person.number.label', default: 'Number')}" />
-          <g:sortableColumn property="lastName" title="${message(code: 'person.lastName.label', default: 'Last name')}" />
-          <g:sortableColumn property="firstName" title="${message(code: 'person.firstName.label', default: 'First name')}" />
-          <g:sortableColumn property="organization.name" title="${message(code: 'person.organization.label', default: 'Organization')}" />
-          <g:sortableColumn property="phone" title="${message(code: 'person.phone.label', default: 'Phone')}" />
-          <g:sortableColumn property="email1" title="${message(code: 'person.email1.label', default: 'E-mail')}" />
-          <th></th>
+          <th id="content-table-headers-person-row-selector"><input type="checkbox" id="person-row-selector" /></th>
+          <g:sortableColumn id="content-table-headers-person-number" property="number" title="${message(code: 'person.number.label', default: 'Number')}" />
+          <g:sortableColumn id="content-table-headers-person-last-name" property="lastName" title="${message(code: 'person.lastName.label', default: 'Last name')}" />
+          <g:sortableColumn id="content-table-headers-person-first-name" property="firstName" title="${message(code: 'person.firstName.label', default: 'First name')}" />
+          <g:sortableColumn id="content-table-headers-person-organization" property="organization.name" title="${message(code: 'person.organization.label', default: 'Organization')}" />
+          <g:sortableColumn id="content-table-headers-person-phone" property="phone" title="${message(code: 'person.phone.label', default: 'Phone')}" />
+          <g:sortableColumn id="content-table-headers-person-email1" property="email1" title="${message(code: 'person.email1.label', default: 'E-mail')}" />
+          <th id="content-table-headers-person-buttons"></th>
         </tr>
       </thead>
       <tbody>
       <g:each in="${personInstanceList}" status="i" var="personInstance">
         <tr>
-          <td><input type="checkbox" id="person-multop-${personInstance.id}" class="multop-sel-item" /></td>
-          <td style="text-align: center;"><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "fullNumber")}</g:link></td>
-          <td><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
-          <td>${fieldValue(bean: personInstance, field: "firstName")}</td>
-          <td><g:link controller="organization" action="show" id="${personInstance.organization.id}">${fieldValue(bean: personInstance, field: "organization.name")}</g:link></td>
-          <td>${fieldValue(bean: personInstance, field: "phone")}</td>
-          <td><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></td>
-          <td>
+          <td class="content-table-row-selector" headers="content-table-headers-person-row-selector"><input type="checkbox" id="person-row-selector-${personInstance.id}" data-id="${personInstance.id}" /></td>
+          <td class="content-table-type-id content-table-column-person-number" headers="content-table-headers-person-number"><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "fullNumber")}</g:link></td>
+          <td class="content-table-type-string content-table-column-person-last-name" headers="content-table-headers-person-last-name"><g:link action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
+          <td class="content-table-type-string content-table-column-person-first-name" headers="content-table-headers-person-first-name">${fieldValue(bean: personInstance, field: "firstName")}</td>
+          <td class="content-table-type-ref content-table-column-person-organization" headers="content-table-headers-person-organization"><g:link controller="organization" action="show" id="${personInstance.organization.id}">${fieldValue(bean: personInstance, field: "organization.name")}</g:link></td>
+          <td class="content-table-type-string content-table-column-person-phone" headers="content-table-headers-person-phone"><a href="tel:${fieldValue(bean: personInstance, field: "phone")}">${fieldValue(bean: personInstance, field: "phone")}</a></td>
+          <td class="content-table-type-string content-table-column-person-email1" headers="content-table-headers-person-email1"><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></td>
+          <td class="content-table-buttons" headers="content-table-headers-person-buttons">
             <g:link action="edit" id="${personInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${personInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
           </td>

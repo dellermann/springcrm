@@ -26,7 +26,8 @@
     <table class="content-table">
       <thead>
         <tr>
-          <th><input type="checkbox" id="${domainClass.propertyName}-multop-sel" class="multop-sel" /></th>
+      <%  cssName = GrailsNameUtils.getScriptName(domainClass) %>
+          <th id="content-table-headers-${cssName}-row-selector"><input type="checkbox" id="${cssName}-row-selector" /></th>
         <%  excludedProps = Event.allEvents.toList() << 'version'
             allowedNames = domainClass.persistentProperties*.name << 'dateCreated' << 'lastUpdated'
             props = domainClass.properties.findAll { allowedNames.contains(it.name) && !excludedProps.contains(it.name) && !Collection.isAssignableFrom(it.type) }
@@ -34,29 +35,29 @@
             props.eachWithIndex { p, i ->
                 if (i < 6) {
                     if (p.isAssociation()) { %>
-          <th><g:message code="${domainClass.propertyName}.${p.name}.label" default="${p.naturalName}" /></th>
+          <th id="content-table-headers-${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:message code="${domainClass.propertyName}.${p.name}.label" default="${p.naturalName}" /></th>
         <%      } else { %>
-          <g:sortableColumn property="${p.name}" title="\${message(code: '${domainClass.propertyName}.${p.name}.label', default: '${p.naturalName}')}" />
+          <g:sortableColumn id="content-table-headers-${cssName}-${GrailsNameUtils.getScriptName(p.name)}" property="${p.name}" title="\${message(code: '${domainClass.propertyName}.${p.name}.label', default: '${p.naturalName}')}" />
         <%  }   }   } %>
-          <th></th>
+          <th id="content-table-headers-calendar-event-buttons"></th>
         </tr>
       </thead>
       <tbody>
       <g:each in="\${${propertyName}List}" status="i" var="${propertyName}">
         <tr>
-          <td><input type="checkbox" id="${domainClass.propertyName}-multop-\${${propertyName}.id}" class="multop-sel-item" /></td>
+          <td class="content-table-row-selector" headers="content-table-headers-${cssName}-row-selector"><input type="checkbox" id="${domainClass.propertyName}-row-selector-\${${propertyName}.id}" data-id="${${propertyName}.id}" /></td>
         <%  props.eachWithIndex { p, i ->
                 if (i == 0) { %>
-          <td><g:link action="show" id="\${${propertyName}.id}">\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</g:link></td>
+          <td class="content-table-type-string content-table-column-${cssName}-${GrailsNameUtils.getScriptName(p.name)}" headers="content-table-headers-${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:link action="show" id="\${${propertyName}.id}">\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</g:link></td>
         <%      } else if (i < 6) {
                     if (p.type == Boolean.class || p.type == boolean.class) { %>
-          <td><g:formatBoolean boolean="\${${propertyName}.${p.name}}" /></td>
+          <td class="content-table-type-boolean content-table-column-${cssName}-${GrailsNameUtils.getScriptName(p.name)}" headers="content-table-headers-${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:formatBoolean boolean="\${${propertyName}.${p.name}}" /></td>
         <%          } else if (p.type == Date.class || p.type == java.sql.Date.class || p.type == java.sql.Time.class || p.type == Calendar.class) { %>
-          <td><g:formatDate date="\${${propertyName}.${p.name}}" /></td>
+          <td class="content-table-type-date content-table-column-${cssName}-${GrailsNameUtils.getScriptName(p.name)}" headers="content-table-headers-${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:formatDate date="\${${propertyName}.${p.name}}" /></td>
         <%          } else { %>
-          <td>\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</td>
+          <td class="content-table-type-string content-table-column-${cssName}-${GrailsNameUtils.getScriptName(p.name)}" headers="content-table-headers-${cssName}-${GrailsNameUtils.getScriptName(p.name)}">\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</td>
         <%  }   }   } %>
-          <td>
+          <td headers="content-table-headers-calendar-event-buttons">
             <g:link action="edit" id="\${${propertyName}.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="\${${propertyName}?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
           </td>

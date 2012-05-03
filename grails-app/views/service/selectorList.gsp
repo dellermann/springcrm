@@ -14,25 +14,25 @@
 <table class="content-table">
   <thead>
     <tr>
-      <!--<th><input type="checkbox" id="service-multop-sel" class="multop-sel" /></th>-->
-      <g:sortableColumn property="number" title="${message(code: 'service.number.label', default: 'Number')}" />
-      <g:sortableColumn property="name" title="${message(code: 'service.name.label', default: 'Name')}" />
-      <th><g:message code="service.category.label" default="Category" /></th>
-      <g:sortableColumn property="quantity" title="${message(code: 'service.quantity.label', default: 'Quantity')}" />
-      <th><g:message code="service.unit.label" default="Unit" /></th>
-      <g:sortableColumn property="unitPrice" title="${message(code: 'service.unitPrice.label', default: 'Unit Price')}" />
+      <%--<th id="content-table-headers-service-row-selector"><input type="checkbox" id="service-row-selector" /></th>--%>
+      <g:sortableColumn id="content-table-headers-service-number" property="number" title="${message(code: 'service.number.label', default: 'Number')}" />
+      <g:sortableColumn id="content-table-headers-service-name" property="name" title="${message(code: 'service.name.label', default: 'Name')}" />
+      <g:sortableColumn id="content-table-headers-service-category" property="category.name" title="${message(code: 'service.category.label', default: 'Category')}" />
+      <g:sortableColumn id="content-table-headers-service-quantity" property="quantity" title="${message(code: 'service.quantity.label', default: 'Quantity')}" />
+      <g:sortableColumn id="content-table-headers-service-unit" property="unit.name" title="${message(code: 'service.unit.label', default: 'Unit')}" />
+      <g:sortableColumn id="content-table-headers-service-unit-price" property="unitPrice" title="${message(code: 'service.unitPrice.label', default: 'Unit Price')}" />
     </tr>
   </thead>
   <tbody>
   <g:each in="${serviceInstanceList}" status="i" var="serviceInstance">
     <tr>
-      <!--<td><input type="checkbox" id="service-multop-${serviceInstance.id}" class="multop-sel-item" /></td>-->
-      <td class="align-center"><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "fullNumber")}</g:link></td>
-      <td><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "name")}</g:link></td>
-      <td>${fieldValue(bean: serviceInstance, field: "category")}</td>
-      <td class="align-right">${fieldValue(bean: serviceInstance, field: "quantity")}</td>
-      <td>${fieldValue(bean: serviceInstance, field: "unit")}</td>
-      <td class="align-right">${formatCurrency(number: serviceInstance?.unitPrice)}</td>
+      <%--<td class="content-table-row-selector" headers="content-table-headers-service-row-selector"><input type="checkbox" id="service-row-selector-${serviceInstance.id}" data-id="${serviceInstance.id}" /></td>--%>
+      <td class="content-table-type-id content-table-column-service-number" headers="content-table-headers-service-number"><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "fullNumber")}</g:link></td>
+      <td class="content-table-type-string content-table-column-service-name" headers="content-table-headers-service-name"><g:link action="get" id="${serviceInstance.id}" class="select-link">${fieldValue(bean: serviceInstance, field: "name")}</g:link></td>
+      <td class="content-table-type-string content-table-column-service-category" headers="content-table-headers-service-category">${fieldValue(bean: serviceInstance, field: "category")}</td>
+      <td class="content-table-type-number content-table-column-service-quantity" headers="content-table-headers-service-quantity">${fieldValue(bean: serviceInstance, field: "quantity")}</td>
+      <td class="content-table-type-string content-table-column-service-unit" headers="content-table-headers-service-unit">${fieldValue(bean: serviceInstance, field: "unit")}</td>
+      <td class="content-table-type-currency content-table-column-service-unit-price" headers="content-table-headers-service-unit-price">${formatCurrency(number: serviceInstance?.unitPrice)}</td>
     </tr>
   </g:each>
   </tbody>

@@ -1145,12 +1145,6 @@ tbody tr th:first-child {
 .content-table {
   width: 100%;
 }
-.content-table tbody tr, .content-table tfoot tr {
-  background: #DDD;
-}
-.content-table tbody tr:nth-child(2n), .content-table tfoot tr:nth-child(2n) {
-  background: #EEE;
-}
 .content-table thead tr {
   background: #CCC;
   border-bottom: 1px solid white;
@@ -1159,21 +1153,63 @@ tbody tr th:first-child {
   background: #CCC;
   border-top: 1px solid white;
 }
+.content-table tbody tr {
+  background: #DDD;
+}
+.content-table tbody tr:nth-child(2n), .content-table tfoot tr:nth-child(2n) {
+  background: #EEE;
+}
+.content-table tbody tr:hover, .content-table tfoot tr:hover {
+  background: #D2DAC1;
+}
 .content-table tbody tr:last-child {
   border-bottom: 1px solid white;
+}
+.content-table-divider {
+  border-top: 1px solid white;
 }
 .content-table td, .content-table th {
   border-right: 1px solid white;
 }
-.content-table td:first-child {
-  text-align: center;
-}
 .content-table td:last-child, .content-table th:last-child {
   border-right: none;
 }
-.content-table td:last-child {
+.content-table-row-selector {
+  text-align: center;
+}
+.content-table-buttons {
   text-align: right;
   white-space: nowrap;
+  width: 11.5em;
+}
+.content-table-type-date, .content-table-type-id, .content-table-type-status {
+  text-align: center;
+}
+.content-table-type-currency, .content-table-type-number {
+  text-align: right;
+}
+.content-table-type-currency {
+  width: 6em;
+}
+.content-table-type-id {
+  white-space: nowrap;
+}
+.content-table-column-call-start {
+  width: 9em;
+}
+.content-table-column-organization-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+}
+.content-table-column-organization-phone, .content-table-column-person-phone {
+  white-space: nowrap;
+  width: 9em;
+}
+.content-table-column-organization-website {
+  max-width: 11em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .invoicing-items td {
   vertical-align: top;
