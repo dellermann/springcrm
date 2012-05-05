@@ -13,7 +13,7 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <g:if test="authorized"><p><g:message code="user.settings.googleAuth.alreadyAuthorized" /></p></g:if>
+    <g:if test="${authorized}"><p><g:message code="user.settings.googleAuth.alreadyAuthorized" /></p></g:if>
     <g:else><p><g:message code="user.settings.googleAuth.hints" /></p></g:else>
     <p><g:link action="settingsGoogleAuthRequest" class="button green"><g:message code="user.settings.googleAuth.authorize" default="Authorize at Google" /></g:link> <g:link action="settingsIndex" class="button red"><g:message code="default.btn.cancel" default="Cancel" /></g:link></p>
   </section>

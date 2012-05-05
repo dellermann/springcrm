@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import com.google.api.client.auth.oauth2.Credential
 import com.google.gdata.client.GoogleService
 import com.google.gdata.data.contacts.ContactEntry
 
@@ -42,7 +43,7 @@ class GoogleDataCalendarService extends GoogleDataService<CalendarEvent, Contact
     }
 
     @Override
-    protected GoogleService getService() {
+    protected GoogleService getServiceInstance() {
         // TODO Auto-generated method stub
         return null
     }

@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.http.javanet.NetHttpTransport
@@ -32,51 +33,56 @@ import org.springframework.web.context.request.RequestContextHolder
 
 
 /**
- * The class <code>GoogleDataService</code> represents a service which is able
- * to exchange data with Google Data.
+ * The class {@code GoogleDataService} represents a service which is able to
+ * exchange data with Google API (former: Google Data).
  *
- * @author		Daniel Ellermann
- * @version		0.9
- * @param <E>	the type of domain model classes which are handled by this
- * 				service
- * @param <G>	the type of Google Data entries which are handled by this
- * 				service
+ * @author      Daniel Ellermann
+ * @version     1.0
+ * @param <E>   the type of domain model classes which are handled by this
+ *              service
+ * @param <G>   the type of Google API entries which are handled by this
+ *              service
  */
 abstract class GoogleDataService<E, G extends BaseEntry> {
 
 	//-- Constants ------------------------------
 
-	protected static final String APPLICATION_NAME = "amcworld-springcrm-0.9"
+    /**
+     * The identifier for this application used in connections to Google.
+     */
+	protected static final String APPLICATION_NAME = 'amcworld-springcrm-1.0'
 
 
 	//-- Class variables ------------------------
 
 	static scope = 'session'
-    static transactional = true
+    static transactional = false
 
 
 	//-- Instance variables ---------------------
 
 	protected Class<G> entryClass
+    def googleOAuthService
 	protected URL feedUrl
+    protected GoogleService svc
 
 
 	//-- Public methods -------------------------
 
 	/**
-	 * Converts the given item to a Google Data entry.
+	 * Converts the given item to a Google API entry.
 	 *
-	 * @param item	the given item
-	 * @param entry	a Google Data object which is to fill with the property
-	 * 				values; if <code>null</code> a new entry is to create
-	 * @return		the converted Google Data entry
+	 * @param item     the given item
+	 * @param entry    a Google API object which is to fill with the property
+	 *                 values; if {@code null} a new entry is to create
+	 * @return         the converted Google API entry
 	 */
 	abstract G convertToGoogle(E item, G entry = null)
 
 	/**
 	 * Deletes the given Google Data entry.
 	 *
-	 * @param entry	the entry to delete
+	 * @param entry    the entry to delete
 	 */
 	void delete(G entry) {
 		entry.delete()
@@ -87,22 +93,22 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	 * status table.
 	 */
 	void deleteMarkedEntries() {
-		def srv = getService()
+		def srv = service
 		List<GoogleDataSyncStatus> toDelete = findDeletedItems()
 		toDelete.each {
 			G entry = retrieve(it.url)
 			if (entry) {
 				delete(entry)
 			}
-			it.delete(flush:true)
+			it.delete(flush: true)
 		}
 	}
 
 	/**
-	 * Inserts the given Google Data entry into the remote repository.
+	 * Inserts the given Google API entry into the remote repository.
 	 *
-	 * @param entry	the entry to insert
-	 * @return		the inserted entry with additional data such as ID
+	 * @param entry    the entry to insert
+	 * @return         the inserted entry with additional data such as ID
 	 */
 	G insert(G entry) {
 		return service.insert(feedUrl, entry)
@@ -110,25 +116,24 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 
 	/**
 	 * Marks the given item as deleted in the synchronization status table. It
-	 * will be deleted during the next Google data synchronization.
+	 * will be deleted during the next Google API synchronization.
 	 *
-	 * @param item	the item to mark as deleted
+	 * @param item the item to mark as deleted
 	 */
 	void markDeleted(E item) {
 		def status = findSyncStatus(item)
-		println "Status: " + status?.dump()
 		if (status) {
 			status.deleted = true
-			status.save(flush:true)
+			status.save(flush: true)
 		}
 	}
 
 	/**
-	 * Retrieves the Google Data entry with the given URL and class.
+	 * Retrieves the Google API entry with the given URL and class.
 	 *
-	 * @param url	the given URL
-	 * @return		the entry; <code>null</code> if no entry with the given
-	 * 				URL is available
+	 * @param url  the given URL
+	 * @return     the entry; {@code null} if no entry with the given URL is
+	 *             available
 	 */
 	G retrieve(String url) {
 		G res = null
@@ -141,12 +146,11 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	}
 
 	/**
-	 * Synchronizes the given item with Google Data. If an associated Google
-	 * Data item is set already it is updated. Otherwise, an new entry is
-	 * created.
+	 * Synchronizes the given item with Google API. If an associated Google API
+	 * item is set already it is updated. Otherwise, an new entry is created.
 	 *
-	 * @param item	the item to synchronize
-	 * @return		the converted Google Data item
+	 * @param item the item to synchronize
+	 * @return     the converted Google API item
 	 */
 	G sync(E item) {
 		GoogleDataSyncStatus status = findSyncStatus(item)
@@ -171,12 +175,12 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	}
 
 	/**
-	 * Updates the given Google Data entry.
+	 * Updates the given Google API entry.
 	 *
-	 * @param entry	the entry to update
-	 * @param url	an optional different URL used for update; if
-	 * 				<code>null</code> the update URL is obtained from the given
-	 * 				entry
+	 * @param entry    the entry to update
+	 * @param url      an optional different URL used for update; if
+	 *                 {@code null} the update URL is obtained from the given
+	 *                 entry
 	 */
 	void update(G entry, String url = null) {
 		if (url == null) {
@@ -189,38 +193,38 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	//-- Non-public methods ---------------------
 
 	/**
-	 * Records the given item and the associated Google Data entry in the
+	 * Records the given item and the associated Google API entry in the
 	 * synchronization status table. This method should be called after
-	 * inserting a Google Data entry.
+	 * inserting a Google API entry.
 	 *
-	 * @param item		the item to record
-	 * @param contact	the associated Google Data entry
+	 * @param item     the item to record
+	 * @param contact  the associated Google Data entry
 	 */
 	protected void afterInsert(E item, G entry) {
 		def status = new GoogleDataSyncStatus(
-			user:session.user, type:item.class.name, itemId:item.id,
-			url:entry.selfLink.href
+			user: session.user, type: item.class.name, itemId: item.id,
+			url: entry.selfLink.href
 		)
-		status.save(flush:true)
+		status.save(flush: true)
 	}
 
 	/**
 	 * Updates the last synchronization time stamp and stores the given
 	 * synchronization status. This method should be called after updating an
-	 * existing Google Data entry.
+	 * existing Google API entry.
 	 *
-	 * @param status	the status to update
+	 * @param status   the status to update
 	 */
 	protected void afterUpdate(GoogleDataSyncStatus status) {
 		status.lastSync = new Date()
-		status.save(flush:true)
+		status.save(flush: true)
 	}
 
 	/**
 	 * Returns all entries from the synchronization status table where were
 	 * marked as deleted.
 	 *
-	 * @return	the synchronization status entries which are marked as deleted
+	 * @return the synchronization status entries which are marked as deleted
 	 */
 	protected List<GoogleDataSyncStatus> findDeletedItems() {
 		return GoogleDataSyncStatus.findAllByDeleted(true)
@@ -229,9 +233,9 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 	/**
 	 * Returns the synchronization status entry for the given item.
 	 *
-	 * @param item	the given item
-	 * @return		the synchronization status entry; <code>null</code> if no
-	 * 				such entry exists for the given item
+	 * @param item the given item
+	 * @return     the synchronization status entry; {@code null} if no such
+	 *             entry exists for the given item
 	 */
 	protected GoogleDataSyncStatus findSyncStatus(E item) {
 		def c = GoogleDataSyncStatus.createCriteria()
@@ -242,12 +246,42 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
 		}
 	}
 
-	protected abstract GoogleService getService()
+    /**
+     * Gets access to the underlying Google API service.  The service is fully
+     * authenticated.  The actual Google API service implementation is obtained
+     * from the subclass by method {@code getServiceInstance()}.
+     *
+     * @return  the Google API service instance
+     * @see     #getServiceInstance()
+     * @since   1.0
+     */
+    protected synchronized GoogleService getService() {
+        if (!svc) {
+            svc = serviceInstance
+        }
+
+        def credential = googleOAuthService.loadCredential(session.user.userName)
+        if (!credential) {
+            throw new GoogleAuthException('error.googleAuthException.message.noCredentials')
+        }
+
+        svc.OAuth2Credentials = credential
+        return svc
+    }
+
+    /**
+     * Gets the underlying Google API service.  Derived classes must implement
+     * the instantiation of such a service class.
+     *
+     * @return  the Google API service instance
+     * @since   1.0
+     */
+	protected abstract GoogleService getServiceInstance()
 
 	/**
 	 * Returns access to the user session.
 	 *
-	 * @return	the session instance
+	 * @return the session instance
 	 */
 	protected HttpSession getSession() {
 		return RequestContextHolder.currentRequestAttributes().session

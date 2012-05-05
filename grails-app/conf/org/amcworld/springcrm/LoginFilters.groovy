@@ -45,7 +45,7 @@ class LoginFilters {
         }
 
 		permission(controller: '*',
-                   controllerExclude: 'notification|searchable|overview|i18n|install',
+                   controllerExclude: 'about|i18n|install|notification|overview|searchable',
                    action: '*',
                    actionExclude: 'login|authenticate|logout|settings*')
         {
@@ -53,7 +53,7 @@ class LoginFilters {
 				User user = session?.user
 				if (user && controllerName) {
 					if (!user.checkAllowedControllers([controllerName])) {
-						redirect(uri: '/forbidden.gsp')
+						render(status: 403)
 						return false
 					}
 				}

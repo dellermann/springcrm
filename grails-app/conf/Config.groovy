@@ -67,6 +67,8 @@ grails.views.default.codec = 'none' // none, html, base64
 grails.views.gsp.encoding = 'UTF-8'
 grails.converters.encoding = 'UTF-8'
 
+grails.web.url.converter = 'hyphenated'
+
 /* Enable Sitemesh preprocessing of GSP pages */
 grails.views.gsp.sitemesh.preprocess = true
 

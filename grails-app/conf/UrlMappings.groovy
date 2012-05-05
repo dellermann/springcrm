@@ -29,14 +29,24 @@ class UrlMappings {
     //-- Class variables ------------------------
 
 	static mappings = {
+
+        /* default URL rewriting */
 		"/$controller/$action?/$id?"{
 			constraints {
 				// apply constraints here
 			}
 		}
 
+        /* redirect home to overview page */
 		'/'(controller: 'overview', action: 'index')
-		'403'(view: '/forbidden')
-//		'500'(view: '/error')
+
+        /* error handling */
+		'403'(view: '/errors/forbidden')
+		'404'(view: '/errors/notFound')
+		'500'(
+            view: '/errors/googleAuthException',
+            exception: org.amcworld.springcrm.GoogleAuthException
+        )
+        '500'(view: '/errors/error')
 	}
 }

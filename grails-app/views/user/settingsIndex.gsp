@@ -21,12 +21,10 @@
         </dl>
       </div>
       <div class="col col-r">
-        <%--
         <dl id="configuration-google-auth">
           <dt><g:link action="settingsGoogleAuth"><g:message code="user.settings.googleAuth.title" default="Authorize at Google" /></g:link></dt>
           <dd><g:message code="user.settings.googleAuth.description" /></dd>
         </dl>
-        --%>
       </div>
     </div>
   </section>

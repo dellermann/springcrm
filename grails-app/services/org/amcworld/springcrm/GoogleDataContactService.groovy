@@ -37,19 +37,14 @@ import net.sf.jmimemagic.Magic
  * The class {@code GoogleDataContactService} sends person records to Google.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
 	//-- Class variables ------------------------
 
 	static scope = 'session'
-    static transactional = true
-
-
-	//-- Instance variables ---------------------
-
-	private ContactsService contactsService
+    static transactional = false; /* leave semicolon here! otherwise instance initializer is treated as closure */
 
 
     //-- Instance initializer -------------------
@@ -68,16 +63,16 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 		}
 		contact.getRepeatingExtension(GDataOrg).clear()
 		contact.addOrganization(new GDataOrg(
-			orgName:p.organization?.name ? new OrgName(p.organization?.name) : null,
-			orgDepartment:p.department ? new OrgDepartment(p.department) : null,
-			orgJobDescription:p.jobTitle ? new OrgJobDescription(p.jobTitle) : null,
-			primary:true,
-			rel:GDataOrg.Rel.WORK
+			orgName: p.organization?.name ? new OrgName(p.organization?.name) : null,
+			orgDepartment: p.department ? new OrgDepartment(p.department) : null,
+			orgJobDescription: p.jobTitle ? new OrgJobDescription(p.jobTitle) : null,
+			primary: true,
+			rel: GDataOrg.Rel.WORK
 		))
 		contact.name = new Name(
-			namePrefix:p.salutation?.name ? new NamePrefix(p.salutation?.name) : null,
-			givenName:new GivenName(p.firstName, null),
-			familyName:new FamilyName(p.lastName, null)
+			namePrefix: p.salutation?.name ? new NamePrefix(p.salutation?.name) : null,
+			givenName: new GivenName(p.firstName, null),
+			familyName: new FamilyName(p.lastName, null)
 		)
 		contact.getRepeatingExtension(StructuredPostalAddress).clear()
 		if (p.mailingAddrStreet || p.mailingAddrPoBox
@@ -85,13 +80,13 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 			|| p.mailingAddrState || p.mailingAddrCountry)
 		{
 			contact.addStructuredPostalAddress(new StructuredPostalAddress(
-				street:p.mailingAddrStreet ? new Street(p.mailingAddrStreet) : null,
-				pobox:p.mailingAddrPoBox ? new PoBox(p.mailingAddrPoBox) : null,
-				postcode:p.mailingAddrPostalCode ? new PostCode(p.mailingAddrPostalCode) : null,
-				city:p.mailingAddrLocation ? new City(p.mailingAddrLocation) : null,
-				region:p.mailingAddrState ? new Region(p.mailingAddrState) : null,
-				country:p.mailingAddrCountry ? new Country(value:p.mailingAddrCountry) : null,
-				rel:StructuredPostalAddress.Rel.WORK
+				street: p.mailingAddrStreet ? new Street(p.mailingAddrStreet) : null,
+				pobox: p.mailingAddrPoBox ? new PoBox(p.mailingAddrPoBox) : null,
+				postcode: p.mailingAddrPostalCode ? new PostCode(p.mailingAddrPostalCode) : null,
+				city: p.mailingAddrLocation ? new City(p.mailingAddrLocation) : null,
+				region: p.mailingAddrState ? new Region(p.mailingAddrState) : null,
+				country: p.mailingAddrCountry ? new Country(value: p.mailingAddrCountry) : null,
+				rel: StructuredPostalAddress.Rel.WORK
 			))
 		}
 		if (p.otherAddrStreet || p.otherAddrPoBox
@@ -99,106 +94,106 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 			|| p.otherAddrState || p.otherAddrCountry)
 		{
 			contact.addStructuredPostalAddress(new StructuredPostalAddress(
-				street:p.otherAddrStreet ? new Street(p.otherAddrStreet) : null,
-				pobox:p.otherAddrPoBox ? new PoBox(p.otherAddrPoBox) : null,
-				postcode:p.otherAddrPostalCode ? new PostCode(p.otherAddrPostalCode) : null,
-				city:p.otherAddrLocation ? new City(p.otherAddrLocation) : null,
-				region:p.otherAddrState ? new Region(p.otherAddrState) : null,
-				country:p.otherAddrCountry ? new Country(value:p.otherAddrCountry) : null,
-				rel:StructuredPostalAddress.Rel.OTHER
+				street: p.otherAddrStreet ? new Street(p.otherAddrStreet) : null,
+				pobox: p.otherAddrPoBox ? new PoBox(p.otherAddrPoBox) : null,
+				postcode: p.otherAddrPostalCode ? new PostCode(p.otherAddrPostalCode) : null,
+				city: p.otherAddrLocation ? new City(p.otherAddrLocation) : null,
+				region: p.otherAddrState ? new Region(p.otherAddrState) : null,
+				country: p.otherAddrCountry ? new Country(value: p.otherAddrCountry) : null,
+				rel: StructuredPostalAddress.Rel.OTHER
 			))
 		}
 		contact.getRepeatingExtension(PhoneNumber).clear()
 		if (p.phone) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.phone,
-				primary:true,
-				rel:PhoneNumber.Rel.WORK
+				phoneNumber: p.phone,
+				primary: true,
+				rel: PhoneNumber.Rel.WORK
 			))
 		}
 		if (p.organization.phone && p.organization.phone != p.phone) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.organization.phone,
-				primary:!p.phone,
-				rel:PhoneNumber.Rel.WORK
+				phoneNumber: p.organization.phone,
+				primary: !p.phone,
+				rel: PhoneNumber.Rel.WORK
 			))
 		}
 		if (p.phoneHome) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.phoneHome,
-				rel:PhoneNumber.Rel.HOME
+				phoneNumber: p.phoneHome,
+				rel: PhoneNumber.Rel.HOME
 			))
 		}
 		if (p.mobile) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.mobile,
-				rel:PhoneNumber.Rel.MOBILE
+				phoneNumber: p.mobile,
+				rel: PhoneNumber.Rel.MOBILE
 			))
 		}
 		if (p.fax) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.fax,
-				rel:PhoneNumber.Rel.FAX
+				phoneNumber: p.fax,
+				rel: PhoneNumber.Rel.FAX
 			))
 		}
 		if (p.organization.fax && p.organization.fax != p.fax) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.organization.fax,
-				rel:PhoneNumber.Rel.FAX
+				phoneNumber: p.organization.fax,
+				rel: PhoneNumber.Rel.FAX
 			))
 		}
 		if (p.phoneAssistant) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.phoneAssistant,
-				rel:PhoneNumber.Rel.ASSISTANT
+				phoneNumber: p.phoneAssistant,
+				rel: PhoneNumber.Rel.ASSISTANT
 			))
 		}
 		if (p.phoneOther) {
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.phoneOther,
-				rel:PhoneNumber.Rel.OTHER
+				phoneNumber: p.phoneOther,
+				rel: PhoneNumber.Rel.OTHER
 			))
 		}
 		if (p.organization.phoneOther
 			&& p.organization.phoneOther != p.phoneOther)
 		{
 			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber:p.organization.phoneOther,
-				rel:PhoneNumber.Rel.OTHER
+				phoneNumber: p.organization.phoneOther,
+				rel: PhoneNumber.Rel.OTHER
 			))
 		}
 		contact.getRepeatingExtension(Email).clear()
 		if (p.email1) {
 			contact.addEmailAddress(new Email(
-				address:p.email1,
-				primary:true,
-				rel:Email.Rel.WORK
+				address: p.email1,
+				primary: true,
+				rel: Email.Rel.WORK
 			))
 		}
 		if (p.organization.email1 && p.organization.email1 != p.email1) {
 			contact.addEmailAddress(new Email(
-				address:p.organization.email1,
-				primary:!p.email1,
-				rel:Email.Rel.WORK
+				address: p.organization.email1,
+				primary: !p.email1,
+				rel: Email.Rel.WORK
 			))
 		}
 		if (p.email2) {
 			contact.addEmailAddress(new Email(
-				address:p.email2,
-				rel:Email.Rel.OTHER
+				address: p.email2,
+				rel: Email.Rel.OTHER
 			))
 		}
 		if (p.organization.email2 && p.organization.email2 != p.email2) {
 			contact.addEmailAddress(new Email(
-				address:p.organization.email2,
-				rel:Email.Rel.OTHER
+				address: p.organization.email2,
+				rel: Email.Rel.OTHER
 			))
 		}
 		contact.getRepeatingExtension(Relation.class).clear()
 		if (p.assistant) {
 			contact.addRelation(new Relation(
-				value:p.assistant,
-				rel:Relation.Rel.ASSISTANT
+				value: p.assistant,
+				rel: Relation.Rel.ASSISTANT
 			))
 		}
 		if (p.birthday) {
@@ -211,9 +206,9 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 		contact.getRepeatingExtension(Website).clear()
 		if (p.organization.website) {
 			contact.addWebsite(new Website(
-				href:p.organization.website,
-				primary:true,
-				rel:Website.Rel.WORK
+				href: p.organization.website,
+				primary: true,
+				rel: Website.Rel.WORK
 			))
 		}
 		return contact
@@ -242,17 +237,9 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
 	//-- Non-public methods ---------------------
 
-	/**
-	 * Initializes and returns the Google Data service for contacts. The method
-	 * expects the session variable <code>gdataToken</code> to be set.
-	 *
-	 * @return	the Google Data contacts service
-	 */
-	protected GoogleService getService() {
-		if (!this.contactsService) {
-			this.contactsService = new ContactsService(APPLICATION_NAME)
-			this.contactsService.setAuthSubToken(session.gdataToken, null)
-		}
-		return this.contactsService
+	protected GoogleService getServiceInstance() {
+        def svc = new ContactsService(APPLICATION_NAME)
+        svc.protocolVersion = ContactsService.Versions.V3
+        return svc
 	}
 }

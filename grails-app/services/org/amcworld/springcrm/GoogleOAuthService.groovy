@@ -79,7 +79,7 @@ class GoogleOAuthService {
     }
 
     /**
-     * Loads the credential for the given user. The credential data are stored
+     * Loads the credential for the given user.  The credential data are stored
      * in the user settings.
      *
      * @param userName  the name of the user
@@ -87,7 +87,15 @@ class GoogleOAuthService {
      *                  stored
      */
     Credential loadCredential(CharSequence userName) {
-        return authorizationCodeFlow.loadCredential(userName.toString())
+        def credential = authorizationCodeFlow.loadCredential(userName.toString())
+        if (credential) {
+            if (credential.expiresInSeconds <= 0) {
+                if (!credential.refreshToken()) {
+                    throw new GoogleAuthException('error.googleAuthException.message.cannotRefreshAccess')
+                }
+            }
+        }
+        return credential
     }
 
     /**
