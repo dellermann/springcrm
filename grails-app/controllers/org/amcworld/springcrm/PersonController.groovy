@@ -240,7 +240,7 @@ class PersonController {
 	}
 
 	def find() {
-		def organizationInstance = Organization.findById(params.organization)
+		def organizationInstance = Organization.get(params.organization)
 		def c = Person.createCriteria()
 		def list = c.list {
 			eq('organization', organizationInstance)
