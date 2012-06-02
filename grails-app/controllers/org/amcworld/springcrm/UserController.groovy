@@ -51,6 +51,7 @@ class UserController {
     //-- Instance variables ---------------------
 
     def googleOAuthService
+    def googleOAuthProxyService
     def installService
 
 
@@ -235,24 +236,31 @@ class UserController {
     }
 
     def settingsGoogleAuthRequest() {
-        def uri = googleOAuthService.getAuthorizationUrl(
+        String uri = googleOAuthService.registerAtProxy(
             createLink(controller: controllerName, action: 'settingsGoogleAuthResponse', absolute: true)
         )
+        if (uri == null) {
+            flash.message = message(code: 'user.settings.googleAuth.failed.message')
+            redirect(action: 'settingsIndex')
+            return
+        }
+
         redirect(uri: uri)
     }
 
     def settingsGoogleAuthResponse() {
-        if (params.error) {
+        if (params.success != '200') {
             flash.message = message(code: 'user.settings.googleAuth.failed.message')
-            redirect(action: 'authGoogle')
+            redirect(action: 'settingsGoogleAuth')
             return
         }
 
-        def tokenResponse = googleOAuthService.requestAccessToken(
-            params.code,
-            createLink(controller: controllerName, action: 'settingsGoogleAuthResponse', absolute: true)
-        )
-        googleOAuthService.createAndStoreCredential(session.user.userName, tokenResponse)
+        if (!googleOAuthService.obtainAndStoreCredential(session.user.userName, params.clientId)) {
+            flash.message = message(code: 'user.settings.googleAuth.failed.message')
+            redirect(action: 'settingsGoogleAuth')
+            return
+        }
+
         flash.message = message(code: 'user.settings.googleAuth.succeeded.message')
         redirect(action: 'settingsIndex')
     }
