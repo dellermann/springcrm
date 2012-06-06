@@ -94,13 +94,13 @@ class ProxyAuthorizationCodeFlow {
      */
     Credential loadCredential(String userId) {
         if (credentialStore == null) {
-            return null;
+            return null
         }
-        Credential credential = newCredential(userId);
+        Credential credential = newCredential(userId)
         if (!credentialStore.load(userId, credential)) {
-            return null;
+            return null
         }
-        return credential;
+        return credential
     }
 
     /**
@@ -131,6 +131,24 @@ class ProxyAuthorizationCodeFlow {
         req.put('redirectUrl', redirectUrl)
         ProxyResponse response = req.execute()
         return response.get('url')
+    }
+
+    /**
+     * Revokes access to the server by sending a revoke request to the proxy
+     * and deleting the credential in the underlying store.
+     *
+     * @param userId    the user name
+     */
+    void revoke(String userId) {
+        def credential = loadCredential(userId)
+        if (credential != null) {
+            def req = new ProxyRequest(transport, jsonFactory, 'revoke')
+            req.put('token', credential.accessToken)
+            req.execute()
+            if (credentialStore != null) {
+                credentialStore.delete(userId, credential)
+            }
+        }
     }
 
 

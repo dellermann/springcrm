@@ -231,7 +231,7 @@ class UserController {
     }
 
     def settingsGoogleAuth() {
-        Credential cred = googleOAuthService.loadCredential(session.user.userName)
+        Credential cred = googleOAuthService.loadCredential()
         return [authorized: cred != null]
     }
 
@@ -255,13 +255,20 @@ class UserController {
             return
         }
 
-        if (!googleOAuthService.obtainAndStoreCredential(session.user.userName, params.clientId)) {
+        if (!googleOAuthService.obtainAndStoreCredential(params.clientId)) {
             flash.message = message(code: 'user.settings.googleAuth.failed.message')
             redirect(action: 'settingsGoogleAuth')
             return
         }
 
         flash.message = message(code: 'user.settings.googleAuth.succeeded.message')
+        redirect(action: 'settingsIndex')
+    }
+
+    def settingsGoogleAuthRevoke() {
+        googleOAuthService.revokeAtProxy()
+
+        flash.message = message(code: 'user.settings.googleAuth.revoked.message')
         redirect(action: 'settingsIndex')
     }
 

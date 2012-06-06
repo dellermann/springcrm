@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.amcworld.springcrm.google.GoogleAuthException;
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
@@ -260,7 +261,7 @@ abstract class GoogleDataService<E, G extends BaseEntry> {
             svc = serviceInstance
         }
 
-        def credential = googleOAuthService.loadCredential(session.user.userName)
+        def credential = googleOAuthService.loadCredential()
         if (!credential) {
             throw new GoogleAuthException('error.googleAuthException.message.noCredentials')
         }

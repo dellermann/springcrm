@@ -22,7 +22,7 @@
  * The class {@code UrlMappings} defines URL mappings.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class UrlMappings {
 
@@ -45,7 +45,7 @@ class UrlMappings {
 		'404'(view: '/errors/notFound')
 		'500'(
             view: '/errors/googleAuthException',
-            exception: org.amcworld.springcrm.GoogleAuthException
+            exception: org.amcworld.springcrm.google.GoogleAuthException
         )
         '500'(view: '/errors/error')
 	}

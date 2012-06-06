@@ -18,12 +18,22 @@
  */
 
 
-package org.amcworld.springcrm
+package org.amcworld.springcrm.google
 
+import org.amcworld.springcrm.User;
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.auth.oauth2.CredentialStore
 
 
+/**
+ * The class {@code UserCredentialStore} represents a store to load and save
+ * the OAuth2 credentials which are used to synchronize data with Google.  It
+ * uses the underlying database and GORM access to manage data.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.0
+ * @since   1.0
+ */
 class UserCredentialStore implements CredentialStore {
 
     //-- Public methods -------------------------

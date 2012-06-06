@@ -18,7 +18,7 @@
  */
 
 
-package org.amcworld.springcrm
+package org.amcworld.springcrm.google
 
 
 /**
