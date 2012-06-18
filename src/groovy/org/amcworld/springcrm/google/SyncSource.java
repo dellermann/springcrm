@@ -1,5 +1,5 @@
 /*
- * GoogleDataSyncStatus.groovy
+ * SyncSource.java
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,46 +18,28 @@
  */
 
 
-package org.amcworld.springcrm
+package org.amcworld.springcrm.google;
 
 
 /**
- * The class {@code GoogleDataSyncStatus} stores information about the
- * synchronization state of a content item with Google.
+ * The enumeration {@code PrimarySyncSource} contains available data sources
+ * which are used during synchronization.
  *
  * @author	Daniel Ellermann
  * @version 1.0
+ * @since   1.0
  */
-class GoogleDataSyncStatus {
+public enum SyncSource {
 
-    //-- Class variables ------------------------
-
-    static constraints = {}
-    static mapping = {
-        type index: 'type'
-    }
-
-
-    //-- Instance variables ---------------------
-
-	User user
-	String type
-	Long itemId
-	String url
-    String etag
-	Date lastSync = new Date()
-	boolean deleted
-
-
-    //-- Public methods -------------------------
+    //-- Values ---------------------------------
 
     /**
-     * Sets the synchronization status to the current date and ETag.
-     *
-     * @param etag  the given ETag
+     * Represents the local (aka SpringCRM) data source.
      */
-    void updateToCurrent(String etag) {
-        this.lastSync = new Date()
-        this.etag = etag
-    }
+    LOCAL,
+
+    /**
+     * Represents the remote data source, for instance Google.
+     */
+    REMOTE
 }

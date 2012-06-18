@@ -1,5 +1,5 @@
 /*
- * changelog.groovy
+ * GoogleSyncException.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,11 +18,34 @@
  */
 
 
-databaseChangeLog = {
-    include file: 'db-2012-03-13.xml'
-	include file: 'db-2012-04-10.xml'
-    include file: 'db-2012-04-11.xml'
-    include file: 'db-2012-04-17.xml'
-	include file: 'db-2012-06-06.xml'
-	include file: 'db-2012-06-09.xml'
+package org.amcworld.springcrm.google
+
+
+/**
+ * The class {@code GoogleSyncException} represents an exception which occurred
+ * during synchronization with Google.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.0
+ * @since   1.0
+ */
+class GoogleSyncException extends Exception {
+
+    //-- Constructors ---------------------------
+
+    public GoogleSyncException() {
+        super()
+    }
+
+    public GoogleSyncException(String message, Throwable cause) {
+        super(message, cause)
+    }
+
+    public GoogleSyncException(String message) {
+        super(message)
+    }
+
+    public GoogleSyncException(Throwable cause) {
+        super(cause)
+    }
 }

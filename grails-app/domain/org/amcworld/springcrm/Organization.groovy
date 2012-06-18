@@ -35,7 +35,7 @@ class Organization {
     static constraints = {
         number(unique: 'recType', widget: 'autonumber')
 		recType(range: 1..3)
-        name(blank: false)
+        name(blank: false, unique: true)
         billingAddrStreet(nullable: true, widget: 'textarea')
         billingAddrPoBox(nullable: true)
         billingAddrPostalCode(nullable: true)

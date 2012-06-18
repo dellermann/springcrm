@@ -28,7 +28,6 @@ import javax.servlet.http.HttpSession;
 import org.amcworld.springcrm.google.ProxyAuthorizationCodeFlow;
 import org.amcworld.springcrm.google.ProxyCredential
 import org.amcworld.springcrm.google.UserCredentialStore;
-import org.springframework.web.context.request.RequestContextHolder
 
 
 /**
@@ -41,7 +40,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * @version 1.0
  * @since   1.0
  */
-class GoogleOAuthService {
+class GoogleOAuthService extends GoogleService {
 
     //-- Instance variables ---------------------
 
@@ -62,9 +61,7 @@ class GoogleOAuthService {
      */
     synchronized ProxyAuthorizationCodeFlow getAuthorizationCodeFlow() {
         if (flow == null) {
-            def httpTransport = new NetHttpTransport()
-            def jsonFactory = new JacksonFactory()
-            flow = new ProxyAuthorizationCodeFlow(httpTransport, jsonFactory)
+            flow = new ProxyAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY)
             flow.setCredentialStore(new UserCredentialStore())
         }
         return flow
@@ -153,14 +150,5 @@ class GoogleOAuthService {
      */
     protected String fixUserName(CharSequence userName) {
         return (userName == null) ? session.user.userName : userName.toString()
-    }
-
-    /**
-     * Returns access to the user session.
-     *
-     * @return the session instance
-     */
-    protected HttpSession getSession() {
-        return RequestContextHolder.currentRequestAttributes().session
     }
 }

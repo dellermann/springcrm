@@ -31,7 +31,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * that belong to an organization.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class PersonController {
 
@@ -263,22 +263,23 @@ class PersonController {
 
 	def gdatasync() {
 		if (googleDataContactService) {
-			if (params.id) {
-				def personInstance = Person.get(params.id)
-				if (personInstance) {
-					googleDataContactService.sync(personInstance)
-					flash.message = message(code: 'default.gdata.sync.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-		        } else {
-					flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-				}
-				redirect(action: 'show', id: params.id)
-				return
-			}
-
-			def personInstanceList = Person.list()
-			personInstanceList.each { googleDataContactService.sync(it) }
-			flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
-			googleDataContactService.deleteMarkedEntries()
+//			if (params.id) {
+//				def personInstance = Person.get(params.id)
+//				if (personInstance) {
+//					googleDataContactService.sync(personInstance)
+//					flash.message = message(code: 'default.gdata.sync.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+//		        } else {
+//					flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+//				}
+//				redirect(action: 'show', id: params.id)
+//				return
+//			}
+//
+//			def personInstanceList = Person.list()
+//			personInstanceList.each { googleDataContactService.sync(it) }
+//			flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
+//			googleDataContactService.deleteMarkedEntries()
+            googleDataContactService.sync()
 		}
 		if (params.returnUrl) {
 			redirect(url: params.returnUrl)

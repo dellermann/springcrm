@@ -20,11 +20,26 @@
 
 package org.amcworld.springcrm
 
-import com.google.api.client.auth.oauth2.Credential
+import java.util.Map;
 import com.google.gdata.client.GoogleService
 import com.google.gdata.data.contacts.ContactEntry
+import org.amcworld.springcrm.google.GoogleAuthException
+
 
 class GoogleDataCalendarService extends GoogleDataService<CalendarEvent, ContactEntry> {
+
+    //-- Class variables ------------------------
+
+    static scope = 'session'
+    static transactional = false
+
+
+    //-- Instance variables ---------------------
+
+    com.google.api.services.calendar.Calendar svc
+
+
+    //-- Public methods -------------------------
 
     def serviceMethod() {
 
@@ -42,9 +57,66 @@ class GoogleDataCalendarService extends GoogleDataService<CalendarEvent, Contact
         return null
     }
 
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets access to the underlying Google API service.  The service is fully
+     * authenticated.
+     *
+     * @return  the Google API service instance
+     * @since   1.0
+     */
+    protected synchronized GoogleService getService() {
+        if (!svc) {
+            svc = com.google.api.services.calendar.Calendar.builder(
+                    HTTP_TRANSPORT, JSON_FACTORY
+                )
+                .setApplicationName(APPLICATION_NAME)
+                .setHttpRequestInitializer(loadCredential())
+                .build()
+        }
+        return svc
+    }
+
     @Override
-    protected GoogleService getServiceInstance() {
+    protected CalendarEvent convertToLocal(CalendarEvent localEntry,
+            ContactEntry googleEntry) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected void deleteGoogleEntry(ContactEntry entry) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected String getEtag(ContactEntry entry) {
         // TODO Auto-generated method stub
         return null
+    }
+
+    protected String getUrl(ContactEntry entry) {
+        return null
+    }
+
+    @Override
+    protected ContactEntry insertGoogleEntry(ContactEntry entry) {
+        // TODO Auto-generated method stub
+        return null
+    }
+
+    @Override
+    protected Map<String, ContactEntry> loadGoogleEntries() {
+        // TODO Auto-generated method stub
+        return null
+    }
+
+    @Override
+    protected void updateGoogleEntry(ContactEntry entry) {
+        // TODO Auto-generated method stub
+
     }
 }

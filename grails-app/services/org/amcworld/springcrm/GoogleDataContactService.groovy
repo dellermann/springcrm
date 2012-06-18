@@ -20,17 +20,20 @@
 
 package org.amcworld.springcrm
 
-import com.google.gdata.client.contacts.ContactsService
+import java.net.URL;
 import com.google.gdata.client.GoogleService
 import com.google.gdata.client.Service.GDataRequest
+import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.data.contacts.*
 import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.extensions.*
 import com.google.gdata.data.extensions.Organization as GDataOrg
 import com.google.gdata.data.Link
 import com.google.gdata.util.ContentType
-import javax.servlet.http.HttpSession
+import com.google.gdata.util.ResourceNotFoundException
 import net.sf.jmimemagic.Magic
+import org.amcworld.springcrm.google.RecoverableGoogleSyncException
+import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
 /**
@@ -44,202 +47,508 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 	//-- Class variables ------------------------
 
 	static scope = 'session'
-    static transactional = false; /* leave semicolon here! otherwise instance initializer is treated as closure */
+    static transactional = false
+
+
+    //-- Instance variables ---------------------
+
+    protected URL feedUrl = new URL('https://www.google.com/m8/feeds/contacts/default/full')
+    def messageSource
+    protected GoogleService svc; /* leave semicolon here! otherwise instance initializer is treated as closure */
 
 
     //-- Instance initializer -------------------
 
 	{
-		entryClass = ContactEntry
-		feedUrl = new URL('https://www.google.com/m8/feeds/contacts/default/full')
-	}
-
-
-	//-- Public methods -------------------------
-
-	ContactEntry convertToGoogle(Person p, ContactEntry contact = null) {
-		if (contact == null) {
-			contact = new ContactEntry()
-		}
-		contact.getRepeatingExtension(GDataOrg).clear()
-		contact.addOrganization(new GDataOrg(
-			orgName: p.organization?.name ? new OrgName(p.organization?.name) : null,
-			orgDepartment: p.department ? new OrgDepartment(p.department) : null,
-			orgJobDescription: p.jobTitle ? new OrgJobDescription(p.jobTitle) : null,
-			primary: true,
-			rel: GDataOrg.Rel.WORK
-		))
-		contact.name = new Name(
-			namePrefix: p.salutation?.name ? new NamePrefix(p.salutation?.name) : null,
-			givenName: new GivenName(p.firstName, null),
-			familyName: new FamilyName(p.lastName, null)
-		)
-		contact.getRepeatingExtension(StructuredPostalAddress).clear()
-		if (p.mailingAddrStreet || p.mailingAddrPoBox
-			|| p.mailingAddrPostalCode || p.mailingAddrLocation
-			|| p.mailingAddrState || p.mailingAddrCountry)
-		{
-			contact.addStructuredPostalAddress(new StructuredPostalAddress(
-				street: p.mailingAddrStreet ? new Street(p.mailingAddrStreet) : null,
-				pobox: p.mailingAddrPoBox ? new PoBox(p.mailingAddrPoBox) : null,
-				postcode: p.mailingAddrPostalCode ? new PostCode(p.mailingAddrPostalCode) : null,
-				city: p.mailingAddrLocation ? new City(p.mailingAddrLocation) : null,
-				region: p.mailingAddrState ? new Region(p.mailingAddrState) : null,
-				country: p.mailingAddrCountry ? new Country(value: p.mailingAddrCountry) : null,
-				rel: StructuredPostalAddress.Rel.WORK
-			))
-		}
-		if (p.otherAddrStreet || p.otherAddrPoBox
-			|| p.otherAddrPostalCode || p.otherAddrLocation
-			|| p.otherAddrState || p.otherAddrCountry)
-		{
-			contact.addStructuredPostalAddress(new StructuredPostalAddress(
-				street: p.otherAddrStreet ? new Street(p.otherAddrStreet) : null,
-				pobox: p.otherAddrPoBox ? new PoBox(p.otherAddrPoBox) : null,
-				postcode: p.otherAddrPostalCode ? new PostCode(p.otherAddrPostalCode) : null,
-				city: p.otherAddrLocation ? new City(p.otherAddrLocation) : null,
-				region: p.otherAddrState ? new Region(p.otherAddrState) : null,
-				country: p.otherAddrCountry ? new Country(value: p.otherAddrCountry) : null,
-				rel: StructuredPostalAddress.Rel.OTHER
-			))
-		}
-		contact.getRepeatingExtension(PhoneNumber).clear()
-		if (p.phone) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.phone,
-				primary: true,
-				rel: PhoneNumber.Rel.WORK
-			))
-		}
-		if (p.organization.phone && p.organization.phone != p.phone) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.organization.phone,
-				primary: !p.phone,
-				rel: PhoneNumber.Rel.WORK
-			))
-		}
-		if (p.phoneHome) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.phoneHome,
-				rel: PhoneNumber.Rel.HOME
-			))
-		}
-		if (p.mobile) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.mobile,
-				rel: PhoneNumber.Rel.MOBILE
-			))
-		}
-		if (p.fax) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.fax,
-				rel: PhoneNumber.Rel.FAX
-			))
-		}
-		if (p.organization.fax && p.organization.fax != p.fax) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.organization.fax,
-				rel: PhoneNumber.Rel.FAX
-			))
-		}
-		if (p.phoneAssistant) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.phoneAssistant,
-				rel: PhoneNumber.Rel.ASSISTANT
-			))
-		}
-		if (p.phoneOther) {
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.phoneOther,
-				rel: PhoneNumber.Rel.OTHER
-			))
-		}
-		if (p.organization.phoneOther
-			&& p.organization.phoneOther != p.phoneOther)
-		{
-			contact.addPhoneNumber(new PhoneNumber(
-				phoneNumber: p.organization.phoneOther,
-				rel: PhoneNumber.Rel.OTHER
-			))
-		}
-		contact.getRepeatingExtension(Email).clear()
-		if (p.email1) {
-			contact.addEmailAddress(new Email(
-				address: p.email1,
-				primary: true,
-				rel: Email.Rel.WORK
-			))
-		}
-		if (p.organization.email1 && p.organization.email1 != p.email1) {
-			contact.addEmailAddress(new Email(
-				address: p.organization.email1,
-				primary: !p.email1,
-				rel: Email.Rel.WORK
-			))
-		}
-		if (p.email2) {
-			contact.addEmailAddress(new Email(
-				address: p.email2,
-				rel: Email.Rel.OTHER
-			))
-		}
-		if (p.organization.email2 && p.organization.email2 != p.email2) {
-			contact.addEmailAddress(new Email(
-				address: p.organization.email2,
-				rel: Email.Rel.OTHER
-			))
-		}
-		contact.getRepeatingExtension(Relation.class).clear()
-		if (p.assistant) {
-			contact.addRelation(new Relation(
-				value: p.assistant,
-				rel: Relation.Rel.ASSISTANT
-			))
-		}
-		if (p.birthday) {
-			contact.birthday = new Birthday(p.birthday.format('yyyy-MM-dd'))
-		}
-		contact.getRepeatingExtension(Jot).clear()
-		if (p.notes) {
-			contact.addJot(new Jot(Jot.Rel.WORK, p.notes))
-		}
-		contact.getRepeatingExtension(Website).clear()
-		if (p.organization.website) {
-			contact.addWebsite(new Website(
-				href: p.organization.website,
-				primary: true,
-				rel: Website.Rel.WORK
-			))
-		}
-		return contact
-	}
-
-	@Override
-	ContactEntry sync(Person p) {
-		ContactEntry contact = super.sync(p)
-
-		Link photoLink = contact.contactPhotoLink
-		if (p.picture) {
-			GDataRequest request = service.createRequest(
-				GDataRequest.RequestType.UPDATE, new URL(photoLink.href),
-				new ContentType(Magic.getMagicMatch(p.picture).mimeType)
-			)
-			request.setEtag(photoLink.getEtag())
-			request.requestStream.write(p.picture)
-			request.execute()
-		} else {
-			service.delete(new URL(photoLink.href), photoLink.getEtag())
-		}
-
-		return contact
+        localEntryClass = Person
+//        println 'Class E (inhertited): ' + localEntryClass?.dump()
 	}
 
 
 	//-- Non-public methods ---------------------
 
-	protected GoogleService getServiceInstance() {
-        def svc = new ContactsService(APPLICATION_NAME)
-        svc.protocolVersion = ContactsService.Versions.V3
+    protected ContactEntry convertToGoogle(Person p,
+                                           ContactEntry contact = null)
+    {
+        if (contact == null) {
+            contact = new ContactEntry()
+        }
+        contact.getRepeatingExtension(GDataOrg).clear()
+        contact.addOrganization(new GDataOrg(
+            orgName: p.organization?.name ? new OrgName(p.organization?.name) : null,
+            orgDepartment: p.department ? new OrgDepartment(p.department) : null,
+            orgJobDescription: p.jobTitle ? new OrgJobDescription(p.jobTitle) : null,
+            primary: true,
+            rel: GDataOrg.Rel.WORK
+        ))
+        contact.name = new Name(
+            givenName: new GivenName(p.firstName, null),
+            familyName: new FamilyName(p.lastName, null)
+        )
+        contact.getRepeatingExtension(StructuredPostalAddress).clear()
+        if (p.mailingAddrStreet || p.mailingAddrPoBox
+            || p.mailingAddrPostalCode || p.mailingAddrLocation
+            || p.mailingAddrState || p.mailingAddrCountry)
+        {
+            contact.addStructuredPostalAddress(new StructuredPostalAddress(
+                street: p.mailingAddrStreet ? new Street(p.mailingAddrStreet) : null,
+                pobox: p.mailingAddrPoBox ? new PoBox(p.mailingAddrPoBox) : null,
+                postcode: p.mailingAddrPostalCode ? new PostCode(p.mailingAddrPostalCode) : null,
+                city: p.mailingAddrLocation ? new City(p.mailingAddrLocation) : null,
+                region: p.mailingAddrState ? new Region(p.mailingAddrState) : null,
+                country: p.mailingAddrCountry ? new Country(value: p.mailingAddrCountry) : null,
+                rel: StructuredPostalAddress.Rel.WORK
+            ))
+        }
+        if (p.otherAddrStreet || p.otherAddrPoBox
+            || p.otherAddrPostalCode || p.otherAddrLocation
+            || p.otherAddrState || p.otherAddrCountry)
+        {
+            contact.addStructuredPostalAddress(new StructuredPostalAddress(
+                street: p.otherAddrStreet ? new Street(p.otherAddrStreet) : null,
+                pobox: p.otherAddrPoBox ? new PoBox(p.otherAddrPoBox) : null,
+                postcode: p.otherAddrPostalCode ? new PostCode(p.otherAddrPostalCode) : null,
+                city: p.otherAddrLocation ? new City(p.otherAddrLocation) : null,
+                region: p.otherAddrState ? new Region(p.otherAddrState) : null,
+                country: p.otherAddrCountry ? new Country(value: p.otherAddrCountry) : null,
+                rel: StructuredPostalAddress.Rel.OTHER
+            ))
+        }
+        contact.getRepeatingExtension(PhoneNumber).clear()
+        if (p.phone) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.phone,
+                primary: true,
+                rel: PhoneNumber.Rel.WORK
+            ))
+        }
+        if (p.organization.phone && p.organization.phone != p.phone) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.organization.phone,
+                primary: !p.phone,
+                rel: PhoneNumber.Rel.COMPANY_MAIN
+            ))
+        }
+        if (p.phoneHome) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.phoneHome,
+                rel: PhoneNumber.Rel.HOME
+            ))
+        }
+        if (p.mobile) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.mobile,
+                rel: PhoneNumber.Rel.MOBILE
+            ))
+        }
+        if (p.fax) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.fax,
+                rel: PhoneNumber.Rel.WORK_FAX
+            ))
+        }
+        if (p.organization.fax && p.organization.fax != p.fax) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.organization.fax,
+                rel: PhoneNumber.Rel.FAX
+            ))
+        }
+        if (p.phoneAssistant) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.phoneAssistant,
+                rel: PhoneNumber.Rel.ASSISTANT
+            ))
+        }
+        if (p.phoneOther) {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.phoneOther,
+                rel: PhoneNumber.Rel.OTHER
+            ))
+        }
+        if (p.organization.phoneOther
+            && p.organization.phoneOther != p.phoneOther)
+        {
+            contact.addPhoneNumber(new PhoneNumber(
+                phoneNumber: p.organization.phoneOther,
+                label: orgOtherRelLabel
+            ))
+        }
+        contact.getRepeatingExtension(Email).clear()
+        if (p.email1) {
+            contact.addEmailAddress(new Email(
+                address: p.email1,
+                primary: true,
+                rel: Email.Rel.WORK
+            ))
+        }
+        if (p.organization.email1 && p.organization.email1 != p.email1) {
+            contact.addEmailAddress(new Email(
+                address: p.organization.email1,
+                label: orgRelLabel
+            ))
+        }
+        if (p.email2) {
+            contact.addEmailAddress(new Email(
+                address: p.email2,
+                rel: Email.Rel.OTHER
+            ))
+        }
+        if (p.organization.email2 && p.organization.email2 != p.email2) {
+            contact.addEmailAddress(new Email(
+                address: p.organization.email2,
+                label: orgOtherRelLabel
+            ))
+        }
+        contact.getRepeatingExtension(Relation.class).clear()
+        if (p.assistant) {
+            contact.addRelation(new Relation(
+                value: p.assistant,
+                rel: Relation.Rel.ASSISTANT
+            ))
+        }
+        if (p.birthday) {
+            contact.birthday = new Birthday(p.birthday.format('yyyy-MM-dd'))
+        }
+        contact.getRepeatingExtension(Jot).clear()
+        if (p.notes) {
+            contact.addJot(new Jot(Jot.Rel.WORK, p.notes))
+        }
+        contact.getRepeatingExtension(Website).clear()
+        if (p.organization.website) {
+            contact.addWebsite(new Website(
+                href: p.organization.website,
+                primary: true,
+                rel: Website.Rel.WORK
+            ))
+        }
+        return contact
+    }
+
+    @Override
+    protected Person convertToLocal(Person localEntry, ContactEntry googleEntry)
+        throws RecoverableGoogleSyncException
+    {
+        List<GDataOrg> organizations = googleEntry.organizations
+        assert !organizations.empty
+        GDataOrg organization = organizations[0]
+        Organization org = Organization.findByName(organization.orgName.value)
+        assert org
+        localEntry.organization = org
+
+        Name name = googleEntry.name
+        if (!name) {
+            throw new RecoverableGoogleSyncException(
+                'Name is mandatory for synchronization.'
+            )
+        }
+        if (!name.hasGivenName()) {
+            throw new RecoverableGoogleSyncException(
+                'First name is mandatory for synchronization.'
+            )
+        }
+        localEntry.firstName = name.givenName.value
+        if (!name.hasFamilyName()) {
+            throw new RecoverableGoogleSyncException(
+                'Last name is mandatory for synchronization.'
+            )
+        }
+        localEntry.lastName = name.familyName.value
+
+        localEntry.mailingAddrStreet = null
+        localEntry.mailingAddrPoBox = null
+        localEntry.mailingAddrPostalCode = null
+        localEntry.mailingAddrLocation = null
+        localEntry.mailingAddrState = null
+        localEntry.mailingAddrCountry = null
+        localEntry.otherAddrStreet = null
+        localEntry.otherAddrPoBox = null
+        localEntry.otherAddrPostalCode = null
+        localEntry.otherAddrLocation = null
+        localEntry.otherAddrState = null
+        localEntry.otherAddrCountry = null
+        boolean mailingAddrSet = false
+        boolean otherAddrSet = false
+        for (StructuredPostalAddress addr : googleEntry.structuredPostalAddresses)
+        {
+            if (!mailingAddrSet
+                && (StructuredPostalAddress.Rel.WORK == addr.rel))
+            {
+                localEntry.mailingAddrStreet = addr.street?.value
+                localEntry.mailingAddrPoBox = addr.pobox?.value
+                localEntry.mailingAddrPostalCode = addr.postcode?.value
+                localEntry.mailingAddrLocation = addr.city?.value
+                localEntry.mailingAddrState = addr.region?.value
+                localEntry.mailingAddrCountry = addr.country?.value
+                mailingAddrSet = true
+            } else if (!otherAddrSet
+                       && (StructuredPostalAddress.Rel.OTHER == addr.rel))
+            {
+                localEntry.otherAddrStreet = addr.street?.value
+                localEntry.otherAddrPoBox = addr.pobox?.value
+                localEntry.otherAddrPostalCode = addr.postcode?.value
+                localEntry.otherAddrLocation = addr.city?.value
+                localEntry.otherAddrState = addr.region?.value
+                localEntry.otherAddrCountry = addr.country?.value
+                otherAddrSet = true
+            }
+        }
+
+        localEntry.phone = null
+        localEntry.phoneHome = null
+        localEntry.mobile = null
+        localEntry.fax = null
+        localEntry.phoneAssistant = null
+        localEntry.phoneOther = null
+        for (PhoneNumber phoneNumber : googleEntry.phoneNumbers) {
+            if (!localEntry.phone && (PhoneNumber.Rel.WORK == phoneNumber.rel))
+            {
+                localEntry.phone = phoneNumber.phoneNumber
+            } else if (!localEntry.phoneHome
+                       && (PhoneNumber.Rel.HOME == phoneNumber.rel))
+            {
+                localEntry.phoneHome = phoneNumber.phoneNumber
+            } else if (!localEntry.mobile
+                       && (PhoneNumber.Rel.MOBILE == phoneNumber.rel))
+            {
+                localEntry.mobile = phoneNumber.phoneNumber
+            } else if (!localEntry.fax
+                       && (PhoneNumber.Rel.FAX == phoneNumber.rel))
+            {
+                localEntry.fax = phoneNumber.phoneNumber
+            } else if (!localEntry.phoneAssistant
+                       && (PhoneNumber.Rel.ASSISTANT == phoneNumber.rel))
+            {
+                localEntry.phoneAssistant = phoneNumber.phoneNumber
+            } else if (!localEntry.phoneOther
+                       && (PhoneNumber.Rel.OTHER == phoneNumber.rel))
+            {
+                localEntry.phoneOther = phoneNumber.phoneNumber
+            }
+        }
+
+        localEntry.email1 = null
+        localEntry.email2 = null
+        for (Email email : googleEntry.emailAddresses) {
+            if (!localEntry.email1 && (Email.Rel.WORK == email.rel)) {
+                localEntry.email1 = email.address
+            } else if (!localEntry.email2 && (Email.Rel.OTHER == email.rel)) {
+                localEntry.email2 = email.address
+            }
+        }
+
+        localEntry.jobTitle = organization.orgJobDescription?.value
+        localEntry.department = organization.orgDepartment?.value
+        localEntry.assistant = null
+        for (Relation relation : googleEntry.relations) {
+            if (Relation.Rel.ASSISTANT == relation.rel) {
+                localEntry.assistant = relation.value
+                break
+            }
+        }
+        localEntry.birthday = googleEntry.hasBirthday() ? Date.parse('yyyy-MM-dd', googleEntry.birthday.value) : null
+        localEntry.picture = null
+        Link photoLink = googleEntry.contactPhotoLink
+        if (photoLink && photoLink.etag) {
+            GDataRequest req = service.createLinkQueryRequest(photoLink)
+            req.execute()
+            localEntry.picture = req.responseStream.bytes
+        }
+        localEntry.notes = null
+        for (Jot jot : googleEntry.jots) {
+            if (Jot.Rel.WORK == jot.rel) {
+                localEntry.notes = jot.value
+                break
+            }
+        }
+
+        return localEntry
+    }
+
+    @Override
+    protected void deleteGoogleEntry(ContactEntry entry) {
+        entry.delete()
+    }
+
+    /**
+     * Gets access to the underlying Google API service.  The service is fully
+     * authenticated.
+     *
+     * @return  the Google API service instance
+     * @since   1.0
+     */
+    protected synchronized GoogleService getService() {
+        if (!svc) {
+            svc = new ContactsService(APPLICATION_NAME)
+            svc.protocolVersion = ContactsService.Versions.V3
+        }
+        svc.OAuth2Credentials = loadCredential()
         return svc
-	}
+    }
+
+    @Override
+    protected String getEtag(ContactEntry entry) {
+        return entry.etag
+    }
+
+    private String getOrgOtherRelLabel() {
+        return messageSource.getMessage(
+            'default.google.rel.orgOther', null, 'Company (other)',
+            LCH.getLocale()
+        )
+    }
+
+    private String getOrgRelLabel() {
+        return messageSource.getMessage(
+            'default.google.rel.org', null, 'Company', LCH.getLocale()
+        )
+    }
+
+    protected String getUrl(ContactEntry entry) {
+        return entry.selfLink.href
+    }
+
+    @Override
+    protected ContactEntry insertGoogleEntry(ContactEntry entry) {
+        return service.insert(feedUrl, entry)
+    }
+
+    @Override
+    protected Map<String, ContactEntry> loadGoogleEntries() {
+        Map<String, ContactEntry> res = null
+        try {
+            ContactFeed feed = service.getFeed(feedUrl, ContactFeed)
+            res = [: ]
+            feed.entries.each { res[it.selfLink.href] = it }
+        } catch (ResourceNotFoundException e) {
+            /* already handled -> res = null */
+        }
+        return res
+    }
+
+    @Override
+    protected ContactEntry syncInsertGoogle(Person localEntry) {
+        ContactEntry googleEntry = super.syncInsertGoogle(localEntry);
+        updatePhoto(localEntry, googleEntry)
+        return googleEntry
+    }
+
+    @Override
+    protected Person syncInsertLocal(ContactEntry googleEntry) {
+        updateOrganization(googleEntry)
+        return super.syncInsertLocal(googleEntry);
+    }
+
+    @Override
+    protected void syncUpdateGoogle(Person localEntry, ContactEntry googleEntry) {
+        super.syncUpdateGoogle(localEntry, googleEntry)
+    }
+
+    @Override
+    protected void syncUpdateLocal(Person localEntry, ContactEntry googleEntry)
+    {
+        updateOrganization(googleEntry)
+        super.syncUpdateLocal(localEntry, googleEntry);
+    }
+
+    @Override
+    protected void updateGoogleEntry(ContactEntry entry) {
+        service.update(new URL(entry.editLink.href), entry)
+    }
+
+    /**
+     * Checks whether an organization for the given Google entry exists.  If
+     * not a new organization is created.  In each case the organization is
+     * updated by the data of the given Google entry.
+     *
+     * @param googleEntry                       the given Google entry
+     * @throws RecoverableGoogleSyncException   if the Google entry does not
+     *                                          define an organization name
+     * @since                                   1.0
+     */
+    private void updateOrganization(ContactEntry googleEntry)
+        throws RecoverableGoogleSyncException
+    {
+        if (!googleEntry.hasOrganizations()) {
+            throw new RecoverableGoogleSyncException(
+                'Can only sync Google entries with organization.'
+            )
+        }
+
+        GDataOrg organization = googleEntry.organizations[0]
+        String orgName = organization.orgName.value
+        Organization org = Organization.findByName(orgName)
+        if (!org) {
+            org = new Organization(name: orgName, recType: 1)
+            boolean shippingAddrSet = false
+            for (StructuredPostalAddress addr : googleEntry.postalAddresses) {
+                if (!shippingAddrSet
+                    && (StructuredPostalAddress.Rel.WORK == addr.rel))
+                {
+                    org.shippingAddrStreet = addr.street?.value
+                    org.shippingAddrPoBox = addr.pobox?.value
+                    org.shippingAddrPostalCode = addr.postcode?.value
+                    org.shippingAddrLocation = addr.city?.value
+                    org.shippingAddrState = addr.region?.value
+                    org.shippingAddrCountry = addr.country?.value
+                    shippingAddrSet = true
+                }
+            }
+        }
+        String label = orgOtherRelLabel
+        org.phone = null
+        org.fax = null
+        org.phoneOther = null
+        for (PhoneNumber phoneNumber : googleEntry.phoneNumbers) {
+            if (!org.phone
+                && (PhoneNumber.Rel.COMPANY_MAIN == phoneNumber.rel))
+            {
+                org.phone = phoneNumber.phoneNumber
+            } else if (!org.fax
+                       && (PhoneNumber.Rel.FAX == phoneNumber.rel))
+            {
+                org.fax = phoneNumber.phoneNumber
+            } else if (!org.phoneOther && (label == phoneNumber.label)) {
+                org.phoneOther = phoneNumber.phoneNumber
+            }
+        }
+        org.email1 = null
+        org.email2 = null
+        for (Email email : googleEntry.emailAddresses) {
+            if (!org.email1 && (orgRelLabel == email.label)) {
+                org.email1 = email.address
+            } else if (!org.email2 && (label == email.label)) {
+                org.email2 = email.address
+            }
+        }
+        org.website = null
+        for (Website website : googleEntry.websites) {
+            if (!org.website && (Website.Rel.WORK == website.rel)) {
+                org.website = website.href
+            }
+        }
+        org.save(flush: true)
+    }
+
+    /**
+     * Updates the photo of the given local person entry at Google.
+     *
+     * @param localEntry    the given local person entry
+     * @param googleEntry   the associated Google entry
+     * @since               1.0
+     */
+    private void updatePhoto(Person localEntry, ContactEntry googleEntry) {
+        Link photoLink = googleEntry.contactPhotoLink
+        def picture = localEntry.picture
+        if (picture) {
+            GDataRequest request = service.createRequest(
+                GDataRequest.RequestType.UPDATE, new URL(photoLink.href),
+                new ContentType(Magic.getMagicMatch(picture).mimeType)
+            )
+            request.setEtag(photoLink.getEtag())
+            request.requestStream.write(picture)
+            request.execute()
+        } else {
+            service.delete(new URL(photoLink.href), photoLink.getEtag())
+        }
+    }
 }
