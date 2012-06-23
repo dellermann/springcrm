@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import java.net.URL;
 import com.google.gdata.client.GoogleService
+import com.google.gdata.client.Query;
 import com.google.gdata.client.Service.GDataRequest
 import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.data.contacts.*
@@ -30,6 +31,7 @@ import com.google.gdata.data.extensions.*
 import com.google.gdata.data.extensions.Organization as GDataOrg
 import com.google.gdata.data.Link
 import com.google.gdata.util.ContentType
+import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.ResourceNotFoundException
 import net.sf.jmimemagic.Magic
 import org.amcworld.springcrm.google.RecoverableGoogleSyncException
@@ -61,7 +63,6 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
 	{
         localEntryClass = Person
-//        println 'Class E (inhertited): ' + localEntryClass?.dump()
 	}
 
 
@@ -418,7 +419,19 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
         try {
             ContactFeed feed = service.getFeed(feedUrl, ContactFeed)
             res = [: ]
-            feed.entries.each { res[it.selfLink.href] = it }
+            int numEntries = feed.totalResults
+            for (int i = 0; i < numEntries; i += 20) {
+                Query query = new Query(feedUrl)
+                query.startIndex = i + 1
+                query.maxResults = 20
+                feed = service.query(query, ContactFeed)
+
+                log.debug("Found ${feed.entries.size()} Google entries.")
+                feed.entries.each {
+                    res[it.selfLink.href] = it
+                    log.debug("Read Google entry ${it.selfLink.href}.")
+                }
+            }
         } catch (ResourceNotFoundException e) {
             /* already handled -> res = null */
         }
@@ -546,7 +559,11 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
             )
             request.setEtag(photoLink.getEtag())
             request.requestStream.write(picture)
-            request.execute()
+            try {
+                request.execute()
+            } catch (InvalidEntryException e) {
+                log.debug("Cannot update picture for person ${localEntry}: ${e.message}")
+            }
         } else {
             service.delete(new URL(photoLink.href), photoLink.getEtag())
         }

@@ -27,6 +27,6 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
   <changeSet author="d.ellermann@amc-world.de" id="20120606-1">
     <addPrimaryKey tableName="user_data_settings"
-      columnNames="settings settings_idx" constraintName="PRIMARY" />
+      columnNames="settings,settings_idx" constraintName="PRIMARY" />
   </changeSet>
 </databaseChangeLog>

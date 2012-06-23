@@ -76,12 +76,14 @@ class ProxyHttpParser implements HttpParser {
                 res.put('message', parts[1])
                 while ((line = r.readLine()) != null) {
                     parts = line.split(/=/, 2)
-                    String key = parts[0]
-                    def value = parts[1]
-                    if (key == 'tokenResponse') {
-                        value = parseTokenResponse(value)
+                    if (parts.length == 2) {
+                        String key = parts[0]
+                        def value = parts[1]
+                        if (key == 'tokenResponse') {
+                            value = parseTokenResponse(value)
+                        }
+                        res.put(key, value)
                     }
-                    res.put(key, value)
                 }
             } else {
                 res.put('code', response.statusCode)
