@@ -95,6 +95,7 @@ h4 {
 }
 h5 {
   font-weight: bold;
+  margin-bottom: 1em;
 }
 
 /* default rulers */
@@ -1954,6 +1955,9 @@ form .invoicing-items-pos {
 }
 #configuration-seq-numbers {
   background-image: url("../img/configuration/numbers.png");
+}
+#configuration-sync {
+  background-image: url("../img/configuration/sync.png");
 }
 #configuration-tax-rates {
   background-image: url("../img/configuration/tax-rates.png");

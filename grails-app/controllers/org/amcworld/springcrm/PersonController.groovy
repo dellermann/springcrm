@@ -186,9 +186,6 @@ class PersonController {
 
         try {
             personInstance.delete(flush: true)
-			if (googleDataContactService) {
-				googleDataContactService.markDeleted(personInstance)
-			}
 			if (ldapService) {
 				ldapService.delete(personInstance)
 			}

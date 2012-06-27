@@ -93,6 +93,21 @@ class GoogleDataCalendarService extends GoogleDataService<CalendarEvent, Contact
     }
 
     @Override
+    protected boolean getAllowLocalCreate() {
+        return getBooleanSystemConfig('syncCalendarEventsOptionsAllowCreate')
+    }
+
+    @Override
+    protected boolean getAllowLocalDelete() {
+        return getBooleanSystemConfig('syncCalendarEventsOptionsAllowDelete')
+    }
+
+    @Override
+    protected boolean getAllowLocalModify() {
+        return getBooleanSystemConfig('syncCalendarEventsOptionsAllowModify')
+    }
+
+    @Override
     protected String getEtag(ContactEntry entry) {
         // TODO Auto-generated method stub
         return null
@@ -118,5 +133,11 @@ class GoogleDataCalendarService extends GoogleDataService<CalendarEvent, Contact
     protected void updateGoogleEntry(ContactEntry entry) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    protected String googleEntryToString(ContactEntry entry) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.net.URL;
 import com.google.gdata.client.GoogleService
 import com.google.gdata.client.Query;
 import com.google.gdata.client.Service.GDataRequest
@@ -370,20 +369,19 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
         entry.delete()
     }
 
-    /**
-     * Gets access to the underlying Google API service.  The service is fully
-     * authenticated.
-     *
-     * @return  the Google API service instance
-     * @since   1.0
-     */
-    protected synchronized GoogleService getService() {
-        if (!svc) {
-            svc = new ContactsService(APPLICATION_NAME)
-            svc.protocolVersion = ContactsService.Versions.V3
-        }
-        svc.OAuth2Credentials = loadCredential()
-        return svc
+    @Override
+    protected boolean getAllowLocalCreate() {
+        return getBooleanSystemConfig('syncContactsOptionsAllowCreate')
+    }
+
+    @Override
+    protected boolean getAllowLocalDelete() {
+        return getBooleanSystemConfig('syncContactsOptionsAllowDelete')
+    }
+
+    @Override
+    protected boolean getAllowLocalModify() {
+        return getBooleanSystemConfig('syncContactsOptionsAllowModify')
     }
 
     @Override
@@ -404,8 +402,40 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
         )
     }
 
+    /**
+     * Gets access to the underlying Google API service.  The service is fully
+     * authenticated.
+     *
+     * @return  the Google API service instance
+     * @since   1.0
+     */
+    protected synchronized GoogleService getService() {
+        if (!svc) {
+            svc = new ContactsService(APPLICATION_NAME)
+            svc.protocolVersion = ContactsService.Versions.V3
+        }
+        svc.OAuth2Credentials = loadCredential()
+        return svc
+    }
+
     protected String getUrl(ContactEntry entry) {
         return entry.selfLink.href
+    }
+
+    @Override
+    protected String googleEntryToString(ContactEntry entry) {
+        String res = ''
+        Name name = entry.name
+        if (name) {
+            if (name.hasFamilyName()) {
+                res = name.familyName.value
+            }
+            if (name.hasGivenName()) {
+                if (res) res += ', '
+                res += name.givenName.value
+            }
+        }
+        return res
     }
 
     @Override
@@ -426,10 +456,11 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
                 query.maxResults = 20
                 feed = service.query(query, ContactFeed)
 
-                log.debug("Found ${feed.entries.size()} Google entries.")
                 feed.entries.each {
                     res[it.selfLink.href] = it
-                    log.debug("Read Google entry ${it.selfLink.href}.")
+                }
+                if (log.debugEnabled) {
+                    log.debug "Loaded ${res.size()}/${numEntries} Google entries."
                 }
             }
         } catch (ResourceNotFoundException e) {
@@ -452,7 +483,8 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
     }
 
     @Override
-    protected void syncUpdateGoogle(Person localEntry, ContactEntry googleEntry) {
+    protected void syncUpdateGoogle(Person localEntry, ContactEntry googleEntry)
+    {
         super.syncUpdateGoogle(localEntry, googleEntry)
     }
 
@@ -493,7 +525,7 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
         if (!org) {
             org = new Organization(name: orgName, recType: 1)
             boolean shippingAddrSet = false
-            for (StructuredPostalAddress addr : googleEntry.postalAddresses) {
+            for (StructuredPostalAddress addr : googleEntry.structuredPostalAddresses) {
                 if (!shippingAddrSet
                     && (StructuredPostalAddress.Rel.WORK == addr.rel))
                 {

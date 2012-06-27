@@ -54,6 +54,8 @@ class Config {
             return Date.parseToStringDate(value)
         case Calendar:
             return Date.parseToStringDate(value).toCalendar()
+        case Boolean:
+            return (value == null) ? null : Boolean.valueOf(value)
         default:
             return value?.asType(type)
         }

@@ -49,8 +49,8 @@ class ConfigController {
     def index() {}
 
     def show() {
-        def configData = ConfigHolder.instance.allConfig
-        Map<String, Object> config = [: ]
+        List<Config> configData = ConfigHolder.instance.allConfig
+        Map<String, String> config = [: ]
         configData.each { config[it.name] = it.value }
 
         render(view: params.page, model: [configData: config])
@@ -59,7 +59,16 @@ class ConfigController {
     def save() {
         def configHolder = ConfigHolder.instance
         params.config.each {
-            configHolder.setConfig(it.key, it.value)
+            String key = it.key
+            if (key.startsWith('_')) {
+                configHolder.setConfig(key.substring(1), 'false')
+            }
+        }
+        params.config.each {
+            String key = it.key
+            if (!key.startsWith('_')) {
+                configHolder.setConfig(key, it.value)
+            }
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'config.label', default: 'System setting'), ''])

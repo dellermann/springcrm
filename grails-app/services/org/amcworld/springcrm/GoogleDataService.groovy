@@ -64,20 +64,6 @@ abstract class GoogleDataService<E, G>
 
 	//-- Public methods -------------------------
 
-	/**
-	 * Marks the given local entry as deleted in the synchronization status
-	 * table.  It will be deleted during the next Google synchronization.
-	 *
-	 * @param localEntry   the local entry to mark as deleted
-	 */
-	void markDeleted(E localEntry) {
-		def status = findSyncStatus(localEntry)
-		if (status) {
-			status.deleted = true
-			status.save(flush: true)
-		}
-	}
-
     /**
      * Synchronizes local entries with Google ones.
      *
@@ -85,60 +71,55 @@ abstract class GoogleDataService<E, G>
      */
     void sync() {
         Map<Long, E> localEntries = [: ]
-        log.debug('Class E: ' + localEntryClass?.dump())
         localEntryClass.'list'().each { localEntries[it.ident()] = it }
         Map<String, G> googleEntries = loadGoogleEntries()
         List<GoogleDataSyncStatus> syncEntries =
             GoogleDataSyncStatus.findAllByType(localEntryClass.name)
 
         /* update and delete entries */
-        log.debug('Start syncing with Google, part I (L = local entry, G = Google entry, S = sync source)')
+        log.debug 'Start syncing with Google, part I (L = local entry, G = Google entry, S = sync source)'
         for (GoogleDataSyncStatus status : syncEntries) {
             try {
                 Long id = status.itemId
                 String url = status.url
+                E localEntry = localEntries[id]
                 G googleEntry = googleEntries.get(url)
-                if (status.deleted) {
-                    if (googleEntry && !hasChanged(googleEntry, status.etag)
-                        || (primarySyncSource == LOCAL))
-                    {
-                        log.debug "L deleted, G unmodified or S = local → delete G: G = ${googleEntry}"
-                        syncDeleteGoogle(googleEntry)
-                        googleEntries.remove(url)
-                    } else if (log.debugEnabled) {
-                        if (!googleEntry) {
-                            log.debug 'L deleted, G deleted → nothing to do'
-                        } else if (hasChanged(googleEntry, status.etag)) {
-                            log.debug "L deleted, G modified, S = remote → leave in L2 for later local recreation: G = ${googleEntry}"
-                        }
-                    }
-                    status.delete(flush: true)
-                } else {
-                    E localEntry = localEntries[id]
+                if (localEntry) {
                     if (localEntry.lastUpdated > status.lastSync) {
                         if (!googleEntry) {
                             if (primarySyncSource != LOCAL) {
                                 log.debug "L modified, G deleted, S = remote → delete L: L = ${localEntry}"
-                                syncDeleteLocal(localEntry)
+                                if (allowLocalDelete) {
+                                    syncDeleteLocal(localEntry)
+                                    status.delete(flush: true)
+                                } else if (log.debugEnabled) {
+                                    log.debug '    Deleting local entries denied by administrator.'
+                                }
                                 localEntries.remove(id)
                             } else if (log.debugEnabled) {
                                 log.debug "L modified, G deleted, S = local → leave in L1 for later recreation at Google: L = ${localEntry}"
+                                status.delete(flush: true)
                             }
-                            status.delete(flush: true)
                         } else if (hasChanged(googleEntry, status.etag)) {
                             if (primarySyncSource == LOCAL) {
-                                log.debug "L modified, G modified, S = local → update G: L = ${localEntry}, G = ${googleEntry}"
+                                log.debug "L modified, G modified, S = local → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
                                 syncUpdateGoogle(localEntry, googleEntry)
+                                status.updateToCurrent(getEtag(googleEntry))
+                                status.save(flush: true)
                             } else {
-                                log.debug "L modified, G modified, S = remote → update L: L = ${localEntry}, G = ${googleEntry}"
-                                syncUpdateLocal(localEntry, googleEntry)
+                                log.debug "L modified, G modified, S = remote → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                                if (allowLocalModify) {
+                                    syncUpdateLocal(localEntry, googleEntry)
+                                    status.updateToCurrent(getEtag(googleEntry))
+                                    status.save(flush: true)
+                                } else if (log.debugEnabled) {
+                                    log.debug '    Modifying local entries denied by administrator.'
+                                }
                             }
-                            status.updateToCurrent(getEtag(googleEntry))
-                            status.save(flush: true)
                             localEntries.remove(id)
                             googleEntries.remove(url)
                         } else {
-                            log.debug "L modified, G unmodified → update G: L = ${localEntry}, G = ${googleEntry}"
+                            log.debug "L modified, G unmodified → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
                             syncUpdateGoogle(localEntry, googleEntry)
                             status.updateToCurrent(getEtag(googleEntry))
                             status.save(flush: true)
@@ -148,28 +129,51 @@ abstract class GoogleDataService<E, G>
                     } else {
                         if (!googleEntry) {
                             log.debug "L unmodified, G deleted → delete L: L = ${localEntry}"
-                            syncDeleteLocal(localEntry)
+                            if (allowLocalDelete) {
+                                syncDeleteLocal(localEntry)
+                                status.delete(flush: true)
+                            } else if (log.debugEnabled) {
+                                log.debug '    Deleting local entries denied by administrator.'
+                            }
                             localEntries.remove(id)
-                            status.delete(flush: true)
                         } else if (hasChanged(googleEntry, status.etag)) {
-                            log.debug "L unmodified, G modified → update L: L = ${localEntry}, G = ${googleEntry}"
-                            syncUpdateLocal(localEntry, googleEntry)
-                            status.updateToCurrent(getEtag(googleEntry))
-                            status.save(flush: true)
+                            log.debug "L unmodified, G modified → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            if (allowLocalModify) {
+                                syncUpdateLocal(localEntry, googleEntry)
+                                status.updateToCurrent(getEtag(googleEntry))
+                                status.save(flush: true)
+                            } else if (log.debugEnabled) {
+                                log.debug '    Modifying local entries denied by administrator.'
+                            }
                             localEntries.remove(id)
                             googleEntries.remove(url)
                         } else {
-                            log.debug "L unmodified, G unmodified → nothing to do: L = ${localEntry}, G = ${googleEntry}"
+                            log.debug "L unmodified, G unmodified → nothing to do: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
                             localEntries.remove(id)
                             googleEntries.remove(url)
                         }
                     }
+                } else {
+                    if (googleEntry && !hasChanged(googleEntry, status.etag)
+                        || (primarySyncSource == LOCAL))
+                    {
+                        log.debug "L deleted, G unmodified or S = local → delete G: G = ${googleEntryToString(googleEntry)}"
+                        syncDeleteGoogle(googleEntry)
+                        googleEntries.remove(url)
+                    } else if (log.debugEnabled) {
+                        if (!googleEntry) {
+                            log.debug 'L deleted, G deleted → nothing to do'
+                        } else if (hasChanged(googleEntry, status.etag)) {
+                            log.debug "L deleted, G modified, S = remote → leave in L2 for later local recreation: G = ${googleEntryToString(googleEntry)}"
+                        }
+                    }
+                    status.delete(flush: true)
                 }
             } catch (RecoverableGoogleSyncException e) { /* ignore */ }
         }
 
         /* create new entries */
-        log.debug('Start syncing with Google, part II (L = local entry, G = Google entry)')
+        log.debug 'Start syncing with Google, part II (L = local entry, G = Google entry)'
         for (E localEntry : localEntries.values()) {
             try {
                 log.debug "L exists, G doesn't exist → create G: L = ${localEntry}"
@@ -177,13 +181,17 @@ abstract class GoogleDataService<E, G>
                 insertStatus(localEntry, googleEntry)
             } catch (RecoverableGoogleSyncException e) { /* ignore */ }
         }
-        log.debug('Start syncing with Google, part III (L = local entry, G = Google entry)')
-        for (G googleEntry : googleEntries.values()) {
-            try {
-                log.debug "L doesn't exist, G exists → create L: G = ${googleEntry}"
-                E localEntry = syncInsertLocal(googleEntry)
-                insertStatus(localEntry, googleEntry)
-            } catch (RecoverableGoogleSyncException e) { /* ignore */ }
+        log.debug 'Start syncing with Google, part III (L = local entry, G = Google entry)'
+        if (allowLocalCreate) {
+            for (G googleEntry : googleEntries.values()) {
+                try {
+                    log.debug "L doesn't exist, G exists → create L: G = ${googleEntryToString(googleEntry)}"
+                    E localEntry = syncInsertLocal(googleEntry)
+                    insertStatus(localEntry, googleEntry)
+                } catch (RecoverableGoogleSyncException e) { /* ignore */ }
+            }
+        } else if (log.debugEnabled && googleEntries.size()) {
+            log.debug "    Creating local entries denied by administrator (${googleEntries.size()} entries)."
         }
     }
 
@@ -247,6 +255,52 @@ abstract class GoogleDataService<E, G>
 	}
 
     /**
+     * Returns whether or not local entries can be created during
+     * synchronization.
+     *
+     * @return  {@code true} if creating local entries is allowed;
+     *          {@code false} otherwise
+     * @since   1.0
+     */
+    protected abstract boolean getAllowLocalCreate()
+
+    /**
+     * Returns whether or not local entries can be deleted during
+     * synchronization.
+     *
+     * @return  {@code true} if deleting local entries is allowed;
+     *          {@code false} otherwise
+     * @since   1.0
+     */
+    protected abstract boolean getAllowLocalDelete()
+
+    /**
+     * Returns whether or not local entries can be modified during
+     * synchronization.
+     *
+     * @return  {@code true} if modifying local entries is allowed;
+     *          {@code false} otherwise
+     * @since   1.0
+     */
+    protected abstract boolean getAllowLocalModify()
+
+    /**
+     * Gets the boolean system configuration value with the given key.
+     *
+     * @param key           the given key
+     * @param defaultValue  the default value if no configuration with the
+     *                      given key exists
+     * @return              the configuration value
+     * @since               1.0
+     */
+    protected boolean getBooleanSystemConfig(String key,
+                                             boolean defaultValue = false)
+    {
+        Config config = getSystemConfig(key)
+        return (config == null) ? defaultValue : (config as Boolean)
+    }
+
+    /**
      * Gets the ETag of the given Google entry.
      *
      * @param entry the given entry
@@ -254,15 +308,6 @@ abstract class GoogleDataService<E, G>
      * @since       1.0
      */
     protected abstract String getEtag(G entry)
-
-    /**
-     * Gets the URL of the given Google entry.
-     *
-     * @param entry the given entry
-     * @return      the URL
-     * @since       1.0
-     */
-    protected abstract String getUrl(G entry)
 
     /**
      * Gets the primary synchronization source as defined by the user.
@@ -274,6 +319,27 @@ abstract class GoogleDataService<E, G>
         String s = user.settings['primarySyncSource' + localEntryClass.name]
         return (s == null) ? LOCAL : SyncSource.valueOf(SyncSource, s)
     }
+
+    /**
+     * Gets the system configuration object with the given key.
+     *
+     * @param key   the given key
+     * @return      the configuration object; {@code null} if no configuration
+     *              for the given key exists
+     * @since       1.0
+     */
+    protected Config getSystemConfig(String key) {
+        return ConfigHolder.instance.getConfig(key)
+    }
+
+    /**
+     * Gets the URL of the given Google entry.
+     *
+     * @param entry the given entry
+     * @return      the URL
+     * @since       1.0
+     */
+    protected abstract String getUrl(G entry)
 
     /**
      * Checks whether or not the given Google entry has been changed since the
@@ -288,6 +354,17 @@ abstract class GoogleDataService<E, G>
     protected boolean hasChanged(G entry, String etag) {
         return getEtag(entry) != etag
     }
+
+    /**
+     * Converts the given Google entry to a string.  The method is needed
+     * because the classes representing the Google entries don't return a
+     * meaningful value when calling {@code toString()}.
+     *
+     * @param entry the given Google entry
+     * @return      the string representation of the entry
+     * @since       1.0
+     */
+    protected abstract String googleEntryToString(G entry)
 
     /**
      * Inserts the given Google entry.

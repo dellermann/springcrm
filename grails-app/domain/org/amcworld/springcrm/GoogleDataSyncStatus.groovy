@@ -46,7 +46,6 @@ class GoogleDataSyncStatus {
 	String url
     String etag
 	Date lastSync = new Date()
-	boolean deleted
 
 
     //-- Public methods -------------------------

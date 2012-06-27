@@ -80,11 +80,9 @@
     <li>
       <a href="#"><g:message code="menu.settings" default="Settings" /></a>
       <ul>
-        <g:ifAdmin>
-        <li><g:link controller="user"><g:message code="user.plural" /></g:link></li>
-        <li><g:link controller="config"><g:message code="config.title" /></g:link></li>
-        </g:ifAdmin>
+        <g:ifAdmin><li><g:link controller="user"><g:message code="user.plural" /></g:link></li></g:ifAdmin>
         <li><g:link controller="user" action="settingsIndex"><g:message code="user.settings.title" /></g:link></li>
+        <g:ifAdmin><li><g:link controller="config"><g:message code="config.title" /></g:link></li></g:ifAdmin>
       </ul>
     </li>
     <li>
