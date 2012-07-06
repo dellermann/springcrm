@@ -1,5 +1,5 @@
 /*
- * GoogleDataCalendarService.groovy
+ * GoogleCalendarSync.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,54 +18,58 @@
  */
 
 
-package org.amcworld.springcrm
+package org.amcworld.springcrm.google
 
+import com.google.gdata.client.GoogleService;
 import java.util.Map;
-import com.google.gdata.client.GoogleService
-import com.google.gdata.data.contacts.ContactEntry
-import org.amcworld.springcrm.google.GoogleAuthException
+import com.google.gdata.data.contacts.ContactEntry;
+import org.amcworld.springcrm.CalendarEvent;
 
 
-class GoogleDataCalendarService extends GoogleDataService<CalendarEvent, ContactEntry> {
-
-    //-- Class variables ------------------------
-
-    static scope = 'session'
-    static transactional = false
-
+/**
+ * The class {@code GoogleCalendarSync} synchronizes calendar entries with
+ * Google.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.0
+ * @since   1.0
+ */
+class GoogleCalendarSync extends GoogleSync<CalendarEvent, ContactEntry> {
 
     //-- Instance variables ---------------------
 
-    com.google.api.services.calendar.Calendar svc
+    protected com.google.api.services.calendar.Calendar svc
 
 
-    //-- Public methods -------------------------
+    //-- Constructors ---------------------------
 
-    def serviceMethod() {
-
-    }
-
-    @Override
-    public ContactEntry convertToGoogle(CalendarEvent item, ContactEntry entry) {
-        // TODO Auto-generated method stub
-        return null
-    }
-
-    @Override
-    public ContactEntry convertToGoogle(CalendarEvent item) {
-        // TODO Auto-generated method stub
-        return null
+    /**
+     * Creates a new Google synchronization instance for calendar entries.
+     */
+    GoogleCalendarSync() {
+        super(CalendarEvent)
     }
 
 
     //-- Non-public methods ---------------------
+
+    @Override
+    protected ContactEntry convertToGoogle(CalendarEvent item, ContactEntry entry) {
+        // TODO Auto-generated method stub
+        return null
+    }
+
+    @Override
+    protected ContactEntry convertToGoogle(CalendarEvent item) {
+        // TODO Auto-generated method stub
+        return null
+    }
 
     /**
      * Gets access to the underlying Google API service.  The service is fully
      * authenticated.
      *
      * @return  the Google API service instance
-     * @since   1.0
      */
     protected synchronized GoogleService getService() {
         if (!svc) {

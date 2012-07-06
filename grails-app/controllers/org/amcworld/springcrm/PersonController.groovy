@@ -43,7 +43,7 @@ class PersonController {
     //-- Instance variables ---------------------
 
 	def seqNumberService
-	def googleDataContactService
+	def googleContactSyncService
 	def ldapService
 
 
@@ -259,8 +259,8 @@ class PersonController {
 	}
 
 	def gdatasync() {
-		if (googleDataContactService) {
-            googleDataContactService.sync()
+		if (googleContactSyncService) {
+            googleContactSyncService.sync()
             flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
 		}
 		if (params.returnUrl) {

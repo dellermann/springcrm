@@ -1,5 +1,5 @@
 /*
- * GoogleDataService.groovy
+ * GoogleSync.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,19 +18,19 @@
  */
 
 
-package org.amcworld.springcrm
-
-import static org.amcworld.springcrm.google.SyncSource.LOCAL
+package org.amcworld.springcrm.google
 
 import com.google.api.client.auth.oauth2.Credential
-import org.amcworld.springcrm.google.GoogleAuthException;
-import org.amcworld.springcrm.google.RecoverableGoogleSyncException
-import org.amcworld.springcrm.google.SyncSource
+import org.amcworld.springcrm.Config
+import org.amcworld.springcrm.ConfigHolder
+import org.amcworld.springcrm.GoogleDataSyncStatus
+import org.amcworld.springcrm.User
+import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code GoogleDataService} represents a service which is able to
- * exchange data with Google API (former: Google Data).
+ * The class {@code GoogleSync} synchronizes local data entries with Google API
+ * (former: Google Data).
  *
  * @author      Daniel Ellermann
  * @version     1.0
@@ -38,36 +38,44 @@ import org.amcworld.springcrm.google.SyncSource
  *              service
  * @param <G>   the type of Google entries which are handled by this service
  */
-abstract class GoogleDataService<E, G>
-    extends org.amcworld.springcrm.GoogleService
-{
+abstract class GoogleSync<E, G> implements GoogleService {
 
-	//-- Constants ------------------------------
+    //-- Constants ------------------------------
 
     /**
      * The identifier for this application used in connections to Google.
      */
-	protected static final String APPLICATION_NAME = 'amcworld-springcrm-1.0'
+    protected static final String APPLICATION_NAME = 'amcworld-springcrm-1.0'
+
+    private static final log = LogFactory.getLog(this)
 
 
-	//-- Class variables ------------------------
+    //-- Instance variables ---------------------
 
-	static scope = 'session'
-    static transactional = false
-
-
-	//-- Instance variables ---------------------
-
-    def googleOAuthService
+    def googleOAuthService              // injected
+    def messageSource                   // injected
+    def CharSequence userName
     protected Class<E> localEntryClass
 
 
-	//-- Public methods -------------------------
+    //-- Constructors ---------------------------
+
+    /**
+     * Creates a new Google synchronization instance for the given type of
+     * local entries.
+     *
+     * @param localEntryClass   the class representing type of the local
+     *                          entries
+     */
+    GoogleSync(Class<E> localEntryClass) {
+        this.localEntryClass = localEntryClass
+    }
+
+
+    //-- Public methods -------------------------
 
     /**
      * Synchronizes local entries with Google ones.
-     *
-     * @since 1.0
      */
     void sync() {
         Map<Long, E> localEntries = [: ]
@@ -196,7 +204,7 @@ abstract class GoogleDataService<E, G>
     }
 
 
-	//-- Non-public methods ---------------------
+    //-- Non-public methods ---------------------
 
     /**
      * Converts the given local entry to a Google entry.
@@ -234,25 +242,25 @@ abstract class GoogleDataService<E, G>
      * Deletes the given Google entry.
      *
      * @param entry the entry to delete
-     * @since       1.0
      */
     protected abstract void deleteGoogleEntry(G entry)
 
-	/**
-	 * Returns the synchronization status entry for the given item.
-	 *
-	 * @param item the given item
-	 * @return     the synchronization status entry; {@code null} if no such
-	 *             entry exists for the given item
-	 */
-	protected GoogleDataSyncStatus findSyncStatus(E item) {
-		def c = GoogleDataSyncStatus.createCriteria()
-		return c.get {
-			eq('user', user)
-			eq('type', item.class.name)
-			eq('itemId', item.id)
-		}
-	}
+    /**
+     * Returns the synchronization status entry for the given item.
+     *
+     * @param item the given item
+     * @return     the synchronization status entry; {@code null} if no such
+     *             entry exists for the given item
+     */
+    protected GoogleDataSyncStatus findSyncStatus(E item) {
+        def user = User.findByUserName(userName.toString())
+        def c = GoogleDataSyncStatus.createCriteria()
+        return c.get {
+            eq('user', user)
+            eq('type', item.class.name)
+            eq('itemId', item.id)
+        }
+    }
 
     /**
      * Returns whether or not local entries can be created during
@@ -260,7 +268,6 @@ abstract class GoogleDataService<E, G>
      *
      * @return  {@code true} if creating local entries is allowed;
      *          {@code false} otherwise
-     * @since   1.0
      */
     protected abstract boolean getAllowLocalCreate()
 
@@ -270,7 +277,6 @@ abstract class GoogleDataService<E, G>
      *
      * @return  {@code true} if deleting local entries is allowed;
      *          {@code false} otherwise
-     * @since   1.0
      */
     protected abstract boolean getAllowLocalDelete()
 
@@ -280,7 +286,6 @@ abstract class GoogleDataService<E, G>
      *
      * @return  {@code true} if modifying local entries is allowed;
      *          {@code false} otherwise
-     * @since   1.0
      */
     protected abstract boolean getAllowLocalModify()
 
@@ -291,7 +296,6 @@ abstract class GoogleDataService<E, G>
      * @param defaultValue  the default value if no configuration with the
      *                      given key exists
      * @return              the configuration value
-     * @since               1.0
      */
     protected boolean getBooleanSystemConfig(String key,
                                              boolean defaultValue = false)
@@ -305,7 +309,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param entry the given entry
      * @return      the ETag
-     * @since       1.0
      */
     protected abstract String getEtag(G entry)
 
@@ -313,7 +316,6 @@ abstract class GoogleDataService<E, G>
      * Gets the primary synchronization source as defined by the user.
      *
      * @return  the primary synchronization source
-     * @since   1.0
      */
     protected SyncSource getPrimarySyncSource() {
         String s = user.settings['primarySyncSource' + localEntryClass.name]
@@ -326,7 +328,6 @@ abstract class GoogleDataService<E, G>
      * @param key   the given key
      * @return      the configuration object; {@code null} if no configuration
      *              for the given key exists
-     * @since       1.0
      */
     protected Config getSystemConfig(String key) {
         return ConfigHolder.instance.getConfig(key)
@@ -337,7 +338,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param entry the given entry
      * @return      the URL
-     * @since       1.0
      */
     protected abstract String getUrl(G entry)
 
@@ -349,7 +349,6 @@ abstract class GoogleDataService<E, G>
      * @param etag  the ETag of the entry from the last synchronization
      * @return      {@code true} if the entry has changed; {@code false}
      *              otherwise
-     * @since       1.0
      */
     protected boolean hasChanged(G entry, String etag) {
         return getEtag(entry) != etag
@@ -362,7 +361,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param entry the given Google entry
      * @return      the string representation of the entry
-     * @since       1.0
      */
     protected abstract String googleEntryToString(G entry)
 
@@ -371,7 +369,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param entry the entry to insert
      * @return      the inserted entry
-     * @since       1.0
      */
     protected abstract G insertGoogleEntry(G entry)
 
@@ -381,7 +378,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param localEntry   the item to record
      * @param googleEntry  the associated Google entry
-     * @since               1.0
      */
     protected void insertStatus(E localEntry, G googleEntry) {
         def status = new GoogleDataSyncStatus(
@@ -392,15 +388,14 @@ abstract class GoogleDataService<E, G>
     }
 
     /**
-     * Loads the OAuth2 credential of the currently logged in user.
+     * Loads the OAuth2 credential of the user defined in the constructor.
      *
      * @return                      the credential
      * @throws GoogleAuthException  if the user currently is not authenticated
      *                              at Google
-     * @since                       1.0
      */
     protected Credential loadCredential() {
-        Credential credential = googleOAuthService.loadCredential()
+        Credential credential = googleOAuthService.loadCredential(userName)
         if (!credential) {
             throw new GoogleAuthException('error.googleAuthException.message.noCredentials')
         }
@@ -412,7 +407,6 @@ abstract class GoogleDataService<E, G>
      *
      * @return  a map containing the Google entry URL as key and the entry
      *          itself as value
-     * @since   1.0
      */
     protected abstract Map<String, G> loadGoogleEntries()
 
@@ -420,7 +414,6 @@ abstract class GoogleDataService<E, G>
      * Deletes the given Google entry.
      *
      * @param googleEntry   the Google entry to delete
-     * @since               1.0
      */
     protected void syncDeleteGoogle(G googleEntry) {
         deleteGoogleEntry(googleEntry)
@@ -430,7 +423,6 @@ abstract class GoogleDataService<E, G>
      * Deletes the given local entry.
      *
      * @param localEntry    the local entry to delete
-     * @since               1.0
      */
     protected void syncDeleteLocal(E localEntry) {
         localEntry.delete(flush: true)
@@ -441,7 +433,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param googleEntry   the Google entry to create
      * @return              a reference to the created Google entry
-     * @since               1.0
      */
     protected G syncInsertGoogle(E localEntry) {
         return insertGoogleEntry(convertToGoogle(localEntry))
@@ -452,7 +443,6 @@ abstract class GoogleDataService<E, G>
      *
      * @param localEntry    the local entry to create
      * @return              a reference to the created local entry
-     * @since               1.0
      */
     protected E syncInsertLocal(G googleEntry) {
         E localEntry = localEntryClass.newInstance()
@@ -465,7 +455,6 @@ abstract class GoogleDataService<E, G>
      * Updates the given Google entry.
      *
      * @param googleEntry   the Google entry to update
-     * @since               1.0
      */
     protected void syncUpdateGoogle(E localEntry, G googleEntry) {
         convertToGoogle(localEntry, googleEntry)
@@ -476,7 +465,6 @@ abstract class GoogleDataService<E, G>
      * Updates the given local entry.
      *
      * @param localEntry    the local entry to update
-     * @since               1.0
      */
     protected void syncUpdateLocal(E localEntry, G googleEntry) {
         convertToLocal(localEntry, googleEntry)
@@ -487,7 +475,6 @@ abstract class GoogleDataService<E, G>
      * Updates the given Google entry.
      *
      * @param entry the entry to update
-     * @since       1.0
      */
     protected abstract void updateGoogleEntry(G entry)
 }

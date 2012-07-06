@@ -18,6 +18,8 @@
  */
 
 
+import org.amcworld.springcrm.Config
+import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.OverviewPanelRepository
 
 
@@ -26,7 +28,7 @@ import org.amcworld.springcrm.OverviewPanelRepository
  * application.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class BootStrap {
 
@@ -41,6 +43,10 @@ class BootStrap {
 		exceptionHandler.exceptionMappings = [
 			'java.lang.Exception': '/error'
 		]
+
+        Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
+        Long interval = config ? (config.value as Long) : 5L
+        GoogleContactSyncJob.schedule(interval * 60000L, -1)
 
 		OverviewPanelRepository opr = OverviewPanelRepository.instance
 		opr.initialize(servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml'))

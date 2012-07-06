@@ -1,5 +1,5 @@
 /*
- * GoogleDataContactService.groovy
+ * GoogleContactSync.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,7 +18,7 @@
  */
 
 
-package org.amcworld.springcrm
+package org.amcworld.springcrm.google
 
 import com.google.gdata.client.GoogleService
 import com.google.gdata.client.Query;
@@ -33,39 +33,45 @@ import com.google.gdata.util.ContentType
 import com.google.gdata.util.InvalidEntryException;
 import com.google.gdata.util.ResourceNotFoundException
 import net.sf.jmimemagic.Magic
+import org.amcworld.springcrm.Person
 import org.amcworld.springcrm.google.RecoverableGoogleSyncException
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
 /**
- * The class {@code GoogleDataContactService} sends person records to Google.
+ * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
  * @author	Daniel Ellermann
  * @version 1.0
+ * @since   1.0
  */
-class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
+class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
 
-	//-- Class variables ------------------------
+    //-- Constants ------------------------------
 
-	static scope = 'session'
-    static transactional = false
+    protected static final URL FEED_URL =
+        new URL('https://www.google.com/m8/feeds/contacts/default/full')
+
+    private static final log = LogFactory.getLog(this)
 
 
     //-- Instance variables ---------------------
 
-    protected URL feedUrl = new URL('https://www.google.com/m8/feeds/contacts/default/full')
-    def messageSource
-    protected GoogleService svc; /* leave semicolon here! otherwise instance initializer is treated as closure */
+    protected GoogleService svc
 
 
-    //-- Instance initializer -------------------
+    //-- Constructors ---------------------------
 
-	{
-        localEntryClass = Person
-	}
+    /**
+     * Creates a new Google synchronization instance for persons.
+     */
+    GoogleContactSync() {
+        super(Person)
+    }
 
 
-	//-- Non-public methods ---------------------
+    //-- Non-public methods ---------------------
 
     protected ContactEntry convertToGoogle(Person p,
                                            ContactEntry contact = null)
@@ -407,7 +413,6 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
      * authenticated.
      *
      * @return  the Google API service instance
-     * @since   1.0
      */
     protected synchronized GoogleService getService() {
         if (!svc) {
@@ -440,18 +445,18 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
 
     @Override
     protected ContactEntry insertGoogleEntry(ContactEntry entry) {
-        return service.insert(feedUrl, entry)
+        return service.insert(FEED_URL, entry)
     }
 
     @Override
     protected Map<String, ContactEntry> loadGoogleEntries() {
         Map<String, ContactEntry> res = null
         try {
-            ContactFeed feed = service.getFeed(feedUrl, ContactFeed)
+            ContactFeed feed = service.getFeed(FEED_URL, ContactFeed)
             res = [: ]
             int numEntries = feed.totalResults
             for (int i = 0; i < numEntries; i += 20) {
-                Query query = new Query(feedUrl)
+                Query query = new Query(FEED_URL)
                 query.startIndex = i + 1
                 query.maxResults = 20
                 feed = service.query(query, ContactFeed)
@@ -508,7 +513,6 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
      * @param googleEntry                       the given Google entry
      * @throws RecoverableGoogleSyncException   if the Google entry does not
      *                                          define an organization name
-     * @since                                   1.0
      */
     private void updateOrganization(ContactEntry googleEntry)
         throws RecoverableGoogleSyncException
@@ -579,7 +583,6 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
      *
      * @param localEntry    the given local person entry
      * @param googleEntry   the associated Google entry
-     * @since               1.0
      */
     private void updatePhoto(Person localEntry, ContactEntry googleEntry) {
         Link photoLink = googleEntry.contactPhotoLink
@@ -594,7 +597,7 @@ class GoogleDataContactService extends GoogleDataService<Person, ContactEntry> {
             try {
                 request.execute()
             } catch (InvalidEntryException e) {
-                log.debug("Cannot update picture for person ${localEntry}: ${e.message}")
+                log.debug "Cannot update picture for person ${localEntry}: ${e.message}"
             }
         } else {
             service.delete(new URL(photoLink.href), photoLink.getEtag())

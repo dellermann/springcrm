@@ -1,5 +1,5 @@
 /*
- * resources.groovy
+ * GoogleContactSyncService.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -18,18 +18,29 @@
  */
 
 
-beans = {
-    appEditorRegistrar(org.amcworld.springcrm.util.AppPropertyEditorRegistrar) {
-		messageSource = ref('messageSource')
-	}
+package org.amcworld.springcrm
 
-    googleContactSync(org.amcworld.springcrm.google.GoogleContactSync) {
-        googleOAuthService = ref('googleOAuthService')
-        messageSource = ref('messageSource')
-    }
 
-    googleCalendarSync(org.amcworld.springcrm.google.GoogleCalendarSync) {
-        googleOAuthService = ref('googleOAuthService')
-        messageSource = ref('messageSource')
+/**
+ * The class {@code GoogleContactSyncService} synchronizes person records with
+ * Google.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.0
+ */
+class GoogleContactSyncService extends GoogleService {
+
+	//-- Class variables ------------------------
+
+	static scope = 'session'
+    static transactional = false
+
+
+    //-- Public methods -------------------------
+
+    void sync() {
+        def sync = getSyncInstance('googleContactSync')
+        sync.userName = user.userName
+        sync.sync()
     }
 }

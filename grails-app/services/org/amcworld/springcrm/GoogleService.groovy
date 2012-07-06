@@ -20,9 +20,8 @@
 
 package org.amcworld.springcrm
 
-import com.google.api.client.http.HttpTransport
-import com.google.api.client.json.JsonFactory
 import javax.servlet.http.HttpSession;
+import org.amcworld.springcrm.google.GoogleSync;
 import org.springframework.web.context.request.RequestContextHolder
 
 
@@ -34,22 +33,13 @@ import org.springframework.web.context.request.RequestContextHolder
  * @version 1.0
  * @since   1.0
  */
-class GoogleService {
+abstract class GoogleService
+    implements org.amcworld.springcrm.google.GoogleService
+{
 
-    //-- Constants ------------------------------
+    //-- Instance variables ---------------------
 
-    /**
-     * The HTTP transport instance which is to use to communicate with the
-     * Google server.
-     */
-    protected static final HttpTransport HTTP_TRANSPORT =
-        new com.google.api.client.http.javanet.NetHttpTransport()
-
-    /**
-     * The JSON factory instance which is to use to create and parse JSON data.
-     */
-    protected static final JsonFactory JSON_FACTORY =
-        new com.google.api.client.json.jackson.JacksonFactory()
+    def grailsApplication
 
 
     //-- Non-public methods ---------------------
@@ -61,6 +51,19 @@ class GoogleService {
      */
     protected HttpSession getSession() {
         return RequestContextHolder.currentRequestAttributes().session
+    }
+
+    /**
+     * Gets the underlying instance which performs the synchronization with
+     * Google.
+     *
+     * @param name  the name of the bean representing the synchronization
+     *              instance as defined in {@code conf/spring/resources.groovy}
+     * @return      the synchronization instance; {@code null} if no such
+     *              instance with the given name exists
+     */
+    protected GoogleSync getSyncInstance(String name) {
+        return (GoogleSync) grailsApplication.mainContext.getBean(name)
     }
 
     /**
