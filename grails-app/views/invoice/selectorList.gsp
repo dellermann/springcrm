@@ -16,7 +16,7 @@
   <g:each in="${invoiceInstanceList}" status="i" var="invoiceInstance">
     <tr data-item-id="${invoiceInstance.id}">
       <td class="content-table-row-selector" headers="content-table-headers-invoice-row-selector"><input type="checkbox" id="invoice-row-selector-${invoiceInstance.id}" data-id="${invoiceInstance.id}" /></td>
-      <td class="content-table-type-id content-table-column-invoice-number" headers="content-table-headers-invoice-number"><a href="#">{fieldValue(bean: invoiceInstance, field: "fullNumber")}</a></td>
+      <td class="content-table-type-id content-table-column-invoice-number" headers="content-table-headers-invoice-number"><a href="#">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</a></td>
       <td class="content-table-type-string content-table-column-invoice-subject" headers="content-table-headers-invoice-subject"><a href="#">${fieldValue(bean: invoiceInstance, field: "subject")}</a></td>
       <td class="content-table-type-ref content-table-column-invoice-organization" headers="content-table-headers-invoice-organization">${fieldValue(bean: invoiceInstance, field: "organization")}</td>
       <td class="content-table-type-status content-table-column-invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}" headers="content-table-headers-invoice-stage">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
