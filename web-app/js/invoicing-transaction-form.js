@@ -52,7 +52,7 @@
                 .end()
                 .find("#person")
                     .autocompleteex({
-                        loadParameters: this.getOrganizationId
+                        loadParameters: $.proxy(this.getOrganizationId, this)
                     });
             this.$stillUnpaid = el.find("#still-unpaid")
                 .click($.proxy(this._onClickStillUnpaid, this));
