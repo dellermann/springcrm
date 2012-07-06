@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Dunning" %>
 <html>
 <head>
@@ -358,7 +357,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [dunning: dunningInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}" data-load-params="dunning=${dunningInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">

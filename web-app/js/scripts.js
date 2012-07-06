@@ -26,6 +26,10 @@
  */
 
 
+/*jslint nomen: true, plusplus: true, white: true */
+/*global SPRINGCRM: false, $L: false, jQuery: true */
+
+
 (function (window, SPRINGCRM, $L, $) {
 
     "use strict";
@@ -924,11 +928,23 @@
             returnUrl: null
         },
 
+        _computeUrl: function (url) {
+            var el = this.element,
+                params;
+
+            url = url || el.data("load-url");
+            params = el.data("load-params");
+            if (params) {
+                url = $.param.querystring(url, params);
+            }
+            return url;
+        },
+
         _create: function () {
             var url = this.element.data("load-url");
 
             if (url) {
-                this._loadContent(url);
+                this._loadContent(this._computeUrl(url));
             }
         },
 
@@ -947,7 +963,9 @@
                         element.find("thead a")
                             .add(".paginator a")
                             .click(function () {
-                                self._loadContent($(this).attr("href"));
+                                self._loadContent(
+                                    self._computeUrl($(this).attr("href"))
+                                );
                                 return false;
                             });
                         if (returnUrl) {

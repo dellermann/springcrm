@@ -324,7 +324,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded', params: [quote: quoteInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded')}" data-load-params="quote=${quoteInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
@@ -336,7 +336,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded', params: [quote: quoteInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded')}" data-load-params="quote=${quoteInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">

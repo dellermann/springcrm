@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.SalesOrder" %>
 <html>
 <head>
@@ -338,7 +337,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded', params: [salesOrder: salesOrderInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded')}" data-load-params="salesOrder=${salesOrderInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">

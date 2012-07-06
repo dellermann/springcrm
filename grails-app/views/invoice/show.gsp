@@ -364,7 +364,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params: [invoice: invoiceInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded')}" data-load-params="invoice=${invoiceInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
@@ -376,7 +376,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [invoice: invoiceInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}" data-load-params="invoice=${invoiceInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">

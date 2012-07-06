@@ -237,7 +237,7 @@
       </div>
       </g:if>
 
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'person', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'person', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="person.plural" /></h4>
           <div class="menu">
@@ -249,7 +249,7 @@
 
       <g:if test="${organizationInstance.isCustomer()}">
       <g:ifModuleAllowed modules="quote">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'quote', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'quote', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
@@ -261,7 +261,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
@@ -273,7 +273,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
@@ -286,7 +286,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
@@ -298,7 +298,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">
@@ -311,7 +311,7 @@
 
       <g:if test="${organizationInstance.isVendor()}">
       <g:ifModuleAllowed modules="purchaseInvoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'purchaseInvoice', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'purchaseInvoice', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="purchaseInvoice.plural" /></h4>
           <div class="menu">
@@ -324,7 +324,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="project">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'project', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'project', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="project.plural" /></h4>
           <div class="menu">
@@ -336,7 +336,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="call">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'call', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'call', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
@@ -348,7 +348,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="note">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'note', action: 'listEmbedded', params: [organization: organizationInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'note', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">

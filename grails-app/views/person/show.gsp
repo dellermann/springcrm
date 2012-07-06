@@ -250,7 +250,7 @@
       </g:if>
 
       <g:ifModuleAllowed modules="quote">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'quote', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'quote', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="quote.plural" /></h4>
           <div class="menu">
@@ -262,7 +262,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="salesOrder.plural" /></h4>
           <div class="menu">
@@ -274,7 +274,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="invoice.plural" /></h4>
           <div class="menu">
@@ -286,7 +286,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="dunning.plural" /></h4>
           <div class="menu">
@@ -298,7 +298,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="creditMemo.plural" /></h4>
           <div class="menu">
@@ -310,7 +310,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="project">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'project', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'project', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="project.plural" /></h4>
           <div class="menu">
@@ -322,7 +322,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="call">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'call', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'call', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="call.plural" /></h4>
           <div class="menu">
@@ -334,7 +334,7 @@
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="note">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'note', action: 'listEmbedded', params: [person: personInstance.id])}">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'note', action: 'listEmbedded')}" data-load-params="person=${personInstance.id}">
         <div class="header-with-menu">
           <h4><g:message code="note.plural" /></h4>
           <div class="menu">

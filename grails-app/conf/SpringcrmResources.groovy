@@ -70,6 +70,7 @@ modules = {
         resource url: '/css/print.css', attrs: [ media: 'print' ]
         resource '/css/jquery-ui-springcrm.css'
         resource '/js/jquery.ui.datepicker-de.js'
+        resource '/js/jquery.ba-bbq.min.js'
         resource '/js/scripts.js'
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
