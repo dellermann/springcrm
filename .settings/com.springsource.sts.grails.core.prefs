@@ -1,4 +1,4 @@
-com.springsource.sts.grails.core.com.springsource.sts.grails.core.install.name=Grails 2.0.4
+com.springsource.sts.grails.core.com.springsource.sts.grails.core.install.name=Grails 2.1.0
 com.springsource.sts.grails.core.javadoc.location-google-api-calendar-v3-rev7-java-1.6.0-beta.jar=jar\:file\:/home/dellermann/Downloads/calendar/google-api-calendar-v3-rev7-java-1.6.0-beta-javadoc.jar\!/
 com.springsource.sts.grails.core.javadoc.location-google-api-client-1.8.0-beta.jar=http\://javadoc.google-api-java-client.googlecode.com/hg/1.8.0-beta/
 com.springsource.sts.grails.core.source.attachment-gdata-client-1.0.jar=/home/dellermann/Downloads/gdata/java/src
