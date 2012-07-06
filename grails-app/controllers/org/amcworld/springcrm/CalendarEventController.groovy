@@ -114,7 +114,7 @@ class CalendarEventController {
                 assert d > dOld
             }
         }
-		render(contentType: "text/json") {
+		render(contentType: 'text/json') {
 			array {
 				for (ce in list) {
 					event id: ce.id, title: ce.subject, allDay: ce.allDay, start: ce.start, end: ce.end, url: createLink(controller: 'calendarEvent', action: 'show', id: ce.id)
@@ -291,7 +291,7 @@ class CalendarEventController {
             }
         }
 
-        render(contentType:"text/json") {
+        render(contentType: 'text/json') {
             array {
                 for (Reminder r in list) {
                     reminder title: r.calendarEvent.subject, allDay: r.calendarEvent.allDay, start: r.calendarEvent.start, end: r.calendarEvent.end, url: createLink(controller: 'calendarEvent', action: 'show', id: r.calendarEvent.id)

@@ -26,4 +26,5 @@ databaseChangeLog = {
 	include file: 'db-2012-06-06.xml'
 	include file: 'db-2012-06-09.xml'
     include file: 'db-2012-06-27.xml'
+    include file: 'db-2012-07-06.xml'
 }

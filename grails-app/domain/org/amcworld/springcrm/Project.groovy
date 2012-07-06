@@ -20,9 +20,16 @@
 
 package org.amcworld.springcrm
 
-import java.util.Date
 
-
+/**
+ * The class {@code Project} represents a project with several project phases
+ * and associated project items such as quotes, sales orders, invoices,
+ * documents etc.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.0
+ * @since   1.0
+ */
 class Project {
 
     //-- Class variables ------------------------
@@ -30,7 +37,7 @@ class Project {
     static constraints = {
         number(unique: true, widget: 'autonumber')
         title(nullable: false, blank: false)
-        description(nullable: true, widget: 'textarea')
+        description(nullable: true, blank: true, widget: 'textarea')
         organization()
         person(nullable: true)
         phase(nullable: false)
@@ -75,6 +82,12 @@ class Project {
 
     //-- Public methods -------------------------
 
+    def beforeInsert() {
+        if (number == 0) {
+            number = seqNumberService.nextNumber(getClass())
+        }
+    }
+
     String getFullNumber() {
         return seqNumberService.format(getClass(), number)
     }
@@ -90,6 +103,7 @@ class Project {
  *
  * @author  Daniel Ellermann
  * @version 1.0
+ * @since   1.0
  */
 enum ProjectPhase {
     planning,
