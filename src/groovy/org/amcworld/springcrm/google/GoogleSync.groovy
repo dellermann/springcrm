@@ -253,7 +253,6 @@ abstract class GoogleSync<E, G> implements GoogleService {
      *             entry exists for the given item
      */
     protected GoogleDataSyncStatus findSyncStatus(E item) {
-        def user = User.findByUserName(userName.toString())
         def c = GoogleDataSyncStatus.createCriteria()
         return c.get {
             eq('user', user)
@@ -340,6 +339,17 @@ abstract class GoogleSync<E, G> implements GoogleService {
      * @return      the URL
      */
     protected abstract String getUrl(G entry)
+
+    /**
+     * Gets the user instance for the user name specified in property
+     * {@code userName}.
+     *
+     * @return  the user instance; {@code null} if no user with the user name
+     *          exists
+     */
+    protected User getUser() {
+        return User.findByUserName(userName.toString())
+    }
 
     /**
      * Checks whether or not the given Google entry has been changed since the

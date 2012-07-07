@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm.google
 
+import com.google.gdata.util.PreconditionFailedException;
 import com.google.gdata.client.GoogleService
 import com.google.gdata.client.Query;
 import com.google.gdata.client.Service.GDataRequest
@@ -474,12 +475,18 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         return res
     }
 
-    @Override
-    protected ContactEntry syncInsertGoogle(Person localEntry) {
-        ContactEntry googleEntry = super.syncInsertGoogle(localEntry);
-        updatePhoto(localEntry, googleEntry)
-        return googleEntry
-    }
+    /*
+     * XXX Currently, updating the photo doesn't work.  It deletes all
+     * property values of the Google entry which were created before (using
+     * insertGoogleEntry).  Maybe this is a problem at Google, so we wait some
+     * time and try it later.
+     */
+//    @Override
+//    protected ContactEntry syncInsertGoogle(Person localEntry) {
+//        ContactEntry googleEntry = super.syncInsertGoogle(localEntry)
+//        updatePhoto(localEntry, googleEntry)
+//        return googleEntry
+//    }
 
     @Override
     protected Person syncInsertLocal(ContactEntry googleEntry) {
@@ -491,13 +498,14 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
     protected void syncUpdateGoogle(Person localEntry, ContactEntry googleEntry)
     {
         super.syncUpdateGoogle(localEntry, googleEntry)
+        updatePhoto(localEntry, googleEntry)
     }
 
     @Override
     protected void syncUpdateLocal(Person localEntry, ContactEntry googleEntry)
     {
         updateOrganization(googleEntry)
-        super.syncUpdateLocal(localEntry, googleEntry);
+        super.syncUpdateLocal(localEntry, googleEntry)
     }
 
     @Override
@@ -588,19 +596,29 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         Link photoLink = googleEntry.contactPhotoLink
         def picture = localEntry.picture
         if (picture) {
+            if (log.debugEnabled) {
+                log.debug "Updating photo for ${localEntry}…"
+            }
             GDataRequest request = service.createRequest(
                 GDataRequest.RequestType.UPDATE, new URL(photoLink.href),
                 new ContentType(Magic.getMagicMatch(picture).mimeType)
             )
-            request.setEtag(photoLink.getEtag())
+            request.etag = photoLink.etag
             request.requestStream.write(picture)
             try {
                 request.execute()
+            } catch (PreconditionFailedException e) {   // etag outdated
+                log.debug "Photo for ${localEntry} changed by third party."
             } catch (InvalidEntryException e) {
                 log.debug "Cannot update picture for person ${localEntry}: ${e.message}"
+            } finally {
+                request.end()
             }
-        } else {
-            service.delete(new URL(photoLink.href), photoLink.getEtag())
+        } else if (photoLink.etag) {
+            if (log.debugEnabled) {
+                log.debug "Deleting photo of ${localEntry}…"
+            }
+            service.delete(new URL(photoLink.href), photoLink.etag)
         }
     }
 }
