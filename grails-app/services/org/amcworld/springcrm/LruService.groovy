@@ -55,7 +55,7 @@ class LruService {
 	 * 						list
 	 */
     void recordItem(String controller, long id, String name) {
-		User user = session.user
+		User user = User.get(session.user.id)
 
 		/* check whether or not this entry already exists */
 		def c = LruEntry.createCriteria()

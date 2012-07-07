@@ -84,7 +84,7 @@ class User {
 	}
 
 	List<String> getAllowedModulesAsList() {
-		return allowedModules?.split(',')
+		return allowedModules ? allowedModules.split(',') : []
 	}
 
 	void setAllowedModulesAsList(List<String> l) {

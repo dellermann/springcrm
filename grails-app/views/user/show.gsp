@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.User" %>
 <html>
 <head>
@@ -89,18 +88,18 @@
             <div class="label"><g:message code="user.admin.label" default="Administrator" /></div>
             <div class="field"><g:formatBoolean boolean="${userInstance?.admin}" /></div>
           </div>
+          <g:if test="${!userInstance?.admin && userInstance?.allowedModulesAsList}">
           <div class="row">
             <div class="label"><g:message code="user.allowedModules.label" default="Allowed modules" /></div>
             <div class="field">
-            <g:if test="${userInstance?.allowedModulesAsList}">
               <ul class="compact-list">
               <g:each in="${userInstance?.allowedModulesAsList}">
                 <li><g:message code="module.${it}" /></li>
               </g:each>
               </ul>
-            </g:if>
             </div>
           </div>
+          </g:if>
         </div>
       </div>
     </div>
