@@ -132,6 +132,7 @@ class User {
 		return admin || modules?.intersect(getAllowedModulesAsList())
 	}
 
+    @Override
     boolean equals(Object o) {
         if (o instanceof User) {
             return o.ident() == ident()
@@ -140,6 +141,12 @@ class User {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return ident()
+    }
+
+    @Override
 	String toString() {
 		return fullName
 	}

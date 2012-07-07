@@ -33,6 +33,15 @@
             <div class="form">
               <f:field bean="${userInstance}" property="userName" />
               <f:field bean="${userInstance}" property="password" />
+              <div class="row">
+                <div class="label">
+                  <label for="password-repeat"><g:message code="user.passwordRepeat.label" default="Repeat password" /></label>
+                </div>
+                <div class="field">
+                  <g:passwordField name="passwordRepeat" size="40" /><br />
+                  <span class="info-msg"><g:message code="default.required" default="required" /></span>
+                </div>
+              </div>
               <f:field bean="${userInstance}" property="firstName" />
               <f:field bean="${userInstance}" property="lastName" />
             </div>

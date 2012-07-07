@@ -48,7 +48,9 @@
           <td class="content-table-type-string content-table-column-user-email" headers="content-table-headers-user-email"><a href="mailto:${fieldValue(bean: userInstance, field: "email")}">${fieldValue(bean: userInstance, field: "email")}</a></td>
           <td class="content-table-buttons" headers="content-table-headers-user-buttons">
             <g:link action="edit" id="${userInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+            <g:if test="${session.user != userInstance}">
             <g:link action="delete" id="${userInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+            </g:if>
           </td>
         </tr>
       </g:each>

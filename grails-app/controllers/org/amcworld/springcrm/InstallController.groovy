@@ -31,7 +31,7 @@ import groovy.sql.Sql
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class InstallController {
 
@@ -39,6 +39,7 @@ class InstallController {
 
     def sessionFactory
     def installService
+    def securityService
 
 
     //-- Public methods -------------------------
@@ -76,7 +77,13 @@ class InstallController {
     def createAdminSave() {
         def userInstance = new User(params)
         userInstance.admin = true
-        if (!userInstance.save(flush: true)) {
+
+        boolean passwordMismatch =
+            params.password != securityService.encryptPassword(params.passwordRepeat)
+        if (passwordMismatch) {
+            userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
+        }
+        if (passwordMismatch || !userInstance.save(flush: true)) {
             render(view: 'createAdmin', model: [userInstance: userInstance, step: 3])
             return
         }

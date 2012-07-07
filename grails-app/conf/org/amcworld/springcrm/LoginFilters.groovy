@@ -26,13 +26,24 @@ package org.amcworld.springcrm
  * access permissions.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class LoginFilters {
+
+    def securityService
+
 
     //-- Public methods -------------------------
 
     def filters = {
+        encryptPassword(controller: 'user|install',
+                        action: 'save|update|authenticate|create-admin-save')
+        {
+            before = {
+                params.password = params.password ? securityService.encryptPassword(params.password) : null
+            }
+        }
+
         login(controller: '*', controllerExclude: 'i18n|install',
               action: '*', actionExclude: 'login|authenticate')
         {

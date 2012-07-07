@@ -29,7 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * the application.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class UserController {
 
@@ -47,6 +47,7 @@ class UserController {
 
     def googleOAuthService
     def installService
+    def securityService
 
 
     //-- Public methods -------------------------
@@ -73,7 +74,12 @@ class UserController {
 
     def save() {
         def userInstance = new User(params)
-        if (!userInstance.save(flush: true)) {
+        boolean passwordMismatch =
+            params.password != securityService.encryptPassword(params.passwordRepeat)
+        if (passwordMismatch) {
+            userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
+        }
+        if (passwordMismatch || !userInstance.save(flush: true)) {
             render(view: 'create', model: [userInstance: userInstance])
             return
         }
@@ -125,12 +131,19 @@ class UserController {
                 return
             }
         }
+
+        boolean passwordMismatch = false
 		String passwd = userInstance.password
         userInstance.properties = params
-		if (!params.password) {
+		if (params.password) {
+            passwordMismatch = params.password != securityService.encryptPassword(params.passwordRepeat)
+            if (passwordMismatch) {
+                userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
+            }
+		} else {
 			userInstance.password = passwd
 		}
-        if (!userInstance.save(flush: true)) {
+        if (passwordMismatch || !userInstance.save(flush: true)) {
             render(view: 'edit', model: [userInstance: userInstance])
             return
         }
