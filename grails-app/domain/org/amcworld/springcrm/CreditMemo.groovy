@@ -54,7 +54,7 @@ class CreditMemo extends InvoicingTransaction {
 	CreditMemoStage stage
 	Date paymentDate
 	BigDecimal paymentAmount
-	PaymentMethod paymentMethod
+	PaymentMethod paymentMethod; /* leave semicolon here! */
 
 
     //-- Instance initializer -------------------

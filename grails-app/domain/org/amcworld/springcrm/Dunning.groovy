@@ -58,7 +58,7 @@ class Dunning extends InvoicingTransaction {
 	Date dueDatePayment
 	Date paymentDate
 	BigDecimal paymentAmount
-	PaymentMethod paymentMethod
+	PaymentMethod paymentMethod; /* leave semicolon here! */
 
 
     //-- Instance initializer -------------------

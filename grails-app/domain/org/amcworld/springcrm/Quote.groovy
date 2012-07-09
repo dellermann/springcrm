@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Quote} represents a quote.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class Quote extends InvoicingTransaction {
 
@@ -45,7 +45,7 @@ class Quote extends InvoicingTransaction {
     //-- Instance variables ---------------------
 
 	QuoteStage stage
-	Date validUntil
+	Date validUntil; /* leave semicolon here! */
 
 
     //-- Instance initializer -------------------

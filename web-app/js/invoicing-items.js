@@ -492,21 +492,23 @@
 
         _onLoadInventorySelector: function (html, type, index) {
             var $ = jQuery,
-                $form = null,
-                $selector,
-                getData = function () {
-                    var data = null,
-                        search = $form.get(0).search.value;
+                $form,
+                $selector = $("#inventory-selector-" + type),
+                getData;
 
-                    if ((search !== $L("default.search.label")) &&
-                        (search !== ""))
-                    {
-                        data = { search: search };
-                    }
-                    return data;
-                };
+            $form = $selector.find("form");
+            getData = function () {
+                var data = null,
+                    search = $form.find("[name=search]")
+                        .val();
 
-            $selector = $("#inventory-selector-" + type);
+                if ((search !== $L("default.search.label")) &&
+                    (search !== ""))
+                {
+                    data = { search: search };
+                }
+                return data;
+            };
             $selector.html(html)
                 .unbind("click")
                 .click($.proxy(
@@ -531,7 +533,6 @@
                     },
                     this
                 ));
-            $form = $selector.find("form");
             $form.submit($.proxy(
                 function (event) {
                     this._loadInventorySelector(

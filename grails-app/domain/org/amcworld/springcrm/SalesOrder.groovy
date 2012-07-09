@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code SalesOrder} represents a sales order.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.0
  */
 class SalesOrder extends InvoicingTransaction {
 
@@ -49,7 +49,7 @@ class SalesOrder extends InvoicingTransaction {
 
 	SalesOrderStage stage
 	Date dueDate
-	Date deliveryDate
+	Date deliveryDate; /* leave semicolon here! */
 
 
     //-- Instance initializer -------------------
