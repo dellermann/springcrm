@@ -75,6 +75,21 @@ modules = {
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
 
+    document {
+        dependsOn 'elfinder'
+
+        resource '/js/document.js'
+    }
+
+    elfinder {
+        dependsOn 'jquery-ui'
+
+        resource url: '/css/elfinder/elfinder.min.css', exclude: 'minify'
+        resource '/css/elfinder/theme.css'
+        resource url: '/js/elfinder/elfinder.min.js', exclude: 'minify'
+        resource '/js/elfinder/i18n/elfinder.de.js'
+    }
+
     error {
         dependsOn 'jquery-ui'
 

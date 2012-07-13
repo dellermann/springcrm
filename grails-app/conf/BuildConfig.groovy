@@ -52,6 +52,10 @@ grails.project.dependency.resolution = {
     dependencies {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
+        compile (
+            'commons-fileupload:commons-fileupload:1.2.1',
+            'commons-io:commons-io:2.3'
+        )
         /*
          * XXX These dependencies conflict in the transient dependency
          * jackson-core-asl with the cloudfoundry plugin

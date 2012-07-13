@@ -24,11 +24,11 @@ import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class <code>Modules</code> defines modules which can be used for
- * permission control in this application.
+ * The class {@code Modules} defines modules which can be used for permission
+ * control in this application.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class Modules {
 
@@ -43,6 +43,7 @@ class Modules {
 		call: ['call'],
 		contact: ['organization', 'person'],
 		creditMemo: ['organization', 'creditMemo'],
+        document: ['document'],
 		dunning: ['organization', 'invoice', 'dunning'],
 		invoice: ['organization', 'invoice'],
 		note: ['note'],

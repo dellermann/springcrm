@@ -8,6 +8,7 @@
         <g:ifModuleAllowed modules="call"><li><g:link controller="call"><g:message code="call.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="note"><li><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="project"><li><g:link controller="project"><g:message code="project.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="document"><li><g:link controller="document"><g:message code="document.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>
     </li>
@@ -18,6 +19,7 @@
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="organization" params="[type:1]"><g:message code="organization.customers" default="Customers" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="person"><g:message code="person.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="document"><li><g:link controller="document"><g:message code="document.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Leads</a></li>
         <li><a href="#">Kalender</a></li>
         <li><a href="#">Postfach</a></li>-->
@@ -35,6 +37,8 @@
         <g:ifModuleAllowed modules="contact"><li><g:link controller="quote"><g:message code="quote.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="salesOrder"><g:message code="salesOrder.plural" /></g:link></li></g:ifModuleAllowed>
         <g:ifModuleAllowed modules="contact"><li><g:link controller="invoice"><g:message code="invoice.plural" /></g:link></li></g:ifModuleAllowed>
+        <li><hr /></li>
+        <g:ifModuleAllowed modules="document"><li><g:link controller="document"><g:message code="document.plural" /></g:link></li></g:ifModuleAllowed>
       </ul>
     </li>
     <li>
@@ -48,6 +52,7 @@
         <g:ifModuleAllowed modules="note"><li><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifModuleAllowed>
         <li><hr /></li>
         <g:ifModuleAllowed modules="project"><li><g:link controller="project"><g:message code="project.plural" /></g:link></li></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="document"><li><g:link controller="document"><g:message code="document.plural" /></g:link></li></g:ifModuleAllowed>
         <!--<li><a href="#">Postfach</a></li>-->
       </ul>
     </li>
