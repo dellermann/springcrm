@@ -25,6 +25,7 @@
     var $documents = $("#documents");
 
     $documents.elfinder({
+            height: 500,
             lang: "de",
             url: $documents.data("load-url")
         })

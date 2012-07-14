@@ -1,11 +1,11 @@
 .ui-widget { 
-  font-family: Arimo, DejaVu Sans Condensed, DejaVu Sans, 
-    Helvetica Neue LT Std, Tahoma, Arial, sans-serif;
+  font-family: "Varela Round", "DejaVu Sans Condensed", "DejaVu Sans", 
+    "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
   font-size: 1em;
 }
 .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { 
-  font-family: Arimo, DejaVu Sans Condensed, DejaVu Sans, 
-    Helvetica Neue LT Std, Tahoma, Arial, sans-serif; 
+  font-family: "Varela Round", "DejaVu Sans Condensed", "DejaVu Sans", 
+    "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
   font-size: 1em; 
 }
 .ui-widget-content {
