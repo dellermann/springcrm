@@ -1,5 +1,5 @@
 /*
- * ElFinderRequest.groovy
+ * Request.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -22,15 +22,13 @@ package org.amcworld.springcrm.elfinder
 
 import javax.servlet.http.HttpServletRequest
 import org.amcworld.springcrm.elfinder.command.Command
-import org.apache.commons.fileupload.FileItemIterator
-import org.apache.commons.fileupload.FileItemStream
-import org.apache.commons.fileupload.servlet.ServletFileUpload
-import org.apache.commons.fileupload.util.Streams
 import org.apache.commons.logging.LogFactory
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 
 /**
- * The class {@code ElFinderRequest} represents ...
+ * The class {@code Request} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
@@ -49,10 +47,18 @@ class Request {
     Connector connector
     HttpServletRequest request
     Map<String, Object> params
+    Collection<MultipartFile> files
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates a new request using the given HTTP request.
+     *
+     * @param connector the connector associated to this request
+     * @param request   the given HTTP request used to obtain uploaded files
+     *                  and parameters
+     */
     Request(Connector connector, HttpServletRequest request) {
         this.connector = connector
         this.request = request
@@ -60,6 +66,11 @@ class Request {
 
 
     //-- Public methods -------------------------
+
+    /**
+     * Closes this request and frees all used resources.
+     */
+    void close() {}
 
     /**
      * Initializes this request.
@@ -72,16 +83,14 @@ class Request {
     /**
      * Processes the request by instantiating the command class and letting do
      * it its job.
+     *
+     * @throws ConnectorException   if an error occurred while processing the
+     *                              request
      */
     void process() {
         Command cmd = this.connector.getCommand(command)
         if (cmd) {
-            try {
-                cmd.execute()
-            } catch (ConnectorException e) {
-                log.warn "Error executing command ${command}.", e
-                response.errors += e.errorCodes ?: ConnectorError.UNKNOWN
-            }
+            cmd.execute()
         }
     }
 
@@ -116,40 +125,29 @@ class Request {
      * parameters to {@code params}.
      */
     protected void parseRequest() {
-        this.params = [: ]
-        if (ServletFileUpload.isMultipartContent(request)) {
-            try {
-                ServletFileUpload upload = new ServletFileUpload()
-                FileItemIterator iter = upload.getItemIterator(request)
-                while (iter.hasNext()) {
-                    FileItemStream item = iter.next()
-                    String name = item.fieldName
-                    InputStream stream = item.openStream()
-                    if (item.formField) {
-                        this.params[name] = Streams.asString(stream)
-                    } else {
-                        String fileName = item.name
-                        if (fileName?.trim()) {
-                            // TODO do we really need this?
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.error 'Unexpected error parsing multipart request.', e
-            }
+        params = [: ]
+        files = (request instanceof MultipartHttpServletRequest) \
+            ? request.fileMap.values() \
+            : []
+        if (log.debugEnabled) {
+            log.debug "Uploaded ${files.size()} file(s)."
         }
 
         for (String key : request.parameterMap.keySet()) {
             def value
             if (key.endsWith('[]')) {
                 value = []
-                request.getParameterValues(key).each {
+                value = request.getParameterValues(key).each {
                     value += it?.trim()
                 }
+                key = key.substring(0, key.length() - 2)
             } else {
                 value = request.getParameter(key)?.trim()
             }
             this.params[key] = value
+        }
+        if (log.debugEnabled) {
+            log.debug "Request parameters: ${params.toMapString()}"
         }
     }
 }

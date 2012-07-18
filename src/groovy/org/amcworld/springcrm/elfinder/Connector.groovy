@@ -55,9 +55,25 @@ class Connector {
      */
     String defaultVolumeId
 
+    /**
+     * The underlying HTTP request.
+     */
     HttpServletRequest httpRequest
+
+    /**
+     * The underlying HTTP response.
+     */
     HttpServletResponse httpResponse
+
+    /**
+     * The connector's request object which parses and handles the request.
+     */
     Request request
+
+    /**
+     * The connector's response object which sends the requested data back to
+     * the client.
+     */
     Response response
 
     /**
@@ -68,8 +84,7 @@ class Connector {
 
     //-- Constructors ---------------------------
 
-    Connector(HttpServletRequest request, HttpServletResponse response)
-    {
+    Connector(HttpServletRequest request, HttpServletResponse response) {
         this.httpRequest = request
         this.httpResponse = response
         this.request = new Request(this, request)
@@ -156,8 +171,25 @@ class Connector {
     void process() {
         request.initialize()
         if (request.validate()) {
-            request.process()
+            try {
+                request.process()
+            } catch (ConnectorException e) {
+                log.info "Error executing command ${request.command}.", e
+                if (e.statusCode) {
+                    response.status = e.statusCode
+                } else {
+                    response.errors += e.errorCodes ?: ConnectorError.UNKNOWN
+                }
+            } catch (ConnectorWarning e) {
+                log.info "Warning executing command ${request.command}.", e
+                if (e.statusCode) {
+                    response.status = e.statusCode
+                } else {
+                    response.warnings += e.warningCodes ?: ConnectorError.UNKNOWN
+                }
+            }
         }
+        request.close()
         response.output()
     }
 

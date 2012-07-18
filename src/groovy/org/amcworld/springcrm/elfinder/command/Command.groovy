@@ -76,6 +76,16 @@ abstract class Command {
     }
 
     /**
+     * Gets the target hash code of the command, that is, the parameter
+     * {@code target} of the request.
+     *
+     * @return  the target hash code
+     */
+    protected String getTarget() {
+        return getParam('target')
+    }
+
+    /**
      * Gets the volume associated to the given hash code.
      *
      * @param hash  the given hash code

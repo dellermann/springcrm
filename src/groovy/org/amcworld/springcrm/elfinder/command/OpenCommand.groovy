@@ -39,7 +39,6 @@ class OpenCommand extends Command {
 
     @Override
     public void execute() {
-        String target = getParam('target')
         boolean init = !!getParam('init')
 
         Volume volume
@@ -77,7 +76,8 @@ class OpenCommand extends Command {
             }
         }
 
-        files += volume.scanDir(cwd.hash)
+        List<Map<String, Object>> ls = volume.scanDir(cwd.hash)
+        files += ls
         if (log.debugEnabled) {
             log.debug "Scanned ${volume.decode(cwd.hash)}: ${files.size()} items in file list."
         }

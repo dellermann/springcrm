@@ -1,5 +1,5 @@
 /*
- * ParentsCommand.groovy
+ * MkdirCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -23,22 +23,16 @@ package org.amcworld.springcrm.elfinder.command
 import org.amcworld.springcrm.elfinder.ConnectorError
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code ParentsCommand} represents ...
+ * The class {@code MkdirCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class ParentsCommand extends Command {
-
-    //-- Constants ------------------------------
-
-    private static final log = LogFactory.getLog(this)
-
+class MkdirCommand extends Command {
 
     //-- Public methods -------------------------
 
@@ -47,15 +41,15 @@ class ParentsCommand extends Command {
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorException(ConnectorError.OPEN)
+                throw new ConnectorException(
+                    ConnectorError.MKDIR, ConnectorError.TRGDIR_NOT_FOUND
+                )
             }
-
-            List<Map<String, Object>> tree = volume.parents(target)
-            println "tree: ${tree.toListString()}"
-            if (tree == null) {
-                throw new ConnectorException(ConnectorError.OPEN)
+            Map<String, Object> dir = volume.mkdir(target, getParam('name'))
+            if (!dir) {
+                throw new ConnectorException(ConnectorError.MKDIR)
             }
-            response['tree'] = tree
+            response['added'] = [dir]
         }
     }
 }

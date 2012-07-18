@@ -191,8 +191,8 @@ log4j = {
 //        'org.amcworld.springcrm.google.GoogleSync',
         'org.amcworld.springcrm.elfinder.Connector',
         'org.amcworld.springcrm.elfinder.Request',
-        'org.amcworld.springcrm.elfinder.command.Command',
-        'org.amcworld.springcrm.elfinder.command.OpenCommand',
+        'org.amcworld.springcrm.elfinder.command',
+        'org.amcworld.springcrm.elfinder.fs',
     )
 
     environments {

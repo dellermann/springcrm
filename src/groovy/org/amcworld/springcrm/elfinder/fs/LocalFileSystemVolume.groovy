@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm.elfinder.fs
 
+import java.io.InputStream;
 import net.sf.jmimemagic.Magic
 import net.sf.jmimemagic.MagicMatchNotFoundException
 
@@ -56,6 +57,10 @@ class LocalFileSystemVolume extends Volume {
         return new File(path).name
     }
 
+    String concatPath(String path, String name) {
+        return new File(path, name).path
+    }
+
     String dirName(String path) {
         return new File(path).parentFile.path
     }
@@ -63,8 +68,38 @@ class LocalFileSystemVolume extends Volume {
 
     //-- Non-public methods ---------------------
 
+    protected boolean fsHasSubdirs(String path) {
+        File dir = new File(path)
+        for (File f : dir.listFiles()) {
+            if (f.isDirectory()) {
+                return true
+            }
+        }
+        return false
+    }
+
     protected boolean fsHidden(String path) {
         return new File(path).hidden
+    }
+
+    protected String fsMkDir(String path, String name) {
+        File dir = new File(path, name)
+        return dir.mkdir() ? dir.path : null
+    }
+
+    protected String fsMkFile(String path, String name) {
+        File file = new File(path, name)
+        return file.createNewFile() ? file.path : null
+    }
+
+    protected String fsMove(String source, String targetDir, String name) {
+        File sourceFile = new File(source)
+        File targetFile = new File(targetDir, name)
+        return sourceFile.renameTo(targetFile) ? targetFile.path : null
+    }
+
+    protected InputStream fsOpen(String path) {
+        return new File(path).newInputStream()
     }
 
     protected String fsPath(String path) {
@@ -73,6 +108,20 @@ class LocalFileSystemVolume extends Volume {
             buf << File.separator << relPath(path)
         }
         return buf.toString()
+    }
+
+    protected boolean fsRemove(String path) {
+        return new File(path).delete()
+    }
+
+    protected boolean fsRmDir(String path) {
+        return new File(path).delete()
+    }
+
+    protected String fsSave(InputStream stream, String path, String name) {
+        File f = new File(path, name)
+        f << stream
+        return f.path
     }
 
     protected String [] fsScanDir(String path) {
@@ -93,10 +142,10 @@ class LocalFileSystemVolume extends Volume {
 
         return [
             mime: f.directory ? 'directory' : getMime(f),
-            read: f.canRead(),
+            read: f.canRead() ? 1 : 0,
             size: f.directory ? 0 : f.length(),
             ts: f.lastModified(),
-            write: f.canWrite()
+            write: f.canWrite() ? 1 : 0
         ]
     }
 
@@ -106,5 +155,21 @@ class LocalFileSystemVolume extends Volume {
         } catch (MagicMatchNotFoundException e) {
             return 'application/octet-stream'
         }
+    }
+
+    protected String uniqueName(String path, String name) {
+        def matches = name =~ /^(\.*)([^.]+)(\..*)?$/
+        if (!matches) {
+            throw new IllegalStateException("File name '${name}' doesn't match the regular expression.")
+        }
+        String rawName = matches[0][2]
+        for (int i = 1; i < 1000000; i++) {
+            String tempName = "${rawName}-${i}"
+            File f = new File(path, tempName)
+            if (!f.exists()) {
+                return "${matches[0][1]}${tempName}${matches[0][3]}"
+            }
+        }
+        return null
     }
 }

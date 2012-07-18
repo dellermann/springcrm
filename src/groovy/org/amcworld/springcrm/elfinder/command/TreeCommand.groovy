@@ -23,6 +23,7 @@ package org.amcworld.springcrm.elfinder.command
 import org.amcworld.springcrm.elfinder.ConnectorError
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
+import org.apache.commons.logging.LogFactory
 
 
 /**
@@ -34,11 +35,15 @@ import org.amcworld.springcrm.elfinder.fs.Volume
  */
 class TreeCommand extends Command {
 
+    //-- Constants ------------------------------
+
+    private static final log = LogFactory.getLog(this)
+
+
     //-- Public methods -------------------------
 
     @Override
     public void execute() {
-        String target = getParam('target')
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
@@ -48,6 +53,9 @@ class TreeCommand extends Command {
             List<Map<String, Object>> tree = volume.tree(target)
             if (tree == null) {
                 throw new ConnectorException(ConnectorError.OPEN)
+            }
+            if (log.debugEnabled) {
+                log.debug "Found ${tree.size()} items for tree ${target}: ${tree.toListString()}."
             }
             response['tree'] = tree
         }

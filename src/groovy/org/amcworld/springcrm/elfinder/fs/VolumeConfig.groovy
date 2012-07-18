@@ -51,6 +51,11 @@ class VolumeConfig {
     boolean allowHidden = false
 
     /**
+     * Whether the volume should check a directory for subfolders.
+     */
+    boolean checkSubfolders = true
+
+    /**
      * The format instance used to format dates and times.
      */
     DateFormat dateFormat = DateFormat.getDateTimeInstance()
@@ -65,4 +70,9 @@ class VolumeConfig {
      * The default depth when obtaining trees.
      */
     int treeDepth = 1
+
+    /**
+     * Whether or not existing files are overwritten during upload.
+     */
+    boolean uploadOverwrite = false
 }

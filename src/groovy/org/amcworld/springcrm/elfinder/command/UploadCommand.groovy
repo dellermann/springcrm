@@ -1,5 +1,5 @@
 /*
- * ParentsCommand.groovy
+ * UploadCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -23,22 +23,17 @@ package org.amcworld.springcrm.elfinder.command
 import org.amcworld.springcrm.elfinder.ConnectorError
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.apache.commons.logging.LogFactory
+import org.springframework.web.multipart.MultipartFile
 
 
 /**
- * The class {@code ParentsCommand} represents ...
+ * The class {@code UploadCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class ParentsCommand extends Command {
-
-    //-- Constants ------------------------------
-
-    private static final log = LogFactory.getLog(this)
-
+class UploadCommand extends Command {
 
     //-- Public methods -------------------------
 
@@ -47,15 +42,26 @@ class ParentsCommand extends Command {
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorException(ConnectorError.OPEN)
+                throw new ConnectorException(
+                    ConnectorError.UPLOAD, ConnectorError.TRGDIR_NOT_FOUND
+                )
             }
-
-            List<Map<String, Object>> tree = volume.parents(target)
-            println "tree: ${tree.toListString()}"
-            if (tree == null) {
-                throw new ConnectorException(ConnectorError.OPEN)
+            List<Map<String, Object>> added = []
+            for (MultipartFile item : connector.request.files) {
+                InputStream stream = item.inputStream
+                try {
+                    Map<String, Object> stat = volume.upload(
+                        stream, target, item.originalFilename
+                    )
+                    if (!stat) {
+                        throw new ConnectorException(ConnectorError.UPLOAD_FILE)
+                    }
+                    added += stat
+                } finally {
+                    stream.close()
+                }
             }
-            response['tree'] = tree
+            response['added'] = added
         }
     }
 }

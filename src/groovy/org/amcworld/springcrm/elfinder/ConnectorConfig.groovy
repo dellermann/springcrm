@@ -33,8 +33,8 @@ class ConnectorConfig {
     //-- Constants ------------------------------
 
     private static final List<String> ALLOWED_COMMANDS = [
-        'open', 'tree', 'parent', 'ls'
-        //'mkdir', 'mkfile', 'open', 'rename', 'rm', 'upload', 'paste'
+        'open', 'tree', 'parents', 'ls', 'file', 'mkdir', 'mkfile', 'rename',
+        'upload', 'rm', 'paste'
     ]
 
 

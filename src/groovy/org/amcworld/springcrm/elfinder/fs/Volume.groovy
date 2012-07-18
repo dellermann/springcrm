@@ -22,6 +22,7 @@ package org.amcworld.springcrm.elfinder.fs
 
 import org.amcworld.springcrm.elfinder.ConnectorError
 import org.amcworld.springcrm.elfinder.ConnectorException
+import org.apache.commons.logging.LogFactory
 
 
 /**
@@ -32,6 +33,11 @@ import org.amcworld.springcrm.elfinder.ConnectorException
  * @since   1.2
  */
 abstract class Volume {
+
+    //-- Constants ------------------------------
+
+    private static final log = LogFactory.getLog(this)
+
 
     //-- Instance variables ---------------------
 
@@ -44,6 +50,16 @@ abstract class Volume {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates a new volume with the given ID, root directory, and
+     * configuration.
+     *
+     * @param id        an ID of this volume used to distinguish multiple
+     *                  volumes
+     * @param root      the root directory where ElFinder operates
+     * @param config    any configuration settings for this volume; if
+     *                  {@code null} default configuration is used
+     */
     Volume(String id, String root, VolumeConfig config = null) {
         this.id = id
         this.root = root
@@ -73,6 +89,15 @@ abstract class Volume {
     abstract String baseName(String path)
 
     /**
+     * Computes a path from the given path and the name appended.
+     *
+     * @param path  the given path
+     * @param name  the name to append to the given path
+     * @return      the concatenated path
+     */
+    abstract String concatPath(String path, String name)
+
+    /**
      * Decodes the given hash code and returns the associated path.
      *
      * @param hash  the given hash code; may be {@code null}
@@ -84,7 +109,7 @@ abstract class Volume {
             return null
         }
 
-        int pos = hash.indexOf(':')
+        int pos = hash.indexOf('_')
         if ((pos < 1) || (pos == hash.length())) {
             return null
         }
@@ -106,7 +131,7 @@ abstract class Volume {
         if (!hash) {
             return null
         }
-        int pos = hash.indexOf(':')
+        int pos = hash.indexOf('_')
         return (pos < 1) ? null : hash.substring(0, pos)
     }
 
@@ -120,7 +145,16 @@ abstract class Volume {
      *                              the represented directory is hidden
      */
     Map<String, Object> dir(String hash) {
-        Map<String, Object> dir = file(hash)
+        Map<String, Object> dir
+        try {
+            dir = file(hash)
+        } catch (ConnectorException e) {
+            if (ConnectorError.FILE_NOT_FOUND in e.errorCodes) {
+                throw new ConnectorException(ConnectorError.DIR_NOT_FOUND)
+            } else {
+                throw e
+            }
+        }
         if ((dir.mime != 'directory') || dir.hidden) {
             throw new ConnectorException(ConnectorError.NOT_DIR)
         }
@@ -150,14 +184,14 @@ abstract class Volume {
 
         String relPath = relPath(path) ?: '/'
         StringBuilder buf = new StringBuilder(id)
-        buf << ':' << relPath.bytes.encodeBase64().toString().tr('+/=', '-_.')
+        buf << '_' << relPath.bytes.encodeBase64().toString().tr('+/=', '-_.').replaceFirst(/\.+$/, '')
         return buf.toString()
     }
 
     /**
      * Returns statistics about the file or directory with the given hash code.
      *
-     * @param hash                  the given hash
+     * @param hash                  the given hash code
      * @return                      the file or directory statistics
      * @throws ConnectorException   if no file or directory with the given hash
      *                              exists
@@ -214,13 +248,99 @@ abstract class Volume {
     }
 
     /**
+     * Creates a new directory with the given name in the directory with the
+     * given hash code.
+     *
+     * @param dest  the hash code representing the directory where to create a
+     *              new one
+     * @param name  the name of the new directory
+     * @return      the statistics of the new directory; {@code null} if the
+     *              directory could not be created
+     */
+    Map<String, Object> mkdir(String dest, String name) {
+        if (!validateName(name)) {
+            throw new ConnectorException(ConnectorError.INVALID_NAME)
+        }
+        Map<String, Object> dir = dir(dest)
+        if (!dir.write) {
+            throw new ConnectorException(ConnectorError.PERM_DENIED)
+        }
+
+        String path = decode(dest)
+        String newPath = concatPath(path, name)
+        if (stat(newPath)) {
+            throw new ConnectorException(ConnectorError.EXISTS)
+        }
+        String dirPath = fsMkDir(path, name)
+        if (!dirPath) {
+            return null
+        }
+
+        List<String> files = dirCache[path]
+        if (files != null) {
+            files += dirPath
+        }
+        return cacheStat(dirPath)
+    }
+
+    /**
+     * Creates an empty file with the given name in the directory with the
+     * given hash code.
+     *
+     * @param dest  the hash code representing the directory where to create a
+     *              new file
+     * @param name  the name of the new file
+     * @return      the statistics of the new file; {@code null} if the file
+     *              could not be created
+     */
+    Map<String, Object> mkfile(String dest, String name) {
+        if (!validateName(name)) {
+            throw new ConnectorException(ConnectorError.INVALID_NAME)
+        }
+        Map<String, Object> dir = dir(dest)
+        if (!dir.write) {
+            throw new ConnectorException(ConnectorError.PERM_DENIED)
+        }
+
+        String path = decode(dest)
+        String newPath = concatPath(path, name)
+        if (stat(newPath)) {
+            throw new ConnectorException(ConnectorError.EXISTS)
+        }
+        String filePath = fsMkFile(path, name)
+        if (!filePath) {
+            return null
+        }
+
+        List<String> files = dirCache[path]
+        if (files != null) {
+            files += filePath
+        }
+        return cacheStat(filePath)
+    }
+
+    /**
+     * Opens the file with the given hash code and returns an input stream to
+     * its data.
+     *
+     * @param hash  the given hash code
+     * @return      the input stream to the file content; {@code null} if the
+     *              hash points to a directory
+     */
+    InputStream open(String hash) {
+        Map<String, Object> stat = file(hash)
+        return (stat.mime == 'directory') ? null : fsOpen(decode(hash))
+    }
+
+    /**
      * Returns volume options required by the client.
      *
-     * @param hash  the hash of the returned directory
+     * @param hash  the hash code of the returned directory
      * @return      the options
      */
     Map<String, Object> options(String hash) {
         return [
+            copyOverwrite: 1,
             disabled: false,
             path: fsPath(decode(hash)),
             separator: fsSeparator()
@@ -238,30 +358,41 @@ abstract class Volume {
      *              readable
      */
     List<Map<String, Object>> parents(String hash) {
+        Map<String, Object> current = dir(hash)
         List<Map<String, Object>> tree = []
         String path = decode(hash)
         if (path) {
             log.debug "Retrieving parent info for ${path}…"
-            path = dirName(path)
             while (!isRoot(path)) {
                 path = dirName(path)
                 Map<String, Object> stat = stat(path)
                 if (stat.hidden || !stat.read) {
                     return null
                 }
-                tree += stat
-
-                for (Map<String, Object> dir : getTree(path)) {
-                    tree += dir
+                tree.add(0, stat)
+                if (!isRoot(path)) {
+                    for (Map<String, Object> dir : getTree(path)) {
+                        tree += dir
+                    }
                 }
             }
             tree.unique { return it.hash }
         }
 
-        if (!tree) {
-            tree += dir(hash)
-        }
-        return tree
+        return tree ?: [current]
+    }
+
+    /**
+     * Returns the real (decoded) path for the given hash code if the file or
+     * directory in this path exists.
+     *
+     * @param hash  the given hash code
+     * @return      the path to the file or directory; {@code null} if it does
+     *              not exist
+     */
+    String realPath(String hash) {
+        String path = decode(hash)
+        return stat(path) ? path : null
     }
 
     /**
@@ -272,6 +403,59 @@ abstract class Volume {
      */
     String relPath(String path) {
         return isRoot(path) ? '' : path.substring(root.length() + 1)
+    }
+
+    /**
+     * Renames the file or directory with the given hash code to the given
+     * name.
+     *
+     * @param hash  the given hash code
+     * @param name  the new name
+     * @return      the statistics of the renamed file or directory;
+     *              {@code null} is renaming was not successful
+     */
+    Map<String, Object> rename(String hash, String name) {
+        if (!validateName(name)) {
+            throw new ConnectorException(ConnectorError.INVALID_NAME)
+        }
+        Map<String, Object> file = file(hash)
+        if (file.name == name) {
+            return file
+        }
+        if (file.locked) {
+            throw new ConnectorException(ConnectorError.LOCKED)
+        }
+
+        String path = decode(hash)
+        String dir = dirName(path)
+        String newPath = concatPath(dir, name)
+        Map<String, Object> stat = stat(newPath)
+        if (stat) {
+            throw new ConnectorException(ConnectorError.EXISTS)
+        }
+        if (!fsMove(path, dir, name)) {
+            return null
+        }
+
+        List<String> list = dirCache[dir]
+        if (list != null) {
+            list.remove(path)
+            list += newPath
+        }
+        dirCache.removeAll { return it.startsWith(path) }
+        statCache.removeAll { return it.key.startWith(path) }
+        return cacheStat(newPath)
+    }
+
+    /**
+     * Removes the file or directory with the given hash code.
+     *
+     * @param hash  the given hash code
+     * @return      {@code true} if the file or directory was removed
+     *              successfully; {@code false} otherwise
+     */
+    boolean rm(String hash) {
+        return remove(decode(hash))
     }
 
     /**
@@ -330,12 +514,60 @@ abstract class Volume {
             return null
         }
 
-        def dirs = getTree(
+        def dirs = [dir]
+        dirs += getTree(
             path, (depth > 0) ? depth - 1 : config.treeDepth - 1,
             decode(excludeHash)
         )
-        dirs += dir
         return dirs
+    }
+
+    /**
+     * Stores the uploaded file represented by the given stream to the
+     * destination directory with the given hash code and a file with the
+     * stated name.
+     *
+     * @param stream    the stream containing the uploaded file data
+     * @param dest      the hash code representing the destination directory
+     * @param name      the desired file name
+     * @return          the statistics of the created file; {@code null} if an
+     *                  error occurred while saving the file in the underlying
+     *                  file system
+     */
+    Map<String, Object> upload(InputStream stream, String dest, String name) {
+        Map<String, Object> dir = dir(dest)
+        if (!dir.write) {
+            throw new ConnectorException(ConnectorError.PERM_DENIED)
+        }
+        if (!validateName(name)) {
+            throw new ConnectorException(ConnectorError.INVALID_NAME)
+        }
+        // TODO check MIME type of uploaded file
+
+        String path = decode(dest)
+        String newPath = concatPath(path, name)
+        Map<String, Object> stat = stat(newPath)
+        if (stat) {
+            if (config.uploadOverwrite) {
+                if (!stat.write) {
+                    throw new ConnectorException(ConnectorError.PERM_DENIED)
+                } else if ('directory' == stat.mime) {
+                    throw new ConnectorException(ConnectorError.NOT_REPLACE)
+                }
+                remove(newPath)
+            } else {
+                name = uniqueName(path, name)
+            }
+        }
+
+        newPath = fsSave(stream, path, name)
+        if (newPath) {
+            List<String> list = dirCache[path]
+            if (list != null) {
+                list += newPath
+            }
+        }
+        return path ? cacheStat(newPath) : null
     }
 
 
@@ -379,10 +611,10 @@ abstract class Volume {
                 date: formatDate(stat.ts),
                 hash: encode(path),
                 hidden: !isVisible,
-                locked: isRoot
+                locked: isRoot ? 1 : 0
             ]
             if (isRoot) {
-                stat.volumeid = id
+                stat.volumeid = id + '_'
                 if (!stat.name) {
                     stat.name = config.alias
                 }
@@ -393,7 +625,7 @@ abstract class Volume {
             if (!stat.phash && !isRoot) {
                 stat.phash = encode(dirName(path))
             }
-            // TODO optionally set stat.dirs
+            stat.dirs = config.checkSubfolders ? (fsHasSubdirs(path) ? 1 : 0) : 1
             // TODO optionally set stat.tmb
             statCache[path] = stat
         }
@@ -412,6 +644,15 @@ abstract class Volume {
     }
 
     /**
+     * Checks whether or not the directory with the given path has subfolders.
+     *
+     * @param path  the given path
+     * @return      {@code true} if the directory has subfolders; {@code false}
+     *              otherwise
+     */
+    protected abstract boolean fsHasSubdirs(String path)
+
+    /**
      * Returns whether or not the file or directory with the given path is
      * marked as hidden in the file system.
      *
@@ -422,6 +663,50 @@ abstract class Volume {
     protected abstract boolean fsHidden(String path)
 
     /**
+     * Creates the directory with the given name in the directory with the
+     * given path in the underlying file system.
+     *
+     * @param path  the directory where to create a new folder
+     * @param name  the name of the directory to create
+     * @return      the path to the new directory; {@code null} if the
+     *              directory could not be created
+     */
+    protected abstract String fsMkDir(String path, String name)
+
+    /**
+     * Creates an empty file with the given name in the directory with the
+     * given path in the underlying file system.
+     *
+     * @param path  the directory where to create a new file
+     * @param name  the name of the file to create
+     * @return      the path to the new file; {@code null} if the file could
+     *              not be created
+     */
+    protected abstract String fsMkFile(String path, String name)
+
+    /**
+     * Moves the source file or directory to the target directory with the
+     * given name.
+     *
+     * @param source    the file or directory to move
+     * @param targetDir the target directory
+     * @param name      the new name of the file or directory
+     * @return          the new path to the moved file or directory;
+     *                  {@code null} if the file could not be moved
+     */
+    protected abstract String fsMove(String source, String targetDir,
+                                     String name)
+
+    /**
+     * Opens the file with the given path and returns an input stream to read
+     * its data.
+     *
+     * @param path  the given path
+     * @return      the input stream
+     */
+    protected abstract InputStream fsOpen(String path)
+
+    /**
      * Returns a path name relative to the root alias.
      *
      * @param path  the given path
@@ -430,11 +715,41 @@ abstract class Volume {
     protected abstract String fsPath(String path)
 
     /**
-     * Scans the directory with the given path and returns the names of all
+     * Removes the file with the given path.
+     *
+     * @param path  the path of the file to be removed
+     * @return      {@code true} if the file was removed successfully;
+     *              {@code false} otherwise
+     */
+    protected abstract boolean fsRemove(String path)
+
+    /**
+     * Removes the directory with the given path.  The directory must be empty.
+     *
+     * @param path  the path of the directory to be removed
+     * @return      {@code true} if the directory was removed successfully;
+     *              {@code false} otherwise
+     */
+    protected abstract boolean fsRmDir(String path)
+
+    /**
+     * Writes data in the given input stream to the file with the stated path
+     * and name.
+     *
+     * @param stream    data to write to the file
+     * @param path      the path where the file should be stored
+     * @param name      the name of the file
+     * @return          the path to the file
+     */
+    protected abstract String fsSave(InputStream stream, String path,
+                                     String name)
+
+    /**
+     * Scans the directory with the given path and returns the pathes of all
      * files and directories within.
      *
      * @param path  the given path to the directory
-     * @return      the names of the files and directories within
+     * @return      the pathes of the files and directories within
      */
     protected abstract String [] fsScanDir(String path)
 
@@ -483,7 +798,7 @@ abstract class Volume {
      * path up to the stated depth.
      *
      * @param path          the given path to start
-     * @param depth         the given depth; zero or negative numbers indicate
+     * @param depth         the given depth; negative numbers indicate
      *                      unlimited depth
      * @param excludePath   a directory which is to exclude from the result;
      *                      may be {@code null}
@@ -556,5 +871,63 @@ abstract class Volume {
         return isRoot(path) || \
             config.allowHidden || \
             !fsHidden(path)
+    }
+
+    /**
+     * Removes the file or directory with the given path.
+     *
+     * @param path  the path to the file or directory to remove
+     * @return      {@code true} if the file or directory was removed
+     *              successfully; {@code false} otherwise
+     */
+    protected boolean remove(String path, boolean force = false) {
+        Map<String, Object> stat = stat(path)
+        if (!stat) {
+            throw new ConnectorException(
+                ConnectorError.RM, ConnectorError.FILE_NOT_FOUND
+            )
+        }
+        stat.realpath = path
+        if (!force && stat.locked) {
+            throw new ConnectorException(ConnectorError.LOCKED)
+        }
+
+        if ('directory' == stat.mime) {
+            if (isRoot(path)) {
+                throw new ConnectorException(ConnectorError.PERM_DENIED)
+            }
+            for (String p : fsScanDir(path)) {
+                String name = baseName(p)
+                if (!remove(p)) {
+                    return false
+                }
+            }
+            if (!fsRmDir(path)) {
+                throw new ConnectorException(ConnectorError.RM)
+            }
+        } else {
+            if (!fsRemove(path)) {
+                throw new ConnectorException(ConnectorError.RM)
+            }
+        }
+
+        return true
+    }
+
+    /**
+     * Computes a unique name for a file in the given path.  The method is
+     * called if the file with the given name already exists in the path.  The
+     * method repeatedly appends numbers to the given file name until no file
+     * with that name exists.
+     *
+     * @param path  the path where the file exists
+     * @param name  the original name of the file
+     * @return      the unique file name in the given path
+     */
+    protected abstract String uniqueName(String path, String name)
+
+    protected boolean validateName(String name) {
+        // TODO implement file name validation
+        return true
     }
 }

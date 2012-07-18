@@ -1,5 +1,5 @@
 /*
- * ConnectorException.groovy
+ * ConnectorWarning.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -22,44 +22,44 @@ package org.amcworld.springcrm.elfinder
 
 
 /**
- * The class {@code ConnectorException} represents ...
+ * The class {@code ConnectorWarning} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class ConnectorException extends Exception {
+class ConnectorWarning extends Exception {
 
     //-- Instance variables ---------------------
 
-    List<ConnectorError> errorCodes
+    List<ConnectorError> warningCodes
     int statusCode
 
 
     //-- Constructors ---------------------------
 
-    ConnectorException() {
+    ConnectorWarning() {
         super()
     }
 
-    ConnectorException(String message, Throwable cause) {
+    ConnectorWarning(String message, Throwable cause) {
         super(message, cause)
     }
 
-    ConnectorException(String message) {
+    ConnectorWarning(String message) {
         super(message)
     }
 
-    ConnectorException(Throwable cause) {
+    ConnectorWarning(Throwable cause) {
         super(cause)
     }
 
-    ConnectorException(ConnectorError... errorCodes) {
+    ConnectorWarning(ConnectorError... warningCodes) {
         super()
-        this.errorCodes = errorCodes
+        this.warningCodes = warningCodes
     }
 
-    ConnectorException(int statusCode) {
+    ConnectorWarning(int statusCode) {
         super()
         this.statusCode = statusCode
     }

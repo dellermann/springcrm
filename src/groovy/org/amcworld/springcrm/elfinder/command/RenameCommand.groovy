@@ -1,5 +1,5 @@
 /*
- * ParentsCommand.groovy
+ * RenameCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -23,22 +23,16 @@ package org.amcworld.springcrm.elfinder.command
 import org.amcworld.springcrm.elfinder.ConnectorError
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code ParentsCommand} represents ...
+ * The class {@code RenameCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class ParentsCommand extends Command {
-
-    //-- Constants ------------------------------
-
-    private static final log = LogFactory.getLog(this)
-
+class RenameCommand extends Command {
 
     //-- Public methods -------------------------
 
@@ -47,15 +41,18 @@ class ParentsCommand extends Command {
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorException(ConnectorError.OPEN)
+                throw new ConnectorException(
+                    ConnectorError.RENAME, ConnectorError.FILE_NOT_FOUND
+                )
             }
-
-            List<Map<String, Object>> tree = volume.parents(target)
-            println "tree: ${tree.toListString()}"
-            if (tree == null) {
-                throw new ConnectorException(ConnectorError.OPEN)
+            Map<String, Object> rm = volume.file(target)
+            rm.realpath = volume.realPath(target)
+            Map<String, Object> file = volume.rename(target, getParam('name'))
+            if (!file) {
+                throw new ConnectorException(ConnectorError.RENAME)
             }
-            response['tree'] = tree
+            response['added'] = file
+            response['removed'] = rm
         }
     }
 }

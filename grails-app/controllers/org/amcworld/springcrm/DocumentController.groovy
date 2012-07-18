@@ -20,10 +20,9 @@
 
 package org.amcworld.springcrm
 
-import org.amcworld.springcrm.elfinder.fs.VolumeConfig;
-import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume;
 import org.amcworld.springcrm.elfinder.Connector
-import org.amcworld.springcrm.elfinder.ConnectorConfig
+import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
+import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest
 
 
 class DocumentController {
@@ -35,7 +34,7 @@ class DocumentController {
     def command() {
         def conn = new Connector(request, response)
         conn.addVolume(new LocalFileSystemVolume(
-            'local', '/net/nike/data/docs/amc-gmbh/Kunden'
+            'local', grailsApplication.config.springcrm.dir.documents
         ))
         conn.process()
     }

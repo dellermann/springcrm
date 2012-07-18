@@ -38,7 +38,6 @@ class LsCommand extends Command {
 
     @Override
     public void execute() {
-        String target = getParam('target')
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
