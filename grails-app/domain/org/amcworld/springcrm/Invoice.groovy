@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Invoice} represents an invoice.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class Invoice extends InvoicingTransaction {
 
@@ -60,29 +60,27 @@ class Invoice extends InvoicingTransaction {
 	PaymentMethod paymentMethod; /* leave semicolon here! */
 
 
-    //-- Instance initializer -------------------
-
-	{
-		type = 'I'
-	}
-
-
     //-- Constructors ---------------------------
 
-	Invoice() {}
+	Invoice() {
+        type = 'I'
+    }
 
 	Invoice(Quote q) {
 		super(q)
+        type = 'I'
 		quote = q
 	}
 
 	Invoice(SalesOrder so) {
 		super(so)
+        type = 'I'
 		salesOrder = so
 	}
 
 	Invoice(Invoice i) {
 		super(i)
+        type = 'I'
 		quote = i.quote
 		salesOrder = i.salesOrder
 	}

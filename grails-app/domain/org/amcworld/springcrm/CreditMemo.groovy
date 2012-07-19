@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code CreditMemo} represents a credit memo.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class CreditMemo extends InvoicingTransaction {
 
@@ -57,19 +57,15 @@ class CreditMemo extends InvoicingTransaction {
 	PaymentMethod paymentMethod; /* leave semicolon here! */
 
 
-    //-- Instance initializer -------------------
-
-	{
-		type = 'C'
-	}
-
-
     //-- Constructors ---------------------------
 
-	CreditMemo() {}
+	CreditMemo() {
+        type = 'C'
+    }
 
 	CreditMemo(Invoice i) {
 		super(i)
+        type = 'C'
         headerText = ''
         footerText = ''
 		invoice = i
@@ -77,6 +73,7 @@ class CreditMemo extends InvoicingTransaction {
 
 	CreditMemo(Dunning d) {
 		super(d)
+        type = 'C'
         headerText = ''
         footerText = ''
 		dunning = d
@@ -84,6 +81,7 @@ class CreditMemo extends InvoicingTransaction {
 
 	CreditMemo(CreditMemo cm) {
 		super(cm)
+        type = 'C'
 		invoice = cm.invoice
 		dunning = cm.dunning
 	}

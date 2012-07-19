@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code SalesOrder} represents a sales order.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class SalesOrder extends InvoicingTransaction {
 
@@ -52,24 +52,21 @@ class SalesOrder extends InvoicingTransaction {
 	Date deliveryDate; /* leave semicolon here! */
 
 
-    //-- Instance initializer -------------------
-
-	{
-		type = 'O'
-	}
-
-
     //-- Constructors ---------------------------
 
-	SalesOrder() {}
+	SalesOrder() {
+        type = 'O'
+    }
 
 	SalesOrder(Quote q) {
 		super(q)
+        type = 'O'
 		quote = q
 	}
 
 	SalesOrder(SalesOrder so) {
 		super(so)
+        type = 'O'
 		quote = so.quote
 	}
 }
