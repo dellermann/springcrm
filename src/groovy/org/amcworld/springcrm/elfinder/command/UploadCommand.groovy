@@ -20,8 +20,9 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
+import org.amcworld.springcrm.elfinder.ConnectorThrowable
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.springframework.web.multipart.MultipartFile
 
@@ -40,21 +41,29 @@ class UploadCommand extends Command {
     @Override
     public void execute() {
         if (target) {
+            List<MultipartFile> files = connector.request.files
+            if (!files) {
+                throw new ConnectorException(CE.UPLOAD, CE.UPLOAD_NO_FILES)
+            }
             Volume volume = getVolume(target)
             if (!volume) {
                 throw new ConnectorException(
-                    ConnectorError.UPLOAD, ConnectorError.TRGDIR_NOT_FOUND
+                    CE.UPLOAD, CE.TRGDIR_NOT_FOUND, targetHash
                 )
             }
             List<Map<String, Object>> added = []
-            for (MultipartFile item : connector.request.files) {
+            for (MultipartFile item : files) {
                 InputStream stream = item.inputStream
                 try {
-                    Map<String, Object> stat = volume.upload(
-                        stream, target, item.originalFilename
-                    )
+                    String name = item.originalFilename
+                    Map<String, Object> stat
+                    try {
+                        stat = volume.upload(stream, target, name)
+                    } catch (ConnectorThrowable ct) {
+                        throw new ConnectorException(CE.UPLOAD_FILE, name, ct)
+                    }
                     if (!stat) {
-                        throw new ConnectorException(ConnectorError.UPLOAD_FILE)
+                        throw new ConnectorException(CE.UPLOAD_FILE, name)
                     }
                     added += stat
                 } finally {

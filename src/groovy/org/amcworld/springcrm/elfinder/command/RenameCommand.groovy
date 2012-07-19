@@ -20,7 +20,8 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorThrowable;
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
 
@@ -42,14 +43,24 @@ class RenameCommand extends Command {
             Volume volume = getVolume(target)
             if (!volume) {
                 throw new ConnectorException(
-                    ConnectorError.RENAME, ConnectorError.FILE_NOT_FOUND
+                    CE.RENAME, targetHash, CE.FILE_NOT_FOUND
                 )
             }
             Map<String, Object> rm = volume.file(target)
+            if (rm == null) {
+                throw new ConnectorException(
+                    CE.RENAME, targetHash, CE.FILE_NOT_FOUND
+                )
+            }
             rm.realpath = volume.realPath(target)
-            Map<String, Object> file = volume.rename(target, getParam('name'))
+            Map<String, Object> file
+            try {
+                file = volume.rename(target, getParam('name'))
+            } catch (ConnectorThrowable ct) {
+                throw new ConnectorException(CE.RENAME, rm.name, ct)
+            }
             if (!file) {
-                throw new ConnectorException(ConnectorError.RENAME)
+                throw new ConnectorException(CE.RENAME, rm.name)
             }
             response['added'] = file
             response['removed'] = rm

@@ -86,6 +86,16 @@ abstract class Command {
     }
 
     /**
+     * Gets the target in hash form, that is in form "#target", which is used
+     * when sending errors back to the client.
+     *
+     * @return  the target hash code with a "#" prefix
+     */
+    protected String getTargetHash() {
+        return '#' + target
+    }
+
+    /**
      * Gets the volume associated to the given hash code.
      *
      * @param hash  the given hash code

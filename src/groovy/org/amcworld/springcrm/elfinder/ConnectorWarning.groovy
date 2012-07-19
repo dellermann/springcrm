@@ -28,39 +28,39 @@ package org.amcworld.springcrm.elfinder
  * @version 1.2
  * @since   1.2
  */
-class ConnectorWarning extends Exception {
-
-    //-- Instance variables ---------------------
-
-    List<ConnectorError> warningCodes
-    int statusCode
-
+class ConnectorWarning extends ConnectorThrowable {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates a new warning without any code or message.
+     */
     ConnectorWarning() {
         super()
     }
 
-    ConnectorWarning(String message, Throwable cause) {
-        super(message, cause)
+    /**
+     * Creates a new warning with the given data.  The arguments may be of the
+     * following type:
+     * <ul>
+     *   <li>{@code List}. The elements of this list are added to the data list
+     *   in this object.</li>
+     *   <li>{@code ConnectorThrowable}. The data list of this error or warning
+     *   are added to the data list of this object.</li>
+     *   <li>any other type. The string representation of this object is added
+     *   to the data list of this object.</li>
+     * </ul>
+     */
+    ConnectorWarning(Object... args) {
+        super(args)
     }
 
-    ConnectorWarning(String message) {
-        super(message)
-    }
-
-    ConnectorWarning(Throwable cause) {
-        super(cause)
-    }
-
-    ConnectorWarning(ConnectorError... warningCodes) {
-        super()
-        this.warningCodes = warningCodes
-    }
-
+    /**
+     * Creates a new warning with the given HTTP status code.
+     *
+     * @param statusCode    the given status code
+     */
     ConnectorWarning(int statusCode) {
-        super()
-        this.statusCode = statusCode
+        super(statusCode)
     }
 }

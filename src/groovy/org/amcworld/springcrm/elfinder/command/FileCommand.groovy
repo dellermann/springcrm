@@ -44,10 +44,8 @@ class FileCommand extends Command {
             if (!volume) {
                 throw new ConnectorException(SC_NOT_FOUND)
             }
-            Map<String, Object> stat
-            try {
-                stat = volume.file(target)
-            } catch (ConnectorException e) {
+            Map<String, Object> stat = volume.file(target)
+            if (stat == null) {
                 throw new ConnectorException(SC_NOT_FOUND)
             }
             if (!stat.read) {

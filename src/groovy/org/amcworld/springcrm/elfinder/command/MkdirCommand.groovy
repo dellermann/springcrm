@@ -20,8 +20,9 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
+import org.amcworld.springcrm.elfinder.ConnectorThrowable
 import org.amcworld.springcrm.elfinder.fs.Volume
 
 
@@ -39,15 +40,22 @@ class MkdirCommand extends Command {
     @Override
     public void execute() {
         if (target) {
+            String name = getParam('name')
             Volume volume = getVolume(target)
             if (!volume) {
                 throw new ConnectorException(
-                    ConnectorError.MKDIR, ConnectorError.TRGDIR_NOT_FOUND
+                    CE.MKDIR, name, CE.TRGDIR_NOT_FOUND, targetHash
                 )
             }
-            Map<String, Object> dir = volume.mkdir(target, getParam('name'))
+            Map<String, Object> dir
+            try {
+                dir = volume.mkdir(target, name)
+            } catch (ConnectorThrowable e) {
+                throw new ConnectorException(CE.MKDIR, name, e)
+            }
+
             if (!dir) {
-                throw new ConnectorException(ConnectorError.MKDIR)
+                throw new ConnectorException(CE.MKDIR, name)
             }
             response['added'] = [dir]
         }

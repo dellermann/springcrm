@@ -22,45 +22,46 @@ package org.amcworld.springcrm.elfinder
 
 
 /**
- * The class {@code ConnectorException} represents ...
+ * The class {@code ConnectorException} represents an error in the operations
+ * of the ElFinder connector.
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class ConnectorException extends Exception {
-
-    //-- Instance variables ---------------------
-
-    List<ConnectorError> errorCodes
-    int statusCode
-
+class ConnectorException extends ConnectorThrowable {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates a new error without any code or message.
+     */
     ConnectorException() {
         super()
     }
 
-    ConnectorException(String message, Throwable cause) {
-        super(message, cause)
+    /**
+     * Creates a new error with the given data.  The arguments may be of the
+     * following type:
+     * <ul>
+     *   <li>{@code List}. The elements of this list are added to the data list
+     *   in this object.</li>
+     *   <li>{@code ConnectorThrowable}. The data list of this error or warning
+     *   are added to the data list of this object.</li>
+     *   <li>any other type. The string representation of this object is added
+     *   to the data list of this object.</li>
+     * </ul>
+     */
+    ConnectorException(Object... args) {
+        super(args)
     }
 
-    ConnectorException(String message) {
-        super(message)
-    }
-
-    ConnectorException(Throwable cause) {
-        super(cause)
-    }
-
-    ConnectorException(ConnectorError... errorCodes) {
-        super()
-        this.errorCodes = errorCodes
-    }
-
+    /**
+     * Creates a new error with the given HTTP status code.
+     *
+     * @param statusCode    the given status code
+     */
     ConnectorException(int statusCode) {
-        super()
-        this.statusCode = statusCode
+        super(statusCode)
     }
 }

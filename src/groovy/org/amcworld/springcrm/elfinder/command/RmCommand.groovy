@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError
-import org.amcworld.springcrm.elfinder.ConnectorException
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
+import org.amcworld.springcrm.elfinder.ConnectorThrowable
 import org.amcworld.springcrm.elfinder.ConnectorWarning
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.apache.commons.logging.LogFactory
@@ -46,24 +46,22 @@ class RmCommand extends Command {
     @Override
     public void execute() {
         String [] targets = connector.request.params['targets'] ?: []
+        response['removed'] = []
         for (String target : targets) {
             if (log.debugEnabled) {
                 log.debug "Deleting file ${target}…"
             }
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorWarning(
-                    ConnectorError.RM, ConnectorError.FILE_NOT_FOUND
-                )
+                throw new ConnectorWarning(CE.RM, targetHash, CE.FILE_NOT_FOUND)
             }
             try {
                 if (!volume.rm(target)) {
-                    throw new ConnectorWarning(ConnectorError.RM)
+                    throw new ConnectorWarning(CE.RM)
                 }
-            } catch (ConnectorException e) {
-                throw new ConnectorWarning(e.errorCodes)
+            } catch (ConnectorThrowable ct) {
+                throw new ConnectorWarning(ct)
             }
         }
-        response['removed'] = []
     }
 }

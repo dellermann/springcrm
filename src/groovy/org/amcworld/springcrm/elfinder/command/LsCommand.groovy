@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
 
@@ -41,10 +41,14 @@ class LsCommand extends Command {
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorException(ConnectorError.OPEN)
+                throw new ConnectorException(CE.OPEN, targetHash)
             }
 
-            response['list'] = volume.ls(target)
+            List<Map<String, Object>> list = volume.ls(target)
+            if (list == null) {
+                throw new ConnectorException(CE.OPEN, targetHash)
+            }
+            response['list'] = list
         }
     }
 }

@@ -38,11 +38,11 @@ class Response {
     String contentType
     Map<String, Object> data = [: ]
     List<InputStream> dataStreams = []
-    List<ConnectorError> errors = []
+    List<List<Object>> errors = []
     Map<String, String> headers = [: ]
     HttpServletResponse response
     int status
-    List<ConnectorError> warnings = []
+    List<List<Object>> warnings = []
 
 
     //-- Constructors ---------------------------
@@ -102,10 +102,10 @@ class Response {
         }
 
         if (errors) {
-            def errData = [error: errors*.code]
+            def errData = [error: errors]
             response.writer.write(errData.encodeAsJSON())
         } else if (warnings) {
-            def wrnData = [warning: warnings*.code]
+            def wrnData = [warning: warnings]
             response.writer.write(wrnData.encodeAsJSON())
         } else if (dataStreams) {
             for (InputStream dataStream : dataStreams) {

@@ -32,9 +32,10 @@ class DocumentController {
     def index() {}
 
     def command() {
+//        File dir = new File(grailsApplication.config.springcrm.dir.documents, '')
         def conn = new Connector(request, response)
         conn.addVolume(new LocalFileSystemVolume(
-            'local', grailsApplication.config.springcrm.dir.documents
+            'l', grailsApplication.config.springcrm.dir.documents
         ))
         conn.process()
     }

@@ -169,27 +169,32 @@ class Connector {
      * Processes the current request and produces the response.
      */
     void process() {
-        request.initialize()
-        if (request.validate()) {
-            try {
-                request.process()
-            } catch (ConnectorException e) {
-                log.info "Error executing command ${request.command}.", e
-                if (e.statusCode) {
-                    response.status = e.statusCode
-                } else {
-                    response.errors += e.errorCodes ?: ConnectorError.UNKNOWN
-                }
-            } catch (ConnectorWarning e) {
-                log.info "Warning executing command ${request.command}.", e
-                if (e.statusCode) {
-                    response.status = e.statusCode
-                } else {
-                    response.warnings += e.warningCodes ?: ConnectorError.UNKNOWN
+        if (volumes) {
+            request.initialize()
+            if (request.validate()) {
+                try {
+                    request.process()
+                } catch (ConnectorException e) {
+                    log.info "Error executing command ${request.command}.", e
+                    if (e.statusCode) {
+                        response.status = e.statusCode
+                    } else {
+                        response.errors += e.data ?: ConnectorError.UNKNOWN
+                    }
+                } catch (ConnectorWarning e) {
+                    log.info "Warning executing command ${request.command}.", e
+                    if (e.statusCode) {
+                        response.status = e.statusCode
+                    } else {
+                        response.warnings += e.data ?: ConnectorError.UNKNOWN
+                    }
                 }
             }
+            request.close()
+        } else {
+            response.errors += ConnectorError.CONF
+            response.errors += ConnectorError.CONF_NO_VOL
         }
-        request.close()
         response.output()
     }
 

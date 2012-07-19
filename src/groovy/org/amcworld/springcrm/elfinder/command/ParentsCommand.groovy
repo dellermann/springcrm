@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.apache.commons.logging.LogFactory
@@ -47,13 +47,12 @@ class ParentsCommand extends Command {
         if (target) {
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorException(ConnectorError.OPEN)
+                throw new ConnectorException(CE.OPEN, targetHash)
             }
 
             List<Map<String, Object>> tree = volume.parents(target)
-            println "tree: ${tree.toListString()}"
             if (tree == null) {
-                throw new ConnectorException(ConnectorError.OPEN)
+                throw new ConnectorException(CE.OPEN, targetHash)
             }
             response['tree'] = tree
         }

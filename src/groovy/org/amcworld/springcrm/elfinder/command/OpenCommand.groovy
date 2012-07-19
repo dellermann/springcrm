@@ -20,8 +20,9 @@
 
 package org.amcworld.springcrm.elfinder.command
 
+import org.amcworld.springcrm.elfinder.ConnectorThrowable;
 import org.amcworld.springcrm.elfinder.Connector
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
 
@@ -40,9 +41,10 @@ class OpenCommand extends Command {
     @Override
     public void execute() {
         boolean init = !!getParam('init')
+        String hash = init ? 'default folder' : targetHash
 
         Volume volume
-        Map<String, Object> cwd
+        Map<String, Object> cwd = null
         if (target) {
             volume = getVolume(target)
             if (volume) {
@@ -54,13 +56,9 @@ class OpenCommand extends Command {
             cwd = volume.dir(volume.defaultPathHash)
         }
         if (!cwd) {
-            throw new ConnectorException(
-                ConnectorError.OPEN, ConnectorError.DIR_NOT_FOUND
-            )
+            throw new ConnectorException(CE.OPEN, hash, CE.DIR_NOT_FOUND)
         } else if (!cwd.read) {
-            throw new ConnectorException(
-                ConnectorError.OPEN, ConnectorError.PERM_DENIED
-            )
+            throw new ConnectorException(CE.OPEN, hash, CE.PERM_DENIED)
         }
 
         List<Map<String, Object>> files = []
@@ -76,7 +74,15 @@ class OpenCommand extends Command {
             }
         }
 
-        List<Map<String, Object>> ls = volume.scanDir(cwd.hash)
+        List<Map<String, Object>> ls
+        try {
+            ls = volume.scanDir(cwd.hash)
+        } catch (ConnectorThrowable ct) {
+            throw new ConnectorException(CE.OPEN, cwd.name, ct)
+        }
+        if (ls == null) {
+            throw new ConnectorException(CE.OPEN, cwd.name)
+        }
         files += ls
         if (log.debugEnabled) {
             log.debug "Scanned ${volume.decode(cwd.hash)}: ${files.size()} items in file list."

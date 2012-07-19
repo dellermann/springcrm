@@ -20,8 +20,9 @@
 
 package org.amcworld.springcrm.elfinder.fs
 
-import org.amcworld.springcrm.elfinder.ConnectorError
+import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
+import org.amcworld.springcrm.elfinder.ConnectorThrowable
 import org.apache.commons.logging.LogFactory
 
 
@@ -139,24 +140,19 @@ abstract class Volume {
      * Returns statistics about the directory with the given hash code.
      *
      * @param hash                  the given hash
-     * @return                      the directory statistics
+     * @return                      the directory statistics; {@code null} if
+     *                              the directory with the given hash code does
+     *                              not exist
      * @throws ConnectorException   if no directory with the given hash exists,
      *                              the hash doesn't represent a directory, or
      *                              the represented directory is hidden
      */
     Map<String, Object> dir(String hash) {
-        Map<String, Object> dir
-        try {
-            dir = file(hash)
-        } catch (ConnectorException e) {
-            if (ConnectorError.FILE_NOT_FOUND in e.errorCodes) {
-                throw new ConnectorException(ConnectorError.DIR_NOT_FOUND)
-            } else {
-                throw e
+        Map<String, Object> dir = file(hash)
+        if (dir != null) {
+            if ((dir.mime != 'directory') || dir.hidden) {
+                throw new ConnectorException(CE.NOT_DIR)
             }
-        }
-        if ((dir.mime != 'directory') || dir.hidden) {
-            throw new ConnectorException(ConnectorError.NOT_DIR)
         }
         return dir
     }
@@ -191,17 +187,12 @@ abstract class Volume {
     /**
      * Returns statistics about the file or directory with the given hash code.
      *
-     * @param hash                  the given hash code
-     * @return                      the file or directory statistics
-     * @throws ConnectorException   if no file or directory with the given hash
-     *                              exists
+     * @param hash  the given hash code
+     * @return      the file or directory statistics; {@code null} if no file
+     *              or directory with the given hash code exists
      */
     Map<String, Object> file(String hash) {
-        Map<String, Object> stat = stat(decode(hash))
-        if (!stat) {
-            throw new ConnectorException(ConnectorError.FILE_NOT_FOUND)
-        }
-        return stat
+        return stat(decode(hash))
     }
 
     /**
@@ -232,10 +223,14 @@ abstract class Volume {
      * given hash code.
      *
      * @param hash  the given hash code
-     * @return      the list of file and directory names
+     * @return      the list of file and directory names; {@code null} if the
+     *              directory with the given hash code does not exist
      */
     List<String> ls(String hash) {
-        dir(hash)   // ensure the directory exists
+        Map<String, Object> dir = dir(hash)
+        if ((dir == null) || !dir.read) {
+            return null
+        }
 
         List<String> list = []
         String path = decode(hash)
@@ -259,17 +254,22 @@ abstract class Volume {
      */
     Map<String, Object> mkdir(String dest, String name) {
         if (!validateName(name)) {
-            throw new ConnectorException(ConnectorError.INVALID_NAME)
+            throw new ConnectorException(CE.INVALID_NAME)
         }
-        Map<String, Object> dir = dir(dest)
+        Map<String, Object> dir
+        try {
+            dir = dir(dest)
+        } catch (ConnectorThrowable ct) {
+            throw new ConnectorException(CE.TRGDIR_NOT_FOUND, '#' + dest)
+        }
         if (!dir.write) {
-            throw new ConnectorException(ConnectorError.PERM_DENIED)
+            throw new ConnectorException(CE.PERM_DENIED)
         }
 
         String path = decode(dest)
         String newPath = concatPath(path, name)
         if (stat(newPath)) {
-            throw new ConnectorException(ConnectorError.EXISTS)
+            throw new ConnectorException(CE.EXISTS, name)
         }
         String dirPath = fsMkDir(path, name)
         if (!dirPath) {
@@ -295,17 +295,20 @@ abstract class Volume {
      */
     Map<String, Object> mkfile(String dest, String name) {
         if (!validateName(name)) {
-            throw new ConnectorException(ConnectorError.INVALID_NAME)
+            throw new ConnectorException(CE.INVALID_NAME)
         }
         Map<String, Object> dir = dir(dest)
+        if (dir == null) {
+            throw new ConnectorException(CE.TRGDIR_NOT_FOUND, '#' + dest)
+        }
         if (!dir.write) {
-            throw new ConnectorException(ConnectorError.PERM_DENIED)
+            throw new ConnectorException(CE.PERM_DENIED)
         }
 
         String path = decode(dest)
         String newPath = concatPath(path, name)
         if (stat(newPath)) {
-            throw new ConnectorException(ConnectorError.EXISTS)
+            throw new ConnectorException(CE.EXISTS, name)
         }
         String filePath = fsMkFile(path, name)
         if (!filePath) {
@@ -325,11 +328,11 @@ abstract class Volume {
      *
      * @param hash  the given hash code
      * @return      the input stream to the file content; {@code null} if the
-     *              hash points to a directory
+     *              hash points to a directory or a non-existing file
      */
     InputStream open(String hash) {
         Map<String, Object> stat = file(hash)
-        return (stat.mime == 'directory') ? null : fsOpen(decode(hash))
+        return (stat && stat.mime != 'directory') ? fsOpen(decode(hash)) : null
     }
 
     /**
@@ -354,11 +357,16 @@ abstract class Volume {
      *
      * @param hash  the given hash code
      * @return      the statistics of the parent folders and their contents;
-     *              {@code null} if any parent folder is either hidden or not
+     *              {@code null} if the directory with the given hash code does
+     *              not exist or any parent folder is either hidden or not
      *              readable
      */
     List<Map<String, Object>> parents(String hash) {
         Map<String, Object> current = dir(hash)
+        if (current == null) {
+            return null
+        }
+
         List<Map<String, Object>> tree = []
         String path = decode(hash)
         if (path) {
@@ -416,14 +424,17 @@ abstract class Volume {
      */
     Map<String, Object> rename(String hash, String name) {
         if (!validateName(name)) {
-            throw new ConnectorException(ConnectorError.INVALID_NAME)
+            throw new ConnectorException(CE.INVALID_NAME, name)
         }
         Map<String, Object> file = file(hash)
+        if (file == null) {
+            throw new ConnectorException(CE.FILE_NOT_FOUND)
+        }
         if (file.name == name) {
             return file
         }
         if (file.locked) {
-            throw new ConnectorException(ConnectorError.LOCKED)
+            throw new ConnectorException(CE.LOCKED, file.name)
         }
 
         String path = decode(hash)
@@ -431,7 +442,7 @@ abstract class Volume {
         String newPath = concatPath(dir, name)
         Map<String, Object> stat = stat(newPath)
         if (stat) {
-            throw new ConnectorException(ConnectorError.EXISTS)
+            throw new ConnectorException(CE.EXISTS, file.name)
         }
         if (!fsMove(path, dir, name)) {
             return null
@@ -464,14 +475,18 @@ abstract class Volume {
      *
      * @param hash                  the given hash code
      * @return                      the statistics data; {@code null} if the
-     *                              given directory cannot be scanned
+     *                              directory with the given hash code does not
+     *                              exist or cannot be scanned
      * @throws ConnectorException   if the directory with the given hash does
      *                              not exist
      */
     List<Map<String, Object>> scanDir(String hash) {
         Map<String, Object> dir = dir(hash)
+        if (dir == null) {
+            return null
+        }
         if (!dir.read) {
-            throw new ConnectorException(ConnectorError.PERM_DENIED)
+            throw new ConnectorException(CE.PERM_DENIED)
         }
         return getScanDir(decode(hash))
     }
@@ -536,11 +551,14 @@ abstract class Volume {
      */
     Map<String, Object> upload(InputStream stream, String dest, String name) {
         Map<String, Object> dir = dir(dest)
+        if (dir == null) {
+            throw new ConnectorException(CE.TRGDIR_NOT_FOUND, '#' + dest)
+        }
         if (!dir.write) {
-            throw new ConnectorException(ConnectorError.PERM_DENIED)
+            throw new ConnectorException(CE.PERM_DENIED)
         }
         if (!validateName(name)) {
-            throw new ConnectorException(ConnectorError.INVALID_NAME)
+            throw new ConnectorException(CE.INVALID_NAME)
         }
         // TODO check MIME type of uploaded file
 
@@ -550,9 +568,9 @@ abstract class Volume {
         if (stat) {
             if (config.uploadOverwrite) {
                 if (!stat.write) {
-                    throw new ConnectorException(ConnectorError.PERM_DENIED)
+                    throw new ConnectorException(CE.PERM_DENIED)
                 } else if ('directory' == stat.mime) {
-                    throw new ConnectorException(ConnectorError.NOT_REPLACE)
+                    throw new ConnectorException(CE.NOT_REPLACE, name)
                 }
                 remove(newPath)
             } else {
@@ -883,18 +901,16 @@ abstract class Volume {
     protected boolean remove(String path, boolean force = false) {
         Map<String, Object> stat = stat(path)
         if (!stat) {
-            throw new ConnectorException(
-                ConnectorError.RM, ConnectorError.FILE_NOT_FOUND
-            )
+            throw new ConnectorException(CE.RM, fsPath(path), CE.FILE_NOT_FOUND)
         }
         stat.realpath = path
         if (!force && stat.locked) {
-            throw new ConnectorException(ConnectorError.LOCKED)
+            throw new ConnectorException(CE.LOCKED, fsPath(path))
         }
 
         if ('directory' == stat.mime) {
             if (isRoot(path)) {
-                throw new ConnectorException(ConnectorError.PERM_DENIED)
+                throw new ConnectorException(CE.PERM_DENIED, fsPath(path))
             }
             for (String p : fsScanDir(path)) {
                 String name = baseName(p)
@@ -903,12 +919,10 @@ abstract class Volume {
                 }
             }
             if (!fsRmDir(path)) {
-                throw new ConnectorException(ConnectorError.RM)
+                throw new ConnectorException(CE.RM, fsPath(path))
             }
-        } else {
-            if (!fsRemove(path)) {
-                throw new ConnectorException(ConnectorError.RM)
-            }
+        } else if (!fsRemove(path)) {
+            throw new ConnectorException(CE.RM, fsPath(path))
         }
 
         return true

@@ -22,7 +22,8 @@ package org.amcworld.springcrm.elfinder
 
 
 /**
- * The class {@code ConnectorError} represents ...
+ * The class {@code ConnectorError} contains the error and warning codes which
+ * are sent back to the client if the connector cannot perform an operation.
  *
  * @author	Daniel Ellermann
  * @version 1.2
