@@ -118,8 +118,8 @@ class Connector {
         if (!command) {
             command = 'open'
         }
-        if (!this.config.isCommandAllowed(command)) {
-            this.response.errors += ConnectorError.ACCESS_DENIED
+        if (!config.isCommandAllowed(command)) {
+            response.errors << ConnectorError.ACCESS_DENIED
             return null
         }
 
@@ -129,10 +129,10 @@ class Connector {
             cmd.init()
             return cmd
         } catch (ClassNotFoundException e) {
-            this.response.errors += ConnectorError.UNKNOWN_CMD
+            response.errors << ConnectorError.UNKNOWN_CMD
             return null
         } catch (Exception e) {
-            this.response.errors += ConnectorError.UNKNOWN
+            response.errors << ConnectorError.UNKNOWN
             return null
         }
     }
@@ -179,22 +179,24 @@ class Connector {
                     if (e.statusCode) {
                         response.status = e.statusCode
                     } else {
-                        response.errors += e.data ?: ConnectorError.UNKNOWN
+                        response.errors << (e.data ?: ConnectorError.UNKNOWN)
                     }
                 } catch (ConnectorWarning e) {
                     log.info "Warning executing command ${request.command}.", e
                     if (e.statusCode) {
                         response.status = e.statusCode
                     } else {
-                        response.warnings += e.data ?: ConnectorError.UNKNOWN
+                        response.warnings << (e.data ?: ConnectorError.UNKNOWN)
                     }
                 }
+                fixResponseData()
             }
             request.close()
         } else {
-            response.errors += ConnectorError.CONF
-            response.errors += ConnectorError.CONF_NO_VOL
+            response.errors << ConnectorError.CONF
+            response.errors << ConnectorError.CONF_NO_VOL
         }
+        request.addDebugInfo()
         response.output()
     }
 
@@ -222,5 +224,29 @@ class Connector {
             log.error "Cannot find class ${name} for command '${command}'."
             throw up
         }
+    }
+
+    /**
+     * Converts some of the response data before they are sent back to the
+     * client.
+     */
+    protected void fixResponseData() {
+        if (response['removed'] != null) {
+            for (Volume volume : volumes.values()) {
+                response['removed'].addAll(volume.removed)
+                volume.removed.clear()
+            }
+        }
+
+        /* replace files infos with hash codes */
+        if (response['removed']) {
+            List<String> removed = []
+            for (Map<String, Object> file : response['removed']) {
+                removed << file.hash
+            }
+            response['removed'] = removed.unique()
+        }
+
+        // TODO filter response['added'] and response['changed'] by MIME type
     }
 }

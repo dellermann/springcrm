@@ -67,7 +67,7 @@ class FileCommand extends Command {
                 disposition = 'inline'
             }
             response.contentType = download ? 'application/octet-stream' : mime
-            response.headers += [
+            response.headers << [
                 'Content-Disposition': "${disposition}; filename=\"${name}\"",
                 'Content-Location': name,
                 'Content-Transfer-Encoding': 'binary',

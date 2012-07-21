@@ -56,7 +56,7 @@ enum ConnectorError {
     MOVE('errMove'),
     COPY_FROM('errCopyFrom'),
     COPY_TO('errCopyTo'),
-    COPY_ITSELF('errCopyInItself'),
+    COPY_INTO_ITSELF('errCopyInItself'),
     REPLACE('errReplace'),                      // Unable to replace "$1".
     RM('errRm'),                                // Unable to remove "$1".
     RM_SRC('errRmSrc'),                         // Unable remove source file(s)

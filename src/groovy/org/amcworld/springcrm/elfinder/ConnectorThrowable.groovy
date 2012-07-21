@@ -49,13 +49,6 @@ abstract class ConnectorThrowable extends Exception {
     //-- Constructors ---------------------------
 
     /**
-     * Creates a new error or warning without any code or message.
-     */
-    ConnectorThrowable() {
-        super()
-    }
-
-    /**
      * Creates a new error or warning with the given data.  The arguments may
      * be of the following type:
      * <ul>
@@ -68,14 +61,13 @@ abstract class ConnectorThrowable extends Exception {
      * </ul>
      */
     ConnectorThrowable(Object... args) {
-        super()
         for (Object arg : args) {
             if (arg instanceof List) {
-                data += arg
+                data.addAll(arg)
             } else if (arg instanceof ConnectorThrowable) {
-                data += arg.data
+                data.addAll(arg.data)
             } else {
-                data += arg.toString()
+                data << arg.toString()
             }
         }
     }
@@ -86,7 +78,6 @@ abstract class ConnectorThrowable extends Exception {
      * @param statusCode    the given status code
      */
     ConnectorThrowable(int statusCode) {
-        super()
         this.statusCode = statusCode
     }
 

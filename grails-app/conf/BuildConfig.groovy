@@ -53,7 +53,8 @@ grails.project.dependency.resolution = {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         compile(
-            'commons-fileupload:commons-fileupload:1.2.1'
+            'commons-fileupload:commons-fileupload:1.2.1',
+            'commons-io:commons-io:2.4'
         )
         /*
          * XXX These dependencies conflict in the transient dependency

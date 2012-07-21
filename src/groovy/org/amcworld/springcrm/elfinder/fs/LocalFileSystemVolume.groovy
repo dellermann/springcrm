@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm.elfinder.fs
 
+import org.apache.commons.io.FileUtils;
 import java.io.InputStream;
 import net.sf.jmimemagic.Magic
 import net.sf.jmimemagic.MagicMatchNotFoundException
@@ -68,6 +69,16 @@ class LocalFileSystemVolume extends Volume {
 
     //-- Non-public methods ---------------------
 
+    protected String fsCopy(String source, String targetDir, String name) {
+        try {
+            File target = new File(targetDir, name)
+            FileUtils.copyFile(new File(source), target)
+            return target.path
+        } catch (IOException e) {
+            return null
+        }
+    }
+
     protected boolean fsHasSubdirs(String path) {
         File dir = new File(path)
         for (File f : dir.listFiles()) {
@@ -80,6 +91,14 @@ class LocalFileSystemVolume extends Volume {
 
     protected boolean fsHidden(String path) {
         return new File(path).hidden
+    }
+
+    protected boolean fsIsDescendant(String path, String ancestor) {
+        return (path == ancestor) || path.startsWith(ancestor + File.separator)
+    }
+
+    protected String fsLoadContent(String path) {
+        return new File(path).text
     }
 
     protected String fsMkDir(String path, String name) {
@@ -149,8 +168,15 @@ class LocalFileSystemVolume extends Volume {
         ]
     }
 
+    protected void fsStoreContent(String path, String content) {
+        new File(path).text = content
+    }
+
     protected String getMime(File file) {
         try {
+            if (file.path.toLowerCase().endsWith('.txt')) {
+                return 'text/simple'
+            }
             return Magic.getMagicMatch(file, true).mimeType
         } catch (MagicMatchNotFoundException e) {
             return 'application/octet-stream'

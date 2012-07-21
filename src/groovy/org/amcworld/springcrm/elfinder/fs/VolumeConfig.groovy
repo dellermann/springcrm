@@ -56,6 +56,21 @@ class VolumeConfig {
     boolean checkSubfolders = true
 
     /**
+     * Whether or not copying from this volume is allowed.
+     */
+    boolean copyFrom = true
+
+    /**
+     * Whether or not existing files are overwritten during copy/cut and paste.
+     */
+    boolean copyOverwrite = false
+
+    /**
+     * Whether or not copying to this volume is allowed.
+     */
+    boolean copyTo = true
+
+    /**
      * The format instance used to format dates and times.
      */
     DateFormat dateFormat = DateFormat.getDateTimeInstance()

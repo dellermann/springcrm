@@ -169,43 +169,43 @@ class Organization {
 	}
 
 	String getBillingAddr() {
-		String s = billingAddrStreet ?: ''
+		StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
 		if (billingAddrLocation) {
 			if (s) {
-				s += ','
+				s << ','
 			}
 			if (billingAddrPostalCode) {
 				if (s) {
-					s += ' '
+					s << ' '
 				}
-				s += billingAddrPostalCode ?: ''
+				s << billingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += ' '
+				s << ' '
 			}
-			s += billingAddrLocation ?: ''
+			s << billingAddrLocation ?: ''
 		}
-		return s
+		return s.toString()
 	}
 
 	String getShippingAddr() {
-		String s = shippingAddrStreet ?: ''
+		StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
 		if (shippingAddrLocation) {
 			if (s) {
-				s += ','
+				s << ','
 			}
 			if (shippingAddrPostalCode) {
 				if (s) {
-					s += ' '
+					s << ' '
 				}
-				s += shippingAddrPostalCode ?: ''
+				s << shippingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += ' '
+				s << ' '
 			}
-			s += shippingAddrLocation ?: ''
+			s << shippingAddrLocation ?: ''
 		}
-		return s
+		return s.toString()
 	}
 
     void setWebsite(String website) {

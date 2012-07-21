@@ -99,22 +99,22 @@ class DatePropertyEditor extends PropertyEditorSupport {
 	}
 
 	protected Date parseDateTime(String text) throws IllegalArgumentException {
-		String fmt
+		StringBuilder fmt = new StringBuilder()
 		int pos = text.indexOf(' ')
 		if (pos >= 0) {
 			String s = text.substring(0, pos)
 			if (s.isLong()) {
-				fmt = (s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
+				fmt << (s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
 			} else {
-				fmt = dateFormat
+				fmt << dateFormat
 			}
 			s = text.substring(pos + 1).trim()
-			fmt += ' ' + (s.isLong() ? 'HHmm' : timeFormat)
+			fmt << ' ' << (s.isLong() ? 'HHmm' : timeFormat)
 		} else {
-			fmt += dateTimeFormat
+			fmt << dateTimeFormat
 		}
 		try {
-			return new SimpleDateFormat(fmt).parse(text)
+			return new SimpleDateFormat(fmt.toString()).parse(text)
 		} catch (ParseException) {
 			throw new IllegalArgumentException()
 		}

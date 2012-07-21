@@ -66,7 +66,7 @@ class OpenCommand extends Command {
             for (Volume vol : connector.volumes.values()) {
                 List<Map<String, Object>> tree = vol.tree()
                 if (tree != null) {
-                    files += tree
+                    files.addAll(tree)
                 }
             }
             if (log.debugEnabled) {
@@ -83,7 +83,7 @@ class OpenCommand extends Command {
         if (ls == null) {
             throw new ConnectorException(CE.OPEN, cwd.name)
         }
-        files += ls
+        files.addAll(ls)
         if (log.debugEnabled) {
             log.debug "Scanned ${volume.decode(cwd.hash)}: ${files.size()} items in file list."
         }

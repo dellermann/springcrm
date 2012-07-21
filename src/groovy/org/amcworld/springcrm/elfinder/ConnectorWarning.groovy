@@ -33,13 +33,6 @@ class ConnectorWarning extends ConnectorThrowable {
     //-- Constructors ---------------------------
 
     /**
-     * Creates a new warning without any code or message.
-     */
-    ConnectorWarning() {
-        super()
-    }
-
-    /**
      * Creates a new warning with the given data.  The arguments may be of the
      * following type:
      * <ul>

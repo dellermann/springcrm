@@ -38,6 +38,7 @@ class Response {
     String contentType
     Map<String, Object> data = [: ]
     List<InputStream> dataStreams = []
+    Map<String, Object> debugInfo
     List<List<Object>> errors = []
     Map<String, String> headers = [: ]
     HttpServletResponse response
@@ -80,7 +81,7 @@ class Response {
      * @return          a reference to this response
      */
     Response leftShift(InputStream stream) {
-        dataStreams += stream
+        dataStreams << stream
         return this
     }
 
@@ -93,8 +94,13 @@ class Response {
         if (status) {
             response.status = status
         }
-        if (!contentType && (errors || warnings || !dataStreams)) {
-            contentType = 'application/json'
+        if (errors || warnings || !dataStreams) {
+            if (!contentType) {
+                contentType = 'application/json'
+            }
+            if (debugInfo) {
+                data << debugInfo
+            }
         }
         response.contentType = contentType
         for (String name : headers.keySet()) {

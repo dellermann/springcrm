@@ -78,7 +78,7 @@ class ReportController {
         query = Dunning.where {
             (docDate >= start.time) && (docDate <= end.time)
         }
-        l += query.list(sort: 'number')
+        l.addAll(query.list(sort: 'number'))
         def total = l*.total.sum()
         def totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 
@@ -87,11 +87,11 @@ class ReportController {
         }
         def creditMemos = query.list(sort: 'number')
         if (creditMemos) {
-            l += creditMemos
+            l.addAll(creditMemos)
             total -= creditMemos*.total.sum()
             totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
         }
-        
+
         return [
             invoicingTransactionInstanceList: l, currentDate: cal.time,
             currentMonth: month, currentYear: year,

@@ -42,10 +42,37 @@ abstract class Volume {
 
     //-- Instance variables ---------------------
 
+    /**
+     * The configuration data of this volume.
+     */
     VolumeConfig config
+
+    /**
+     * The unique ID of this volume.
+     */
     String id
+
+    /**
+     * The path to the root directory.
+     */
     String root
+
+    /**
+     * The directory cache.  The cache contains a list of pathes to child files
+     * and directories for a given directory path.  The pathes stored in the
+     * value list are all relative to the root directory.
+     */
     protected Map<String, List<String>> dirCache = [: ]
+
+    /**
+     * A list of file statistics of removed file or directories.
+     */
+    protected List<Map<String, Object>> removed = []
+
+    /**
+     * The statistics cache.  The cache contains the statistics for the path of
+     * a file or directory.
+     */
     protected Map<String, Map<String, Object>> statCache = [: ]
 
 
@@ -90,6 +117,35 @@ abstract class Volume {
     abstract String baseName(String path)
 
     /**
+     * Clears the caches.
+     */
+    void clearCaches() {
+        dirCache.clear()
+        statCache.clear()
+    }
+
+    /**
+     * Returns the hash code of the file or directory which has the given
+     * boolean attribute in its statistics set to the stated value.  The
+     * returned hash code either denotes the file or directory with the given
+     * hash code or the first child where the attribute value matches.
+     *
+     * @param hash  the hash code of the file or directory to check
+     * @param attr  the requested boolean attribute
+     * @param value the stated value
+     * @return      the hash code of the file or directory which has the
+     *              attribute set to the stated value; {@code null} if the file
+     *              or directory with the path does not exist, it denotes a
+     *              file and does not have the attribute set to the stated
+     *              value, or no child is found with the attribute set to the
+     *              stated value
+     */
+    String closest(String hash, String attr, boolean value) {
+        String path = closestByAttr(decode(hash), attr, value)
+        return (path == null) ? null : encode(path)
+    }
+
+    /**
      * Computes a path from the given path and the name appended.
      *
      * @param path  the given path
@@ -97,6 +153,18 @@ abstract class Volume {
      * @return      the concatenated path
      */
     abstract String concatPath(String path, String name)
+
+    /**
+     * Returns some debug information about this volume.
+     *
+     * @return  the debug information
+     */
+    Map<String, Object> debug() {
+        return [
+            id: id,
+            name: this.class.name.toLowerCase()
+        ]
+    }
 
     /**
      * Decodes the given hash code and returns the associated path.
@@ -184,6 +252,15 @@ abstract class Volume {
         return buf.toString()
     }
 
+    @Override
+    boolean equals(Object obj) {
+        if (obj instanceof Volume) {
+            return this.id == obj.id
+        } else {
+            return false
+        }
+    }
+
     /**
      * Returns statistics about the file or directory with the given hash code.
      *
@@ -206,6 +283,11 @@ abstract class Volume {
         return encode(config.startPath ?: root)
     }
 
+    @Override
+    int hashCode() {
+        return id.hashCode()
+    }
+
     /**
      * Checks whether or not the given path represents the root directory of
      * this volume.
@@ -216,6 +298,26 @@ abstract class Volume {
      */
     boolean isRoot(String path) {
         return root == path
+    }
+
+    /**
+     * Loads the text content of the file with the given hash code.
+     *
+     * @param path  the given hash code
+     * @return      the file content as string
+     */
+    String loadContent(String hash) {
+        Map<String, Object> file = file(hash)
+        if (!file) {
+            throw new ConnectorException(CE.FILE_NOT_FOUND)
+        }
+        if ('directory' == file.mime) {
+            throw new ConnectorException(CE.NOT_FILE)
+        }
+        if (!file.read) {
+            throw new ConnectorException(CE.PERM_DENIED)
+        }
+        return fsLoadContent(decode(hash))
     }
 
     /**
@@ -236,7 +338,7 @@ abstract class Volume {
         String path = decode(hash)
         for (Map<String, Object> stat : getScanDir(path)) {
             if (!stat.hidden && isMimeTypeAllowed(stat.mime)) {
-                list += stat.name
+                list << stat.name
             }
         }
         return list
@@ -278,7 +380,7 @@ abstract class Volume {
 
         List<String> files = dirCache[path]
         if (files != null) {
-            files += dirPath
+            files << dirPath
         }
         return cacheStat(dirPath)
     }
@@ -317,7 +419,7 @@ abstract class Volume {
 
         List<String> files = dirCache[path]
         if (files != null) {
-            files += filePath
+            files << filePath
         }
         return cacheStat(filePath)
     }
@@ -380,7 +482,7 @@ abstract class Volume {
                 tree.add(0, stat)
                 if (!isRoot(path)) {
                     for (Map<String, Object> dir : getTree(path)) {
-                        tree += dir
+                        tree << dir
                     }
                 }
             }
@@ -388,6 +490,114 @@ abstract class Volume {
         }
 
         return tree ?: [current]
+    }
+
+    /**
+     * Pastes the given cut or copied source file or directory to the given
+     * destination directory.
+     *
+     * @param volume    the volume where the source file or directory is stored
+     * @param src       the hash code representing the source file or directory
+     * @param dest      the hash code representing the destination directory
+     * @param move      if {@code true} the source file or directory is moved;
+     *                  if {@code false} it is copied instead
+     * @return          the statistics of the moved or copied file or
+     *                  directory
+     */
+    Map<String, Object> paste(Volume volume, String src, String dest,
+                              boolean move = false)
+    {
+        CE error = move ? CE.MOVE : CE.COPY
+        Map<String, Object> file = file(src)
+        if (!file) {
+            throw new ConnectorException(error, '#' + src, CE.FILE_NOT_FOUND)
+        }
+
+        String name = file.name
+        String errPath = volume.path(src)
+        Map<String, Object> dir = dir(dest)
+        if (!dir) {
+            throw new ConnectorException(
+                error, errPath, CE.TRGDIR_NOT_FOUND, '#' + dest
+            )
+        }
+        if (!dir.write || !file.read) {
+            throw new ConnectorException(error, errPath, CE.PERM_DENIED)
+        }
+
+        String destPath = decode(dest)
+        String test = volume.closest(src, move ? 'locked' : 'read', move)
+        if (test != null) {
+            if (move) {
+                throw new ConnectorException(
+                    error, errPath, CE.LOCKED, volume.path(test)
+                )
+            } else {
+                throw new ConnectorException(error, errPath, CE.PERM_DENIED)
+            }
+        }
+
+        test = concatPath(destPath, name)
+        Map<String, Object> stat = stat(test)
+        if (stat) {
+            if (config.copyOverwrite) {
+                if (!isSameType(file.mime, stat.mime)) {
+                    throw new ConnectorException(CE.NOT_REPLACE, path(test))
+                }
+                if (!stat.write) {
+                    throw new ConnectorException(error, errPath, CE.PERM_DENIED)
+                }
+                String locked = closestByAttr(test, 'locked', true)
+                if (locked != null) {
+                    throw new ConnectorException(CE.LOCKED, path(test))
+                }
+                if (!remove(test)) {
+                    throw new ConnectorException(CE.REPLACE, path(test))
+                }
+                name = uniqueName(destPath, name)
+            }
+        }
+
+        /* copy/move inside current volume */
+        if (volume == this) {
+
+            /* do not copy into itself */
+            String srcPath = decode(src)
+            if (fsIsDescendant(destPath, srcPath)) {
+                throw new ConnectorException(
+                    CE.COPY_INTO_ITSELF, path(destPath)
+                )
+            }
+
+            String path = move ? this.move(srcPath, destPath, name) \
+                : copy(srcPath, destPath, name)
+            return this.stat(path)
+        }
+
+        /* copy/move between different volumes */
+        if (!config.copyTo || !volume.config.copyFrom) {
+            throw new ConnectorException(CE.COPY, errPath, CE.PERM_DENIED)
+        }
+
+        String path = copyFrom(volume, src, dest, name)
+        if (move) {
+            if (!volume.rm(src)) {
+                throw new ConnectorException(CE.MOVE, errPath, CE.RM_SRC)
+            }
+            removed << file
+        }
+        return cacheStat(path)
+    }
+
+    /**
+     * Returns the file path related to the root directory for the given hash
+     * code.
+     *
+     * @param hash  the given hash code
+     * @return      the path relative to the root directory
+     */
+    String path(String hash) {
+        return fsPath(decode(hash))
     }
 
     /**
@@ -451,10 +661,15 @@ abstract class Volume {
         List<String> list = dirCache[dir]
         if (list != null) {
             list.remove(path)
-            list += newPath
+            list << newPath
         }
-        dirCache.removeAll { return it.startsWith(path) }
-        statCache.removeAll { return it.key.startWith(path) }
+
+        /* update cache */
+        String prefix = path + fsSeparator()
+        dirCache.remove(path)
+        dirCache.keySet().removeAll { return it.startsWith(prefix) }
+        statCache.remove(path)
+        statCache.keySet().removeAll { return it.startsWith(prefix) }
         return cacheStat(newPath)
     }
 
@@ -507,6 +722,31 @@ abstract class Volume {
     }
 
     /**
+     * Stores the given text content in the file with the stated hash code.
+     *
+     * @param hash      the stated hash code
+     * @param content   the given text content to store
+     */
+    Map<String, Object> storeContent(String hash, String content) {
+        Map<String, Object> file = file(hash)
+        if (!file) {
+            throw new ConnectorException(CE.FILE_NOT_FOUND)
+        }
+        if (!file.write) {
+            throw new ConnectorException(CE.PERM_DENIED)
+        }
+
+        String path = decode(hash)
+        fsStoreContent(path, content)
+        return cacheStat(path)
+    }
+
+    @Override
+    String toString() {
+        return id
+    }
+
+    /**
      * Collects the information about the directory with the given hash code
      * and all subsequent directories.
      *
@@ -529,11 +769,11 @@ abstract class Volume {
             return null
         }
 
-        def dirs = [dir]
-        dirs += getTree(
+        List<Map<String, Object>> dirs = [dir]
+        dirs.addAll(getTree(
             path, (depth > 0) ? depth - 1 : config.treeDepth - 1,
             decode(excludeHash)
-        )
+        ))
         return dirs
     }
 
@@ -582,7 +822,7 @@ abstract class Volume {
         if (newPath) {
             List<String> list = dirCache[path]
             if (list != null) {
-                list += newPath
+                list << newPath
             }
         }
         return path ? cacheStat(newPath) : null
@@ -604,11 +844,30 @@ abstract class Volume {
         for (String fileName : fileNames) {
             def stat = stat(fileName)
             if (stat && !stat.hidden) {
-                entries += fileName
+                entries << fileName
             }
         }
         dirCache[path] = entries
         return entries
+    }
+
+    /**
+     * Stores the given path, which is a child of the given directory, to the
+     * directory cache.
+     *
+     * @param dir   the given directory
+     * @param path  the path to a child of the given directory
+     * @return      the new content of the directory cache for the given
+     *              directory
+     */
+    protected List<String> cachePath(String dir, String path) {
+        List<String> list = dirCache[dir]
+        if (list == null) {
+            list = []
+            dirCache[dir] = list
+        }
+        list << path
+        return list
     }
 
     /**
@@ -625,7 +884,7 @@ abstract class Volume {
             boolean isDir = stat.mime == 'directory'
             boolean isRoot = isRoot(path)
             boolean isVisible = isVisible(path) && isMimeTypeAllowed(stat.mime)
-            stat += [
+            stat << [
                 date: formatDate(stat.ts),
                 hash: encode(path),
                 hidden: !isVisible,
@@ -651,6 +910,156 @@ abstract class Volume {
     }
 
     /**
+     * Returns the first file or directory in the directory with the given path
+     * where the given boolean attribute in its statistics is set to the stated
+     * value.
+     *
+     * @param path  the given path to the directory
+     * @param attr  the requested boolean attribute
+     * @param value the stated value
+     * @return      the path to the child which has the attribute set to the
+     *              stated value; {@code null} if no such child was found
+     */
+    protected String childrenByAttr(String path, String attr, boolean value) {
+        for (String p : fsScanDir(path)) {
+            String res = closestByAttr(p, attr, value)
+            if (res != null) {
+                return res
+            }
+        }
+        return null
+    }
+
+    /**
+     * If the file or directory with the given path has the given boolean
+     * attribute in its statistics set to the stated value the given path is
+     * returned.  Otherwise if the path denotes a directory the path to the
+     * child with the attribute set to the stated value is returned.
+     *
+     * @param path  the given path
+     * @param attr  the requested boolean attribute
+     * @param value the stated value
+     * @return      the path to the file or directory which has the attribute
+     *              set to the stated value; {@code null} if the file or
+     *              directory with the path does not exist, it denotes a file
+     *              and does not have the attribute set to the stated value, or
+     *              no child is found with the attribute set to the stated
+     *              value
+     */
+    protected String closestByAttr(String path, String attr, boolean value) {
+        Map<String, Object> stat = stat(path)
+        if (!stat) {
+            return null
+        }
+
+        Boolean val = stat[attr] as Boolean
+        if (val == null) {
+            val = Boolean.FALSE
+        }
+
+        if (val == value) {
+            return path
+        }
+
+        return ('directory' == stat.mime) ? childrenByAttr(path, attr, value) : null
+    }
+
+    /**
+     * Recursively copies the file or directory with the given source path to
+     * the destination path using the stated name.
+     *
+     * @param srcPath   the path to the file or directory to copy
+     * @param destPath  the destination path
+     * @param name      the new name of the file or directory in the
+     *                  destination directory
+     * @return          the path to the copied file or directory
+     */
+    protected String copy(String srcPath, String destPath, String name) {
+        Map<String, Object> srcStat = stat(srcPath)
+
+        if ('directory' == srcStat.mime) {
+            String dst = concatPath(destPath, name)
+            Map<String, Object> test = stat(dst)
+            if (test && ('directory' != test.mime) || !fsMkDir(destPath, name))
+            {
+                throw new ConnectorException(CE.COPY, fsPath(srcPath))
+            }
+            cachePath(destPath, dst)
+            destPath = dst
+            for (Map<String, Object> stat : getScanDir(srcPath)) {
+                if (!stat.hidden) {
+                    name = stat.name
+                    copy(concatPath(srcPath, name), destPath, name)
+                }
+            }
+            return destPath
+        }
+
+        if (fsCopy(srcPath, destPath, name)) {
+            String newPath = concatPath(destPath, name)
+            cachePath(destPath, newPath)
+            return newPath
+        } else {
+            throw new ConnectorException(CE.COPY, fsPath(srcPath))
+        }
+    }
+
+    /**
+     * Copies the file or directory with the given hash code from the given
+     * volume to the stated directory on this volume.
+     *
+     * @param volume    the given volume where the source file or directory is
+     *                  stored
+     * @param src       the hash code of the file or directory to copy
+     * @param destPath  the path to the destination directory on this volume
+     * @param name      the new name for the file or directory
+     * @return          the path to the copied file or directory
+     */
+    protected String copyFrom(Volume volume, String src, String destPath,
+                              String name)
+    {
+        Map<String, Object> source = volume.file(src)
+        if (!source) {
+            throw new ConnectorException(CE.COPY, '#' + src)
+        }
+
+        String errPath = volume.path(src)
+        if (!validateName(name)) {
+            throw new ConnectorException(CE.COPY, errPath, CE.INVALID_NAME)
+        }
+        if (!source.read) {
+            throw new ConnectorException(CE.COPY, errPath, CE.PERM_DENIED)
+        }
+
+        String path
+        if ('directory' == source.mime) {
+            path = concatPath(destPath, name)
+            Map<String, Object> stat = stat(path)
+            if ((!stat || ('directory' != stat.mime)) &&
+                !fsMkDir(destPath, name))
+            {
+                throw new ConnectorException(CE.COPY, errPath)
+            }
+            for (Map<String, Object> entry : scanDir(src)) {
+                copyFrom(volume, entry.hash, path, entry.name)
+            }
+        } else {
+            InputStream stream = volume.open(src)
+            if (!stream) {
+                throw new ConnectorException(CE.COPY, errPath)
+            }
+            try {
+                path = fsSave(stream, destPath, name)
+            } finally {
+                stream.close()
+            }
+        }
+
+        cachePath(destPath, path)
+        return path
+    }
+
+    /**
      * Formats the given time stamp.
      *
      * @param time  the given time stamp; may be {@code null}
@@ -660,6 +1069,19 @@ abstract class Volume {
     protected String formatDate(Long time) {
         return time ? config.dateFormat.format(new Date(time)) : null
     }
+
+    /**
+     * Copies the source file or directory to the target directory with the
+     * given name.
+     *
+     * @param source    the file or directory to copy
+     * @param targetDir the target directory
+     * @param name      the new name of the file or directory
+     * @return          the new path to the copied file or directory;
+     *                  {@code null} if the file could not be copied
+     */
+    protected abstract String fsCopy(String source, String targetDir,
+                                     String name)
 
     /**
      * Checks whether or not the directory with the given path has subfolders.
@@ -679,6 +1101,25 @@ abstract class Volume {
      *              {@code false} otherwise
      */
     protected abstract boolean fsHidden(String path)
+
+    /**
+     * Checks whether or not the given path is a descendant of the stated
+     * ancestor path.
+     *
+     * @param path      the given path to check
+     * @param ancestor  the stated ancestor path
+     * @return          {@code true} if the given path is a descendant;
+     *                  {@code false} otherwise
+     */
+    protected abstract boolean fsIsDescendant(String path, String ancestor)
+
+    /**
+     * Loads the text content of the file with the given path.
+     *
+     * @param path  the given path
+     * @return      the file content as string
+     */
+    protected abstract String fsLoadContent(String path)
 
     /**
      * Creates the directory with the given name in the directory with the
@@ -789,6 +1230,14 @@ abstract class Volume {
     protected abstract Map<String, Object> fsStat(String path)
 
     /**
+     * Stores the given text content in the file with the stated path.
+     *
+     * @param path      the stated path
+     * @param content   the given text content to store
+     */
+    protected abstract void fsStoreContent(String path, String content)
+
+    /**
      * Returns the statistics of all files and directories in the directory
      * with the given path.
      *
@@ -805,7 +1254,7 @@ abstract class Volume {
         for (String file : files) {
             Map<String, Object> stat = stat(file)
             if (stat && !stat.hidden) {
-                res += stat
+                res << stat
             }
         }
         return res
@@ -832,13 +1281,13 @@ abstract class Volume {
 
         List<Map<String, Object>> dirs = []
         for (String entry : entries) {
-            def stat = stat(entry)
+            Map<String, Object> stat = stat(entry)
             if (stat && !stat.hidden && (stat.mime == 'directory') &&
                 entry != excludePath)
             {
-                dirs += stat
+                dirs << stat
                 if (depth > 0) {
-                    dirs += getTree(entry, depth - 1)
+                    dirs.addAll(getTree(entry, depth - 1))
                 }
             }
         }
@@ -876,6 +1325,20 @@ abstract class Volume {
     }
 
     /**
+     * Checks whether or not both the MIME types are either directory or file.
+     *
+     * @param mimeType1 the first MIME type to check
+     * @param mimeType2 the second MIME type to check
+     * @return          {@code true} if and only if both MIME types are
+     *                  directory or both MIME types are file; {@code false}
+     *                  otherwise
+     */
+    protected boolean isSameType(String mimeType1, String mimeType2) {
+        return (('directory' == mimeType1) && ('directory' == mimeType2)) || \
+            (('directory' != mimeType1) && ('directory' != mimeType2))
+    }
+
+    /**
      * Checks whether the file or directory with the given path is visible in
      * listings.  All hidden files are actually hidden if the configuration
      * option {@link VolumeConfig#allowHidden} is {@code false}.  The root
@@ -889,6 +1352,35 @@ abstract class Volume {
         return isRoot(path) || \
             config.allowHidden || \
             !fsHidden(path)
+    }
+
+    /**
+     * Moves a file or directory to the destination directory with the new
+     * file name.
+     *
+     * @param srcPath   the path to the file or directory to move
+     * @param destPath  the path to the destination directory
+     * @param name      the new file or directory name
+     * @return          the path to the moved file or directory
+     */
+    protected String move(String srcPath, String destPath, String name) {
+        Map<String, Object> stat = stat(srcPath)
+        stat.realpath = srcPath
+
+        if (fsMove(srcPath, destPath, name) == null) {
+            throw new ConnectorException(CE.MOVE, fsPath(srcPath))
+        }
+
+        removed << stat
+
+        /* update cache */
+        String prefix = srcPath + fsSeparator()
+        dirCache.remove(srcPath)
+        dirCache.keySet().removeAll { return it.startsWith(prefix) }
+        statCache.remove(srcPath)
+        statCache.keySet().removeAll { return it.startsWith(prefix) }
+
+        return concatPath(destPath, name)
     }
 
     /**
@@ -925,6 +1417,9 @@ abstract class Volume {
             throw new ConnectorException(CE.RM, fsPath(path))
         }
 
+        dirCache.remove(path)
+        statCache.remove(path)
+        removed << stat
         return true
     }
 

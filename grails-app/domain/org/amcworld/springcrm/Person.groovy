@@ -170,57 +170,57 @@ class Person {
 	}
 
 	String getMailingAddr() {
-		String s = mailingAddrStreet ?: ''
+		StringBuilder s = new StringBuilder(mailingAddrStreet ?: '')
 		if (mailingAddrLocation) {
 			if (s) {
-				s += ','
+				s << ','
 			}
 			if (mailingAddrPostalCode) {
 				if (s) {
-					s += ' '
+					s << ' '
 				}
-				s += mailingAddrPostalCode ?: ''
+				s << mailingAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += ' '
+				s << ' '
 			}
-			s += mailingAddrLocation ?: ''
+			s << mailingAddrLocation ?: ''
 		}
-		return s
+		return s.toString()
 	}
 
 	String getOtherAddr() {
-		String s = otherAddrStreet ?: ''
+		StringBuilder s = new StringBuilder(otherAddrStreet ?: '')
 		if (otherAddrLocation) {
 			if (s) {
-				s += ','
+				s << ','
 			}
 			if (otherAddrPostalCode) {
 				if (s) {
-					s += ' '
+					s << ' '
 				}
-				s += otherAddrPostalCode ?: ''
+				s << otherAddrPostalCode ?: ''
 			}
 			if (s) {
-				s += ' '
+				s << ' '
 			}
-			s += otherAddrLocation ?: ''
+			s << otherAddrLocation ?: ''
 		}
-		return s
+		return s.toString()
 	}
 
     String toString() {
-		String s = ''
+		StringBuilder s = new StringBuilder()
 		if (lastName) {
-			s += lastName ?: ''
+			s << lastName ?: ''
 		}
 		if (lastName && firstName) {
-			s += ', '
+			s << ', '
 		}
 		if (firstName) {
-			s += firstName ?: ''
+			s << firstName ?: ''
 		}
-        return s
+        return s.toString()
     }
 
 	def beforeInsert() {

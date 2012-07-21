@@ -106,7 +106,7 @@ class Modules {
 			if (controllerNames == null) {
 				log.error "Module ${name} not defined. Add an entry to ${this.name}.MODULES."
 			} else {
-				res += controllerNames
+				res.addAll(controllerNames)
 			}
 		}
 		return res

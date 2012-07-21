@@ -34,13 +34,6 @@ class ConnectorException extends ConnectorThrowable {
     //-- Constructors ---------------------------
 
     /**
-     * Creates a new error without any code or message.
-     */
-    ConnectorException() {
-        super()
-    }
-
-    /**
      * Creates a new error with the given data.  The arguments may be of the
      * following type:
      * <ul>

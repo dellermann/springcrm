@@ -44,7 +44,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
@@ -430,18 +430,18 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
 
     @Override
     protected String googleEntryToString(ContactEntry entry) {
-        String res = ''
+        StringBuilder res = new StringBuilder()
         Name name = entry.name
         if (name) {
             if (name.hasFamilyName()) {
-                res = name.familyName.value
+                res << name.familyName.value
             }
             if (name.hasGivenName()) {
-                if (res) res += ', '
-                res += name.givenName.value
+                if (res) res << ', '
+                res << name.givenName.value
             }
         }
-        return res
+        return res.toString()
     }
 
     @Override

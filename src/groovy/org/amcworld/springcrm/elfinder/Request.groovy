@@ -68,6 +68,19 @@ class Request {
     //-- Public methods -------------------------
 
     /**
+     * Adds debug information to the response if the client requests it.
+     */
+    void addDebugInfo() {
+        if (!!params.debug) {
+            response.debugInfo = [
+                connector: 'springcrm',
+                time: 1000,
+                volumes: connector.volumes*.debug()
+            ]
+        }
+    }
+
+    /**
      * Closes this request and frees all used resources.
      */
     void close() {}
@@ -102,8 +115,8 @@ class Request {
      */
     boolean validate() {
         if (!command && ('POST' == this.connector.httpRequest.method)) {
-            response.errors += ConnectorError.UPLOAD
-            response.errors += ConnectorError.UPLOAD_TOTAL_SIZE
+            response.errors << ConnectorError.UPLOAD
+            response.errors << ConnectorError.UPLOAD_TOTAL_SIZE
         }
         return response.errors.empty
     }
@@ -129,7 +142,7 @@ class Request {
         files = (request instanceof MultipartHttpServletRequest) \
             ? request.fileMap.values() \
             : []
-        if (log.debugEnabled) {
+        if (log.debugEnabled && files) {
             log.debug "Uploaded ${files.size()} file(s)."
         }
 
@@ -138,7 +151,7 @@ class Request {
             if (key.endsWith('[]')) {
                 value = []
                 value = request.getParameterValues(key).each {
-                    value += it?.trim()
+                    value << it?.trim()
                 }
                 key = key.substring(0, key.length() - 2)
             } else {

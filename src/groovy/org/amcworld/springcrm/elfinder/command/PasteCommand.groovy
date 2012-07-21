@@ -1,5 +1,5 @@
 /*
- * RenameCommand.groovy
+ * PasteCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -20,50 +20,51 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorThrowable;
 import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
+import org.amcworld.springcrm.elfinder.ConnectorWarning
 import org.amcworld.springcrm.elfinder.fs.Volume
 
 
 /**
- * The class {@code RenameCommand} represents ...
+ * The class {@code PasteCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class RenameCommand extends Command {
+class PasteCommand extends Command {
 
     //-- Public methods -------------------------
 
     @Override
     public void execute() {
-        if (target) {
-            Volume volume = getVolume(target)
-            if (!volume) {
-                throw new ConnectorException(
-                    CE.RENAME, targetHash, CE.FILE_NOT_FOUND
-                )
-            }
-            Map<String, Object> rm = volume.file(target)
-            if (rm == null) {
-                throw new ConnectorException(
-                    CE.RENAME, targetHash, CE.FILE_NOT_FOUND
-                )
-            }
-            rm.realpath = volume.realPath(target)
-            Map<String, Object> file
-            try {
-                file = volume.rename(target, getParam('name'))
-            } catch (ConnectorThrowable ct) {
-                throw new ConnectorException(CE.RENAME, rm.name, ct)
-            }
-            if (!file) {
-                throw new ConnectorException(CE.RENAME, rm.name)
-            }
-            response['added'] = [file]
-            response['removed'] = [rm]
+        String dest = getParam('dst')
+        String [] targets = connector.request.params['targets'] ?: []
+        boolean cut = !!getParam('cut')
+        CE error = cut ? CE.MOVE : CE.COPY
+
+        Volume destVolume = getVolume(dest)
+        if (!destVolume) {
+            throw new ConnectorException(
+                error, '#' + targets[0], CE.TRGDIR_NOT_FOUND, '#' + dest
+            )
         }
+
+        List<Map<String, Object>> added = []
+        for (String target : targets) {
+            Volume srcVolume = getVolume(target)
+            if (!srcVolume) {
+                throw new ConnectorWarning(
+                    error, '#' + target, CE.FILE_NOT_FOUND
+                )
+            }
+            try {
+                added << destVolume.paste(srcVolume, target, dest, cut)
+            } catch (ConnectorException e) {
+                throw new ConnectorWarning(e)
+            }
+        }
+        response['added'] = added
     }
 }

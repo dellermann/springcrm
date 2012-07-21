@@ -1,5 +1,5 @@
 /*
- * UploadCommand.groovy
+ * GetCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -22,55 +22,41 @@ package org.amcworld.springcrm.elfinder.command
 
 import org.amcworld.springcrm.elfinder.ConnectorError as CE
 import org.amcworld.springcrm.elfinder.ConnectorException
-import org.amcworld.springcrm.elfinder.ConnectorThrowable
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.springframework.web.multipart.MultipartFile
 
 
 /**
- * The class {@code UploadCommand} represents ...
+ * The class {@code GetCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class UploadCommand extends Command {
+class GetCommand extends Command {
 
     //-- Public methods -------------------------
 
     @Override
     public void execute() {
         if (target) {
-            Collection<MultipartFile> files = connector.request.files
-            if (!files) {
-                throw new ConnectorException(CE.UPLOAD, CE.UPLOAD_NO_FILES)
-            }
             Volume volume = getVolume(target)
             if (!volume) {
                 throw new ConnectorException(
-                    CE.UPLOAD, CE.TRGDIR_NOT_FOUND, targetHash
+                    CE.OPEN, targetHash, CE.FILE_NOT_FOUND
                 )
             }
-            List<Map<String, Object>> added = []
-            for (MultipartFile item : files) {
-                InputStream stream = item.inputStream
-                try {
-                    String name = item.originalFilename
-                    Map<String, Object> stat
-                    try {
-                        stat = volume.upload(stream, target, name)
-                    } catch (ConnectorThrowable ct) {
-                        throw new ConnectorException(CE.UPLOAD_FILE, name, ct)
-                    }
-                    if (!stat) {
-                        throw new ConnectorException(CE.UPLOAD_FILE, name)
-                    }
-                    added << stat
-                } finally {
-                    stream.close()
-                }
+            Map<String, Object> file = volume.file(target)
+            if (!file) {
+                throw new ConnectorException(
+                    CE.OPEN, targetHash, CE.FILE_NOT_FOUND
+                )
             }
-            response['added'] = added
+
+            try {
+                response['content'] = volume.loadContent(target)
+            } catch (ConnectorException e) {
+                throw new ConnectorException(CE.OPEN, volume.path(target), e)
+            }
         }
     }
 }
