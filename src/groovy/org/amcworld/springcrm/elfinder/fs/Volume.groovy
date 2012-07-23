@@ -40,6 +40,12 @@ abstract class Volume {
     private static final log = LogFactory.getLog(this)
 
 
+    //-- Class variables ------------------------
+
+    private static Map<String, Map<String, List<String>>> globalDirCache = [: ]
+    private static Map<String, Map<String, Map<String, Object>>> globalStatCache = [: ]
+
+
     //-- Instance variables ---------------------
 
     /**
@@ -62,7 +68,7 @@ abstract class Volume {
      * and directories for a given directory path.  The pathes stored in the
      * value list are all relative to the root directory.
      */
-    protected Map<String, List<String>> dirCache = [: ]
+    protected Map<String, List<String>> dirCache
 
     /**
      * A list of file statistics of removed file or directories.
@@ -73,7 +79,7 @@ abstract class Volume {
      * The statistics cache.  The cache contains the statistics for the path of
      * a file or directory.
      */
-    protected Map<String, Map<String, Object>> statCache = [: ]
+    protected Map<String, Map<String, Object>> statCache
 
 
     //-- Constructors ---------------------------
@@ -92,6 +98,20 @@ abstract class Volume {
         this.id = id
         this.root = root
         this.config = config ?: new VolumeConfig()
+        synchronized (globalDirCache) {
+            dirCache = globalDirCache[id]
+            if (dirCache == null) {
+                dirCache = [: ]
+                globalDirCache[id] = dirCache
+            }
+        }
+        synchronized (globalStatCache) {
+            statCache = globalStatCache[id]
+            if (statCache == null) {
+                statCache = [: ]
+                globalStatCache[id] = statCache
+            }
+        }
     }
 
 
@@ -360,7 +380,7 @@ abstract class Volume {
         }
         Map<String, Object> dir
         try {
-            dir = dir(dest)
+            dir = this.dir(dest)
         } catch (ConnectorThrowable ct) {
             throw new ConnectorException(CE.TRGDIR_NOT_FOUND, '#' + dest)
         }
@@ -1372,6 +1392,7 @@ abstract class Volume {
         }
 
         removed << stat
+        String newPath = concatPath(destPath, name)
 
         /* update cache */
         String prefix = srcPath + fsSeparator()
@@ -1379,8 +1400,9 @@ abstract class Volume {
         dirCache.keySet().removeAll { return it.startsWith(prefix) }
         statCache.remove(srcPath)
         statCache.keySet().removeAll { return it.startsWith(prefix) }
+        cachePath(destPath, newPath)
 
-        return concatPath(destPath, name)
+        return newPath
     }
 
     /**

@@ -66,5 +66,6 @@ class PasteCommand extends Command {
             }
         }
         response['added'] = added
+        response['removed'] = []
     }
 }
