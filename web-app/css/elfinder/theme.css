@@ -44,13 +44,27 @@
 
 /* overrides for SpringCRM */
 .elfinder-cwd, .elfinder .elfinder-navbar, .elfinder-contextmenu-item, 
-  .std42-dialog .ui-dialog-content, .elfinder-statusbar div 
+  .elfinder-statusbar div, .elfinder-quicklook-title, 
+  .elfinder-button-menu-item, .elfinder-button-search input
 {
-  font-size: 93%;
+  font-size: 93% !important;
+}
+.std42-dialog .ui-dialog-titlebar, .std42-dialog .ui-dialog-content,
+  .std42-dialog .ui-dialog-buttonpane, .elfinder-info-tb,
+  .elfinder-quicklook-info-data, .elfinder-quicklook-preview-text-wrapper
+{
+  font-size: 100% !important;
 }
 .elfinder-tree span {
   color: #444;
 }
 .elfinder-navbar .ui-state-hover {
   color: #567B0F !important;
+}
+.elfinder-quicklook-titlebar .ui-icon {
+  left: auto;
+  right: 4px;
+}
+.ui-widget-header .ui-icon {
+  background-image: url("../jquery/default/images/ui-icons_444444_256x240.png");
 }

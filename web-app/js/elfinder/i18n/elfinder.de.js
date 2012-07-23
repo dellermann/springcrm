@@ -92,6 +92,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'cmdup'        : 'Ins übergeordnete Verzeichnis wechseln',
 			'cmdupload'    : 'Datei hochladen',
 			'cmdview'      : 'Ansehen',
+            'cmdsort'      : 'Sortieren',
 
 			/*********************************** buttons ***********************************/
 			'btnClose'  : 'Schließen',

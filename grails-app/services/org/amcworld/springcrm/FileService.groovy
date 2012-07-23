@@ -94,12 +94,12 @@ class FileService {
 
 	/**
 	 * Gets the base directory of the document space as specified in the
-	 * configuration file in key {@code springcrm.dir.documents}.
+	 * configuration file in key {@code springcrm.dir.data}.
 	 *
 	 * @return	the base directory
 	 */
 	protected File getBaseDir() {
-		File dir = new File(grailsApplication.config.springcrm.dir.documents)
+		File dir = new File(grailsApplication.config.springcrm.dir.data)
 		if (!dir.exists()) {
 			dir.mkdirs()
 		}

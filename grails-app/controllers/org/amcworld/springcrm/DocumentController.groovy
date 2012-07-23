@@ -22,7 +22,7 @@ package org.amcworld.springcrm
 
 import org.amcworld.springcrm.elfinder.Connector
 import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
-import org.springframework.web.multipart.support.DefaultMultipartHttpServletRequest
+import org.amcworld.springcrm.elfinder.fs.VolumeConfig
 
 
 class DocumentController {
@@ -32,10 +32,12 @@ class DocumentController {
     def index() {}
 
     def command() {
-//        File dir = new File(grailsApplication.config.springcrm.dir.documents, '')
         def conn = new Connector(request, response)
+        def config = new VolumeConfig(
+            alias: message(code: 'document.rootAlias', default: 'Documents')
+        )
         conn.addVolume(new LocalFileSystemVolume(
-            'l', grailsApplication.config.springcrm.dir.documents
+            'l', grailsApplication.config.springcrm.dir.documents, config
         ))
         conn.process()
     }

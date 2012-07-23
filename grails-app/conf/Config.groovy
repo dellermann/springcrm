@@ -117,6 +117,7 @@ if (System.properties["${appName}.dir.base"]) {
 grails.config.locations << "file: ${springcrm.dir.base}/config.properties"
 springcrm {
     dir {
+        data = "${springcrm.dir.base}/data"
         documents = "${springcrm.dir.base}/documents"
         installer = "${springcrm.dir.base}/install"
         print = "${springcrm.dir.base}/print"
@@ -190,9 +191,9 @@ log4j = {
 //        'org.amcworld.springcrm.google.GoogleContactSync',
 //        'org.amcworld.springcrm.google.GoogleSync',
 //        'org.amcworld.springcrm.elfinder.Connector',
-        'org.amcworld.springcrm.elfinder.Request',
-        'org.amcworld.springcrm.elfinder.command',
-        'org.amcworld.springcrm.elfinder.fs',
+//        'org.amcworld.springcrm.elfinder.Request',
+//        'org.amcworld.springcrm.elfinder.command',
+//        'org.amcworld.springcrm.elfinder.fs',
     )
 
     environments {
