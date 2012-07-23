@@ -25,8 +25,37 @@
     var $documents = $("#documents");
 
     $documents.elfinder({
+            commands: [
+                'open', 'reload', 'home', 'up', 'back', 'forward', 'getfile',
+                'quicklook', 'download', 'rm', 'duplicate', 'rename', 'mkdir',
+                'mkfile', 'upload', 'copy', 'cut', 'paste', 'edit',
+                /*'extract', 'archive', */'search', 'info', 'view', 'help',
+                /*'resize', */'sort'
+            ],
+            contextmenu: {
+                files: [
+                    'getfile', '|','open', 'quicklook', '|', 'download', '|',
+                    'copy', 'cut', 'paste', 'duplicate', '|',
+                    'rm', '|', 'edit', 'rename', '|', 'info'
+                ]
+            },
             height: 500,
             lang: "de",
+            uiOptions: {
+                toolbar: [
+                    ['back', 'forward'],
+                    ['mkdir', 'mkfile', 'upload'],
+                    ['open', 'download', 'getfile'],
+                    ['info'],
+                    ['quicklook'],
+                    ['copy', 'cut', 'paste'],
+                    ['rm'],
+                    ['duplicate', 'rename', 'edit'],
+                    ['search'],
+                    ['view', 'sort'],
+                    ['help']
+                ],
+            },
             url: $documents.data("load-url")
         })
         .elfinder("instance");

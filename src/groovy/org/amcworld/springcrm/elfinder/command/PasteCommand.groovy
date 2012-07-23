@@ -40,7 +40,6 @@ class PasteCommand extends Command {
     @Override
     public void execute() {
         String dest = getParam('dst')
-        String [] targets = connector.request.params['targets'] ?: []
         boolean cut = !!getParam('cut')
         CE error = cut ? CE.MOVE : CE.COPY
 

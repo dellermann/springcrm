@@ -1,5 +1,5 @@
 /*
- * RmCommand.groovy
+ * InfoCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -20,47 +20,32 @@
 
 package org.amcworld.springcrm.elfinder.command
 
-import org.amcworld.springcrm.elfinder.ConnectorError as CE
-import org.amcworld.springcrm.elfinder.ConnectorThrowable
-import org.amcworld.springcrm.elfinder.ConnectorWarning
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code RmCommand} represents ...
+ * The class {@code InfoCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class RmCommand extends Command {
-
-    //-- Constants ------------------------------
-
-    private static final log = LogFactory.getLog(this)
-
+class InfoCommand extends Command {
 
     //-- Public methods -------------------------
 
     @Override
     public void execute() {
-        response['removed'] = []
+        List<Map<String, Object>> files = []
         for (String target : targets) {
-            if (log.debugEnabled) {
-                log.debug "Deleting file ${target}…"
-            }
             Volume volume = getVolume(target)
-            if (!volume) {
-                throw new ConnectorWarning(CE.RM, targetHash, CE.FILE_NOT_FOUND)
-            }
-            try {
-                if (!volume.rm(target)) {
-                    throw new ConnectorWarning(CE.RM)
+            if (volume) {
+                Map<String, Object> info = volume.file(target)
+                if (info) {
+                    files << info
                 }
-            } catch (ConnectorThrowable ct) {
-                throw new ConnectorWarning(ct)
             }
         }
+        response['files'] = files
     }
 }

@@ -189,7 +189,7 @@ log4j = {
 //        'grails.app.services.org.amcworld.springcrm.GoogleDataContactService',
 //        'org.amcworld.springcrm.google.GoogleContactSync',
 //        'org.amcworld.springcrm.google.GoogleSync',
-        'org.amcworld.springcrm.elfinder.Connector',
+//        'org.amcworld.springcrm.elfinder.Connector',
         'org.amcworld.springcrm.elfinder.Request',
         'org.amcworld.springcrm.elfinder.command',
         'org.amcworld.springcrm.elfinder.fs',

@@ -42,7 +42,16 @@ abstract class Volume {
 
     //-- Class variables ------------------------
 
+    /**
+     * The global directory cache for all volumes.  The cache contains the ID
+     * of the volume as key and the actual cache as value.
+     */
     private static Map<String, Map<String, List<String>>> globalDirCache = [: ]
+
+    /**
+     * The global statistics cache for all volumes.  The cache contains the ID
+     * of the volume as key and the actual cache as value.
+     */
     private static Map<String, Map<String, Map<String, Object>>> globalStatCache = [: ]
 
 
@@ -253,6 +262,26 @@ abstract class Volume {
      * @return      the directory path
      */
     abstract String dirName(String path)
+
+    /**
+     * Duplicates the file or directory with the given hash code.  The method
+     * creates a copy of the file or directory in the same parent directory
+     * with a unique name.
+     *
+     * @param hash  the hash code of the file or directory to duplicate
+     * @return      the statistics of the duplicated file or directory
+     */
+    Map<String, Object> duplicate(String hash) {
+        Map<String, Object> file = this.file(hash)
+        if (!file) {
+            throw new ConnectorException(CE.COPY, CE.FILE_NOT_FOUND)
+        }
+        String path = decode(hash)
+        String dir = dirName(path)
+        String newPath = copy(path, dir, uniqueName(dir, baseName(path)))
+        cachePath(dir, newPath)
+        return cacheStat(newPath)
+    }
 
     /**
      * Encodes the given file path.
@@ -724,6 +753,17 @@ abstract class Volume {
             throw new ConnectorException(CE.PERM_DENIED)
         }
         return getScanDir(decode(hash))
+    }
+
+    /**
+     * Searches for a file or directory containing the given query string.
+     *
+     * @param query the given query string
+     * @return      a list of statistics of files and directories which name
+     *              contains the query string
+     */
+    List<Map<String, Object>> search(String query) {
+        return search(root, query)
     }
 
     /**
@@ -1443,6 +1483,35 @@ abstract class Volume {
         statCache.remove(path)
         removed << stat
         return true
+    }
+
+    /**
+     * Searches in the directory with the given path and in all subfolders for
+     * a file or directory containing the given query string.
+     *
+     * @param path  the path where to search
+     * @param query the given query string
+     * @return      a list of statistics of files and directories which name
+     *              contains the query string
+     */
+    List<Map<String, Object>> search(String path, String query) {
+        List<Map<String, Object>> result = []
+        String q = query.toLowerCase()
+        for (String p : fsScanDir(path)) {
+            Map<String, Object> stat = this.stat(p)
+            if (!stat || stat.hidden || !isMimeTypeAllowed(stat.mime)) {
+                continue
+            }
+            String name = stat.name.toLowerCase()
+            if (name.contains(q)) {
+                stat.path = fsPath(p)
+                result << stat
+            }
+            if (('directory' == stat.mime) && stat.read) {
+                result.addAll(search(p, query))
+            }
+        }
+        return result
     }
 
     /**

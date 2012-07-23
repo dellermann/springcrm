@@ -1,5 +1,5 @@
 /*
- * RmCommand.groovy
+ * DuplicateCommand.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -21,46 +21,39 @@
 package org.amcworld.springcrm.elfinder.command
 
 import org.amcworld.springcrm.elfinder.ConnectorError as CE
-import org.amcworld.springcrm.elfinder.ConnectorThrowable
-import org.amcworld.springcrm.elfinder.ConnectorWarning
+import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code RmCommand} represents ...
+ * The class {@code DuplicateCommand} represents ...
  *
  * @author	Daniel Ellermann
  * @version 1.2
  * @since   1.2
  */
-class RmCommand extends Command {
-
-    //-- Constants ------------------------------
-
-    private static final log = LogFactory.getLog(this)
-
+class DuplicateCommand extends Command {
 
     //-- Public methods -------------------------
 
     @Override
     public void execute() {
-        response['removed'] = []
+        List<Map<String, Object>> added = []
         for (String target : targets) {
-            if (log.debugEnabled) {
-                log.debug "Deleting file ${target}…"
-            }
             Volume volume = getVolume(target)
             if (!volume) {
-                throw new ConnectorWarning(CE.RM, targetHash, CE.FILE_NOT_FOUND)
+                throw new ConnectorException(
+                    CE.COPY, '#' + target, CE.FILE_NOT_FOUND
+                )
             }
-            try {
-                if (!volume.rm(target)) {
-                    throw new ConnectorWarning(CE.RM)
-                }
-            } catch (ConnectorThrowable ct) {
-                throw new ConnectorWarning(ct)
+            Map<String, Object> src = volume.file(target)
+            if (!src) {
+                throw new ConnectorException(
+                    CE.COPY, '#' + target, CE.FILE_NOT_FOUND
+                )
             }
+            added << volume.duplicate(target)
         }
+        response['added'] = added
     }
 }

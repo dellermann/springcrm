@@ -96,6 +96,17 @@ abstract class Command {
     }
 
     /**
+     * Gets an array of target hash codes of the command, that is, the
+     * parameter {@code targets} of the request.
+     *
+     * @return  the target hash codes or an empty array if no targets have been
+     *          submitted
+     */
+    protected String [] getTargets() {
+        return connector.request.params['targets'] ?: []
+    }
+
+    /**
      * Gets the volume associated to the given hash code.
      *
      * @param hash  the given hash code

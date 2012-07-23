@@ -22,7 +22,8 @@ package org.amcworld.springcrm.elfinder
 
 
 /**
- * The class {@code ConnectorConfig} represents ...
+ * The class {@code ConnectorConfig} represents the configuration of the
+ * ElFinder connector.
  *
  * @author	Daniel Ellermann
  * @version 1.2
@@ -32,15 +33,21 @@ class ConnectorConfig {
 
     //-- Constants ------------------------------
 
-    private static final List<String> ALLOWED_COMMANDS = [
-        'open', 'tree', 'parents', 'ls', 'file', 'mkdir', 'mkfile', 'rename',
-        'upload', 'rm', 'paste', 'get', 'put'
+    /**
+     * The list of available commands.
+     */
+    private static final String [] AVAILABLE_COMMANDS = [
+        'duplicate', 'file', 'get', 'info', 'ls', 'mkdir', 'mkfile', 'parents',
+        'open', 'paste', 'put', 'rename', 'rm', 'search', 'tree', 'upload'
     ]
 
 
     //-- Instance variables ---------------------
 
-    List<String> allowedCommands = ALLOWED_COMMANDS
+    /**
+     * The list of allowed commands.
+     */
+    String [] allowedCommands = AVAILABLE_COMMANDS
 
     /**
      * The maximum allowed upload size in MB per file.
