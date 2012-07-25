@@ -1950,6 +1950,9 @@ form .invoicing-items-pos {
 #configuration-ldap {
   background-image: url("../img/configuration/network.png");
 }
+#configuration-pathes {
+  background-image: url("../img/configuration/pathes.png");
+}
 #configuration-sel-values {
   background-image: url("../img/configuration/list.png");
 }

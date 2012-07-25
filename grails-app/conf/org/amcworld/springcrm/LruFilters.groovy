@@ -72,7 +72,7 @@ class LruFilters {
             }
         }
 
-        lruRemove(controller: '*', action: 'delete') {
+        lruRemove(controller: '*', action: 'delete', controllerExclude: 'document') {
             before = {
                 if (params.confirmed) {
                     lruService.removeItem(controllerName, params.id as long)

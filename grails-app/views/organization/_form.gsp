@@ -71,3 +71,9 @@
     <f:field bean="${organizationInstance}" property="notes" cols="80" rows="5" />
   </div>
 </fieldset>
+<fieldset>
+  <h4><g:message code="organization.fieldset.misc.label" /></h4>
+  <div class="fieldset-content">
+    <f:field bean="${organizationInstance}" property="docPlaceholderValue" />
+  </div>
+</fieldset>

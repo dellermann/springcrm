@@ -45,6 +45,10 @@
           <dt><g:link action="loadSeqNumbers"><g:message code="config.seqNumbers.title" default="Sequence numbers" /></g:link></dt>
           <dd><g:message code="config.seqNumbers.description" /></dd>
         </dl>
+        <dl id="configuration-pathes">
+          <dt><g:link action="show" params="[page: 'pathes']"><g:message code="config.pathes.title" default="Pathes" /></g:link></dt>
+          <dd><g:message code="config.pathes.description" /></dd>
+        </dl>
       </div>
     </div>
   </section>

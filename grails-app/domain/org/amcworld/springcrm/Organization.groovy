@@ -61,6 +61,7 @@ class Organization {
         numEmployees(nullable: true)
         rating(nullable: true)
         notes(nullable: true, widget: 'textarea')
+        docPlaceholderValue(nullable: true)
 		dateCreated()
 		lastUpdated()
     }
@@ -115,6 +116,7 @@ class Organization {
     String numEmployees
     Rating rating
     String notes
+    String docPlaceholderValue
 	Date dateCreated
 	Date lastUpdated
 

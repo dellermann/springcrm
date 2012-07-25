@@ -236,6 +236,15 @@
         </div>
       </div>
       </g:if>
+      <div class="fieldset">
+        <h4><g:message code="organization.fieldset.misc.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="organization.docPlaceholderValue.label" /></div>
+            <div class="field">${fieldValue(bean: organizationInstance, field: 'docPlaceholderValue')}</div>
+          </div>
+        </div>
+      </div>
 
       <div class="fieldset remote-list" data-load-url="${createLink(controller: 'person', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
         <div class="header-with-menu">
@@ -330,6 +339,15 @@
           <div class="menu">
             <g:link controller="project" action="create" params="['organization.id': organizationInstance.id, returnUrl: url()]" class="button small green"><g:message code="default.create.label" args="[message(code: 'project.label')]" /></g:link>
           </div>
+        </div>
+        <div class="fieldset-content"></div>
+      </div>
+      </g:ifModuleAllowed>
+
+      <g:ifModuleAllowed modules="document">
+      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'document', action: 'listEmbedded')}" data-load-params="organization=${organizationInstance.id}">
+        <div class="header-with-menu">
+          <h4><g:message code="document.plural" /></h4>
         </div>
         <div class="fieldset-content"></div>
       </div>

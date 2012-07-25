@@ -29,9 +29,14 @@ import org.springframework.dao.DataIntegrityViolationException
  * purchase invoices.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class PurchaseInvoiceController {
+
+    //-- Constants ------------------------------
+
+    protected static final FILE_TYPE = 'purchase-invoice'
+
 
     //-- Class variables ------------------------
 
@@ -93,7 +98,7 @@ class PurchaseInvoiceController {
     def save() {
         def purchaseInvoiceInstance = new PurchaseInvoice(params)
 		if (!params.file.isEmpty()) {
-			purchaseInvoiceInstance.documentFile = fileService.storeFile(params.file)
+			purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
 		}
         if (!purchaseInvoiceInstance.save(flush: true)) {
             log.debug(purchaseInvoiceInstance.errors)
@@ -159,14 +164,14 @@ class PurchaseInvoiceController {
 
         if (params.fileRemove == '1') {
             if (purchaseInvoiceInstance.documentFile) {
-                fileService.removeFile(purchaseInvoiceInstance.documentFile)
+                fileService.removeFile(FILE_TYPE, purchaseInvoiceInstance.documentFile)
             }
             purchaseInvoiceInstance.documentFile = null
         } else if (!params.file?.isEmpty()) {
             if (purchaseInvoiceInstance.documentFile) {
                 fileService.removeFile(purchaseInvoiceInstance.documentFile)
             }
-            purchaseInvoiceInstance.documentFile = fileService.storeFile(params.file)
+            purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
         }
 
         /*
@@ -216,7 +221,7 @@ class PurchaseInvoiceController {
         }
 
 		if (purchaseInvoiceInstance.documentFile) {
-			fileService.removeFile(purchaseInvoiceInstance.documentFile)
+			fileService.removeFile(FILE_TYPE, purchaseInvoiceInstance.documentFile)
 		}
         try {
             purchaseInvoiceInstance.delete(flush: true)
@@ -236,7 +241,7 @@ class PurchaseInvoiceController {
         def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
         if (purchaseInvoiceInstance) {
 			String doc = purchaseInvoiceInstance.documentFile
-			File f = fileService.retrieveFile(doc)
+			File f = fileService.retrieveFile(FILE_TYPE, doc)
 			if (f.exists()) {
 				response.contentType = Magic.getMagicMatch(f, true).mimeType
 				response.contentLength = f.length()
