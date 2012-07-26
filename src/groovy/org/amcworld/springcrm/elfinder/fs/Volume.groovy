@@ -107,19 +107,24 @@ abstract class Volume {
         this.id = id
         this.root = root
         this.config = config ?: new VolumeConfig()
-        synchronized (globalDirCache) {
-            dirCache = globalDirCache[id]
-            if (dirCache == null) {
-                dirCache = [: ]
-                globalDirCache[id] = dirCache
+        if (this.config.useCache) {
+            synchronized (globalDirCache) {
+                dirCache = globalDirCache[id]
+                if (dirCache == null) {
+                    dirCache = [: ]
+                    globalDirCache[id] = dirCache
+                }
             }
-        }
-        synchronized (globalStatCache) {
-            statCache = globalStatCache[id]
-            if (statCache == null) {
-                statCache = [: ]
-                globalStatCache[id] = statCache
+            synchronized (globalStatCache) {
+                statCache = globalStatCache[id]
+                if (statCache == null) {
+                    statCache = [: ]
+                    globalStatCache[id] = statCache
+                }
             }
+        } else {
+            dirCache = [: ]
+            statCache = [: ]
         }
     }
 
@@ -427,10 +432,7 @@ abstract class Volume {
             return null
         }
 
-        List<String> files = dirCache[path]
-        if (files != null) {
-            files << dirPath
-        }
+        cachePath(path, dirPath)
         return cacheStat(dirPath)
     }
 
@@ -466,10 +468,7 @@ abstract class Volume {
             return null
         }
 
-        List<String> files = dirCache[path]
-        if (files != null) {
-            files << filePath
-        }
+        cachePath(path, filePath)
         return cacheStat(filePath)
     }
 
@@ -707,18 +706,20 @@ abstract class Volume {
             return null
         }
 
-        List<String> list = dirCache[dir]
-        if (list != null) {
-            list.remove(path)
-            list << newPath
-        }
+        if (this.config.useCache) {
+            List<String> list = dirCache[dir]
+            if (list != null) {
+                list.remove(path)
+                list << newPath
+            }
 
-        /* update cache */
-        String prefix = path + fsSeparator()
-        dirCache.remove(path)
-        dirCache.keySet().removeAll { return it.startsWith(prefix) }
-        statCache.remove(path)
-        statCache.keySet().removeAll { return it.startsWith(prefix) }
+            /* update cache */
+            String prefix = path + fsSeparator()
+            dirCache.remove(path)
+            dirCache.keySet().removeAll { return it.startsWith(prefix) }
+            statCache.remove(path)
+            statCache.keySet().removeAll { return it.startsWith(prefix) }
+        }
         return cacheStat(newPath)
     }
 
@@ -880,10 +881,7 @@ abstract class Volume {
 
         newPath = fsSave(stream, path, name)
         if (newPath) {
-            List<String> list = dirCache[path]
-            if (list != null) {
-                list << newPath
-            }
+            cachePath(path, newPath)
         }
         return path ? cacheStat(newPath) : null
     }
@@ -907,7 +905,9 @@ abstract class Volume {
                 entries << fileName
             }
         }
-        dirCache[path] = entries
+        if (this.config.useCache) {
+            dirCache[path] = entries
+        }
         return entries
     }
 
@@ -918,15 +918,18 @@ abstract class Volume {
      * @param dir   the given directory
      * @param path  the path to a child of the given directory
      * @return      the new content of the directory cache for the given
-     *              directory
+     *              directory; {@code null} if the cache is disabled
      */
     protected List<String> cachePath(String dir, String path) {
-        List<String> list = dirCache[dir]
-        if (list == null) {
-            list = []
-            dirCache[dir] = list
+        List<String> list = null
+        if (this.config.useCache) {
+            list = dirCache[dir]
+            if (list == null) {
+                list = []
+                dirCache[dir] = list
+            }
+            list << path
         }
-        list << path
         return list
     }
 
@@ -964,7 +967,9 @@ abstract class Volume {
             }
             stat.dirs = config.checkSubfolders ? (fsHasSubdirs(path) ? 1 : 0) : 1
             // TODO optionally set stat.tmb
-            statCache[path] = stat
+            if (this.config.useCache) {
+                statCache[path] = stat
+            }
         }
         return stat
     }
@@ -1435,12 +1440,14 @@ abstract class Volume {
         String newPath = concatPath(destPath, name)
 
         /* update cache */
-        String prefix = srcPath + fsSeparator()
-        dirCache.remove(srcPath)
-        dirCache.keySet().removeAll { return it.startsWith(prefix) }
-        statCache.remove(srcPath)
-        statCache.keySet().removeAll { return it.startsWith(prefix) }
-        cachePath(destPath, newPath)
+        if (this.config.useCache) {
+            String prefix = srcPath + fsSeparator()
+            dirCache.remove(srcPath)
+            dirCache.keySet().removeAll { return it.startsWith(prefix) }
+            statCache.remove(srcPath)
+            statCache.keySet().removeAll { return it.startsWith(prefix) }
+            cachePath(destPath, newPath)
+        }
 
         return newPath
     }
@@ -1479,8 +1486,10 @@ abstract class Volume {
             throw new ConnectorException(CE.RM, fsPath(path))
         }
 
-        dirCache.remove(path)
-        statCache.remove(path)
+        if (this.config.useCache) {
+            dirCache.remove(path)
+            statCache.remove(path)
+        }
         removed << stat
         return true
     }

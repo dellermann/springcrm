@@ -90,4 +90,9 @@ class VolumeConfig {
      * Whether or not existing files are overwritten during upload.
      */
     boolean uploadOverwrite = false
+
+    /**
+     * Whether or not the cache for directory content and statistics is used.
+     */
+    boolean useCache = true
 }

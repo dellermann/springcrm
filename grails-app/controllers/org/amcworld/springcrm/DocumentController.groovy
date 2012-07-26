@@ -21,13 +21,28 @@
 package org.amcworld.springcrm
 
 import groovy.io.FileType
-import net.sf.jmimemagic.Magic
 import org.amcworld.springcrm.elfinder.Connector
+import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
+import org.amcworld.springcrm.elfinder.fs.Volume
 import org.amcworld.springcrm.elfinder.fs.VolumeConfig
+import org.apache.commons.logging.LogFactory
 
 
+/**
+ * The class {@code DocumentController} handles actions which display documents
+ * either in the ElFinder client or as embedded list for an organization.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.2
+ * @since   1.2
+ */
 class DocumentController {
+
+    //-- Constants ------------------------------
+
+    private static final log = LogFactory.getLog(this)
+
 
     //-- Instance variables ---------------------
 
@@ -39,25 +54,22 @@ class DocumentController {
     def index() {}
 
     def command() {
-        def conn = new Connector(request, response)
-        def config = new VolumeConfig(
-            alias: message(code: 'document.rootAlias', default: 'Documents')
-        )
-        conn.addVolume(new LocalFileSystemVolume(
-            'l', grailsApplication.config.springcrm.dir.documents, config
-        ))
-        conn.process()
+        new Connector(request, response).
+            addVolume(localVolume).
+            process()
     }
 
     def listEmbedded() {
         def organizationInstance = Organization.get(params.organization)
         File dir = fileService.getOrgDocumentDir(organizationInstance)
+        Volume volume = localVolume
         def list = []
         int total = 0
         if (dir) {
-            String rootDir = dir.path
             List<Document> documents = []
-            dir.eachFileRecurse(FileType.FILES) { documents << new Document(rootDir, it) }
+            dir.eachFileRecurse(FileType.FILES) {
+                documents << new Document(volume.encode(it.path), it)
+            }
 
             String sort = params.sort
             String order = params.order
@@ -83,41 +95,59 @@ class DocumentController {
             list = documents.subList(offset, Math.min(offset + max, documents.size()))
         }
 
-        return [documentInstanceList: list, documentInstanceTotal: total, organizationInstance: organizationInstance]
+        return [documentInstanceList: list, documentInstanceTotal: total]
     }
 
     def download() {
-        def organizationInstance = Organization.get(params.organization)
-        File dir = fileService.getOrgDocumentDir(organizationInstance)
-        if (dir) {
-            File f = Document.decode(dir.path, params.id)
-            if (f.exists()) {
-                response.contentType = Magic.getMagicMatch(f, true).mimeType
-                response.contentLength = f.length()
-                response.addHeader 'Content-Disposition',
-                    "attachment; filename=\"${f.name}\""
-                response.outputStream << f.newInputStream()
-                return null
+        Volume volume = localVolume
+        try {
+            Map<String, Object> file = volume.file(params.id)
+            if (file) {
+                InputStream stream = volume.open(params.id)
+                if (stream) {
+                    response.contentType = file.mime
+                    response.contentLength = file.size
+                    response.addHeader 'Content-Disposition',
+                        "attachment; filename=\"${file.name}\""
+                    response.outputStream << stream
+                    return null
+                }
             }
+        } catch (ConnectorException e) {
+            log.error e
         }
         render(status: 404)
     }
 
     def delete() {
-        def organizationInstance = Organization.get(params.organization)
-        File dir = fileService.getOrgDocumentDir(organizationInstance)
-        if (dir) {
-            File f = Document.decode(dir.path, params.id)
-            if (f.exists()) {
-                f.delete()
+        try {
+            if (localVolume.rm(params.id)) {
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'document.label', default: 'Document')])
             }
+        } catch (ConnectorException e) {
+            log.error e
         }
-
-        flash.message = message(code: 'default.deleted.message', args: [message(code: 'document.label', default: 'Document')])
         if (params.returnUrl) {
             redirect(url: params.returnUrl)
         } else {
             redirect(action: 'list')
         }
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets the local volume to retrieve and store documents.
+     *
+     * @return  the local volume
+     */
+    protected Volume getLocalVolume() {
+        def sysConf = grailsApplication.config.springcrm
+        def config = new VolumeConfig(
+            alias: message(code: 'document.rootAlias', default: 'Documents'),
+            useCache: sysConf.cacheDocs
+        )
+        return new LocalFileSystemVolume('l', sysConf.dir.documents, config)
     }
 }

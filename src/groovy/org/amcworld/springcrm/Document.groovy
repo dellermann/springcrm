@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import java.text.NumberFormat
+
 
 /**
  * The class {@code Document} represents a document which is used in the
@@ -42,14 +44,13 @@ class Document {
     //-- Constructors ---------------------------
 
     /**
-     * Creates a new document represented by the given file which is stored in
-     * the stated root directory.
+     * Creates a new document represented by the given ID and file instance.
      *
-     * @param rootDir   the stated root directory
-     * @param f         the file representing the document
+     * @param id    the given ID
+     * @param f     the given file representing the document
      */
-    Document(String rootDir, File f) {
-        this.id = encode(rootDir, f.path)
+    Document(String id, File f) {
+        this.id = id
         this.name = f.name
         this.size = f.length()
         this.lastModified = new Date(f.lastModified())
@@ -59,65 +60,31 @@ class Document {
     //-- Public methods -------------------------
 
     /**
-     * Decodes the given hash code and returns the associated file.
-     *
-     * @param rootDir   the root path
-     * @param id        the given ID
-     * @return          the associated file
-     */
-    static File decode(String rootDir, String id) {
-        String relPath = new String(id.tr('-_.', '+/=').decodeBase64())
-        if (relPath == '/') {
-            relPath = ''
-        }
-        return new File(rootDir, relPath)
-    }
-
-    /**
      * Gets the size of this document in a human readable form.
      *
      * @return  the size as string
      */
     String getSizeAsString() {
+        double val
+        String unit
         if (size >= 1024 ** 3) {
-            return "${((size / 1024 ** 3) as Double).round(1)} GB"
+            val = ((size / 1024 ** 3) as Double).round(1)
+            unit = 'GB'
         } else if (size >= 1024 ** 2) {
-            return "${((size / 1024 ** 2) as Double).round(1)} MB"
+            val = ((size / 1024 ** 2) as Double).round(1)
+            unit = 'MB'
         } else if (size >= 1024) {
-            return "${((size / 1024) as Double).round(1)} KB"
+            val = ((size / 1024) as Double).round(1)
+            unit = 'KB'
         } else {
-            return "${size} B"
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    /**
-     * Encodes the given file path.
-     *
-     * @param rootDir   the given root path
-     * @param path      the given file path; may be {@code null}
-     * @return          the computed hash code; {@code null} if the path is
-     *                  {@code null}
-     */
-    protected String encode(String rootDir, String path) {
-        if (path == null) {
-            return null
+            val = size
+            unit = 'B'
         }
 
-        String relPath = relPath(rootDir, path) ?: '/'
-        return relPath.bytes.encodeBase64().toString().tr('+/=', '-_.').replaceFirst(/\.+$/, '')
-    }
-
-    /**
-     * Computes the path relative to the given root path.
-     *
-     * @param rootDir   the given root path
-     * @param path      the given path
-     * @return          the relative path
-     */
-    protected String relPath(String rootDir, String path) {
-        return (path == rootDir) ? '' : path.substring(rootDir.length() + 1)
+        def format = NumberFormat.instance
+        format.maximumFractionDigits = (unit == 'B') ? 0 : 1
+        StringBuilder buf = new StringBuilder(format.format(val))
+        buf << ' ' << unit
+        return buf.toString()
     }
 }

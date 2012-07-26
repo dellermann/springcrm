@@ -122,6 +122,7 @@ springcrm {
         installer = "${springcrm.dir.base}/install"
         print = "${springcrm.dir.base}/print"
     }
+    cacheDocs = true
     lruList.numEntries = 10
 }
 
