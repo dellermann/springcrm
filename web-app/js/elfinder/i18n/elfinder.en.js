@@ -1,22 +1,15 @@
 /**
- * elFinder translation template
- * use this file to create new translation
- * submit new translation via https://github.com/Studio-42/elFinder/issues
- * or make a pull request
- */
- 
-/**
- * XXXXX translation
- * @author Translator Name <translator@email.tld>
- * @version 201x-xx-xx
+ * English translation
+ * @author Troex Nevelin <troex@fury.scancode.ru>
+ * @version 2012-02-25
  */
 if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object') {
-	elFinder.prototype.i18.REPLACE_WITH_xx_OR_xx_YY_LANG_CODE = {
-		translator : 'Translator name &lt;translator@email.tld&gt;',
-		language   : 'Language of translation in your language',
+	elFinder.prototype.i18.en = {
+		translator : 'Troex Nevelin &lt;troex@fury.scancode.ru&gt;',
+		language   : 'English',
 		direction  : 'ltr',
-		dateFormat : 'd.m.Y H:i',
-		fancyDateFormat : '$1 H:i',
+		dateFormat : 'M d, Y h:i A', // Mar 13, 2012 05:27 PM
+		fancyDateFormat : '$1 h:i A', // will produce smth like: Today 12:25 PM
 		messages   : {
 			
 			/********************************** errors **********************************/
@@ -57,18 +50,21 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'errRename'            : 'Unable to rename "$1".',
 			'errCopyFrom'          : 'Copying files from volume "$1" not allowed.',
 			'errCopyTo'            : 'Copying files to volume "$1" not allowed.',
-			'errUploadCommon'      : 'Upload error.',
-			'errUpload'            : 'Unable to upload "$1".',
-			'errUploadNoFiles'     : 'No files found for upload.',
-			'errMaxSize'           : 'Data exceeds the maximum allowed size.',
-			'errFileMaxSize'       : 'File exceeds maximum allowed size.',
-			'errUploadMime'        : 'File type not allowed.',
+			'errUpload'            : 'Upload error.',  // old name - errUploadCommon
+			'errUploadFile'        : 'Unable to upload "$1".', // old name - errUpload
+			'errUploadNoFiles'     : 'No files found for upload.', 
+			'errUploadTotalSize'   : 'Data exceeds the maximum allowed size.', // old name - errMaxSize
+			'errUploadFileSize'    : 'File exceeds maximum allowed size.', //  old name - errFileMaxSize
+			'errUploadMime'        : 'File type not allowed.', 
 			'errUploadTransfer'    : '"$1" transfer error.', 
+			'errNotReplace'        : 'Object "$1" already exists at this location and can not be replaced by object with another type.', // new
+			'errReplace'           : 'Unable to replace "$1".',
 			'errSave'              : 'Unable to save "$1".',
 			'errCopy'              : 'Unable to copy "$1".',
 			'errMove'              : 'Unable to move "$1".',
 			'errCopyInItself'      : 'Unable to copy "$1" into itself.',
 			'errRm'                : 'Unable to remove "$1".',
+			'errRmSrc'             : 'Unable remove source file(s).',
 			'errExtract'           : 'Unable to extract files from "$1".',
 			'errArchive'           : 'Unable to create archive.',
 			'errArcType'           : 'Unsupported archive type.',
@@ -80,9 +76,9 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'errResize'            : 'Unable to resize "$1".',
 			'errUsupportType'      : 'Unsupported file type.',
 			'errNotUTF8Content'    : 'File "$1" is not in UTF-8 and cannot be edited.',  // added 9.11.2011
-			'errNetMount'          : 'Unable to mount "$1".',     // added 17.04.2012
+			'errNetMount'          : 'Unable to mount "$1".', // added 17.04.2012
 			'errNetMountNoDriver'  : 'Unsupported protocol.',     // added 17.04.2012
-			'errNetMountFailed'    : 'Mount failed.',             // added 17.04.2012
+			'errNetMountFailed'    : 'Mount failed.',         // added 17.04.2012
 			'errNetMountHostReq'   : 'Host required.', // added 18.04.2012
 			/******************************* commands names ********************************/
 			'cmdarchive'   : 'Create archive',
@@ -110,8 +106,9 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'cmdup'        : 'Go to parent directory',
 			'cmdupload'    : 'Upload files',
 			'cmdview'      : 'View',
-			'cmdresize'    : 'Resize image',
+			'cmdresize'    : 'Resize & Rotate',
 			'cmdsort'      : 'Sort',
+			'cmdnetmount'  : 'Mount network volume', // added 18.04.2012
 			
 			/*********************************** buttons ***********************************/ 
 			'btnClose'  : 'Close',
@@ -121,7 +118,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'btnCancel' : 'Cancel',
 			'btnNo'     : 'No',
 			'btnYes'    : 'Yes',
-			
+			'btnMount'  : 'Mount',  // added 18.04.2012
 			/******************************** notifications ********************************/
 			'ntfopen'     : 'Open folder',
 			'ntffile'     : 'Open file',
@@ -139,9 +136,10 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'ntfarchive'  : 'Creating archive',
 			'ntfextract'  : 'Extracting files from archive',
 			'ntfsearch'   : 'Searching files',
+			'ntfresize'   : 'Resizing images',
 			'ntfsmth'     : 'Doing something >_<',
-			'ntfloadimg'  : 'Loading image',
-			'ntfnetmount' : 'Mounting network volume', // added 18.04.2012
+      		'ntfloadimg'  : 'Loading image',
+      		'ntfnetmount' : 'Mounting network volume', // added 18.04.2012
 			
 			/************************************ dates **********************************/
 			'dateUnknown' : 'unknown',
@@ -159,39 +157,14 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'Oct'         : 'Oct',
 			'Nov'         : 'Nov',
 			'Dec'         : 'Dec',
-			'January'     : 'January',
-			'February'    : 'February',
-			'March'       : 'March',
-			'April'       : 'April',
-			'May'         : 'May',
-			'June'        : 'June',
-			'July'        : 'July',
-			'August'      : 'August',
-			'September'   : 'September',
-			'October'     : 'October',
-			'November'    : 'November',
-			'December'    : 'December',
-			'Sunday'      : 'Sunday', 
-			'Monday'      : 'Monday', 
-			'Tuesday'     : 'Tuesday', 
-			'Wednesday'   : 'Wednesday', 
-			'Thursday'    : 'Thursday', 
-			'Friday'      : 'Friday', 
-			'Saturday'    : 'Saturday',
-			'Sun'         : 'Sun', 
-			'Mon'         : 'Mon', 
-			'Tue'         : 'Tue', 
-			'Wed'         : 'Wed', 
-			'Thu'         : 'Thu', 
-			'Fri'         : 'Fri', 
-			'Sat'         : 'Sat',
+
 			/******************************** sort variants ********************************/
 			'sortname'          : 'by name', 
 			'sortkind'          : 'by kind', 
 			'sortsize'          : 'by size',
 			'sortdate'          : 'by date',
-			'sortFoldersFirst'  : 'Folders first', // added 22.06.2012
-			
+			'sortFoldersFirst'  : 'Folders first',
+
 			/********************************** messages **********************************/
 			'confirmReq'      : 'Confirmation required',
 			'confirmRm'       : 'Are you sure you want to remove files?<br/>This cannot be undone!',
@@ -253,25 +226,23 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'moveFiles'       : 'Move files',
 			'copyFiles'       : 'Copy files',
 			'rmFromPlaces'    : 'Remove from places',
-			'untitled folder' : 'untitled folder',
-			'untitled file.txt' : 'untitled file.txt',
 			'aspectRatio'     : 'Aspect ratio',
 			'scale'           : 'Scale',
 			'width'           : 'Width',
 			'height'          : 'Height',
-			'mode'            : 'Mode',
 			'resize'          : 'Resize',
 			'crop'            : 'Crop',
 			'rotate'          : 'Rotate',
 			'rotate-cw'       : 'Rotate 90 degrees CW',
 			'rotate-ccw'      : 'Rotate 90 degrees CCW',
-			'degree'          : 'Degree',
+			'degree'          : '°',
 			'netMountDialogTitle' : 'Mount network volume', // added 18.04.2012
 			'protocol'            : 'Protocol', // added 18.04.2012
 			'host'                : 'Host', // added 18.04.2012
 			'port'                : 'Port', // added 18.04.2012
 			'user'                : 'User', // added 18.04.2012
 			'pass'                : 'Password', // added 18.04.2012
+
 			/********************************** mimetypes **********************************/
 			'kindUnknown'     : 'Unknown',
 			'kindFolder'      : 'Folder',

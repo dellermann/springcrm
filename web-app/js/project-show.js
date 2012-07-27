@@ -35,6 +35,8 @@
         onOpenSelectDlg = null,
         onSelectProjectStatus,
         onSubmittedSelectedItems = null,
+        showFileSelector,
+        submitSelectedDocuments = null,
         submitSelectedItems;
 
     changePhase = function (phaseName) {
@@ -61,10 +63,24 @@
     };
 
     onChangeType = function () {
-        var $this = $(this);
+        var $option,
+            $this = $(this);
 
-        $("#select-project-item-dialog h2").text($this.find(":selected").text());
-        loadList($(this).val());
+        $option = $this.find(":selected");
+        $("#select-project-item-dialog h2").text($option.text());
+        if ($option.data("controller") == "document") {
+            showFileSelector($this.val());
+            $("#select-project-item-add-btn").fadeOut();
+            $(".selector-toolbar-search").fadeOut();
+            $("#select-project-item-list").fadeOut();
+            $("#select-project-document-list").fadeIn();
+        } else {
+            loadList($this.val());
+            $("#select-project-item-add-btn").show();
+            $(".selector-toolbar-search").show();
+            $("#select-project-item-list").fadeIn();
+            $("#select-project-document-list").fadeOut();
+        }
     };
 
     onClick = function (event) {
@@ -94,7 +110,7 @@
             res = false;
         } else if ($target.is(".project-phase-actions-select")) {
             $("#select-project-item-dialog").dialog({
-                    minWidth: 700, minHeight: 400, modal: true,
+                    minWidth: 900, minHeight: 520, modal: true,
                     open: onOpenSelectDlg
                 })
                 .data("phase", phaseName);
@@ -167,6 +183,63 @@
 
     onSubmittedSelectedItems = function () {
         window.location.reload(true);
+    };
+
+    showFileSelector = function (url) {
+        $("#select-project-document-list").elfinder({
+            commands: [
+                'open', 'reload', 'home', 'up', 'back', 'forward', 'getfile',
+                'quicklook', 'download', 'rm', 'duplicate', 'rename', 'mkdir',
+                'mkfile', 'upload', 'copy', 'cut', 'paste', 'edit',
+                /*'extract', 'archive', */'search', 'info', 'view', 'help',
+                /*'resize', */'sort'
+            ],
+            commandsOptions: {
+                getfile: {
+                    onlyURL: false
+                }
+            },
+            contextmenu: {
+                files: [
+                    'getfile', '|','open', 'quicklook', '|', 'download', '|',
+                    'copy', 'cut', 'paste', 'duplicate', '|',
+                    'rm', '|', 'edit', 'rename', '|', 'info'
+                ]
+            },
+            getFileCallback: submitSelectedDocuments,
+            lang: "de",
+            uiOptions: {
+                toolbar: [
+                    ['back', 'forward'],
+                    ['mkdir', 'mkfile', 'upload'],
+                    ['open', 'download', 'getfile'],
+                    ['info', 'quicklook'],
+                    ['copy', 'cut', 'paste'],
+                    ['rm'],
+                    ['duplicate', 'rename', 'edit'],
+                    ['search'],
+                    ['view', 'sort'],
+                    ['help']
+                ],
+            },
+            url: url
+        })
+        .elfinder("instance");
+    };
+
+    submitSelectedDocuments = function (file) {
+        var $ = jQuery,
+            $dialog = $("#select-project-item-dialog"),
+            phaseName = $dialog.data("phase"),
+            url = $dialog.data("submit-url");
+
+        $.post(
+                url, {
+                    projectPhase: phaseName, controllerName: "document",
+                    documents: file.hash
+                },
+                onSubmittedSelectedItems
+            );
     };
 
     submitSelectedItems = function (ids) {

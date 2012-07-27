@@ -23,9 +23,7 @@ package org.amcworld.springcrm
 import groovy.io.FileType
 import org.amcworld.springcrm.elfinder.Connector
 import org.amcworld.springcrm.elfinder.ConnectorException
-import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
 import org.amcworld.springcrm.elfinder.fs.Volume
-import org.amcworld.springcrm.elfinder.fs.VolumeConfig
 import org.apache.commons.logging.LogFactory
 
 
@@ -55,14 +53,14 @@ class DocumentController {
 
     def command() {
         new Connector(request, response).
-            addVolume(localVolume).
+            addVolume(fileService.localVolume).
             process()
     }
 
     def listEmbedded() {
         def organizationInstance = Organization.get(params.organization)
         File dir = fileService.getOrgDocumentDir(organizationInstance)
-        Volume volume = localVolume
+        Volume volume = fileService.localVolume
         def list = []
         int total = 0
         if (dir) {
@@ -99,7 +97,7 @@ class DocumentController {
     }
 
     def download() {
-        Volume volume = localVolume
+        Volume volume = fileService.localVolume
         try {
             Map<String, Object> file = volume.file(params.id)
             if (file) {
@@ -121,7 +119,7 @@ class DocumentController {
 
     def delete() {
         try {
-            if (localVolume.rm(params.id)) {
+            if (fileService.localVolume.rm(params.id)) {
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'document.label', default: 'Document')])
             }
         } catch (ConnectorException e) {
@@ -132,22 +130,5 @@ class DocumentController {
         } else {
             redirect(action: 'list')
         }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    /**
-     * Gets the local volume to retrieve and store documents.
-     *
-     * @return  the local volume
-     */
-    protected Volume getLocalVolume() {
-        def sysConf = grailsApplication.config.springcrm
-        def config = new VolumeConfig(
-            alias: message(code: 'document.rootAlias', default: 'Documents'),
-            useCache: sysConf.cacheDocs
-        )
-        return new LocalFileSystemVolume('l', sysConf.dir.documents, config)
     }
 }

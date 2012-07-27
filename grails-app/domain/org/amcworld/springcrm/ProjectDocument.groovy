@@ -1,5 +1,5 @@
 /*
- * ProjectItem.groovy
+ * ProjectDocument.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -22,22 +22,21 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code ProjectItem} represents an item, such a task, call, notes,
- * quote, invoice etc. which belongs to a phase of a particular project.
+ * The class {@code ProjectDocument} represents a document which is associated
+ * to a project.
  *
  * @author	Daniel Ellermann
  * @version 1.2
+ * @since   1.2
  */
-class ProjectItem {
+class ProjectDocument {
 
     //-- Class variables ------------------------
 
     static constraints = {
-        project()
         phase(nullable: false)
-        controller(nullable: false, blank: false)
-        itemId(nullable: false)
-        title(nullable: true)
+        path(nullable: false, blank: false)
+        title(nullable: false, blank: false)
     }
     static belongsTo = [project: Project]
 
@@ -45,27 +44,25 @@ class ProjectItem {
     //-- Instance variables ---------------------
 
     ProjectPhase phase
-    String controller
-    long itemId
+    String path
     String title
 
 
     //-- Public methods -------------------------
 
     boolean equals(Object o) {
-        if (o instanceof ProjectItem) {
-            return (o.project == project) && (o.phase == phase) &&
-                (o.controller == controller) && (o.itemId == itemId)
+        if (o instanceof ProjectDocument) {
+            return (o.project == project) && (o.phase == phase) && (o.path == path)
         } else {
             return false
         }
     }
 
     int hashCode() {
-        return "${project.ident()}-${phase}-${controller}-${itemId}".hashCode()
+        return "${project.ident()}-${phase}-${path}".hashCode()
     }
 
     String toString() {
-        return title ?: ''
+        return title
     }
 }

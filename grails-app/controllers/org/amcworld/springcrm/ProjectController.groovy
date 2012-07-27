@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.amcworld.springcrm.elfinder.fs.Volume
 import org.codehaus.groovy.grails.commons.GrailsClass
 import org.springframework.dao.DataIntegrityViolationException
 
@@ -36,6 +37,11 @@ class ProjectController {
     //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Instance variables ---------------------
+
+    def fileService
 
 
     //-- Public methods -------------------------
@@ -129,7 +135,21 @@ class ProjectController {
             items << it
         }
 
-        return [projectInstance: projectInstance, projectItems: projectItems]
+        def projectDocuments = [: ]
+        l = ProjectDocument.findAllByProject(
+            projectInstance, [sort: 'phase', order: 'asc']
+        )
+        l.each {
+            def phase = it.phase
+            def docs = projectDocuments[phase]
+            if (!docs) {
+                docs = []
+                projectDocuments[phase] = docs
+            }
+            docs << it
+        }
+
+        return [projectInstance: projectInstance, projectItems: projectItems, projectDocuments: projectDocuments]
     }
 
     def edit() {
@@ -230,16 +250,32 @@ class ProjectController {
             GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
                 'Domain', controllerName
             )
-            params.itemIds.split(',').each {
-                long itemId = it as long
-                def itemInstance = cls.clazz.'get'(itemId)
-                if (itemInstance) {
-                    def projectItem = new ProjectItem(
-                        project: project, phase: projectPhase,
-                        controller: controllerName, itemId: itemId,
-                        title: itemInstance.toString()
-                    )
-                    projectItem.save(flush: true)
+            if (params.itemIds) {
+                params.itemIds.split(',').each {
+                    long itemId = it as long
+                    def itemInstance = cls.clazz.'get'(itemId)
+                    if (itemInstance) {
+                        def projectItem = new ProjectItem(
+                            project: project, phase: projectPhase,
+                            controller: controllerName, itemId: itemId,
+                            title: itemInstance.toString()
+                        )
+                        projectItem.save(flush: true)
+                    }
+                }
+            }
+            if (params.documents) {
+                String rootDir = fileService.rootDir
+                Volume volume = fileService.localVolume
+                params.documents.split(',').each {
+                    Map<String, Object> stat = volume.file(it)
+                    if (stat) {
+                        def projectDoc = new ProjectDocument(
+                            project: project, phase: projectPhase,
+                            path: it, title: stat.name
+                        )
+                        projectDoc.save(flush: true)
+                    }
                 }
             }
         }

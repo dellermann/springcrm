@@ -107,10 +107,14 @@
                   <li class="project-phase-actions-select white button small"><g:message code="project.item.select.label" default="Select item" /></li>
                 </ul>
                 <g:set var="items" value="${projectItems[phase]}" />
-                <g:if test="${items}">
+                <g:set var="documents" value="${projectDocuments[phase]}" />
+                <g:if test="${items || documents}">
                 <ul class="project-phase-items">
                   <g:each in="${items}" var="item">
-                    <li><g:link controller="${item.controller}" action="show" id="${item.itemId}" class="data-type data-type-${item.controller}">${item.title}</g:link></li>
+                  <li><g:link controller="${item.controller}" action="show" id="${item.itemId}" class="data-type data-type-${item.controller}">${item.title}</g:link></li>
+                  </g:each>
+                  <g:each in="${documents}" var="document">
+                  <li><g:link controller="document" action="download" id="${document.path}" target="_blank" class="data-type data-type-document">${document.title}</g:link></li>
                   </g:each>
                 </ul>
                 </g:if>
@@ -135,9 +139,10 @@
             <div class="label"><label for="select-project-item-type-selector"><g:message code="project.item.select.type.label" default="Type" /></label></div>
             <div class="field">
               <select id="select-project-item-type-selector">
-              <g:each in="${controllers}">
+                <g:each in="${controllers}">
                 <option value="${createLink(controller: it, action: 'list')}" data-controller="${it}"><g:message code="${it}.plural" default="${it}" /></option>
-              </g:each>
+                </g:each>
+                <option value="${createLink(controller: 'document', action: 'command')}" data-controller="document"><g:message code="document.plural" default="Documents" /></option>
               </select>
             </div>
             <div class="field search-field selector-toolbar-search">
@@ -150,7 +155,10 @@
           </div>
         </div>
         <h2></h2>
-        <div id="select-project-item-list"></div>
+        <div id="select-project-content">
+          <div id="select-project-item-list"></div>
+          <div id="select-project-document-list"></div>
+        </div>
       </div>
     </div>
 

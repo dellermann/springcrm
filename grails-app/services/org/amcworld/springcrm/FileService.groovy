@@ -20,6 +20,10 @@
 
 package org.amcworld.springcrm
 
+import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
+import org.amcworld.springcrm.elfinder.fs.Volume
+import org.amcworld.springcrm.elfinder.fs.VolumeConfig
+import org.springframework.context.i18n.LocaleContextHolder as LCH
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -39,9 +43,26 @@ class FileService {
     //-- Instance variables ---------------------
 
     def grailsApplication
+    def messageSource
 
 
 	//-- Public methods -------------------------
+
+    /**
+     * Gets the local volume to retrieve and store documents.
+     *
+     * @return  the local volume
+     */
+    Volume getLocalVolume() {
+        def alias = messageSource.getMessage(
+            'document.rootAlias', null, 'Documents', LCH.locale
+        )
+        def config = new VolumeConfig(
+            alias: alias,
+            useCache: grailsApplication.config.springcrm.cacheDocs
+        )
+        return new LocalFileSystemVolume('l', rootDir, config)
+    }
 
     /**
      * Returns the directory containing the documents of the given
@@ -94,6 +115,15 @@ class FileService {
             }
         }
         return dir
+    }
+
+    /**
+     * Gets the directory where to store the documents of this application.
+     *
+     * @return  the root directory to store documents
+     */
+    String getRootDir() {
+        return grailsApplication.config.springcrm.dir.documents
     }
 
 	/**

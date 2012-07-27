@@ -5,8 +5,8 @@
  */
 if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object') {
 	elFinder.prototype.i18.de = {
-		translator : 'JPG & Mace &lt;dev@flying-datacenter.de>',
-		language   : 'deutsch',
+		translator : 'JPG & Mace &lt;dev@flying-datacenter.de&gt;',
+		language   : 'Deutsch',
 		direction  : 'ltr',
 		messages   : {
 
@@ -60,7 +60,7 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'errMove'              : 'Kann "$1" nicht verschieben.',
 			'errCopyInItself'      : '"$1" kann sich nicht auf sich selbst kopiert werden.',
 			'errRm'                : 'Kann "$1" nicht enfernen.',
-			'errExtract'           : 'Kann "$1" nicht entpacken.',
+			'errExtract'           : 'Kann "$1" nicht entpacken .',
 			'errArchive'           : 'Archiv konnte nicht erstellt werden.',
 			'errArcType'           : 'Archivtyp nicht untersützt.',
 			'errNoArchive'         : 'Bei der Datei handelt es nicht um ein Archiv oder der Archivtyp wird nicht unterstützt.',
@@ -137,6 +137,13 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'Oct'         : 'Okt',
 			'Nov'         : 'Nov',
 			'Dec'         : 'Dez',
+
+			/******************************** sort variants ********************************/
+			'sortname'           : 'nach Name',
+			'sortkind'           : 'nach Typ',
+			'sortsize'           : 'nach Größe',
+			'sortdate'           : 'nach Datum',
+			'sortFoldersFirst'   : 'Ordner zuerst',
 
 			/********************************** messages **********************************/
 			'confirmReq'      : 'Bestätigung benötigt',

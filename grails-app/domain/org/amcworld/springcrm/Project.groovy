@@ -27,7 +27,7 @@ package org.amcworld.springcrm
  * documents etc.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 class Project {
@@ -46,7 +46,7 @@ class Project {
         lastUpdated()
     }
     static belongsTo = [organization: Organization, person: Person]
-    static hasMany = [items: ProjectItem]
+    static hasMany = [items: ProjectItem, documents: ProjectDocument]
     static mapping = {
         sort 'title'
         description type: 'text'

@@ -149,7 +149,7 @@ modules = {
     }
 
     projectShow {
-        dependsOn 'core, jquery-ui-selectmenu'
+        dependsOn 'core, jquery-ui-selectmenu, elfinder'
 
         resource '/js/project-show.js'
     }

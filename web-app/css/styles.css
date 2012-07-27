@@ -1494,6 +1494,9 @@ form .invoicing-items-pos {
 .data-type-creditMemo {
   background-image: url("../img/type/credit-memo.png")
 }
+.data-type-document {
+  background-image: url("../img/type/document.png")
+}
 .data-type-dunning {
   background-image: url("../img/type/dunning.png")
 }
@@ -1887,13 +1890,30 @@ form .invoicing-items-pos {
   text-align: right;
 }
 #select-project-item-dialog .label {
-  width: auto;
+  width: 10em;
+}
+#select-project-item-dialog h2 {
+  margin-top: 1em;
+}
+#select-project-content {
+  left: 0;
+  margin-top: .5em;
+  position: relative;
+  top: 0;
 }
 #select-project-item-list {
-  margin-top: 1em;
+  left: 0;
+  position: absolute;
+  top: 0;
 }
 #select-project-item-list .content-table a {
   color: #567B0F;
+}
+#select-project-document-list {
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 /* reports */
