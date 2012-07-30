@@ -14,7 +14,6 @@
     <div class="col col-r">
       <div class="form">
         <f:field bean="${serviceInstance}" property="taxRate" />
-        <f:field bean="${serviceInstance}" property="commission" />
         <f:field bean="${serviceInstance}" property="salesStart" />
         <f:field bean="${serviceInstance}" property="salesEnd" />
       </div>

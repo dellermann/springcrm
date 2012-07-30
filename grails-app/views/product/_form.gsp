@@ -18,7 +18,6 @@
         <f:field bean="${productInstance}" property="weight" />
         <f:field bean="${productInstance}" property="taxRate" />
         <f:field bean="${productInstance}" property="purchasePrice" />
-        <f:field bean="${productInstance}" property="commission" />
         <f:field bean="${productInstance}" property="salesStart" />
         <f:field bean="${productInstance}" property="salesEnd" />
       </div>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!--
+
+ db-2012-07-28.xml
+
+ Copyright (c) 2011-2012, Daniel Ellermann
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20120728-1">
+    <createTable tableName="sales_item">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="sales_itemPK" />
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="description" type="longtext" />
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false" />
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="number" type="integer">
+        <constraints nullable="false" />
+      </column>
+      <column name="purchase_price" type="decimal(19,2)" />
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false" />
+      </column>
+      <column name="sales_end" type="datetime" />
+      <column name="sales_start" type="datetime" />
+      <column name="tax_rate_id" type="bigint" />
+      <column name="type" type="varchar(1)">
+        <constraints nullable="false" />
+      </column>
+      <column name="unit_id" type="bigint" />
+      <column name="unit_price" type="decimal(19,2)">
+        <constraints nullable="false" />
+      </column>
+      <column name="class" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="category_id" type="bigint" />
+      <column name="manufacturer" type="varchar(255)" />
+      <column name="retailer" type="varchar(255)" />
+      <column name="weight" type="decimal(19,2)" />
+    </createTable>
+    <addForeignKeyConstraint baseColumnNames="category_id"
+      baseTableName="sales_item" constraintName="FK6669B2662A2F6EC9"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sel_value"
+      referencesUniqueColumn="false" />
+    <addForeignKeyConstraint baseColumnNames="tax_rate_id"
+      baseTableName="sales_item" constraintName="FK6669B266C7AFB16B"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sel_value"
+      referencesUniqueColumn="false" />
+    <addForeignKeyConstraint baseColumnNames="unit_id"
+      baseTableName="sales_item" constraintName="FK6669B26667D5AB80"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sel_value"
+      referencesUniqueColumn="false" />
+    <createIndex indexName="FK6669B2662A2F6EC9" tableName="sales_item">
+      <column name="category_id" />
+    </createIndex>
+    <createIndex indexName="FK6669B26667D5AB80" tableName="sales_item">
+      <column name="unit_id" />
+    </createIndex>
+    <createIndex indexName="FK6669B266C7AFB16B" tableName="sales_item">
+      <column name="tax_rate_id" />
+    </createIndex>
+    <createIndex indexName="FK6669B266E9949B03" tableName="sales_item">
+      <column name="category_id" />
+    </createIndex>
+    <createIndex indexName="class" tableName="sales_item">
+      <column name="class" />
+    </createIndex>
+    <createIndex indexName="unique-number" tableName="sales_item">
+      <column name="type" />
+      <column name="number" />
+    </createIndex>
+  </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20120728-2">
+    <sql>
+      INSERT INTO sales_item (
+          version, date_created, description, last_updated, name, number,
+          purchase_price, quantity, sales_end, sales_start, tax_rate_id, type,
+          unit_id, unit_price, class, category_id, manufacturer, retailer,
+          weight
+        )
+        SELECT version, date_created, description, last_updated, name, number,
+            purchase_price, quantity, sales_end, sales_start, tax_rate_id, 'P',
+            unit_id, unit_price, 'org.amcworld.springcrm.Product', category_id, 
+            manufacturer, retailer, weight
+          FROM product;
+      INSERT INTO sales_item (
+          version, date_created, description, last_updated, name, number,
+          quantity, sales_end, sales_start, tax_rate_id, type, unit_id, 
+          unit_price, class, category_id
+        )
+        SELECT version, date_created, description, last_updated, name, number,
+            quantity, sales_end, sales_start, tax_rate_id, 'S', unit_id,
+            unit_price, 'org.amcworld.springcrm.Service', category_id
+          FROM service;
+    </sql>
+  </changeSet>
+  <!--
+  <changeSet author="d.ellermann@amc-world.de" id="20120728-3">
+    <dropTable tableName="product" />
+    <dropTable tableName="service" />
+  </changeSet>
+  -->
+</databaseChangeLog>

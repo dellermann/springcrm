@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Product" %>
 <html>
 <head>
@@ -98,11 +97,6 @@
               <div class="field"><g:formatCurrency number="${productInstance?.purchasePrice}" /></div>
             </div>
 
-            <div class="row">
-              <div class="label"><g:message code="product.commission.label" default="Commission" /></div>
-              <div class="field"><g:formatNumber number="${productInstance?.commission}" minFractionDigits="2" /> %</div>
-            </div>
-            
             <div class="row">
               <div class="label"><g:message code="product.salesStart.label" default="Sales Start" /></div>
               <div class="field"><g:formatDate date="${productInstance?.salesStart}" formatName="default.format.date" /></div>

@@ -79,11 +79,6 @@
             </div>
             
             <div class="row">
-              <div class="label"><g:message code="service.commission.label" default="Commission" /></div>
-              <div class="field"><g:formatNumber number="${serviceInstance?.commission}" minFractionDigits="2" /> %</div>
-            </div>
-            
-            <div class="row">
               <div class="label"><g:message code="service.salesStart.label" default="Sales Start" /></div>
               <div class="field"><g:formatDate date="${serviceInstance?.salesStart}" formatName="default.format.date" /></div>
             </div>

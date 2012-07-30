@@ -25,87 +25,34 @@ package org.amcworld.springcrm
  * The class {@code Service} represents a service from the service catalog.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  * @see     Product
  */
-class Service {
+class Service extends SalesItem {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		number(unique: true, widget: 'autonumber')
-		name(blank: false)
 		category(nullable: true)
-		quantity(min: 0.0)
-		unit(nullable: true)
-		unitPrice(scale: 2, min: 0.0, widget: 'currency')
-		taxRate(nullable: true)
-		commission(nullable: true, min: 0.0, widget: 'percent')
-		salesStart(nullable: true)
-		salesEnd(nullable: true)
-        description(nullable: true, widget: 'textarea')
-		dateCreated()
-		lastUpdated()
-    }
-	static mapping = {
-		description type: 'text'
-        name index: 'name'
-        sort 'number'
     }
 	static searchable = true
-	static transients = ['fullNumber']
 
 
     //-- Instance variables ---------------------
 
-	def seqNumberService
-
-	int number
-	String name
 	ServiceCategory category
-	BigDecimal quantity
-	Unit unit
-	BigDecimal unitPrice
-	TaxRate taxRate
-	BigDecimal commission
-	Date salesStart
-	Date salesEnd
-	String description
-	Date dateCreated
-	Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
-	Service() {}
+	Service() {
+        super()
+        type = 'S'
+    }
 
 	Service(Service s) {
-		name = s.name
+        super(s)
+        type = 'S'
 		category = s.category
-		quantity = s.quantity
-		unit = s.unit
-		unitPrice = s.unitPrice
-		taxRate = s.taxRate
-		commission = s.commission
-		salesStart = s.salesStart
-		salesEnd = s.salesEnd
-		description = s.description
-	}
-
-
-    //-- Public methods -------------------------
-
-	String getFullNumber() {
-		return seqNumberService.format(getClass(), number)
-	}
-
-	String toString() {
-		return name ?: ''
-	}
-
-	def beforeInsert() {
-		if (number == 0) {
-			number = seqNumberService.nextNumber(getClass())
-		}
 	}
 }
