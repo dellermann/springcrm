@@ -1,5 +1,5 @@
 /*
- * SalesItemCostingTests.groovy
+ * SalesItemPricingTests.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -20,21 +20,16 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.*
-import org.junit.*
-
 
 /**
- * The class {@code SalesItemCostingTests} contains the unit test cases for
- * {@code SalesItemCosting}.
+ * The class {@code SalesItemPricingTests} contains the unit test cases for
+ * {@code SalesItemPricing}.
  *
  * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-@TestFor(SalesItemCosting)
-@Mock([SalesItemCosting, SalesItemCostingItem])
-class SalesItemCostingTests {
+class SalesItemPricingTests {
 
     //-- Public methods -------------------------
 
@@ -83,33 +78,33 @@ class SalesItemCostingTests {
 
     //-- Non-public methods ---------------------
 
-    protected SalesItemCosting mockDomain() {
-        return new SalesItemCosting(
+    protected SalesItemPricing mockDomain() {
+        return new SalesItemPricing(
             name: 'Netzwerkkabel', quantity: 3000.0, unit: 'm',
             items: [
-                new SalesItemCostingItem(
+                new SalesItemPricingItem(
                     quantity: 3000.0, unit: 'm', name: 'Netzwerkkabel',
                     type: CostingItemType.ABSOLUTE, unitPrice: 0.1
                 ),
-                new SalesItemCostingItem(
+                new SalesItemPricingItem(
                     quantity: 0.5, unit: 'h', name: 'Arbeitsleistung',
                     type: CostingItemType.ABSOLUTE, unitPrice: 50.0
                 ),
-                new SalesItemCostingItem(
+                new SalesItemPricingItem(
                     quantity: 0, unit: '', name: '',
                     type: CostingItemType.SUM
                 ),
-                new SalesItemCostingItem(
+                new SalesItemPricingItem(
                     quantity: 1, unit: 'Einheit', name: 'Gewinn',
                     type: CostingItemType.RELATIVE_TO_LAST_SUM,
                     unitPercent: 5.0
                 ),
-                new SalesItemCostingItem(
+                new SalesItemPricingItem(
                     quantity: 1, unit: 'Einheit', name: 'Risiko',
                     type: CostingItemType.RELATIVE_TO_POS, relToPos: 2,
                     unitPercent: 5.0
                 ),
-                new SalesItemCostingItem(
+                new SalesItemPricingItem(
                     quantity: 1, unit: 'Einheit', name: 'Test',
                     type: CostingItemType.RELATIVE_TO_CURRENT_SUM,
                     unitPercent: 10.0

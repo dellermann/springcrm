@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!--
+
+ db-2012-07-31.xml
+
+ Copyright (c) 2011-2012, Daniel Ellermann
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20120731-1">
+    <createTable tableName="sales_item_pricing">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="sales_item_prPK" />
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false" />
+      </column>
+      <column name="unit" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="unit_price" type="decimal(19,2)" />
+    </createTable>
+    <createTable tableName="sales_item_pricing_item">
+      <column autoIncrement="true" name="id" type="bigint">
+        <constraints nullable="false" primaryKey="true"
+          primaryKeyName="sales_item_prPK" />
+      </column>
+      <column name="version" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="pricing_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+      <column name="quantity" type="decimal(19,2)">
+        <constraints nullable="false" />
+      </column>
+      <column name="rel_to_pos" type="integer" />
+      <column name="type" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="unit" type="varchar(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="unit_percent" type="decimal(19,2)" />
+      <column name="unit_price" type="decimal(19,2)" />
+      <column name="items_idx" type="integer" />
+    </createTable>
+    <addColumn tableName="sales_item">
+      <column name="pricing_id" type="bigint">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+    <addForeignKeyConstraint baseColumnNames="pricing_id"
+      baseTableName="sales_item_pricing_item" constraintName="FK303CD25DCF64401"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sales_item_pricing"
+      referencesUniqueColumn="false" />
+    <addForeignKeyConstraint baseColumnNames="pricing_id"
+      baseTableName="sales_item" constraintName="FK6669B266DCF64401"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sales_item_pricing"
+      referencesUniqueColumn="false" />
+    <createIndex indexName="FK6669B266DCF64401" tableName="sales_item">
+      <column name="pricing_id" />
+    </createIndex>
+    <createIndex indexName="name" tableName="sales_item">
+      <column name="name" />
+    </createIndex>
+    <createIndex indexName="FK303CD25DCF64401" tableName="sales_item_pricing_item">
+      <column name="pricing_id" />
+    </createIndex>
+  </changeSet>
+</databaseChangeLog>

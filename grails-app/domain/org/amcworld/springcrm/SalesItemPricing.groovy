@@ -1,5 +1,5 @@
 /*
- * SalesItemCosting.groovy
+ * SalesItemPricing.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -20,35 +20,38 @@
 
 package org.amcworld.springcrm
 
+import static org.amcworld.springcrm.PricingItemType.*
+
 
 /**
- * The class {@code SalesItemCosting} represents costings for a sales item
+ * The class {@code SalesItemPricing} represents a pricing for a sales item
  * such as a product or service.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class SalesItemCosting {
+class SalesItemPricing {
 
     //-- Class variables ------------------------
 
     static constraints = {
         name(blank: false)
         quantity(min: 0.0)
-        unit(nullable: true)
+        unit()
         unitPrice(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+        items(minSize: 1)
     }
-    static hasMany = [items: SalesItemCostingItem]
+    static hasMany = [items: SalesItemPricingItem, salesItems: SalesItem]
 
 
     //-- Instance variables ---------------------
 
     String name
     BigDecimal quantity
-    Unit unit
+    String unit
     BigDecimal unitPrice
-    List<SalesItemCostingItem> items
+    List<SalesItemPricingItem> items
 
 
     //-- Public methods -------------------------
@@ -61,7 +64,7 @@ class SalesItemCosting {
      */
     BigDecimal computeTotalOfItem(int pos) {
         def item = items[pos]
-        if (CostingItemType.SUM == item.type) {
+        if (SUM == item.type) {
             return getCurrentSum(pos - 1)
         } else {
             return item.quantity * computeUnitPriceOfItem(pos)
@@ -79,17 +82,17 @@ class SalesItemCosting {
     BigDecimal computeUnitPriceOfItem(int pos) {
         def item = items[pos]
         switch (item.type) {
-        case CostingItemType.ABSOLUTE:
+        case ABSOLUTE:
             return item.unitPrice
-        case CostingItemType.RELATIVE_TO_POS:
+        case RELATIVE_TO_POS:
             return item.unitPercent * computeTotalOfItem(item.relToPos) / 100
-        case CostingItemType.RELATIVE_TO_LAST_SUM:
+        case RELATIVE_TO_LAST_SUM:
             Integer otherPos = getLastSumPos(pos - 1)
             if (otherPos >= 0) {
                 return item.unitPercent * computeTotalOfItem(otherPos) / 100
             }
             // break through
-        case CostingItemType.RELATIVE_TO_CURRENT_SUM:
+        case RELATIVE_TO_CURRENT_SUM:
             return item.unitPercent * getCurrentSum(pos - 1) / 100
         default:
             return null
@@ -105,7 +108,7 @@ class SalesItemCosting {
     BigDecimal getCurrentSum(Integer pos = items.size() - 1) {
         BigDecimal sum = 0.0
         for (int i = pos; i >= 0; --i) {
-            if (CostingItemType.SUM != items[i].type) {
+            if (SUM != items[i].type) {
                 sum += computeTotalOfItem(i)
             }
         }
@@ -120,7 +123,7 @@ class SalesItemCosting {
      */
     int getLastSumPos(Integer start = items.size() - 1) {
         for (int i = start; i >= 0; --i) {
-            if (items[i].type == CostingItemType.SUM) {
+            if (items[i].type == SUM) {
                 return i
             }
         }

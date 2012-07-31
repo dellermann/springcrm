@@ -1,5 +1,5 @@
 /*
- * SalesItemCostingItem.groovy
+ * PricingItemType.groovy
  *
  * Copyright (c) 2011-2012, Daniel Ellermann
  *
@@ -21,30 +21,21 @@
 package org.amcworld.springcrm
 
 
-class SalesItemCostingItem {
+/**
+ * The enumeration {@code PricingItemType} contains available types of pricing
+ * items.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.3
+ * @since   1.3
+ */
+enum PricingItemType {
 
-    //-- Class variables ------------------------
+    //-- Values ---------------------------------
 
-    static constraints = {
-        quantity(min: 0.0)
-        unit()
-        name(blank: false)
-        type()
-        relToPos(nullable: true, min: 0i)
-        unitPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-        unitPrice(nullable: true, scale: 2, widget: 'currency')
-    }
-    static belongsTo = [costing: SalesItemCosting]
-    static searchable = [only: ['name']]
-
-
-    //-- Instance variables ---------------------
-
-    BigDecimal quantity
-    String unit
-    String name
-    CostingItemType type = CostingItemType.ABSOLUTE
-    Integer relToPos
-    BigDecimal unitPercent
-    BigDecimal unitPrice
+    ABSOLUTE,
+    RELATIVE_TO_POS,
+    RELATIVE_TO_LAST_SUM,
+    RELATIVE_TO_CURRENT_SUM,
+    SUM
 }

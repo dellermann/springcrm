@@ -128,10 +128,8 @@
           FROM service;
     </sql>
   </changeSet>
-  <!--
   <changeSet author="d.ellermann@amc-world.de" id="20120728-3">
     <dropTable tableName="product" />
     <dropTable tableName="service" />
   </changeSet>
-  -->
 </databaseChangeLog>

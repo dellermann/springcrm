@@ -47,6 +47,7 @@ class SalesItem {
         dateCreated()
         lastUpdated()
     }
+    static belongsTo = [pricing: SalesItemPricing]
     static mapping = {
         description type: 'text'
         name index: 'name'
