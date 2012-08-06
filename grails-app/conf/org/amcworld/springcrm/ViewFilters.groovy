@@ -99,7 +99,7 @@ class ViewFilters {
             }
         }
 
-		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action: 'create|edit|copy|save|update') {
+		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice|product|service', action: 'create|edit|copy|save|update') {
 			after = { model ->
 				if (model) {
 					model.units = Unit.list(sort: 'orderId')

@@ -167,6 +167,16 @@ modules = {
         resource '/js/report-sales-journal.js'
     }
 
+    salesItemForm {
+        dependsOn 'salesItemPricing'
+    }
+
+    salesItemPricing {
+        dependsOn 'core'
+
+        resource '/js/sales-item-pricing.js'
+    }
+
     tinyMce {
         resource url: '/js/tiny_mce/jquery.tinymce.js', exclude: 'minify'
     }

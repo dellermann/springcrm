@@ -33,9 +33,9 @@ enum PricingItemType {
 
     //-- Values ---------------------------------
 
-    ABSOLUTE,
-    RELATIVE_TO_POS,
-    RELATIVE_TO_LAST_SUM,
-    RELATIVE_TO_CURRENT_SUM,
-    SUM
+    absolute,
+    relativeToPos,
+    relativeToLastSum,
+    relativeToCurrentSum,
+    sum
 }

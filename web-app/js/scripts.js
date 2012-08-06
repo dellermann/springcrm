@@ -22,7 +22,7 @@
  * @fileOverview    Contains general classes which are used within this
  *                  application.
  * @author          Daniel Ellermann
- * @version         1.0
+ * @version         1.3
  */
 
 
@@ -44,16 +44,19 @@
      * @name    jQuery
      * @class   Extends the jQuery class.
      */
+    /**#@+
+     * @memberOf    jQuery
+     */
     $.extend({
 
         /**
          * Formats the given number as currency, that is with two decimal
          * digits. For example, the number 1423 is formatted as "1.423,00".
          *
-         * @name                jQuery#formatCurrency
+         * @function
+         * @name                formatCurrency
          * @param {Number} x    the given number
          * @returns {String}    the formatted number
-         * @function
          */
         formatCurrency: function (x) {
             return $.formatNumber(x, 2);
@@ -64,18 +67,19 @@
          * date and time format as specified in the messages
          * <code>dateFormat</code> and <code>timeFormat</code>.
          *
-         * @name                    jQuery#formatDate
-         * @param {Date} [d]        the given date; defaults to the current
-         *                          date and time
-         * @param {String} [type]   the type of string which is to parse;
-         *                          possible values are "date", "time", and
-         *                          "datetime". Defaults to "datetime". The
-         *                          parameter is ignored if parameter "format"
-         *                          is set.
-         * @param {String} [format] uses the given format for parsing; this
-         *                          parameter takes precedence over "type"
-         * @returns {String}        the formatted date
          * @function
+         * @name                                formatDate
+         * @param {Date} [d]                    the given date; defaults to the
+         *                                      current date and time
+         * @param {String} [type="datetime"]    the type of string which is to
+         *                                      parse; possible values are
+         *                                      "date", "time", and "datetime".
+         *                                      The parameter is ignored if
+         *                                      parameter "format" is set.
+         * @param {String} [format]             uses the given format for
+         *                                      parsing; this parameter takes
+         *                                      precedence over "type"
+         * @returns {String}                    the formatted date
          */
         formatDate: function (d, type, format) {
             var $L = $LANG,
@@ -161,12 +165,12 @@
         /**
          * Formats the given number with the given precision.
          *
-         * @name                jQuery#formatNumber
+         * @function
+         * @name                formatNumber
          * @param {Number} x    the given number
          * @param {Number} [n]  the precision; if not set the precision remains
          *                      as it is
          * @returns {String}    the formatted number
-         * @function
          */
         formatNumber: function (x, n) {
             var i,
@@ -191,29 +195,33 @@
          * given format or the localized date and time format as specified in
          * the messages <code>dateFormat</code> and <code>timeFormat</code>.
          *
-         * @name                        jQuery#parseDate
-         * @param {String} s            the given string containing date or
-         *                              time parts or both; if it contains date
-         *                              and time parts they must be separated
-         *                              by a space character
-         * @param {String} [type]       the type of string which is to parse;
-         *                              possible values are "date", "time", and
-         *                              "datetime". Defaults to "datetime". The
-         *                              parameter is ignored if parameter
-         *                              "format" is set.
-         * @param {String} [format]     uses the given format for parsing; this
-         *                              parameter takes precedence over "type"
-         * @param {Number} [baseYear]   the year which acts as limit for year
-         *                              specifications without century: years
-         *                              before the base year are treated as
-         *                              after 2000, all other years before
-         *                              2000; defaults to 35
-         * @returns {Date}              the parsed date; <code>null</code> if
-         *                              the given string was empty
-         * @throws Error                if the given string does not represent
-         *                              a valid date according to the specified
-         *                              or default format
          * @function
+         * @name                                parseDate
+         * @param {String} s                    the given string containing
+         *                                      date or time parts or both; if
+         *                                      it contains date and time parts
+         *                                      they must be separated by a
+         *                                      space character
+         * @param {String} [type="datetime"]    the type of string which is to
+         *                                      parse; possible values are
+         *                                      "date", "time", and "datetime".
+         *                                      The parameter is ignored if
+         *                                      parameter "format" is set.
+         * @param {String} [format]             uses the given format for
+         *                                      parsing; this parameter takes
+         *                                      precedence over "type"
+         * @param {Number} [baseYear=35]        the year which acts as limit
+         *                                      for year specifications without
+         *                                      century: years before the base
+         *                                      year are treated as after 2000,
+         *                                      all other years before 2000
+         * @returns {Date}                      the parsed date;
+         *                                      <code>null</code> if the given
+         *                                      string was empty
+         * @throws Error                        if the given string does not
+         *                                      represent a valid date
+         *                                      according to the specified or
+         *                                      default format
          */
         parseDate: function (s, type, format, baseYear) {
             var $L = $LANG,
@@ -301,27 +309,31 @@
         /**
          * Parses the given localized number string.
          *
-         * @name                jQuery#parseNumber
+         * @function
+         * @name                parseNumber
          * @param {String} s    the given string
          * @returns {Number}    the parsed number; <code>NaN</code> if the
          *                      given string is not a number
-         * @function
          */
         parseNumber: function (s) {
             return (s === "") ? 0
                     : parseFloat(s.replace(/\./, "").replace(/,/, "."));
         }
     });
+    /**#@-*/
 
+    /**#@+
+     * @memberOf    jQuery#
+     */
     $.fn.extend({
 
         /**
          * Disables the elements in the jQuery object.
          *
-         * @name                    jQuery#disable
-         * @returns {JQueryObject}  this jQuery object
          * @function
-         * @since                   0.9.12
+         * @name                disable
+         * @returns {jQuery}    this jQuery object
+         * @since               0.9.12
          */
         disable: function () {
             return this.each(function () {
@@ -333,10 +345,10 @@
         /**
          * Enables the elements in the jQuery object.
          *
-         * @name                    jQuery#enable
-         * @returns {JQueryObject}  this jQuery object
          * @function
-         * @since                   0.9.12
+         * @name                enable
+         * @returns {jQuery}    this jQuery object
+         * @since               0.9.12
          */
         enable: function () {
             return this.each(function () {
@@ -350,10 +362,10 @@
          * object which is displayed if the input control is empty. If the user
          * enters a text it replaces the hint.
          *
-         * @name                    jQuery#hint
-         * @param {String} hint     the hint to display
-         * @returns {JQueryObject}  this jQuery object
          * @function
+         * @name                hint
+         * @param {String} hint the hint to display
+         * @returns {jQuery}    this jQuery object
          */
         hint: function (hint) {
             return this.each(function () {
@@ -384,11 +396,11 @@
          * Fills in the given date or the current date into the jQuery object
          * if it is empty.
          *
-         * @name                    jQuery#populateDate
-         * @param {Date} [date]     the given date; if not specified the
-         *                          current date is used
-         * @returns {JQueryObject}  this jQuery object
          * @function
+         * @name                populateDate
+         * @param {Date} [date] the given date; if not specified the current
+         *                      date is used
+         * @returns {jQuery}    this jQuery object
          * @since               0.9.10
          */
         populateDate: function (date) {
@@ -450,17 +462,19 @@
          * Enables or disables the elements in the jQuery object depending on
          * the given state.
          *
-         * @name                                jQuery#enable
-         * @param {Boolean|String|JQueryObject} either a boolean value
-         *                                      indicating whether or not to
-         *                                      enable the elements, a string
-         *                                      representing a selector of a
-         *                                      checkbox, or a jQueryObject
-         *                                      representing a checkbox which
-         *                                      checked state is obtained
-         * @returns {JQueryObject}              this jQuery object
          * @function
-         * @since                               0.9.12
+         * @name                                    toggleEnable
+         * @param {Boolean|String|jQuery} enable    either a boolean value
+         *                                          indicating whether or not
+         *                                          to enable the elements, a
+         *                                          string representing a
+         *                                          selector of a check box, or
+         *                                          a jQuery object
+         *                                          representing a check box
+         *                                          which checked state is
+         *                                          obtained
+         * @returns {jQuery}                        this jQuery object
+         * @since                                   0.9.12
          */
         toggleEnable: function (enable) {
             var b;
@@ -473,14 +487,50 @@
             return b ? this.enable() : this.disable();
         }
     });
+    /**#@-*/
 
+    /**
+     * The namespace <code>springcrm</code> contains jQuery UI widgets which
+     * operate on a higher level than default jQuery UI widgets.  These widget
+     * represent a complex behavior.
+     *
+     * @name        springcrm
+     * @namespace   contains widgets for jQuery UI, mainly high level widgets
+     * @author      Daniel Ellermann
+     * @version     1.0
+     */
+
+    /**
+     * @name        fontsize
+     * @class       Displays a selector for font sizes and scales the whole
+     *              appearance of the page.
+     * @memberOf    springcrm
+     */
+    /**#@+
+     * @memberOf    springcrm.fontsize#
+     */
     $.widget("springcrm.fontsize", {
+
+        /**
+         * The options for this widget.
+         *
+         * @name    options
+         * @type    Object
+         */
         options: {
             currentSize: "11px",
             numItems: 5,
             url: null
         },
 
+        /**
+         * Initializes this widget.
+         *
+         * @function
+         * @name        _create
+         * @constructs
+         * @private
+         */
         _create: function () {
             var DEF_SIZE = 11,
                 $ = jQuery,
@@ -512,11 +562,27 @@
             }
         },
 
+        /**
+         * Called if this widget is destroyed.
+         *
+         * @function
+         * @name        _destroy
+         * @private
+         */
         _destroy: function () {
             this.element
                 .remove("ul");
         },
 
+        /**
+         * Called if the user changes the font size.  The method submits the
+         * new font size to the server.
+         *
+         * @function
+         * @name                    _onChangeFontSize
+         * @param {Object} event    the event data
+         * @private
+         */
         _onChangeFontSize: function (event) {
             var $ = jQuery,
                 $target = $(event.target),
@@ -532,8 +598,27 @@
             }
         }
     });
+    /**#@-*/
 
+    /**
+     * @name        autocompleteex
+     * @class       Renders an autocomplete input field with extended
+     *              functionality.  The <code>autocompleteex</code> widget
+     *              forces the user to select a value.  If not the input field
+     *              is reset to its old content.
+     * @memberOf    springcrm
+     */
+    /**#@+
+     * @memberOf    springcrm.autocompleteex#
+     */
     $.widget("springcrm.autocompleteex", $.ui.autocomplete, {
+
+        /**
+         * The options for this widget.
+         *
+         * @name    options
+         * @type    Object
+         */
         options: {
             combobox: true,
             labelProp: "name",
@@ -545,6 +630,14 @@
             valueProp: "id"
         },
 
+        /**
+         * Initializes this widget.
+         *
+         * @function
+         * @name        _create
+         * @constructs
+         * @private
+         */
         _create: function () {
             var $ = jQuery,
                 baseClass = this.widgetBaseClass,
@@ -719,7 +812,11 @@
             };
         }
     });
+    /**#@-*/
 
+    /**#@+
+     * @memberOf    springcrm.addrfields#
+     */
     $.widget("springcrm.addrfields", {
         ADDRESS_FIELDS: [
             "Street", "PoBox", "PostalCode", "Location", "State", "Country"
@@ -898,7 +995,11 @@
             }
         }
     });
+    /**#@-*/
 
+    /**#@+
+     * @memberOf    springcrm.lightbox#
+     */
     $.widget("springcrm.lightbox", {
         options: {
             imgDir: "img/lightbox",
@@ -921,7 +1022,11 @@
             this.element.lightBox(o);
         }
     });
+    /**#@-*/
 
+    /**#@+
+     * @memberOf    springcrm.remotelist#
+     */
     $.widget("springcrm.remotelist", {
         options: {
             container: ".fieldset-content",
@@ -986,6 +1091,7 @@
                 );
         }
     });
+    /**#@-*/
 
 
     //== INITIALIZATION =========================

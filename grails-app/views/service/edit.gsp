@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.Service" %>
 <html>
 <head>

@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.amcworld.springcrm.PricingItemType.*
-
 
 /**
  * The class {@code SalesItemPricing} represents a pricing for a sales item
@@ -56,6 +54,10 @@ class SalesItemPricing {
 
     //-- Public methods -------------------------
 
+    boolean asBoolean() {
+        return !!items
+    }
+
     /**
      * Computes the total price for the item at the given position.
      *
@@ -64,7 +66,7 @@ class SalesItemPricing {
      */
     BigDecimal computeTotalOfItem(int pos) {
         def item = items[pos]
-        if (SUM == item.type) {
+        if (PricingItemType.sum == item.type) {
             return getCurrentSum(pos - 1)
         } else {
             return item.quantity * computeUnitPriceOfItem(pos)
@@ -82,17 +84,17 @@ class SalesItemPricing {
     BigDecimal computeUnitPriceOfItem(int pos) {
         def item = items[pos]
         switch (item.type) {
-        case ABSOLUTE:
+        case PricingItemType.absolute:
             return item.unitPrice
-        case RELATIVE_TO_POS:
+        case PricingItemType.relativeToPos:
             return item.unitPercent * computeTotalOfItem(item.relToPos) / 100
-        case RELATIVE_TO_LAST_SUM:
+        case PricingItemType.relativeToLastSum:
             Integer otherPos = getLastSumPos(pos - 1)
             if (otherPos >= 0) {
                 return item.unitPercent * computeTotalOfItem(otherPos) / 100
             }
-            // break through
-        case RELATIVE_TO_CURRENT_SUM:
+            // fall through
+        case PricingItemType.relativeToCurrentSum:
             return item.unitPercent * getCurrentSum(pos - 1) / 100
         default:
             return null
@@ -103,12 +105,13 @@ class SalesItemPricing {
      * Gets the sum of all items' total prices at the given position and
      * before.
      *
-     * @return  the current sum
+     * @param pos   the given zero-based position
+     * @return      the current sum
      */
     BigDecimal getCurrentSum(Integer pos = items.size() - 1) {
         BigDecimal sum = 0.0
         for (int i = pos; i >= 0; --i) {
-            if (SUM != items[i].type) {
+            if (sum != items[i].type) {
                 sum += computeTotalOfItem(i)
             }
         }
@@ -118,12 +121,13 @@ class SalesItemPricing {
     /**
      * Gets the last position of the item of type {@code SUM}.
      *
-     * @return  the zero-based position of the last subtotal sum; -1 if no such
-     *          an item exists
+     * @param pos   the given zero-based position
+     * @return      the zero-based position of the last subtotal sum; -1 if no
+     *              such an item exists
      */
     int getLastSumPos(Integer start = items.size() - 1) {
         for (int i = start; i >= 0; --i) {
-            if (items[i].type == SUM) {
+            if (PricingItemType.sum == items[i].type) {
                 return i
             }
         }

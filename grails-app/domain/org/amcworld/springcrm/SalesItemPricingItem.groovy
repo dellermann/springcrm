@@ -43,7 +43,7 @@ class SalesItemPricingItem {
     BigDecimal quantity
     String unit
     String name
-    PricingItemType type = PricingItemType.ABSOLUTE
+    PricingItemType type = PricingItemType.absolute
     Integer relToPos
     BigDecimal unitPercent
     BigDecimal unitPrice
