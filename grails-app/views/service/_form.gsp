@@ -58,6 +58,17 @@
           <th></th>
         </tr>
       </thead>
+      <tfoot>
+        <tr>
+          <td headers="pricing-items-header-pos" colspan="3"></td>
+          <td headers="pricing-items-header-name" class="pricing-items-label" colspan="2"><g:message code="pricing.total.label" default="Total price" /></td>
+          <td headers="pricing-items-header-relative-to-pos"></td> 
+          <td headers="pricing-items-header-unit-percent"></td> 
+          <td headers="pricing-items-header-unit-price"></td> 
+          <td headers="pricing-items-header-total" class="pricing-items-total total"><span id="pricing-items-total" class="value">${formatNumber(number: serviceInstance.pricing.getCurrentSum(), minFractionDigits: 2)}</span>&nbsp;<g:currency /></td> 
+          <td></td>
+        </tr>
+      </tfoot>
       <tbody class="pricing-items-body">
         <g:each in="${serviceInstance.pricing.items}" status="i" var="item">
         <tr>
@@ -76,10 +87,10 @@
           </td>
           <td headers="pricing-items-header-relative-to-pos" class="pricing-items-relative-to-pos">
             <input type="hidden" name="items[${i}].relToPos" value="${item.relToPos ?: ''}" />
+            <span style="display: ${item.type == PricingItemType.relativeToPos ? 'block' : 'none'}">
               <a href="#"><g:message code="pricing.relativeToPos.finder" default="Select reference row" /></a>
-              <span>${(item.relToPos ?: 0) + 1}.</span>
-            <g:if test="${item.type == PricingItemType.relativeToPos}">
-            </g:if>
+              <strong>${item.relToPos ? item.relToPos + 1 : ''}</strong>
+            </span>
           </td>
           <td headers="pricing-items-header-unit-percent" class="pricing-items-unit-percent">
             <input type="text" name="items[${i}].unitPercent" size="5" value="${formatNumber(number: item.unitPercent, minFractionDigits: 2)}" class="percent" />

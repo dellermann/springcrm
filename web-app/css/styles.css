@@ -1237,8 +1237,8 @@ form .invoicing-items-pos {
   .content-table td.pricing-items-pos, .pricing-items-quantity,
   .pricing-items-unit-percent, .pricing-items-unit-price, .pricing-items-total,
   .pricing-items-quantity input, .pricing-items-unit-percent input,
-  .pricing-items-unit-price input, .invoicing-items-buttons, 
-  .pricing-items-buttons
+  .pricing-items-unit-price input, .content-table td.pricing-items-label,
+  .invoicing-items-buttons, .pricing-items-buttons
 {
   text-align: right;
 }
@@ -1264,7 +1264,7 @@ form .invoicing-items-pos {
 .invoicing-items .value {
   padding-top: .3em;
 }
-.invoicing-items .total {
+.invoicing-items .total, .pricing-items .total {
   font-weight: bold;
 }
 .pricing-items-relative-to-pos a {
@@ -1276,9 +1276,14 @@ form .invoicing-items-pos {
   text-indent: -9999px;
   width: 16px;
 }
-.pricing-items-relative-to-pos span {
+.pricing-items-relative-to-pos strong {
   float: left;
+  line-height: 16px;
   margin-left: 1ex;
+  min-height: 16px;
+}
+.pricing-items-relative-to-pos strong:not(:empty):after {
+  content: ".";
 }
 .empty-list {
   -khtml-border-radius: .5em;
@@ -2225,7 +2230,8 @@ form .invoicing-items-pos {
   .header-with-menu:after, .letter-bar:after, 
   .springcrm-overviewpanels-panel-header:after,
   .sel-values-list li:after, #panel-list ol:after, .filter-bar:after,
-  footer:after, #install-progress:after, .pricing-items-relative-to-pos:after
+  footer:after, #install-progress:after, 
+  .pricing-items-relative-to-pos span:after
 {
   clear: both;
   content: ".";

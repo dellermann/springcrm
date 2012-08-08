@@ -333,7 +333,6 @@
          * @function
          * @name                disable
          * @returns {jQuery}    this jQuery object
-         * @since               0.9.12
          */
         disable: function () {
             return this.each(function () {
@@ -348,7 +347,6 @@
          * @function
          * @name                enable
          * @returns {jQuery}    this jQuery object
-         * @since               0.9.12
          */
         enable: function () {
             return this.each(function () {
@@ -401,7 +399,6 @@
          * @param {Date} [date] the given date; if not specified the current
          *                      date is used
          * @returns {jQuery}    this jQuery object
-         * @since               0.9.10
          */
         populateDate: function (date) {
             return this.each(function () {
@@ -413,6 +410,16 @@
                     }
                 });
         },
+
+        /**
+         * Reverses the elements in the jQuery object.
+         *
+         * @function
+         * @name            reverse
+         * @return {jQuery} this jQuery object with reversed content
+         * @since           1.3
+         */
+        reverse: [].reverse,
 
         sortElements: function (comparator, getSortable) {
             var document = window.document,
@@ -474,7 +481,6 @@
          *                                          which checked state is
          *                                          obtained
          * @returns {jQuery}                        this jQuery object
-         * @since                                   0.9.12
          */
         toggleEnable: function (enable) {
             var b;
@@ -1119,7 +1125,7 @@
         /**
          * Initializes the page and their elements.
          *
-         * @protected
+         * @private
          */
         init = function () {
             var $ = jQuery;
@@ -1159,7 +1165,7 @@
          * Initializes the handling of AJAX requests. The method cares about
          * display of a spinner view while loading data.
          *
-         * @protected
+         * @private
          */
         initAjaxEvents = function () {
             var $ = jQuery;
@@ -1172,8 +1178,7 @@
          * Called if the auto number check box was changed. The method enables
          * or disables the number field.
          *
-         * @protected
-         * @since 0.9.10
+         * @private
          */
         onChangeAutoNumber = function () {
             $("#number").toggleEnable(!this.checked);
@@ -1184,7 +1189,7 @@
          * has changed. The method computes a formatted composed value in a
          * hidden date/time field.
          *
-         * @protected
+         * @private
          */
         onChangeDateInput = function () {
             var baseId,
@@ -1223,7 +1228,7 @@
          * Called if an item of the quick access selector was selected. The
          * method calls the associated URL.
          *
-         * @protected
+         * @private
          */
         onChangeQuickAccess = function () {
             var $this = $(this),
@@ -1241,8 +1246,7 @@
          *
          * @returns {Boolean}   <code>true</code> to delete the record;
          *                      <code>false</code> to abort the operation
-         * @protected
-         * @since               0.9.10
+         * @private
          */
         onClickDeleteBtn = function () {
             var $this = $(this),
@@ -1275,7 +1279,7 @@
          * Called if the user enters or leaves a menu. The method shows or
          * hides the submenu.
          *
-         * @protected
+         * @private
          */
         onMenuHover = function () {
             $(this).find("ul")
@@ -1286,7 +1290,7 @@
         /**
          * Called if the document is scrolled.
          *
-         * @protected
+         * @private
          */
         onScrollDocument = function () {
             if ($document.scrollTop() >= toolbarOffset) {
@@ -1301,8 +1305,7 @@
          *
          * @param {Object} event    the event data
          * @param {Object} ui       information about the selected item
-         * @protected
-         * @since 0.9.12
+         * @private
          */
         onSelectTimeValue = function (event, ui) {
             var $this = $(this),
@@ -1318,8 +1321,7 @@
          * Called if the form submit button in the toolbar is clicked.
          *
          * @returns {Boolean}   always <code>false</code>
-         * @protected
-         * @since 0.9.12
+         * @private
          */
         onSubmitForm = function () {
             var $ = jQuery;
