@@ -34,7 +34,7 @@
 
     "use strict";
 
-    var /*$LANG = $L,*/
+    var $LANG = $L,
         jQuery = $;
 
     /**
@@ -50,12 +50,30 @@
      * @memberOf    springcrm.salesitempricing#
      */
     $.widget("springcrm.salesitempricing", {
-//        INPUT_FIELD_NAMES: [
-//            "id", "number", "quantity", "unit", "name", "description",
-//            "unitPrice", "tax"
-//        ],
+
+        /**
+         * The names of the input controls of a table row.
+         *
+         * @constant
+         * @name        INPUT_FIELD_NAMES
+         * @type        Array
+         * @private
+         */
+        INPUT_FIELD_NAMES: [
+            "id", "quantity", "unit", "name", "type", "relToPos",
+            "unitPercent", "unitPrice"
+        ],
 
         _$finderRow: null,
+
+        /**
+         * The table body which contains the pricing items.
+         *
+         * @name    _$tbody
+         * @type    jQuery
+         * @private
+         */
+        _$tbody: null,
 
         /**
          * Cache for the rows of the pricing table.
@@ -67,15 +85,34 @@
         _$trs: null,
 
         /**
-         * Stores the reference to related items for each pricing item.  The
-         * size and order of the elements in this array corresponds with the
-         * items in the pricing table.
+         * The form associated to the pricing table.
          *
-         * @name    _itemRelations
+         * @name    _form
+         * @type    Object
+         * @private
+         */
+        _form: null,
+
+        /**
+         * Stores the reference to items for each pricing item.  The size and
+         * order of the elements in this array corresponds with the items in
+         * the pricing table.
+         *
+         * @name    _itemReferences
          * @type    Array
          * @private
          */
-        _itemRelations: null,
+        _itemReferences: null,
+
+        /**
+         * The zero-based index of the next pricing item which is created.
+         *
+         * @name    _nextIndex
+         * @type    Number
+         * @private
+         * @see     #_addItem
+         */
+        _nextIndex: 0,
 
         /**
          * The options for this widget.
@@ -85,89 +122,176 @@
          */
         options: {
             currency: "€",
-//            fieldNamePrefix: "items",
-            imgPath: $(".pricing-items").data("img-path"),
-            units: $(".pricing-items").data("units").split(",")
-        },
-
-        _addItem: function (jumpToNewRow) {
-
+            fieldNamePrefix: "items",
+            imgPath: null,
+            units: null
         },
 
         /**
-         * Computes the total price of the pricing item with the given
-         * position.
+         * Adds a row for a new item to the pricing table.
+         *
+         * @function
+         * @name                            _addItem
+         * @param {Boolean} jumpToNewRow    <code>true</code> if the document
+         *                                  is to scroll that the new row is
+         *                                  visible; <code>false</code>
+         *                                  otherwise
+         * @private
+         */
+        _addItem: function (jumpToNewRow) {
+            var $L = $LANG,
+                $row,
+                $tbody = this._$tbody,
+                currency,
+                imgPath,
+                index = this._nextIndex++,
+                opts = this.options,
+                pos,
+                s;
+
+            currency = opts.currency;
+            s = '<tr><td headers="pricing-items-header-pos" ' +
+                'class="pricing-items-pos">' + String(index + 1) +
+                '.</td><td headers="pricing-items-header-quantity" ' +
+                'class="pricing-items-quantity"><input type="text" name="' +
+                this._getInputName(index, "quantity") + '" size="6" /></td>' +
+                '<td headers="pricing-items-header-unit" ' +
+                'class="pricing-items-unit"><input type="text" name="' +
+                this._getInputName(index, "unit") + '" size="7" /></td>' +
+                '<td headers="pricing-items-header-name" ' +
+                'class="pricing-items-name"><input type="text" name="' +
+                this._getInputName(index, "name") + '" size="30" /></td>' +
+                '<td headers="pricing-items-header-type" ' +
+                'class="pricing-items-type"><select name="' +
+                this._getInputName(index, "type") + '">' +
+                '<option value="absolute">' + $L("pricing.type.absolute") +
+                '</option><option value="relativeToPos">' +
+                $L("pricing.type.relativeToPos") +
+                '</option><option value="relativeToLastSum">' +
+                $L("pricing.type.relativeToLastSum") +
+                '</option><option value="relativeToCurrentSum">' +
+                $L("pricing.type.relativeToCurrentSum") +
+                '</option><option value="sum">' +
+                $L("pricing.type.sum") + '</option></select></td>' +
+                '<td headers="pricing-items-header-relative-to-pos" ' +
+                'class="pricing-items-relative-to-pos"><input type="hidden" ' +
+                'name="' + this._getInputName(index, "relToPos") +
+                '" /><span style="display: none"><a href="#">' +
+                $L("pricing.relativeToPos.finder") +
+                '</a><strong></strong></span></td>' +
+                '<td headers="pricing-items-header-unit-percent" ' +
+                'class="pricing-items-unit-percent"><input type="text" name="' +
+                this._getInputName(index, "unitPercent") +
+                '" size="5" class="percent" /></td>' +
+                '<td headers="pricing-items-header-unit-price" ' +
+                'class="pricing-items-unit-price"><input type="text" name="' +
+                this._getInputName(index, "unitPrice") +
+                '" size="8" class="currency" />&nbsp;' + currency + '</td>' +
+                '<td headers="pricing-items-header-total" ' +
+                'class="pricing-items-total"><span class="value"></span>' +
+                '&nbsp;' + currency + '</td>' +
+                '<td class="pricing-items-buttons">';
+            imgPath = opts.imgPath;
+            if (imgPath) {
+                s += '<a href="#" class="up-btn"><img src="' + imgPath +
+                    '/up.png" alt="' + $L("default.btn.up") + '" title="' +
+                    $L("default.btn.up") + '" width="16" height="16" /></a>' +
+                    '<a href="#" class="down-btn"><img src="' + imgPath +
+                    '/down.png" alt="' + $L("default.btn.down") + '" title="' +
+                    $L("default.btn.down") + '" width="16" height="16" /></a>' +
+                    '<a href="#" class="remove-btn"><img src="' + imgPath +
+                    '/remove.png" alt="' + $L("default.btn.remove") +
+                    '" title="' + $L("default.btn.remove") +
+                    '" width="16" height="16" /></a>';
+            }
+            s += '</td></tr>';
+
+            $row = $(s);
+            this._initItemCtrls($row);
+            $row.appendTo($tbody);
+            this._$trs = this._getRows();
+            this._itemReferences.push(-1);
+            this._initUnitAutocomplete($row.find(".pricing-items-unit input"));
+            if (jumpToNewRow) {
+                pos = $row.position().top - $("#toolbar").outerHeight();
+                $("html, body").animate({ scrollTop: pos }, "slow");
+            }
+        },
+
+        /**
+         * Computes the total price of the given item.
          *
          * @function
          * @name                        _computeTotalPrice
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @returns {Number}            the computed total price;
-         *                              <code>null</code> if the related item
+         *                              <code>null</code> if the referred item
          *                              was not set
          * @private
          */
-        _computeTotalPrice: function (row) {
-            var pos = this._getPos(row),
-                type = this._getRowType(row),
+        _computeTotalPrice: function (item) {
+            var idx = this._getIndex(item),
+                type = this._getRowType(item),
                 unitPrice;
 
             if (type === "sum") {
-                return this._getCurrentSum(pos - 1);
+                return this._getCurrentSum(idx - 1);
             }
 
-            unitPrice = this._computeUnitPrice(pos);
+            unitPrice = this._computeUnitPrice(idx);
             return (unitPrice === null) ? null
-                    : this._getFieldVal(row, "quantity") * unitPrice;
+                    : this._getFieldVal(item, "quantity") * unitPrice;
         },
 
         /**
-         * Computes the unit price of the pricing item with the given position.
+         * Computes the unit price of the given item.
          *
          * @function
          * @name                        _computeUnitPrice
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @returns {Number}            the computed unit price;
          *                              <code>null</code> if the type of the
          *                              pricing item is <code>sum</code> or
-         *                              unknown or the related item was not set
+         *                              unknown or the referred item was not
+         *                              set
          * @private
          */
-        _computeUnitPrice: function (row) {
-            var otherPos,
-                pos = this._getPos(row),
+        _computeUnitPrice: function (item) {
+            var otherIndex,
+                idx = this._getIndex(item),
                 totalPrice = null,
                 unitPrice = null;
 
-            switch (this._getRowType(row)) {
+            switch (this._getRowType(item)) {
             case "absolute":
-                unitPrice = this._getFieldVal(row, "unit-price");
+                unitPrice = this._getFieldVal(item, "unit-price");
                 break;
             case "relativeToPos":
-                otherPos = this._getFieldVal(row, "relative-to-pos");
-                if (otherPos >= 0) {
-                    totalPrice = this._computeTotalPrice(otherPos);
+                otherIndex = this._getFieldVal(item, "relative-to-pos");
+                if (otherIndex >= 0) {
+                    totalPrice = this._computeTotalPrice(otherIndex);
                     if (totalPrice !== null) {
                         unitPrice = (
-                                this._getFieldVal(row, "unit-percent")
+                                this._getFieldVal(item, "unit-percent")
                                 * totalPrice / 100
                             ).toFixed(2);
                     }
                 }
                 break;
             case "relativeToLastSum":
-                otherPos = this._getLastSumPos(pos);
-                if (otherPos < 0) {
+                otherIndex = this._getLastSumIndex(idx);
+                if (otherIndex < 0) {
                     unitPrice = (
-                            this._getFieldVal(row, "unit-percent")
-                            * this._getCurrentSum(pos - 1) / 100
+                            this._getFieldVal(item, "unit-percent")
+                            * this._getCurrentSum(idx - 1) / 100
                         ).toFixed(2);
                 } else {
-                    totalPrice = this._computeTotalPrice(otherPos);
+                    totalPrice = this._computeTotalPrice(otherIndex);
                     if (totalPrice !== null) {
                         unitPrice = (
-                                this._getFieldVal(row, "unit-percent")
+                                this._getFieldVal(item, "unit-percent")
                                 * totalPrice / 100
                         ).toFixed(2);
                     }
@@ -175,8 +299,8 @@
                 break;
             case "relativeToCurrentSum":
                 unitPrice = (
-                        this._getFieldVal(row, "unit-percent")
-                        * this._getCurrentSum(pos - 1) / 100
+                        this._getFieldVal(item, "unit-percent")
+                        * this._getCurrentSum(idx - 1) / 100
                     ).toFixed(2);
                 break;
             }
@@ -193,64 +317,80 @@
          */
         _create: function () {
             var $ = jQuery,
-                itemRelations = [],
+                $form,
+                $trs,
+                el = this.element,
+                itemReferences = [],
+                numItems,
+                opts = this.options,
                 self = this;
 
-            this._$trs = this._getRows();
-            this.element
-                .change($.proxy(this._onChange, this))
-                .click($.proxy(this._onClick, this))
-                .find("> .pricing-items-body > tr")
-                    .each(function () {
-                            var $tr = $(this),
-                                inst = self,
-                                ref = -1;
+            opts.imgPath = opts.imgPath || el.data("img-path");
+            opts.units = opts.units || el.data("units").split(",");
 
-                            inst._prepareRow.call(inst, this);
-                            if (inst._getRowType($tr) === "relativeToPos") {
-                                ref = inst._getFieldVal($tr, "relative-to-pos");
-                            }
-                            itemRelations.push(ref);
-                        });
-            this._itemRelations = itemRelations;
-            $("#add-pricing-item-btn").click(function () {
-                        self._addItem(self, true);
+            $form = el.parents("form")
+                /*.submit($.proxy(this._onSubmit, this))*/;
+            this._form = $form.get(0);
+
+            el.change($.proxy(this._onChange, this))
+                .click($.proxy(this._onClick, this));
+            this._$tbody = el.find("> .pricing-items-body");
+            this._$trs = $trs = this._getRows();
+            $trs.each(function () {
+                    var $tr = $(this),
+                        inst = self,
+                        ref = -1;
+
+                    inst._initItemCtrls.call(inst, this);
+                    if (inst._getRowType($tr) === "relativeToPos") {
+                        ref = inst._getFieldVal($tr, "relative-to-pos");
+                    }
+                    itemReferences.push(ref);
+                });
+            this._itemReferences = itemReferences;
+            this._nextIndex = numItems = $trs.length;
+            if (numItems !== 0) {
+                this._initUnitAutocomplete();
+            }
+            $(".add-pricing-item-btn").click(function () {
+                        self._addItem.call(self, true);
+                        return false;
                     }
                 );
         },
 
         /**
-         * Deletes the item relation entry at the given position.
+         * Deletes the item reference entry at the given index.
          *
          * @function
-         * @name                _deleteItemRelation
-         * @param {Number} pos  the given zero-based item position
+         * @name                _deleteItemReference
+         * @param {Number} idx  the given zero-based item index
          * @private
          */
-        _deleteItemRelation: function (pos) {
-            this._itemRelations.splice(pos, 1);
+        _deleteItemReference: function (idx) {
+            this._itemReferences.splice(idx, 1);
         },
 
         /**
-         * Gets the sum of all items' total prices at the given position and
+         * Gets the sum of all items' total prices at the given index and
          * before.
          *
          * @function
          * @name                    _getCurrentSum
-         * @param {Number} [pos]    the given zero-based item position;
-         *                          defaults to the last item position
+         * @param {Number} [idx]    the given zero-based item index;
+         *                          defaults to the last item index
          * @returns {Number}        the current sum
          * @private
          */
-        _getCurrentSum: function (pos) {
+        _getCurrentSum: function (idx) {
             var $trs = this._$trs,
                 self = this,
                 sum = 0;
 
-            if (pos === undefined) {
-                pos = $trs.length - 1;
+            if (idx === undefined) {
+                idx = $trs.length - 1;
             }
-            $trs.slice(0, pos + 1)
+            $trs.slice(0, idx + 1)
                 .each(function (i) {
                     if (self._getRowType($(this)) !== "sum") {
                         sum += self._computeTotalPrice(i);
@@ -261,34 +401,34 @@
 
         /**
          * Gets the input control in the table cell with the given name in the
-         * given row.  In case of name <code>total</code> the
+         * given item.  In case of name <code>total</code> the
          * <code>&lt;span></code> object is returned.
          *
          * @function
          * @name                        _getField
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @param {String} name         the given name of the table cell
          * @returns {jQuery}            the input control or the
          *                              <code>&lt;span></code> object
          * @private
          */
-        _getField: function (row, name) {
+        _getField: function (item, name) {
             var sel = (name === "total") ? ".value" : ":input";
 
-            row = this._getRow(row);
-            return $("> .pricing-items-" + name + " > " + sel, row);
+            item = this._getRow(item);
+            return $("> .pricing-items-" + name + " > " + sel, item);
         },
 
         /**
          * Gets the value of the input control in the table cell with the given
-         * name in the given row.  In case of name <code>total</code> the text
+         * name in the given item.  In case of name <code>total</code> the text
          * of the <code>&lt;span></code> object is returned.  Numeric values
          * are parsed before returned.
          *
          * @function
          * @name                        _getFieldVal
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @param {String} name         the given name of the table cell
          * @returns {String|Number}     the value of the input control or the
@@ -296,8 +436,8 @@
          *                              object
          * @private
          */
-        _getFieldVal: function (row, name) {
-            var $field = this._getField(row, name),
+        _getFieldVal: function (item, name) {
+            var $field = this._getField(item, name),
                 val = (name === "total") ? $field.text() : $field.val();
 
             if ((name === "quantity") || (name === "unit-percent")
@@ -311,29 +451,48 @@
         },
 
         /**
-         * Gets the last position of the item of type <code>SUM</code>.
+         * Computes the name of an input field for the given name and item
+         * index.
          *
          * @function
-         * @name                    _getLastSumPos
-         * @param {Number} [pos]    the given zero-based position; defaults to
-         *                          the last item position
-         * @return {Number}         the zero-based position of the last
+         * @name                        _getInputName
+         * @param {Number} index        the zero-based index of the item
+         * @param {String} [name=""]    the name of the field
+         * @param {String} [suffix=""]  a suffix which is to append to the
+         *                              field name prefix defined in the
+         *                              options
+         * @returns {String}            the computed field name
+         * @private
+         */
+        _getInputName: function (index, name, suffix) {
+            return this.options.fieldNamePrefix + (suffix || "") + "[" +
+                index + "]." + (name || "");
+        },
+
+        /**
+         * Gets the last index of the item of type <code>SUM</code>.
+         *
+         * @function
+         * @name                    _getLastSumIndex
+         * @param {Number} [idx]    the given zero-based index; defaults to
+         *                          the last item index
+         * @return {Number}         the zero-based index of the last
          *                          subtotal sum; -1 if no such an item exists
          * @private
          */
-        _getLastSumPos: function (pos) {
+        _getLastSumIndex: function (idx) {
             var $trs = this._$trs,
                 res = -1,
                 self = this;
 
-            if (pos === undefined) {
-                pos = $trs.length - 1;
+            if (idx === undefined) {
+                idx = $trs.length - 1;
             }
-            $trs.slice(0, pos + 1)
+            $trs.slice(0, idx + 1)
                 .reverse()
                 .each(function (i) {
                     if (self._getRowType($(this)) === "sum") {
-                        res = pos - i;
+                        res = idx - i;
                         return false;
                     }
                     return true;
@@ -343,40 +502,39 @@
         },
 
         /**
-         * Gets the position of the item with the given table row or position
-         * in the table.
+         * Gets the index of the item with the given table item or index in the
+         * table.
          *
          * @function
-         * @name                        _getPos
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @name                        _getIndex
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
-         * @returns {Number}            the zero-based position or -1 if the
-         *                              item was not found
+         * @returns {Number}            the zero-based index or -1 if the item
+         *                              was not found
          * @private
          */
-        _getPos: function (row) {
-            return (typeof row === "number") ? row : this._$trs.index(row);
+        _getIndex: function (item) {
+            return (typeof item === "number") ? item : this._$trs.index(item);
         },
 
         /**
-         * Gets a list of items which refer to the item with the given
-         * position.
+         * Gets a list of items which refer to the item with the given index.
          *
          * @function
          * @name                _getReferrers
-         * @param {Number} pos  the given zero-based position
-         * @returns {Array}     the zero-based positions of the items referring
-         *                      the item with the given position
+         * @param {Number} idx  the given zero-based index
+         * @returns {Array}     the zero-based indices of the items referring
+         *                      the item with the given index
          * @private
          */
-        _getReferrers: function (pos) {
+        _getReferrers: function (idx) {
             var i = -1,
-                itemRelations = this._itemRelations,
-                n = itemRelations.length,
+                itemReferences = this._itemReferences,
+                n = itemReferences.length,
                 res = [];
 
             while (++i < n) {
-                if (itemRelations[i] === pos) {
+                if (itemReferences[i] === idx) {
                     res.push(i);
                 }
             }
@@ -384,17 +542,17 @@
         },
 
         /**
-         * Gets the table row of the item with the given position.
+         * Gets the table row of the given item.
          *
          * @function
          * @name                        _getRow
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @returns {jQuery}            the table row
          * @private
          */
-        _getRow: function (row) {
-            return (typeof row === "number") ? this._$trs.eq(row) : row;
+        _getRow: function (item) {
+            return (typeof item === "number") ? this._$trs.eq(item) : item;
         },
 
         /**
@@ -402,34 +560,108 @@
          *
          * @function
          * @name                    _getRows
-         * @param {Number} [pos]    the zero-based position up to but not
+         * @param {Number} [idx]    the zero-based index up to but not
          *                          including the rows are to return; defaults
          *                          to all rows
          * @returns {jQuery}        all table rows, optionally up to but not
-         *                          including the given position
+         *                          including the given index
          * @private
          */
-        _getRows: function (pos) {
-            var $trs = $("> .pricing-items-body > tr", this.element);
+        _getRows: function (idx) {
+            var $trs = this._$tbody.find("> tr");
 
-            if (arguments.length > 0) {
-                $trs = $trs.slice(0, pos);
+            if (idx !== undefined) {
+                $trs = $trs.slice(0, idx);
             }
             return $trs;
         },
 
         /**
-         * Gets the type of the item with the given position or table row.
+         * Gets the type of the given item.
          *
          * @function
          * @name                        _getRowType
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @returns {String}            the type of the item
          * @private
          */
-        _getRowType: function (row) {
-            return this._getFieldVal(row, "type");
+        _getRowType: function (item) {
+            return this._getFieldVal(item, "type");
+        },
+
+        /**
+         * Initializes the given item by enabling or disabling the input
+         * controls depending on the item type.
+         *
+         * @function
+         * @name                        _initItemCtrls
+         * @param {jQuery|Number} item  either the given zero-based index or
+         *                              the table row representing the item
+         * @private
+         */
+        _initItemCtrls: function (item) {
+            var type = this._getRowType(item);
+
+            this._getField(item, "quantity").toggleEnable(type !== "sum");
+            this._getField(item, "unit").toggleEnable(type !== "sum");
+            this._getField(item, "name").toggleEnable(type !== "sum");
+            this._getField(item, "unit-percent")
+                .toggleEnable((type !== "absolute") && (type !== "sum"));
+            this._getField(item, "unit-price").toggleEnable(type === "absolute");
+        },
+
+        /**
+         * Augments the given input control with the autocomplete feature to
+         * select units.
+         *
+         * @function
+         * @name                    _initUnitAutocomplete
+         * @param {jQuery} $input   the given input control
+         * @private
+         */
+        _initUnitAutocomplete: function ($input) {
+            var units = this.options.units;
+
+            if (units) {
+                if (!$input) {
+                    $input = $(".pricing-items-unit input");
+                }
+                $input.autocomplete({ source: units });
+            }
+        },
+
+        /**
+         * Moves the item with the given table row in to the given direction.
+         *
+         * @function
+         * @name                _moveItem
+         * @param {jQuery} $tr  the table row to move
+         * @param {Number} dir  the direction to move; negative values move the
+         *                      row up, positive values down
+         * @private
+         */
+        _moveItem: function ($tr, dir) {
+            var $destTr = null,
+                pos = this._getIndex($tr);
+
+            /* swap current row with previous or next row */
+            if ((dir < 0) && (pos > 0)) {
+                $destTr = $tr.prev();
+                $destTr.before($tr);
+            } else if (pos < this._$trs.length - 1) {
+                $destTr = $tr.next();
+                $destTr.after($tr);
+            }
+
+            /* swap input name positions and item positions */
+            if ($destTr) {
+                this._swapInputItemPos($tr, $destTr);
+                this._swapItemPos($tr, $destTr);
+                this._swapItemReferences($tr, $destTr);
+                this._$trs = this._getRows();
+                this._updateItems();
+            }
         },
 
         /**
@@ -444,25 +676,25 @@
             var $target = $(event.target),
                 $td = $target.parents("td"),
                 $tr = $td.parent(),
-                pos;
+                idx;
 
             if ($td.hasClass("pricing-items-quantity")
                 || $td.hasClass("pricing-items-unit-percent")
                 || $td.hasClass("pricing-items-unit-price"))
             {
-                this._updateRows();
+                this._updateItems();
             } else if ($td.hasClass("pricing-items-type")) {
-                this._prepareRow.call(this, $tr);
+                this._initItemCtrls.call(this, $tr);
                 if ($target.val() === "relativeToPos") {
-                    pos = this._getFieldVal($tr, "relative-to-pos");
-                    pos = (pos < 0) ? "" : String(pos + 1) + ".";
+                    idx = this._getFieldVal($tr, "relative-to-pos");
+                    idx = (idx < 0) ? "" : String(idx + 1) + ".";
                     $tr.find("> .pricing-items-relative-to-pos > span")
                         .fadeIn();
                 } else {
                     $tr.find("> .pricing-items-relative-to-pos > span")
                         .fadeOut();
                 }
-                this._updateRows();
+                this._updateItems();
             }
         },
 
@@ -475,7 +707,8 @@
          * @private
          */
         _onClick: function (event) {
-            var $finderRow = this._$finderRow,
+            var $a,
+                $finderRow = this._$finderRow,
                 $target = $(event.target),
                 $td,
                 $tr,
@@ -483,12 +716,11 @@
                 v;
 
             if ($finderRow) {
-                $tr = $target.parents("tr")
-                    .andSelf();
+                $tr = $target.closest("tr");
                 if (!$tr.is($finderRow)) {
-                    k = this._getPos($finderRow);
-                    v = this._getPos($tr);
-                    this._itemRelations[k] = v;
+                    k = this._getIndex($finderRow);
+                    v = this._getIndex($tr);
+                    this._itemReferences[k] = v;
                     $finderRow.find("> .pricing-items-relative-to-pos > span")
                         .find("> strong")
                             .text(String(v + 1))
@@ -496,15 +728,20 @@
                         .find("> input")
                             .val(v);
                     this._setFieldVal($finderRow, "relative-to-pos", v);
-                    this._updateRows();
+                    this._updateItems();
                 }
                 this._stopFinderMode();
                 return false;
             }
 
-            $td = $target.parents("td");
+            $a = $target.closest("a");
+            $td = $target.closest("td");
             $tr = $td.parent();
-            if ($td.hasClass("pricing-items-relative-to-pos")) {
+            if ($a.hasClass("up-btn")) {
+                this._moveItem($tr, -1);
+            } else if ($a.hasClass("down-btn")) {
+                this._moveItem($tr, 1);
+            } else if ($td.hasClass("pricing-items-relative-to-pos")) {
                 this._startFinderMode($tr);
                 return false;
             }
@@ -525,35 +762,14 @@
         },
 
         /**
-         * Prepares the given table row by enabling or disabling the input
-         * controls depending on the type of the item in the row.
-         *
-         * @function
-         * @name                        _prepareRow
-         * @param {jQuery|Number} row   either the given zero-based position or
-         *                              the table row representing the item
-         * @private
-         */
-        _prepareRow: function (row) {
-            var type = this._getRowType(row);
-
-            this._getField(row, "quantity").toggleEnable(type !== "sum");
-            this._getField(row, "unit").toggleEnable(type !== "sum");
-            this._getField(row, "name").toggleEnable(type !== "sum");
-            this._getField(row, "unit-percent")
-                .toggleEnable((type !== "absolute") && (type !== "sum"));
-            this._getField(row, "unit-price").toggleEnable(type === "absolute");
-        },
-
-        /**
          * Sets the value of the input control in the table cell with the given
-         * name in the given row.  In case of name <code>total</code> the text
+         * name in the given item.  In case of name <code>total</code> the text
          * of the <code>&lt;span></code> object is set.  Numeric values are
          * formatted before returned.
          *
          * @function
          * @name                        _setFieldVal
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @param {String} name         the given name of the table cell
          * @param {String|Number} val   the value of the input control or the
@@ -561,8 +777,8 @@
          *                              object to set
          * @private
          */
-        _setFieldVal: function (row, name, val) {
-            var $field = this._getField(row, name);
+        _setFieldVal: function (item, name, val) {
+            var $field = this._getField(item, name);
 
             if ((name === "quantity") || (name === "unit-percent")) {
                 val = $.formatNumber(val);
@@ -578,17 +794,44 @@
         },
 
         /**
-         * Starts the mode where the user should select a related row.
+         * Sets the referred item for the given item in the associated table
+         * row.  The method displays the index of the referred item and stores
+         * the index in the hidden input field in the table row.
+         *
+         * @function
+         * @name                            _setItemReference
+         * @param {jQuery|Number} item      either the given zero-based index
+         *                                  or the table row representing the
+         *                                  referring item
+         * @param {jQuery|Number} refItem   either the given zero-based index
+         *                                  or the table row representing the
+         *                                  referred item
+         * @private
+         */
+        _setItemReference: function (item, refItem) {
+            var $tr = this._getRow(item),
+                idx = this._getIndex(refItem);
+
+            $tr.find("> .pricing-items-relative-to-pos")
+                .find("> strong")
+                    .text(String(idx + 1))
+                .end()
+                .find("> input")
+                    .val(idx);
+        },
+
+        /**
+         * Starts the mode where the user should select a referred item.
          *
          * @function
          * @name                        _startFinderMode
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @see                         #_stopFinderMode
          * @private
          */
-        _startFinderMode: function (row) {
-            var $tr = this._getRow(row);
+        _startFinderMode: function (item) {
+            var $tr = this._getRow(item);
 
             this._$finderRow = $tr;
             $tr.addClass("non-selectable")
@@ -598,7 +841,7 @@
         },
 
         /**
-         * Stops the mode where the user should select a related row.
+         * Stops the mode where the user should select a referred item.
          *
          * @function
          * @name        _stopFinderMode
@@ -612,23 +855,139 @@
         },
 
         /**
+         * Swaps the indices of the input controls of both the given table
+         * rows.
+         *
+         * @function
+         * @name                    _swapInputItemPos
+         * @param {jQuery} $tr      the given source table row
+         * @param {jQuery} $destTr  the given destination table row
+         * @private
+         */
+        _swapInputItemPos: function($tr, $destTr) {
+            var destIndex,
+                form = this._form,
+                index,
+                self = this,
+                swap;
+
+            index = this._getIndex($tr);
+            destIndex = this._getIndex($destTr);
+
+            swap = function (name, newName) {
+                var el,
+                    elems = form.elements,
+                    fieldName,
+                    fieldNames = self.INPUT_FIELD_NAMES,
+                    i = -1,
+                    n = fieldNames.length;
+
+                while (++i < n) {
+                    fieldName = fieldNames[i];
+                    el = elems[name + fieldName];
+                    if (el) {
+                        el.name = newName + fieldName;
+                    }
+                }
+            };
+            swap(
+                this._getInputName(index),
+                this._getInputName(destIndex, "", "-dest")
+            );
+            swap(
+                this._getInputName(destIndex),
+                this._getInputName(index)
+            );
+            swap(
+                this._getInputName(destIndex, "", "-dest"),
+                this._getInputName(destIndex)
+            );
+        },
+
+        /**
+         * Swaps the position numbers of both the given table rows.
+         *
+         * @function
+         * @name                    _swapItemPos
+         * @param {jQuery} $tr      the given source table row
+         * @param {jQuery} $destTr  the given destination table row
+         * @private
+         */
+        _swapItemPos: function ($tr, $destTr) {
+            var $destTd = $destTr.find("td:first-child"),
+                $td = $tr.find("td:first-child"),
+                s = $td.text();
+
+            $td.text($destTd.text());
+            $destTd.text(s);
+        },
+
+        /**
+         * Swaps the referrences to both the given items.
+         *
+         * @function
+         * @name                            _swapItemReferences
+         * @param {jQuery|Number} item      either the given zero-based index or
+         *                                  the table row representing the one
+         *                                  item
+         * @param {jQuery|Number} destItem  either the given zero-based index
+         *                                  or the table row representing the
+         *                                  other item
+         * @private
+         */
+        _swapItemReferences: function (item, destItem) {
+            var destIdx = this._getIndex(destItem),
+                destRefs,
+                i = -1,
+                idx = this._getIndex(item),
+                itemRefs = this._itemReferences,
+                n,
+                refs;
+
+            refs = this._getReferrers(idx);
+            n = refs.length;
+            while (++i < n) {
+                this._setItemReference(refs[i], destIdx);
+            }
+
+            i = -1;
+            destRefs = this._getReferrers(destIdx);
+            n = destRefs.length;
+            while (++i < n) {
+                this._setItemReference(destRefs[i], idx);
+            }
+
+            i = -1;
+            n = refs.length;
+            while (++i < n) {
+                itemRefs[refs[i]] = destIdx;
+            }
+
+            i = -1;
+            n = destRefs.length;
+            while (++i < n) {
+                itemRefs[destRefs[i]] = idx;
+            }
+        },
+
+        /**
          * Updates the computable fields in the given item.
          *
          * @function
-         * @name                        _updateRow
-         * @param {jQuery|Number} row   either the given zero-based position or
+         * @name                        _updateItem
+         * @param {jQuery|Number} item  either the given zero-based index or
          *                              the table row representing the item
          * @private
          */
-        _updateRow: function (row) {
-            var totalPrice = this._computeTotalPrice(row),
-                unitPrice = this._computeUnitPrice(row);
+        _updateItem: function (item) {
+            var totalPrice = this._computeTotalPrice(item),
+                unitPrice = this._computeUnitPrice(item);
 
             if (unitPrice !== null) {
-                this._setFieldVal(row, "unit-price", unitPrice);
+                this._setFieldVal(item, "unit-price", unitPrice);
             }
             if (totalPrice !== null) {
-                this._setFieldVal(row, "total", totalPrice);
+                this._setFieldVal(item, "total", totalPrice);
             }
         },
 
@@ -637,14 +996,14 @@
          * of the pricing table.
          *
          * @function
-         * @name        _updateRows
+         * @name        _updateItems
          * @private
          */
-        _updateRows: function () {
+        _updateItems: function () {
             var self = this;
 
             this._$trs.each(function () {
-                    self._updateRow($(this));
+                    self._updateItem($(this));
                 });
             $("#pricing-items-total").text($.formatCurrency(this._getCurrentSum()));
         }

@@ -83,5 +83,11 @@
     'person.addr.fromOrgBillingAddr',
     'person.addr.fromOrgShippingAddr',
     'person.mailingAddr.copy',
-    'person.otherAddr.copy'
+    'person.otherAddr.copy',
+    'pricing.relativeToPos.finder',
+    'pricing.type.absolute',
+    'pricing.type.relativeToCurrentSum',
+    'pricing.type.relativeToLastSum',
+    'pricing.type.relativeToPos',
+    'pricing.type.sum'
 ];
