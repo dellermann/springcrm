@@ -25,12 +25,12 @@
  * property "springcrm.config.location" to specify a configuration file.
  */
 grails.config.locations = [
-    "classpath: ${appName}-config.properties",
-    "classpath: ${appName}-config.groovy",
-    "file: ${userHome}/.${appName}/config.properties"
+    "classpath:${appName}-config.properties",
+    "classpath:${appName}-config.groovy",
+    "file:${userHome}/.${appName}/config.properties"
 ]
 if (System.properties["${appName}.config.location"]) {
-    grails.config.locations << "file: " + System.properties["${appName}.config.location"]
+    grails.config.locations << 'file:' + System.properties["${appName}.config.location"]
 }
 
 /*
@@ -114,7 +114,7 @@ if (System.getenv('SPRINGCRM_HOME')) {
 if (System.properties["${appName}.dir.base"]) {
     springcrm.dir.base = System.properties["${appName}.dir.base"]
 }
-grails.config.locations << "file: ${springcrm.dir.base}/config.properties"
+grails.config.locations << "file:${springcrm.dir.base}/config.properties"
 springcrm {
     dir {
         data = "${springcrm.dir.base}/data"

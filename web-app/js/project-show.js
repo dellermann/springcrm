@@ -18,6 +18,30 @@
  */
 
 
+/**
+ * @fileOverview    Contains functions which are loaded in the show view of the
+ *                  project.
+ * @author          Daniel Ellermann
+ * @version         1.2
+ * @since           1.0
+ */
+
+
+/*global window: false, jQuery: false */
+/*jslint nomen: true, plusplus: true, white: true */
+
+
+/**
+ * @name        project-show
+ * @namespace   Contains functions which are loaded in the show view of the
+ *              project.
+ * @author      Daniel Ellermann
+ * @version     1.2
+ * @since       1.0
+ */
+/**#@+
+ * @memberOf    project-show
+ */
 (function (window, $) {
 
     "use strict";
@@ -39,6 +63,12 @@
         submitSelectedDocuments = null,
         submitSelectedItems;
 
+    /**
+     * Changes the current project phase.  The method submits the project phase
+     * to the server.
+     *
+     * @param {String} phaseName    the name of the current project phase
+     */
     changePhase = function (phaseName) {
         var $ = jQuery;
 
@@ -48,12 +78,21 @@
             );
     };
 
+    /**
+     * Loads the list of items with the given URL into the selector dialog.
+     *
+     * @param {String} url  the given URL
+     */
     loadList = function (url) {
         $("#select-project-item-list").load(
                 url, { view: 'selector' }, onLoadedList
             );
     };
 
+    /**
+     * Called if the checkbox to select or unselect all entries in the item
+     * table is changed.
+     */
     onChangeTopCheckbox = function () {
         var $this = $(this);
 
@@ -62,13 +101,16 @@
                 .attr("checked", $this.is(":checked"));
     };
 
+    /**
+     * Called if the type selector is changed.
+     */
     onChangeType = function () {
         var $option,
             $this = $(this);
 
         $option = $this.find(":selected");
         $("#select-project-item-dialog h2").text($option.text());
-        if ($option.data("controller") == "document") {
+        if ($option.data("controller") === "document") {
             showFileSelector($this.val());
             $("#select-project-item-add-btn").fadeOut();
             $(".selector-toolbar-search").fadeOut();
@@ -83,6 +125,11 @@
         }
     };
 
+    /**
+     * Called if an element is clicked.
+     *
+     * @param {Object} event    the event data
+     */
     onClick = function (event) {
         var $ = jQuery,
             $section,
@@ -119,6 +166,9 @@
         return res;
     };
 
+    /**
+     * Called if the button to add an item is clicked.
+     */
     onClickAddBtn = function () {
         var $ = jQuery,
             ids = [];
@@ -131,11 +181,19 @@
         return false;
     };
 
+    /**
+     * Called if any link in the item selector dialog is clicked.  The method
+     * loads the link into the same dialog.
+     */
     onClickLink = function () {
         loadList($(this).attr("href"));
         return false;
     };
 
+    /**
+     * Called if an item in the item selector dialog is clicked and thus the
+     * item is selected.
+     */
     onClickSelectItem = function () {
         var itemId;
 
@@ -146,6 +204,10 @@
         return false;
     };
 
+    /**
+     * Called if the data for the item selector dialog are received from the
+     * server and are to display.
+     */
     onLoadedList = function () {
         var $ = jQuery;
 
@@ -165,12 +227,18 @@
                 });
     };
 
+    /**
+     * Called if the item selector dialog is to display.
+     */
     onOpenSelectDlg = function () {
         $("#select-project-item-type-selector").change(onChangeType)
             .trigger("change");
         $("#select-project-item-add-btn").click(onClickAddBtn);
     };
 
+    /**
+     * Called if the project status is changed.
+     */
     onSelectProjectStatus = function () {
         var $this = $(this),
             status = $this.val();
@@ -181,10 +249,20 @@
             .text($this.find(":selected").text());
     };
 
+    /**
+     * Called after the item selected from the item selector dialog has been
+     * submitted to the server.
+     */
     onSubmittedSelectedItems = function () {
         window.location.reload(true);
     };
 
+    /**
+     * Shows the selector to select documents.
+     *
+     * @param {String} url  the URL used to obtain the documents from the
+     *                      server
+     */
     showFileSelector = function (url) {
         $("#select-project-document-list").elfinder({
             commands: [
@@ -220,13 +298,19 @@
                     ['search'],
                     ['view', 'sort'],
                     ['help']
-                ],
+                ]
             },
             url: url
         })
         .elfinder("instance");
     };
 
+    /**
+     * Submits the selected document to the server to associate them to the
+     * current project.
+     *
+     * @param {Object} file the data of the selected document
+     */
     submitSelectedDocuments = function (file) {
         var $ = jQuery,
             $dialog = $("#select-project-item-dialog"),
@@ -242,6 +326,12 @@
             );
     };
 
+    /**
+     * Submits the selected items to the server to associate them to the
+     * current project.
+     *
+     * @param {Array} ids   the IDs of the selected items
+     */
     submitSelectedItems = function (ids) {
         var $ = jQuery,
             $dialog = $("#select-project-item-dialog"),
@@ -268,3 +358,4 @@
             style: "popup"
         });
 }(window, jQuery));
+/**#@-*/
