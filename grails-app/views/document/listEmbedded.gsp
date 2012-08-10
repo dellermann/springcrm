@@ -22,7 +22,7 @@
   </tbody>
 </table>
 <div class="paginator">
-  <g:paginate total="${documentInstanceList}" params="${linkParams}" />
+  <g:paginate total="${documentInstanceTotal}" />
 </div>
 </g:if>
 <g:else>
