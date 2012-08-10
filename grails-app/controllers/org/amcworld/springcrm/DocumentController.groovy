@@ -66,7 +66,9 @@ class DocumentController {
         if (dir) {
             List<Document> documents = []
             dir.eachFileRecurse(FileType.FILES) {
-                documents << new Document(volume.encode(it.path), it)
+                if (!it.hidden) {
+                    documents << new Document(volume.encode(it.path), it)
+                }
             }
 
             String sort = params.sort
@@ -88,9 +90,9 @@ class DocumentController {
             }
             total = documents.size()
 
-            def offset = params.offset ?: 0
-            def max = params.max ?: 10
-            list = documents.subList(offset, Math.min(offset + max, documents.size()))
+            def offset = (params.offset ?: 0) as Integer
+            def max = (params.max ?: 10) as Integer
+            list = documents.subList(offset, Math.min(offset + max, total))
         }
 
         return [documentInstanceList: list, documentInstanceTotal: total]
