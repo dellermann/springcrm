@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm.google
 
+import static org.amcworld.springcrm.google.SyncSource.LOCAL
 import com.google.api.client.auth.oauth2.Credential
 import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
@@ -32,11 +33,12 @@ import org.apache.commons.logging.LogFactory
  * The class {@code GoogleSync} synchronizes local data entries with Google API
  * (former: Google Data).
  *
- * @author      Daniel Ellermann
- * @version     1.0
  * @param <E>   the type of local domain models which are handled by this
  *              service
  * @param <G>   the type of Google entries which are handled by this service
+ * @author      Daniel Ellermann
+ * @version     1.2
+ * @since       1.0
  */
 abstract class GoogleSync<E, G> implements GoogleService {
 
