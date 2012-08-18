@@ -235,94 +235,94 @@
       <div class="fieldset">
         <h4><g:message code="dunning.fieldset.items.label" /></h4>
         <div class="fieldset-content">
-          <table id="quote-items" class="invoicing-items content-table">
+          <table id="dunning-items" class="content-table price-table">
             <thead>
               <tr>
-                <th id="quote-items-pos"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
-                <th id="quote-items-number"><g:message code="invoicingTransaction.number.label" default="No." /></th>
-                <th id="quote-items-quantity"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
-                <th id="quote-items-unit"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
-                <th id="quote-items-name"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
-                <th id="quote-items-unit-price"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
-                <th id="quote-items-total"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
-                <th id="quote-items-tax"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
+                <th scope="col"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
+                <th scope="col"><g:message code="invoicingTransaction.number.label" default="No." /></th>
+                <th scope="col"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
+                <th scope="col"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
+                <th scope="col"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
+                <th scope="col"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
+                <th scope="col"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
+                <th scope="col"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
               </tr>
             </thead>
             <tfoot>
-              <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="dunning.subtotalNet.label" default="Subtotal excl. VAT" /></strong></td>
-                <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatCurrency(number: dunningInstance?.subtotalNet)}</strong></td>
-                <td headers="quote-items-tax"></td>
+              <tr class="subtotal">
+                <td colspan="5" class="label"><g:message code="dunning.subtotalNet.label" default="Subtotal excl. VAT" /></td>
+                <td></td>
+                <td class="currency number">${formatCurrency(number: dunningInstance?.subtotalNet)}</td>
+                <td></td>
               </tr>
               <g:each in="${dunningInstance.taxRateSums}" var="item">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
-                <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: item.value)}</td>
-                <td headers="quote-items-tax"></td>
+                <td colspan="5" class="label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
+                <td></td>
+                <td class="currency number">${formatCurrency(number: item.value)}</td>
+                <td></td>
               </tr>
               </g:each>
               <g:if test="${dunningInstance?.discountPercent != 0 || dunningInstance?.discountAmount != 0 || dunningInstance?.adjustment != 0}">
-              <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></strong></td>
-                <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total"><strong>${formatCurrency(number: dunningInstance?.subtotalGross)}</strong></td>
-                <td headers="quote-items-tax"></td>
+              <tr class="subtotal">
+                <td colspan="5" class="label"><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></td>
+                <td></td>
+                <td class="currency number">${formatCurrency(number: dunningInstance?.subtotalGross)}</td>
+                <td></td>
               </tr>
               </g:if>
               <g:if test="${dunningInstance?.discountPercent != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
-                <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatNumber(number: dunningInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: dunningInstance?.discountPercentAmount)}</td>
-                <td headers="quote-items-tax"></td>
+                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
+                <td class="percentage number">${formatNumber(number: dunningInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
+                <td class="currency number">${formatCurrency(number: dunningInstance?.discountPercentAmount)}</td>
+                <td></td>
               </tr>
               </g:if>
               <g:if test="${dunningInstance?.discountAmount != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
-                <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: dunningInstance?.discountAmount)}</td>
-                <td headers="quote-items-tax"></td>
+                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
+                <td></td>
+                <td class="currency number">${formatCurrency(number: dunningInstance?.discountAmount)}</td>
+                <td></td>
               </tr>
               </g:if>
               <g:if test="${dunningInstance?.adjustment != 0}">
               <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
-                <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: dunningInstance?.adjustment)}</td>
-                <td headers="quote-items-tax"></td>
+                <td colspan="5" class="label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
+                <td></td>
+                <td class="currency number">${formatCurrency(number: dunningInstance?.adjustment)}</td>
+                <td></td>
               </tr>
               </g:if>
-              <tr>
-                <td headers="quote-items-name" colspan="5" class="invoicing-items-label"><strong><g:message code="dunning.total.label" default="Total" /></strong></td>
-                <td headers="quote-items-unit-price"></td>
-                <td headers="quote-items-total" class="invoicing-items-total total">${formatCurrency(number: dunningInstance?.total)}</td>
-                <td headers="quote-items-tax"></td>
+              <tr class="total">
+                <td colspan="5" class="label"><g:message code="dunning.total.label" default="Total" /></td>
+                <td></td>
+                <td class="currency number">${formatCurrency(number: dunningInstance?.total)}</td>
+                <td></td>
               </tr>
             </tfoot>
             <tbody>
               <g:each in="${dunningInstance.items}" status="i" var="item">
               <tr>
-                <td headers="quote-items-pos" class="invoicing-items-pos">${i + 1}.</td>
-                <td headers="quote-items-number" class="invoicing-items-number">${item.number}</td>
-                <td headers="quote-items-quantity" class="invoicing-items-quantity">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
-                <td headers="quote-items-unit" class="invoicing-items-unit">${item.unit}</td>
-                <td headers="quote-items-name" class="invoicing-items-name">${item.name}<br />${item.description}</td>
-                <td headers="quote-items-unit-price" class="invoicing-items-unit-price">${formatCurrency(number: item.unitPrice)}</td> 
-                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: item.total)}</td>
-                <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
+                <td class="pos number">${i + 1}.</td>
+                <td class="item-number">${item.number}</td>
+                <td class="quantity number">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
+                <td class="unit">${item.unit}</td>
+                <td class="name">${item.name}<br />${item.description}</td>
+                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
+                <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
+                <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>
               </g:each>
             </tbody>
             <tbody>
               <tr>
-                <td headers="quote-items-pos" class="invoicing-items-pos" colspan="4"></td>
-                <td headers="quote-items-name" class="invoicing-items-name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
-                <td headers="quote-items-unit-price" class="invoicing-items-unit-price"></td> 
-                <td headers="quote-items-total" class="invoicing-items-total">${formatCurrency(number: dunningInstance?.shippingCosts)}</td>
-                <td headers="quote-items-tax" class="invoicing-items-tax">${formatNumber(number: dunningInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
+                <td colspan="4"></td>
+                <td class="name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
+                <td></td> 
+                <td class="currency number">${formatCurrency(number: dunningInstance?.shippingCosts)}</td>
+                <td class="percentage number">${formatNumber(number: dunningInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>
             </tbody>
           </table>

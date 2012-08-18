@@ -102,7 +102,7 @@
   <div class="header-with-menu">
     <h4><g:message code="creditMemo.fieldset.items.label" /></h4>
     <div class="menu">
-      <a href="javascript:void 0;" class="add-invoicing-item-btn button small green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
+      <a href="#" class="add-invoicing-item-btn button small green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
     </div>
   </div>
   <div class="fieldset-content">

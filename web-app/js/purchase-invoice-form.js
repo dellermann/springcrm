@@ -35,7 +35,7 @@
 
             $.springcrm.invoicingtransaction.prototype._create.call(this);
             this.element
-                .find(".invoicing-items")
+                .find(".price-table")
                     .invoicingitems(
                         "option",
                         { productListUrl: null, serviceListUrl: null }

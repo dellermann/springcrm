@@ -22,7 +22,8 @@
  * @fileOverview    Contains a class to handle invoicing items in quotes,
  *                  sales order, invoices etc.
  * @author          Daniel Ellermann
- * @version         1.0
+ * @version         1.3
+ * @since           1.0
  */
 
 
@@ -42,11 +43,11 @@
         options: {
             currency: "€",
             fieldNamePrefix: "items",
-            imgPath: $(".invoicing-items").data("img-path"),
-            productListUrl: $(".invoicing-items").data("product-list-url"),
-            serviceListUrl: $(".invoicing-items").data("service-list-url"),
-            taxes: $(".invoicing-items").data("tax-items").split(","),
-            units: $(".invoicing-items").data("units").split(",")
+            imgPath: $(".price-table").data("img-path"),
+            productListUrl: $(".price-table").data("product-list-url"),
+            serviceListUrl: $(".price-table").data("service-list-url"),
+            taxes: $(".price-table").data("tax-items").split(","),
+            units: $(".price-table").data("units").split(",")
         },
 
         _addItem: function (jumpToNewRow) {
@@ -62,77 +63,58 @@
 
             currency = opts.currency;
             imgPath = opts.imgPath;
-            s = '<tr><td headers="invoicing-items-header-pos" ' +
-                'class="invoicing-items-pos">' + String(index + 1) +
-                '.</td><td headers="-number" class="invoicing-items-number">' +
-                '<input type="text" name="' +
+            s = '<tr><td class="pos number">' + String(index + 1) +
+                '.</td><td class="item-number"><input type="text" name="' +
                 this._getInputName(index, "number") + '" size="10" /></td>' +
-                '<td headers="invoicing-items-header-quantity" ' +
-                'class="invoicing-items-quantity"><input type="text" name="' +
+                '<td class="quantity number"><input type="text" name="' +
                 this._getInputName(index, "quantity") + '" size="4" /></td>' +
-                '<td headers="invoicing-items-header-unit" ' +
-                'class="invoicing-items-unit"><input type="text" name="' +
-                this._getInputName(index, "unit") + '" size="5" /></td>' +
-                '<td headers="invoicing-items-header-name" ' +
-                'class="invoicing-items-name"><input type="text" name="' +
+                '<td class="unit"><input type="text" name="' +
+                this._getInputName(index, "unit") + '" size="8" /></td>' +
+                '<td class="name"><input type="text" name="' +
                 this._getInputName(index, "name") + '" size="28" />';
             if (opts.productListUrl && imgPath) {
-                s += '&nbsp;<a href="javascript:void 0;" ' +
-                    'class="select-btn-products"><img src="' + imgPath +
+                s += '&nbsp;<img class="select-btn-products" src="' + imgPath +
                     '/products.png" alt="' +
                     $L("invoicingTransaction.product.sel") + '" title="' +
                     $L("invoicingTransaction.product.sel") +
-                    '" width="16" height="16" ' +
-                    'style="vertical-align: middle;" /></a>';
+                    '" width="16" height="16" />';
             }
             if (opts.serviceListUrl && imgPath) {
-                s += '&nbsp;<a href="javascript:void 0;" ' +
-                    'class="select-btn-services">' +
-                    '<img src="' + imgPath + '/services.png" alt="' +
+                s += '&nbsp;<img class="select-btn-services" src="' + imgPath +
+                    '/services.png" alt="' +
                     $L("invoicingTransaction.service.sel") + '" title="' +
                     $L("invoicingTransaction.service.sel") +
-                    '" width="16" height="16" ' +
-                    'style="vertical-align: middle;" /></a>';
+                    '" width="16" height="16" />';
             }
             s += '<br /><textarea name="' +
                 this._getInputName(index, "description") +
                 '" cols="30" rows="3"></textarea></td>' +
-                '<td headers="invoicing-items-header-unit-price" ' +
-                'class="invoicing-items-unit-price"><input type="text" name="' +
+                '<td class="unit-price currency number">' +
+                '<input type="text" name="' +
                 this._getInputName(index, "unitPrice") +
-                '" size="8" value="0,00" class="currency" />&nbsp;' + currency +
-                '</td><td headers="invoicing-items-header-total" ' +
-                'class="invoicing-items-total">' +
-                '<span class="value">0,00</span>&nbsp;' + currency + '</td>' +
-                '<td headers="invoicing-items-header-tax" ' +
-                'class="invoicing-items-tax">' +
+                '" size="8" value="0,00" />&nbsp;' + currency +
+                '</td><td class="total-price currency number">' +
+                '<output>0,00</output>&nbsp;' + currency + '</td>' +
+                '<td class="tax percentage number">' +
                 '<input type="text" name="' + this._getInputName(index, "tax") +
-                '" size="4" />&nbsp;%</td>' +
-                '<td class="invoicing-items-buttons">';
+                '" size="4" />&nbsp;%</td><td class="action-buttons">';
             if (imgPath) {
-                s += '<a href="javascript:void 0;" class="up-btn"><img src="' +
-                    imgPath + '/up.png" alt="' + $L("default.btn.up") +
-                    '" title="' + $L("default.btn.up") +
-                    '" width="16" height="16" /></a>' +
-                    '<a href="javascript:void 0;" class="down-btn"><img src="' +
-                    imgPath + '/down.png" alt="' + $L("default.btn.down") +
-                    '" title="' + $L("default.btn.down") +
-                    '" width="16" height="16" /></a>' +
-                    '<a href="javascript:void 0;" class="remove-btn">' +
-                    '<img src="' + imgPath + '/remove.png" alt="' +
-                    $L("default.delete.label") + '" title="' +
-                    $L("default.delete.label") +
-                    '" width="16" height="16" /></a>';
+                s += '<img class="up-btn" src="' + imgPath + '/up.png" alt="' +
+                    $L("default.btn.up") + '" title="' + $L("default.btn.up") +
+                    '" width="16" height="16" />' +
+                    '<img class="down-btn" src="' + imgPath +
+                    '/down.png" alt="' + $L("default.btn.down") + '" title="' +
+                    $L("default.btn.down") + '" width="16" height="16" />' +
+                    '<img class="remove-btn" src="' + imgPath +
+                    '/remove.png" alt="' + $L("default.delete.label") +
+                    '" title="' + $L("default.delete.label") +
+                    '" width="16" height="16" />';
             }
             s += '</td></tr>';
             $row = $(s);
             $row.appendTo($tbody);
-            this._initUnitAutocomplete(
-                $row.find(".invoicing-items-unit input")
-            );
-            this._initTaxAutocomplete(
-                $row.find(".invoicing-items-tax input")
-            );
+            this._initUnitAutocomplete($row.find(".unit input"));
+            this._initTaxAutocomplete($row.find(".tax input"));
             if (jumpToNewRow) {
                 $("html").scrollTop(
                         $row.position().top - $("#toolbar").outerHeight()
@@ -166,7 +148,7 @@
                 subtotalNet = 0,
                 total;
 
-            $(".invoicing-items-total .value", this.$tbodyItems)
+            $(".total-price output", this.$tbodyItems)
                 .each(function () {
                     subtotalNet += $.parseNumber($(this).text());
                 });
@@ -241,18 +223,14 @@
                 tr = taxRates[i];
                 taxTotal += tr.tax;
                 s += '<tr class="tax-rate-sum">' +
-                    '<td headers="invoicing-items-header-name" ' +
-                    'colspan="5" class="invoicing-items-label"><label>' +
+                    '<td colspan="5" class="label"><label>' +
                     $L("invoicingTransaction.taxRate.label").replace(
                         /\{0\}/, $.formatNumber(tr.taxRate, 1)
                     ) +
-                    '</label></td>' +
-                    '<td headers="invoicing-items-header-unitPrice"></td>' +
-                    '<td headers="invoicing-items-header-total" ' +
-                    'class="invoicing-items-total">' +
+                    '</label></td><td></td>' +
+                    '<td class="total-price currency number">' +
                     $.formatCurrency(tr.tax) + '&nbsp;' + currency + '</td>' +
-                    '<td headers="invoicing-items-header-tax"></td><td></td>' +
-                    '</tr>';
+                    '<td></td><td></td></tr>';
             }
             $(".tax-rate-sum").remove();
             $("tfoot tr:first").after(s);
@@ -271,9 +249,10 @@
                 $tbodyItems,
                 el = this.element,
                 numItems,
-                opts = this.options;
+                opts = this.options,
+                self = this;
 
-            $tbodyItems = el.find(".invoicing-items-body");
+            $tbodyItems = el.find(".items");
             this.$tbodyItems = $tbodyItems;
             numItems = $tbodyItems.find("tr").length;
             this.nextIndex = numItems;
@@ -284,14 +263,13 @@
 
             this.$shippingCosts = $("#shippingCosts");
             this.$shippingTax = $("#shippingTax");
-            this.$subtotalNet = $("#invoicing-items-subtotal-net");
-            this.$subtotalGross = $("#invoicing-items-subtotal-gross");
+            this.$subtotalNet = $("#subtotal-net");
+            this.$subtotalGross = $("#subtotal-gross");
             this.$discountPercent = $("#discountPercent");
-            this.$discountFromPercent =
-                $("#invoicing-items-discount-from-percent");
+            this.$discountFromPercent = $("#discount-from-percent");
             this.$discountAmount = $("#discountAmount");
             this.$adjustment = $("#adjustment");
-            this.$total = $("#invoicing-items-total");
+            this.$total = $("#total-price");
             this.subtotalNet = 0.0;
             this.taxTotal = 0.0;
             this.subtotalGross = 0.0;
@@ -309,12 +287,10 @@
                 .focusin($.proxy(this._onFocusIn, this))
                 .focusout($.proxy(this._onFocusOut, this));
             $(".add-invoicing-item-btn")
-                .click($.proxy(
-                    function () {
-                        this._addItem(true);
-                    },
-                    this
-                ));
+                .click(function () {
+                        self._addItem.call(self, true);
+                        return false;
+                    });
             if (numItems === 0) {
                 this._addItem(false);
             } else {
@@ -366,7 +342,7 @@
 
             if (taxes) {
                 if (!$input) {
-                    $input = $(".quote-items-tax input");
+                    $input = $(".tax input");
                 }
                 $input.autocomplete({ source: taxes });
             }
@@ -377,7 +353,7 @@
 
             if (units) {
                 if (!$input) {
-                    $input = $(".invoicing-items-unit input");
+                    $input = $(".unit input");
                 }
                 $input.autocomplete({ source: units });
             }
@@ -395,9 +371,9 @@
             });
         },
 
-        _moveItem: function ($a, dir) {
+        _moveItem: function ($img, dir) {
             var $destTr = null,
-                $tr = $a.parents("tr"),
+                $tr = $img.parents("tr"),
                 pos;
 
             /* swap current row with previous or next row */
@@ -436,7 +412,7 @@
                     unitPrice = $.parseNumber(
                         this._getInput(index, "unitPrice").value
                     );
-                    $tr.find(".invoicing-items-total .value")
+                    $tr.find(".total-price output")
                         .text($.formatCurrency(qty * unitPrice));
                     break;
                 case "unitPrice":
@@ -444,7 +420,7 @@
                     qty = $.parseNumber(
                         this._getInput(index, "quantity").value
                     );
-                    $tr.find(".invoicing-items-total .value")
+                    $tr.find(".total-price output")
                         .text($.formatCurrency(qty * unitPrice));
                     break;
                 }
@@ -454,18 +430,23 @@
         },
 
         _onClick: function (event) {
-            var $a = $(event.target).closest("a");
+            var $img = $(event.target).closest("img");
 
-            if ($a.hasClass("up-btn")) {
-                this._moveItem($a, -1);
-            } else if ($a.hasClass("down-btn")) {
-                this._moveItem($a, 1);
-            } else if ($a.hasClass("remove-btn")) {
-                this._removeItem($a);
-            } else if ($a.hasClass("select-btn-products")) {
-                this._showInventorySelector($a, "products");
-            } else if ($a.hasClass("select-btn-services")) {
-                this._showInventorySelector($a, "services");
+            if ($img.hasClass("up-btn")) {
+                this._moveItem($img, -1);
+                return false;
+            } else if ($img.hasClass("down-btn")) {
+                this._moveItem($img, 1);
+                return false;
+            } else if ($img.hasClass("remove-btn")) {
+                this._removeItem($img);
+                return false;
+            } else if ($img.hasClass("select-btn-products")) {
+                this._showInventorySelector($img, "products");
+                return false;
+            } else if ($img.hasClass("select-btn-services")) {
+                this._showInventorySelector($img, "services");
+                return false;
             }
             return true;
         },
@@ -618,14 +599,14 @@
             return taxes;
         },
 
-        _removeItem: function ($a) {
+        _removeItem: function ($img) {
             var numRows;
 
             numRows = this.$tbodyItems
                 .find("tr")
                 .size();
             if (numRows > 1) {
-                this._removeRow($a.parents("tr"));
+                this._removeRow($img.parents("tr"));
                 this._computeFooterValues();
             }
         },
@@ -703,7 +684,7 @@
                     unitPriceInput = els[prefix + "unitPrice"];
                     unitPriceInput.value = $.formatCurrency(unitPrice);
                     $(unitPriceInput).parents("tr")
-                        .find(".invoicing-items-total .value")
+                        .find(".total-price output")
                             .text($.formatCurrency(qty * unitPrice));
                     els[prefix + "tax"].value =
                         $.formatNumber(item.taxRate.taxValue * 100.0, 1);
@@ -713,7 +694,7 @@
             });
         },
 
-        _showInventorySelector: function ($a, type, url) {
+        _showInventorySelector: function ($img, type, url) {
             var index,
                 opts = this.options;
 
@@ -722,7 +703,7 @@
                         : opts.serviceListUrl;
             }
             if (url) {
-                index = this._getRowIndex($a.parents("tr"));
+                index = this._getRowIndex($img.parents("tr"));
                 this._loadInventorySelector(type, url, index);
             }
         },

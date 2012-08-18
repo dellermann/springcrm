@@ -1134,8 +1134,8 @@
                 $document.scroll(onScrollDocument);
             }
             $("#search").hint($L("default.search.label"))
-                .next("a")
-                .click(onClickSubmitSearchForm);
+                .next("img")
+                    .click(onClickSubmitSearchForm);
             $("#quick-access").change(onChangeQuickAccess);
             $("#main-menu > li").hover(onMenuHover);
             $("#print-btn").click(onClickPrintBtn);

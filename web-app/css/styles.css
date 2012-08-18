@@ -210,7 +210,8 @@ body {
 #login-area a {
   padding-left: 1ex;
 }
-#search-area a {
+#search-area img {
+  cursor: pointer;
   padding-left: .5ex;
 }
 
@@ -965,15 +966,15 @@ footer {
 .row {
   display: table-row;
 }
-.label, .field {
+.row .label, .row .field {
   display: table-cell;
   padding-bottom: .5em;
   vertical-align: top;
 }
-.label {
+.row .label {
   width: 13em;
 }
-label {
+.row label {
   display: block;
   padding: .2em 1em 0 0;
 }
@@ -1061,13 +1062,13 @@ input[type=date]:focus, input[type=datetime]:focus,
   border-color: #888 !important;
   color: #EEE;
 }
-label, .data-sheet .label {
+.row label, .data-sheet .row .label {
   font-weight: bold;
 }
-label:after, .data-sheet .label:after {
+.row label:after, .data-sheet .row .label:after {
   content: ":";
 }
-label.empty-label:after, .data-sheet .label.empty-label:after {
+.row label.empty-label:after, .data-sheet .row .label.empty-label:after {
   content: "";
 }
 input[type=checkbox] ~ label, input[type=radio] ~ label {
@@ -1171,7 +1172,7 @@ tbody tr th:first-child {
 .content-table tbody tr:last-child {
   border-bottom: 1px solid white;
 }
-.content-table-divider {
+.content-table .divider {
   border-top: 1px solid white;
 }
 .content-table td, .content-table th {
@@ -1180,110 +1181,119 @@ tbody tr th:first-child {
 .content-table td:last-child, .content-table th:last-child {
   border-right: none;
 }
-.content-table-row-selector {
-  text-align: center;
-}
-.content-table-buttons {
+.content-table .action-buttons {
   text-align: right;
   white-space: nowrap;
   width: 11.5em;
 }
-.content-table-type-date, .content-table-type-id, .content-table-type-status {
+.content-table .date, .content-table .id, .content-table .status,
+  .content-table .row-selector
+{
   text-align: center;
 }
-.content-table-type-currency, .content-table-type-number {
+.content-table .currency, .content-table .number {
   text-align: right;
 }
-.content-table-type-currency {
+.content-table .currency {
   width: 6em;
 }
-.content-table-type-id {
+.content-table .id {
   white-space: nowrap;
 }
-.content-table-column-call-start {
+.content-table .call-start {
   width: 9em;
 }
-.content-table-column-organization-name {
+.content-table .organization-name {
   overflow: hidden;
   text-overflow: ellipsis;
   word-wrap: break-word;
 }
-.content-table-column-organization-phone, .content-table-column-person-phone {
+.content-table .organization-phone, .content-table .person-phone {
   white-space: nowrap;
   width: 9em;
 }
-.content-table-column-organization-website {
+.content-table .organization-website {
   max-width: 11em;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.invoicing-items td {
+.price-table td {
   vertical-align: top;
 }
-.invoicing-items-pos {
-  text-align: right;
-}
-form .invoicing-items-pos {
+form .price-table .pos {
   padding-top: .7em;
 }
-.invoicing-items-number, .pricing-items-number, .pricing-items-type {
+.price-table .item-number, .price-table .type {
   text-align: center;
 }
-.content-table td.invoicing-items-pos, .invoicing-items-quantity,
-  .invoicing-items-unit-price, .invoicing-items-total, .invoicing-items-tax,
-  .invoicing-items-buttons, .content-table td.invoicing-items-label,
-  .invoicing-items-quantity input, .invoicing-items-unit-price input,
-  .invoicing-items-total input, .invoicing-items-tax input,
-  .content-table td.pricing-items-pos, .pricing-items-quantity,
-  .pricing-items-unit-percent, .pricing-items-unit-price, .pricing-items-total,
-  .pricing-items-quantity input, .pricing-items-unit-percent input,
-  .pricing-items-unit-price input, .content-table td.pricing-items-label,
-  .invoicing-items-buttons, .pricing-items-buttons
+.price-table .pos, .price-table .number, .price-table .label, 
+  .price-table .number input 
 {
   text-align: right;
 }
-.invoicing-items-name textarea {
+.price-table .name textarea {
   margin-top: .5em;
 }
-.invoicing-items-buttons a, .pricing-items-buttons a {
+.price-table .currency, .price-table .percentage {
+  line-height: 1.4em;
+}
+.price-table .currency {
+  width: 7.5em;
+}
+.price-table .action-buttons {
+  width: auto;
+}
+.price-table .action-buttons img {
+  cursor: pointer;
   padding-left: .3em;
 }
-.invoicing-items-buttons a:first-child, .pricing-items-buttons a:first-child {
+.price-table .action-buttons img:first-child {
   padding-left: 0;
 }
-.invoicing-items tbody tr:first-child .up-btn,
-  .pricing-items tbody tr:first-child .up-btn 
-{
+.price-table tr:first-child .up-btn {
   display: none;
 }
-.invoicing-items tbody tr:last-child .down-btn, 
-  .pricing-items tbody tr:last-child .down-btn 
-{
+.price-table tr:last-child .down-btn {
   display: none;
 }
-.invoicing-items .value {
+.price-table output {
   padding-top: .3em;
 }
-.invoicing-items .total, .pricing-items .total {
+.price-table .label {
+  vertical-align: middle;
+}
+.price-table .total, .price-table .subtotal {
   font-weight: bold;
 }
-.pricing-items-relative-to-pos a {
-  background: url("../img/target.png") no-repeat;
-  direction: ltr;
-  float: left;
-  height: 16px;
-  outline: 0;
-  text-indent: -9999px;
-  width: 16px;
+.price-table .select-btn-products, .price-table .select-btn-services {
+  cursor: pointer;
+  vertical-align: middle;
 }
-.pricing-items-relative-to-pos strong {
-  float: left;
+#pricing-items .calculated-unit-price {
+  font-weight: bold;
+}
+#pricing-items .relative-to-pos img {
+  vertical-align: middle;
+}
+#pricing-items .relative-to-pos strong {
   line-height: 16px;
-  margin-left: 1ex;
-  min-height: 16px;
+  padding-left: 1ex;
 }
-.pricing-items-relative-to-pos strong:not(:empty):after {
+#pricing-items .relative-to-pos strong:not(:empty):after {
   content: ".";
+}
+#pricing-items .not-removable .remove-btn {
+  cursor: default;
+}
+#pricing-items .not-removable .remove-btn img {
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+#pricing-sales-pricing .unit-price-label {
+  text-align: right;
 }
 .empty-list {
   -khtml-border-radius: .5em;
@@ -2230,8 +2240,7 @@ form .invoicing-items-pos {
   .header-with-menu:after, .letter-bar:after, 
   .springcrm-overviewpanels-panel-header:after,
   .sel-values-list li:after, #panel-list ol:after, .filter-bar:after,
-  footer:after, #install-progress:after, 
-  .pricing-items-relative-to-pos span:after
+  footer:after, #install-progress:after
 {
   clear: both;
   content: ".";

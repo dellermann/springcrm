@@ -38,6 +38,8 @@ class SalesItemPricing {
         quantity(min: 0.0)
         unit()
         unitPrice(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+        discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
+        adjustment(nullable: true, scale: 2, widget: 'currency')
         items(minSize: 1)
     }
     static hasMany = [items: SalesItemPricingItem, salesItems: SalesItem]
@@ -46,9 +48,11 @@ class SalesItemPricing {
     //-- Instance variables ---------------------
 
     String name
-    BigDecimal quantity
+    BigDecimal quantity = 1.0
     String unit
     BigDecimal unitPrice
+    BigDecimal discountPercent
+    BigDecimal adjustment
     List<SalesItemPricingItem> items
 
 
@@ -111,7 +115,7 @@ class SalesItemPricing {
     BigDecimal getCurrentSum(Integer pos = items.size() - 1) {
         BigDecimal sum = 0.0
         for (int i = pos; i >= 0; --i) {
-            if (sum != items[i].type) {
+            if (PricingItemType.sum != items[i].type) {
                 sum += computeTotalOfItem(i)
             }
         }
@@ -133,5 +137,27 @@ class SalesItemPricing {
         }
 
         return -1
+    }
+
+    /**
+     * Gets the unit price of this sales item as ratio between the sum of all
+     * pricing items and the quantity.
+     *
+     * @return  the unit price of the sales item
+     */
+    BigDecimal getUnitPrice() {
+        unitPrice = ((getCurrentSum() / quantity) as Double).round(2)
+        return unitPrice
+    }
+
+    /**
+     * Gets the total price of this sales item as product of the unit price and
+     * the quantity.  The total price may differ from the sum of all pricing
+     * items due to rounding errors.
+     *
+     * @return  the total price of the sales item
+     */
+    BigDecimal getTotalPrice() {
+        return quantity * unitPrice
     }
 }

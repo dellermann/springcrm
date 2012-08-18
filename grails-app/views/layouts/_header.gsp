@@ -3,7 +3,7 @@
   <div id="search-area">
     <g:form controller="searchable" action="index" id="searchableForm" name="searchableForm" method="get">
       <g:textField id="search" name="q" />
-      <a href="#"><img src="${resource(dir:'img', file:'search.png')}" alt="${message(code:'default.search.button.label', default:'Search')}" title="${message(code:'default.search.button.label', default:'Search')}" width="16" height="16" /></a>
+      <img src="${resource(dir:'img', file:'search.png')}" alt="${message(code:'default.search.button.label', default:'Search')}" title="${message(code:'default.search.button.label', default:'Search')}" width="16" height="16" />
     </g:form>
   </div>
 </aside>

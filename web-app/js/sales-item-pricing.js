@@ -64,6 +64,14 @@
             "unitPercent", "unitPrice"
         ],
 
+        /**
+         * During finder mode the row that referring item currently is
+         * searched.
+         *
+         * @name    _$finderRow
+         * @type    jQuery
+         * @private
+         */
         _$finderRow: null,
 
         /**
@@ -92,6 +100,16 @@
          * @private
          */
         _form: null,
+
+        /**
+         * A regular expression which is applied to the names of input fields
+         * in order to obtain the index and field name.
+         *
+         * @name    _inputRegExp
+         * @type    RegExp
+         * @private
+         */
+        _inputRegExp: null,
 
         /**
          * Stores the reference to items for each pricing item.  The size and
@@ -150,59 +168,53 @@
                 s;
 
             currency = opts.currency;
-            s = '<tr><td headers="pricing-items-header-pos" ' +
-                'class="pricing-items-pos">' + String(index + 1) +
-                '.</td><td headers="pricing-items-header-quantity" ' +
-                'class="pricing-items-quantity"><input type="text" name="' +
+            s = '<tr><td class="pos number">' + String(index + 1) +
+                '.</td><td class="quantity number"><input type="text" name="' +
                 this._getInputName(index, "quantity") + '" size="6" /></td>' +
-                '<td headers="pricing-items-header-unit" ' +
-                'class="pricing-items-unit"><input type="text" name="' +
+                '<td class="unit"><input type="text" name="' +
                 this._getInputName(index, "unit") + '" size="7" /></td>' +
-                '<td headers="pricing-items-header-name" ' +
-                'class="pricing-items-name"><input type="text" name="' +
+                '<td class="name"><input type="text" name="' +
                 this._getInputName(index, "name") + '" size="30" /></td>' +
-                '<td headers="pricing-items-header-type" ' +
-                'class="pricing-items-type"><select name="' +
+                '<td class="type"><select name="' +
                 this._getInputName(index, "type") + '">' +
-                '<option value="absolute">' + $L("pricing.type.absolute") +
+                '<option value="absolute">' +
+                $L("salesItem.pricing.type.absolute") +
                 '</option><option value="relativeToPos">' +
-                $L("pricing.type.relativeToPos") +
+                $L("salesItem.pricing.type.relativeToPos") +
                 '</option><option value="relativeToLastSum">' +
-                $L("pricing.type.relativeToLastSum") +
+                $L("salesItem.pricing.type.relativeToLastSum") +
                 '</option><option value="relativeToCurrentSum">' +
-                $L("pricing.type.relativeToCurrentSum") +
+                $L("salesItem.pricing.type.relativeToCurrentSum") +
                 '</option><option value="sum">' +
-                $L("pricing.type.sum") + '</option></select></td>' +
-                '<td headers="pricing-items-header-relative-to-pos" ' +
-                'class="pricing-items-relative-to-pos"><input type="hidden" ' +
+                $L("salesItem.pricing.type.sum") + '</option></select></td>' +
+                '<td class="relative-to-pos"><input type="hidden" ' +
                 'name="' + this._getInputName(index, "relToPos") +
                 '" /><span style="display: none"><a href="#">' +
-                $L("pricing.relativeToPos.finder") +
+                $L("salesItem.pricing.relativeToPos.finder") +
                 '</a><strong></strong></span></td>' +
-                '<td headers="pricing-items-header-unit-percent" ' +
-                'class="pricing-items-unit-percent"><input type="text" name="' +
+                '<td class="unit-percent percentage number">' +
+                '<input type="text" name="' +
                 this._getInputName(index, "unitPercent") +
                 '" size="5" class="percent" /></td>' +
-                '<td headers="pricing-items-header-unit-price" ' +
-                'class="pricing-items-unit-price"><input type="text" name="' +
+                '<td class="unit-price currency number">' +
+                '<input type="text" name="' +
                 this._getInputName(index, "unitPrice") +
                 '" size="8" class="currency" />&nbsp;' + currency + '</td>' +
-                '<td headers="pricing-items-header-total" ' +
-                'class="pricing-items-total"><span class="value"></span>' +
-                '&nbsp;' + currency + '</td>' +
-                '<td class="pricing-items-buttons">';
+                '<td class="total-price currency number">' +
+                '<output></output>&nbsp;' + currency + '</td>' +
+                '<td class="action-buttons">';
             imgPath = opts.imgPath;
             if (imgPath) {
-                s += '<a href="#" class="up-btn"><img src="' + imgPath +
-                    '/up.png" alt="' + $L("default.btn.up") + '" title="' +
-                    $L("default.btn.up") + '" width="16" height="16" /></a>' +
-                    '<a href="#" class="down-btn"><img src="' + imgPath +
+                s += '<img class="up-btn" src="' + imgPath + '/up.png" alt="' +
+                    $L("default.btn.up") + '" title="' + $L("default.btn.up") +
+                    '" width="16" height="16" />' +
+                    '<img class="down-btn" src="' + imgPath +
                     '/down.png" alt="' + $L("default.btn.down") + '" title="' +
-                    $L("default.btn.down") + '" width="16" height="16" /></a>' +
-                    '<a href="#" class="remove-btn"><img src="' + imgPath +
+                    $L("default.btn.down") + '" width="16" height="16" />' +
+                    '<img class="remove-btn" src="' + imgPath +
                     '/remove.png" alt="' + $L("default.btn.remove") +
                     '" title="' + $L("default.btn.remove") +
-                    '" width="16" height="16" /></a>';
+                    '" width="16" height="16" />';
             }
             s += '</td></tr>';
 
@@ -211,7 +223,7 @@
             $row.appendTo($tbody);
             this._$trs = this._getRows();
             this._itemReferences.push(-1);
-            this._initUnitAutocomplete($row.find(".pricing-items-unit input"));
+            this._initUnitAutocomplete($row.find(".unit input"));
             if (jumpToNewRow) {
                 pos = $row.position().top - $("#toolbar").outerHeight();
                 $("html, body").animate({ scrollTop: pos }, "slow");
@@ -327,6 +339,9 @@
 
             opts.imgPath = opts.imgPath || el.data("img-path");
             opts.units = opts.units || el.data("units").split(",");
+            this._inputRegExp = new RegExp(
+                    "^" + opts.fieldNamePrefix + "\\[(\\d+)\\]\\.(\\w+)$"
+                );
 
             $form = el.parents("form")
                 /*.submit($.proxy(this._onSubmit, this))*/;
@@ -334,7 +349,7 @@
 
             el.change($.proxy(this._onChange, this))
                 .click($.proxy(this._onClick, this));
-            this._$tbody = el.find("> .pricing-items-body");
+            this._$tbody = el.find("> .items");
             this._$trs = $trs = this._getRows();
             $trs.each(function () {
                     var $tr = $(this),
@@ -348,6 +363,7 @@
                     itemReferences.push(ref);
                 });
             this._itemReferences = itemReferences;
+            this._updateReferenceClasses();
             this._nextIndex = numItems = $trs.length;
             if (numItems !== 0) {
                 this._initUnitAutocomplete();
@@ -357,18 +373,9 @@
                         return false;
                     }
                 );
-        },
-
-        /**
-         * Deletes the item reference entry at the given index.
-         *
-         * @function
-         * @name                _deleteItemReference
-         * @param {Number} idx  the given zero-based item index
-         * @private
-         */
-        _deleteItemReference: function (idx) {
-            this._itemReferences.splice(idx, 1);
+            $("#sales-item-pricing-quantity").change(
+                    $.proxy(this._onChangePricingQuantity, this)
+                );
         },
 
         /**
@@ -401,8 +408,8 @@
 
         /**
          * Gets the input control in the table cell with the given name in the
-         * given item.  In case of name <code>total</code> the
-         * <code>&lt;span></code> object is returned.
+         * given item.  In case of name <code>total-price</code> the
+         * <code>&lt;output></code> object is returned.
          *
          * @function
          * @name                        _getField
@@ -410,21 +417,21 @@
          *                              the table row representing the item
          * @param {String} name         the given name of the table cell
          * @returns {jQuery}            the input control or the
-         *                              <code>&lt;span></code> object
+         *                              <code>&lt;output></code> object
          * @private
          */
         _getField: function (item, name) {
-            var sel = (name === "total") ? ".value" : ":input";
+            var sel = (name === "total-price") ? "output" : ":input";
 
             item = this._getRow(item);
-            return $("> .pricing-items-" + name + " > " + sel, item);
+            return $("> ." + name + " > " + sel, item);
         },
 
         /**
          * Gets the value of the input control in the table cell with the given
-         * name in the given item.  In case of name <code>total</code> the text
-         * of the <code>&lt;span></code> object is returned.  Numeric values
-         * are parsed before returned.
+         * name in the given item.  In case of name <code>total-price</code>
+         * the text of the <code>&lt;output></code> object is returned.
+         * Numeric values are parsed before returned.
          *
          * @function
          * @name                        _getFieldVal
@@ -438,16 +445,51 @@
          */
         _getFieldVal: function (item, name) {
             var $field = this._getField(item, name),
-                val = (name === "total") ? $field.text() : $field.val();
+                val = (name === "total-price") ? $field.text() : $field.val();
 
             if ((name === "quantity") || (name === "unit-percent")
-                || (name === "unit-price") || (name === "total"))
+                || (name === "unit-price") || (name === "total-price"))
             {
                 val = $.parseNumber(val);
             } else if (name === "relative-to-pos") {
                 val = (val === "") ? -1 : $.parseNumber(val);
             }
             return val;
+        },
+
+        /**
+         * Gets the index of the item with the given table item or index in the
+         * table.
+         *
+         * @function
+         * @name                        _getIndex
+         * @param {jQuery|Number} item  either the given zero-based index or
+         *                              the table row representing the item
+         * @returns {Number}            the zero-based index or -1 if the item
+         *                              was not found
+         * @private
+         */
+        _getIndex: function (item) {
+            return (typeof item === "number") ? item : this._$trs.index(item);
+        },
+
+        /**
+         * Returns the input field with the given name and item index.
+         *
+         * @function
+         * @name                        _getInput
+         * @param {Number} index        the zero-based index of the item
+         * @param {String} [name=""]    the name of the field
+         * @param {String} [suffix=""]  a suffix which is to append to the
+         *                              field name prefix defined in the
+         *                              options
+         * @returns {Object}            the DOM element representing the input
+         *                              field; <code>null</code> if no such
+         *                              input field exists
+         * @private
+         */
+        _getInput: function (index, name, suffix) {
+            return this._form.elements[this._getInputName(index, name, suffix)];
         },
 
         /**
@@ -499,22 +541,6 @@
                 });
 
             return res;
-        },
-
-        /**
-         * Gets the index of the item with the given table item or index in the
-         * table.
-         *
-         * @function
-         * @name                        _getIndex
-         * @param {jQuery|Number} item  either the given zero-based index or
-         *                              the table row representing the item
-         * @returns {Number}            the zero-based index or -1 if the item
-         *                              was not found
-         * @private
-         */
-        _getIndex: function (item) {
-            return (typeof item === "number") ? item : this._$trs.index(item);
         },
 
         /**
@@ -621,13 +647,16 @@
          * @private
          */
         _initUnitAutocomplete: function ($input) {
-            var units = this.options.units;
+            var data,
+                units = this.options.units;
 
             if (units) {
+                data = { source: units };
                 if (!$input) {
-                    $input = $(".pricing-items-unit input");
+                    $input = $(".unit input");
                 }
-                $input.autocomplete({ source: units });
+                $input.autocomplete(data);
+                $("#sales-item-pricing-unit").autocomplete(data);
             }
         },
 
@@ -654,7 +683,7 @@
                 $destTr.after($tr);
             }
 
-            /* swap input name positions and item positions */
+            /* swap input name positions, item positions, and references */
             if ($destTr) {
                 this._swapInputItemPos($tr, $destTr);
                 this._swapItemPos($tr, $destTr);
@@ -678,24 +707,34 @@
                 $tr = $td.parent(),
                 idx;
 
-            if ($td.hasClass("pricing-items-quantity")
-                || $td.hasClass("pricing-items-unit-percent")
-                || $td.hasClass("pricing-items-unit-price"))
+            if ($td.hasClass("quantity") || $td.hasClass("unit-percent")
+                || $td.hasClass("unit-price"))
             {
                 this._updateItems();
-            } else if ($td.hasClass("pricing-items-type")) {
+            } else if ($td.hasClass("type")) {
                 this._initItemCtrls.call(this, $tr);
                 if ($target.val() === "relativeToPos") {
                     idx = this._getFieldVal($tr, "relative-to-pos");
                     idx = (idx < 0) ? "" : String(idx + 1) + ".";
-                    $tr.find("> .pricing-items-relative-to-pos > span")
+                    $tr.find("> .relative-to-pos > span")
                         .fadeIn();
                 } else {
-                    $tr.find("> .pricing-items-relative-to-pos > span")
+                    $tr.find("> .relative-to-pos > span")
                         .fadeOut();
                 }
                 this._updateItems();
             }
+        },
+
+        /**
+         * Called if the quantity in the unit pricing section has been changed.
+         *
+         * @function
+         * @name        _onChangePricingQuantity
+         * @private
+         */
+        _onChangePricingQuantity: function () {
+            this._updateItems();
         },
 
         /**
@@ -707,44 +746,68 @@
          * @private
          */
         _onClick: function (event) {
-            var $a,
-                $finderRow = this._$finderRow,
+            var $finderRow = this._$finderRow,
+                $img,
                 $target = $(event.target),
-                $td,
-                $tr,
-                k,
-                v;
+                $tr;
 
             if ($finderRow) {
-                $tr = $target.closest("tr");
-                if (!$tr.is($finderRow)) {
-                    k = this._getIndex($finderRow);
-                    v = this._getIndex($tr);
-                    this._itemReferences[k] = v;
-                    $finderRow.find("> .pricing-items-relative-to-pos > span")
-                        .find("> strong")
-                            .text(String(v + 1))
-                        .end()
-                        .find("> input")
-                            .val(v);
-                    this._setFieldVal($finderRow, "relative-to-pos", v);
-                    this._updateItems();
-                }
-                this._stopFinderMode();
+                this._onClickReferenceItem($target);
                 return false;
             }
 
-            $a = $target.closest("a");
-            $td = $target.closest("td");
-            $tr = $td.parent();
-            if ($a.hasClass("up-btn")) {
+            $img = $target.closest("img");
+            $tr = $target.closest("td").parent();
+            if ($img.hasClass("up-btn")) {
                 this._moveItem($tr, -1);
-            } else if ($a.hasClass("down-btn")) {
+                return false;
+            }
+            if ($img.hasClass("down-btn")) {
                 this._moveItem($tr, 1);
-            } else if ($td.hasClass("pricing-items-relative-to-pos")) {
+                return false;
+            }
+            if ($img.hasClass("remove-btn")) {
+                if (!$tr.hasClass("not-removable")) {
+                    this._removeItem($tr);
+                }
+                return false;
+            }
+            if ($img.is(".relative-to-pos img")) {
                 this._startFinderMode($tr);
                 return false;
             }
+        },
+
+        /**
+         * Called if the user is in "find reference item" mode and has clicked
+         * the reference item.
+         *
+         * @function
+         * @name                    _onClickReferenceItem
+         * @param {jQuery} $target  the clicked element
+         * @private
+         */
+        _onClickReferenceItem: function ($target) {
+            var $finderRow = this._$finderRow,
+                $tr = $target.closest("tr"),
+                k,
+                v;
+
+            if (!$tr.is($finderRow)) {
+                k = this._getIndex($finderRow);
+                v = this._getIndex($tr);
+                this._itemReferences[k] = v;
+                $finderRow.find("> .relative-to-pos > span")
+                    .find("> strong")
+                        .text(String(v + 1))
+                    .end()
+                    .find("> input")
+                        .val(v);
+                this._setFieldVal($finderRow, "relative-to-pos", v);
+                this._updateReferenceClasses();
+                this._updateItems();
+            }
+            this._stopFinderMode();
         },
 
         /**
@@ -762,10 +825,89 @@
         },
 
         /**
+         * Removes the given pricing item.
+         *
+         * @function
+         * @name                        _removeItem
+         * @param {jQuery|Number} item  either the given zero-based index or
+         *                              the table row representing the item
+         * @private
+         */
+        _removeItem: function (item) {
+            var $ = jQuery,
+                el,
+                fieldPrefix = this.options.fieldNamePrefix,
+                index = this._getIndex(item),
+                re = this._inputRegExp;
+
+            /* unset the ID value to cause Grails delete the record */
+            el = this._getInput(index, "id");
+            if (el) {
+                el.value = "null";
+            }
+
+            /* fix row position labels and input names of all successing rows */
+            this._getRow(item)
+                .nextAll()
+                    .each(function (i) {
+                        var $this = $(this),
+                            idx = index,
+                            prefix = fieldPrefix,
+                            regexp = re;
+
+                        $this.find("td:first-child")
+                            .text(String(idx + i + 1) + ".");
+
+                        /*
+                         * input names are fixed after deleting new items, only
+                         */
+                        if (!el) {
+                            $this.find(":input")
+                                .each(function () {
+                                    var parts = this.name.match(regexp);
+
+                                    if (parts) {
+                                        this.name = prefix + "["
+                                            + String(idx + i) + "]."
+                                            + parts[2];
+                                    }
+                                });
+                        }
+                    })
+                .end()
+                .remove();
+            this._$trs = this._getRows();
+            this._removeItemReference(item);
+            this._updateItems();
+        },
+
+        /**
+         * Removes the item reference entry at the given index.
+         *
+         * @function
+         * @name                _deleteItemReference
+         * @param {Number} idx  the given zero-based item index
+         * @private
+         */
+        _removeItemReference: function (idx) {
+            var i = -1,
+                refs = this._itemReferences,
+                n;
+
+            refs.splice(idx, 1);
+            n = refs.length;
+            while (++i < n) {
+                if (refs[i] > idx) {
+                    --refs[i];
+                }
+            }
+        },
+
+        /**
          * Sets the value of the input control in the table cell with the given
-         * name in the given item.  In case of name <code>total</code> the text
-         * of the <code>&lt;span></code> object is set.  Numeric values are
-         * formatted before returned.
+         * name in the given item.  In case of name <code>total-price</code>
+         * the text of the <code>&lt;output></code> object is set.  Numeric
+         * values are formatted before returned.
          *
          * @function
          * @name                        _setFieldVal
@@ -783,10 +925,10 @@
             if ((name === "quantity") || (name === "unit-percent")) {
                 val = $.formatNumber(val);
             }
-            if ((name === "unit-price") || (name === "total")) {
+            if ((name === "unit-price") || (name === "total-price")) {
                 val = $.formatCurrency(val);
             }
-            if (name === "total") {
+            if (name === "total-price") {
                 $field.text(val);
             } else {
                 $field.val(val);
@@ -812,7 +954,7 @@
             var $tr = this._getRow(item),
                 idx = this._getIndex(refItem);
 
-            $tr.find("> .pricing-items-relative-to-pos")
+            $tr.find("> .relative-to-pos")
                 .find("> strong")
                     .text(String(idx + 1))
                 .end()
@@ -987,7 +1129,7 @@
                 this._setFieldVal(item, "unit-price", unitPrice);
             }
             if (totalPrice !== null) {
-                this._setFieldVal(item, "total", totalPrice);
+                this._setFieldVal(item, "total-price", totalPrice);
             }
         },
 
@@ -1000,12 +1142,51 @@
          * @private
          */
         _updateItems: function () {
-            var self = this;
+            var quantity,
+                self = this,
+                sum = this._getCurrentSum(),
+                sumText = $.formatCurrency(sum),
+                unitPrice;
 
             this._$trs.each(function () {
                     self._updateItem($(this));
                 });
-            $("#pricing-items-total").text($.formatCurrency(this._getCurrentSum()));
+            $("#pricing-total-price").text(sumText);
+
+            quantity = $.parseNumber($("#sales-item-pricing-quantity").val());
+            unitPrice = (sum / quantity).toFixed(2);
+            $("#calculated-unit-price").text($.formatCurrency(unitPrice));
+            $("#sales-pricing-unit-price").text($.formatCurrency(unitPrice));
+        },
+
+        /**
+         * Updates the class names for each row in the pricing table.  If a row
+         * is references by another one class "not-removable" is added.
+         *
+         * @function
+         * @name        _updateReferenceClasses
+         * @private
+         */
+        _updateReferenceClasses: function () {
+            var $L = $LANG,
+                self = this,
+                textNotRemovable = $L("salesItem.pricing.button.notRemovable"),
+                textRemovable = $L("default.btn.remove");
+
+            this._$trs.each(function (i) {
+                    var $this = $(this),
+                        referrers = self._getReferrers(i);
+
+                    if (referrers.length) {
+                        $this.addClass("not-removable")
+                            .find(".remove-btn img")
+                                .attr("title", textNotRemovable);
+                    } else {
+                        $this.removeClass("not-removable")
+                            .find(".remove-btn img")
+                                .attr("title", textRemovable);
+                    }
+                });
         }
     });
     /**#@-*/

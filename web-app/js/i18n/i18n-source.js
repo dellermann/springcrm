@@ -84,10 +84,11 @@
     'person.addr.fromOrgShippingAddr',
     'person.mailingAddr.copy',
     'person.otherAddr.copy',
-    'pricing.relativeToPos.finder',
-    'pricing.type.absolute',
-    'pricing.type.relativeToCurrentSum',
-    'pricing.type.relativeToLastSum',
-    'pricing.type.relativeToPos',
-    'pricing.type.sum'
+    'salesItem.pricing.button.notRemovable',
+    'salesItem.pricing.relativeToPos.finder',
+    'salesItem.pricing.type.absolute',
+    'salesItem.pricing.type.relativeToCurrentSum',
+    'salesItem.pricing.type.relativeToLastSum',
+    'salesItem.pricing.type.relativeToPos',
+    'salesItem.pricing.type.sum'
 ];

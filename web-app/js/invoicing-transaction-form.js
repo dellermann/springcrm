@@ -42,7 +42,7 @@
                 $L = $LANG,
                 el = this.element;
 
-            el.find(".invoicing-items")
+            el.find(".price-table")
                     .invoicingitems()
                 .end()
                 .find("#organization")
@@ -102,7 +102,7 @@
         _getTotal: function () {
             var $ = jQuery;
 
-            return $.parseNumber($("#invoicing-items-total").text());
+            return $.parseNumber($("#total-price").text());
         },
 
         _getUnpaid: function () {
