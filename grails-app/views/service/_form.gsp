@@ -159,8 +159,8 @@
     <tbody>
       <tr>
         <td><g:message code="service.pricing.salesPricing.soldFor" /></td>
-        <td class="quantity number"><input type="text" name="serviceInstance.quantity" size="6" value="${formatNumber(number: serviceInstance.quantity, maxFractionDigits: 3)}" /></td>
-        <td class="unit"><input type="text" name="serviceInstance.unit" size="8" value="${serviceInstance.unit}" /></td>
+        <td class="quantity number"><input id="sales-pricing-quantity" type="text" name="serviceInstance.quantity" size="6" value="${formatNumber(number: serviceInstance.quantity, maxFractionDigits: 3)}" /></td>
+        <td class="unit"><input id="sales-pricing-unit" type="text" name="serviceInstance.unit" size="8" value="${serviceInstance.unit}" /></td>
         <td></td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.salesPricing.per" /></td>
         <td class="unit-price currency number"><output id="sales-pricing-unit-price">${formatNumber(number: serviceInstance.unitPrice, minFractionDigits: 2)}</output>&nbsp;<g:currency /></td> 
@@ -171,7 +171,7 @@
         <td><g:message code="service.pricing.salesPricing.discount" /></td>
         <td></td>
         <td></td>
-        <td class="percent number"><input type="text" name="serviceInstance.pricing.discountPercent" size="5" value="${formatNumber(number: serviceInstance.pricing.discountPercent, minFractionDigits: 2)}" class="percent" /></td>
+        <td class="percentage number"><input id="sales-pricing-discount-percent" type="text" name="serviceInstance.pricing.discountPercent" size="5" value="${formatNumber(number: serviceInstance.pricing.discountPercent, minFractionDigits: 2)}" class="percent" /></td>
         <td></td>
         <td></td> 
         <td class="total-price currency number"><output id="sales-pricing-discount-percent-amount">${formatNumber(number: serviceInstance.salesPriceDiscountPercentAmount, minFractionDigits: 2)}</output>&nbsp;<g:currency /></td> 
@@ -183,7 +183,7 @@
         <td></td>
         <td></td>
         <td></td> 
-        <td class="currency number"><input type="text" name="serviceInstance.pricing.adjustment" size="8" value="${formatNumber(number: serviceInstance.pricing.adjustment, minFractionDigits: 2)}" />&nbsp;<g:currency /></td> 
+        <td class="currency number"><input id="sales-pricing-adjustment" type="text" name="serviceInstance.pricing.adjustment" size="8" value="${formatNumber(number: serviceInstance.pricing.adjustment, minFractionDigits: 2)}" />&nbsp;<g:currency /></td> 
       </tr>
     </tbody>
   </table>

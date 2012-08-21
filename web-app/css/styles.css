@@ -1292,6 +1292,11 @@ form .price-table .pos {
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
 }
+#pricing-sales-pricing .quantity, #pricing-sales-pricing .unit, 
+  #pricing-sales-pricing .percentage 
+{
+  width: 7.5em;
+}
 #pricing-sales-pricing .unit-price-label {
   text-align: right;
 }

@@ -376,6 +376,9 @@
             $("#sales-item-pricing-quantity").change(
                     $.proxy(this._onChangePricingQuantity, this)
                 );
+            $("#pricing-sales-pricing").change(
+                    $.proxy(this._onChangeSalesPricing, this)
+                );
         },
 
         /**
@@ -653,10 +656,15 @@
             if (units) {
                 data = { source: units };
                 if (!$input) {
-                    $input = $(".unit input");
+                    $input = this.element.find(".unit input");
                 }
                 $input.autocomplete(data);
                 $("#sales-item-pricing-unit").autocomplete(data);
+                $("#sales-pricing-unit").autocomplete(data)
+                    .bind(
+                        "autocompletechange",
+                        $.proxy(this._onChangeSalesPricing, this)
+                    );
             }
         },
 
@@ -735,6 +743,18 @@
          */
         _onChangePricingQuantity: function () {
             this._updateItems();
+        },
+
+        /**
+         * Called if an input control in the sales pricing section has been
+         * changed.
+         *
+         * @function
+         * @name        _onChangeSalesPricing
+         * @private
+         */
+        _onChangeSalesPricing: function () {
+            this._updateSalesPricing();
         },
 
         /**
@@ -1135,11 +1155,13 @@
 
         /**
          * Updates the computable fields of all items and updates the total sum
-         * of the pricing table.
+         * of the pricing table.  Furthermore, the function updates the
+         * computable fields in the sales pricing section.
          *
          * @function
          * @name        _updateItems
          * @private
+         * @see         #_updateSalesPricing
          */
         _updateItems: function () {
             var quantity,
@@ -1157,6 +1179,7 @@
             unitPrice = (sum / quantity).toFixed(2);
             $("#calculated-unit-price").text($.formatCurrency(unitPrice));
             $("#sales-pricing-unit-price").text($.formatCurrency(unitPrice));
+            this._updateSalesPricing();
         },
 
         /**
@@ -1187,6 +1210,44 @@
                                 .attr("title", textRemovable);
                     }
                 });
+        },
+
+        /**
+         * Updates the computed fields in the sales pricing section.
+         *
+         * @function
+         * @name        _updateSalesPricing
+         * @private
+         */
+        _updateSalesPricing: function () {
+            var $ = jQuery,
+                adjustment = $.parseNumber(
+                        $("#sales-pricing-adjustment").val()
+                    ),
+                discountPercent = $.parseNumber(
+                        $("#sales-pricing-discount-percent").val()
+                    ),
+                discountPercentAmount,
+                qty = $.parseNumber($("#sales-pricing-quantity").val()),
+                totalPrice,
+                unit = $("#sales-pricing-unit").val(),
+                unitPrice = $.parseNumber(
+                        $("#sales-pricing-unit-price").text()
+                    );
+
+            totalPrice = qty * unitPrice;
+            $("#sales-pricing-total-price").text($.formatCurrency(totalPrice));
+            discountPercentAmount = discountPercent * totalPrice / 100;
+            $("#sales-pricing-discount-percent-amount")
+                .text($.formatCurrency(discountPercentAmount));
+            totalPrice -= discountPercentAmount;
+            totalPrice += adjustment;
+            $("#sales-pricing-total").text($.formatCurrency(totalPrice));
+            $("#sales-pricing-total-unit-price")
+                .text($.formatCurrency(totalPrice / qty));
+
+            $("#sales-pricing-total-quantity").text(qty);
+            $("#sales-pricing-total-unit").text(unit);
         }
     });
     /**#@-*/
