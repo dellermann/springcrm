@@ -26,54 +26,55 @@ import org.codehaus.groovy.grails.commons.GrailsClass
 /**
  * The class {@code ViewFilters} contains various filters concerning the view.
  *
- * @author	Daniel Ellermann
- * @version 0.9
+ * @author  Daniel Ellermann
+ * @version 1.2
  */
 class ViewFilters {
 
-	def dependsOn = [LoginFilters]
+    def dependsOn = [LoginFilters]
 
-	def filters = {
-		pagination(controller: '*', action: 'list') {
-			def sessionKey = { String name ->
-				String key = name + controllerName.capitalize()
-				if (params.type) key += params.type
-				return key
-			}
+    def filters = {
+        pagination(controller: '*', action: 'list') {
+            def sessionKey = { String name ->
+                String key = name + controllerName.capitalize()
+                if (params.type) key += params.type
+                return key
+            }
 
-			before = {
-				def f = { pk, s, sk ->
-					if (params[pk] == null) params[pk] = s[sk]
-					else s[sk] = params[pk]
-				}
+            before = {
+                def f = { pk, s, sk ->
+                    if (params[pk] == null) params[pk] = s[sk]
+                    else s[sk] = params[pk]
+                }
 
-				/* store or restore offset */
-				String key = sessionKey('offset')
-				f('offset', session, key)
+                /* store or restore offset */
+                String key = sessionKey('offset')
+                f('offset', session, key)
 
-				/* compute number of entries of the associated domain */
-				GrailsClass cls =
-					grailsApplication.getArtefactByLogicalPropertyName(
-						'Domain', controllerName
-					)
-				int count = cls.clazz.'count'()
-				int max = Math.min(params.max ? params.int('max') : 10, 100)
-				int maxOffset = Math.floor((count - 1) / max) * max
-				params.offset = Math.min(maxOffset, params.int('offset') ?: 0)
-				session[key] = params.offset
+                /* compute number of entries of the associated domain */
+                GrailsClass cls =
+                    grailsApplication.getArtefactByLogicalPropertyName(
+                        'Domain', controllerName
+                    )
+                int count = cls.clazz.'count'()
+                int max = Math.min(params.max ? params.int('max') : 10, 100)
+                int maxOffset = Math.floor((count - 1) / max) * max
+                params.offset = Math.min(maxOffset, params.int('offset') ?: 0)
+                session[key] = params.offset
 
-				/* store or restore sorting and order */
-				String name = controllerName.capitalize()
-				User user = User.get(session.user.id)
-				f('sort', user.settings, "sort${name}")
-				f('order', user.settings, "order${name}")
-				user.save(flush: true)
-			}
+                /* store or restore sorting and order */
+                String name = controllerName.capitalize()
+                User user = session.user
+                if (!user.attached) user.attach()
+                f('sort', user.settings, "sort${name}")
+                f('order', user.settings, "order${name}")
+                user.save(flush: true)
+            }
 
-			after = {
-				session[sessionKey('offset')] = params.offset
-			}
-		}
+            after = {
+                session[sessionKey('offset')] = params.offset
+            }
+        }
 
         selectorView(controller: '*', action: 'list') {
             after = { model ->
@@ -99,13 +100,15 @@ class ViewFilters {
             }
         }
 
-		invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice', action: 'create|edit|copy|save|update') {
-			after = { model ->
-				if (model) {
-					model.units = Unit.list(sort: 'orderId')
-					model.taxRates = TaxRate.list(sort: 'orderId')
-				}
-			}
-		}
-	}
+        invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice',
+                       action: 'create|edit|copy|save|update')
+        {
+            after = { model ->
+                if (model) {
+                    model.units = Unit.list(sort: 'orderId')
+                    model.taxRates = TaxRate.list(sort: 'orderId')
+                }
+            }
+        }
+    }
 }
