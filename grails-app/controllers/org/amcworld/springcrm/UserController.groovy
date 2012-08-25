@@ -28,8 +28,8 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code UserController} contains methods which manager the users of
  * the application.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.2
  */
 class UserController {
 
@@ -58,11 +58,11 @@ class UserController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.letter) {
-			int num = User.countByUserNameLessThan(params.letter)
-			params.sort = 'userName'
-			params.offset = Math.floor(num / params.max) * params.max
-		}
+        if (params.letter) {
+            int num = User.countByUserNameLessThan(params.letter)
+            params.sort = 'userName'
+            params.offset = Math.floor(num / params.max) * params.max
+        }
         return [userInstanceList: User.list(params), userInstanceTotal: User.count()]
     }
 
@@ -86,11 +86,11 @@ class UserController {
         params.id = userInstance.ident()
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: userInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'show', id: userInstance.id)
+        }
     }
 
     def show() {
@@ -133,27 +133,27 @@ class UserController {
         }
 
         boolean passwordMismatch = false
-		String passwd = userInstance.password
+        String passwd = userInstance.password
         userInstance.properties = params
-		if (params.password) {
+        if (params.password) {
             passwordMismatch = params.password != securityService.encryptPassword(params.passwordRepeat)
             if (passwordMismatch) {
                 userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
             }
-		} else {
-			userInstance.password = passwd
-		}
+        } else {
+            userInstance.password = passwd
+        }
         if (passwordMismatch || !userInstance.save(flush: true)) {
             render(view: 'edit', model: [userInstance: userInstance])
             return
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: userInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect(url: params.returnUrl)
+        } else {
+            redirect(action: 'show', id: userInstance.id)
+        }
     }
 
     def delete() {
@@ -171,18 +171,18 @@ class UserController {
         try {
             userInstance.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect(url: params.returnUrl)
+            } else {
+                redirect(action: 'list')
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User')])
             redirect(action: 'show', id: params.id)
         }
     }
 
-	def login() {
+    def login() {
         def installStatus = org.amcworld.springcrm.Config.findByName('installStatus')
         if (!installStatus || !installStatus.value) {
             installService.enableInstaller()
@@ -191,33 +191,33 @@ class UserController {
         }
     }
 
-	def authenticate() {
-		def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
-		if (!userInstance) {
+    def authenticate() {
+        def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
+        if (!userInstance) {
             flash.message = message(code: 'user.authenticate.failed.message', default: 'Invalid user name or password. Please retry.')
             redirect(action: 'login')
             return
-		}
+        }
 
-		session.user = userInstance
+        session.user = userInstance
         def language = userInstance.settings['language']
         if (language) {
             session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(language)
         }
-		redirect(uri: '/')
-	}
+        redirect(uri: '/')
+    }
 
-	def logout() {
-		flash.message = message(code: 'user.logout.message', default: 'You were logged out.')
-		session.user = null
-		session.invalidate()
-		redirect(action: 'login')
-	}
+    def logout() {
+        flash.message = message(code: 'user.logout.message', default: 'You were logged out.')
+        session.user = null
+        session.invalidate()
+        redirect(action: 'login')
+    }
 
-	def storeSetting() {
+    def storeSetting() {
         storeUserSetting(params.key, params.value)
-		render(status: 200)
-	}
+        render(status: 200)
+    }
 
     def settingsIndex() {}
 
@@ -291,10 +291,9 @@ class UserController {
      * @since       1.0
      */
     protected void storeUserSetting(String key, String value) {
-        User sessionUser = session.user
-        User dbUser = User.get(sessionUser.id)
-        sessionUser.settings[key] = value
-        dbUser.settings[key] = value
-        dbUser.save(flush: true)
+        User user = session.user
+        if (!user.attached) user.attach()
+        user.settings[key] = value
+        user.save(flush: true)
     }
 }
