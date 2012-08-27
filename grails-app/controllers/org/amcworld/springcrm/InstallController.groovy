@@ -31,7 +31,7 @@ import groovy.sql.Sql
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class InstallController {
 
@@ -52,8 +52,9 @@ class InstallController {
 
     def installBaseDataSave() {
         InputStream is = installService.loadPackage(params.package)
+        Reader r = is.newReader('utf-8')
         Sql sql = new Sql(sessionFactory.currentSession.connection())
-        is.eachLine { sql.execute(it) }
+        r.eachLine { sql.execute(it) }
         redirect(action: 'clientData')
     }
 
