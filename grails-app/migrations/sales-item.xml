@@ -2,7 +2,7 @@
 
 <!--
 
- db-2012-07-28.xml
+ sales-item.xml
 
  Copyright (c) 2011-2012, Daniel Ellermann
 
@@ -25,6 +25,9 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!-- Table definitions -->
+
   <changeSet author="d.ellermann@amc-world.de" id="20120728-1">
     <createTable tableName="sales_item">
       <column autoIncrement="true" name="id" type="bigint">
@@ -104,6 +107,10 @@
       <column name="number" />
     </createIndex>
   </changeSet>
+
+
+  <!-- Data refactoring -->
+
   <changeSet author="d.ellermann@amc-world.de" id="20120728-2">
     <sql>
       INSERT INTO sales_item (
@@ -114,12 +121,12 @@
         )
         SELECT version, date_created, description, last_updated, name, number,
             purchase_price, quantity, sales_end, sales_start, tax_rate_id, 'P',
-            unit_id, unit_price, 'org.amcworld.springcrm.Product', category_id, 
+            unit_id, unit_price, 'org.amcworld.springcrm.Product', category_id,
             manufacturer, retailer, weight
           FROM product;
       INSERT INTO sales_item (
           version, date_created, description, last_updated, name, number,
-          quantity, sales_end, sales_start, tax_rate_id, type, unit_id, 
+          quantity, sales_end, sales_start, tax_rate_id, type, unit_id,
           unit_price, class, category_id
         )
         SELECT version, date_created, description, last_updated, name, number,
@@ -128,6 +135,10 @@
           FROM service;
     </sql>
   </changeSet>
+
+
+  <!-- Table deletion -->
+
   <changeSet author="d.ellermann@amc-world.de" id="20120728-3">
     <dropTable tableName="product" />
     <dropTable tableName="service" />

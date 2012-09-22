@@ -43,6 +43,9 @@ class SalesItemPricing {
         items(minSize: 1)
     }
     static hasMany = [items: SalesItemPricingItem, salesItems: SalesItem]
+    static transients = [
+        'discountPercentAmount', 'step1TotalPrice', 'step1UnitPrice', 'step2Total', 'step2TotalUnitPrice', 'step3TotalPrice'
+    ]
 
 
     //-- Instance variables ---------------------
@@ -122,6 +125,11 @@ class SalesItemPricing {
         return sum
     }
 
+    BigDecimal getDiscountPercentAmount() {
+        def total = step1TotalPrice
+        return discountPercent ? total * discountPercent / 100.0 : 0.0
+    }
+
     /**
      * Gets the last position of the item of type {@code SUM}.
      *
@@ -140,24 +148,34 @@ class SalesItemPricing {
     }
 
     /**
-     * Gets the unit price of this sales item as ratio between the sum of all
-     * pricing items and the quantity.
+     * Gets the total price of this sales item in step 1 as sum of all pricing
+     * items.
      *
-     * @return  the unit price of the sales item
+     * @return  the total price of the sales item in step 1
      */
-    BigDecimal getUnitPrice() {
-        unitPrice = ((getCurrentSum() / quantity) as Double).round(2)
-        return unitPrice
+    BigDecimal getStep1TotalPrice() {
+        return getCurrentSum()
     }
 
     /**
-     * Gets the total price of this sales item as product of the unit price and
-     * the quantity.  The total price may differ from the sum of all pricing
-     * items due to rounding errors.
+     * Gets the unit price of this sales item in step 1 as ratio between the
+     * sum of all pricing items and the quantity.
      *
-     * @return  the total price of the sales item
+     * @return  the unit price of the sales item in step 1
      */
-    BigDecimal getTotalPrice() {
-        return quantity * unitPrice
+    BigDecimal getStep1UnitPrice() {
+        return step1TotalPrice / quantity
+    }
+
+    BigDecimal getStep2Total() {
+        return step1TotalPrice - discountPercentAmount + (adjustment ?: 0.0)
+    }
+
+    BigDecimal getStep2TotalUnitPrice() {
+        return step2Total / quantity
+    }
+
+    BigDecimal getStep3TotalPrice() {
+        return step2Total
     }
 }

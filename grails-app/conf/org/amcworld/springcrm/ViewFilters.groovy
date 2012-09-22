@@ -100,7 +100,7 @@ class ViewFilters {
             }
         }
 
-        invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice',
+        invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice|product|service',
                        action: 'create|edit|copy|save|update')
         {
             after = { model ->

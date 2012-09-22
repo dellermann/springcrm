@@ -29,7 +29,7 @@ body {
     "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
 }
 button, input, select, textarea {
-  font: 99% "Varela Round", "DejaVu Sans Condensed", "DejaVu Sans", 
+  font: 99% "Varela Round", "DejaVu Sans Condensed", "DejaVu Sans",
     "Helvetica Neue LT Std", Tahoma, Arial, sans-serif;
 }
 code, kbd, pre, samp, tt, xmp {
@@ -533,7 +533,7 @@ footer {
 .align-right {
   text-align: right;
 }
- 
+
 /* headers */
 .header-with-menu {
   -moz-box-sizing: border-box;
@@ -1027,10 +1027,10 @@ fieldset .col-l ~ .col-r, .col-r .fieldset-content,
 }
 
 /* form controls */
-button, input[type=button], input[type=date], input[type=datetime], 
+button, input[type=button], input[type=date], input[type=datetime],
   input[type=datetime-local], input[type=email], input[type=file],
-  input[type=month], input[type=number], input[type=password], 
-  input[type=range], input[type=reset], input[type=search], input[type=submit], 
+  input[type=month], input[type=number], input[type=password],
+  input[type=range], input[type=reset], input[type=search], input[type=submit],
   input[type=tel], input[type=text], input[type=time], input[type=url],
   input[type=week], select, textarea
 {
@@ -1040,11 +1040,11 @@ button, input[type=button], input[type=date], input[type=datetime],
   border: .1em solid #6C8F18;
   border-radius: .2em;
 }
-input[type=date], input[type=datetime], input[type=datetime-local], 
-  input[type=email], input[type=file], input[type=month], input[type=number], 
-  input[type=password], input[type=range], input[type=search], input[type=tel], 
-  input[type=text], input[type=time], input[type=url], input[type=week], 
-  textarea 
+input[type=date], input[type=datetime], input[type=datetime-local],
+  input[type=email], input[type=file], input[type=month], input[type=number],
+  input[type=password], input[type=range], input[type=search], input[type=tel],
+  input[type=text], input[type=time], input[type=url], input[type=week],
+  textarea
 {
   padding: .1em .2em;
 }
@@ -1118,13 +1118,13 @@ button.springcrm-autocompleteex-combobox {
 .auto-number label {
   top: -.4em !important;
 }
-.error input[type=date], .error input[type=datetime], 
-  .error input[type=datetime-local], .error input[type=email], 
+.error input[type=date], .error input[type=datetime],
+  .error input[type=datetime-local], .error input[type=email],
   .error input[type=file], .error input[type=month], .error input[type=number],
-  .error input[type=password], .error input[type=range], 
-  .error input[type=search], .error input[type=tel], .error input[type=text], 
+  .error input[type=password], .error input[type=range],
+  .error input[type=search], .error input[type=tel], .error input[type=text],
   .error input[type=time], .error input[type=url], .error input[type=week],
-  .error select, .error textarea 
+  .error select, .error textarea
 {
   border: .1em solid #B51419;
 }
@@ -1227,8 +1227,8 @@ form .price-table .pos {
 .price-table .item-number, .price-table .type {
   text-align: center;
 }
-.price-table .pos, .price-table .number, .price-table .label, 
-  .price-table .number input 
+.price-table .pos, .price-table .number, .price-table .label,
+  .price-table .number input
 {
   text-align: right;
 }
@@ -1270,35 +1270,35 @@ form .price-table .pos {
   cursor: pointer;
   vertical-align: middle;
 }
-#pricing-items .calculated-unit-price {
+#step1-pricing-items .step1-unit-price {
   font-weight: bold;
 }
-#pricing-items .relative-to-pos img {
+#step1-pricing-items .relative-to-pos img {
   vertical-align: middle;
 }
-#pricing-items .relative-to-pos strong {
+#step1-pricing-items .relative-to-pos strong {
   line-height: 16px;
   padding-left: 1ex;
 }
-#pricing-items .relative-to-pos strong:not(:empty):after {
+#step1-pricing-items .relative-to-pos strong:not(:empty):after {
   content: ".";
 }
-#pricing-items .not-removable .remove-btn {
+#step1-pricing-items .not-removable .remove-btn {
   cursor: default;
 }
-#pricing-items .not-removable .remove-btn img {
+#step1-pricing-items .not-removable .remove-btn img {
   -moz-filter: grayscale(100%);
   -ms-filter: grayscale(100%);
   -o-filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
 }
-#pricing-sales-pricing .quantity, #pricing-sales-pricing .unit, 
-  #pricing-sales-pricing .percentage 
+#step2 .quantity, #step2 .unit, #step2 .percentage, #step3 .quantity,
+  #step3 .unit
 {
   width: 7.5em;
 }
-#pricing-sales-pricing .unit-price-label {
+#step2 .unit-price-label, #step3 .unit-price-label {
   text-align: right;
 }
 .empty-list {
@@ -1886,11 +1886,11 @@ form .price-table .pos {
   height: 5em;
 }
 #project-phases section:last-child div {
-  width: 0; 
+  width: 0;
   height: 0;
   border-top: 5em solid #6C8F18;
-  border-left: 7em solid transparent; 
-  border-right: 7em solid transparent; 
+  border-left: 7em solid transparent;
+  border-right: 7em solid transparent;
 }
 #project-phases h5 {
   background: #6C8F18;
@@ -2101,7 +2101,7 @@ form .price-table .pos {
 #seq-numbers td:first-child, #seq-numbers td:last-child {
   padding-top: .8em;
 }
-#seq-numbers td:nth-child(2), #seq-numbers td:nth-child(3), 
+#seq-numbers td:nth-child(2), #seq-numbers td:nth-child(3),
   #seq-numbers td:nth-child(4), #seq-numbers td:nth-child(5)
 {
   text-align: center;
@@ -2242,8 +2242,8 @@ form .price-table .pos {
 
 /* clearance */
 #logo:after, #main-menu:after, #main-container:after,
-  #main-container-header:after, .multicol-content:after, 
-  .header-with-menu:after, .letter-bar:after, 
+  #main-container-header:after, .multicol-content:after,
+  .header-with-menu:after, .letter-bar:after,
   .springcrm-overviewpanels-panel-header:after,
   .sel-values-list li:after, #panel-list ol:after, .filter-bar:after,
   footer:after, #install-progress:after

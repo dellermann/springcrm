@@ -2,7 +2,7 @@
 
 <!--
 
- db-2012-07-31.xml
+ sales-item-pricing.xml
 
  Copyright (c) 2011-2012, Daniel Ellermann
 
@@ -25,6 +25,9 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!-- Table definitions -->
+
   <changeSet author="d.ellermann@amc-world.de" id="20120731-1">
     <createTable tableName="sales_item_pricing">
       <column autoIncrement="true" name="id" type="bigint">
@@ -34,6 +37,8 @@
       <column name="version" type="bigint">
         <constraints nullable="false" />
       </column>
+      <column name="adjustment" type="decimal(19,2)" />
+      <column name="discount_percent" type="decimal(19,2)" />
       <column name="name" type="varchar(255)">
         <constraints nullable="false" />
       </column>
@@ -75,7 +80,7 @@
     </createTable>
     <addColumn tableName="sales_item">
       <column name="pricing_id" type="bigint">
-        <constraints nullable="false" />
+        <constraints nullable="true" />
       </column>
     </addColumn>
     <addForeignKeyConstraint baseColumnNames="pricing_id"

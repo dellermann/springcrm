@@ -53,10 +53,7 @@ class SalesItem {
         name index: 'name'
         sort 'number'
     }
-    static transients = [
-        'fullNumber', 'salesPriceDiscountPercentAmount', 'salesPriceSubtotal',
-        'total'
-    ]
+    static transients = ['fullNumber', 'total']
 
 
     //-- Instance variables ---------------------
@@ -101,17 +98,9 @@ class SalesItem {
         return seqNumberService?.format(getClass(), number)
     }
 
-    BigDecimal getSalesPriceDiscountPercentAmount() {
-        return pricing ? (pricing.discountPercent ?: 0.0) * salesPriceSubtotal / 100.0 : null
-    }
-
-    BigDecimal getSalesPriceSubtotal() {
-        return pricing ? quantity * pricing.unitPrice : null
-    }
-
     BigDecimal getUnitPrice() {
         if (pricing) {
-            this.unitPrice = salesPriceSubtotal - salesPriceDiscountPercentAmount + (pricing.adjustment ?: 0.0)
+            this.unitPrice = pricing.step3TotalPrice / quantity
         }
         return this.unitPrice
     }

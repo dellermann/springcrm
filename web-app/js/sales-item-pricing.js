@@ -75,24 +75,6 @@
         _$finderRow: null,
 
         /**
-         * The table body which contains the pricing items.
-         *
-         * @name    _$tbody
-         * @type    jQuery
-         * @private
-         */
-        _$tbody: null,
-
-        /**
-         * Cache for the rows of the pricing table.
-         *
-         * @name    _$trs
-         * @type    jQuery
-         * @private
-         */
-        _$trs: null,
-
-        /**
          * The form associated to the pricing table.
          *
          * @name    _form
@@ -133,6 +115,188 @@
         _nextIndex: 0,
 
         /**
+         * The input field containing the quantity for computing the unit
+         * price in step 1.
+         *
+         * @name    _$step1PricingQuantity
+         * @type    jQuery
+         * @private
+         */
+        _$step1PricingQuantity: $("#step1-pricing-quantity"),
+
+        /**
+         * The input field containing the unit for computing the unit price in
+         * step 1.
+         *
+         * @name    _$step1PricingUnit
+         * @type    jQuery
+         * @private
+         */
+        _$step1PricingUnit: $("#step1-pricing-unit"),
+
+        /**
+         * The output field containing the calculated total price in step 1.
+         *
+         * @name    _$step1TotalPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step1TotalPrice: $("#step1-total-price"),
+
+        /**
+         * The output field containing the calculated unit price in step 1.
+         *
+         * @name    _$step1UnitPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step1UnitPrice: $("#step1-unit-price"),
+
+        /**
+         * The input field containing the price adjustment in step 2.
+         *
+         * @name    _$step2Adjustment
+         * @type    jQuery
+         * @private
+         */
+        _$step2Adjustment: $("#step2-adjustment"),
+
+        /**
+         * The input field containing the discount percent value in step 2.
+         *
+         * @name    _$step2DiscountPercent
+         * @type    jQuery
+         * @private
+         */
+        _$step2DiscountPercent: $("#step2-discount-percent"),
+
+        /**
+         * The input field containing the absolute discount value in step 2.
+         *
+         * @name    _$step2DiscountPercentAmount
+         * @type    jQuery
+         * @private
+         */
+        _$step2DiscountPercentAmount: $("#step2-discount-percent-amount"),
+
+        /**
+         * The output field containing the quantity in step 2.
+         *
+         * @name    _$step2Quantity
+         * @type    jQuery
+         * @private
+         */
+        _$step2Quantity: $("#step2-quantity"),
+
+        /**
+         * The output field containing the total price in the footer in step 2.
+         *
+         * @name    _$step2Total
+         * @type    jQuery
+         * @private
+         */
+        _$step2Total: $("#step2-total"),
+
+        /**
+         * The output field containing the total price in step 2.
+         *
+         * @name    _$step2TotalPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step2TotalPrice: $("#step2-total-price"),
+
+        /**
+         * The output field containing the quantity in the footer in step 2.
+         *
+         * @name    _$step2TotalQuantity
+         * @type    jQuery
+         * @private
+         */
+        _$step2TotalQuantity: $("#step2-total-quantity"),
+
+        /**
+         * The output field containing the unit in the footer in step 2.
+         *
+         * @name    _$step2TotalUnit
+         * @type    jQuery
+         * @private
+         */
+        _$step2TotalUnit: $("#step2-total-unit"),
+
+        /**
+         * The output field containing the unit price in the footer in step 2.
+         *
+         * @name    _$step2TotalUnitPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step2TotalUnitPrice: $("#step2-total-unit-price"),
+
+        /**
+         * The output field containing the unit in step 2.
+         *
+         * @name    _$step2Unit
+         * @type    jQuery
+         * @private
+         */
+        _$step2Unit: $("#step2-unit"),
+
+        /**
+         * The output field containing the calculated unit price in step 2.
+         *
+         * @name    _$step2UnitPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step2UnitPrice: $("#step2-unit-price"),
+
+        /**
+         * The input field containing the quantity in step 3.
+         *
+         * @name    _$step3Quantity
+         * @type    jQuery
+         * @private
+         */
+        _$step3Quantity: $("#step3-quantity"),
+
+        /**
+         * The output field containing the total price in step 3.
+         *
+         * @name    _$step3TotalPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step3TotalPrice: $("#step3-total-price"),
+
+        /**
+         * The output field containing the calculated unit price in step 3.
+         *
+         * @name    _$step3UnitPrice
+         * @type    jQuery
+         * @private
+         */
+        _$step3UnitPrice: $("#step3-unit-price"),
+
+        /**
+         * The table body which contains the pricing items.
+         *
+         * @name    _$tbody
+         * @type    jQuery
+         * @private
+         */
+        _$tbody: null,
+
+        /**
+         * Cache for the rows of the pricing table.
+         *
+         * @name    _$trs
+         * @type    jQuery
+         * @private
+         */
+        _$trs: null,
+
+        /**
          * The options for this widget.
          *
          * @name    options
@@ -168,11 +332,12 @@
                 s;
 
             currency = opts.currency;
+            imgPath = opts.imgPath;
             s = '<tr><td class="pos number">' + String(index + 1) +
                 '.</td><td class="quantity number"><input type="text" name="' +
                 this._getInputName(index, "quantity") + '" size="6" /></td>' +
                 '<td class="unit"><input type="text" name="' +
-                this._getInputName(index, "unit") + '" size="7" /></td>' +
+                this._getInputName(index, "unit") + '" size="8" /></td>' +
                 '<td class="name"><input type="text" name="' +
                 this._getInputName(index, "name") + '" size="30" /></td>' +
                 '<td class="type"><select name="' +
@@ -189,9 +354,11 @@
                 $L("salesItem.pricing.type.sum") + '</option></select></td>' +
                 '<td class="relative-to-pos"><input type="hidden" ' +
                 'name="' + this._getInputName(index, "relToPos") +
-                '" /><span style="display: none"><a href="#">' +
+                '" /><span style="display: none;"><img src="' + imgPath +
+                '/target.png" alt="' +
                 $L("salesItem.pricing.relativeToPos.finder") +
-                '</a><strong></strong></span></td>' +
+                '" title="' + $L("salesItem.pricing.relativeToPos.finder") +
+                '" width="16" height="16" /><strong></strong></span></td>' +
                 '<td class="unit-percent percentage number">' +
                 '<input type="text" name="' +
                 this._getInputName(index, "unitPercent") +
@@ -199,11 +366,10 @@
                 '<td class="unit-price currency number">' +
                 '<input type="text" name="' +
                 this._getInputName(index, "unitPrice") +
-                '" size="8" class="currency" />&nbsp;' + currency + '</td>' +
-                '<td class="total-price currency number">' +
-                '<output></output>&nbsp;' + currency + '</td>' +
-                '<td class="action-buttons">';
-            imgPath = opts.imgPath;
+                '" size="8" />&nbsp;' + currency + '</td>' +
+                '<td class="total-price currency number"><output>' +
+                $.formatCurrency(0) + '</output>&nbsp;' + currency +
+                '</td><td class="action-buttons">';
             if (imgPath) {
                 s += '<img class="up-btn" src="' + imgPath + '/up.png" alt="' +
                     $L("default.btn.up") + '" title="' + $L("default.btn.up") +
@@ -349,6 +515,8 @@
 
             el.change($.proxy(this._onChange, this))
                 .click($.proxy(this._onClick, this));
+            $(window).focusin($.proxy(this._onFocusIn, this))
+                .focusout($.proxy(this._onFocusOut, this));
             this._$tbody = el.find("> .items");
             this._$trs = $trs = this._getRows();
             $trs.each(function () {
@@ -356,7 +524,7 @@
                         inst = self,
                         ref = -1;
 
-                    inst._initItemCtrls.call(inst, this);
+                    inst._initItemCtrls(this);
                     if (inst._getRowType($tr) === "relativeToPos") {
                         ref = inst._getFieldVal($tr, "relative-to-pos");
                     }
@@ -369,16 +537,19 @@
                 this._initUnitAutocomplete();
             }
             $(".add-pricing-item-btn").click(function () {
-                        self._addItem.call(self, true);
+                        self._addItem(true);
                         return false;
                     }
                 );
-            $("#sales-item-pricing-quantity").change(
-                    $.proxy(this._onChangePricingQuantity, this)
+            this._$step1PricingQuantity.change(
+                    $.proxy(this._onChangeStep1PricingQuantity, this)
                 );
-            $("#pricing-sales-pricing").change(
-                    $.proxy(this._onChangeSalesPricing, this)
+            this._$step1PricingUnit.change(
+                    $.proxy(this._onChangeStep1PricingUnit, this)
                 );
+            $("#step2").change($.proxy(this._onChangeStep2, this));
+            this._$step3Quantity
+                .change($.proxy(this._onChangeStep3Quantity, this));
         },
 
         /**
@@ -659,12 +830,8 @@
                     $input = this.element.find(".unit input");
                 }
                 $input.autocomplete(data);
-                $("#sales-item-pricing-unit").autocomplete(data);
-                $("#sales-pricing-unit").autocomplete(data)
-                    .bind(
-                        "autocompletechange",
-                        $.proxy(this._onChangeSalesPricing, this)
-                    );
+                this._$step1PricingUnit.autocomplete(data);
+                $("#step3-unit").autocomplete(data);
             }
         },
 
@@ -720,7 +887,7 @@
             {
                 this._updateItems();
             } else if ($td.hasClass("type")) {
-                this._initItemCtrls.call(this, $tr);
+                this._initItemCtrls($tr);
                 if ($target.val() === "relativeToPos") {
                     idx = this._getFieldVal($tr, "relative-to-pos");
                     idx = (idx < 0) ? "" : String(idx + 1) + ".";
@@ -735,25 +902,46 @@
         },
 
         /**
-         * Called if the quantity in the unit pricing section has been changed.
+         * Called if the pricing quantity in step 1 has been changed.
          *
          * @function
-         * @name        _onChangePricingQuantity
+         * @name        _onChangeStep1PricingQuantity
          * @private
          */
-        _onChangePricingQuantity: function () {
+        _onChangeStep1PricingQuantity: function () {
             this._updateItems();
         },
 
         /**
-         * Called if an input control in the sales pricing section has been
-         * changed.
+         * Called if the pricing unit in step 1 has been changed.
          *
          * @function
-         * @name        _onChangeSalesPricing
+         * @name        _onChangeStep1PricingUnit
          * @private
          */
-        _onChangeSalesPricing: function () {
+        _onChangeStep1PricingUnit: function () {
+            this._updateItems();
+        },
+
+        /**
+         * Called if an input control in step 2 has been changed.
+         *
+         * @function
+         * @name        _onChangeStep2
+         * @private
+         */
+        _onChangeStep2: function () {
+            this._updateSalesPricing();
+        },
+
+        /**
+         * Called if the quantity in step 3 has been changed.
+         *
+         * @function
+         * @name        _onChangeStep3Quantity
+         * @private
+         */
+        _onChangeStep3Quantity: function () {
             this._updateSalesPricing();
         },
 
@@ -828,6 +1016,44 @@
                 this._updateItems();
             }
             this._stopFinderMode();
+        },
+
+        /**
+         * Called if an element in the pricing table has got the focus.
+         *
+         * @function
+         * @name                    _onFocusIn
+         * @param {Object} event    the event data
+         * @private
+         */
+        _onFocusIn: function (event) {
+            var $ = jQuery,
+                $target = $(event.target),
+                val;
+
+            if ($target.is(".number input")) {
+                val = $.parseNumber($target.val());
+                $target.val(val ? $.formatNumber(val, null) : "");
+            }
+        },
+
+        /**
+         * Called if an element in the pricing table has lost the focus.
+         *
+         * @function
+         * @name                    _onFocusOut
+         * @param {Object} event    the event data
+         * @private
+         */
+        _onFocusOut: function (event) {
+            var $ = jQuery,
+                $target = $(event.target);
+
+            if ($target.is(".currency input")) {
+                $target.val($.formatCurrency($.parseNumber($target.val())));
+            } else if ($target.is(".percentage input")) {
+                $target.val($.formatNumber($.parseNumber($target.val()), 2));
+            }
         },
 
         /**
@@ -1165,20 +1391,27 @@
          */
         _updateItems: function () {
             var quantity,
+                s,
                 self = this,
                 sum = this._getCurrentSum(),
-                sumText = $.formatCurrency(sum),
-                unitPrice;
+                sumText = $.formatCurrency(sum);
 
             this._$trs.each(function () {
                     self._updateItem($(this));
                 });
-            $("#pricing-total-price").text(sumText);
+            this._$step1TotalPrice.text(sumText);
+            this._$step2TotalPrice.text(sumText);
 
-            quantity = $.parseNumber($("#sales-item-pricing-quantity").val());
-            unitPrice = (sum / quantity).toFixed(2);
-            $("#calculated-unit-price").text($.formatCurrency(unitPrice));
-            $("#sales-pricing-unit-price").text($.formatCurrency(unitPrice));
+            quantity = $.parseNumber(this._$step1PricingQuantity.val());
+            s = $.formatNumber(quantity);
+            this._$step2Quantity.text(s);
+            this._$step2TotalQuantity.text(s);
+            s = this._$step1PricingUnit.val();
+            this._$step2Unit.text(s);
+            this._$step2TotalUnit.text(s);
+            s = $.formatCurrency((sum / quantity).toFixed(2));
+            this._$step1UnitPrice.text(s);
+            this._$step2UnitPrice.text(s);
             this._updateSalesPricing();
         },
 
@@ -1221,36 +1454,27 @@
          */
         _updateSalesPricing: function () {
             var $ = jQuery,
-                adjustment = $.parseNumber(
-                        $("#sales-pricing-adjustment").val()
-                    ),
-                discountPercent = $.parseNumber(
-                        $("#sales-pricing-discount-percent").val()
-                    ),
+                adjustment = $.parseNumber(this._$step2Adjustment.val()),
+                discountPercent =
+                    $.parseNumber(this._$step2DiscountPercent.val()),
                 discountPercentAmount,
-                qty = $.parseNumber($("#sales-pricing-quantity").val()),
-                totalPrice,
-                unit = $("#sales-pricing-unit").val(),
-                unitPrice = $.parseNumber(
-                        $("#sales-pricing-unit-price").text()
-                    );
+                qty = $.parseNumber(this._$step1PricingQuantity.val()),
+                s,
+                step3Qty = $.parseNumber(this._$step3Quantity.val()),
+                totalPrice = $.parseNumber(this._$step2TotalPrice.text());
 
-            totalPrice = qty * unitPrice;
-            $("#sales-pricing-total-price").text($.formatCurrency(totalPrice));
             discountPercentAmount = discountPercent * totalPrice / 100;
-            $("#sales-pricing-discount-percent-amount")
+            this._$step2DiscountPercentAmount
                 .text($.formatCurrency(discountPercentAmount));
-            totalPrice -= discountPercentAmount;
-            totalPrice += adjustment;
-            $("#sales-pricing-total").text($.formatCurrency(totalPrice));
-            $("#sales-pricing-total-unit-price")
-                .text($.formatCurrency(totalPrice / qty));
-
-            $("#sales-pricing-total-quantity").text(qty);
-            $("#sales-pricing-total-unit").text(unit);
+            totalPrice += adjustment - discountPercentAmount;
+            s = $.formatCurrency(totalPrice);
+            this._$step2Total.text(s);
+            this._$step3TotalPrice.text(s);
+            this._$step2TotalUnitPrice.text($.formatCurrency(totalPrice / qty));
+            this._$step3UnitPrice.text($.formatCurrency(totalPrice / step3Qty));
         }
     });
     /**#@-*/
 
-    $("#pricing-items").salesitempricing();
+    $("#step1-pricing-items").salesitempricing();
 }(window, jQuery, $L));
