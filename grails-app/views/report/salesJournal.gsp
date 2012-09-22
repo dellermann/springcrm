@@ -27,6 +27,7 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
+    <g:if test="${invoicingTransactionInstanceList}">
     <div id="filter-bar" class="filter-bar" data-load-url="${createLink(action: 'salesJournal')}">
       <g:set var="monthNames" value="${java.text.DateFormatSymbols.instance.months}" />
       <g:set var="shortMonthNames" value="${java.text.DateFormatSymbols.instance.shortMonths}" />
@@ -89,6 +90,12 @@
       </g:each>
       </tbody>
     </table>
+    </g:if>
+    <g:else>
+      <div class="empty-list">
+        <p><g:message code="default.list.empty" /></p>
+      </div>
+    </g:else>
   </section>
 </body>
 </html>

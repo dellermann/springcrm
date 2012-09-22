@@ -23,6 +23,13 @@ package org.amcworld.springcrm
 import static java.util.Calendar.*
 
 
+/**
+ * The class {@code ReportController} produces several reports such as sales
+ * journals.
+ *
+ * @author	Daniel Ellermann
+ * @version 1.2
+ */
 class ReportController {
 
     //-- Public methods -------------------------
@@ -58,38 +65,46 @@ class ReportController {
             end[MONTH] = cal.getActualMaximum(MONTH)
         }
 
+        int yearStart = -1
+        int yearEnd = -1
         def l = Invoice.list(sort: 'docDate', max: 1)
-        int yearStart = l[0].docDate[YEAR]
+        if (!l.empty) yearStart = l[0].docDate[YEAR]
         l = Invoice.list(sort: 'docDate', order: 'desc', max: 1)
-        int yearEnd = l[0].docDate[YEAR]
+        if (!l.empty) yearEnd = l[0].docDate[YEAR]
         l = Dunning.list(sort: 'docDate', max: 1)
-        yearStart = Math.min(yearStart, l[0].docDate[YEAR])
+        if (!l.empty) yearStart = Math.min(yearStart, l[0].docDate[YEAR])
         l = Dunning.list(sort: 'docDate', order: 'desc', max: 1)
-        yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
+        if (!l.empty) yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
         l = CreditMemo.list(sort: 'docDate', max: 1)
-        yearStart = Math.min(yearStart, l[0].docDate[YEAR])
+        if (!l.empty) yearStart = Math.min(yearStart, l[0].docDate[YEAR])
         l = CreditMemo.list(sort: 'docDate', order: 'desc', max: 1)
-        yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
+        if (!l.empty) yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
 
-        def query = Invoice.where {
-            (docDate >= start.time) && (docDate <= end.time)
-        }
-        l = query.list(sort: 'number')
-        query = Dunning.where {
-            (docDate >= start.time) && (docDate <= end.time)
-        }
-        l.addAll(query.list(sort: 'number'))
-        def total = l*.total.sum()
-        def totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
+        def total = 0.0
+        def totalPaymentAmount = 0.0
+        if ((yearStart < 0) || (yearEnd < 0)) {
+            l = null
+        } else {
+            def query = Invoice.where {
+                (docDate >= start.time) && (docDate <= end.time)
+            }
+            l = query.list(sort: 'number')
+            query = Dunning.where {
+                (docDate >= start.time) && (docDate <= end.time)
+            }
+            l.addAll(query.list(sort: 'number'))
+            total = l*.total.sum()
+            totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 
-        query = CreditMemo.where {
-            (docDate >= start.time) && (docDate <= end.time)
-        }
-        def creditMemos = query.list(sort: 'number')
-        if (creditMemos) {
-            l.addAll(creditMemos)
-            total -= creditMemos*.total.sum()
-            totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
+            query = CreditMemo.where {
+                (docDate >= start.time) && (docDate <= end.time)
+            }
+            def creditMemos = query.list(sort: 'number')
+            if (creditMemos) {
+                l.addAll(creditMemos)
+                total -= creditMemos*.total.sum()
+                totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
+            }
         }
 
         return [
