@@ -18,7 +18,10 @@
           <fo:table-row>
             <fo:table-cell number-rows-spanned="2">
               <fo:block>
-              </fo:block>
+                <fo:external-graphic 
+                  src="url('servlet-context:/WEB-INF/data/print/default/img/logo.png')"
+                  content-width="18.3mm" content-height="24.1mm"/>
+               </fo:block>
             </fo:table-cell>
             <fo:table-cell padding-top="8mm">
               <fo:block>

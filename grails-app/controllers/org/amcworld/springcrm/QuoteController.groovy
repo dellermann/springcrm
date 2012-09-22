@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.XML
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -28,7 +27,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class QuoteController {
 
@@ -280,25 +279,7 @@ class QuoteController {
             return
         }
 
-		def data = [
-			transaction: quoteInstance, items: quoteInstance.items,
-			organization: quoteInstance.organization,
-			person: quoteInstance.person,
-			user: session.user,
-			fullNumber: quoteInstance.fullNumber,
-			taxRates: quoteInstance.taxRateSums,
-			values: [
-		        subtotalNet: quoteInstance.subtotalNet,
-				subtotalGross: quoteInstance.subtotalGross,
-				discountPercentAmount: quoteInstance.discountPercentAmount,
-				total: quoteInstance.total
-			],
-			watermark: params.duplicate ? 'duplicate' : '',
-            client: Client.loadAsMap()
-		]
-		String xml = (data as XML).toString()
-//		println xml
-
+        String xml = fopService.generateXml(quoteInstance, !!params.duplicate)
 		GString fileName = "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
 		if (params.duplicate) {
 			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"

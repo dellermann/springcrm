@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.XML
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -28,7 +27,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code DunningController} contains actions which manage dunnings.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class DunningController {
 
@@ -385,28 +384,12 @@ class DunningController {
             return
         }
 
-		def data = [
-			transaction: dunningInstance,
-			items: dunningInstance.items,
-			organization: dunningInstance.organization,
-			person: dunningInstance.person,
-			invoice: dunningInstance.invoice,
-			invoiceFullNumber: dunningInstance.invoice.fullNumber,
-			user: session.user,
-			fullNumber: dunningInstance.fullNumber,
-			taxRates: dunningInstance.taxRateSums,
-			values: [
-		        subtotalNet: dunningInstance.subtotalNet,
-				subtotalGross: dunningInstance.subtotalGross,
-				discountPercentAmount: dunningInstance.discountPercentAmount,
-				total: dunningInstance.total
-			],
-			watermark: params.duplicate ? 'duplicate' : '',
-            client: Client.loadAsMap()
-		]
-		String xml = (data as XML).toString()
-//        println xml
-
+        String xml = fopService.generateXml(
+            dunningInstance, !!params.duplicate, [
+                invoice: dunningInstance.invoice,
+                invoiceFullNumber: dunningInstance.invoice.fullNumber,
+            ]
+        )
 		GString fileName = "${message(code: 'dunning.label')} ${dunningInstance.fullNumber}"
 		if (params.duplicate) {
 			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"

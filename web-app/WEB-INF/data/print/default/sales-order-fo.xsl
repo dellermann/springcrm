@@ -36,8 +36,9 @@
           <xsl:call-template name="format-date-long">
             <xsl:with-param name="date" select="dueDate"/>
           </xsl:call-template>
+          <xsl:text>. </xsl:text>
         </xsl:if>
-        <xsl:text>. Es gelten unsere Allgemeinen Geschäftsbedingungen. Für
+        <xsl:text>Es gelten unsere Allgemeinen Geschäftsbedingungen. Für
         weitere Fragen stehen wir gern zur Verfügung. Sie erreichen uns unter
         den oben angegebenen Hotline-Nummern.</xsl:text>
       </fo:block>

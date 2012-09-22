@@ -69,7 +69,7 @@ environments {
         }
     }
 
-    /* live enviroment on the AMC World server */
+    /* live environment on the AMC World server */
     live {
         dataSource {
             url = 'jdbc:mysql://db.amc-world.home/springcrm?autoreconnect=true'

@@ -341,8 +341,7 @@
       <fo:simple-page-master margin-top="16mm" margin-right="31mm"
                              margin-bottom="11mm" margin-left="21mm"
                              master-name="first-page">
-        <fo:region-body space-before="20mm" space-after="16mm"
-                        margin-left="2mm" width="156mm">
+        <fo:region-body space-before="20mm" space-after="16mm" width="158mm">
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
             <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/print/default/img/copy-watermark.png')</xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
@@ -502,7 +501,7 @@
               table-omit-footer-at-break="true">
       <fo:table-column column-number="1" column-width="9mm"/>
       <fo:table-column column-number="2" column-width="14mm"/>
-      <fo:table-column column-number="3" column-width="88mm"/>
+      <fo:table-column column-number="3" column-width="91mm"/>
       <fo:table-column column-number="4" column-width="22mm"/>
       <fo:table-column column-number="5" column-width="22mm"/>
       <fo:table-header font-weight="bold" text-align="center">

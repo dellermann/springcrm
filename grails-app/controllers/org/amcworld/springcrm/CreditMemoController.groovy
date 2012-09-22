@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.XML
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -29,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * memos.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class CreditMemoController {
 
@@ -366,31 +365,15 @@ class CreditMemoController {
             return
         }
 
-		def data = [
-			transaction: creditMemoInstance,
-			items: creditMemoInstance.items,
-			organization: creditMemoInstance.organization,
-			person: creditMemoInstance.person,
-			invoice: creditMemoInstance.invoice,
-			invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
-			dunning: creditMemoInstance.dunning,
-			dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
-			user: session.user,
-			fullNumber: creditMemoInstance.fullNumber,
-			paymentMethod: creditMemoInstance.paymentMethod?.name,
-			taxRates: creditMemoInstance.taxRateSums,
-			values: [
-		        subtotalNet: creditMemoInstance.subtotalNet,
-				subtotalGross: creditMemoInstance.subtotalGross,
-				discountPercentAmount: creditMemoInstance.discountPercentAmount,
-				total: creditMemoInstance.total
-			],
-			watermark: params.duplicate ? 'duplicate' : '',
-            client: Client.loadAsMap()
-		]
-		String xml = (data as XML).toString()
-//		println xml
-
+        String xml = fopService.generateXml(
+            creditMemoInstance, !!params.duplicate, [
+                invoice: creditMemoInstance.invoice,
+                invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
+                dunning: creditMemoInstance.dunning,
+                dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
+                paymentMethod: creditMemoInstance.paymentMethod?.name
+            ]
+        )
 		GString fileName = "${message(code: 'creditMemo.label')} ${creditMemoInstance.fullNumber}"
 		if (params.duplicate) {
 			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"

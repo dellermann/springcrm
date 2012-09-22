@@ -20,12 +20,10 @@
 
 package org.amcworld.springcrm
 
-import java.io.File
-import java.io.OutputStream
-import java.io.Reader
-import java.util.Map
+import grails.converters.XML
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpSession
 import javax.xml.transform.*
 import javax.xml.transform.sax.SAXResult
 import javax.xml.transform.stream.StreamSource
@@ -37,6 +35,7 @@ import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 import org.springframework.context.i18n.LocaleContextHolder as LCH
+import org.springframework.web.context.request.RequestContextHolder
 
 
 /**
@@ -46,7 +45,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class FopService {
 
@@ -100,6 +99,17 @@ class FopService {
 
 		TransformerFactory tfFactory = TransformerFactory.newInstance()
 		tfFactory.URIResolver = uriResolver
+        tfFactory.errorListener = [
+            error: { e ->
+                log.error "XSL-FO error: ${e.messageAndLocation}"
+            },
+            fatalError: { e ->
+                log.fatal "XSL-FO fatal error: ${e.messageAndLocation}"
+            },
+            warning: { e ->
+                log.warn "XSL-FO warning: ${e.messageAndLocation}"
+            }
+        ] as ErrorListener
 
         try {
             InputStream is = getTemplateFile("${templateDir}/${type}-fo.xsl")
@@ -112,9 +122,57 @@ class FopService {
     		Result res = new SAXResult(fop.getDefaultHandler())
     		transformer.transform src, res
         } catch (TransformerException e) {
-            println e.locator?.dump()
+            log.error "XSL-FO transformer error: ${e.messageAndLocation}"
             throw e
         }
+    }
+
+    /**
+     * Generates the XML data structure which is used in XSL transformation
+     * using the given invoicing transaction.
+     *
+     * @param transaction       the given invoicing transaction
+     * @param duplicate         whether or not the data structure of a
+     *                          duplicate document is to create; if
+     *                          {@code true} the XSL transformation renders a
+     *                          watermark
+     * @param additionalData    any additional data which are added to the
+     *                          generated data structure; all entries in this
+     *                          table overwrite possible existing entries in
+     *                          the generated data structure
+     * @return                  the generated XML data structure as string
+     * @since                   1.2
+     */
+    String generateXml(InvoicingTransaction transaction,
+                       boolean duplicate = false, Map additionalData = null)
+    {
+        User user = session.user.clone()
+        user.password = null    // unset password for security reasons
+        def data = [
+            transaction: transaction,
+            items: transaction.items,
+            organization: transaction.organization,
+            person: transaction.person,
+            user: user,
+            fullNumber: transaction.fullNumber,
+            taxRates: transaction.taxRateSums,
+            values: [
+                subtotalNet: transaction.subtotalNet,
+                subtotalGross: transaction.subtotalGross,
+                discountPercentAmount: transaction.discountPercentAmount,
+                total: transaction.total
+            ],
+            watermark: duplicate ? 'duplicate' : '',
+            client: Client.loadAsMap()
+        ]
+        if (additionalData) {
+            data << additionalData
+        }
+        String xml = (data as XML).toString()
+        if (log.debugEnabled) {
+            log.debug "XML data structure, type ${transaction.type}: ${xml}"
+        }
+        return xml
     }
 
     /**
@@ -220,6 +278,15 @@ class FopService {
         }
 		return new DefaultConfigurationBuilder().build(is)
 	}
+
+    /**
+     * Returns access to the user session.
+     *
+     * @return the session instance
+     */
+    protected HttpSession getSession() {
+        return RequestContextHolder.currentRequestAttributes().session
+    }
 
     /**
      * Gets the input stream to the file with the given path.  The method

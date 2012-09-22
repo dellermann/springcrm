@@ -58,6 +58,10 @@
           <xsl:value-of select="key('client', 'bankCode')"/>
         </fo:block>
       </xsl:if>
+    </fo:block-container>
+    <fo:block-container font-family="Helvetica" font-size="9pt"
+                        color="#000" line-height="140%"
+                        keep-together.within-page="always">
       <fo:block space-after="5mm">
         <xsl:text>Rechnungsdatum ist gleich Lieferdatum. Es gelten unsere
         Allgemeinen Geschäftsbedingungen. Für weitere Fragen stehen wir gern
