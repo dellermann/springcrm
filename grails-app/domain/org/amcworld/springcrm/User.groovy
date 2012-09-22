@@ -25,9 +25,9 @@ package org.amcworld.springcrm
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
-class User {
+class User implements Cloneable {
 
     //-- Class variables ------------------------
 
@@ -131,6 +131,11 @@ class User {
 	boolean checkAllowedModules(List<String> modules) {
 		return admin || modules?.intersect(getAllowedModulesAsList())
 	}
+
+    @Override
+    User clone() {
+        return (User) super.clone()
+    }
 
     @Override
     boolean equals(Object o) {

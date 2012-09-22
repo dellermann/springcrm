@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.XML
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -29,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * orders.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class SalesOrderController {
 
@@ -292,25 +291,9 @@ class SalesOrderController {
             return
         }
 
-		def data = [
-			transaction: salesOrderInstance, items: salesOrderInstance.items,
-			organization: salesOrderInstance.organization,
-			person: salesOrderInstance.person,
-			user: session.user,
-			fullNumber: salesOrderInstance.fullNumber,
-			taxRates: salesOrderInstance.taxRateSums,
-			values: [
-		        subtotalNet: salesOrderInstance.subtotalNet,
-				subtotalGross: salesOrderInstance.subtotalGross,
-				discountPercentAmount: salesOrderInstance.discountPercentAmount,
-				total: salesOrderInstance.total
-			],
-			watermark: params.duplicate ? 'duplicate' : '',
-            client: Client.loadAsMap()
-		]
-		String xml = (data as XML).toString()
-//		println xml
-
+        String xml = fopService.generateXml(
+            salesOrderInstance, !!params.duplicate
+        )
 		GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
 		if (params.duplicate) {
 			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
