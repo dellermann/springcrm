@@ -20,10 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.io.File
-import java.io.OutputStream
-import java.io.Reader
-import java.util.Map
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.*
@@ -46,7 +42,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class FopService {
 
@@ -100,6 +96,17 @@ class FopService {
 
 		TransformerFactory tfFactory = TransformerFactory.newInstance()
 		tfFactory.URIResolver = uriResolver
+        tfFactory.errorListener = [
+            error: { e ->
+                log.error "XSL-FO error: ${e.messageAndLocation}"
+            },
+            fatalError: { e ->
+                log.fatal "XSL-FO fatal error: ${e.messageAndLocation}"
+            },
+            warning: { e ->
+                log.warn "XSL-FO warning: ${e.messageAndLocation}"
+            }
+        ] as ErrorListener
 
         try {
             InputStream is = getTemplateFile("${templateDir}/${type}-fo.xsl")
@@ -112,7 +119,7 @@ class FopService {
     		Result res = new SAXResult(fop.getDefaultHandler())
     		transformer.transform src, res
         } catch (TransformerException e) {
-            println e.locator?.dump()
+            log.error "XSL-FO transformer error: ${e.messageAndLocation}"
             throw e
         }
     }

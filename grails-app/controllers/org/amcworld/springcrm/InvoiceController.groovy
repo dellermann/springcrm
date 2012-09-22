@@ -28,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class InvoiceController {
 
@@ -378,7 +378,7 @@ class InvoiceController {
             client: Client.loadAsMap()
 		]
 		String xml = (data as XML).toString()
-		println xml
+//		println xml
 
 		GString fileName =
             "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
