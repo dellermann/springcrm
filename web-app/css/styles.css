@@ -1039,6 +1039,7 @@ button, input[type=button], input[type=date], input[type=datetime],
   background: #F0F0F0;
   border: .1em solid #6C8F18;
   border-radius: .2em;
+  margin: 0;
 }
 input[type=date], input[type=datetime], input[type=datetime-local],
   input[type=email], input[type=file], input[type=month], input[type=number],

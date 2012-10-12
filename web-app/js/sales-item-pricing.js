@@ -304,7 +304,7 @@
          */
         options: {
             currency: "€",
-            fieldNamePrefix: "items",
+            fieldNamePrefix: "pricing.items",
             imgPath: null,
             units: null
         },
@@ -388,6 +388,11 @@
             this._initItemCtrls($row);
             $row.appendTo($tbody);
             this._$trs = this._getRows();
+//            this.element
+//                .before(
+//                    '<input type="hidden" name="pricing.items[' +
+//                    String(this._$trs.length - 1) + '].id" value="0" />'
+//                );
             this._itemReferences.push(-1);
             this._initUnitAutocomplete($row.find(".unit input"));
             if (jumpToNewRow) {
@@ -830,8 +835,6 @@
                     $input = this.element.find(".unit input");
                 }
                 $input.autocomplete(data);
-                this._$step1PricingUnit.autocomplete(data);
-                $("#step3-unit").autocomplete(data);
             }
         },
 
@@ -1406,7 +1409,9 @@
             s = $.formatNumber(quantity);
             this._$step2Quantity.text(s);
             this._$step2TotalQuantity.text(s);
-            s = this._$step1PricingUnit.val();
+            s = this._$step1PricingUnit
+                .find("option:selected")
+                    .text();
             this._$step2Unit.text(s);
             this._$step2TotalUnit.text(s);
             s = $.formatCurrency((sum / quantity).toFixed(2));

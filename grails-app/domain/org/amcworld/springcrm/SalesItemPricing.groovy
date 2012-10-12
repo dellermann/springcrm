@@ -37,14 +37,17 @@ class SalesItemPricing {
         name(blank: false)
         quantity(min: 0.0)
         unit()
-        unitPrice(nullable: true, scale: 2, min: 0.0, widget: 'currency')
         discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
         adjustment(nullable: true, scale: 2, widget: 'currency')
         items(minSize: 1)
     }
     static hasMany = [items: SalesItemPricingItem, salesItems: SalesItem]
+    static mapping = {
+        items cascade: 'all-delete-orphan'
+    }
     static transients = [
-        'discountPercentAmount', 'step1TotalPrice', 'step1UnitPrice', 'step2Total', 'step2TotalUnitPrice', 'step3TotalPrice'
+        'discountPercentAmount', 'step1TotalPrice', 'step1UnitPrice',
+        'step2Total', 'step2TotalUnitPrice', 'step3TotalPrice'
     ]
 
 
@@ -52,8 +55,7 @@ class SalesItemPricing {
 
     String name
     BigDecimal quantity = 1.0
-    String unit
-    BigDecimal unitPrice
+    Unit unit
     BigDecimal discountPercent
     BigDecimal adjustment
     List<SalesItemPricingItem> items
@@ -61,6 +63,12 @@ class SalesItemPricing {
 
     //-- Public methods -------------------------
 
+    /**
+     * Represents the boolean value of this sales item pricing.  The pricing is
+     * {@code true} if and only if there are pricing items.
+     *
+     * @return  the boolean value of this pricing
+     */
     boolean asBoolean() {
         return !!items
     }
@@ -118,16 +126,20 @@ class SalesItemPricing {
     BigDecimal getCurrentSum(Integer pos = items.size() - 1) {
         BigDecimal sum = 0.0
         for (int i = pos; i >= 0; --i) {
-            if (PricingItemType.sum != items[i].type) {
+            if (items[i] && PricingItemType.sum != items[i].type) {
                 sum += computeTotalOfItem(i)
             }
         }
         return sum
     }
 
+    /**
+     * Gets the amount of discount for this sales item in step 2.
+     *
+     * @return  the discount amount
+     */
     BigDecimal getDiscountPercentAmount() {
-        def total = step1TotalPrice
-        return discountPercent ? total * discountPercent / 100.0 : 0.0
+        return discountPercent ? step1TotalPrice * discountPercent / 100.0 : 0.0
     }
 
     /**
@@ -139,7 +151,7 @@ class SalesItemPricing {
      */
     int getLastSumPos(Integer start = items.size() - 1) {
         for (int i = start; i >= 0; --i) {
-            if (PricingItemType.sum == items[i].type) {
+            if (items[i] && PricingItemType.sum == items[i].type) {
                 return i
             }
         }
@@ -167,14 +179,32 @@ class SalesItemPricing {
         return step1TotalPrice / quantity
     }
 
+    /**
+     * Gets the total of this sales item in step 2 which is the total price of
+     * step 1 minus discount plus adjustment.
+     *
+     * @return  the total of the sales item in step 2
+     */
     BigDecimal getStep2Total() {
         return step1TotalPrice - discountPercentAmount + (adjustment ?: 0.0)
     }
 
+    /**
+     * Gets the total unit price of this sales item in step 2 as ratio between
+     * the total of step 2 and the quantity.
+     *
+     * @return  the total unit price of the sales item in step 2
+     */
     BigDecimal getStep2TotalUnitPrice() {
         return step2Total / quantity
     }
 
+    /**
+     * Gets the total price of this sales item in step 3 which is the same as
+     * the total of step 2.
+     *
+     * @return  the total price of the sales item in step 3
+     */
     BigDecimal getStep3TotalPrice() {
         return step2Total
     }

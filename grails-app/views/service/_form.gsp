@@ -40,12 +40,12 @@
   <g:if test="${serviceInstance.pricing}">
     <p>
       <g:message code="salesItem.pricing.step1.tableDescription" />&nbsp;
-      <input id="step1-pricing-quantity" type="text" name="serviceInstance.pricing.quantity" size="6" value="${formatNumber(number: serviceInstance.pricing.quantity, maxFractionDigits: 3)}" placeholder="${message(code: 'service.quantity.label', default: 'Quantity')}" />
-      <input id="step1-pricing-unit" type="text" name="serviceInstance.pricing.unit" size="8" value="${serviceInstance.pricing.unit}" placeholder="${message(code: 'service.unit.label', default: 'Unit')}" />:
+      <input id="step1-pricing-quantity" type="text" name="pricing.quantity" size="6" value="${formatNumber(number: serviceInstance.pricing.quantity, maxFractionDigits: 3)}" placeholder="${message(code: 'service.quantity.label', default: 'Quantity')}" />
+      <g:select from="${units}" optionKey="id" optionValue="name" id="step1-pricing-unit" name="pricing.unit.id" value="${serviceInstance.pricing.unit?.id}" />:
     </p>
     <g:each in="${serviceInstance.pricing.items}" var="item" status="i">
       <g:if test="${item.id}">
-      <input type="hidden" name="items[${i}].id" value="${item.id}" />
+      <input type="hidden" name="pricing.items[${i}].id" value="${item.id}" />
       </g:if>
     </g:each>
     <table id="step1-pricing-items" class="content-table price-table"
@@ -84,29 +84,29 @@
         <tr>
           <td class="pos number">${i + 1}.</td>
           <td class="quantity number">
-            <input type="text" name="items[${i}].quantity" size="6" value="${formatNumber(number: item.quantity, maxFractionDigits: 3)}" />
+            <input type="text" name="pricing.items[${i}].quantity" size="6" value="${formatNumber(number: item.quantity, maxFractionDigits: 3)}" />
           </td>
           <td class="unit">
-            <input type="text" name="items[${i}].unit" size="8" value="${item.unit}" />
+            <input type="text" name="pricing.items[${i}].unit" size="8" value="${item.unit}" />
           </td>
           <td class="name">
-            <input type="text" name="items[${i}].name" size="30" value="${item.name}" />
+            <input type="text" name="pricing.items[${i}].name" size="30" value="${item.name}" />
           </td>
           <td class="type">
-            <g:select name="items[${i}].type" from="${PricingItemType.values()}" value="${item.type}" valueMessagePrefix="salesItem.pricing.type" />
+            <g:select name="pricing.items[${i}].type" from="${PricingItemType.values()}" value="${item.type}" valueMessagePrefix="salesItem.pricing.type" />
           </td>
           <td class="relative-to-pos">
-            <input type="hidden" name="items[${i}].relToPos" value="${item.relToPos ?: ''}" />
+            <input type="hidden" name="pricing.items[${i}].relToPos" value="${item.relToPos ?: ''}" />
             <span style="display: ${item.type == PricingItemType.relativeToPos ? 'block' : 'none'};">
               <img src="${resource(dir: 'img', file: 'target.png')}" alt="${message(code: 'salesItem.pricing.relativeToPos.finder', default: 'Select reference row')}" title="${message(code: 'salesItem.pricing.relativeToPos.finder', default: 'Select reference row')}" width="16" height="16" />
               <strong>${item.relToPos ? item.relToPos + 1 : ''}</strong>
             </span>
           </td>
           <td class="unit-percent percentage number">
-            <input type="text" name="items[${i}].unitPercent" size="5" value="${formatNumber(number: item.unitPercent, minFractionDigits: 2)}" class="percent" />
+            <input type="text" name="pricing.items[${i}].unitPercent" size="5" value="${formatNumber(number: item.unitPercent, minFractionDigits: 2)}" class="percent" />
           </td>
           <td class="unit-price currency number">
-            <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: serviceInstance.pricing.computeUnitPriceOfItem(i), minFractionDigits: 2)}" />&nbsp;<g:currency />
+            <input type="text" name="pricing.items[${i}].unitPrice" size="8" value="${formatNumber(number: serviceInstance.pricing.computeUnitPriceOfItem(i), minFractionDigits: 2)}" />&nbsp;<g:currency />
           </td>
           <td class="total-price currency number">
             <output>${formatNumber(number: serviceInstance.pricing.computeTotalOfItem(i), minFractionDigits: 2)}</output>&nbsp;<g:currency />
@@ -149,7 +149,7 @@
       <tr class="total">
         <td><g:message code="salesItem.pricing.step2.salesPrice" /></td>
         <td class="quantity number"><output id="step2-total-quantity">${formatNumber(number: serviceInstance.pricing.quantity, maxFractionDigits: 3)}</output></td>
-        <td class="unit"><output id="step2-total-unit">${serviceInstance.pricing.unit}</output></td>
+        <td class="unit"><output id="step2-total-unit">${fieldValue(bean: serviceInstance, field: 'pricing.unit')}</output></td>
         <td></td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
         <td class="unit-price currency number"><output id="step2-total-unit-price">${formatNumber(number: serviceInstance.pricing.step2TotalUnitPrice, minFractionDigits: 2)}</output>&nbsp;<g:currency /></td>
@@ -160,7 +160,7 @@
       <tr>
         <td><g:message code="salesItem.pricing.step2.calculatedTotalPrice" /></td>
         <td class="quantity number"><output id="step2-quantity">${formatNumber(number: serviceInstance.pricing.quantity, maxFractionDigits: 3)}</output></td>
-        <td class="unit"><output id="step2-unit">${serviceInstance.pricing.unit}</output></td>
+        <td class="unit"><output id="step2-unit">${fieldValue(bean: serviceInstance, field: 'pricing.unit')}</output></td>
         <td></td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
         <td class="unit-price currency number"><output id="step2-unit-price">${formatNumber(number: serviceInstance.pricing.step1UnitPrice, minFractionDigits: 2)}</output>&nbsp;<g:currency /></td>
@@ -171,7 +171,7 @@
         <td><g:message code="salesItem.pricing.step2.discount" /></td>
         <td></td>
         <td></td>
-        <td class="percentage number"><input id="step2-discount-percent" type="text" name="serviceInstance.pricing.discountPercent" size="5" value="${formatNumber(number: serviceInstance.pricing.discountPercent, minFractionDigits: 2)}" class="percent" /></td>
+        <td class="percentage number"><input id="step2-discount-percent" type="text" name="pricing.discountPercent" size="5" value="${formatNumber(number: serviceInstance.pricing.discountPercent, minFractionDigits: 2)}" class="percent" /></td>
         <td></td>
         <td></td>
         <td class="total-price currency number"><output id="step2-discount-percent-amount">${formatNumber(number: serviceInstance.pricing.discountPercentAmount, minFractionDigits: 2)}</output>&nbsp;<g:currency /></td>
@@ -183,7 +183,7 @@
         <td></td>
         <td></td>
         <td></td>
-        <td class="currency number"><input id="step2-adjustment" type="text" name="serviceInstance.pricing.adjustment" size="8" value="${formatNumber(number: serviceInstance.pricing.adjustment, minFractionDigits: 2)}" />&nbsp;<g:currency /></td>
+        <td class="currency number"><input id="step2-adjustment" type="text" name="pricing.adjustment" size="8" value="${formatNumber(number: serviceInstance.pricing.adjustment, minFractionDigits: 2)}" />&nbsp;<g:currency /></td>
       </tr>
     </tbody>
   </table>
@@ -204,8 +204,8 @@
     <tbody>
       <tr>
         <td><g:message code="service.pricing.step3.soldAs" /></td>
-        <td class="quantity number"><input id="step3-quantity" type="text" name="serviceInstance.quantity" size="6" value="${formatNumber(number: serviceInstance.quantity, maxFractionDigits: 3)}" /></td>
-        <td class="unit"><input id="step3-unit" type="text" name="serviceInstance.unit" size="8" value="${serviceInstance.unit}" /></td>
+        <td class="quantity number"><input id="step3-quantity" type="text" name="quantity" size="6" value="${formatNumber(number: serviceInstance.quantity, maxFractionDigits: 3)}" /></td>
+        <td class="unit"><f:input bean="${serviceInstance}" property="unit" id="step3-unit" /></td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
         <td class="unit-price currency number"><output id="step3-unit-price">${formatNumber(number: serviceInstance.unitPrice, minFractionDigits: 2)}</output>&nbsp;<g:currency /></td>
         <td class="total-price currency number"><output id="step3-total-price">${formatNumber(number: serviceInstance.pricing.step3TotalPrice, minFractionDigits: 2)}</output>&nbsp;<g:currency />
