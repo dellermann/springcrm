@@ -94,15 +94,16 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile(
+            ':cloud-foundry:1.2.3',
             ':fields:1.2',
             ":hibernate:${grailsVersion}",
+            ':jsunit:0.7',
             ':mail:1.0',
             ':quartz:1.0-RC2',
             ':searchable:0.6.3',
             ':svn:1.0.0.M1'
         )
         build(
-            ':cloud-foundry:1.2.3',
             ':standalone:1.1.1',
             ":tomcat:${grailsVersion}"
         )
