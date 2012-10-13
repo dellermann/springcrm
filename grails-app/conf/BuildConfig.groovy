@@ -53,8 +53,9 @@ grails.project.dependency.resolution = {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         compile(
-            'commons-fileupload:commons-fileupload:1.2.1',
-            'commons-io:commons-io:2.4'
+            'commons-fileupload:commons-fileupload:1.2.2',
+            'commons-io:commons-io:2.1',
+            'org.codehaus.jackson:jackson-core-asl:1.6.2'
         )
         /*
          * XXX These dependencies conflict in the transient dependency
@@ -93,18 +94,19 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
+        compile(':cloud-foundry:1.2.3') {
+            export = false
+        }
         compile(
-            ':cloud-foundry:1.2.3',
             ':fields:1.2',
             ":hibernate:${grailsVersion}",
-            ':jsunit:0.7',
             ':mail:1.0',
             ':quartz:1.0-RC2',
-            ':searchable:0.6.3',
-            ':svn:1.0.0.M1'
+            ':searchable:0.6.3'
         )
         build(
             ':standalone:1.1.1',
+            ':svn:1.0.0.M1',
             ":tomcat:${grailsVersion}"
         )
         runtime(
@@ -113,6 +115,9 @@ grails.project.dependency.resolution = {
             ':jquery-json:2.2.2',
             ':jquery-ui:1.8.15',
             ':resources:1.1.6'
+        )
+        test(
+            ':jsunit:0.7'
         )
     }
 }
