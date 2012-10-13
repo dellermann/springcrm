@@ -91,4 +91,27 @@ grails.project.dependency.resolution = {
          *
          */
     }
+
+    plugins {
+        compile(
+            ':fields:1.2',
+            ":hibernate:${grailsVersion}",
+            ':mail:1.0',
+            ':quartz:1.0-RC2',
+            ':searchable:0.6.3',
+            ':svn:1.0.0.M1'
+        )
+        build(
+            ':cloud-foundry:1.2.3',
+            ':standalone:1.1.1',
+            ":tomcat:${grailsVersion}"
+        )
+        runtime(
+            ':database-migration:1.1',
+            ':jquery:1.7.2',
+            ':jquery-json:2.2.2',
+            ':jquery-ui:1.8.15',
+            ':resources:1.1.6'
+        )
+    }
 }
