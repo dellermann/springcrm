@@ -27,7 +27,7 @@ import static java.math.RoundingMode.HALF_UP
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  */
 class PurchaseInvoice {
 
@@ -65,12 +65,14 @@ class PurchaseInvoice {
 	}
 	static searchable = true
 	static transients = [
-		'balance', 'balanceColor', 'discountPercentAmount',
+		'balance', 'balanceColor', 'discountPercentAmount', 'itemErrors',
         'paymentStateColor', 'subtotalNet', 'subtotalGross', 'taxRateSums'
 	]
 
 
     //-- Instance variables ---------------------
+
+    def viewService
 
 	String number
 	String subject
@@ -181,7 +183,7 @@ class PurchaseInvoice {
 	Map<Double, BigDecimal> getTaxRateSums() {
 		Map<Double, BigDecimal> res = [: ]
 		for (item in items) {
-			double tax = item.tax.toDouble()
+			double tax = (item.tax != null) ? item.tax.toDouble() : 0.0
 			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
 		}
 		if (getShippingTax() != 0 && getShippingCosts() != 0) {
@@ -229,6 +231,16 @@ class PurchaseInvoice {
             color = 'green'
         }
         return color
+    }
+
+    /**
+     * Renders a list of error messages in the embedded items.
+     *
+     * @return  a list of error messages
+     * @since   1.2
+     */
+    List<String> getItemErrors() {
+        return viewService.getItemErrorMessages(this)
     }
 
     /**
