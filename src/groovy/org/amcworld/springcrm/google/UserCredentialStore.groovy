@@ -45,19 +45,19 @@ class UserCredentialStore implements CredentialStore {
             return false
         }
 
-        String s = user.settings['googleAccessToken']
+        String s = user.settings.googleAccessToken
         if (!s) {
             return false
         }
         credential.accessToken = s
 
-        s = user.settings['googleRefreshToken']
+        s = user.settings.googleRefreshToken
         if (!s) {
             return false
         }
         credential.refreshToken = s
 
-        s = user.settings['googleExpirationTime']
+        s = user.settings.googleExpirationTime
         if (!s) {
             return false
         }
@@ -69,10 +69,9 @@ class UserCredentialStore implements CredentialStore {
     public void store(String userId, Credential credential) {
         User user = getUser(userId)
         if (user) {
-            user.settings['googleAccessToken'] = credential.accessToken
-            user.settings['googleRefreshToken'] = credential.refreshToken
-            user.settings['googleExpirationTime'] = credential.expirationTimeMilliseconds.toString()
-            user.save(flush: true)
+            user.storeSetting('googleAccessToken', credential.accessToken)
+            user.storeSetting('googleRefreshToken', credential.refreshToken)
+            user.storeSetting('googleExpirationTime', credential.expirationTimeMilliseconds.toString())
         }
     }
 
@@ -80,10 +79,9 @@ class UserCredentialStore implements CredentialStore {
     public void delete(String userId, Credential credential) {
         User user = getUser(userId)
         if (user) {
-            user.settings.remove('googleAccessToken')
-            user.settings.remove('googleRefreshToken')
-            user.settings.remove('googleExpirationTime')
-            user.save(flush: true)
+            user.removeSetting('googleAccessToken')
+            user.removeSetting('googleRefreshToken')
+            user.removeSetting('googleExpirationTime')
         }
     }
 

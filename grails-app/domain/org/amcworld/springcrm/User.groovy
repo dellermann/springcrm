@@ -43,18 +43,17 @@ class User implements Cloneable {
         email(nullable: false, blank: false, email: true)
 		admin()
 		allowedModules(nullable: true)
-		settings()
 		dateCreated()
 		lastUpdated()
     }
+    static hasMany = [rawSettings: UserSetting]
 	static mapping = {
 		allowedModules type: 'text'
-        settings index: 'settings_idx'
         table 'user_data'
         userName index: 'user_name'
     }
 	static transients = [
-		'fullName', 'allowedModulesAsList', 'allowedControllers'
+		'fullName', 'allowedModulesAsList', 'allowedControllers', 'settings'
 	]
 
 
@@ -71,9 +70,9 @@ class User implements Cloneable {
 	String email
 	boolean admin
 	String allowedModules
-	Map settings
 	Date dateCreated
 	Date lastUpdated
+    Map<String, String> settings
 	private Set<String> allowedControllers
 
 
@@ -104,6 +103,16 @@ class User implements Cloneable {
 		}
 		return allowedControllers
 	}
+
+    Map<String, String> getSettings() {
+        return Collections.unmodifiableMap(settings)
+    }
+
+    void setSettings(Map<String, String> settings) {
+        for (Map.Entry<String, String> entry : settings) {
+            storeSetting(entry.key, entry.value)
+        }
+    }
 
 
     //-- Public methods -------------------------
@@ -151,8 +160,56 @@ class User implements Cloneable {
         return ident()
     }
 
+    /**
+     * Initializes the settings table by converting the list of
+     * {@code UserSetting} objects to a map.
+     *
+     * @since 1.2
+     */
+    void initSettings() {
+        settings = [: ]
+        for (UserSetting us : rawSettings) {
+            settings[us.name] = us.value
+        }
+    }
+
+    /**
+     * Removes the setting with the given name.
+     *
+     * @param name  the name of the setting
+     * @since       1.2
+     */
+    void removeSettings(String name) {
+        UserSetting us = UserSetting.findByUserAndName(this, name)
+        if (us != null) {
+            us.delete(flush: true)
+        }
+        settings.remove(name)
+    }
+
+    /**
+     * Stores the given value to the setting with the given name.
+     *
+     * @param name  the name of the setting
+     * @param value the value of the setting
+     * @since       1.2
+     */
+    void storeSetting(String name, String value) {
+        UserSetting us = UserSetting.findByUserAndName(this, name)
+        if (us == null) {
+            us = new UserSetting(user: this, name: name)
+        }
+        us.value = value
+        us.save(flush: true)
+        settings[name] = value
+    }
+
     @Override
 	String toString() {
 		return fullName
 	}
+
+    def onLoad() {
+        initSettings()
+    }
 }

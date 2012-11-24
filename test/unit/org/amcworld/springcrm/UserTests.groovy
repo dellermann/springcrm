@@ -27,13 +27,13 @@ class UserTests extends GrailsUnitTestCase {
 		assertNull user.fax
 		assertFalse user.admin
 		assertNull user.allowedModules
-		assertNull user.settings
+		assertNotNull user.settings
 		assertEquals 'd.ellermann@amc-world.de', user.email
     }
-	
+
 	void testBlankConstraints() {
 		mockForConstraintsTests User
-		def validationFields = 
+		def validationFields =
 			['userName', 'password', 'firstName', 'lastName', 'email']
 		def u = new User()
 		assertFalse u.validate(validationFields)
@@ -42,7 +42,7 @@ class UserTests extends GrailsUnitTestCase {
 		assertEquals 'nullable', u.errors['firstName']
         assertEquals 'nullable', u.errors['lastName']
 		assertEquals 'nullable', u.errors['email']
-		
+
 		u = new User(userName:'', password:'', firstName:'', lastName:'')
 		assertFalse u.validate(validationFields)
 		assertEquals 'blank', u.errors['userName']
@@ -50,14 +50,14 @@ class UserTests extends GrailsUnitTestCase {
 		assertEquals 'blank', u.errors['firstName']
 		assertEquals 'blank', u.errors['lastName']
 		assertEquals 'nullable', u.errors['email']
-		
+
 		u = new User(
-			userName: 'danny', password:'test', firstName:'Daniel', 
+			userName: 'danny', password:'test', firstName:'Daniel',
 			lastName:'Ellermann', email:'d.ellermann@amc-world.de'
 		)
 		assertTrue u.validate(validationFields)
 	}
-	
+
 	void testUniqueConstraints() {
 		def jdoe = new User(
 			userName:'jdoe', password:'test', firstName:'Peter',
@@ -68,7 +68,7 @@ class UserTests extends GrailsUnitTestCase {
 			lastName:'Smith', email:'admin@example.com'
 		)
 		mockDomain(User, [jdoe, admin])
-		
+
 		def badUser = new User(
 			userName:'jdoe', password:'test', firstName:'Peter',
 			lastName:'Smith', email:'jdoe@example.com'
@@ -76,7 +76,7 @@ class UserTests extends GrailsUnitTestCase {
 		assertNull badUser.save()
 		assertEquals 2, User.count()
 		assertEquals 'unique', badUser.errors['userName']
-		
+
 		def goodUser = new User(
 			userName:'good', password:'test', firstName:'Peter',
 			lastName:'Smith', email:'good@example.com'
@@ -85,7 +85,7 @@ class UserTests extends GrailsUnitTestCase {
 		assertEquals 3, User.count()
 		assertNotNull User.findByUserNameAndPassword('good', 'test')
 	}
-	
+
 	void testSizeConstraints() {
 		mockForConstraintsTests User
 		def validationFields = [ 'phone', 'phoneHome', 'mobile', 'fax' ]
@@ -96,16 +96,16 @@ class UserTests extends GrailsUnitTestCase {
 		assertEquals 'maxSize', u.errors['phoneHome']
         assertEquals 'maxSize', u.errors['mobile']
 		assertEquals 'maxSize', u.errors['fax']
-		
+
 		s = '1234567890' * 4
 		u = new User(phone:s, phoneHome:s, mobile:s, fax:s)
 		assertTrue u.validate(validationFields)
-		
+
 		s = '+49 30 8321475-0'
 		u = new User(phone:s, phoneHome:s, mobile:s, fax:s)
 		assertTrue u.validate(validationFields)
 	}
-	
+
 	void testEmailConstraints() {
 		mockForConstraintsTests User
 		def validationFields = ['email']
@@ -116,31 +116,31 @@ class UserTests extends GrailsUnitTestCase {
 		u = new User(email:'foobar')
 		assertFalse u.validate(validationFields)
 		assertEquals 'email', u.errors['email']
-		
+
 		u = new User(email:'foobar@')
 		assertFalse u.validate(validationFields)
 		assertEquals 'email', u.errors['email']
-		
+
 		u = new User(email:'@mydomain.com')
 		assertFalse u.validate(validationFields)
 		assertEquals 'email', u.errors['email']
-		
+
 		u = new User(email:'user@mydomain')
 		assertFalse u.validate(validationFields)
 		assertEquals 'email', u.errors['email']
-		
+
 		u = new User(email:'user@.com')
 		assertFalse u.validate(validationFields)
 		assertEquals 'email', u.errors['email']
-		
+
 		u = new User(email:'')
 		assertFalse u.validate(validationFields)
 		assertEquals 'blank', u.errors['email']
-		
+
 		u = new User(email:'user@mydomain.com')
 		assertTrue u.validate(validationFields)
 	}
-	
+
 	void testFullName() {
 		User u = new User(
 			userName:'danny', password:'test', firstName:'Daniel',
@@ -151,7 +151,7 @@ class UserTests extends GrailsUnitTestCase {
 		u = new User()
 		assertEquals '', u.fullName
 	}
-	
+
 	void testToString() {
         User u = new User(
 			userName:'danny', password:'test', firstName:'Daniel',
