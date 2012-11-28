@@ -45,6 +45,7 @@ class UserSetting {
 
     String name
     String value
+    User user
 
 
     //-- Public methods -------------------------

@@ -520,13 +520,14 @@
         _onChangeFontSize: function (event) {
             var $ = jQuery,
                 $target = $(event.target),
+                clsCurrent = this.widgetBaseClass + "-current",
                 fontSize = $target.css("font-size"),
                 url = this.options.url;
 
             $("body").css("font-size", fontSize);
-            $target.addClass("current")
-                .siblings(".current")
-                    .removeClass("current");
+            $target.addClass(clsCurrent)
+                .siblings("." + clsCurrent)
+                    .removeClass(clsCurrent);
             if (url) {
                 $.get(url, { key: "fontSize", value: fontSize });
             }

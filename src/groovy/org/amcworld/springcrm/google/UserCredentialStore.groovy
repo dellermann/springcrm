@@ -69,9 +69,9 @@ class UserCredentialStore implements CredentialStore {
     public void store(String userId, Credential credential) {
         User user = getUser(userId)
         if (user) {
-            user.storeSetting('googleAccessToken', credential.accessToken)
-            user.storeSetting('googleRefreshToken', credential.refreshToken)
-            user.storeSetting('googleExpirationTime', credential.expirationTimeMilliseconds.toString())
+            user.settings['googleAccessToken'] = credential.accessToken
+            user.settings['googleRefreshToken'] = credential.refreshToken
+            user.settings['googleExpirationTime'] = credential.expirationTimeMilliseconds.toString()
         }
     }
 
@@ -79,9 +79,9 @@ class UserCredentialStore implements CredentialStore {
     public void delete(String userId, Credential credential) {
         User user = getUser(userId)
         if (user) {
-            user.removeSetting('googleAccessToken')
-            user.removeSetting('googleRefreshToken')
-            user.removeSetting('googleExpirationTime')
+            user.settings.remove('googleAccessToken')
+            user.settings.remove('googleRefreshToken')
+            user.settings.remove('googleExpirationTime')
         }
     }
 

@@ -200,7 +200,6 @@ class UserController {
         }
 
         session.user = userInstance
-//        userInstance.initSettings()
         def language = userInstance.settings['language']
         if (language) {
             session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(language)
@@ -216,7 +215,7 @@ class UserController {
     }
 
     def storeSetting() {
-        session.user.storeSetting(params.key, params.value)
+        session.user.settings[params.key] = params.value
         render(status: 200)
     }
 
@@ -233,7 +232,7 @@ class UserController {
     }
 
     def settingsLanguageSave() {
-        session.user.storeSetting('language', params.language)
+        session.user.settings['language'] = params.language
         session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(params.language)
         redirect(action: 'settingsIndex')
     }

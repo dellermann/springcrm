@@ -42,11 +42,14 @@ class ViewFilters {
             }
 
             before = {
+                def f = { pk, s, sk ->
+                    if (params[pk] == null) params[pk] = s[sk]
+                    else s[sk] = params[pk]
+                }
 
                 /* store or restore offset */
                 String key = sessionKey('offset')
-                if (params['offset'] == null) params['offset'] = session[key]
-                else session[key] = params['offset']
+                f('offset', session, key)
 
                 /* compute number of entries of the associated domain */
                 GrailsClass cls =
@@ -60,14 +63,11 @@ class ViewFilters {
                 session[key] = params.offset
 
                 /* store or restore sorting and order */
-                User user = session.user
                 String name = controllerName.capitalize()
-                String k = "sort${name}"
-                if (params['sort'] == null) params['sort'] = user.settings[k]
-                else user.storeSetting(k, params['sort'])
-                k = "order${name}"
-                if (params['order'] == null) params['order'] = user.settings[k]
-                else user.storeSetting(k, params['order'])
+                User user = session.user
+                if (!user.attached) user.attach()
+                f('sort', user.settings, "sort${name}")
+                f('order', user.settings, "order${name}")
             }
 
             after = {
