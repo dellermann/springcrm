@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpSession;
-import org.amcworld.springcrm.google.GoogleSync;
+import javax.servlet.http.HttpSession
+import org.amcworld.springcrm.google.GoogleSync
 import org.springframework.web.context.request.RequestContextHolder
 
 
@@ -30,12 +30,16 @@ import org.springframework.web.context.request.RequestContextHolder
  * classes which exchange data with Google.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 abstract class GoogleService
     implements org.amcworld.springcrm.google.GoogleService
 {
+    //-- Class variables ------------------------
+
+    static transactional = false
+
 
     //-- Instance variables ---------------------
 

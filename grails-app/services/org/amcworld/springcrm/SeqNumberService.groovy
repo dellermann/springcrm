@@ -30,13 +30,13 @@ import org.springframework.transaction.annotation.Transactional
  * content items.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class SeqNumberService {
 
     //-- Class variables ------------------------
 
-    static transactional = true
+    static transactional = false
 
 
     //-- Instance variables ---------------------

@@ -28,10 +28,15 @@ import java.security.MessageDigest
  * in this application.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.2
  * @since   1.0
  */
 class SecurityService {
+
+    //-- Class variables ------------------------
+
+    static transactional = false
+
 
     //-- Public methods -------------------------
 

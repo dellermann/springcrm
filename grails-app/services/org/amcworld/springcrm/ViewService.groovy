@@ -34,6 +34,11 @@ import org.springframework.validation.FieldError
  */
 class ViewService {
 
+    //-- Class variables ------------------------
+
+    static transactional = false
+
+
     //-- Instance variables ---------------------
 
     def messageSource

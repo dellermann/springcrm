@@ -132,6 +132,7 @@ class InvoicingTransaction {
 	InvoicingTransaction() {}
 
 	InvoicingTransaction(InvoicingTransaction i) {
+        this()
 		subject = i.subject
 		organization = i.organization
 		person = i.person
@@ -344,5 +345,6 @@ class InvoicingTransaction {
 
 	def beforeUpdate() {
 		total = computeTotal()
+        println "Saving ${type}-${number} in " + Thread.currentThread().stackTrace
 	}
 }
