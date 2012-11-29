@@ -3,7 +3,7 @@
 <input type="hidden" name="items[${i}].id" value="${item.id}" />
 </g:if>
 </g:each>
-<table id="${pageProperty(name: 'tableId')}" class="content-table price-table" 
+<table id="${pageProperty(name: 'tableId')}" class="content-table price-table"
        data-tax-items="${taxRates*.taxValue.join(',')}"
        data-units="${units*.name.join(',')}"
        data-img-path="${resource(dir: 'img')}"
@@ -99,10 +99,10 @@
       </td>
       <td class="unit-price currency number">
         <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" />&nbsp;<g:currency />
-      </td> 
+      </td>
       <td class="total-price currency number">
         <output>${formatNumber(number: item.total, minFractionDigits: 2)}</output>&nbsp;<g:currency />
-      </td> 
+      </td>
       <td class="tax percentage number">
         <input type="text" name="items[${i}].tax" size="4" value="${formatNumber(number: item.tax, minFractionDigits: 1)}" />&nbsp;%
       </td>
@@ -137,7 +137,10 @@
 <div class="table-actions">
   <a href="#" class="add-invoicing-item-btn button medium green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
 </div>
-<g:hasErrors bean="${invoicingTransaction}" field="items.*">
+<g:each var="err" in="${invoicingTransaction.itemErrors}">
+  <span class="error-msg">${err}</span>
+</g:each>
+<g:hasErrors bean="${invoicingTransaction}" field="items">
   <span class="error-msg"><g:eachError bean="${invoicingTransaction}" field="items.*">${it.arguments[0]}: <g:message error="${it}" /> </g:eachError></span>
 </g:hasErrors>
 <div id="inventory-selector-products" title="${message(code: 'invoicingTransaction.selector.products.title')}"></div>

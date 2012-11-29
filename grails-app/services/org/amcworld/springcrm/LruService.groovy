@@ -29,14 +29,9 @@ import org.springframework.web.context.request.RequestContextHolder
  * recently used) entries.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class LruService {
-
-	//-- Class variables ------------------------
-
-    static transactional = true
-
 
 	//-- Instance variables ---------------------
 

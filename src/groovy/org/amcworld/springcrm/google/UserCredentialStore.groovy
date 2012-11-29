@@ -45,19 +45,19 @@ class UserCredentialStore implements CredentialStore {
             return false
         }
 
-        String s = user.settings['googleAccessToken']
+        String s = user.settings.googleAccessToken
         if (!s) {
             return false
         }
         credential.accessToken = s
 
-        s = user.settings['googleRefreshToken']
+        s = user.settings.googleRefreshToken
         if (!s) {
             return false
         }
         credential.refreshToken = s
 
-        s = user.settings['googleExpirationTime']
+        s = user.settings.googleExpirationTime
         if (!s) {
             return false
         }
@@ -72,7 +72,6 @@ class UserCredentialStore implements CredentialStore {
             user.settings['googleAccessToken'] = credential.accessToken
             user.settings['googleRefreshToken'] = credential.refreshToken
             user.settings['googleExpirationTime'] = credential.expirationTimeMilliseconds.toString()
-            user.save(flush: true)
         }
     }
 
@@ -83,7 +82,6 @@ class UserCredentialStore implements CredentialStore {
             user.settings.remove('googleAccessToken')
             user.settings.remove('googleRefreshToken')
             user.settings.remove('googleExpirationTime')
-            user.save(flush: true)
         }
     }
 

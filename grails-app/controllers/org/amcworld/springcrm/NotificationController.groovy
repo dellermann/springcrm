@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * the developer team about errors.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class NotificationController {
 
@@ -38,8 +38,8 @@ class NotificationController {
     def reportError() {
 		sendMail {
 			multipart true
-			to 'error@amc-world.ath.cx'
-			from 'noreply@amc-world.ath.cx'
+			to 'error@amc-world.de'
+			from 'noreply@amc-world.de'
 			subject 'SpringCRM Fehlerbericht'
 			body '''Liebes SpringCRM-Entwicklerteam,
 

@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import static java.math.RoundingMode.HALF_UP
+import java.util.List;
 
 
 /**
@@ -92,6 +93,7 @@ class InvoicingTransaction {
     //-- Instance variables ---------------------
 
 	def seqNumberService
+    def viewService
 
 	int number
 	String type
@@ -130,6 +132,7 @@ class InvoicingTransaction {
 	InvoicingTransaction() {}
 
 	InvoicingTransaction(InvoicingTransaction i) {
+        this()
 		subject = i.subject
 		organization = i.organization
 		person = i.person
@@ -222,6 +225,16 @@ class InvoicingTransaction {
 	BigDecimal getDiscountAmount() {
 		return discountAmount ?: 0
 	}
+
+    /**
+     * Renders a list of error messages in the embedded items.
+     *
+     * @return  a list of error messages
+     * @since   1.2
+     */
+    List<String> getItemErrors() {
+        return viewService.getItemErrorMessages(this)
+    }
 
 	BigDecimal getShippingCosts() {
 		return shippingCosts ?: 0
@@ -332,5 +345,6 @@ class InvoicingTransaction {
 
 	def beforeUpdate() {
 		total = computeTotal()
+        println "Saving ${type}-${number} in " + Thread.currentThread().stackTrace
 	}
 }

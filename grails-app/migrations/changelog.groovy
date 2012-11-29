@@ -20,6 +20,7 @@
 
 databaseChangeLog = {
     include file: 'base.xml'
+    include file: 'user-settings.xml'
     include file: 'sales-item.xml'
     include file: 'sales-item-pricing.xml'
 }

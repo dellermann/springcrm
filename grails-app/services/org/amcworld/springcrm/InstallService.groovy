@@ -31,7 +31,7 @@ import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
  * reasons or obtaining the available base data packages.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.2
  */
 class InstallService {
 
@@ -42,6 +42,11 @@ class InstallService {
      * into the database during installation.
      */
     protected static final String BASE_PACKAGE_DIR = '/WEB-INF/data/install'
+
+
+    //-- Class variables ------------------------
+
+    static transactional = false
 
 
     //-- Instance variables ---------------------
@@ -72,7 +77,6 @@ class InstallService {
      */
     void enableInstaller() {
         log.error(enableFile)
-        println "Installer enable file: ${enableFile}"
         enableFile.createNewFile()
     }
 

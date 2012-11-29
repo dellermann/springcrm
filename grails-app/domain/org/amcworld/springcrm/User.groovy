@@ -43,18 +43,17 @@ class User implements Cloneable {
         email(nullable: false, blank: false, email: true)
 		admin()
 		allowedModules(nullable: true)
-		settings()
 		dateCreated()
 		lastUpdated()
     }
+    static hasMany = [rawSettings: UserSetting]
 	static mapping = {
 		allowedModules type: 'text'
-        settings index: 'settings_idx'
         table 'user_data'
         userName index: 'user_name'
     }
 	static transients = [
-		'fullName', 'allowedModulesAsList', 'allowedControllers'
+		'fullName', 'allowedModulesAsList', 'allowedControllers', 'settings'
 	]
 
 
@@ -71,9 +70,10 @@ class User implements Cloneable {
 	String email
 	boolean admin
 	String allowedModules
-	Map settings
 	Date dateCreated
 	Date lastUpdated
+    UserSettings settings
+    Collection<UserSetting> rawSettings
 	private Set<String> allowedControllers
 
 
@@ -155,4 +155,8 @@ class User implements Cloneable {
 	String toString() {
 		return fullName
 	}
+
+    def afterLoad() {
+        settings = new UserSettings(this)
+    }
 }

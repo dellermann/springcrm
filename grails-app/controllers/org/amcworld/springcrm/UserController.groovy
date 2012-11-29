@@ -215,7 +215,7 @@ class UserController {
     }
 
     def storeSetting() {
-        storeUserSetting(params.key, params.value)
+        session.user.settings[params.key] = params.value
         render(status: 200)
     }
 
@@ -232,7 +232,7 @@ class UserController {
     }
 
     def settingsLanguageSave() {
-        storeUserSetting('language', params.language)
+        session.user.settings['language'] = params.language
         session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(params.language)
         redirect(action: 'settingsIndex')
     }
@@ -277,23 +277,5 @@ class UserController {
 
         flash.message = message(code: 'user.settings.googleAuth.revoked.message')
         redirect(action: 'settingsIndex')
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    /**
-     * Stores the given user setting to the database and the session user
-     * instance.
-     *
-     * @param key   the key of the setting
-     * @param value the value to store
-     * @since       1.0
-     */
-    protected void storeUserSetting(String key, String value) {
-        User user = session.user
-        if (!user.attached) user.attach()
-        user.settings[key] = value
-        user.save(flush: true)
     }
 }

@@ -68,7 +68,6 @@ class ViewFilters {
                 if (!user.attached) user.attach()
                 f('sort', user.settings, "sort${name}")
                 f('order', user.settings, "order${name}")
-                user.save(flush: true)
             }
 
             after = {

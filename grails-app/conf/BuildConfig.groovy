@@ -28,7 +28,7 @@ grails.project.dependency.resolution = {
     inherits('global') {
         // uncomment to disable ehcache
         // excludes 'ehcache'
-        // excludes 'xml-apis', 'commons-logging'
+        excludes 'xml-apis', 'xml-apis-ext', 'xml-resolver', 'commons-digester', 'commons-logging', 'xalan', 'xerces', 'xercesImpl'
     }
 
     log 'warn' // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
@@ -53,42 +53,61 @@ grails.project.dependency.resolution = {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         compile(
-            'commons-fileupload:commons-fileupload:1.2.1',
-            'commons-io:commons-io:2.4'
-        )
-        /*
-         * XXX These dependencies conflict in the transient dependency
-         * jackson-core-asl with the cloudfoundry plugin
-         *
-        compile(
-            'com.google.api-client:google-api-client:1.7.0-beta',
-            'com.google.apis:google-api-services-calendar:v3-rev3-1.4.0-beta',
-            'com.google.oauth-client:google-oauth-client:1.7.0-beta'
-        )
-         *
-         * this works:
-        compile(
+            'com.google.apis:google-api-services-calendar:v3-rev7-1.6.0-beta',
+            'commons-fileupload:commons-fileupload:1.2.2',
+            'commons-io:commons-io:2.1',
             'jmimemagic:jmimemagic:0.1.2'
         )
-         *
+
+        /*
          * XXX Including FOP dependencies does not work because the xml-apis
          * are loaded twice.
          *
         compile('org.apache.xmlgraphics:fop:1.0') {
-            excludes([group: 'xml-apis', name: 'xml-apis'], [group: 'xml-resolver', name: 'xml-resolver'])
+//            transitive = false
+//            excludes 'xml-apis', 'xml-resolver'
+//            excludes([group: 'xml-apis', name: 'xml-apis'], [group: 'xml-resolver', name: 'xml-resolver'])
         }
-         *
-         * this works without problems:
-         *
+        */
         runtime(
+            'mysql:mysql-connector-java:5.1.21',
             'net.sf.offo:fop-hyph:1.2'
         )
+
+        /*
+         * XXX Same dependency problem as above at FOP
          *
-         * this works, too:
-        runtime(
-            'mysql:mysql-connector-java:5.1.19'
+        runtime('net.sf.barcode4j:barcode4j-fop-ext-complete:2.0') {
+            transitive = false
+        }
+        */
+    }
+
+    plugins {
+        compile(':cloud-foundry:1.2.3') {
+            export = false
+        }
+        compile(
+            ':fields:1.2',
+            ":hibernate:${grailsVersion}",
+            ':mail:1.0',
+            ':quartz:1.0-RC2',
+            ':searchable:0.6.3'
         )
-         *
-         */
+        build(
+            ':standalone:1.1.1',
+            ':svn:1.0.0.M1',
+            ":tomcat:${grailsVersion}"
+        )
+        runtime(
+            ':database-migration:1.1',
+            ':jquery:1.7.2',
+            ':jquery-json:2.2.2',
+            ':jquery-ui:1.8.15',
+            ':resources:1.1.6'
+        )
+        test(
+            ':jsunit:0.7'
+        )
     }
 }

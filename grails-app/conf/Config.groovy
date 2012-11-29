@@ -154,13 +154,11 @@ environments {
 /* logger configuration */
 log4j = {
     appenders {
+        String logDir = grails.util.Environment.warDeployed ? System.getProperty('catalina.home') + '/logs' : 'target'
+        file name: 'stacktrace',
+        file: "${logDir}/stacktrace.log",
+        layout: pattern(conversionPattern: "'%d [%t] %-5p %c{2} %x - %m%n'")
 //        console name: 'stdout', layout: pattern(conversionPattern: '%c{2} %m%n')
-        environments {
-            live {
-//                file name: 'file', file: '/var/log/tomcat-5.5/springcrm.log'
-                file name: 'stacktrace', file: '/var/log/tomcat-5.5/stacktrace.log'
-            }
-        }
     }
 
     error(
