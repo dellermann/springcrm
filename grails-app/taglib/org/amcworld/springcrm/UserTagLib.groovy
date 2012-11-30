@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code UserTagLib} represents tags for login.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class UserTagLib {
 
@@ -47,6 +47,9 @@ class UserTagLib {
 	 * @attr key REQUIRED	the name of the user setting
 	 */
 	def userSetting = { attrs, body ->
-		out << session.user?.settings[attrs.key]
+        def settings = session.user?.settings
+        if (settings) {
+            out << settings[attrs.key]
+        }
 	}
 }

@@ -37,7 +37,7 @@ if (System.properties["${appName}.config.location"]) {
  * Change this to alter the default package name and Maven publishing
  * destination.
  */
-grails.project.groupId = appName
+grails.project.groupId = 'org.amcworld.springcrm'
 
 /*
  * Enables the parsing of file extensions from URLs into the request format.
