@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.web.servlet.support.RequestContextUtils as RCU
+import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
 /**
@@ -141,6 +141,7 @@ class ViewTagLib {
                 ConfigHolder.instance['currency'] as String ?: '€'
 			map.groupingUsed = attrs.groupingUsed ?: true
 			map.minFractionDigits = attrs.minFractionDigits ?: 2
+            map.locale = LCH.locale
 			out << formatNumber(map)
 		} else {
 			out << ''

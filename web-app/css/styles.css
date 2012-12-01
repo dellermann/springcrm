@@ -1228,6 +1228,9 @@ form .price-table .pos {
 .price-table .item-number, .price-table .type {
   text-align: center;
 }
+.price-table.read-only .type {
+  text-align: left;
+}
 .price-table .pos, .price-table .number, .price-table .label,
   .price-table .number input
 {
