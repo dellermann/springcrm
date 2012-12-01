@@ -105,16 +105,6 @@
         _itemReferences: null,
 
         /**
-         * The zero-based index of the next pricing item which is created.
-         *
-         * @name    _nextIndex
-         * @type    Number
-         * @private
-         * @see     #_addItem
-         */
-        _nextIndex: 0,
-
-        /**
          * The input field containing the quantity for computing the unit
          * price in step 1.
          *
@@ -326,7 +316,7 @@
                 $tbody = this._$tbody,
                 currency,
                 imgPath,
-                index = this._nextIndex++,
+                index = this._$trs.length,
                 opts = this.options,
                 pos,
                 s;
@@ -388,11 +378,6 @@
             this._initItemCtrls($row);
             $row.appendTo($tbody);
             this._$trs = this._getRows();
-//            this.element
-//                .before(
-//                    '<input type="hidden" name="pricing.items[' +
-//                    String(this._$trs.length - 1) + '].id" value="0" />'
-//                );
             this._itemReferences.push(-1);
             this._initUnitAutocomplete($row.find(".unit input"));
             if (jumpToNewRow) {
@@ -537,7 +522,7 @@
                 });
             this._itemReferences = itemReferences;
             this._updateReferenceClasses();
-            this._nextIndex = numItems = $trs.length;
+            numItems = $trs.length;
             if (numItems !== 0) {
                 this._initUnitAutocomplete();
             }
@@ -1084,16 +1069,9 @@
          */
         _removeItem: function (item) {
             var $ = jQuery,
-                el,
                 fieldPrefix = this.options.fieldNamePrefix,
                 index = this._getIndex(item),
                 re = this._inputRegExp;
-
-            /* unset the ID value to cause Grails delete the record */
-            el = this._getInput(index, "id");
-            if (el) {
-                el.value = "null";
-            }
 
             /* fix row position labels and input names of all successing rows */
             this._getRow(item)
@@ -1105,13 +1083,9 @@
                             regexp = re;
 
                         $this.find("td:first-child")
-                            .text(String(idx + i + 1) + ".");
-
-                        /*
-                         * input names are fixed after deleting new items, only
-                         */
-                        if (!el) {
-                            $this.find(":input")
+                                .text(String(idx + i + 1) + ".")
+                            .end()
+                            .find(":input")
                                 .each(function () {
                                     var parts = this.name.match(regexp);
 
@@ -1121,7 +1095,6 @@
                                             + parts[2];
                                     }
                                 });
-                        }
                     })
                 .end()
                 .remove();

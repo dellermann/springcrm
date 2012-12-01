@@ -41,6 +41,7 @@ environments {
             url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
             username = 'projects'
             password = 'haluni21'
+//            logSql = true
         }
     }
 

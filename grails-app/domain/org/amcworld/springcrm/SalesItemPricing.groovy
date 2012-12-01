@@ -34,14 +34,13 @@ class SalesItemPricing {
     //-- Class variables ------------------------
 
     static constraints = {
-        name(blank: false)
         quantity(min: 0.0)
         unit()
         discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
         adjustment(nullable: true, scale: 2, widget: 'currency')
         items(minSize: 1)
     }
-    static hasMany = [items: SalesItemPricingItem, salesItems: SalesItem]
+    static hasMany = [items: SalesItemPricingItem]
     static mapping = {
         items cascade: 'all-delete-orphan'
     }
@@ -53,11 +52,11 @@ class SalesItemPricing {
 
     //-- Instance variables ---------------------
 
-    String name
     BigDecimal quantity = 1.0
     Unit unit
     BigDecimal discountPercent
     BigDecimal adjustment
+    SalesItem salesItem
     List<SalesItemPricingItem> items
 
 

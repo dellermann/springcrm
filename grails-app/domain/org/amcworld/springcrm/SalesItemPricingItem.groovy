@@ -21,20 +21,28 @@
 package org.amcworld.springcrm
 
 
+/**
+ * The class {@code SalesItemPricingItem} represents an item in the pricing of
+ * a sales item.
+ *
+ * @author  Daniel Ellermann
+ * @version 1.3
+ * @since   1.3
+ */
 class SalesItemPricingItem {
 
     //-- Class variables ------------------------
 
+    static belongsTo = [pricing: SalesItemPricing]
     static constraints = {
-        quantity(min: 0.0)
-        unit()
-        name(blank: false)
+        quantity(nullable: true, min: 0.0)
+        unit(nullable: true)
+        name(nullable: true)
         type()
         relToPos(nullable: true, min: 0i)
         unitPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
         unitPrice(nullable: true, scale: 2, widget: 'currency')
     }
-    static belongsTo = [pricing: SalesItemPricing]
     static searchable = [only: ['name']]
 
 

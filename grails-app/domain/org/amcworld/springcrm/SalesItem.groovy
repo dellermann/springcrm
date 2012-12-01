@@ -44,10 +44,10 @@ class SalesItem {
         salesStart(nullable: true)
         salesEnd(nullable: true)
         description(nullable: true, widget: 'textarea')
+        pricing(nullable: true)
         dateCreated()
         lastUpdated()
     }
-    static belongsTo = [pricing: SalesItemPricing]
     static mapping = {
         description type: 'text'
         name index: 'name'
@@ -71,6 +71,7 @@ class SalesItem {
     Date salesStart
     Date salesEnd
     String description
+    SalesItemPricing pricing
     Date dateCreated
     Date lastUpdated
 

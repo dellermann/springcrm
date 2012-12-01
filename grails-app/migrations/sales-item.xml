@@ -73,10 +73,9 @@
       <column name="weight" type="decimal(19,2)" />
     </createTable>
     <addForeignKeyConstraint baseColumnNames="category_id"
-      baseTableName="sales_item" constraintName="FK6669B2662A2F6EC9"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="sel_value"
-      referencesUniqueColumn="false" />
+      baseTableName="sales_item" constraintName="FK6669B266E9949B03"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false" />
     <addForeignKeyConstraint baseColumnNames="tax_rate_id"
       baseTableName="sales_item" constraintName="FK6669B266C7AFB16B"
       deferrable="false" initiallyDeferred="false"
@@ -89,6 +88,9 @@
       referencesUniqueColumn="false" />
     <createIndex indexName="FK6669B2662A2F6EC9" tableName="sales_item">
       <column name="category_id" />
+    </createIndex>
+    <createIndex indexName="name" tableName="sales_item">
+      <column name="name" />
     </createIndex>
     <createIndex indexName="FK6669B26667D5AB80" tableName="sales_item">
       <column name="unit_id" />

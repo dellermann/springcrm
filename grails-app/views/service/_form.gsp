@@ -43,11 +43,6 @@
       <input id="step1-pricing-quantity" type="text" name="pricing.quantity" size="6" value="${formatNumber(number: serviceInstance.pricing.quantity, maxFractionDigits: 3)}" placeholder="${message(code: 'service.quantity.label', default: 'Quantity')}" />
       <g:select from="${units}" optionKey="id" optionValue="name" id="step1-pricing-unit" name="pricing.unit.id" value="${serviceInstance.pricing.unit?.id}" />:
     </p>
-    <g:each in="${serviceInstance.pricing.items}" var="item" status="i">
-      <g:if test="${item.id}">
-      <input type="hidden" name="pricing.items[${i}].id" value="${item.id}" />
-      </g:if>
-    </g:each>
     <table id="step1-pricing-items" class="content-table price-table"
            data-units="${units*.name.join(',')}"
            data-img-path="${resource(dir: 'img')}">

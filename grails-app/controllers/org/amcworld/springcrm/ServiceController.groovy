@@ -156,53 +156,35 @@ class ServiceController {
             }
         }
 
+        /*
+         * Implementation notes:
+         *
+         * There are a lot of problems when we try to simply use data binding
+         * and 1:n relation storage in GORM.  It simply doesn't work, at least
+         * in Grails 2.1.1.
+         *
+         * I change the way data binding works.  The client submits the items
+         * as array (items[...]) with subsequent indices.  The client must
+         * ensure that no gaps (i. e. items[0], items[1], items[3], ...) are
+         * submitted.  The following implementation simply clears the items
+         * list and adds all submitted items, which itself undergo data
+         * binding, to the list.  A disadvantage of this way is that GORM
+         * deletes all previous items and then adds back all new items which is
+         * somewhat inefficient and permanently allocates new IDs.
+         */
         def pricing = serviceInstance.pricing
         if (pricing == null) {
             pricing = new SalesItemPricing()
             serviceInstance.pricing = pricing
         }
-
-        /*
-         * XXX  This code is necessary because the default implementation
-         *      in Grails does not work.  The above lines worked in Grails
-         *      2.0.0.  Now, either data binding or saving does not work
-         *      correctly if items were deleted and gaps in the indices
-         *      occurred (e. g. 0, 1, null, null, 4) or the items were
-         *      re-ordered.  Then I observed cluttering in saved data
-         *      columns.
-         *      The following lines do not make me happy but they work.
-         *      In future, this problem hopefully will be fixed in Grails
-         *      so we can remove these lines.
-         */
-        pricing.items?.clear()
-        for (int i = 0; params.pricing?."items[${i}]"; i++) {
-            println "trying: " + params.pricing?."items[${i}]"
-            if (params.pricing?."items[${i}]"?.id != 'null') {
-                println "adding: " + params.pricing?."items[${i}]"
-                def item = new SalesItemPricingItem()
-                bindData(item, params.pricing."items[${i}]")
-                pricing.addToItems(item)
-            }
+        if (pricing.items == null) {
+            pricing.items = []
+        } else {
+            pricing.items.clear()
         }
-        println "A: ${pricing.items.dump()}"
-
-//        println params.pricing.dump()
-//        println "A: ${pricing.items.dump()}"
-//        for (int i = 0; params.pricing?."items[${i}].type"; i++) {
-//            def item = params.pricing?."items[${i}]"
-//            println "Processing ${item}…";
-//            if (item.id == '0') {
-//                println "adding ${i}"; pricing.addToItems(item)
-//            }
-//        }
-//        println "A1: ${pricing.items.dump()}"
-//        pricing.properties = params.pricing
-//        println "B: ${pricing.items.dump()}"
-//        pricing.items.eachWithIndex { it, i -> def x = params.pricing?."items[${i}].id"; println "${i} → ${x}/${it?.id}"; if (params.pricing?."items[${i}].id" == '0') it.id = null }
-//        println 'C: ' + pricing.items.dump()
-//        pricing.items.removeAll { it == null }
-//        println 'D: ' + pricing.items.dump()
-//        pricing.save(flush: true)
+        for (int i = 0; params.pricing?."items[${i}]"; i++) {
+            pricing.addToItems(params.pricing."items[${i}]")
+        }
 
 		if (params.autoNumber) {
 			params.number = serviceInstance.number
