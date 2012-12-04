@@ -35,11 +35,6 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  */
 class UserController {
 
-    //-- Constants ------------------------------
-
-    static final String [] AVAILABLE_LANGUAGES = ['de', 'en']
-
-
     //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
@@ -224,8 +219,7 @@ class UserController {
     def settingsLanguage() {
         Map<String, String> locales = userService.availableLocales.collectEntries { [it.toString(), it.displayName] }
         locales = locales.sort { a, b -> a.value <=> b.value }
-        Locale currLocale = RCU.getLocale(request) ?: Locale.default
-        return [locales: locales, currentLocale: currLocale.toString()]
+        return [locales: locales, currentLocale: userService.currentLocale.toString()]
     }
 
     def settingsLanguageSave() {

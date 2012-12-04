@@ -20,7 +20,8 @@
 
 package org.amcworld.springcrm
 
-import org.apache.commons.lang.LocaleUtils
+import org.codehaus.groovy.grails.web.util.WebUtils
+import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
 /**
@@ -38,7 +39,30 @@ class UserService {
     private static final String [] AVAILABLE_LANGUAGES = ['de', 'en']
 
 
+    //-- Class variables ------------------------
+
+    static transactional = false
+
+
     //-- Public methods -------------------------
+
+    /**
+     * Gets all available currencies.
+     *
+     * @return  the available currencies
+     */
+    Set<Currency> getAvailableCurrencies() {
+        Set<Currency> res = new HashSet()
+        for (Locale l in Locale.availableLocales) {
+            if (l.country) {
+                Currency currency = Currency.getInstance(l)
+                if (currency) {
+                    res << currency
+                }
+            }
+        }
+        return res
+    }
 
     /**
      * Gets a list of languages which are fully supported by this application.
@@ -64,5 +88,15 @@ class UserService {
             }
         }
         return res
+    }
+
+    /**
+     * Gets the currently selected locale or the locale from the request.
+     *
+     * @return  the current locale
+     */
+    Locale getCurrentLocale() {
+        def request = WebUtils.retrieveGrailsWebRequest().currentRequest
+        return RCU.getLocale(request) ?: Locale.default
     }
 }

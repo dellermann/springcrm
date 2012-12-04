@@ -20,17 +20,20 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.context.i18n.LocaleContextHolder as LCH
-
 
 /**
  * The class {@code ViewTagLib} contains various tags which are needed in the
  * views.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class ViewTagLib {
+
+    //-- Instance variables ---------------------
+
+    def userService
+
 
     //-- Public methods -------------------------
 
@@ -134,14 +137,23 @@ class ViewTagLib {
 	def formatCurrency = { attrs, body ->
 		def number = attrs.number
 		if (number || attrs.displayZero) {
+            Locale locale = userService.currentLocale
+            Currency currency = getCurrency(locale)
+            int defMinFractionDigits = 2
+
 			def map = new HashMap(attrs)
 			map.number = number ?: 0
 			map.type = 'currency'
-			map.currencySymbol =
-                ConfigHolder.instance['currency'] as String ?: '€'
+            map.locale = locale
+            if (currency != null) {
+                map.currencyCode = currency.currencyCode
+                int prec = currency.defaultFractionDigits
+                if (prec >= 0) {
+                    defMinFractionDigits = prec
+                }
+            }
 			map.groupingUsed = attrs.groupingUsed ?: true
-			map.minFractionDigits = attrs.minFractionDigits ?: 2
-            map.locale = LCH.locale
+			map.minFractionDigits = attrs.minFractionDigits ?: defMinFractionDigits
 			out << formatNumber(map)
 		} else {
 			out << ''
@@ -152,7 +164,9 @@ class ViewTagLib {
 	 * Renders the currency symbol from the application configuration.
 	 */
 	def currency = {
-		out << (ConfigHolder.instance['currency'] as String) ?: '€'
+        Locale locale = userService.currentLocale
+        Currency currency = getCurrency(locale)
+		out << ((currency == null) ? '' : currency.getSymbol(locale))
 	}
 
 	/**
@@ -301,4 +315,25 @@ class ViewTagLib {
 			createLink(attrs, body)
 		}
 	}
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets the currently active currency.
+     *
+     * @param locale    the given locale
+     * @return          the currency; {@code null} if no currency is defined
+     * @since           1.3
+     */
+    protected Currency getCurrency(Locale locale) {
+        String currencyId = ConfigHolder.instance['currency'] as String
+
+        /* fix for old currency symbols in table config */
+        if (currencyId.length() != 3) {
+            currencyId = 'EUR'
+        }
+        return currencyId ? Currency.getInstance(currencyId)
+                : Currency.getInstance(locale)
+    }
 }

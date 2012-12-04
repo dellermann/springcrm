@@ -30,7 +30,7 @@
                   <label for="number"><g:message code="config.currencySymbol.label" default="Currency symbol" /></label>
                 </div>
                 <div class="field${hasErrors(bean: configData, field: 'currency', ' error')}">
-                  <g:textField name="config.currency" value="${configData.currency}" size="5" />
+                  <g:select name="config.currency" from="${currencies}" optionKey="key" optionValue="value" value="${currentCurrency}" />
                   <g:hasErrors bean="${configData}" field="currency">
                     <span class="error-msg"><g:eachError bean="${configData}" field="currency"><g:message error="${it}" /> </g:eachError></span>
                   </g:hasErrors>

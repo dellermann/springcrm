@@ -141,7 +141,7 @@ INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_v
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (10, 0, 'creditMemo', 99999, 'G', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (11, 0, 'project', 99999, 'J', 10000, '')
 DELETE FROM config
-INSERT INTO config (version, name, value) VALUES (0, 'currency', '€')
+INSERT INTO config (version, name, value) VALUES (0, 'currency', 'EUR')
 INSERT INTO config (version, name, value) VALUES (0, 'ldapBindDn', NULL)
 INSERT INTO config (version, name, value) VALUES (0, 'ldapBindPasswd', NULL)
 INSERT INTO config (version, name, value) VALUES (0, 'ldapContactDn', NULL)

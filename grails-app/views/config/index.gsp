@@ -20,7 +20,7 @@
           <dd><g:message code="config.client.description" /></dd>
         </dl>
         <dl id="configuration-currency">
-          <dt><g:link action="show" params="[page: 'currency']"><g:message code="config.currency.title" default="Currency" /></g:link></dt>
+          <dt><g:link action="currency"><g:message code="config.currency.title" default="Currency" /></g:link></dt>
           <dd><g:message code="config.currency.description" /></dd>
         </dl>
         <dl id="configuration-tax-rates">

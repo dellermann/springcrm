@@ -29,7 +29,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class ConfigController {
 
@@ -44,6 +44,11 @@ class ConfigController {
     ]
 
 
+    //-- Instance variables ---------------------
+
+    def userService
+
+
     //-- Public methods -------------------------
 
     def index() {}
@@ -54,6 +59,12 @@ class ConfigController {
         configData.each { config[it.name] = it.value }
 
         render(view: params.page, model: [configData: config])
+    }
+
+    def currency() {
+        Locale locale = userService.currentLocale
+        Map<String, String> currencies = userService.availableCurrencies.collectEntries { [it.currencyCode, it.currencyCode + ((it.currencyCode == it.getSymbol(locale)) ? '' : " (${it.getSymbol(locale)})")] }
+        return [currencies: currencies.sort { a, b -> a.key <=> b.key }, currentCurrency: ConfigHolder.instance['currency'] as String]
     }
 
     def save() {

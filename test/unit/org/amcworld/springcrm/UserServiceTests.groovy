@@ -34,6 +34,12 @@ class UserServiceTests {
 
     //-- Public methods -------------------------
 
+    void testGetAvailableCurrencies() {
+        Set<Currency> currencies = service.availableCurrencies
+        assert currencies.contains(Currency.getInstance('EUR'))
+        assert currencies.contains(Currency.getInstance('USD'))
+    }
+
     void testGetAvailableLanguages() {
         List<String> langs = service.availableLanguages
         assert langs.contains('de')
