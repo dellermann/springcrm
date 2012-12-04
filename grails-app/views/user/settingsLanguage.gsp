@@ -27,10 +27,10 @@
             <div class="form">
               <div class="row">
                 <div class="label">
-                  <label for="language"><g:message code="user.settings.language.language.label" default="Language" /></label>
+                  <label for="locale"><g:message code="user.settings.language.language.label" default="Language" /></label>
                 </div>
                 <div class="field">
-                  <g:select name="language" from="${locales}" value="${currentLocale}" optionKey="key" optionValue="value" />
+                  <g:select name="locale" from="${locales}" value="${currentLocale}" optionKey="key" optionValue="value" />
                 </div>
               </div>
             </div>

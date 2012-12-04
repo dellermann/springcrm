@@ -21,7 +21,9 @@
 package org.amcworld.springcrm
 
 import com.google.api.client.auth.oauth2.Credential
+import org.apache.commons.lang.LocaleUtils
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
 /**
@@ -29,7 +31,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * the application.
  *
  * @author  Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class UserController {
 
@@ -48,6 +50,7 @@ class UserController {
     def googleOAuthService
     def installService
     def securityService
+    def userService
 
 
     //-- Public methods -------------------------
@@ -200,10 +203,7 @@ class UserController {
         }
 
         session.user = userInstance
-        def language = userInstance.settings['language']
-        if (language) {
-            session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(language)
-        }
+        setUserLocale()
         redirect(uri: '/')
     }
 
@@ -222,18 +222,14 @@ class UserController {
     def settingsIndex() {}
 
     def settingsLanguage() {
-        Map<String, String> locales = [: ]
-        for (String code : AVAILABLE_LANGUAGES) {
-            Locale l = new Locale(code)
-            locales[code] = l.getDisplayLanguage(l)
-        }
-        Locale currLocale = session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] ?: Locale.default
-        return [locales: locales, currentLocale: currLocale.language]
+        Map<String, String> locales = userService.availableLocales.collectEntries { [it.toString(), it.displayName] }
+        locales = locales.sort { a, b -> a.value <=> b.value }
+        Locale currLocale = RCU.getLocale(request) ?: Locale.default
+        return [locales: locales, currentLocale: currLocale.toString()]
     }
 
     def settingsLanguageSave() {
-        session.user.settings['language'] = params.language
-        session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = new Locale(params.language)
+        setUserLocale(params.locale)
         redirect(action: 'settingsIndex')
     }
 
@@ -277,5 +273,19 @@ class UserController {
 
         flash.message = message(code: 'user.settings.googleAuth.revoked.message')
         redirect(action: 'settingsIndex')
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    protected void setUserLocale(String locale = null) {
+        if (locale) {
+            session.user.settings.locale = locale
+        } else {
+            locale = session.user.settings.locale
+        }
+        if (locale) {
+            session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = LocaleUtils.toLocale(locale)
+        }
     }
 }
