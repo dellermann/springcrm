@@ -29,7 +29,7 @@ import java.util.List;
  * transactions such as invoices, quotes etc.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class InvoicingTransaction {
 
@@ -60,11 +60,11 @@ class InvoicingTransaction {
 		items(minSize: 1)
 		footerText(nullable: true, widget: 'textarea')
 		discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-		discountAmount(nullable: true, scale: 2, min: 0.0, widget: 'currency')
-		shippingCosts(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+		discountAmount(nullable: true, scale: 10, min: 0.0, widget: 'currency')
+		shippingCosts(nullable: true, scale: 10, min: 0.0, widget: 'currency')
         shippingTax(nullable: true, scale: 1, min: 0.0, widget: 'percent')
-		adjustment(nullable: true, scale: 2, widget: 'currency')
-		total(scale: 2)
+		adjustment(nullable: true, scale: 10, widget: 'currency')
+		total(scale: 10)
         notes(nullable: true, widget: 'textarea')
 		dateCreated()
 		lastUpdated()

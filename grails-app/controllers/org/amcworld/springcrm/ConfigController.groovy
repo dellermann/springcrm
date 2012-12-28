@@ -64,7 +64,16 @@ class ConfigController {
     def currency() {
         Locale locale = userService.currentLocale
         Map<String, String> currencies = userService.availableCurrencies.collectEntries { [it.currencyCode, it.currencyCode + ((it.currencyCode == it.getSymbol(locale)) ? '' : " (${it.getSymbol(locale)})")] }
-        return [currencies: currencies.sort { a, b -> a.key <=> b.key }, currentCurrency: ConfigHolder.instance['currency'] as String]
+        String currentCurrency = ConfigHolder.instance['currency'] as String
+        Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
+        if (numFractionDigits == null) {
+            try {
+                numFractionDigits = Currency.getInstance(currentCurrency).defaultFractionDigits
+            } catch (IllegalArgumentException e) {
+                numFractionDigits = 2
+            }
+        }
+        return [currencies: currencies.sort { a, b -> a.key <=> b.key }, currentCurrency: currentCurrency, numFractionDigits: numFractionDigits]
     }
 
     def save() {

@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * invoice.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class PurchaseInvoiceItem {
 
@@ -39,7 +39,7 @@ class PurchaseInvoiceItem {
 		unit()
 		name(blank: false)
 		description(nullable: true)
-		unitPrice(scale: 2, widget: 'currency')
+		unitPrice(scale: 10, widget: 'currency')
 		tax(nullable: false, scale: 1, min: 0.0, widget: 'percent')
     }
 	static searchable = [only: ['number', 'name', 'description']]

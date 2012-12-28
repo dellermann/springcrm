@@ -37,7 +37,7 @@ class SalesItemPricing {
         quantity(min: 0.0)
         unit()
         discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-        adjustment(nullable: true, scale: 2, widget: 'currency')
+        adjustment(nullable: true, scale: 10, widget: 'currency')
         items(minSize: 1)
     }
     static hasMany = [items: SalesItemPricingItem]

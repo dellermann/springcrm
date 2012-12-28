@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code CreditMemo} represents a credit memo.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class CreditMemo extends InvoicingTransaction {
 
@@ -34,7 +34,7 @@ class CreditMemo extends InvoicingTransaction {
     static constraints = {
 		stage()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, min: 0.0, scale: 2, widget: 'currency')
+		paymentAmount(nullable: true, min: 0.0, scale: 10, widget: 'currency')
 		paymentMethod(nullable: true)
 		invoice(nullable: true)
 		dunning(nullable: true)

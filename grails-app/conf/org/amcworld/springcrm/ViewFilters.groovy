@@ -27,13 +27,38 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * The class {@code ViewFilters} contains various filters concerning the view.
  *
  * @author  Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class ViewFilters {
 
     def dependsOn = [LoginFilters]
 
+    def userService
+
     def filters = {
+        commonData(controller: '*', action: '*') {
+            after = { model ->
+                if (model) {
+                    Locale locale = userService.currentLocale
+                    model.locale = locale.toString().replace('_', '-')
+
+                    Currency currency
+                    try {
+                        currency = Currency.getInstance(ConfigHolder.instance['currency'] as String)
+                    } catch (IllegalArgumentException e) {
+                        currency = Currency.getInstance('EUR')
+                    }
+                    model.currencySymbol = currency.getSymbol(locale)
+
+                    Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
+                    if (numFractionDigits == null) {
+                        numFractionDigits = currency.defaultFractionDigits
+                    }
+                    model.numFractionDigits = numFractionDigits
+                }
+            }
+        }
+
         pagination(controller: '*', action: 'list') {
             def sessionKey = { String name ->
                 String key = name + controllerName.capitalize()

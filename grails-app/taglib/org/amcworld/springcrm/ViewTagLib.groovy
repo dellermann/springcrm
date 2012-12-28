@@ -139,7 +139,10 @@ class ViewTagLib {
 		if (number || attrs.displayZero) {
             Locale locale = userService.currentLocale
             Currency currency = getCurrency(locale)
-            int defMinFractionDigits = 2
+            Integer minFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
+            if (minFractionDigits == null) {
+                minFractionDigits = currency.defaultFractionDigits
+            }
 
 			def map = new HashMap(attrs)
 			map.number = number ?: 0
@@ -147,13 +150,9 @@ class ViewTagLib {
             map.locale = locale
             if (currency != null) {
                 map.currencyCode = currency.currencyCode
-                int prec = currency.defaultFractionDigits
-                if (prec >= 0) {
-                    defMinFractionDigits = prec
-                }
             }
 			map.groupingUsed = attrs.groupingUsed ?: true
-			map.minFractionDigits = attrs.minFractionDigits ?: defMinFractionDigits
+			map.minFractionDigits = attrs.minFractionDigits ?: minFractionDigits
 			out << formatNumber(map)
 		} else {
 			out << ''

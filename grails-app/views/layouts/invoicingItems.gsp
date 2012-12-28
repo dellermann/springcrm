@@ -26,14 +26,14 @@
     <tr class="subtotal">
       <td colspan="5" class="label"><label><g:message code="${pageProperty(name: 'className')}.subtotalNet.label" default="Subtotal excl. VAT" /></label></td>
       <td></td>
-      <td class="currency number"><output id="subtotal-net">0,00</output>&nbsp;<g:currency /></td>
+      <td class="currency number"><output id="subtotal-net"><g:formatNumber number="0" minFractionDigits="${numFractionDigits}" /></output>&nbsp;<g:currency /></td>
       <td></td>
       <td></td>
     </tr>
     <tr class="subtotal">
       <td colspan="5" class="label"><label><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></label></td>
       <td></td>
-      <td class="currency number"><output id="subtotal-gross">0,00</output>&nbsp;<g:currency /></td>
+      <td class="currency number"><output id="subtotal-gross"><g:formatNumber number="0" minFractionDigits="${numFractionDigits}" /></output>&nbsp;<g:currency /></td>
       <td></td>
       <td></td>
     </tr>
@@ -45,7 +45,7 @@
           <span class="error-msg"><g:eachError bean="${invoicingTransaction}" field="discountPercent"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
       </td>
-      <td class="currency number"><output id="discount-from-percent">0,00</output>&nbsp;<g:currency /></td>
+      <td class="currency number"><output id="discount-from-percent"><g:formatNumber number="0" minFractionDigits="${numFractionDigits}" /></output>&nbsp;<g:currency /></td>
       <td></td>
       <td></td>
     </tr>
@@ -53,7 +53,7 @@
       <td colspan="5" class="label"><label for="discountAmount"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></label></td>
       <td></td>
       <td class="currency number${hasErrors(bean: invoicingTransaction, field: 'discountAmount', ' error')}">
-        <g:textField name="discountAmount" value="${formatNumber(number: invoicingTransaction?.discountAmount, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
+        <g:textField name="discountAmount" value="${formatNumber(number: invoicingTransaction?.discountAmount, minFractionDigits: numFractionDigits)}" size="8" />&nbsp;<g:currency /><br />
         <g:hasErrors bean="${invoicingTransaction}" field="discountAmount">
           <span class="error-msg"><g:eachError bean="${invoicingTransaction}" field="discountAmount"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
@@ -65,7 +65,7 @@
       <td colspan="5" class="label"><label for="adjustment"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></label></td>
       <td></td>
       <td class="currency number${hasErrors(bean: invoicingTransaction, field: 'adjustment', ' error')}">
-        <g:textField name="adjustment" value="${formatNumber(number: invoicingTransaction?.adjustment, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
+        <g:textField name="adjustment" value="${formatNumber(number: invoicingTransaction?.adjustment, minFractionDigits: numFractionDigits)}" size="8" />&nbsp;<g:currency /><br />
         <g:hasErrors bean="${invoicingTransaction}" field="adjustment">
           <span class="error-msg"><g:eachError bean="${invoicingTransaction}" field="adjustment"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>
@@ -76,7 +76,7 @@
     <tr class="total">
       <td colspan="5" class="label"><label><g:message code="${pageProperty(name: 'className')}.total.label" default="Total" /></label></td>
       <td></td>
-      <td class="currency number"><output id="total-price">0,00</output>&nbsp;<g:currency /></td>
+      <td class="currency number"><output id="total-price"><g:formatNumber number="0" minFractionDigits="${numFractionDigits}" /></output>&nbsp;<g:currency /></td>
       <td></td>
       <td></td>
     </tr>
@@ -98,10 +98,10 @@
         <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<img class="select-btn-products" src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingTransaction.selector.products.title')}" title="${message(code: 'invoicingTransaction.selector.products.title')}" width="16" height="16" /></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<img class="select-btn-services" src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingTransaction.selector.services.title')}" title="${message(code: 'invoicingTransaction.selector.services.title')}" width="16" height="16" /></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
       </td>
       <td class="unit-price currency number">
-        <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: 2)}" />&nbsp;<g:currency />
+        <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(number: item.unitPrice, minFractionDigits: numFractionDigits)}" />&nbsp;<g:currency />
       </td>
       <td class="total-price currency number">
-        <output>${formatNumber(number: item.total, minFractionDigits: 2)}</output>&nbsp;<g:currency />
+        <output>${formatNumber(number: item.total, minFractionDigits: numFractionDigits)}</output>&nbsp;<g:currency />
       </td>
       <td class="tax percentage number">
         <input type="text" name="items[${i}].tax" size="4" value="${formatNumber(number: item.tax, minFractionDigits: 1)}" />&nbsp;%
@@ -119,7 +119,7 @@
       <td colspan="5" class="label"><label for="shippingCosts"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></label></td>
       <td></td>
       <td class="currency number${hasErrors(bean: invoicingTransaction, field: 'shippingCosts', ' error')}">
-        <g:textField name="shippingCosts" value="${formatNumber(number: invoicingTransaction?.shippingCosts, minFractionDigits: 2)}" size="8" />&nbsp;<g:currency /><br />
+        <g:textField name="shippingCosts" value="${formatNumber(number: invoicingTransaction?.shippingCosts, minFractionDigits: numFractionDigits)}" size="8" />&nbsp;<g:currency /><br />
         <g:hasErrors bean="${invoicingTransaction}" field="shippingCosts">
           <span class="error-msg"><g:eachError bean="${invoicingTransaction}" field="shippingCosts"><g:message error="${it}" /> </g:eachError></span>
         </g:hasErrors>

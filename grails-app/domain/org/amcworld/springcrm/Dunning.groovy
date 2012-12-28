@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Dunning} represents a dunning which belongs to an invoice.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class Dunning extends InvoicingTransaction {
 
@@ -36,7 +36,7 @@ class Dunning extends InvoicingTransaction {
 		stage()
 		dueDatePayment()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, min: 0.0, scale: 2, widget: 'currency')
+		paymentAmount(nullable: true, min: 0.0, scale: 10, widget: 'currency')
 		paymentMethod(nullable: true)
 		invoice()
     }

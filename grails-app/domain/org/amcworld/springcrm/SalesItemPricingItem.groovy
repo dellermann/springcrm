@@ -41,7 +41,7 @@ class SalesItemPricingItem {
         type()
         relToPos(nullable: true, min: 0i)
         unitPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-        unitPrice(nullable: true, scale: 2, widget: 'currency')
+        unitPrice(nullable: true, scale: 10, widget: 'currency')
     }
     static searchable = [only: ['name']]
 

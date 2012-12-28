@@ -35,7 +35,9 @@
     "use strict";
 
     var $LANG = $L,
-        jQuery = $;
+        $html = $("html"),
+        jQuery = $,
+        numFractions = $html.data("num-fraction-digits");
 
 
     //== jQuery extensions ======================
@@ -59,7 +61,7 @@
          * @returns {String}    the formatted number
          */
         formatCurrency: function (x) {
-            return $.formatNumber(x, 2);
+            return $.formatNumber(x, numFractions);
         },
 
         /**

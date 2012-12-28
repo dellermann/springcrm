@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * such as invoices, quotes etc.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class InvoicingItem {
 
@@ -39,7 +39,7 @@ class InvoicingItem {
 		unit()
 		name(blank: false)
 		description(nullable: true)
-		unitPrice(scale: 2, widget: 'currency')
+		unitPrice(scale: 10, widget: 'currency')
 		tax(nullable: false, scale: 1, min: 0.0, widget: 'percent')
     }
 	static mapping = {

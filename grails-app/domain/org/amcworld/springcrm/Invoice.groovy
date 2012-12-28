@@ -35,7 +35,7 @@ class Invoice extends InvoicingTransaction {
 		stage()
 		dueDatePayment()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, min: 0.0, scale: 2, widget: 'currency')
+		paymentAmount(nullable: true, min: 0.0, scale: 10, widget: 'currency')
 		paymentMethod(nullable: true)
 		quote(nullable: true)
 		salesOrder(nullable: true)

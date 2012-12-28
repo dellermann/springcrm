@@ -27,6 +27,10 @@
  */
 
 
+/*jslint nomen: true, plusplus: true, white: true */
+/*global $L: false, jQuery: true */
+
+
 (function ($, $L) {
 
     "use strict";
@@ -92,10 +96,10 @@
                 '<td class="unit-price currency number">' +
                 '<input type="text" name="' +
                 this._getInputName(index, "unitPrice") +
-                '" size="8" value="0,00" />&nbsp;' + currency +
-                '</td><td class="total-price currency number">' +
-                '<output>0,00</output>&nbsp;' + currency + '</td>' +
-                '<td class="tax percentage number">' +
+                '" size="8" value="' + $.formatCurrency(0) + '" />&nbsp;' +
+                currency + '</td><td class="total-price currency number">' +
+                '<output>' + $.formatCurrency(0) + '</output>&nbsp;' +
+                currency + '</td><td class="tax percentage number">' +
                 '<input type="text" name="' + this._getInputName(index, "tax") +
                 '" size="4" />&nbsp;%</td><td class="action-buttons">';
             if (imgPath) {
@@ -288,7 +292,7 @@
                 .focusout($.proxy(this._onFocusOut, this));
             $(".add-invoicing-item-btn")
                 .click(function () {
-                        self._addItem.call(self, true);
+                        self._addItem(true);
                         return false;
                     });
             if (numItems === 0) {
@@ -435,16 +439,20 @@
             if ($img.hasClass("up-btn")) {
                 this._moveItem($img, -1);
                 return false;
-            } else if ($img.hasClass("down-btn")) {
+            }
+            if ($img.hasClass("down-btn")) {
                 this._moveItem($img, 1);
                 return false;
-            } else if ($img.hasClass("remove-btn")) {
+            }
+            if ($img.hasClass("remove-btn")) {
                 this._removeItem($img);
                 return false;
-            } else if ($img.hasClass("select-btn-products")) {
+            }
+            if ($img.hasClass("select-btn-products")) {
                 this._showInventorySelector($img, "products");
                 return false;
-            } else if ($img.hasClass("select-btn-services")) {
+            }
+            if ($img.hasClass("select-btn-services")) {
                 this._showInventorySelector($img, "services");
                 return false;
             }
@@ -456,7 +464,7 @@
                 $target = $(event.target),
                 val;
 
-            if ($target.hasClass("currency")) {
+            if ($target.is(".currency :input")) {
                 val = $.parseNumber($target.val());
                 $target.val(val ? $.formatNumber(val, null) : "");
             }
@@ -466,7 +474,7 @@
             var $ = jQuery,
                 $target = $(event.target);
 
-            if ($target.hasClass("currency")) {
+            if ($target.is(".currency :input")) {
                 $target.val($.formatCurrency($.parseNumber($target.val())));
             }
         },
@@ -591,7 +599,7 @@
                 n = taxes.length;
                 while (++i < n) {
                     tax = taxes[i];
-                    if (typeof(tax) === "number") {
+                    if (typeof tax === "number") {
                         taxes[i] = $.formatNumber(tax * 100);
                     }
                 }

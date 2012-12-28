@@ -27,13 +27,18 @@
             <div class="form">
               <div class="row">
                 <div class="label">
-                  <label for="number"><g:message code="config.currencySymbol.label" default="Currency symbol" /></label>
+                  <label for="number"><g:message code="config.currency.label" default="Currency" /></label>
                 </div>
-                <div class="field${hasErrors(bean: configData, field: 'currency', ' error')}">
+                <div class="field">
                   <g:select name="config.currency" from="${currencies}" optionKey="key" optionValue="value" value="${currentCurrency}" />
-                  <g:hasErrors bean="${configData}" field="currency">
-                    <span class="error-msg"><g:eachError bean="${configData}" field="currency"><g:message error="${it}" /> </g:eachError></span>
-                  </g:hasErrors>
+                </div>
+              </div>
+              <div class="row">
+                <div class="label">
+                  <label for="numFractionDigits"><g:message code="config.numFractionDigits.label" default="Num. of fraction digits" /></label>
+                </div>
+                <div class="field">
+                  <g:select name="config.numFractionDigits" from="${0..10}" value="${numFractionDigits}" />
                 </div>
               </div>
             </div>

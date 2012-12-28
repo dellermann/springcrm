@@ -27,7 +27,7 @@ import static java.math.RoundingMode.HALF_UP
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class PurchaseInvoice {
 
@@ -42,17 +42,17 @@ class PurchaseInvoice {
 		dueDate()
 		stage()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, widget: 'currency')
+		paymentAmount(nullable: true, scale: 10, widget: 'currency')
 		paymentMethod(nullable: true)
 		items(minSize: 1)
 		notes(nullable: true, widget: 'textarea')
 		documentFile(nullable: true)
-		discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-		discountAmount(nullable: true, scale: 2, min: 0.0, widget: 'currency')
-		shippingCosts(nullable: true, scale: 2, min: 0.0, widget: 'currency')
+		discountPercent(nullable: true, scale: 10, min: 0.0, widget: 'percent')
+		discountAmount(nullable: true, scale: 10, min: 0.0, widget: 'currency')
+		shippingCosts(nullable: true, scale: 10, min: 0.0, widget: 'currency')
         shippingTax(nullable: true, scale: 1, min: 0.0, widget: 'percent')
-		adjustment(nullable: true, scale: 2, widget: 'currency')
-		total(scale: 2)
+		adjustment(nullable: true, scale: 10, widget: 'currency')
+		total(scale: 10)
 		dateCreated()
 		lastUpdated()
     }
