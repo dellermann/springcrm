@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Number extension tests</title>
+  <link rel="stylesheet" href="../qunit-1.10.0.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="../qunit-1.10.0.js"></script>
+  <script>
+  var $L = function (key) {
+          "use strict";
+
+          return $L._messages[key.replace(/\./g, "_")];
+      },
+      SPRINGCRM = SPRINGCRM || {};
+
+  $L._messages = {
+          default_format_date: "dd.MM.yyyy",
+          default_format_datetime: "dd.MM.yyyy HH:mm",
+          default_format_time: "HH:mm"
+      };
+  </script>
+  <script src="../../../web-app/js/core.js"></script>
+  <script>
+  test("Number formatting without precision", function () {
+      equal((45).format(), "45");
+      equal((-45).format(), "-45");
+      equal((45.123).format(), "45,123");
+      equal((-45.123).format(), "-45,123");
+      equal((.123456).format(), "0,123456");
+      equal((-.123456).format(), "-0,123456");
+      equal((1234567.123).format(), "1.234.567,123");
+      equal((-1234567.123).format(), "-1.234.567,123");
+      equal((123456.123).format(), "123.456,123");
+      equal((-123456.123).format(), "-123.456,123");
+      equal((0 / 0).format(), "0");
+  });
+
+  test("Number formatting with null precision", function () {
+      var n = null;
+
+      equal((45).format(n), "45");
+      equal((-45).format(n), "-45");
+      equal((45.123).format(n), "45,123");
+      equal((-45.123).format(n), "-45,123");
+      equal((.123456).format(n), "0,123456");
+      equal((-.123456).format(n), "-0,123456");
+      equal((1234567.123).format(n), "1.234.567,123");
+      equal((-1234567.123).format(n), "-1.234.567,123");
+      equal((123456.123).format(n), "123.456,123");
+      equal((-123456.123).format(n), "-123.456,123");
+      equal((0 / 0).format(n), "0");
+  });
+
+  test("Number formatting with precision", function () {
+      var n = 2;
+
+      equal((45).format(n), "45,00");
+      equal((-45).format(n), "-45,00");
+      equal((45.123).format(n), "45,12");
+      equal((45.128).format(n), "45,13");
+      equal((-45.123).format(n), "-45,12");
+      equal((-45.128).format(n), "-45,13");
+      equal((.123456).format(n), "0,12");
+      equal((-.123456).format(n), "-0,12");
+      equal((1234567.123).format(n), "1.234.567,12");
+      equal((-1234567.123).format(n), "-1.234.567,12");
+      equal((123456.123).format(n), "123.456,12");
+      equal((-123456.123).format(n), "-123.456,12");
+      equal((0 / 0).format(n), "0,00");
+      equal(Number.MIN_VALUE.format(n), "0,00");
+      equal(Number.POSITIVE_INFINITY.format(n), "NaN");
+      equal(Number.NEGATIVE_INFINITY.format(n), "-NaN");
+  });
+
+  test("Number formatting with negative precision", function () {
+      var n = -2;
+
+      equal((45).format(n), "45,00");
+      equal((-45).format(n), "-45,00");
+      equal((45.123).format(n), "45,12");
+      equal((45.128).format(n), "45,13");
+      equal((-45.123).format(n), "-45,12");
+      equal((-45.128).format(n), "-45,13");
+      equal((.123456).format(n), "0,12");
+      equal((-.123456).format(n), "-0,12");
+      equal((1234567.123).format(n), "1.234.567,12");
+      equal((-1234567.123).format(n), "-1.234.567,12");
+      equal((123456.123).format(n), "123.456,12");
+      equal((-123456.123).format(n), "-123.456,12");
+      equal((0 / 0).format(n), "0,00");
+      equal(Number.MIN_VALUE.format(n), "0,00");
+      equal(Number.POSITIVE_INFINITY.format(n), "NaN");
+      equal(Number.NEGATIVE_INFINITY.format(n), "-NaN");
+  });
+
+  test("Number formatting with string precision", function () {
+      var n = "2";
+
+      equal((45).format(n), "45,00");
+      equal((-45).format(n), "-45,00");
+      equal((45.123).format(n), "45,12");
+      equal((45.128).format(n), "45,13");
+      equal((-45.123).format(n), "-45,12");
+      equal((-45.128).format(n), "-45,13");
+      equal((.123456).format(n), "0,12");
+      equal((-.123456).format(n), "-0,12");
+      equal((1234567.123).format(n), "1.234.567,12");
+      equal((-1234567.123).format(n), "-1.234.567,12");
+      equal((123456.123).format(n), "123.456,12");
+      equal((-123456.123).format(n), "-123.456,12");
+      equal((0 / 0).format(n), "0,00");
+      equal(Number.MIN_VALUE.format(n), "0,00");
+      equal(Number.POSITIVE_INFINITY.format(n), "NaN");
+      equal(Number.NEGATIVE_INFINITY.format(n), "-NaN");
+  });
+
+  test("Currency value formatting", function () {
+      equal((45).formatCurrencyValue(), "45,00");
+      equal((-45).formatCurrencyValue(), "-45,00");
+      equal((45.123).formatCurrencyValue(), "45,12");
+      equal((45.128).formatCurrencyValue(), "45,13");
+      equal((-45.123).formatCurrencyValue(), "-45,12");
+      equal((-45.128).formatCurrencyValue(), "-45,13");
+      equal((.123456).formatCurrencyValue(), "0,12");
+      equal((-.123456).formatCurrencyValue(), "-0,12");
+      equal((1234567.123).formatCurrencyValue(), "1.234.567,12");
+      equal((-1234567.123).formatCurrencyValue(), "-1.234.567,12");
+      equal((123456.123).formatCurrencyValue(), "123.456,12");
+      equal((-123456.123).formatCurrencyValue(), "-123.456,12");
+      equal((0 / 0).formatCurrencyValue(), "0,00");
+      equal(Number.MIN_VALUE.formatCurrencyValue(), "0,00");
+      equal(Number.POSITIVE_INFINITY.formatCurrencyValue(), "NaN");
+      equal(Number.NEGATIVE_INFINITY.formatCurrencyValue(), "-NaN");
+  });
+
+  test("Number parsing", function () {
+      equal("45".parseNumber(), 45);
+      equal("45,".parseNumber(), 45);
+      equal("45,00".parseNumber(), 45);
+      equal("45,123".parseNumber(), 45.123);
+      equal("1.234.567,123".parseNumber(), 1234567.123);
+      equal("-45".parseNumber(), -45);
+      equal("-45,00".parseNumber(), -45);
+      equal("-45,123".parseNumber(), -45.123);
+      equal("-1.234.567,123".parseNumber(), -1234567.123);
+      equal("0,123456".parseNumber(), 0.123456);
+      equal("-0,123456".parseNumber(), -0.123456);
+      equal(",123456".parseNumber(), 0.123456);
+      equal("-,123456".parseNumber(), -0.123456);
+  });
+
+  test("Number rounding", function () {
+      equal((45).round(2), 45);
+      equal((45.1).round(2), 45.1);
+      equal((45.12).round(2), 45.12);
+      equal((45.123).round(2), 45.12);
+      equal((45.128).round(2), 45.13);
+      equal((45.128).round(3), 45.128);
+      equal((45.12345678901).round(3), 45.123);
+      equal((45.12398765432).round(3), 45.124);
+      equal((0).round(2), 0);
+      equal(Number.MIN_VALUE.round(2), 0);
+      ok(isNaN((0 / 0).round(2)));
+  });
+
+  test("Regular expression escaping", function () {
+      equal(RegExp.escape("."), "\\.");
+      equal(RegExp.escape("[abc]"), "\\[abc\\]");
+      equal(RegExp.escape("{abc}"), "\\{abc\\}");
+      equal(RegExp.escape("1+4"), "1\\+4");
+      equal(RegExp.escape("What?"), "What\\?");
+      equal(RegExp.escape("Hat^"), "Hat\\^");
+      equal(RegExp.escape("1.000.000 $"), "1\\.000\\.000 \\$");
+      equal(RegExp.escape("\\"), "\\\\");
+      equal(RegExp.escape("/"), "\\/");
+  });
+
+  test("Date formatting", function () {
+      var d = new Date(2012, 11, 29, 22, 28, 0, 0);
+
+      equal(d.format("yy"), "12");
+      equal(d.format("yyy"), "2012");
+      equal(d.format("yyyy"), "2012");
+      equal(d.format("MM.yyyy"), "12.2012");
+      equal(d.format("yyyy-MM"), "2012-12");
+      equal(d.format("dd.MM.yyyy"), "29.12.2012");
+      equal(d.format("dd.MM.yyyy HH:mm"), "29.12.2012 22:28");
+      equal(d.format("date"), "29.12.2012");
+      equal(d.format("datetime"), "29.12.2012 22:28");
+      equal(d.format("time"), "22:28");
+      equal(d.format(), "29.12.2012 22:28");
+
+      d = new Date(1980, 2, 7, 9, 5, 0, 0);
+      equal(d.format("d.M.yy H:m"), "7.3.80 9:5");
+  });
+
+  test("Date parsing", function () {
+      equal("2012".parseDate("yyyy").getTime(), new Date(2012, 0, 1, 0, 0, 0, 0).getTime());
+      equal("12.2012".parseDate("MM.yyyy").getTime(), new Date(2012, 11, 1, 0, 0, 0, 0).getTime());
+      equal("2012-12".parseDate("yyyy-MM").getTime(), new Date(2012, 11, 1, 0, 0, 0, 0).getTime());
+      equal("29.12.2012".parseDate("dd.MM.yyyy").getTime(), new Date(2012, 11, 29, 0, 0, 0, 0).getTime());
+      equal("29.12.2012 22:28".parseDate("dd.MM.yyyy HH:mm").getTime(), new Date(2012, 11, 29, 22, 28, 0, 0).getTime());
+      equal("29.12.2012".parseDate("date").getTime(), new Date(2012, 11, 29, 0, 0, 0, 0).getTime());
+      equal("29.12.2012 22:28".parseDate("datetime").getTime(), new Date(2012, 11, 29, 22, 28, 0, 0).getTime());
+      equal("22:28".parseDate("time").getTime(), new Date(1970, 0, 1, 22, 28, 0, 0).getTime());
+      equal("29.12.2012 22:28".parseDate().getTime(), new Date(2012, 11, 29, 22, 28, 0, 0).getTime());
+      equal("29.12.2012 22:28".parseDate("d.M.yyy H:m").getTime(), new Date(2012, 11, 29, 22, 28, 0, 0).getTime());
+      equal("29.12.2012 22:28".parseDate("d.M.yy H:m").getTime(), new Date(2012, 11, 29, 22, 28, 0, 0).getTime());
+      equal("29.12.2012 22:28".parseDate("d.M.y H:m").getTime(), new Date(2012, 11, 29, 22, 28, 0, 0).getTime());
+  });
+  </script>
+</head>
+
+<body>
+  <div id="qunit"></div>
+</body>
+</html>

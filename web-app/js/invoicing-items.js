@@ -1,7 +1,7 @@
 /*
  * invoicing-items.js
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,10 +96,11 @@
                 '<td class="unit-price currency number">' +
                 '<input type="text" name="' +
                 this._getInputName(index, "unitPrice") +
-                '" size="8" value="' + $.formatCurrency(0) + '" />&nbsp;' +
-                currency + '</td><td class="total-price currency number">' +
-                '<output>' + $.formatCurrency(0) + '</output>&nbsp;' +
-                currency + '</td><td class="tax percentage number">' +
+                '" size="8" value="' + (0).formatCurrencyValue() +
+                '" />&nbsp;' + currency +
+                '</td><td class="total-price currency number"><output>' +
+                (0).formatCurrencyValue() + '</output>&nbsp;' + currency +
+                '</td><td class="tax percentage number">' +
                 '<input type="text" name="' + this._getInputName(index, "tax") +
                 '" size="4" />&nbsp;%</td><td class="action-buttons">';
             if (imgPath) {
@@ -154,23 +155,23 @@
 
             $(".total-price output", this.$tbodyItems)
                 .each(function () {
-                    subtotalNet += $.parseNumber($(this).text());
+                    subtotalNet += $(this).text().parseNumber();
                 });
-            shippingCosts = $.parseNumber(this.$shippingCosts.val());
+            shippingCosts = this.$shippingCosts.val().parseNumber();
             this.subtotalNet = subtotalNet + shippingCosts;
-            this.$subtotalNet.text($.formatCurrency(this.subtotalNet));
+            this.$subtotalNet.text(this.subtotalNet.formatCurrencyValue());
 
             this._computeTaxValues();
 
-            discountPercent = $.parseNumber(this.$discountPercent.val());
+            discountPercent = this.$discountPercent.val().parseNumber();
             discount = this.subtotalGross * discountPercent / 100;
-            this.$discountFromPercent.text($.formatCurrency(discount));
-            discount += $.parseNumber(this.$discountAmount.val());
+            this.$discountFromPercent.text(discount.formatCurrencyValue());
+            discount += this.$discountAmount.val().parseNumber();
 
-            adjustment = $.parseNumber(this.$adjustment.val());
+            adjustment = this.$adjustment.val().parseNumber();
             total = this.subtotalGross - discount + adjustment;
             this.total = total;
-            this.$total.text($.formatCurrency(total));
+            this.$total.text(total.formatCurrencyValue());
             $("#paymentAmount").trigger("change");
         },
 
@@ -200,10 +201,10 @@
                         unitPrice;
 
                     name = this.name.replace(/\.tax$/, ".quantity");
-                    qty = $.parseNumber(els[name].value);
+                    qty = els[name].value.parseNumber();
                     name = this.name.replace(/\.tax$/, ".unitPrice");
-                    unitPrice = $.parseNumber(els[name].value);
-                    taxRate = $.parseNumber(this.value);
+                    unitPrice = els[name].value.parseNumber();
+                    taxRate = this.value.parseNumber();
                     if (taxRate !== 0) {
                         tax = qty * unitPrice * taxRate / 100.0;
                         self._addTaxRate(tr, taxRate, tax);
@@ -211,8 +212,8 @@
                 });
 
             /* add the shipping tax to the tax rate map */
-            shippingCosts = $.parseNumber(this.$shippingCosts.val());
-            shippingTax = $.parseNumber(this.$shippingTax.val());
+            shippingCosts = this.$shippingCosts.val().parseNumber();
+            shippingTax = this.$shippingTax.val().parseNumber();
             if (shippingCosts !== 0 && shippingTax !== 0) {
                 this._addTaxRate(
                     taxRates, shippingTax, shippingCosts * shippingTax / 100.0
@@ -229,12 +230,12 @@
                 s += '<tr class="tax-rate-sum">' +
                     '<td colspan="5" class="label"><label>' +
                     $L("invoicingTransaction.taxRate.label").replace(
-                        /\{0\}/, $.formatNumber(tr.taxRate, 1)
+                        /\{0\}/, tr.taxRate.format(1)
                     ) +
                     '</label></td><td></td>' +
                     '<td class="total-price currency number">' +
-                    $.formatCurrency(tr.tax) + '&nbsp;' + currency + '</td>' +
-                    '<td></td><td></td></tr>';
+                    tr.tax.formatCurrencyValue() + '&nbsp;' + currency +
+                    '</td><td></td><td></td></tr>';
             }
             $(".tax-rate-sum").remove();
             $("tfoot tr:first").after(s);
@@ -243,7 +244,7 @@
             this.taxTotal = taxTotal;
             subtotalGross = this.subtotalNet + taxTotal;
             this.subtotalGross = subtotalGross;
-            this.$subtotalGross.text($.formatCurrency(subtotalGross));
+            this.$subtotalGross.text(subtotalGross.formatCurrencyValue());
             return subtotalGross;
         },
 
@@ -412,20 +413,20 @@
                 $tr = $(input).parents("tr");
                 switch (parts[1]) {
                 case "quantity":
-                    qty = $.parseNumber(input.value);
-                    unitPrice = $.parseNumber(
-                        this._getInput(index, "unitPrice").value
-                    );
+                    qty = input.value.parseNumber();
+                    unitPrice = this._getInput(index, "unitPrice")
+                        .value
+                        .parseNumber();
                     $tr.find(".total-price output")
-                        .text($.formatCurrency(qty * unitPrice));
+                        .text((qty * unitPrice).formatCurrencyValue());
                     break;
                 case "unitPrice":
-                    unitPrice = $.parseNumber(input.value);
-                    qty = $.parseNumber(
-                        this._getInput(index, "quantity").value
-                    );
+                    unitPrice = input.value.parseNumber();
+                    qty = this._getInput(index, "quantity")
+                        .value
+                        .parseNumber();
                     $tr.find(".total-price output")
-                        .text($.formatCurrency(qty * unitPrice));
+                        .text((qty * unitPrice).formatCurrencyValue());
                     break;
                 }
             }
@@ -465,8 +466,8 @@
                 val;
 
             if ($target.is(".currency :input")) {
-                val = $.parseNumber($target.val());
-                $target.val(val ? $.formatNumber(val, null) : "");
+                val = $target.val().parseNumber();
+                $target.val(val ? val.format() : "");
             }
         },
 
@@ -475,7 +476,7 @@
                 $target = $(event.target);
 
             if ($target.is(".currency :input")) {
-                $target.val($.formatCurrency($.parseNumber($target.val())));
+                $target.val($target.val().parseNumber().formatCurrencyValue());
             }
         },
 
@@ -564,7 +565,7 @@
                             || (fieldName === "unitPrice")
                             || (fieldName === "tax"))
                         {
-                            b = b || $.parseNumber(val) === 0;
+                            b = b || val.parseNumber() === 0;
                         } else if (fieldName === "name") {
                             $name = $(e);
                         }
@@ -600,7 +601,7 @@
                 while (++i < n) {
                     tax = taxes[i];
                     if (typeof tax === "number") {
-                        taxes[i] = $.formatNumber(tax * 100);
+                        taxes[i] = (tax * 100).format();
                     }
                 }
             }
@@ -684,18 +685,18 @@
                     els[prefix + "number"].value = data.fullNumber;
                     item = data.inventoryItem;
                     qty = item.quantity;
-                    els[prefix + "quantity"].value = $.formatNumber(qty, null);
+                    els[prefix + "quantity"].value = qty.format(qty);
                     els[prefix + "unit"].value = item.unit.name;
                     els[prefix + "name"].value = item.name;
                     els[prefix + "description"].value = item.description;
                     unitPrice = item.unitPrice;
                     unitPriceInput = els[prefix + "unitPrice"];
-                    unitPriceInput.value = $.formatCurrency(unitPrice);
+                    unitPriceInput.value = unitPrice.formatCurrencyValue();
                     $(unitPriceInput).parents("tr")
                         .find(".total-price output")
-                            .text($.formatCurrency(qty * unitPrice));
+                            .text((qty * unitPrice).formatCurrencyValue());
                     els[prefix + "tax"].value =
-                        $.formatNumber(item.taxRate.taxValue * 100.0, 1);
+                        (item.taxRate.taxValue * 100.0).format(1);
                     self._computeFooterValues();
                     $("#inventory-selector-" + type).dialog("close");
                 }

@@ -84,6 +84,16 @@
         _form: null,
 
         /**
+         * Stores whether or not pricing is enabled when the form is displayed.
+         *
+         * @name    _initialPricingEnabled
+         * @type    boolean
+         * @private
+         * @since   1.3
+         */
+        _initialPricingEnabled: false,
+
+        /**
          * A regular expression which is applied to the names of input fields
          * in order to obtain the index and field name.
          *
@@ -103,6 +113,17 @@
          * @private
          */
         _itemReferences: null,
+
+        /**
+         * The form element indicating whether or not pricing is enabled for
+         * this sales item.
+         *
+         * @name    _pricingEnabled
+         * @type    Object
+         * @private
+         * @since   1.3
+         */
+        _pricingEnabled: null,
 
         /**
          * The input field containing the quantity for computing the unit
@@ -358,7 +379,7 @@
                 this._getInputName(index, "unitPrice") +
                 '" size="8" />&nbsp;' + currency + '</td>' +
                 '<td class="total-price currency number"><output>' +
-                $.formatCurrency(0) + '</output>&nbsp;' + currency +
+                (0).formatCurrencyValue() + '</output>&nbsp;' + currency +
                 '</td><td class="action-buttons">';
             if (imgPath) {
                 s += '<img class="up-btn" src="' + imgPath + '/up.png" alt="' +
@@ -444,7 +465,7 @@
                         unitPrice = (
                                 this._getFieldVal(item, "unit-percent")
                                 * totalPrice / 100
-                            ).toFixed(2);
+                            ).round(2);
                     }
                 }
                 break;
@@ -454,14 +475,14 @@
                     unitPrice = (
                             this._getFieldVal(item, "unit-percent")
                             * this._getCurrentSum(idx - 1) / 100
-                        ).toFixed(2);
+                        ).round(2);
                 } else {
                     totalPrice = this._computeTotalPrice(otherIndex);
                     if (totalPrice !== null) {
                         unitPrice = (
                                 this._getFieldVal(item, "unit-percent")
                                 * totalPrice / 100
-                        ).toFixed(2);
+                        ).round(2);
                     }
                 }
                 break;
@@ -469,7 +490,7 @@
                 unitPrice = (
                         this._getFieldVal(item, "unit-percent")
                         * this._getCurrentSum(idx - 1) / 100
-                    ).toFixed(2);
+                    ).round(2);
                 break;
             }
             return unitPrice;
@@ -488,9 +509,11 @@
                 $form,
                 $trs,
                 el = this.element,
+                form,
                 itemReferences = [],
                 numItems,
                 opts = this.options,
+                pricingEnabled,
                 self = this;
 
             opts.imgPath = opts.imgPath || el.data("img-path");
@@ -499,9 +522,20 @@
                     "^" + opts.fieldNamePrefix + "\\[(\\d+)\\]\\.(\\w+)$"
                 );
 
+            $("#start-pricing")
+                .click($.proxy(this._onClickStartPricing, this));
+            $("#remove-pricing")
+                .click($.proxy(this._onClickRemovePricing, this));
+
             $form = el.parents("form")
                 /*.submit($.proxy(this._onSubmit, this))*/;
-            this._form = $form.get(0);
+            this._form = form = $form.get(0);
+            this._pricingEnabled = pricingEnabled = form.pricingEnabled;
+            this._initialPricingEnabled = !!pricingEnabled.value;
+            $(".hidden :input").attr("disabled", "disabled");
+            if (this._initialPricingEnabled) {
+                this._toggleVisibility();
+            }
 
             el.change($.proxy(this._onChange, this))
                 .click($.proxy(this._onClick, this));
@@ -614,9 +648,9 @@
             if ((name === "quantity") || (name === "unit-percent")
                 || (name === "unit-price") || (name === "total-price"))
             {
-                val = $.parseNumber(val);
+                val = val.parseNumber();
             } else if (name === "relative-to-pos") {
-                val = (val === "") ? -1 : $.parseNumber(val);
+                val = (val === "") ? -1 : val.parseNumber();
             }
             return val;
         },
@@ -939,6 +973,8 @@
          * @function
          * @name                    _onClick
          * @param {Object} event    the event data
+         * @returns {boolean}       <code>true</code> to perform event
+         *                          bubbling; <code>false</code> otherwise
          * @private
          */
         _onClick: function (event) {
@@ -1007,6 +1043,49 @@
         },
 
         /**
+         * Called if the button to remove pricing has been clicked.
+         *
+         * @function
+         * @name                _onClickRemovePricing
+         * @returns {boolean}   always <code>false</code> to prevent event
+         *                      bubbling
+         * @private
+         * @since               1.3
+         */
+        _onClickRemovePricing: function () {
+            var ok;
+
+            if (this._initialPricingEnabled) {
+                ok = window.confirm(
+                        $L("salesItem.pricing.removePricing.confirm")
+                    );
+                if (!ok) {
+                    return false;
+                }
+            }
+            this._pricingEnabled.value = "";
+            this._toggleVisibility();
+            return false;
+        },
+
+        /**
+         * Called if the button to start pricing has been clicked.
+         *
+         * @function
+         * @name                _onClickStartPricing
+         * @returns {boolean}   always <code>false</code> to prevent event
+         *                      bubbling
+         * @private
+         * @since               1.3
+         */
+        _onClickStartPricing: function () {
+            this._pricingEnabled.value = "1";
+            this._toggleVisibility();
+            this._addItem(false);
+            return false;
+        },
+
+        /**
          * Called if an element in the pricing table has got the focus.
          *
          * @function
@@ -1015,13 +1094,12 @@
          * @private
          */
         _onFocusIn: function (event) {
-            var $ = jQuery,
-                $target = $(event.target),
+            var $target = $(event.target),
                 val;
 
             if ($target.is(".number input")) {
-                val = $.parseNumber($target.val());
-                $target.val(val ? $.formatNumber(val, null) : "");
+                val = $target.val().parseNumber();
+                $target.val(val ? val.format() : "");
             }
         },
 
@@ -1034,13 +1112,12 @@
          * @private
          */
         _onFocusOut: function (event) {
-            var $ = jQuery,
-                $target = $(event.target);
+            var $target = $(event.target);
 
             if ($target.is(".currency input")) {
-                $target.val($.formatCurrency($.parseNumber($target.val())));
+                $target.val($target.val().parseNumber().formatCurrencyValue());
             } else if ($target.is(".percentage input")) {
-                $target.val($.formatNumber($.parseNumber($target.val()), 2));
+                $target.val($target.val().parseNumber().format(2));
             }
         },
 
@@ -1145,10 +1222,10 @@
             var $field = this._getField(item, name);
 
             if ((name === "quantity") || (name === "unit-percent")) {
-                val = $.formatNumber(val);
+                val = val.format();
             }
             if ((name === "unit-price") || (name === "total-price")) {
-                val = $.formatCurrency(val);
+                val = val.formatCurrencyValue();
             }
             if (name === "total-price") {
                 $field.text(val);
@@ -1335,6 +1412,26 @@
         },
 
         /**
+         * Toggles the visibility of the pricing form section.
+         *
+         * @function
+         * @name        _toggleVisibility
+         * @private
+         */
+        _toggleVisibility: function () {
+            $(".toggle-visibility")
+                .filter(".hidden")
+                    .find(":input")
+                        .removeAttr("disabled")
+                    .end()
+                .end()
+                .toggleClass("hidden")
+                .filter(".hidden")
+                    .find(":input")
+                        .attr("disabled", "disabled");
+        },
+
+        /**
          * Updates the computable fields in the given item.
          *
          * @function
@@ -1370,7 +1467,7 @@
                 s,
                 self = this,
                 sum = this._getCurrentSum(),
-                sumText = $.formatCurrency(sum);
+                sumText = sum.formatCurrencyValue();
 
             this._$trs.each(function () {
                     self._updateItem($(this));
@@ -1378,8 +1475,10 @@
             this._$step1TotalPrice.text(sumText);
             this._$step2TotalPrice.text(sumText);
 
-            quantity = $.parseNumber(this._$step1PricingQuantity.val());
-            s = $.formatNumber(quantity);
+            quantity = this._$step1PricingQuantity
+                .val()
+                .parseNumber();
+            s = quantity.format();
             this._$step2Quantity.text(s);
             this._$step2TotalQuantity.text(s);
             s = this._$step1PricingUnit
@@ -1387,7 +1486,7 @@
                     .text();
             this._$step2Unit.text(s);
             this._$step2TotalUnit.text(s);
-            s = $.formatCurrency((sum / quantity).toFixed(2));
+            s = (sum / quantity).formatCurrencyValue();
             this._$step1UnitPrice.text(s);
             this._$step2UnitPrice.text(s);
             this._updateSalesPricing();
@@ -1431,25 +1530,28 @@
          * @private
          */
         _updateSalesPricing: function () {
-            var $ = jQuery,
-                adjustment = $.parseNumber(this._$step2Adjustment.val()),
+            var adjustment = this._$step2Adjustment.val().parseNumber(),
                 discountPercent =
-                    $.parseNumber(this._$step2DiscountPercent.val()),
+                    this._$step2DiscountPercent.val().parseNumber(),
                 discountPercentAmount,
-                qty = $.parseNumber(this._$step1PricingQuantity.val()),
+                qty = this._$step1PricingQuantity.val().parseNumber(),
                 s,
-                step3Qty = $.parseNumber(this._$step3Quantity.val()),
-                totalPrice = $.parseNumber(this._$step2TotalPrice.text());
+                step3Qty = this._$step3Quantity.val().parseNumber(),
+                totalPrice = this._$step2TotalPrice.text().parseNumber();
 
             discountPercentAmount = discountPercent * totalPrice / 100;
             this._$step2DiscountPercentAmount
-                .text($.formatCurrency(discountPercentAmount));
+                .text(discountPercentAmount.formatCurrencyValue());
             totalPrice += adjustment - discountPercentAmount;
-            s = $.formatCurrency(totalPrice);
+            s = totalPrice.formatCurrencyValue();
             this._$step2Total.text(s);
             this._$step3TotalPrice.text(s);
-            this._$step2TotalUnitPrice.text($.formatCurrency(totalPrice / qty));
-            this._$step3UnitPrice.text($.formatCurrency(totalPrice / step3Qty));
+            this._$step2TotalUnitPrice.text(
+                    (totalPrice / qty).formatCurrencyValue()
+                );
+            this._$step3UnitPrice.text(
+                    (totalPrice / step3Qty).formatCurrencyValue()
+                );
         }
     });
     /**#@-*/

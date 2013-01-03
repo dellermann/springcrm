@@ -1,7 +1,7 @@
 /*
  * invoicing-transaction-form.js
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+/*jslint nomen: true, plusplus: true, white: true */
+/*global window: true, $L: false, jQuery: true */
 
 
 (function (window, $, $L) {
@@ -100,9 +104,7 @@
         },
 
         _getTotal: function () {
-            var $ = jQuery;
-
-            return $.parseNumber($("#total-price").text());
+            return $("#total-price").text().parseNumber();
         },
 
         _getUnpaid: function () {
@@ -110,7 +112,7 @@
 
             return -sgn * (
                     this._getTotal()
-                    + sgn * $.parseNumber(this.$paymentAmount.val())
+                    + sgn * this.$paymentAmount.val().parseNumber()
                     - this._getModifiedClosingBalance(this.$stillUnpaid)
                 );
         },
@@ -140,8 +142,7 @@
         },
 
         _onChangePaymentAmount: function () {
-            var $ = jQuery,
-                $stillUnpaid = this.$stillUnpaid,
+            var $stillUnpaid = this.$stillUnpaid,
                 val = this._getUnpaid();
 
             $stillUnpaid
@@ -151,7 +152,7 @@
                         : ((val < 0) ? "still-unpaid-too-much" : "still-unpaid-paid")
                 )
                 .find("span")
-                    .text($.formatCurrency(val));
+                    .text(val.formatCurrencyValue());
         },
 
         _onChangePaymentDate: function (event) {
@@ -188,8 +189,7 @@
         },
 
         _onClickStillUnpaid: function (event) {
-            var $ = jQuery,
-                $paymentAmount = this.$paymentAmount,
+            var $paymentAmount = this.$paymentAmount,
                 unpaid = this._getUnpaid(),
                 val;
 
@@ -197,10 +197,10 @@
                 val = this._getTotal()
                     - this._getModifiedClosingBalance($(event.currentTarget));
                 if (this.options.type === "C") {
-                    val = 2 * $.parseNumber($paymentAmount.val()) - val;
+                    val = 2 * $paymentAmount.val().parseNumber() - val;
                 }
                 if (val) {
-                    $paymentAmount.val($.formatCurrency(val))
+                    $paymentAmount.val(val.formatCurrencyValue())
                         .trigger("change");
                 }
             }

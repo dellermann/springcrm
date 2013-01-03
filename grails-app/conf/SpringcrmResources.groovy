@@ -1,7 +1,7 @@
 /*
  * SpringcrmResources.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ modules = {
         resource '/css/jquery-ui-springcrm.css'
         resource '/js/jquery.ui.datepicker-de.js'
         resource '/js/jquery.ba-bbq.min.js'
+        resource '/js/core.js'
         resource '/js/scripts.js'
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
