@@ -39,52 +39,52 @@
     <h3>${serviceInstance?.toString()}</h3>
     <div class="data-sheet">
       <div class="fieldset">
-        <h4><g:message code="service.fieldset.general.label" /></h4>
+        <h4><g:message code="salesItem.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
             <div class="row">
-              <div class="label"><g:message code="service.number.label" default="Number" /></div>
+              <div class="label"><g:message code="salesItem.number.label" default="Number" /></div>
               <div class="field">${fieldValue(bean: serviceInstance, field: "fullNumber")}</div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.name.label" default="Name" /></div>
+              <div class="label"><g:message code="salesItem.name.label" default="Name" /></div>
               <div class="field">${fieldValue(bean: serviceInstance, field: "name")}</div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.category.label" default="Category" /></div>
+              <div class="label"><g:message code="salesItem.category.label" default="Category" /></div>
               <div class="field">${serviceInstance?.category?.encodeAsHTML()}</div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.quantity.label" default="Quantity" /></div>
+              <div class="label"><g:message code="salesItem.quantity.label" default="Quantity" /></div>
               <div class="field">${fieldValue(bean: serviceInstance, field: "quantity")}</div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.unit.label" default="Unit" /></div>
+              <div class="label"><g:message code="salesItem.unit.label" default="Unit" /></div>
               <div class="field">${serviceInstance?.unit?.encodeAsHTML()}</div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.unitPrice.label" default="Unit Price" /></div>
+              <div class="label"><g:message code="salesItem.unitPrice.label" default="Unit Price" /></div>
               <div class="field"><g:formatCurrency number="${serviceInstance?.unitPrice}" /></div>
             </div>
           </div>
           <div class="col col-r">
             <div class="row">
-              <div class="label"><g:message code="service.taxRate.label" default="Tax Class" /></div>
+              <div class="label"><g:message code="salesItem.taxRate.label" default="Tax Class" /></div>
               <div class="field">${serviceInstance?.taxRate?.encodeAsHTML()}</div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.salesStart.label" default="Sales Start" /></div>
+              <div class="label"><g:message code="salesItem.salesStart.label" default="Sales Start" /></div>
               <div class="field"><g:formatDate date="${serviceInstance?.salesStart}" formatName="default.format.date" /></div>
             </div>
 
             <div class="row">
-              <div class="label"><g:message code="service.salesEnd.label" default="Sales End" /></div>
+              <div class="label"><g:message code="salesItem.salesEnd.label" default="Sales End" /></div>
               <div class="field"><g:formatDate date="${serviceInstance?.salesEnd}" formatName="default.format.date" /></div>
             </div>
           </div>
@@ -92,10 +92,10 @@
       </div>
       <g:if test="${serviceInstance?.description}">
       <div class="fieldset">
-        <h4><g:message code="service.fieldset.description.label" /></h4>
+        <h4><g:message code="salesItem.fieldset.description.label" /></h4>
         <div class="fieldset-content">
           <div class="row">
-            <div class="label"><g:message code="service.description.label" default="Description" /></div>
+            <div class="label"><g:message code="salesItem.description.label" default="Description" /></div>
             <div class="field">${nl2br(value: serviceInstance?.description)}</div>
           </div>
         </div>
@@ -105,7 +105,7 @@
       <div class="fieldset">
         <h4><g:message code="salesItem.fieldset.pricing.step1.label" /></h4>
         <p>
-          <g:message code="salesItem.pricing.step1.tableDescription" />&nbsp;
+          <g:message code="salesItem.pricing.step1.tableDescription" />
           <g:formatNumber number="${serviceInstance.pricing.quantity}" maxFractionDigits="3" />
           ${serviceInstance.pricing.unit?.encodeAsHTML()}
         </p>
@@ -223,7 +223,7 @@
           </thead>
           <tbody>
             <tr>
-              <td><g:message code="service.pricing.step3.soldAs" /></td>
+              <td><g:message code="salesItem.pricing.step3.soldAs" /></td>
               <td class="quantity number"><g:formatNumber number="${serviceInstance.quantity}" maxFractionDigits="3" /></td>
               <td class="unit"><g:fieldValue bean="${serviceInstance}" field="unit" /></td>
               <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>

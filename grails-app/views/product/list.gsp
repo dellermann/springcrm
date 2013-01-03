@@ -27,12 +27,12 @@
       <thead>
         <tr>
           <th scope="col"><input type="checkbox" id="product-row-selector" /></th>
-          <g:sortableColumn scope="col" property="number" title="${message(code: 'product.number.label', default: 'Number')}" />
-          <g:sortableColumn scope="col" property="name" title="${message(code: 'product.name.label', default: 'Name')}" />
-          <g:sortableColumn scope="col" property="category.name" title="${message(code: 'product.category.label', default: 'Category')}" />
-          <g:sortableColumn scope="col" property="quantity" title="${message(code: 'product.quantity.label', default: 'Quantity')}" />
-          <g:sortableColumn scope="col" property="unit.name" title="${message(code: 'product.unit.label', default: 'Unit')}" />
-          <g:sortableColumn scope="col" property="unitPrice" title="${message(code: 'product.unitPrice.label', default: 'Unit Price')}" />
+          <g:sortableColumn scope="col" property="number" title="${message(code: 'salesItem.number.label', default: 'Number')}" />
+          <g:sortableColumn scope="col" property="name" title="${message(code: 'salesItem.name.label', default: 'Name')}" />
+          <g:sortableColumn scope="col" property="category.name" title="${message(code: 'salesItem.category.label', default: 'Category')}" />
+          <g:sortableColumn scope="col" property="quantity" title="${message(code: 'salesItem.quantity.label', default: 'Quantity')}" />
+          <g:sortableColumn scope="col" property="unit.name" title="${message(code: 'salesItem.unit.label', default: 'Unit')}" />
+          <g:sortableColumn scope="col" property="unitPrice" title="${message(code: 'salesItem.unitPrice.label', default: 'Unit Price')}" />
           <th scope="col"></th>
         </tr>
       </thead>
