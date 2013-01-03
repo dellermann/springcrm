@@ -25,6 +25,9 @@
     <g:hasErrors bean="${serviceInstance}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
+    <g:hasErrors bean="${serviceInstance?.pricing}">
+    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
+    </g:hasErrors>
     <h3>${serviceInstance?.toString()}</h3>
     <g:form name="service-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
       <g:hiddenField name="id" value="${serviceInstance?.id}" />

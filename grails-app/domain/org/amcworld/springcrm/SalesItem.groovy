@@ -101,13 +101,13 @@ class SalesItem {
 
     BigDecimal getUnitPrice() {
         if (pricing) {
-            this.unitPrice = pricing.step3TotalPrice / quantity
+            this.unitPrice = quantity ? pricing.step3TotalPrice / quantity : 0.0
         }
         return this.unitPrice
     }
 
     BigDecimal getTotal() {
-        return quantity * unitPrice
+        return (quantity ?: 0) * (unitPrice ?: 0)
     }
 
     String toString() {

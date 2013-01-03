@@ -27,6 +27,9 @@
     <g:hasErrors bean="${productInstance}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
+    <g:hasErrors bean="${productInstance?.pricing}">
+    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
+    </g:hasErrors>
     <h3><g:message code="product.new.label" default="New ${entityName}" /></h3>
     <g:form name="product-form" action="save" params="[returnUrl:params.returnUrl]">
       <g:render template="/product/form" />

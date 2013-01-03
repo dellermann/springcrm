@@ -4,7 +4,7 @@
 
  sales-item-pricing.xml
 
- Copyright (c) 2011-2012, Daniel Ellermann
+ Copyright (c) 2011-2013, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
       <column name="quantity" type="decimal(19,2)">
         <constraints nullable="false" />
       </column>
-      <column name="sales_item_id" type="bigint"/>
       <column name="unit_id" type="bigint">
         <constraints nullable="false" />
       </column>
@@ -79,10 +78,6 @@
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
       referencedTableName="sales_item_pricing"
       referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="sales_item_id"
-      baseTableName="sales_item_pricing" constraintName="FKFA432ED15DA134D"
-      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
-      referencedTableName="sales_item" referencesUniqueColumn="false" />
     <addForeignKeyConstraint baseColumnNames="unit_id"
       baseTableName="sales_item_pricing" constraintName="FKFA432ED67D5AB80"
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
@@ -95,9 +90,6 @@
       referencesUniqueColumn="false" />
     <createIndex indexName="FK6669B266DCF64401" tableName="sales_item">
       <column name="pricing_id" />
-    </createIndex>
-    <createIndex indexName="FKFA432ED15DA134D" tableName="sales_item_pricing">
-      <column name="sales_item_id"/>
     </createIndex>
     <createIndex indexName="FKFA432ED67D5AB80" tableName="sales_item_pricing">
       <column name="unit_id"/>

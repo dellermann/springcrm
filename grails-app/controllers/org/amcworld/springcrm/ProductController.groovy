@@ -1,7 +1,7 @@
 /*
  * ProductController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * The class {@code ProductController} contains actions which manage products.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class ProductController {
 
@@ -39,6 +39,7 @@ class ProductController {
 
     //-- Instance variables ---------------------
 
+    def salesItemService
 	def seqNumberService
 
 
@@ -102,8 +103,8 @@ class ProductController {
 	}
 
     def save() {
-        def productInstance = new Product(params)
-        if (!productInstance.save(flush: true)) {
+        def productInstance = new Product()
+        if (!salesItemService.saveSalesItemPricing(productInstance, params)) {
             render(view: 'create', model: [productInstance: productInstance])
             return
         }
@@ -156,11 +157,8 @@ class ProductController {
                 return
             }
         }
-		if (params.autoNumber) {
-			params.number = productInstance.number
-		}
-        productInstance.properties = params
-        if (!productInstance.save(flush: true)) {
+
+        if (!salesItemService.saveSalesItemPricing(productInstance, params)) {
             render(view: 'edit', model: [productInstance: productInstance])
             return
         }

@@ -86,6 +86,7 @@
     'person.otherAddr.copy',
     'salesItem.pricing.button.notRemovable',
     'salesItem.pricing.relativeToPos.finder',
+    'salesItem.pricing.removePricing.confirm',
     'salesItem.pricing.type.absolute',
     'salesItem.pricing.type.relativeToCurrentSum',
     'salesItem.pricing.type.relativeToLastSum',

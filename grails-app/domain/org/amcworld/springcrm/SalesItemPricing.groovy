@@ -56,7 +56,7 @@ class SalesItemPricing {
     Unit unit
     BigDecimal discountPercent
     BigDecimal adjustment
-    SalesItem salesItem
+//    SalesItem salesItem
     List<SalesItemPricingItem> items
 
 
@@ -83,7 +83,7 @@ class SalesItemPricing {
         if (PricingItemType.sum == item.type) {
             return getCurrentSum(pos - 1)
         } else {
-            return item.quantity * computeUnitPriceOfItem(pos)
+            return (item.quantity ?: 0.0) * (computeUnitPriceOfItem(pos) ?: 0.0)
         }
     }
 
@@ -101,15 +101,15 @@ class SalesItemPricing {
         case PricingItemType.absolute:
             return item.unitPrice
         case PricingItemType.relativeToPos:
-            return item.unitPercent * computeTotalOfItem(item.relToPos) / 100
+            return (item.unitPercent ?: 0.0) * (computeTotalOfItem(item.relToPos) ?: 0.0) / 100
         case PricingItemType.relativeToLastSum:
             Integer otherPos = getLastSumPos(pos - 1)
             if (otherPos >= 0) {
-                return item.unitPercent * computeTotalOfItem(otherPos) / 100
+                return (item.unitPercent ?: 0.0) * (computeTotalOfItem(otherPos) ?: 0.0) / 100
             }
             // fall through
         case PricingItemType.relativeToCurrentSum:
-            return item.unitPercent * getCurrentSum(pos - 1) / 100
+            return (item.unitPercent ?: 0.0) * getCurrentSum(pos - 1) / 100
         default:
             return null
         }
@@ -122,7 +122,7 @@ class SalesItemPricing {
      * @param pos   the given zero-based position
      * @return      the current sum
      */
-    BigDecimal getCurrentSum(Integer pos = items.size() - 1) {
+    BigDecimal getCurrentSum(Integer pos = (items ?: []).size() - 1) {
         BigDecimal sum = 0.0
         for (int i = pos; i >= 0; --i) {
             if (items[i] && PricingItemType.sum != items[i].type) {
@@ -175,7 +175,7 @@ class SalesItemPricing {
      * @return  the unit price of the sales item in step 1
      */
     BigDecimal getStep1UnitPrice() {
-        return step1TotalPrice / quantity
+        return quantity ? step1TotalPrice / quantity : 0.0
     }
 
     /**
@@ -195,7 +195,7 @@ class SalesItemPricing {
      * @return  the total unit price of the sales item in step 2
      */
     BigDecimal getStep2TotalUnitPrice() {
-        return step2Total / quantity
+        return quantity ? step2Total / quantity : 0.0
     }
 
     /**

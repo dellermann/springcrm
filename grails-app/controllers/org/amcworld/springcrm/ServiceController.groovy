@@ -1,7 +1,7 @@
 /*
  * ServiceController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ class ServiceController {
 
     //-- Instance variables ---------------------
 
+    def salesItemService
 	def seqNumberService
 
 
@@ -102,7 +103,7 @@ class ServiceController {
 
     def save() {
         def serviceInstance = new Service(params)
-        if (!serviceInstance.save(flush: true)) {
+        if (!salesItemService.saveSalesItemPricing(serviceInstance, params)) {
             render(view: 'create', model: [serviceInstance: serviceInstance])
             return
         }
@@ -156,42 +157,7 @@ class ServiceController {
             }
         }
 
-        /*
-         * Implementation notes:
-         *
-         * There are a lot of problems when we try to simply use data binding
-         * and 1:n relation storage in GORM.  It simply doesn't work, at least
-         * in Grails 2.1.1.
-         *
-         * I change the way data binding works.  The client submits the items
-         * as array (items[...]) with subsequent indices.  The client must
-         * ensure that no gaps (i. e. items[0], items[1], items[3], ...) are
-         * submitted.  The following implementation simply clears the items
-         * list and adds all submitted items, which itself undergo data
-         * binding, to the list.  A disadvantage of this way is that GORM
-         * deletes all previous items and then adds back all new items which is
-         * somewhat inefficient and permanently allocates new IDs.
-         */
-        def pricing = serviceInstance.pricing
-        if (pricing == null) {
-            pricing = new SalesItemPricing()
-            serviceInstance.pricing = pricing
-        }
-        if (pricing.items == null) {
-            pricing.items = []
-        } else {
-            pricing.items.clear()
-        }
-        for (int i = 0; params.pricing?."items[${i}]"; i++) {
-            pricing.addToItems(params.pricing."items[${i}]")
-        }
-
-		if (params.autoNumber) {
-			params.number = serviceInstance.number
-		}
-        serviceInstance.properties = params.findAll { !it.key.startsWith('pricing.') && it.key != 'pricing' }
-
-        if (!serviceInstance.save(flush: true)) {
+        if (!salesItemService.saveSalesItemPricing(serviceInstance, params)) {
             render(view: 'edit', model: [serviceInstance: serviceInstance])
             return
         }

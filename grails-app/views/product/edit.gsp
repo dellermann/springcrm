@@ -27,6 +27,9 @@
     <g:hasErrors bean="${productInstance}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
+    <g:hasErrors bean="${productInstance?.pricing}">
+    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
+    </g:hasErrors>
     <h3>${productInstance?.toString()}</h3>
     <g:form name="product-form" action="update" method="post" params="[returnUrl:params.returnUrl]">
       <g:hiddenField name="id" value="${productInstance?.id}" />
