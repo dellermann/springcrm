@@ -1,7 +1,7 @@
 /*
  * Project.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ package org.amcworld.springcrm
  * documents etc.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  * @since   1.0
  */
 class Project {
@@ -36,12 +36,12 @@ class Project {
 
     static constraints = {
         number(unique: true, widget: 'autonumber')
-        title(nullable: false, blank: false)
+        title(blank: false)
         description(nullable: true, blank: true, widget: 'textarea')
         organization()
         person(nullable: true)
-        phase(nullable: false)
-        status(nullable: false)
+        phase()
+        status()
         dateCreated()
         lastUpdated()
     }

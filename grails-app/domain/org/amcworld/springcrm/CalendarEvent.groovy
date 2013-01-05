@@ -1,7 +1,7 @@
 /*
  * CalendarEvent.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.springframework.context.MessageSourceResolvable
  * is, an appointment.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  * @see     Reminder
  */
 class CalendarEvent {
@@ -37,15 +37,15 @@ class CalendarEvent {
     //-- Class variables ------------------------
 
     static constraints = {
-		subject(nullable: false, blank: false, widget: 'autonumber')
+		subject(blank: false, widget: 'autonumber')
 		location(nullable: true)
 		description(nullable: true)
-		start(nullable: false)
-		end(nullable: false)
+		start()
+		end()
 		allDay()
-		recurrence(nullable: false)
+		recurrence()
 		organization(nullable: true)
-        owner(nullable: false)
+        owner()
 		dateCreated()
 		lastUpdated()
     }
@@ -54,8 +54,8 @@ class CalendarEvent {
 	static mapping = {
 		sort 'start'
 		description type: 'text'
-        end column: 'end_time'
-        start column: 'start_time'
+        end column: 'end_time', index: 'end_time'
+        start column: 'start_time', index: 'start_time'
         subject index: 'subject'
 	}
 	static searchable = true
@@ -115,20 +115,23 @@ class CalendarEvent {
  * events.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class RecurrenceData implements MessageSourceResolvable {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		type(nullable: false, inList: [0, 10, 30, 40, 50, 60, 70])
+		type(inList: [0, 10, 30, 40, 50, 60, 70])
 		until(nullable: true)
-		interval(nullable: false, min: 1)
+		interval(min: 1)
 		monthDay(nullable: true, range: 1..31)
 		weekdays(nullable: true, maxSize: 13)
 		weekdayOrd(nullable: true, range: -5..5)
 		month(nullable: true, range: 1..12)
+    }
+    static mapping = {
+        type index: 'recurrence_type'
     }
 	static transients = [
 		'weekdaysAsList', 'weekdayNamesAsList', 'weekdayNames', 'monthName',

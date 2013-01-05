@@ -1,7 +1,7 @@
 /*
  * CreditMemo.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ class CreditMemo extends InvoicingTransaction {
     static constraints = {
 		stage()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, min: 0.0, scale: 10, widget: 'currency')
+		paymentAmount(min: 0.0d, widget: 'currency')
 		paymentMethod(nullable: true)
 		invoice(nullable: true)
 		dunning(nullable: true)
@@ -53,8 +53,8 @@ class CreditMemo extends InvoicingTransaction {
 
 	CreditMemoStage stage
 	Date paymentDate
-	BigDecimal paymentAmount
-	PaymentMethod paymentMethod; /* leave semicolon here! */
+	double paymentAmount
+	PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
@@ -97,8 +97,8 @@ class CreditMemo extends InvoicingTransaction {
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    BigDecimal getBalance() {
-        return (total ?: 0) - (paymentAmount ?: 0)
+    double getBalance() {
+        return total - paymentAmount
     }
 
     /**
@@ -114,7 +114,7 @@ class CreditMemo extends InvoicingTransaction {
      * @see     Invoice#getClosingBalance()
      * @see     Dunning#getClosingBalance()
      */
-    BigDecimal getClosingBalance() {
+    double getClosingBalance() {
         return (invoice ? invoice : dunning).closingBalance
     }
 
@@ -128,9 +128,9 @@ class CreditMemo extends InvoicingTransaction {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (closingBalance > 0) {
+        if (closingBalance > 0.0d) {
             color = 'red'
-        } else if (closingBalance < 0) {
+        } else if (closingBalance < 0.0d) {
             color = 'green'
         }
         return color
@@ -146,7 +146,7 @@ class CreditMemo extends InvoicingTransaction {
         String color = 'default'
         def id = stage?.id ?: 0
         if ((id >= 2502) && (id <= 2504)) {     // cancelled, paid, delivered
-            color = (closingBalance >= 0) ? 'green' : 'red'
+            color = (closingBalance >= 0.0d) ? 'green' : 'red'
         }
         return color
     }

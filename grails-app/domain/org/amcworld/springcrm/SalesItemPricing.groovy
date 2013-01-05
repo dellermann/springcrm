@@ -34,10 +34,10 @@ class SalesItemPricing {
     //-- Class variables ------------------------
 
     static constraints = {
-        quantity(min: 0.0)
+        quantity(min: 0.0d)
         unit()
-        discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-        adjustment(nullable: true, scale: 10, widget: 'currency')
+        discountPercent(scale: 2, min: 0.0d, widget: 'percent')
+        adjustment(widget: 'currency')
         items(minSize: 1)
     }
     static hasMany = [items: SalesItemPricingItem]
@@ -52,11 +52,10 @@ class SalesItemPricing {
 
     //-- Instance variables ---------------------
 
-    BigDecimal quantity = 1.0
+    double quantity = 1.0d
     Unit unit
-    BigDecimal discountPercent
-    BigDecimal adjustment
-//    SalesItem salesItem
+    double discountPercent
+    double adjustment
     List<SalesItemPricingItem> items
 
 
@@ -78,12 +77,12 @@ class SalesItemPricing {
      * @param pos   the given zero-based item position
      * @return      the total price of the item at the given position
      */
-    BigDecimal computeTotalOfItem(int pos) {
-        def item = items[pos]
+    double computeTotalOfItem(int pos) {
+        SalesItemPricingItem item = items[pos]
         if (PricingItemType.sum == item.type) {
             return getCurrentSum(pos - 1)
         } else {
-            return (item.quantity ?: 0.0) * (computeUnitPriceOfItem(pos) ?: 0.0)
+            return item.quantity * computeUnitPriceOfItem(pos)
         }
     }
 
@@ -95,23 +94,24 @@ class SalesItemPricing {
      *              {@code null} if the item is of type {@code SUM} which does
      *              not have a unit price
      */
-    BigDecimal computeUnitPriceOfItem(int pos) {
-        def item = items[pos]
+    double computeUnitPriceOfItem(int pos) {
+        SalesItemPricingItem item = items[pos]
         switch (item.type) {
         case PricingItemType.absolute:
             return item.unitPrice
         case PricingItemType.relativeToPos:
-            return (item.unitPercent ?: 0.0) * (computeTotalOfItem(item.relToPos) ?: 0.0) / 100
+            return (item.relToPos == null) ? 0.0d
+                : item.unitPercent * computeTotalOfItem(item.relToPos) / 100.0d
         case PricingItemType.relativeToLastSum:
-            Integer otherPos = getLastSumPos(pos - 1)
+            int otherPos = getLastSumPos(pos - 1)
             if (otherPos >= 0) {
-                return (item.unitPercent ?: 0.0) * (computeTotalOfItem(otherPos) ?: 0.0) / 100
+                return item.unitPercent * computeTotalOfItem(otherPos) / 100.0d
             }
             // fall through
         case PricingItemType.relativeToCurrentSum:
-            return (item.unitPercent ?: 0.0) * getCurrentSum(pos - 1) / 100
+            return item.unitPercent * getCurrentSum(pos - 1) / 100.0d
         default:
-            return null
+            return 0.0d
         }
     }
 
@@ -122,8 +122,8 @@ class SalesItemPricing {
      * @param pos   the given zero-based position
      * @return      the current sum
      */
-    BigDecimal getCurrentSum(Integer pos = (items ?: []).size() - 1) {
-        BigDecimal sum = 0.0
+    double getCurrentSum(int pos = items.size() - 1) {
+        double sum = 0.0d
         for (int i = pos; i >= 0; --i) {
             if (items[i] && PricingItemType.sum != items[i].type) {
                 sum += computeTotalOfItem(i)
@@ -137,8 +137,8 @@ class SalesItemPricing {
      *
      * @return  the discount amount
      */
-    BigDecimal getDiscountPercentAmount() {
-        return discountPercent ? step1TotalPrice * discountPercent / 100.0 : 0.0
+    double getDiscountPercentAmount() {
+        return step1TotalPrice * discountPercent / 100.0d
     }
 
     /**
@@ -148,7 +148,7 @@ class SalesItemPricing {
      * @return      the zero-based position of the last subtotal sum; -1 if no
      *              such an item exists
      */
-    int getLastSumPos(Integer start = items.size() - 1) {
+    int getLastSumPos(int start = items.size() - 1) {
         for (int i = start; i >= 0; --i) {
             if (items[i] && PricingItemType.sum == items[i].type) {
                 return i
@@ -164,7 +164,7 @@ class SalesItemPricing {
      *
      * @return  the total price of the sales item in step 1
      */
-    BigDecimal getStep1TotalPrice() {
+    double getStep1TotalPrice() {
         return getCurrentSum()
     }
 
@@ -172,10 +172,11 @@ class SalesItemPricing {
      * Gets the unit price of this sales item in step 1 as ratio between the
      * sum of all pricing items and the quantity.
      *
-     * @return  the unit price of the sales item in step 1
+     * @return  the unit price of the sales item in step 1; {@code null} if
+     *          quantity is zero
      */
-    BigDecimal getStep1UnitPrice() {
-        return quantity ? step1TotalPrice / quantity : 0.0
+    Double getStep1UnitPrice() {
+        return (quantity == 0.0d) ? null : step1TotalPrice / quantity
     }
 
     /**
@@ -184,18 +185,19 @@ class SalesItemPricing {
      *
      * @return  the total of the sales item in step 2
      */
-    BigDecimal getStep2Total() {
-        return step1TotalPrice - discountPercentAmount + (adjustment ?: 0.0)
+    double getStep2Total() {
+        return step1TotalPrice - discountPercentAmount + (adjustment ?: 0.0d)
     }
 
     /**
      * Gets the total unit price of this sales item in step 2 as ratio between
      * the total of step 2 and the quantity.
      *
-     * @return  the total unit price of the sales item in step 2
+     * @return  the total unit price of the sales item in step 2; {@code null}
+     *          if quantity is zero
      */
-    BigDecimal getStep2TotalUnitPrice() {
-        return quantity ? step2Total / quantity : 0.0
+    Double getStep2TotalUnitPrice() {
+        return (quantity == 0.0d) ? null : step2Total / quantity
     }
 
     /**
@@ -204,7 +206,7 @@ class SalesItemPricing {
      *
      * @return  the total price of the sales item in step 3
      */
-    BigDecimal getStep3TotalPrice() {
+    double getStep3TotalPrice() {
         return step2Total
     }
 }

@@ -4,7 +4,7 @@
 
  sales-item.xml
 
- Copyright (c) 2011-2012, Daniel Ellermann
+ Copyright (c) 2011-2013, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -50,8 +50,8 @@
       <column name="number" type="integer">
         <constraints nullable="false" />
       </column>
-      <column name="purchase_price" type="decimal(19,2)" />
-      <column name="quantity" type="decimal(19,2)">
+      <column name="purchase_price" type="double precision" />
+      <column name="quantity" type="double precision">
         <constraints nullable="false" />
       </column>
       <column name="sales_end" type="datetime" />
@@ -61,7 +61,7 @@
         <constraints nullable="false" />
       </column>
       <column name="unit_id" type="bigint" />
-      <column name="unit_price" type="decimal(19,2)">
+      <column name="unit_price" type="double precision">
         <constraints nullable="false" />
       </column>
       <column name="class" type="varchar(255)">
@@ -70,7 +70,7 @@
       <column name="category_id" type="bigint" />
       <column name="manufacturer" type="varchar(255)" />
       <column name="retailer" type="varchar(255)" />
-      <column name="weight" type="decimal(19,2)" />
+      <column name="weight" type="double precision" />
     </createTable>
     <addForeignKeyConstraint baseColumnNames="category_id"
       baseTableName="sales_item" constraintName="FK6669B266E9949B03"

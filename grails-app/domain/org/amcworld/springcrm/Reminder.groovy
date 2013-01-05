@@ -1,7 +1,7 @@
 /*
  * Reminder.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Reminder} represents a reminder of a calendar event.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  * @see     CalendarEvent
  */
 class Reminder {
@@ -33,14 +33,15 @@ class Reminder {
     //-- Class variables ------------------------
 
     static constraints = {
-        value(nullable: false, min: 0)
-        unit(nullable: false, inList: ['m', 'h', 'd', 'w'])
-        nextReminder(nullable: false)
-        calendarEvent(nullable: false)
+        value(min: 0)
+        unit(inList: ['m', 'h', 'd', 'w'])
+        nextReminder()
+        calendarEvent()
         user(nullable: true)
     }
     static belongsTo = [calendarEvent: CalendarEvent, user: User]
     static mapping = {
+        nextReminder index: 'next_reminder'
         version false
     }
     static transients = ['rule', 'valueAsMilliseconds']

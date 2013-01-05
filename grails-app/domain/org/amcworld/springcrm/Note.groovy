@@ -1,7 +1,7 @@
 /*
  * Note.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Note} represents a note.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class Note {
 
@@ -33,8 +33,8 @@ class Note {
 
     static constraints = {
         number(unique: true, widget: 'autonumber')
-		title(nullable: false, blank: false, maxSize: 200)
-		content(nullable: false, blank: true, widget: 'textarea')
+		title(blank: false, maxSize: 200)
+		content(blank: true, widget: 'textarea')
 		organization(nullable: true)
 		person(nullable: true)
 		dateCreated()

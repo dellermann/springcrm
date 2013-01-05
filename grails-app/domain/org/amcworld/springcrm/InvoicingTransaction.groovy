@@ -1,7 +1,7 @@
 /*
  * InvoicingTransaction.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class InvoicingTransaction {
 
     static constraints = {
 		number(unique: 'type', widget: 'autonumber')
-		type(nullable: false, blank: false, maxSize: 1)
+		type(blank: false, maxSize: 1)
 		subject(blank: false)
 		organization()
 		person(nullable: true)
@@ -59,12 +59,12 @@ class InvoicingTransaction {
 		headerText(nullable: true, widget: 'textarea')
 		items(minSize: 1)
 		footerText(nullable: true, widget: 'textarea')
-		discountPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-		discountAmount(nullable: true, scale: 10, min: 0.0, widget: 'currency')
-		shippingCosts(nullable: true, scale: 10, min: 0.0, widget: 'currency')
-        shippingTax(nullable: true, scale: 1, min: 0.0, widget: 'percent')
-		adjustment(nullable: true, scale: 10, widget: 'currency')
-		total(scale: 10)
+		discountPercent(scale: 2, min: 0.0d, widget: 'percent')
+		discountAmount(min: 0.0d, widget: 'currency')
+		shippingCosts(min: 0.0d, widget: 'currency')
+        shippingTax(scale: 1, min: 0.0d, widget: 'percent')
+		adjustment(widget: 'currency')
+		total(widget: 'currency')
         notes(nullable: true, widget: 'textarea')
 		dateCreated()
 		lastUpdated()
@@ -116,12 +116,12 @@ class InvoicingTransaction {
 	String headerText
 	List<InvoicingItem> items
 	String footerText
-	BigDecimal discountPercent
-	BigDecimal discountAmount
-	BigDecimal shippingCosts
-    BigDecimal shippingTax = 19.0
-	BigDecimal adjustment
-	BigDecimal total
+	double discountPercent
+	double discountAmount
+	double shippingCosts
+    double shippingTax = 19.0d
+	double adjustment
+	double total
 	String notes
 	Date dateCreated
 	Date lastUpdated
@@ -218,14 +218,6 @@ class InvoicingTransaction {
 		return s.toString()
 	}
 
-	BigDecimal getDiscountPercent() {
-		return discountPercent ?: 0
-	}
-
-	BigDecimal getDiscountAmount() {
-		return discountAmount ?: 0
-	}
-
     /**
      * Renders a list of error messages in the embedded items.
      *
@@ -236,18 +228,6 @@ class InvoicingTransaction {
         return viewService.getItemErrorMessages(this)
     }
 
-	BigDecimal getShippingCosts() {
-		return shippingCosts ?: 0
-	}
-
-	BigDecimal getShippingTax() {
-		return shippingTax ?: 0
-	}
-
-	BigDecimal getAdjustment() {
-		return adjustment ?: 0
-	}
-
 	/**
 	 * Gets the subtotal net value. It is computed by accumulating the total
 	 * values of the items plus the shipping costs.
@@ -255,8 +235,8 @@ class InvoicingTransaction {
 	 * @return	the subtotal net value
 	 * @see		#getSubtotalGross()
 	 */
-	BigDecimal getSubtotalNet() {
-		return items ? (items.total.sum() + getShippingCosts()) : 0
+	double getSubtotalNet() {
+		return items ? (items.total.sum() + shippingCosts) : 0.0d
 	}
 
 	/**
@@ -266,8 +246,8 @@ class InvoicingTransaction {
 	 * @return	the subtotal gross value
 	 * @see		#getSubtotalNet()
 	 */
-	BigDecimal getSubtotalGross() {
-		return taxRateSums ? (subtotalNet + taxRateSums.values().sum()) : 0
+	double getSubtotalGross() {
+		return subtotalNet + taxRateSums.values().sum()
 	}
 
 	/**
@@ -278,8 +258,8 @@ class InvoicingTransaction {
 	 * @return	the discount amount from the percentage value
 	 * @see		#getSubtotalGross()
 	 */
-	BigDecimal getDiscountPercentAmount() {
-		return (subtotalGross * getDiscountPercent()).divide(100.0, 2, HALF_UP)
+	double getDiscountPercentAmount() {
+		return subtotalGross * discountPercent / 100.0d
 	}
 
 	/**
@@ -289,18 +269,18 @@ class InvoicingTransaction {
 	 *
 	 * @return	the tax rates and their associated tax value sums
 	 */
-	Map<Double, BigDecimal> getTaxRateSums() {
-		Map<Double, BigDecimal> res = [:]
+	Map<Double, Double> getTaxRateSums() {
+		Map<Double, Double> res = [: ]
         if (items) {
     		for (item in items) {
-    			double tax = (item.tax != null) ? item.tax.toDouble() : 0.0
-    			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
-    		}
-    		if (getShippingTax() != 0 && getShippingCosts() != 0) {
-    			double tax = getShippingTax().toDouble()
-    			res[tax] = (res[tax] ?: 0.0) + getShippingCosts() * tax / 100.0
+    			double tax = item.tax
+    			res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
     		}
         }
+		if (shippingTax != 0.0d && shippingCosts != 0.0d) {
+		    double tax = shippingTax
+            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
+		}
 		return res.sort { e1, e2 -> e1.key <=> e2.key }
 	}
 
@@ -310,9 +290,8 @@ class InvoicingTransaction {
 	 *
 	 * @return	the total (gross) value
 	 */
-	BigDecimal computeTotal() {
-		return subtotalGross - discountPercentAmount - getDiscountAmount() +
-			getAdjustment()
+	double computeTotal() {
+		return subtotalGross - discountPercentAmount - discountAmount + adjustment
 	}
 
 	String toString() {
@@ -345,6 +324,5 @@ class InvoicingTransaction {
 
 	def beforeUpdate() {
 		total = computeTotal()
-        println "Saving ${type}-${number} in " + Thread.currentThread().stackTrace
 	}
 }

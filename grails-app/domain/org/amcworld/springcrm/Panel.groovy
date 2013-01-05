@@ -1,7 +1,7 @@
 /*
  * Panel.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Panel} contains data about a panel on the overview page.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class Panel {
 
@@ -40,7 +40,7 @@ class Panel {
 		user()
 		col(range: 0..NUM_COLUMNS - 1)
 		pos(min: 0)
-		panelId(nullable: false, blank: false)
+		panelId(blank: false)
     }
 	static mapping = {
         panelId index: 'panel_id'

@@ -1,7 +1,7 @@
 /*
  * changelog.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,5 +23,5 @@ databaseChangeLog = {
     include file: 'user-settings.xml'
     include file: 'sales-item.xml'
     include file: 'sales-item-pricing.xml'
-	include file: 'more-precision-for-currency.xml'
+	include file: 'number-issues.xml'
 }

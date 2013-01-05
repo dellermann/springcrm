@@ -1,7 +1,7 @@
 /*
  * Dunning.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ class Dunning extends InvoicingTransaction {
 		stage()
 		dueDatePayment()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, min: 0.0, scale: 10, widget: 'currency')
+		paymentAmount(min: 0.0d, widget: 'currency')
 		paymentMethod(nullable: true)
 		invoice()
     }
@@ -57,8 +57,8 @@ class Dunning extends InvoicingTransaction {
 	DunningStage stage
 	Date dueDatePayment
 	Date paymentDate
-	BigDecimal paymentAmount
-	PaymentMethod paymentMethod; /* leave semicolon here! */
+	double paymentAmount
+	PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
@@ -101,8 +101,8 @@ class Dunning extends InvoicingTransaction {
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    BigDecimal getBalance() {
-        return (paymentAmount ?: 0) - (total ?: 0)
+    double getBalance() {
+        return paymentAmount - total
     }
 
     /**
@@ -116,8 +116,8 @@ class Dunning extends InvoicingTransaction {
      * @since   1.0
      * @see     #getBalance()
      */
-    BigDecimal getClosingBalance() {
-        return balance + (creditMemos ? creditMemos*.balance.sum() : 0)
+    double getClosingBalance() {
+        return balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)
     }
 
     /**
@@ -130,9 +130,9 @@ class Dunning extends InvoicingTransaction {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (closingBalance < 0) {
+        if (closingBalance < 0.0d) {
             color = 'red'
-        } else if (closingBalance > 0) {
+        } else if (closingBalance > 0.0d) {
             color = 'green'
         }
         return color

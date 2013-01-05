@@ -1,7 +1,7 @@
 /*
  * Product.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ class Product extends SalesItem {
 		category(nullable: true)
 		manufacturer(nullable: true)
 		retailer(nullable: true)
-		weight(nullable: true, min: 0.0)
+		weight(nullable: true, min: 0.0d)
     }
     static searchable = true
 
@@ -46,7 +46,7 @@ class Product extends SalesItem {
 	ProductCategory category
 	String manufacturer
 	String retailer
-	BigDecimal weight
+	Double weight
 
 
     //-- Constructors ---------------------------

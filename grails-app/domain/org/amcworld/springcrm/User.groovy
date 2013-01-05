@@ -1,7 +1,7 @@
 /*
  * User.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ package org.amcworld.springcrm
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class User implements Cloneable {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		userName(nullable: false, blank: false, unique: true)
+		userName(blank: false, unique: true)
 		password(blank: false, password: true)
 		firstName(blank: false)
 		lastName(blank: false)
@@ -40,7 +40,7 @@ class User implements Cloneable {
         phoneHome(nullable: true, maxSize: 40)
         mobile(nullable: true, maxSize: 40)
         fax(nullable: true, maxSize: 40)
-        email(nullable: false, blank: false, email: true)
+        email(blank: false, email: true)
 		admin()
 		allowedModules(nullable: true)
 		dateCreated()

@@ -1,7 +1,7 @@
 /*
  * SalesItem.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,13 @@ class SalesItem {
 
     static constraints = {
         number(unique: 'type', widget: 'autonumber')
-        type(nullable: false, blank: false, maxSize: 1)
+        type(blank: false, maxSize: 1)
         name(blank: false)
-        quantity(min: 0.0)
+        quantity(min: 0.0d)
         unit(nullable: true)
-        unitPrice(scale: 10, min: 0.0, widget: 'currency')
+        unitPrice(min: 0.0d, widget: 'currency')
         taxRate(nullable: true)
-        purchasePrice(nullable: true, scale: 10, min: 0.0, widget: 'currency')
+        purchasePrice(nullable: true, min: 0.0d, widget: 'currency')
         salesStart(nullable: true)
         salesEnd(nullable: true)
         description(nullable: true, widget: 'textarea')
@@ -63,11 +63,11 @@ class SalesItem {
     int number
     String type
     String name
-    BigDecimal quantity
+    double quantity
     Unit unit
-    BigDecimal unitPrice
+    double unitPrice
     TaxRate taxRate
-    BigDecimal purchasePrice
+    Double purchasePrice
     Date salesStart
     Date salesEnd
     String description
@@ -99,15 +99,15 @@ class SalesItem {
         return seqNumberService?.format(getClass(), number)
     }
 
-    BigDecimal getUnitPrice() {
+    double getUnitPrice() {
         if (pricing) {
-            this.unitPrice = quantity ? pricing.step3TotalPrice / quantity : 0.0
+            this.unitPrice = quantity ? pricing.step3TotalPrice / quantity : 0.0d
         }
         return this.unitPrice
     }
 
-    BigDecimal getTotal() {
-        return (quantity ?: 0) * (unitPrice ?: 0)
+    double getTotal() {
+        return quantity * unitPrice
     }
 
     String toString() {

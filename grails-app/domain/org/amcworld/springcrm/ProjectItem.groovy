@@ -1,7 +1,7 @@
 /*
  * ProjectItem.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * quote, invoice etc. which belongs to a phase of a particular project.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class ProjectItem {
 
@@ -34,9 +34,9 @@ class ProjectItem {
 
     static constraints = {
         project()
-        phase(nullable: false)
-        controller(nullable: false, blank: false)
-        itemId(nullable: false)
+        phase()
+        controller(blank: false)
+        itemId()
         title(nullable: true)
     }
     static belongsTo = [project: Project]

@@ -1,7 +1,7 @@
 /*
  * Call.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Call} represents a phone call.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class Call {
 
@@ -38,8 +38,8 @@ class Call {
 		person(nullable: true)
 		phone(nullable: true, maxSize: 40)
 		start()
-		type(nullable: false)
-		status(nullable: false)
+		type()
+		status()
 		dateCreated()
 		lastUpdated()
     }

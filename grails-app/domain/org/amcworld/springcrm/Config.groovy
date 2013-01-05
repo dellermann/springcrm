@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ package org.amcworld.springcrm
  * The class {@code Config} represents a system configuration information.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class Config {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		name(nullable: false, blank: false)
+		name(blank: false)
 		value(nullable: true)
     }
     static mapping = {

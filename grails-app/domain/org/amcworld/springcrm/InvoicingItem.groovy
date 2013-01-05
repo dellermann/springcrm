@@ -1,7 +1,7 @@
 /*
  * InvoicingItem.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ class InvoicingItem {
 	static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
 		number(blank: false)
-		quantity(min: 0.0)
+		quantity(min: 0.0d)
 		unit()
 		name(blank: false)
 		description(nullable: true)
-		unitPrice(scale: 10, widget: 'currency')
-		tax(nullable: false, scale: 1, min: 0.0, widget: 'percent')
+		unitPrice(widget: 'currency')
+		tax(scale: 1, min: 0.0d, widget: 'percent')
     }
 	static mapping = {
 		description type: 'text'
@@ -52,12 +52,12 @@ class InvoicingItem {
     //-- Instance variables ---------------------
 
 	String number
-	BigDecimal quantity
+	double quantity
 	String unit
 	String name
 	String description
-	BigDecimal unitPrice
-	BigDecimal tax
+	double unitPrice
+	double tax
 
 
     //-- Constructors ---------------------------
@@ -77,16 +77,8 @@ class InvoicingItem {
 
     //-- Public methods -------------------------
 
-	BigDecimal getQuantity() {
-		return quantity ?: 0
-	}
-
-	BigDecimal getUnitPrice() {
-		return unitPrice ?: 0
-	}
-
-	BigDecimal getTotal() {
-		return getQuantity() * getUnitPrice()
+	double getTotal() {
+		return quantity * unitPrice
 	}
 
 	String toString() {

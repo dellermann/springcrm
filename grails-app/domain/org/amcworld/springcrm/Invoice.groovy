@@ -1,7 +1,7 @@
 /*
  * Invoice.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Invoice} represents an invoice.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class Invoice extends InvoicingTransaction {
 
@@ -35,7 +35,7 @@ class Invoice extends InvoicingTransaction {
 		stage()
 		dueDatePayment()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, min: 0.0, scale: 10, widget: 'currency')
+		paymentAmount(min: 0.0d, widget: 'currency')
 		paymentMethod(nullable: true)
 		quote(nullable: true)
 		salesOrder(nullable: true)
@@ -56,7 +56,7 @@ class Invoice extends InvoicingTransaction {
 	InvoiceStage stage
 	Date dueDatePayment
 	Date paymentDate
-	BigDecimal paymentAmount
+	double paymentAmount
 	PaymentMethod paymentMethod; /* leave semicolon here! */
 
 
@@ -99,8 +99,8 @@ class Invoice extends InvoicingTransaction {
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    BigDecimal getBalance() {
-        return (paymentAmount ?: 0) - (total ?: 0)
+    double getBalance() {
+        return paymentAmount - total
     }
 
     /**
@@ -114,8 +114,8 @@ class Invoice extends InvoicingTransaction {
      * @since   1.0
      * @see     #getBalance()
      */
-    BigDecimal getClosingBalance() {
-        return balance + (creditMemos ? creditMemos*.balance.sum() : 0)
+    double getClosingBalance() {
+        return balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)
     }
 
     /**
@@ -128,9 +128,9 @@ class Invoice extends InvoicingTransaction {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (closingBalance < 0) {
+        if (closingBalance < 0.0d) {
             color = 'red'
-        } else if (closingBalance > 0) {
+        } else if (closingBalance > 0.0d) {
             color = 'green'
         }
         return color
@@ -159,7 +159,7 @@ class Invoice extends InvoicingTransaction {
             color = 'purple'
             break
         case 903:                       // paid
-            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
+            color = (closingBalance >= 0.0d) ? 'green' : colorIndicatorByDate()
             break
         case 902:                       // delivered
             color = colorIndicatorByDate()

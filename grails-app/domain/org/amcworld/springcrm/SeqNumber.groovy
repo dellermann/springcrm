@@ -1,7 +1,7 @@
 /*
  * SeqNumber.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,14 +26,14 @@ package org.amcworld.springcrm
  * number various content items.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class SeqNumber {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		controllerName(nullable: false, blank: false)
+		controllerName(blank: false)
 		prefix(maxSize: 5)
 		suffix(maxSize: 5)
 		startValue(min: 0)

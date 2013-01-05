@@ -37,9 +37,13 @@
       <column name="version" type="bigint">
         <constraints nullable="false" />
       </column>
-      <column name="adjustment" type="decimal(19,2)" />
-      <column name="discount_percent" type="decimal(19,2)" />
-      <column name="quantity" type="decimal(19,2)">
+      <column name="adjustment" type="double precision">
+        <constraints nullable="false" />
+      </column>
+      <column name="discount_percent" type="double precision">
+        <constraints nullable="false" />
+      </column>
+      <column name="quantity" type="double precision">
         <constraints nullable="false" />
       </column>
       <column name="unit_id" type="bigint">
@@ -58,14 +62,20 @@
       <column name="pricing_id" type="bigint">
         <constraints nullable="false" />
       </column>
-      <column name="quantity" type="decimal(19,2)" />
+      <column name="quantity" type="double precision">
+        <constraints nullable="false" />
+      </column>
       <column name="rel_to_pos" type="integer" />
       <column name="type" type="varchar(255)">
         <constraints nullable="false" />
       </column>
       <column name="unit" type="varchar(255)" />
-      <column name="unit_percent" type="decimal(19,2)" />
-      <column name="unit_price" type="decimal(19,2)" />
+      <column name="unit_percent" type="double precision">
+        <constraints nullable="false" />
+      </column>
+      <column name="unit_price" type="double precision">
+        <constraints nullable="false" />
+      </column>
       <column name="items_idx" type="integer" />
     </createTable>
     <addColumn tableName="sales_item">

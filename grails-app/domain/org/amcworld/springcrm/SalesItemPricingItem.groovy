@@ -35,24 +35,24 @@ class SalesItemPricingItem {
 
     static belongsTo = [pricing: SalesItemPricing]
     static constraints = {
-        quantity(nullable: true, min: 0.0)
+        quantity(min: 0.0d)
         unit(nullable: true)
         name(nullable: true)
         type()
         relToPos(nullable: true, min: 0i)
-        unitPercent(nullable: true, scale: 2, min: 0.0, widget: 'percent')
-        unitPrice(nullable: true, scale: 10, widget: 'currency')
+        unitPercent(scale: 2, min: 0.0d, widget: 'percent')
+        unitPrice(widget: 'currency')
     }
     static searchable = [only: ['name']]
 
 
     //-- Instance variables ---------------------
 
-    BigDecimal quantity
+    double quantity
     String unit
     String name
     PricingItemType type = PricingItemType.absolute
     Integer relToPos
-    BigDecimal unitPercent
-    BigDecimal unitPrice
+    double unitPercent
+    double unitPrice
 }

@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoice.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static java.math.RoundingMode.HALF_UP
-
 
 /**
  * The class {@code PurchaseInvoice} represents a purchase invoice.
@@ -34,25 +32,25 @@ class PurchaseInvoice {
     //-- Class variables ------------------------
 
     static constraints = {
-		number(nullable: false, blank: false)
-		subject(nullable: false, blank: false)
+		number(blank: false)
+		subject(blank: false)
 		vendor(nullable: true)
-		vendorName(nullable: false, blank: false)
+		vendorName(blank: false)
 		docDate()
 		dueDate()
 		stage()
 		paymentDate(nullable: true)
-		paymentAmount(nullable: true, scale: 10, widget: 'currency')
+		paymentAmount(widget: 'currency')
 		paymentMethod(nullable: true)
 		items(minSize: 1)
 		notes(nullable: true, widget: 'textarea')
 		documentFile(nullable: true)
-		discountPercent(nullable: true, scale: 10, min: 0.0, widget: 'percent')
-		discountAmount(nullable: true, scale: 10, min: 0.0, widget: 'currency')
-		shippingCosts(nullable: true, scale: 10, min: 0.0, widget: 'currency')
-        shippingTax(nullable: true, scale: 1, min: 0.0, widget: 'percent')
-		adjustment(nullable: true, scale: 10, widget: 'currency')
-		total(scale: 10)
+		discountPercent(scale: 1, min: 0.0d, widget: 'percent')
+		discountAmount(min: 0.0d, widget: 'currency')
+		shippingCosts(min: 0.0d, widget: 'currency')
+        shippingTax(scale: 1, min: 0.0d, widget: 'percent')
+		adjustment(widget: 'currency')
+		total()
 		dateCreated()
 		lastUpdated()
     }
@@ -81,17 +79,17 @@ class PurchaseInvoice {
 	Date dueDate
 	PurchaseInvoiceStage stage
 	Date paymentDate
-	BigDecimal paymentAmount
+	double paymentAmount
 	PaymentMethod paymentMethod
 	List<PurchaseInvoiceItem> items
-	BigDecimal discountPercent
-	BigDecimal discountAmount
-	BigDecimal shippingCosts
-    BigDecimal shippingTax = 19.0
-	BigDecimal adjustment
+	double discountPercent
+	double discountAmount
+	double shippingCosts
+    double shippingTax = 19.0
+	double adjustment
 	String notes
 	String documentFile
-	BigDecimal total
+	double total
 	Date dateCreated
 	Date lastUpdated
 
@@ -119,26 +117,6 @@ class PurchaseInvoice {
 
     //-- Public methods -------------------------
 
-	BigDecimal getDiscountPercent() {
-		return discountPercent ?: 0
-	}
-
-	BigDecimal getDiscountAmount() {
-		return discountAmount ?: 0
-	}
-
-	BigDecimal getShippingCosts() {
-		return shippingCosts ?: 0
-	}
-
-	BigDecimal getShippingTax() {
-		return shippingTax ?: 0
-	}
-
-	BigDecimal getAdjustment() {
-		return adjustment ?: 0
-	}
-
 	/**
 	 * Gets the subtotal net value. It is computed by accumulating the total
 	 * values of the items plus the shipping costs.
@@ -146,8 +124,8 @@ class PurchaseInvoice {
 	 * @return	the subtotal net value
 	 * @see		#getSubtotalGross()
 	 */
-	BigDecimal getSubtotalNet() {
-		return items.total.sum() + getShippingCosts()
+	double getSubtotalNet() {
+		return items.total.sum() + shippingCosts
 	}
 
 	/**
@@ -157,7 +135,7 @@ class PurchaseInvoice {
 	 * @return	the subtotal gross value
 	 * @see		#getSubtotalNet()
 	 */
-	BigDecimal getSubtotalGross() {
+	double getSubtotalGross() {
 		return subtotalNet + taxRateSums.values().sum()
 	}
 
@@ -169,8 +147,8 @@ class PurchaseInvoice {
 	 * @return	the discount amount from the percentage value
 	 * @see		#getSubtotalGross()
 	 */
-	BigDecimal getDiscountPercentAmount() {
-		return (subtotalGross * getDiscountPercent()).divide(100.0, 2, HALF_UP)
+	double getDiscountPercentAmount() {
+		return subtotalGross * discountPercent / 100.0d
 	}
 
 	/**
@@ -180,15 +158,15 @@ class PurchaseInvoice {
 	 *
 	 * @return	the tax rates and their associated tax value sums
 	 */
-	Map<Double, BigDecimal> getTaxRateSums() {
-		Map<Double, BigDecimal> res = [: ]
+	Map<Double, Double> getTaxRateSums() {
+		Map<Double, Double> res = [: ]
 		for (item in items) {
-			double tax = (item.tax != null) ? item.tax.toDouble() : 0.0
-			res[tax] = (res[tax] ?: 0.0) + item.total * tax / 100.0
+			double tax = item.tax
+			res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
 		}
-		if (getShippingTax() != 0 && getShippingCosts() != 0) {
-			double tax = getShippingTax().toDouble()
-			res[tax] = (res[tax] ?: 0.0) + getShippingCosts() * tax / 100.0
+		if (getShippingTax() != 0.0d && getShippingCosts() != 0.0d) {
+			double tax = shippingTax
+			res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
 		}
 		return res.sort { e1, e2 -> e1.key <=> e2.key }
 	}
@@ -199,9 +177,8 @@ class PurchaseInvoice {
 	 *
 	 * @return	the total (gross) value
 	 */
-	BigDecimal computeTotal() {
-		return subtotalGross - discountPercentAmount - getDiscountAmount() +
-			getAdjustment()
+	double computeTotal() {
+		return subtotalGross - discountPercentAmount - discountAmount + adjustment
 	}
 
     /**
@@ -211,8 +188,8 @@ class PurchaseInvoice {
      * @return  the purchase invoice balance
      * @since   1.0
      */
-    BigDecimal getBalance() {
-        return (paymentAmount ?: 0) - (total ?: 0)
+    double getBalance() {
+        return paymentAmount - total
     }
 
     /**
@@ -225,9 +202,9 @@ class PurchaseInvoice {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (balance < 0) {
+        if (balance < 0.0d) {
             color = 'red'
-        } else if (balance > 0) {
+        } else if (balance > 0.0d) {
             color = 'green'
         }
         return color
@@ -258,7 +235,7 @@ class PurchaseInvoice {
             color = 'purple'
             break
         case 2102:                       // paid
-            color = (balance >= 0) ? 'green' : colorIndicatorByDate()
+            color = (balance >= 0.0d) ? 'green' : colorIndicatorByDate()
             break
         }
         return color
