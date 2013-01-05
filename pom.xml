@@ -74,6 +74,7 @@
 
   <properties>
     <grails.version>2.1.1</grails.version>
+    <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
   </properties>
 
 
@@ -113,12 +114,75 @@
       <artifactId>jmimemagic</artifactId>
       <version>0.1.2</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xerces</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xmlParserAPIs</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.apis</groupId>
       <artifactId>google-api-services-calendar</artifactId>
       <version>v3-rev7-1.6.0-beta</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gdata.gdata-java-client</groupId>
+      <artifactId>gdata-contacts-3.0</artifactId>
+      <version>1.47.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>fop</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-svg-dom</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-bridge</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-awt-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-gvt</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-transcoder</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-extension</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.xmlgraphics</groupId>
+          <artifactId>batik-ext</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>xalan</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>net.sf.offo</groupId>
@@ -131,6 +195,11 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.21</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory</groupId>
+      <artifactId>groovy-ldap</artifactId>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.grails.plugins</groupId>
@@ -174,6 +243,7 @@
       <scope>compile</scope>
       <type>zip</type>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.grails.plugins</groupId>
       <artifactId>cloud-foundry</artifactId>
@@ -181,6 +251,7 @@
       <scope>compile</scope>
       <type>zip</type>
     </dependency>
+    -->
     <dependency>
       <groupId>org.grails.plugins</groupId>
       <artifactId>database-migration</artifactId>
@@ -250,6 +321,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.13</version>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -298,6 +370,14 @@
   <reporting>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <show>private</show>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
         <version>0.6</version>
@@ -332,12 +412,25 @@
     <repository>
       <id>grails</id>
       <name>grails</name>
-      <url>http://repo.grails.org/grails/core</url>
+      <url>http://repo.grails.org/grails/core/</url>
     </repository>
     <repository>
       <id>grails-plugins</id>
       <name>grails-plugins</name>
       <url>http://repo.grails.org/grails/plugins</url>
+    </repository>
+    <repository>
+      <id>google-api-services</id>
+      <url>http://mavenrepo.google-api-java-client.googlecode.com/hg/</url>
+    </repository>
+    <repository>
+      <id>gdata-maven-github</id>
+      <name>Google Gdata Maven Repository</name>
+      <url>https://raw.github.com/eburtsev/gdata-maven/master/</url>
+    </repository>
+    <repository>
+      <id>local-repo</id>
+      <url>file://${project.basedir}/local-repo</url>
     </repository>
   </repositories>
 
