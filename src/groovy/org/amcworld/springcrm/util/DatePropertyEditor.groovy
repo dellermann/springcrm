@@ -1,7 +1,7 @@
 /*
  * DatePropertyEditor.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ package org.amcworld.springcrm.util
 import java.beans.PropertyEditorSupport
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.context.i18n.LocaleContextHolder
  * date/time formats.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class DatePropertyEditor extends PropertyEditorSupport {
 
@@ -46,16 +46,15 @@ class DatePropertyEditor extends PropertyEditorSupport {
 	//-- Constructors ---------------------------
 
 	DatePropertyEditor(messageSource) {
+        Locale locale = LCH.locale
 		dateFormat = messageSource.getMessage(
-			'default.format.date', null, 'yyyy-MM-dd',
-			LocaleContextHolder.locale
+			'default.format.date', null, 'yyyy-MM-dd', locale
 		)
 		dateTimeFormat = messageSource.getMessage(
-			'default.format.datetime', null, 'yyyy-MM-dd HH:mm',
-			LocaleContextHolder.locale
+			'default.format.datetime', null, 'yyyy-MM-dd HH:mm', locale
 		)
 		timeFormat = messageSource.getMessage(
-			'default.format.time', null, 'HH:mm', LocaleContextHolder.locale
+			'default.format.time', null, 'HH:mm', locale
 		)
 	}
 
@@ -67,8 +66,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		if (value == null) {
 			return null
 		} else {
-			SimpleDateFormat format = new SimpleDateFormat(dateTimeFormat)
-			return format.format(value)
+			return new SimpleDateFormat(dateTimeFormat).format(value)
 		}
 	}
 
@@ -77,7 +75,8 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		if (text == null) {
 			value = null
 		} else {
-			value = (text.indexOf(' ') < 0) ? parseDate(text) : parseDateTime(text)
+			value = (text.indexOf(' ') < 0) ? parseDate(text)
+                : parseDateTime(text)
 		}
 	}
 
@@ -93,7 +92,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		}
 		try {
 			return new SimpleDateFormat(fmt).parse(text)
-		} catch (ParseException) {
+		} catch (ParseException e) {
 			throw new IllegalArgumentException()
 		}
 	}
@@ -104,7 +103,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		if (pos >= 0) {
 			String s = text.substring(0, pos)
 			if (s.isLong()) {
-				fmt << (s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
+				fmt << ((s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy')
 			} else {
 				fmt << dateFormat
 			}
@@ -115,7 +114,7 @@ class DatePropertyEditor extends PropertyEditorSupport {
 		}
 		try {
 			return new SimpleDateFormat(fmt.toString()).parse(text)
-		} catch (ParseException) {
+		} catch (ParseException e) {
 			throw new IllegalArgumentException()
 		}
 	}

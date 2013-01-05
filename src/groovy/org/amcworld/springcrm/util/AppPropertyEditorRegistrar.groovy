@@ -1,7 +1,7 @@
 /*
  * AppPropertyEditorRegistrar.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm.util
 
-import org.amcworld.springcrm.*
 import org.springframework.beans.PropertyEditorRegistrar
 import org.springframework.beans.PropertyEditorRegistry
 
@@ -30,7 +29,7 @@ import org.springframework.beans.PropertyEditorRegistry
  * editors for data binding.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class AppPropertyEditorRegistrar implements PropertyEditorRegistrar {
 
@@ -44,5 +43,11 @@ class AppPropertyEditorRegistrar implements PropertyEditorRegistrar {
 	@Override
 	void registerCustomEditors(PropertyEditorRegistry registry) {
 		registry.registerCustomEditor(Date, new DatePropertyEditor(messageSource))
+		registry.registerCustomEditor(float, new NumberPropertyEditor(Float))
+        registry.registerCustomEditor(double, new NumberPropertyEditor(Double))
+        registry.registerCustomEditor(byte, new NumberPropertyEditor(Byte))
+        registry.registerCustomEditor(short, new NumberPropertyEditor(Short))
+        registry.registerCustomEditor(int, new NumberPropertyEditor(Integer))
+        registry.registerCustomEditor(long, new NumberPropertyEditor(Long))
 	}
 }
