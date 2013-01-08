@@ -88,7 +88,7 @@ grails.project.dependency.resolution = {
             export = false
         }
         compile(
-            ':fields:1.2',
+            ':fields:1.3',
             ":hibernate:${grailsVersion}",
             ':mail:1.0',
             ':quartz:1.0-RC2',
@@ -100,7 +100,7 @@ grails.project.dependency.resolution = {
             ":tomcat:${grailsVersion}"
         )
         runtime(
-            ':database-migration:1.1',
+            ':database-migration:1.3.2',
             ':jquery:1.7.2',
             ':jquery-json:2.2.2',
             ':jquery-ui:1.8.15',

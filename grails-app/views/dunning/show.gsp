@@ -53,125 +53,43 @@
         <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.number.label" default="Number" /></div>
-              <div class="field">${dunningInstance?.fullNumber}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.subject.label" default="Subject" /></div>
-              <div class="field">${fieldValue(bean: dunningInstance, field: "subject")}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${dunningInstance?.organization?.id}">${dunningInstance?.organization?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.person.label" default="Person" /></div>
-              <div class="field">
-                <g:link controller="person" action="show" id="${dunningInstance?.person?.id}">${dunningInstance?.person?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="dunning.invoice.label" default="Invoice" /></div>
-              <div class="field">
-                <g:link controller="invoice" action="show" id="${dunningInstance?.invoice?.id}">${dunningInstance?.invoice?.fullName?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="dunning.stage.label" default="Stage" /></div>
-              <div class="field">${dunningInstance?.stage?.encodeAsHTML()}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="dunning.level.label" default="Level" /></div>
-              <div class="field">${dunningInstance?.level?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${dunningInstance}" property="number">
+              <g:fieldValue bean="${dunningInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${dunningInstance}" property="subject" />
+            <f:display bean="${dunningInstance}" property="organization" />
+            <f:display bean="${dunningInstance}" property="person" />
+            <f:display bean="${dunningInstance}" property="invoice" />
+            <f:display bean="${dunningInstance}" property="stage" />
+            <f:display bean="${dunningInstance}" property="level" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="dunning.docDate.label" default="Doc Date" /></div>
-              <div class="field"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="dunning.dueDatePayment.label" default="Due Date Payment" /></div>
-              <div class="field"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="dunning.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${dunningInstance?.shippingDate}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.carrier.label" default="Carrier" /></div>
-              <div class="field">${dunningInstance?.carrier?.encodeAsHTML()}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.paymentDate.label" default="Payment Date" /></div>
-              <div class="field"><g:formatDate date="${dunningInstance?.paymentDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment Amount" /></div>
-              <div class="field"><g:formatCurrency number="${dunningInstance?.paymentAmount}" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></div>
-              <div class="field">${dunningInstance?.paymentMethod?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${dunningInstance}" property="docDate" />
+            <f:display bean="${dunningInstance}" property="dueDatePayment" />
+            <f:display bean="${dunningInstance}" property="shippingDate" />
+            <f:display bean="${dunningInstance}" property="carrier" />
+            <f:display bean="${dunningInstance}" property="paymentDate" />
+            <f:display bean="${dunningInstance}" property="paymentAmount" />
+            <f:display bean="${dunningInstance}" property="paymentMethod" />
           </div>
         </div>
       </div>
-      
+
       <div class="multicol-content">
         <div class="col col-l">
           <div class="fieldset">
             <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "billingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "billingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "billingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "billingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "billingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "billingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: dunningInstance, field: 'billingAddr')}">
+              <f:display bean="${dunningInstance}" property="billingAddrStreet" />
+              <f:display bean="${dunningInstance}" property="billingAddrPoBox" />
+              <f:display bean="${dunningInstance}" property="billingAddrPostalCode" />
+              <f:display bean="${dunningInstance}" property="billingAddrLocation" />
+              <f:display bean="${dunningInstance}" property="billingAddrState" />
+              <f:display bean="${dunningInstance}" property="billingAddrCountry" />
+              <g:if test="${dunningInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${dunningInstance?.billingAddr?.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${dunningInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -181,40 +99,16 @@
           <div class="fieldset">
             <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "shippingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "shippingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "shippingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "shippingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "shippingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: dunningInstance, field: "shippingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: dunningInstance, field: 'shippingAddr')}">
+              <f:display bean="${dunningInstance}" property="shippingAddrStreet" />
+              <f:display bean="${dunningInstance}" property="shippingAddrPoBox" />
+              <f:display bean="${dunningInstance}" property="shippingAddrPostalCode" />
+              <f:display bean="${dunningInstance}" property="shippingAddrLocation" />
+              <f:display bean="${dunningInstance}" property="shippingAddrState" />
+              <f:display bean="${dunningInstance}" property="shippingAddrCountry" />
+              <g:if test="${dunningInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${dunningInstance?.shippingAddr?.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${dunningInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -225,122 +119,21 @@
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.headerText.label" default="Header Text" /></div>
-            <div class="field">${nl2br(value: dunningInstance?.headerText)}</div>
-          </div>
+          <f:display bean="${dunningInstance}" property="headerText" />
         </div>
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="dunning.fieldset.items.label" /></h4>
-        <div class="fieldset-content">
-          <table id="dunning-items" class="content-table price-table">
-            <thead>
-              <tr>
-                <th scope="col"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.number.label" default="No." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
-              </tr>
-            </thead>
-            <tfoot>
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="dunning.subtotalNet.label" default="Subtotal excl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: dunningInstance?.subtotalNet)}</td>
-                <td></td>
-              </tr>
-              <g:each in="${dunningInstance.taxRateSums}" var="item">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: item.value)}</td>
-                <td></td>
-              </tr>
-              </g:each>
-              <g:if test="${dunningInstance?.discountPercent != 0 || dunningInstance?.discountAmount != 0 || dunningInstance?.adjustment != 0}">
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: dunningInstance?.subtotalGross)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${dunningInstance?.discountPercent != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
-                <td class="percentage number">${formatNumber(number: dunningInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
-                <td class="currency number">${formatCurrency(number: dunningInstance?.discountPercentAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${dunningInstance?.discountAmount != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: dunningInstance?.discountAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${dunningInstance?.adjustment != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: dunningInstance?.adjustment)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <tr class="total">
-                <td colspan="5" class="label"><g:message code="dunning.total.label" default="Total" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: dunningInstance?.total)}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-            <tbody>
-              <g:each in="${dunningInstance.items}" status="i" var="item">
-              <tr>
-                <td class="pos number">${i + 1}.</td>
-                <td class="item-number">${item.number}</td>
-                <td class="quantity number">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
-                <td class="unit">${item.unit}</td>
-                <td class="name">${item.name}<br />${item.description}</td>
-                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
-                <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
-                <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-              </g:each>
-            </tbody>
-            <tbody>
-              <tr>
-                <td colspan="4"></td>
-                <td class="name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
-                <td></td> 
-                <td class="currency number">${formatCurrency(number: dunningInstance?.shippingCosts)}</td>
-                <td class="percentage number">${formatNumber(number: dunningInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <g:set var="invoicingTransaction" value="${dunningInstance}" />
+        <g:applyLayout name="invoicingItemsShow" params="[className: 'dunning']" />
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.footerText.label" default="Footer Text" /></div>
-            <div class="field">${nl2br(value: dunningInstance?.footerText)}</div>
-          </div>
-          
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.termsAndConditions.label" default="Terms And Conditions" /></div>
-            <div class="field">${dunningInstance?.termsAndConditions?.name.join(', ')}</div>
-          </div>
+          <f:display bean="${dunningInstance}" property="footerText" />
+          <f:display bean="${dunningInstance}" property="termsAndConditions" />
         </div>
       </div>
 
@@ -348,10 +141,7 @@
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.notes.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: dunningInstance?.notes)}</div>
-          </div>
+          <f:display bean="${dunningInstance}" property="notes" />
         </div>
       </div>
       </g:if>

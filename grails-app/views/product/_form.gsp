@@ -33,4 +33,4 @@
   </div>
 </fieldset>
 <g:set var="salesItem" value="${productInstance}" />
-<g:applyLayout name="salesItemPricing" />
+<g:applyLayout name="salesItemPricingForm" />

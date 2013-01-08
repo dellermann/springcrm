@@ -70,8 +70,36 @@ class SalesItemService {
             for (int i = 0; params.pricing?."items[${i}]"; i++) {
                 pricing.addToItems(params.pricing."items[${i}]")
             }
-            if (!pricing.save()) {
-                return false;
+
+            boolean anyItemErrors = false
+            for (SalesItemPricingItem item in pricing.items) {
+                if (item.type != PricingItemType.sum) {
+                    if (item.quantity == null) {
+                        item.errors.rejectValue('quantity', 'default.null.message')
+                    }
+                    if (!item.name) {
+                        item.errors.rejectValue('name', 'default.null.message')
+                    }
+                    if (item.unitPrice == null) {
+                        item.errors.rejectValue('unitPrice', 'default.null.message')
+                    }
+                }
+                if ((item.type == PricingItemType.relativeToPos)
+                    && (item.relToPos == null))
+                {
+                    item.errors.rejectValue('relToPos', 'default.null.message')
+                }
+                if (((item.type == PricingItemType.relativeToCurrentSum)
+                    || (item.type == PricingItemType.relativeToLastSum)
+                    || (item.type == PricingItemType.relativeToPos))
+                    && (item.unitPercent == null))
+                {
+                    item.errors.rejectValue('unitPercent', 'default.null.message')
+                }
+                anyItemErrors |= item.hasErrors()
+            }
+            if (anyItemErrors || !pricing.save()) {
+                return false
             }
         } else if (pricing) {
             pricing.delete(flush: true)

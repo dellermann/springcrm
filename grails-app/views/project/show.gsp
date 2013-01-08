@@ -44,42 +44,16 @@
         <h4><g:message code="project.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="project.number.label" default="Number" /></div>
-              <div class="field">${fieldValue(bean: projectInstance, field: "fullNumber")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="project.title.label" default="Title" /></div>
-              <div class="field">${fieldValue(bean: projectInstance, field: "title")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="project.phase.label" default="Phase" /></div>
-              <div class="field" id="project-phase"><g:message code="project.phase.${fieldValue(bean: projectInstance, field: "phase")}" default="${projectInstance.phase.toString()}" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="project.status.label" default="Status" /></div>
-              <div class="field">
-                <g:select name="project-status" from="${org.amcworld.springcrm.ProjectStatus.list()}" optionKey="id" value="${projectInstance.status.id}" data-submit-url="${createLink(action: 'setStatus', id: projectInstance.id)}" />
-              </div>
-            </div>
+            <f:display bean="${projectInstance}" property="number">
+              <g:fieldValue bean="${projectInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${projectInstance}" property="title" />
+            <f:display bean="${projectInstance}" property="phase" />
+            <f:display bean="${projectInstance}" property="status" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="project.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${projectInstance?.organization?.id}">${projectInstance?.organization?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="project.person.label" default="Person" /></div>
-              <div class="field">
-                <g:link controller="person" action="show" id="${projectInstance?.person?.id}">${projectInstance?.person?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
+            <f:display bean="${projectInstance}" property="organization" />
+            <f:display bean="${projectInstance}" property="person" />
           </div>
         </div>
       </div>
@@ -87,10 +61,7 @@
       <div class="fieldset">
         <h4><g:message code="project.fieldset.description.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="project.description.label" default="Description" /></div>
-            <div class="field">${nl2br(value: projectInstance?.description)}</div>
-          </div>
+          <f:display bean="${projectInstance}" property="description" />
         </div>
       </div>
       </g:if>
@@ -150,7 +121,7 @@
               <button type="button" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
             </div>
             <div class="field submit-field">
-              <a id="select-project-item-add-btn" href="#" class="green button small"><g:message code="project.item.select.add.btn" default="Add selected" /></a>            
+              <a id="select-project-item-add-btn" href="#" class="green button small"><g:message code="project.item.select.add.btn" default="Add selected" /></a>
             </div>
           </div>
         </div>

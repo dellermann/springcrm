@@ -47,98 +47,38 @@
         <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.number.label" default="Number" /></div>
-              <div class="field">${quoteInstance?.fullNumber}</div>
-	        </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.subject.label" default="Subject" /></div>
-              <div class="field">${fieldValue(bean: quoteInstance, field: "subject")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${quoteInstance?.organization?.id}">${quoteInstance?.organization?.encodeAsHTML()}</g:link>
-      	      </div>
-      	    </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.person.label" default="Person" /></div>
-              <div class="field">
-                <g:link controller="person" action="show" id="${quoteInstance?.person?.id}">${quoteInstance?.person?.encodeAsHTML()}</g:link>
-      			  </div>
-      			</div>
-
-            <div class="row">
-              <div class="label"><g:message code="quote.stage.label" default="Stage" /></div>
-              <div class="field">${quoteInstance?.stage?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${quoteInstance}" property="number">
+              <g:fieldValue bean="${quoteInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${quoteInstance}" property="subject" />
+            <f:display bean="${quoteInstance}" property="organization" />
+            <f:display bean="${quoteInstance}" property="person" />
+            <f:display bean="${quoteInstance}" property="stage" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="quote.docDate.label" default="Quote Date" /></div>
-              <div class="field"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="quote.validUntil.label" default="Valid Until" /></div>
-              <div class="field"><g:formatDate date="${quoteInstance?.validUntil}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="quote.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.carrier.label" default="Carrier" /></div>
-              <div class="field">${quoteInstance?.carrier?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${quoteInstance}" property="docDate" />
+            <f:display bean="${quoteInstance}" property="validUntil" />
+            <f:display bean="${quoteInstance}" property="shippingDate" />
+            <f:display bean="${quoteInstance}" property="carrier" />
           </div>
         </div>
       </div>
-      
+
       <div class="multicol-content">
         <div class="col col-l">
           <div class="fieldset">
             <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "billingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: quoteInstance, field: 'billingAddr')}">
+              <f:display bean="${quoteInstance}" property="billingAddrStreet" />
+              <f:display bean="${quoteInstance}" property="billingAddrPoBox" />
+              <f:display bean="${quoteInstance}" property="billingAddrPostalCode" />
+              <f:display bean="${quoteInstance}" property="billingAddrLocation" />
+              <f:display bean="${quoteInstance}" property="billingAddrState" />
+              <f:display bean="${quoteInstance}" property="billingAddrCountry" />
+              <g:if test="${quoteInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${quoteInstance?.billingAddr?.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${quoteInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -148,40 +88,16 @@
           <div class="fieldset">
             <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: quoteInstance, field: "shippingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: quoteInstance, field: 'shippingAddr')}">
+              <f:display bean="${quoteInstance}" property="shippingAddrStreet" />
+              <f:display bean="${quoteInstance}" property="shippingAddrPoBox" />
+              <f:display bean="${quoteInstance}" property="shippingAddrPostalCode" />
+              <f:display bean="${quoteInstance}" property="shippingAddrLocation" />
+              <f:display bean="${quoteInstance}" property="shippingAddrState" />
+              <f:display bean="${quoteInstance}" property="shippingAddrCountry" />
+              <g:if test="${quoteInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${quoteInstance?.shippingAddr?.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${quoteInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -192,122 +108,21 @@
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.headerText.label" default="Header Text" /></div>
-            <div class="field">${nl2br(value: quoteInstance?.headerText)}</div>
-          </div>
+          <f:display bean="${quoteInstance}" property="headerText" />
         </div>
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="quote.fieldset.items.label" /></h4>
-        <div class="fieldset-content">
-          <table id="quote-items" class="content-table price-table">
-            <thead>
-              <tr>
-                <th scope="col"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.number.label" default="No." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
-              </tr>
-            </thead>
-            <tfoot>
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="quote.subtotalNet.label" default="Subtotal excl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: quoteInstance?.subtotalNet)}</td>
-                <td></td>
-              </tr>
-              <g:each in="${quoteInstance.taxRateSums}" var="item">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: item.value)}</td>
-                <td></td>
-              </tr>
-              </g:each>
-              <g:if test="${quoteInstance?.discountPercent != 0 || quoteInstance?.discountAmount != 0 || quoteInstance?.adjustment != 0}">
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: quoteInstance?.subtotalGross)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${quoteInstance?.discountPercent != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
-                <td class="percentage number">${formatNumber(number: quoteInstance?.discountPercent, minFractionDigits: 2)}&nbsp;&#37;</td>
-                <td class="currency number">${formatCurrency(number: quoteInstance?.discountPercentAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${quoteInstance?.discountAmount != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: quoteInstance?.discountAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${quoteInstance?.adjustment != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: quoteInstance?.adjustment)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <tr class="total">
-                <td colspan="5" class="label"><g:message code="quote.total.label" default="Total" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: quoteInstance?.total)}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-            <tbody>
-              <g:each in="${quoteInstance.items}" status="i" var="item">
-              <tr>
-                <td class="pos number">${i + 1}.</td>
-                <td class="item-number">${item.number}</td>
-                <td class="quantity number">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
-                <td class="unit">${item.unit}</td>
-                <td class="name">${item.name}<br />${item.description}</td>
-                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
-                <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
-                <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-              </g:each>
-            </tbody>
-            <tbody>
-              <tr>
-                <td colspan="4"></td>
-                <td class="name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
-                <td></td> 
-                <td class="currency number">${formatCurrency(number: quoteInstance?.shippingCosts)}</td>
-                <td class="percentage number">${formatNumber(number: quoteInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <g:set var="invoicingTransaction" value="${quoteInstance}" />
+        <g:applyLayout name="invoicingItemsShow" params="[className: 'quote']" />
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.footerText.label" default="Footer Text" /></div>
-            <div class="field">${nl2br(value: quoteInstance?.footerText)}</div>
-          </div>
-          
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.termsAndConditions.label" default="Terms And Conditions" /></div>
-            <div class="field">${quoteInstance?.termsAndConditions?.name.join(', ')}</div>
-          </div>
+          <f:display bean="${quoteInstance}" property="footerText" />
+          <f:display bean="${quoteInstance}" property="termsAndConditions" />
         </div>
       </div>
 
@@ -315,10 +130,7 @@
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.notes.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: quoteInstance?.notes)}</div>
-          </div>
+          <f:display bean="${quoteInstance}" property="notes" />
         </div>
       </div>
       </g:if>

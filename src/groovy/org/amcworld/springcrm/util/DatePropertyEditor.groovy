@@ -72,11 +72,11 @@ class DatePropertyEditor extends PropertyEditorSupport {
 
 	@Override
 	void setAsText(String text) throws IllegalArgumentException {
-		if (text == null) {
-			value = null
-		} else {
+		if (text) {
 			value = (text.indexOf(' ') < 0) ? parseDate(text)
                 : parseDateTime(text)
+		} else {
+            value = null
 		}
 	}
 

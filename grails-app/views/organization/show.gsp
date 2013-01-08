@@ -57,83 +57,25 @@
         <h4><g:message code="organization.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="organization.number.label" default="Number" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "fullNumber")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.recType.label" default="Record type" /></div>
-              <div class="field">
-                <g:if test="${organizationInstance?.recType & 1}"><g:message code="organization.recType.customer.label" default="Customer" /></g:if><g:if test="${!(organizationInstance?.recType ^ 3)}">, </g:if><g:if test="${organizationInstance?.recType & 2}"><g:message code="organization.recType.vendor.label" default="Vendor" /></g:if>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.name.label" default="Name" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "name")}</div>
-			      </div>
-                        
-            <div class="row">
-              <div class="label"><g:message code="organization.legalForm.label" default="Legal Form" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "legalForm")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.type.label" default="Type" /></div>
-              <div class="field">${organizationInstance?.type?.encodeAsHTML()}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.industry.label" default="Industry" /></div>
-              <div class="field">${organizationInstance?.industry?.encodeAsHTML()}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.owner.label" default="Owner" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "owner")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.numEmployees.label" default="Num Employees" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "numEmployees")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.rating.label" default="Rating" /></div>
-              <div class="field">${organizationInstance?.rating?.encodeAsHTML()}</div>
-			      </div>
+            <f:display bean="${organizationInstance}" property="number">
+              <g:fieldValue bean="${organizationInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${organizationInstance}" property="recType" />
+            <f:display bean="${organizationInstance}" property="name" />
+            <f:display bean="${organizationInstance}" property="legalForm" />
+            <f:display bean="${organizationInstance}" property="type" />
+            <f:display bean="${organizationInstance}" property="industry" />
+            <f:display bean="${organizationInstance}" property="owner" />
+            <f:display bean="${organizationInstance}" property="numEmployees" />
+            <f:display bean="${organizationInstance}" property="rating" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="organization.phone.label" default="Phone" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "phone")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.fax.label" default="Fax" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "fax")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.phoneOther.label" default="Phone Other" /></div>
-              <div class="field">${fieldValue(bean: organizationInstance, field: "phoneOther")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.email1.label" default="Email1" /></div>
-              <div class="field"><a href="mailto:${fieldValue(bean: organizationInstance, field: "email1")}">${fieldValue(bean: organizationInstance, field: "email1")}</a></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.email2.label" default="Email2" /></div>
-              <div class="field"><a href="mailto:${fieldValue(bean: organizationInstance, field: "email2")}">${fieldValue(bean: organizationInstance, field: "email2")}</a></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="organization.website.label" default="Website" /></div>
-              <div class="field"><a href="${fieldValue(bean: organizationInstance, field: "website")}" target="_blank">${fieldValue(bean: organizationInstance, field: "website")}</a></div>
-            </div>
+            <f:display bean="${organizationInstance}" property="phone" />
+            <f:display bean="${organizationInstance}" property="fax" />
+            <f:display bean="${organizationInstance}" property="phoneOther" />
+            <f:display bean="${organizationInstance}" property="email1" />
+            <f:display bean="${organizationInstance}" property="email2" />
+            <f:display bean="${organizationInstance}" property="website" />
           </div>
         </div>
       </div>
@@ -142,40 +84,16 @@
           <div class="fieldset">
             <h4><g:message code="organization.fieldset.billingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="organization.billingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "billingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.billingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "billingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.billingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "billingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.billingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "billingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.billingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "billingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.billingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "billingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: organizationInstance, field: 'billingAddr')}">
+              <f:display bean="${organizationInstance}" property="billingAddrStreet" />
+              <f:display bean="${organizationInstance}" property="billingAddrPoBox" />
+              <f:display bean="${organizationInstance}" property="billingAddrPostalCode" />
+              <f:display bean="${organizationInstance}" property="billingAddrLocation" />
+              <f:display bean="${organizationInstance}" property="billingAddrState" />
+              <f:display bean="${organizationInstance}" property="billingAddrCountry" />
+              <g:if test="${organizationInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${fieldValue(bean: organizationInstance, field: 'billingAddr').encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${organizationInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -185,40 +103,16 @@
           <div class="fieldset">
             <h4><g:message code="organization.fieldset.shippingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="organization.shippingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "shippingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.shippingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "shippingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.shippingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "shippingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.shippingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "shippingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.shippingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "shippingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="organization.shippingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: organizationInstance, field: "shippingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: organizationInstance, field: 'shippingAddr')}">
+              <f:display bean="${organizationInstance}" property="shippingAddrStreet" />
+              <f:display bean="${organizationInstance}" property="shippingAddrPoBox" />
+              <f:display bean="${organizationInstance}" property="shippingAddrPostalCode" />
+              <f:display bean="${organizationInstance}" property="shippingAddrLocation" />
+              <f:display bean="${organizationInstance}" property="shippingAddrState" />
+              <f:display bean="${organizationInstance}" property="shippingAddrCountry" />
+              <g:if test="${organizationInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${fieldValue(bean: organizationInstance, field: 'shippingAddr').encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${organizationInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -229,20 +123,14 @@
       <div class="fieldset">
         <h4><g:message code="organization.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="organization.notes.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: organizationInstance?.notes)}</div>
-          </div>
+          <f:display bean="${organizationInstance}" property="notes" />
         </div>
       </div>
       </g:if>
       <div class="fieldset">
         <h4><g:message code="organization.fieldset.misc.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="organization.docPlaceholderValue.label" /></div>
-            <div class="field">${fieldValue(bean: organizationInstance, field: 'docPlaceholderValue')}</div>
-          </div>
+          <f:display bean="${organizationInstance}" property="docPlaceholderValue" />
         </div>
       </div>
 

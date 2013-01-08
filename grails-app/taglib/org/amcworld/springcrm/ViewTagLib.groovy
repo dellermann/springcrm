@@ -128,13 +128,20 @@ class ViewTagLib {
 	 *
 	 * @attr number REQUIRED   the number to format
 	 * @attr minFractionDigits the minimum number of digits allowed in the
-	 *                         fraction portion of a number; defaults to 2
+	 *                         fraction portion of a number; defaults to either
+	 *                         the default number of fraction digits for the
+	 *                         currency of the selected locale or the number of
+	 *                         fraction digits defined in the configuration
+	 *                         (the latter has precedence)
 	 * @attr groupingUsed      whether or not grouping will be used in this
 	 *                         format; defaults to true
-	 * @attr displayZero       if true zero values are displayed, otherwise an
-	 *                         empty string is generated
+	 * @attr displayZero       if true zero is displayed as number, otherwise
+	 *                         an empty string is generated; defaults to false
+	 * @attr numberOnly        if true the formatted value is display without
+	 *                         the currency symbol; defaults to false
 	 */
 	def formatCurrency = { attrs, body ->
+        def withCurrencySymbol = true
 		def number = attrs.number
 		if (number || attrs.displayZero) {
             Locale locale = userService.currentLocale
@@ -146,7 +153,7 @@ class ViewTagLib {
 
 			def map = new HashMap(attrs)
 			map.number = number ?: 0
-			map.type = 'currency'
+			map.type = attrs.numberOnly ? 'number' : 'currency'
             map.locale = locale
             if (currency != null) {
                 map.currencyCode = currency.currencyCode

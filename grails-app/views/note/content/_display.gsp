@@ -1,0 +1,1 @@
+<g:applyLayout name="fieldDisplay">${bean.content}</g:applyLayout>

@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Note" %>
 <html>
 <head>
@@ -42,32 +41,15 @@
         <h4><g:message code="note.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            
-            <div class="row">
-              <div class="label"><g:message code="note.number.label" default="Number" /></div>
-              <div class="field">${fieldValue(bean: noteInstance, field: "fullNumber")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="note.title.label" default="Title" /></div>
-              <div class="field">${fieldValue(bean: noteInstance, field: "title")}</div>
-            </div>
+            <f:display bean="${noteInstance}" property="number">
+              <g:fieldValue bean="${noteInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${noteInstance}" property="title" />
           </div>
           <div class="col col-r">
             <g:ifModuleAllowed modules="contact">
-            <div class="row">
-              <div class="label"><g:message code="note.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${noteInstance?.organization?.id}">${noteInstance?.organization?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="note.person.label" default="Person" /></div>
-              <div class="field">
-                <g:link controller="person" action="show" id="${noteInstance?.person?.id}">${noteInstance?.person?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
+            <f:display bean="${noteInstance}" property="organization" />
+            <f:display bean="${noteInstance}" property="person" />
             </g:ifModuleAllowed>
           </div>
         </div>
@@ -76,10 +58,7 @@
       <div class="fieldset">
         <h4><g:message code="note.fieldset.content.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="note.content.label" default="Text content" /></div>
-            <div class="field">${noteInstance?.content}</div>
-          </div>
+          <f:display bean="${noteInstance}" property="content" />
         </div>
       </div>
       </g:if>

@@ -69,7 +69,8 @@ class Person {
     static belongsTo = [organization: Organization]
     static hasMany = [
 		calls: Call, noteEntries: Note, quotes: Quote, salesOrders: SalesOrder,
-		invoices: Invoice, creditMemos: CreditMemo, dunnings: Dunning
+		invoices: Invoice, creditMemos: CreditMemo, dunnings: Dunning,
+        projects: Project
 	]
 	static mapping = {
 		calls column: 'Person'

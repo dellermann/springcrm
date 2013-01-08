@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Call" %>
 <html>
 <head>
@@ -42,57 +41,24 @@
         <h4><g:message code="call.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="call.subject.label" default="Subject" /></div>
-              <div class="field">${fieldValue(bean: callInstance, field: "subject")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="call.start.label" default="Start" /></div>
-              <div class="field"><g:formatDate date="${callInstance?.start}" /></div>
-			      </div>
+            <f:display bean="${callInstance}" property="subject" />
+            <f:display bean="${callInstance}" property="start" />
           </div>
           <div class="col col-r">
             <g:ifModuleAllowed modules="contact">
-            <div class="row">
-              <div class="label"><g:message code="call.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${callInstance?.organization?.id}">${callInstance?.organization?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="call.person.label" default="Person" /></div>
-              <div class="field">
-                <g:link controller="person" action="show" id="${callInstance?.person?.id}">${callInstance?.person?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
+            <f:display bean="${callInstance}" property="organization" />
+            <f:display bean="${callInstance}" property="person" />
             </g:ifModuleAllowed>
-            
-            <div class="row">
-              <div class="label"><g:message code="call.phone.label" default="Phone" /></div>
-              <div class="field">${fieldValue(bean: callInstance, field: "phone")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="call.type.label" default="Type" /></div>
-              <div class="field"><g:message code="call.type.${callInstance?.type}" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="call.status.label" default="Status" /></div>
-              <div class="field"><g:message code="call.status.${callInstance?.status}" /></div>
-            </div>
+            <f:display bean="${callInstance}" property="phone" />
+            <f:display bean="${callInstance}" property="type" />
+            <f:display bean="${callInstance}" property="status" />
           </div>
         </div>
       </div>
       <div class="fieldset">
         <h4><g:message code="call.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="call.notes.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: callInstance?.notes)}</div>
-          </div>
+          <f:display bean="${callInstance}" property="notes" />
         </div>
       </div>
     </div>

@@ -47,13 +47,13 @@ class DatePropertyEditorTests {
 	@Before
     void setUp() {
 		messageSource = new ResourceBundleMessageSource()
-		messageSource.setBasename('org.amcworld.springcrm')
+		messageSource.basename = 'org.amcworld.springcrm'
     }
 
 	@Test
 	void testGetAsText() {
 		Date d = new Date(
-			date:13, month:MAY, year:2011 - 1900, hours:15, minutes:24
+			date: 13, month: MAY, year: 2011 - 1900, hours: 15, minutes: 24
 		)
 		def editor = new DatePropertyEditor(messageSource)
 		editor.value = d
@@ -63,7 +63,7 @@ class DatePropertyEditorTests {
 	@Test
 	void testSetAsTextDate() {
 		def editor = new DatePropertyEditor(messageSource)
-		editor.setAsText '2011-05-13'
+		editor.asText = '2011-05-13'
 		Date d = editor.value
 		assert 13 == d[DATE]
 		assert MAY == d[MONTH]
@@ -100,7 +100,7 @@ class DatePropertyEditorTests {
         assert 0 == d[MINUTE]
         assert 0 == d[SECOND]
 		assert 0 == d[MILLISECOND]
-		editor.setAsText '13051975'
+		editor.asText = '13051975'
 		d = editor.value
 		assert 13 == d[DATE]
 		assert MAY == d[MONTH]
@@ -123,7 +123,7 @@ class DatePropertyEditorTests {
 		assert 24 == d[MINUTE]
 		assert 0 == d[SECOND]
 		assert 0 == d[MILLISECOND]
-		editor.setAsText '13051975 1524'
+		editor.asText = '13051975 1524'
 		d = editor.value
 		assert 13 == d[DATE]
 		assert MAY == d[MONTH]
@@ -133,6 +133,13 @@ class DatePropertyEditorTests {
 		assert 0 == d[SECOND]
 		assert 0 == d[MILLISECOND]
 	}
+
+    @Test
+    void testEmptyValues() {
+        def editor = new DatePropertyEditor(messageSource)
+        editor.asText = ''
+        assert null == editor.value
+    }
 
 	@Test
 	void testNullValues() {

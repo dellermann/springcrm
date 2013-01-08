@@ -44,79 +44,23 @@
         <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.number.label" default="Number" /></div>
-              <div class="field">${creditMemoInstance?.fullNumber}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.subject.label" default="Subject" /></div>
-              <div class="field">${fieldValue(bean: creditMemoInstance, field: "subject")}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${creditMemoInstance?.organization?.id}">${creditMemoInstance?.organization?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.person.label" default="Person" /></div>
-              <div class="field">
-                <g:link controller="person" action="show" id="${creditMemoInstance?.person?.id}">${creditMemoInstance?.person?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.invoice.label" default="Invoice" /></div>
-              <div class="field">
-                <g:link controller="invoice" action="show" id="${creditMemoInstance?.invoice?.id}">${creditMemoInstance?.invoice?.fullName?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.dunning.label" default="Dunning" /></div>
-              <div class="field">
-                <g:link controller="dunning" action="show" id="${creditMemoInstance?.dunning?.id}">${creditMemoInstance?.dunning?.fullName?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.stage.label" default="Stage" /></div>
-              <div class="field">${creditMemoInstance?.stage?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${creditMemoInstance}" property="number">
+              <g:fieldValue bean="${creditMemoInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${creditMemoInstance}" property="subject" />
+            <f:display bean="${creditMemoInstance}" property="organization" />
+            <f:display bean="${creditMemoInstance}" property="person" />
+            <f:display bean="${creditMemoInstance}" property="invoice" />
+            <f:display bean="${creditMemoInstance}" property="dunning" />
+            <f:display bean="${creditMemoInstance}" property="stage" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.docDate.label" default="Doc Date" /></div>
-              <div class="field"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="creditMemo.shippingDate.label" default="Shipping Date" /></div>
-              <div class="field"><g:formatDate date="${creditMemoInstance?.shippingDate}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.carrier.label" default="Carrier" /></div>
-              <div class="field">${creditMemoInstance?.carrier?.encodeAsHTML()}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.paymentDate.label" default="Payment Date" /></div>
-              <div class="field"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment Amount" /></div>
-              <div class="field"><g:formatCurrency number="${creditMemoInstance?.paymentAmount}" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></div>
-              <div class="field">${creditMemoInstance?.paymentMethod?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${creditMemoInstance}" property="docDate" />
+            <f:display bean="${creditMemoInstance}" property="shippingDate" />
+            <f:display bean="${creditMemoInstance}" property="carrier" />
+            <f:display bean="${creditMemoInstance}" property="paymentDate" />
+            <f:display bean="${creditMemoInstance}" property="paymentAmount" />
+            <f:display bean="${creditMemoInstance}" property="paymentMethod" />
           </div>
         </div>
       </div>
@@ -126,40 +70,16 @@
           <div class="fieldset">
             <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "billingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "billingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "billingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "billingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "billingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.billingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "billingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: creditMemoInstance, field: 'billingAddr')}">
+              <f:display bean="${creditMemoInstance}" property="billingAddrStreet" />
+              <f:display bean="${creditMemoInstance}" property="billingAddrPoBox" />
+              <f:display bean="${creditMemoInstance}" property="billingAddrPostalCode" />
+              <f:display bean="${creditMemoInstance}" property="billingAddrLocation" />
+              <f:display bean="${creditMemoInstance}" property="billingAddrState" />
+              <f:display bean="${creditMemoInstance}" property="billingAddrCountry" />
+              <g:if test="${creditMemoInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${creditMemoInstance?.billingAddr?.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${creditMemoInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -169,40 +89,16 @@
           <div class="fieldset">
             <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
             <div class="fieldset-content form-fragment">
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "shippingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrPoBox.label" default="PO Box" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "shippingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "shippingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "shippingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "shippingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="invoicingTransaction.shippingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: creditMemoInstance, field: "shippingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: creditMemoInstance, field: 'shippingAddr')}">
+              <f:display bean="${creditMemoInstance}" property="shippingAddrStreet" />
+              <f:display bean="${creditMemoInstance}" property="shippingAddrPoBox" />
+              <f:display bean="${creditMemoInstance}" property="shippingAddrPostalCode" />
+              <f:display bean="${creditMemoInstance}" property="shippingAddrLocation" />
+              <f:display bean="${creditMemoInstance}" property="shippingAddrState" />
+              <f:display bean="${creditMemoInstance}" property="shippingAddrCountry" />
+              <g:if test="${creditMemoInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${creditMemoInstance?.shippingAddr?.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${creditMemoInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -213,122 +109,21 @@
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.headerText.label" default="Header Text" /></div>
-            <div class="field">${nl2br(value: creditMemoInstance?.headerText)}</div>
-          </div>
+          <f:display bean="${creditMemoInstance}" property="headerText" />
         </div>
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="creditMemo.fieldset.items.label" /></h4>
-        <div class="fieldset-content">
-          <table id="credit-memo-items" class="content-table price-table">
-            <thead>
-              <tr>
-                <th scope="col"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.number.label" default="No." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
-              </tr>
-            </thead>
-            <tfoot>
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="invoice.subtotalNet.label" default="Subtotal excl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.subtotalNet)}</td>
-                <td></td>
-              </tr>
-              <g:each in="${creditMemoInstance.taxRateSums}" var="item">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: item.value)}</td>
-                <td></td>
-              </tr>
-              </g:each>
-              <g:if test="${creditMemoInstance?.discountPercent != 0 || creditMemoInstance?.discountAmount != 0 || creditMemoInstance?.adjustment != 0}">
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.subtotalGross)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${creditMemoInstance?.discountPercent != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
-                <td class="percentage number">${formatNumber(number: creditMemoInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.discountPercentAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${creditMemoInstance?.discountAmount != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.discountAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${creditMemoInstance?.adjustment != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.adjustment)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <tr class="total">
-                <td colspan="5" class="label"><g:message code="invoice.total.label" default="Total" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.total)}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-            <tbody>
-              <g:each in="${creditMemoInstance.items}" status="i" var="item">
-              <tr>
-                <td class="pos number">${i + 1}.</td>
-                <td class="item-number">${item.number}</td>
-                <td class="quantity number">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
-                <td class="unit">${item.unit}</td>
-                <td class="name">${item.name}<br />${item.description}</td>
-                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
-                <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
-                <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-              </g:each>
-            </tbody>
-            <tbody>
-              <tr>
-                <td colspan="4"></td>
-                <td class="name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
-                <td></td> 
-                <td class="currency number">${formatCurrency(number: creditMemoInstance?.shippingCosts)}</td>
-                <td class="percentage number">${formatNumber(number: creditMemoInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <g:set var="invoicingTransaction" value="${creditMemoInstance}" />
+        <g:applyLayout name="invoicingItemsShow" params="[className: 'creditMemo']" />
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.footerText.label" default="Footer Text" /></div>
-            <div class="field">${nl2br(value: creditMemoInstance?.footerText)}</div>
-          </div>
-          
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.termsAndConditions.label" default="Terms And Conditions" /></div>
-            <div class="field">${creditMemoInstance?.termsAndConditions?.name.join(', ')}</div>
-          </div>
+          <f:display bean="${creditMemoInstance}" property="footerText" />
+          <f:display bean="${creditMemoInstance}" property="termsAndConditions" />
         </div>
       </div>
 
@@ -336,10 +131,7 @@
       <div class="fieldset">
         <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="invoicingTransaction.notes.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: creditMemoInstance?.notes)}</div>
-          </div>
+          <f:display bean="${creditMemoInstance}" property="notes" />
         </div>
       </div>
       </g:if>

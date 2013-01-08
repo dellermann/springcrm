@@ -88,7 +88,7 @@
   </div>
   <div class="fieldset-content">
     <g:set var="invoicingTransaction" value="${quoteInstance}" />
-    <g:applyLayout name="invoicingItems" params="[tableId: 'quote-items', className: 'quote']" />
+    <g:applyLayout name="invoicingItemsForm" params="[tableId: 'quote-items', className: 'quote']" />
   </div>
 </fieldset>
 <fieldset>

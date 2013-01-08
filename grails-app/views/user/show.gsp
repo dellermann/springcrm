@@ -40,65 +40,25 @@
         <h4><g:message code="user.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="user.userName.label" default="User Name" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "userName")}</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.password.label" default="Password" /></div>
-              <div class="field">**********</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.firstName.label" default="First Name" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "firstName")}</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.lastName.label" default="Last Name" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "lastName")}</div>
-            </div>
+            <f:display bean="${userInstance}" property="userName" />
+            <f:display bean="${userInstance}" property="firstName" />
+            <f:display bean="${userInstance}" property="lastName" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="user.phone.label" default="Phone" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "phone")}</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.phoneHome.label" default="Phone Home" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "phoneHome")}</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.mobile.label" default="Mobile" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "mobile")}</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.fax.label" default="Fax" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "fax")}</div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="user.email.label" default="Email" /></div>
-              <div class="field">${fieldValue(bean: userInstance, field: "email")}</div>
-            </div>
+            <f:display bean="${userInstance}" property="phone" />
+            <f:display bean="${userInstance}" property="phoneHome" />
+            <f:display bean="${userInstance}" property="mobile" />
+            <f:display bean="${userInstance}" property="fax" />
+            <f:display bean="${userInstance}" property="email" />
           </div>
         </div>
       </div>
       <div class="fieldset">
         <h4><g:message code="user.fieldset.permissions.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="user.admin.label" default="Administrator" /></div>
-            <div class="field"><g:formatBoolean boolean="${userInstance?.admin}" /></div>
-          </div>
+          <f:display bean="${userInstance}" property="admin" />
           <g:if test="${!userInstance?.admin && userInstance?.allowedModulesAsList}">
-          <div class="row">
-            <div class="label"><g:message code="user.allowedModules.label" default="Allowed modules" /></div>
-            <div class="field">
-              <ul class="compact-list">
-              <g:each in="${userInstance?.allowedModulesAsList}">
-                <li><g:message code="module.${it}" /></li>
-              </g:each>
-              </ul>
-            </div>
-          </div>
+          <f:display bean="${userInstance}" property="allowedModulesAsList" />
           </g:if>
         </div>
       </div>

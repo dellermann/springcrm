@@ -41,175 +41,32 @@
         <h4><g:message code="purchaseInvoice.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.number.label" default="Number" /></div>
-              <div class="field">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.subject.label" default="Subject" /></div>
-              <div class="field">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.vendor.label" default="Vendor" /></div>
-              <div class="field">
-                <g:if test="${purchaseInvoiceInstance?.vendor}">
-                <g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:link>
-                </g:if>
-                <g:else>
-                ${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}
-                </g:else>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.documentFile.label" default="Document File" /></div>
-              <div class="field">
-                <g:if test="${purchaseInvoiceInstance?.documentFile}">
-                <a id="document" href="${createLink(action:'getDocument', id:purchaseInvoiceInstance?.id)}" target="_blank">${fieldValue(bean: purchaseInvoiceInstance, field: "documentFile")}</a>
-                </g:if>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.stage.label" default="Stage" /></div>
-              <div class="field">${purchaseInvoiceInstance?.stage?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${purchaseInvoiceInstance}" property="number" />
+            <f:display bean="${purchaseInvoiceInstance}" property="subject" />
+            <f:display bean="${purchaseInvoiceInstance}" property="vendor" />
+            <f:display bean="${purchaseInvoiceInstance}" property="documentFile" />
+            <f:display bean="${purchaseInvoiceInstance}" property="stage" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.docDate.label" default="Doc Date" /></div>
-              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.docDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.dueDate.label" default="Due Date" /></div>
-              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.dueDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.paymentDate.label" default="Payment Date" /></div>
-              <div class="field"><g:formatDate date="${purchaseInvoiceInstance?.paymentDate}" formatName="default.format.date" /></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.paymentAmount.label" default="Payment Amount" /></div>
-              <div class="field"><g:formatCurrency number="${purchaseInvoiceInstance?.paymentAmount}" /></div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.paymentMethod.label" default="Payment Method" /></div>
-              <div class="field">${purchaseInvoiceInstance?.paymentMethod?.encodeAsHTML()}</div>
-            </div>
+            <f:display bean="${purchaseInvoiceInstance}" property="docDate" />
+            <f:display bean="${purchaseInvoiceInstance}" property="dueDate" />
+            <f:display bean="${purchaseInvoiceInstance}" property="paymentDate" />
+            <f:display bean="${purchaseInvoiceInstance}" property="paymentAmount" />
+            <f:display bean="${purchaseInvoiceInstance}" property="paymentMethod" />
           </div>
         </div>
       </div>
-      
+
       <div class="fieldset">
         <h4><g:message code="invoice.fieldset.items.label" /></h4>
-        <div class="fieldset-content">
-          <table id="purchase-invoice-items" class="content-table price-table">
-            <thead>
-              <tr>
-                <th scope="col"><g:message code="invoicingTransaction.pos.label" default="Pos." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.number.label" default="No." /></th>
-                <th scope="col"><g:message code="invoicingTransaction.quantity.label" default="Qty" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unit.label" default="Unit" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.name.label" default="Name" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.unitPrice.label" default="Unit price" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.total.label" default="Total" /></th>
-                <th scope="col"><g:message code="invoicingTransaction.tax.label" default="Tax" /></th>
-              </tr>
-            </thead>
-            <tfoot>
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="invoice.subtotalNet.label" default="Subtotal excl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.subtotalNet)}</td>
-                <td></td>
-              </tr>
-              <g:each in="${purchaseInvoiceInstance.taxRateSums}" var="item">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.taxRate.label" default="VAT {0} %" args="${[item.key]}" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: item.value)}</td>
-                <td></td>
-              </tr>
-              </g:each>
-              <g:if test="${purchaseInvoiceInstance?.discountPercent != 0 || purchaseInvoiceInstance?.discountAmount != 0 || purchaseInvoiceInstance?.adjustment != 0}">
-              <tr class="subtotal">
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.subtotalGross)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${purchaseInvoiceInstance?.discountPercent != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountPercent.label" default="Discount Percent" /></td>
-                <td class="percentage number">${formatNumber(number: purchaseInvoiceInstance?.discountPercent, minFractionDigits: 2)}&nbsp;%</td>
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.discountPercentAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${purchaseInvoiceInstance?.discountAmount != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.discountAmount.label" default="Discount Amount" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.discountAmount)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <g:if test="${purchaseInvoiceInstance?.adjustment != 0}">
-              <tr>
-                <td colspan="5" class="label"><g:message code="invoicingTransaction.adjustment.label" default="Adjustment" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.adjustment)}</td>
-                <td></td>
-              </tr>
-              </g:if>
-              <tr class="total">
-                <td colspan="5" class="label"><g:message code="invoice.total.label" default="Total" /></td>
-                <td></td>
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.total)}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-            <tbody>
-              <g:each in="${purchaseInvoiceInstance.items}" status="i" var="item">
-              <tr>
-                <td class="pos number">${i + 1}.</td>
-                <td class="item-number">${item.number}</td>
-                <td class="quantity number">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
-                <td class="unit">${item.unit}</td>
-                <td class="name">${item.name}<br />${item.description}</td>
-                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
-                <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
-                <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-              </g:each>
-            </tbody>
-            <tbody>
-              <tr>
-                <td colspan="4"></td>
-                <td class="name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
-                <td></td> 
-                <td class="currency number">${formatCurrency(number: purchaseInvoiceInstance?.shippingCosts)}</td>
-                <td class="percentage number">${formatNumber(number: purchaseInvoiceInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <g:set var="invoicingTransaction" value="${purchaseInvoiceInstance}" />
+        <g:applyLayout name="invoicingItemsShow" params="[className: 'invoice']" />
       </div>
 
       <div class="fieldset">
         <h4><g:message code="purchaseInvoice.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-            <div class="row">
-              <div class="label"><g:message code="purchaseInvoice.notes.label" default="Notes" /></div>
-              <div class="field">${nl2br(value: purchaseInvoiceInstance?.notes)}</div>
-            </div>
+          <f:display bean="${purchaseInvoiceInstance}" property="notes" />
         </div>
       </div>
     </div>

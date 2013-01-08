@@ -52,100 +52,28 @@
         <h4><g:message code="person.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="person.number.label" default="Number" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "fullNumber")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${personInstance?.organization?.id}">${personInstance?.organization?.encodeAsHTML()}</g:link>
-			        </div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.salutation.label" default="Salutation" /></div>
-              <div class="field">${personInstance?.salutation?.encodeAsHTML()}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.firstName.label" default="First Name" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "firstName")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.lastName.label" default="Last Name" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "lastName")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.jobTitle.label" default="Job Title" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "jobTitle")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.department.label" default="Department" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "department")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.assistant.label" default="Assistant" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "assistant")}</div>
-			      </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.birthday.label" default="Birthday" /></div>
-              <div class="field"><g:formatDate date="${personInstance?.birthday}" formatName="default.format.date" /></div>
-			      </div>
-            
-            <g:if test="${personInstance?.picture}">
-            <div class="row">
-              <div class="label"><g:message code="person.picture.label" default="Picture" /></div>
-              <div class="field"><a id="picture" href="${createLink(action: 'getPicture', id: personInstance?.id)}"><img src="${createLink(action: 'getPicture', id: personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a></div>
-            </div>
-            </g:if>
+            <f:display bean="${personInstance}" property="number">
+              <g:fieldValue bean="${personInstance}" field="fullNumber" />
+            </f:display>
+            <f:display bean="${personInstance}" property="organization" />
+            <f:display bean="${personInstance}" property="salutation" />
+            <f:display bean="${personInstance}" property="firstName" />
+            <f:display bean="${personInstance}" property="lastName" />
+            <f:display bean="${personInstance}" property="jobTitle" />
+            <f:display bean="${personInstance}" property="department" />
+            <f:display bean="${personInstance}" property="assistant" />
+            <f:display bean="${personInstance}" property="birthday" />
+            <f:display bean="${personInstance}" property="picture" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="person.phone.label" default="Phone" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "phone")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.phoneHome.label" default="Phone Home" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "phoneHome")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.mobile.label" default="Mobile" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "mobile")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.fax.label" default="Fax" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "fax")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.phoneAssistant.label" default="Phone Assistant" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "phoneAssistant")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.phoneOther.label" default="Phone Other" /></div>
-              <div class="field">${fieldValue(bean: personInstance, field: "phoneOther")}</div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.email1.label" default="Email1" /></div>
-              <div class="field"><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></div>
-            </div>
-            
-            <div class="row">
-              <div class="label"><g:message code="person.email2.label" default="Email2" /></div>
-              <div class="field"><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email2")}</a></div>
-            </div>
+            <f:display bean="${personInstance}" property="phone" />
+            <f:display bean="${personInstance}" property="phoneHome" />
+            <f:display bean="${personInstance}" property="mobile" />
+            <f:display bean="${personInstance}" property="fax" />
+            <f:display bean="${personInstance}" property="phoneAssistant" />
+            <f:display bean="${personInstance}" property="phoneOther" />
+            <f:display bean="${personInstance}" property="email1" />
+            <f:display bean="${personInstance}" property="email2" />
           </div>
         </div>
       </div>
@@ -154,40 +82,16 @@
           <div class="fieldset">
             <h4><g:message code="person.fieldset.mailingAddr.label" /></h4>
             <div class="fieldset-content">
-              <div class="row">
-                <div class="label"><g:message code="person.mailingAddrStreet.label" default="Street" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "mailingAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.mailingAddrPoBox.label" default="Po Box" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "mailingAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.mailingAddrPostalCode.label" default="Postal Code" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "mailingAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.mailingAddrLocation.label" default="Location" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "mailingAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.mailingAddrState.label" default="State" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "mailingAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.mailingAddrCountry.label" default="Country" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "mailingAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: personInstance, field: 'mailingAddr')}">
+              <f:display bean="${personInstance}" property="mailingAddrStreet" />
+              <f:display bean="${personInstance}" property="mailingAddrPoBox" />
+              <f:display bean="${personInstance}" property="mailingAddrPostalCode" />
+              <f:display bean="${personInstance}" property="mailingAddrLocation" />
+              <f:display bean="${personInstance}" property="mailingAddrState" />
+              <f:display bean="${personInstance}" property="mailingAddrCountry" />
+              <g:if test="${personInstance?.mailingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${fieldValue(bean: personInstance, field: 'mailingAddr').encodeAsURL()}" target="_blank" class="button medium blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${personInstance.mailingAddr.encodeAsURL()}" target="_blank" class="button medium blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -197,40 +101,16 @@
           <div class="fieldset">
             <h4><g:message code="person.fieldset.otherAddr.label" /></h4>
             <div class="fieldset-content">
-              <div class="row">
-                <div class="label"><g:message code="person.otherAddrStreet.label" default="Other Addr Street" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "otherAddrStreet")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.otherAddrPoBox.label" default="Other Addr Po Box" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "otherAddrPoBox")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.otherAddrPostalCode.label" default="Other Addr Postal Code" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "otherAddrPostalCode")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.otherAddrLocation.label" default="Other Addr Location" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "otherAddrLocation")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.otherAddrState.label" default="Other Addr State" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "otherAddrState")}</div>
-              </div>
-              
-              <div class="row">
-                <div class="label"><g:message code="person.otherAddrCountry.label" default="Other Addr Country" /></div>
-                <div class="field">${fieldValue(bean: personInstance, field: "otherAddrCountry")}</div>
-              </div>
-              
-              <g:if test="${fieldValue(bean: personInstance, field: 'otherAddr')}">
+              <f:display bean="${personInstance}" property="otherAddrStreet" />
+              <f:display bean="${personInstance}" property="otherAddrPoBox" />
+              <f:display bean="${personInstance}" property="otherAddrPostalCode" />
+              <f:display bean="${personInstance}" property="otherAddrLocation" />
+              <f:display bean="${personInstance}" property="otherAddrState" />
+              <f:display bean="${personInstance}" property="otherAddrCountry" />
+              <g:if test="${personInstance?.otherAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${fieldValue(bean: personInstance, field: 'otherAddr').encodeAsURL()}" target="_blank" class="button medium blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field"><a href="http://maps.google.de/maps?hl=&q=${personInstance.otherAddr.encodeAsURL()}" target="_blank" class="button medium blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
               </div>
               </g:if>
             </div>
@@ -241,10 +121,7 @@
       <div class="fieldset">
         <h4><g:message code="person.fieldset.notes.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="person.notes.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: personInstance?.notes)}</div>
-          </div>
+          <f:display bean="${personInstance}" property="notes" />
         </div>
       </div>
       </g:if>

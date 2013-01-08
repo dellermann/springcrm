@@ -3,9 +3,9 @@
 (function ($) {
 
     "use strict";
-    
+
     var params;
-    
+
     params = $("#sales-order-form").invoicingtransaction({
             checkStageTransition: false,
             stageValues: {
@@ -99,7 +99,7 @@
   </div>
   <div class="fieldset-content">
     <g:set var="invoicingTransaction" value="${salesOrderInstance}" />
-    <g:applyLayout name="invoicingItems" params="[tableId: 'sales-order-items', className: 'salesOrder']" />
+    <g:applyLayout name="invoicingItemsForm" params="[tableId: 'sales-order-items', className: 'salesOrder']" />
   </div>
 </fieldset>
 <fieldset>

@@ -62,6 +62,8 @@ class Project {
     int number
     String title
     String description
+    Organization organization
+    Person person
     ProjectPhase phase = ProjectPhase.planning
     ProjectStatus status
     Date dateCreated

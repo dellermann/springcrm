@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.CalendarEvent" %>
 <html>
 <head>
@@ -42,44 +41,17 @@
         <h4><g:message code="calendarEvent.fieldset.general.label" /></h4>
         <div class="multicol-content">
           <div class="col col-l">
-            <div class="row">
-              <div class="label"><g:message code="calendarEvent.subject.label" default="Subject" /></div>
-              <div class="field">${fieldValue(bean: calendarEventInstance, field: "subject")}</div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="calendarEvent.start.label" default="Start" /></div>
-              <div class="field">
-                <g:formatDate date="${calendarEventInstance?.start}" formatName="${calendarEventInstance.allDay ? 'default.format.date' : 'default.format.datetime'}" />
-                <g:if test="${calendarEventInstance.allDay}">(<g:message code="calendarEvent.allDay.label" />)</g:if>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="calendarEvent.end.label" default="End" /></div>
-              <div class="field">
-                <g:formatDate date="${calendarEventInstance?.end}" formatName="${calendarEventInstance.allDay ? 'default.format.date' : 'default.format.datetime'}" />
-                <g:if test="${calendarEventInstance.allDay}">(<g:message code="calendarEvent.allDay.label" />)</g:if>
-              </div>
-            </div>
+            <f:display bean="${calendarEventInstance}" property="subject" />
+            <f:display bean="${calendarEventInstance}" property="start" />
+            <f:display bean="${calendarEventInstance}" property="end" />
           </div>
           <div class="col col-r">
-            <div class="row">
-              <div class="label"><g:message code="calendarEvent.organization.label" default="Organization" /></div>
-              <div class="field">
-                <g:link controller="organization" action="show" id="${calendarEventInstance?.organization?.id}">${calendarEventInstance?.organization?.encodeAsHTML()}</g:link>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="label"><g:message code="calendarEvent.location.label" default="Location" /></div>
-              <div class="field">${fieldValue(bean: calendarEventInstance, field: "location")}</div>
-            </div>
-
-            <g:if test="${fieldValue(bean: calendarEventInstance, field: 'location')}">
+            <f:display bean="${calendarEventInstance}" property="organization" />
+            <f:display bean="${calendarEventInstance}" property="location" />
+            <g:if test="${calendarEventInstance?.location}">
             <div class="row">
               <div class="label empty-label"></div>
-              <div class="field"><a href="http://maps.google.de/maps?hl=&q=${fieldValue(bean: calendarEventInstance, field: 'location').encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+              <div class="field"><a href="http://maps.google.de/maps?hl=&q=${calendarEventInstance.location.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
             </div>
             </g:if>
           </div>
@@ -114,10 +86,7 @@
       <div class="fieldset">
         <h4><g:message code="calendarEvent.fieldset.description.label" /></h4>
         <div class="fieldset-content">
-          <div class="row">
-            <div class="label"><g:message code="calendarEvent.description.label" default="Notes" /></div>
-            <div class="field">${nl2br(value: calendarEventInstance?.description)}</div>
-          </div>
+          <f:display bean="${calendarEventInstance}" property="description" />
         </div>
       </div>
     </div>

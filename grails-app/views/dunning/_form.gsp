@@ -3,7 +3,7 @@
 (function ($) {
 
     "use strict";
-    
+
     var params;
 
     params = $("#dunning-form").invoicingtransaction({
@@ -99,7 +99,7 @@
   </div>
   <div class="fieldset-content">
     <g:set var="invoicingTransaction" value="${dunningInstance}" />
-    <g:applyLayout name="invoicingItems" params="[tableId: 'dunning-items', className: 'dunning']" />
+    <g:applyLayout name="invoicingItemsForm" params="[tableId: 'dunning-items', className: 'dunning']" />
   </div>
 </fieldset>
 <fieldset>

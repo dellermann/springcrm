@@ -3,9 +3,9 @@
 (function ($) {
 
     "use strict";
-    
+
     var params;
-    
+
     params = $("#purchaseInvoice-form").purchaseinvoice({
             checkStageTransition: false,
             loadVendorsUrl: "${createLink(controller: 'organization', action: 'find', params: [type: 2])}",
@@ -57,7 +57,7 @@
   </div>
   <div class="fieldset-content">
     <g:set var="invoicingTransaction" value="${purchaseInvoiceInstance}" />
-    <g:applyLayout name="invoicingItems" params="[tableId: 'purchaseInvoice-items', className: 'purchaseInvoice']" />
+    <g:applyLayout name="invoicingItemsForm" params="[tableId: 'purchaseInvoice-items', className: 'purchaseInvoice']" />
   </div>
 </fieldset>
 <fieldset>
