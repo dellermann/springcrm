@@ -41,13 +41,13 @@
       <g:each in="${dunningInstanceList}" status="i" var="dunningInstance">
         <tr>
           <td class="row-selector"><input type="checkbox" id="dunning-row-selector-${dunningInstance.id}" data-id="${dunningInstance.id}" /></td>
-          <td class="id dunning-number"><g:link action="show" id="${dunningInstance.id}">${fieldValue(bean: dunningInstance, field: "fullNumber")}</g:link></td>
-          <td class="string dunning-subject"><g:link action="show" id="${dunningInstance.id}">${fieldValue(bean: dunningInstance, field: "subject")}</g:link></td>
-          <td class="ref dunning-organization"><g:link controller="organization" action="show" id="${dunningInstance.organization?.id}">${fieldValue(bean: dunningInstance, field: "organization")}</g:link></td>
-          <td class="status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}">${fieldValue(bean: dunningInstance, field: "stage")}</td>
+          <td class="id dunning-number"><g:link action="show" id="${dunningInstance.id}"><g:fieldValue bean="${dunningInstance}" field="fullNumber" /></g:link></td>
+          <td class="string dunning-subject"><g:link action="show" id="${dunningInstance.id}"><g:fieldValue bean="${dunningInstance}" field="subject" /></g:link></td>
+          <td class="ref dunning-organization"><g:link controller="organization" action="show" id="${dunningInstance.organization?.id}"><g:fieldValue bean="${dunningInstance}" field="organization" /></g:link></td>
+          <td class="status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}"><g:fieldValue bean="${dunningInstance}" field="stage" /></td>
           <td class="date dunning-doc-date"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="date dunning-subjectdue-date-payment"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-          <td class="currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" /></td>
+          <td class="currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" displayZero="true" /></td>
           <td class="currency dunning-closing-balance balance-state balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" /></td>
           <td class="action-buttons">
             <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">

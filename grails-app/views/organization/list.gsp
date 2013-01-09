@@ -1,4 +1,3 @@
-
 <%@ page import="org.amcworld.springcrm.Organization" %>
 <html>
 <head>
@@ -49,11 +48,11 @@
       <g:each in="${organizationInstanceList}" status="i" var="organizationInstance">
         <tr>
           <td class="row-selector"><input type="checkbox" id="organization-row-selector-${organizationInstance.id}" data-id="${organizationInstance.id}" /></td>
-          <td class="id organization-number"><g:link action="show" id="${organizationInstance.id}" params="[type: params.type]">${fieldValue(bean: organizationInstance, field: "fullNumber")}</g:link></td>
-          <td class="string organization-name"><g:link action="show" id="${organizationInstance.id}" params="[type: params.type]">${fieldValue(bean: organizationInstance, field: "name")}</g:link></td>
-          <td class="string organization-billing-addr">${fieldValue(bean: organizationInstance, field: "billingAddr")}</td>
-          <td class="string organization-phone"><a href="tel:${fieldValue(bean: organizationInstance, field: "phone")}">${fieldValue(bean: organizationInstance, field: "phone")}</a></td>
-          <td class="string organization-email1"><a href="mailto:${fieldValue(bean: organizationInstance, field: 'email1')}">${fieldValue(bean: organizationInstance, field: "email1")}</a></td>
+          <td class="id organization-number"><g:link action="show" id="${organizationInstance.id}" params="[type: params.type]"><g:fieldValue bean="${organizationInstance}" field="fullNumber" /></g:link></td>
+          <td class="string organization-name"><g:link action="show" id="${organizationInstance.id}" params="[type: params.type]"><g:fieldValue bean="${organizationInstance}" field="name" /></g:link></td>
+          <td class="string organization-billing-addr"><g:fieldValue bean="${organizationInstance}" field="billingAddr" /></td>
+          <td class="string organization-phone"><a href="tel:<g:fieldValue bean="${organizationInstance}" field="phone" />"><g:fieldValue bean="${organizationInstance}" field="phone" /></a></td>
+          <td class="string organization-email1"><a href="mailto:${fieldValue(bean: organizationInstance, field: 'email1')}"><g:fieldValue bean="${organizationInstance}" field="email1" /></a></td>
           <td class="string organization-website"><a href="${organizationInstance?.website}" target="_blank">${fieldValue(bean: organizationInstance, field: "website")?.replace('http://', '')}</a></td>
           <td class="action-buttons">
             <g:link action="edit" id="${organizationInstance.id}" params="[listType: params.type]" class="button small green"><g:message code="default.button.edit.label" /></g:link>

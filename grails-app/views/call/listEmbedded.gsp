@@ -15,8 +15,8 @@
   <g:each in="${callInstanceList}" status="i" var="callInstance">
     <tr>
       <td class="row-selector"><input type="checkbox" id="call-row-selector-${callInstance.id}" data-id="${callInstance.id}" /></td>
-      <td class="string call-subject"><g:link controller="call" action="show" id="${callInstance.id}">${fieldValue(bean: callInstance, field: "subject")}</g:link></td>
-      <g:ifModuleAllowed modules="contact"><td class="ref call-person"><g:link controller="person" action="show" id="${callInstance.person?.id}">${fieldValue(bean: callInstance, field: "person")}</g:link></td></g:ifModuleAllowed>
+      <td class="string call-subject"><g:link controller="call" action="show" id="${callInstance.id}"><g:fieldValue bean="${callInstance}" field="subject" /></g:link></td>
+      <g:ifModuleAllowed modules="contact"><td class="ref call-person"><g:link controller="person" action="show" id="${callInstance.person?.id}"><g:fieldValue bean="${callInstance}" field="person" /></g:link></td></g:ifModuleAllowed>
       <td class="date call-start"><g:formatDate date="${callInstance.start}" /></td>
       <td class="status call-type"><g:message code="call.type.${callInstance?.type}" /></td>
       <td class="status call-status"><g:message code="call.status.${callInstance?.status}" /></td>

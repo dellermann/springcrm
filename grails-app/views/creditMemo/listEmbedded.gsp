@@ -17,12 +17,12 @@
   <g:each in="${creditMemoInstanceList}" status="i" var="creditMemoInstance">
     <tr>
       <td class="row-selector"><input type="checkbox" id="credit-memo-row-selector-${creditMemoInstance.id}" data-id="${creditMemoInstance.id}" /></td>
-      <td class="id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}">${fieldValue(bean: creditMemoInstance, field: "fullNumber")}</g:link></td>
-      <td class="string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}">${fieldValue(bean: creditMemoInstance, field: "subject")}</g:link></td>
-      <td class="status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}">${fieldValue(bean: creditMemoInstance, field: "stage")}</td>
+      <td class="id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="fullNumber" /></g:link></td>
+      <td class="string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="subject" /></g:link></td>
+      <td class="status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}"><g:fieldValue bean="${creditMemoInstance}" field="stage" /></td>
       <td class="date credit-memo-doc-date"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
       <td class="date credit-memo-payment-date"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>
-      <td class="currency credit-memo-total"><g:formatCurrency number="${creditMemoInstance?.total}" /></td>
+      <td class="currency credit-memo-total"><g:formatCurrency number="${creditMemoInstance?.total}" displayZero="true" /></td>
       <td class="currency credit-memo-closing-balance balance-state balance-state-${creditMemoInstance?.balanceColor}"><g:formatCurrency number="${creditMemoInstance?.closingBalance}" displayZero="true" /></td>
       <td class="action-buttons">
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">

@@ -41,13 +41,13 @@
       <g:each in="${purchaseInvoiceInstanceList}" status="i" var="purchaseInvoiceInstance">
         <tr>
           <td class="row-selector"><input type="checkbox" id="purchase-invoice-row-selector-${purchaseInvoiceInstance.id}" data-id="${purchaseInvoiceInstance.id}" /></td>
-          <td class="string purchase-invoice-number"><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "number")}</g:link></td>
-          <td class="string purchase-invoice-subject"><g:link action="show" id="${purchaseInvoiceInstance.id}">${fieldValue(bean: purchaseInvoiceInstance, field: "subject")}</g:link></td>
-          <td class="ref purchase-invoice-vendor"><g:if test="${purchaseInvoiceInstance?.vendor}"><g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}">${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:link></g:if><g:else>${purchaseInvoiceInstance?.vendorName?.encodeAsHTML()}</g:else></td>
-          <td class="status purchase-invoice-stage payment-state payment-state-${purchaseInvoiceInstance?.paymentStateColor}">${fieldValue(bean: purchaseInvoiceInstance, field: "stage")}</td>
+          <td class="string purchase-invoice-number"><g:link action="show" id="${purchaseInvoiceInstance.id}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="number" /></g:link></td>
+          <td class="string purchase-invoice-subject"><g:link action="show" id="${purchaseInvoiceInstance.id}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="subject" /></g:link></td>
+          <td class="ref purchase-invoice-vendor"><g:if test="${purchaseInvoiceInstance?.vendor}"><g:link controller="organization" action="show" id="${purchaseInvoiceInstance?.vendor?.id}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="vendorName" /></g:link></g:if><g:else><g:fieldValue bean="${purchaseInvoiceInstance}" field="vendorName" /></g:else></td>
+          <td class="status purchase-invoice-stage payment-state payment-state-${purchaseInvoiceInstance?.paymentStateColor}"><g:fieldValue bean="${purchaseInvoiceInstance}" field="stage" /></td>
           <td class="date purchase-invoice-doc-date"><g:formatDate date="${purchaseInvoiceInstance.docDate}" formatName="default.format.date" /></td>
           <td class="date purchase-invoice-due-date"><g:formatDate date="${purchaseInvoiceInstance.dueDate}" formatName="default.format.date" /></td>
-          <td class="currency purchase-invoice-total"><g:formatCurrency number="${purchaseInvoiceInstance.total}" /></td>
+          <td class="currency purchase-invoice-total"><g:formatCurrency number="${purchaseInvoiceInstance.total}" displayZero="true" /></td>
           <td class="currency purchase-invoice-balance balance-state balance-state-${purchaseInvoiceInstance?.balanceColor}"><g:formatCurrency number="${purchaseInvoiceInstance?.balance}" displayZero="true" /></td>
           <td class="action-buttons">
             <g:link action="edit" id="${purchaseInvoiceInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

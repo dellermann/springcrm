@@ -40,12 +40,12 @@
       <g:each in="${userInstanceList}" status="i" var="userInstance">
         <tr>
           <td class="row-selector"><input type="checkbox" id="user-row-selector-${userInstance.id}" data-id="${userInstance.id}" /></td>
-          <td class="string user-user-name"><g:link action="show" id="${userInstance.id}">${fieldValue(bean: userInstance, field: "userName")}</g:link></td>
-          <td class="string user-last-name">${fieldValue(bean: userInstance, field: "lastName")}</td>
-          <td class="string user-first-name">${fieldValue(bean: userInstance, field: "firstName")}</td>
-          <td class="string user-phone"><a href="tel:${fieldValue(bean: userInstance, field: "phone")}">${fieldValue(bean: userInstance, field: "phone")}</a></td>
-          <td class="string user-mobile"><a href="tel:${fieldValue(bean: userInstance, field: "mobile")}">${fieldValue(bean: userInstance, field: "mobile")}</a></td>
-          <td class="string user-email"><a href="mailto:${fieldValue(bean: userInstance, field: "email")}">${fieldValue(bean: userInstance, field: "email")}</a></td>
+          <td class="string user-user-name"><g:link action="show" id="${userInstance.id}"><g:fieldValue bean="${userInstance}" field="userName" /></g:link></td>
+          <td class="string user-last-name"><g:fieldValue bean="${userInstance}" field="lastName" /></td>
+          <td class="string user-first-name"><g:fieldValue bean="${userInstance}" field="firstName" /></td>
+          <td class="string user-phone"><a href="tel:${fieldValue(bean: userInstance, field: "phone")}"><g:fieldValue bean="${userInstance}" field="phone" /></a></td>
+          <td class="string user-mobile"><a href="tel:${fieldValue(bean: userInstance, field: "mobile")}"><g:fieldValue bean="${userInstance}" field="mobile" /></a></td>
+          <td class="string user-email"><a href="mailto:${fieldValue(bean: userInstance, field: "email")}"><g:fieldValue bean="${userInstance}" field="email" /></a></td>
           <td class="action-buttons">
             <g:link action="edit" id="${userInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:if test="${session.user != userInstance}">

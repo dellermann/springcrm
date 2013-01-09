@@ -11,9 +11,9 @@
   <tbody>
   <g:each in="${documentInstanceList}" status="i" var="documentInstance">
     <tr>
-      <td class="content-table-type-string content-table-column-document-name"><g:link controller="document" action="download" id="${documentInstance.id}" target="_blank">${fieldValue(bean: documentInstance, field: "name")}</g:link></td>
-      <td class="content-table-type-number content-table-column-document-size">${fieldValue(bean: documentInstance, field: "sizeAsString")}</td>
-      <td class="content-table-type-date content-table-column-document-last-modified">${fieldValue(bean: documentInstance, field: "lastModified")}</td>
+      <td class="content-table-type-string content-table-column-document-name"><g:link controller="document" action="download" id="${documentInstance.id}" target="_blank"><g:fieldValue bean="${documentInstance}" field="name" /></g:link></td>
+      <td class="content-table-type-number content-table-column-document-size"><g:fieldValue bean="${documentInstance}" field="sizeAsString" /></td>
+      <td class="content-table-type-date content-table-column-document-last-modified"><g:fieldValue bean="${documentInstance}" field="lastModified" /></td>
       <td class="content-table-buttons">
         <g:link controller="document" action="delete" id="${documentInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
       </td>

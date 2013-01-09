@@ -40,13 +40,13 @@
       <g:each in="${quoteInstanceList}" status="i" var="quoteInstance">
         <tr data-item-id="${quoteInstance.id}">
           <td class="row-selector"><input type="checkbox" id="quote-row-selector-${quoteInstance.id}" data-id="${quoteInstance.id}" /></td>
-          <td class="id quote-number"><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "fullNumber")}</g:link></td>
-          <td class="string quote-subject"><g:link action="show" id="${quoteInstance.id}">${fieldValue(bean: quoteInstance, field: "subject")}</g:link></td>
-          <td class="ref quote-organization"><g:link controller="organization" action="show" id="${quoteInstance.organization?.id}">${fieldValue(bean: quoteInstance, field: "organization")}</g:link></td>
-          <td class="status quote-stage">${fieldValue(bean: quoteInstance, field: "stage")}</td>
+          <td class="id quote-number"><g:link action="show" id="${quoteInstance.id}"><g:fieldValue bean="${quoteInstance}" field="fullNumber" /></g:link></td>
+          <td class="string quote-subject"><g:link action="show" id="${quoteInstance.id}"><g:fieldValue bean="${quoteInstance}" field="subject" /></g:link></td>
+          <td class="ref quote-organization"><g:link controller="organization" action="show" id="${quoteInstance.organization?.id}"><g:fieldValue bean="${quoteInstance}" field="organization" /></g:link></td>
+          <td class="status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>
           <td class="date quote-doc-date"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="date quote-shipping-date"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
-          <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" /></td>
+          <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" displayZero="true" /></td>
           <td class="action-buttons">
             <g:link action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${quoteInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

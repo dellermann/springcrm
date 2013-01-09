@@ -39,11 +39,11 @@
       <g:each in="${projectInstanceList}" status="i" var="projectInstance">
         <tr>
           <td class="row-selector"><input type="checkbox" id="project-row-selector-${projectInstance.id}" data-id="${projectInstance.id}" /></td>
-          <td class="id project-number"><g:link action="show" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "fullNumber")}</g:link></td>
-          <td class="string project-title"><g:link action="show" id="${projectInstance.id}">${fieldValue(bean: projectInstance, field: "title")}</g:link></td>
-          <g:ifModuleAllowed modules="contact"><td class="ref project-organization"><g:link controller="organization" action="show" id="${projectInstance.organization?.id}">${fieldValue(bean: projectInstance, field: "organization")}</g:link></td></g:ifModuleAllowed>
-          <g:ifModuleAllowed modules="contact"><td class="ref project-person"><g:link controller="person" action="show" id="${projectInstance.person?.id}">${fieldValue(bean: projectInstance, field: "person")}</g:link></td></g:ifModuleAllowed>
-          <td class="string project-phase"><g:message code="project.phase.${fieldValue(bean: projectInstance, field: "phase")}" default="${projectInstance.phase.toString()}" /></td>
+          <td class="id project-number"><g:link action="show" id="${projectInstance.id}"><g:fieldValue bean="${projectInstance}" field="fullNumber" /></g:link></td>
+          <td class="string project-title"><g:link action="show" id="${projectInstance.id}"><g:fieldValue bean="${projectInstance}" field="title" /></g:link></td>
+          <g:ifModuleAllowed modules="contact"><td class="ref project-organization"><g:link controller="organization" action="show" id="${projectInstance.organization?.id}"><g:fieldValue bean="${projectInstance}" field="organization" /></g:link></td></g:ifModuleAllowed>
+          <g:ifModuleAllowed modules="contact"><td class="ref project-person"><g:link controller="person" action="show" id="${projectInstance.person?.id}"><g:fieldValue bean="${projectInstance}" field="person" /></g:link></td></g:ifModuleAllowed>
+          <td class="string project-phase"><g:message code="project.phase.${projectInstance.phase}" default="${projectInstance.phase.toString()}" /></td>
           <td class="status project-status project-status project-status-${projectInstance.status.id}">${fieldValue(bean: projectInstance, field: "status")}</td>
           <td class="action-buttons">
             <g:link action="edit" id="${projectInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>

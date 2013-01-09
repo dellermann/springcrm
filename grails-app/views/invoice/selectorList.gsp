@@ -16,12 +16,12 @@
   <g:each in="${invoiceInstanceList}" status="i" var="invoiceInstance">
     <tr data-item-id="${invoiceInstance.id}">
       <td class="row-selector"><input type="checkbox" id="invoice-row-selector-${invoiceInstance.id}" data-id="${invoiceInstance.id}" /></td>
-      <td class="id invoice-number"><a href="#">${fieldValue(bean: invoiceInstance, field: "fullNumber")}</a></td>
-      <td class="string invoice-subject"><a href="#">${fieldValue(bean: invoiceInstance, field: "subject")}</a></td>
-      <td class="ref invoice-organization">${fieldValue(bean: invoiceInstance, field: "organization")}</td>
-      <td class="status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}">${fieldValue(bean: invoiceInstance, field: "stage")}</td>
+      <td class="id invoice-number"><a href="#"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /></a></td>
+      <td class="string invoice-subject"><a href="#"><g:fieldValue bean="${invoiceInstance}" field="subject" /></a></td>
+      <td class="ref invoice-organization"><g:fieldValue bean="${invoiceInstance}" field="organization" /></td>
+      <td class="status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>
       <td class="date invoice-doc-date"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
-      <td class="currency invoice-total"><g:formatCurrency number="${invoiceInstance?.total}" /></td>
+      <td class="currency invoice-total"><g:formatCurrency number="${invoiceInstance?.total}" displayZero="true" /></td>
     </tr>
   </g:each>
   </tbody>

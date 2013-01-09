@@ -15,11 +15,11 @@
   <g:each in="${personInstanceList}" status="i" var="personInstance">
     <tr>
       <td class="row-selector"><input type="checkbox" id="person-row-selector-${personInstance.id}" data-id="${personInstance.id}" /></td>
-      <td class="id person-number"><g:link controller="person" action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "fullNumber")}</g:link></td>
-      <td class="string person-last-name"><g:link controller="person" action="show" id="${personInstance.id}">${fieldValue(bean: personInstance, field: "lastName")}</g:link></td>
-      <td class="string person-first-name">${fieldValue(bean: personInstance, field: "firstName")}</td>
-      <td class="string person-phone"><a href="tel:${fieldValue(bean: personInstance, field: "phone")}">${fieldValue(bean: personInstance, field: "phone")}</a></td>
-      <td class="string person-email1"><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}">${fieldValue(bean: personInstance, field: "email1")}</a></td>
+      <td class="id person-number"><g:link controller="person" action="show" id="${personInstance.id}"><g:fieldValue bean="${personInstance}" field="fullNumber" /></g:link></td>
+      <td class="string person-last-name"><g:link controller="person" action="show" id="${personInstance.id}"><g:fieldValue bean="${personInstance}" field="lastName" /></g:link></td>
+      <td class="string person-first-name"><g:fieldValue bean="${personInstance}" field="firstName" /></td>
+      <td class="string person-phone"><a href="tel:${fieldValue(bean: personInstance, field: "phone")}"><g:fieldValue bean="${personInstance}" field="phone" /></a></td>
+      <td class="string person-email1"><a href="mailto:${fieldValue(bean: personInstance, field: "email1")}"><g:fieldValue bean="${personInstance}" field="email1" /></a></td>
       <td class="action-buttons">
         <g:link controller="person" action="edit" id="${personInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
         <g:link controller="person" action="delete" id="${personInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

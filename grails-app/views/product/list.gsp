@@ -40,12 +40,12 @@
       <g:each in="${productInstanceList}" status="i" var="productInstance">
         <tr>
           <td class="row-selector"><input type="checkbox" id="product-row-selector-${productInstance.id}" data-id="${productInstance.id}" /></td>
-          <td class="id product-number"><g:link action="show" id="${productInstance.id}">${fieldValue(bean: productInstance, field: "fullNumber")}</g:link></td>
-          <td class="string product-name"><g:link action="show" id="${productInstance.id}">${fieldValue(bean: productInstance, field: "name")}</g:link></td>
-          <td class="string product-category">${fieldValue(bean: productInstance, field: "category")}</td>
-          <td class="number product-quantity">${fieldValue(bean: productInstance, field: "quantity")}</td>
-          <td class="string product-unit">${fieldValue(bean: productInstance, field: "unit")}</td>
-          <td class="currency product-unit-price">${formatCurrency(number: productInstance?.unitPrice)}</td>
+          <td class="id product-number"><g:link action="show" id="${productInstance.id}"><g:fieldValue bean="${productInstance}" field="fullNumber" /></g:link></td>
+          <td class="string product-name"><g:link action="show" id="${productInstance.id}"><g:fieldValue bean="${productInstance}" field="name" /></g:link></td>
+          <td class="string product-category"><g:fieldValue bean="${productInstance}" field="category" /></td>
+          <td class="number product-quantity"><g:fieldValue bean="${productInstance}" field="quantity" /></td>
+          <td class="string product-unit"><g:fieldValue bean="${productInstance}" field="unit" /></td>
+          <td class="currency product-unit-price"><g:formatCurrency number="${productInstance.unitPrice}" displayZero="true" /></td>
           <td class="action-buttons">
             <g:link action="edit" id="${productInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
             <g:link action="delete" id="${productInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

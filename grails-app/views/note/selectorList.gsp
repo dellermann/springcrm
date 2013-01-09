@@ -15,10 +15,10 @@
   <g:each in="${noteInstanceList}" status="i" var="noteInstance">
     <tr data-item-id="${noteInstance.id}">
       <td class="row-selector"><input type="checkbox" id="note-row-selector-${noteInstance.id}" data-id="${noteInstance.id}" /></td>
-      <td class="id note-number"><a href="#">${fieldValue(bean: noteInstance, field: "fullNumber")}</a></td>
-      <td class="string note-title"><a href="#">${fieldValue(bean: noteInstance, field: "title")}</a></td>
-      <g:ifModuleAllowed modules="contact"><td class="ref note-organization">${fieldValue(bean: noteInstance, field: "organization")}</td></g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="contact"><td class="ref note-person">${fieldValue(bean: noteInstance, field: "person")}</td></g:ifModuleAllowed>
+      <td class="id note-number"><a href="#"><g:fieldValue bean="${noteInstance}" field="fullNumber" /></a></td>
+      <td class="string note-title"><a href="#"><g:fieldValue bean="${noteInstance}" field="title" /></a></td>
+      <g:ifModuleAllowed modules="contact"><td class="ref note-organization"><g:fieldValue bean="${noteInstance}" field="organization" /></td></g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="contact"><td class="ref note-person"><g:fieldValue bean="${noteInstance}" field="person" /></td></g:ifModuleAllowed>
     </tr>
   </g:each>
   </tbody>

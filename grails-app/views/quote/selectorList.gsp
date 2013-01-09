@@ -16,12 +16,12 @@
   <g:each in="${quoteInstanceList}" status="i" var="quoteInstance">
     <tr data-item-id="${quoteInstance.id}">
       <td class="row-selector"><input type="checkbox" id="quote-row-selector-${quoteInstance.id}" data-id="${quoteInstance.id}" /></td>
-      <td class="id quote-number"><a href="#">${fieldValue(bean: quoteInstance, field: "fullNumber")}</a></td>
-      <td class="string quote-subject"><a href="#">${fieldValue(bean: quoteInstance, field: "subject")}</a></td>
-      <td class="ref quote-organization">${fieldValue(bean: quoteInstance, field: "organization")}</td>
-      <td class="status quote-stage">${fieldValue(bean: quoteInstance, field: "stage")}</td>
+      <td class="id quote-number"><a href="#"><g:fieldValue bean="${quoteInstance}" field="fullNumber" /></a></td>
+      <td class="string quote-subject"><a href="#"><g:fieldValue bean="${quoteInstance}" field="subject" /></a></td>
+      <td class="ref quote-organization"><g:fieldValue bean="${quoteInstance}" field="organization" /></td>
+      <td class="status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>
       <td class="date quote-doc-date"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
-      <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" /></td>
+      <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" displayZero="true" /></td>
     </tr>
   </g:each>
   </tbody>
