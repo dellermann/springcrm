@@ -90,9 +90,9 @@ grails.project.dependency.resolution = {
         compile(
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
-            ':mail:1.0',
-            ':quartz:1.0-RC2',
-            ':searchable:0.6.3'
+            ':mail:1.0.1',
+            ':quartz:1.0-RC4',
+            ':searchable:0.6.4'
         )
         build(
             ':standalone:1.1.1',
@@ -101,13 +101,10 @@ grails.project.dependency.resolution = {
         )
         runtime(
             ':database-migration:1.3.2',
-            ':jquery:1.7.2',
+            ':jquery:1.8.3',
             ':jquery-json:2.2.2',
-            ':jquery-ui:1.8.15',
-            ':resources:1.1.6'
-        )
-        test(
-            ':jsunit:0.7'
+            ':jquery-ui:1.8.24',
+            ':resources:1.2.RC2'
         )
     }
 }
