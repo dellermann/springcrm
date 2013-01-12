@@ -1,7 +1,7 @@
 /*
  * Organization.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * customer or a vendor.
  *
  * @author  Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class Organization {
 
@@ -53,7 +53,7 @@ class Organization {
         phoneOther(nullable: true, maxSize: 40)
         email1(nullable: true, email: true)
         email2(nullable: true, email: true)
-        website(nullable: true, url: /\s*/)
+        website(nullable: true)
 		legalForm(nullable: true)
         type(nullable: true)
         industry(nullable: true)

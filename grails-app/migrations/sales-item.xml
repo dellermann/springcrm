@@ -86,10 +86,7 @@
       deferrable="false" initiallyDeferred="false"
       referencedColumnNames="id" referencedTableName="sel_value"
       referencesUniqueColumn="false" />
-    <createIndex indexName="FK6669B2662A2F6EC9" tableName="sales_item">
-      <column name="category_id" />
-    </createIndex>
-    <createIndex indexName="name" tableName="sales_item">
+    <createIndex indexName="sales_item_name" tableName="sales_item">
       <column name="name" />
     </createIndex>
     <createIndex indexName="FK6669B26667D5AB80" tableName="sales_item">
@@ -101,10 +98,11 @@
     <createIndex indexName="FK6669B266E9949B03" tableName="sales_item">
       <column name="category_id" />
     </createIndex>
-    <createIndex indexName="class" tableName="sales_item">
+    <createIndex indexName="sales_item_class" tableName="sales_item">
       <column name="class" />
     </createIndex>
-    <createIndex indexName="unique-number" tableName="sales_item">
+    <createIndex indexName="sales_item_number" tableName="sales_item"
+      unique="true">
       <column name="type" />
       <column name="number" />
     </createIndex>

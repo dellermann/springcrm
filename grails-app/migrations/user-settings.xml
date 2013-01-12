@@ -20,17 +20,17 @@
       </column>
       <column name="value" type="varchar(255)" />
     </createTable>
-    <createIndex indexName="FKD14EA5DC8D1F27AF" tableName="user_setting">
-      <column name="user_id" />
-    </createIndex>
-    <createIndex indexName="unique-name" tableName="user_setting">
-      <column name="user_id" />
-      <column name="name" />
-    </createIndex>
     <addForeignKeyConstraint baseTableName="user_setting"
       baseColumnNames="user_id" constraintName="FKD14EA5DC8D1F27AF"
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
       referencedTableName="user_data" referencesUniqueColumn="false" />
+    <createIndex indexName="FKD14EA5DC8D1F27AF" tableName="user_setting">
+      <column name="user_id" />
+    </createIndex>
+    <createIndex indexName="user_setting_name" tableName="user_setting">
+      <column name="user_id" />
+      <column name="name" />
+    </createIndex>
     <sql>
       INSERT INTO user_setting (version, user_id, name, value)
         SELECT 0 AS version, settings AS user_id, settings_idx AS name,

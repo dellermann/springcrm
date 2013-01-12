@@ -1,7 +1,7 @@
 /*
  * ViewFilters.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,14 @@ class ViewFilters {
                     Locale locale = userService.currentLocale
                     model.locale = locale.toString().replace('_', '-')
 
-                    Currency currency
+                    Currency currency = null
                     try {
-                        currency = Currency.getInstance(ConfigHolder.instance['currency'] as String)
-                    } catch (IllegalArgumentException e) {
+                        String currencyCode = ConfigHolder.instance['currency'] as String
+                        if (currencyCode) {
+                            currency = Currency.getInstance(currencyCode)
+                        }
+                    } catch (IllegalArgumentException e) { /* ignored */ }
+                    if (currency == null) {
                         currency = Currency.getInstance('EUR')
                     }
                     model.currencySymbol = currency.getSymbol(locale)

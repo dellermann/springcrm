@@ -1,7 +1,7 @@
 /*
  * Client.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import grails.util.GrailsNameUtils as GNU
  * command object for the install and configuration controller.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  * @see     InstallController#clientData()
  * @see     InstallController#clientDataSave(Client)
  */
@@ -45,8 +45,8 @@ class Client {
         location(blank: false)
         phone(blank: false)
         fax(nullable: true)
-        email(blank: false, nullable: false, email: true)
-        website(nullable: true, url: /\s*/)
+        email(blank: false, email: true)
+        website(nullable: true)
         bankName(nullable: true)
         bankCode(nullable: true)
         accountNumber(nullable: true)

@@ -1,7 +1,7 @@
 /*
  * BuildConfig.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ grails.project.dependency.resolution = {
     inherits('global') {
         // uncomment to disable ehcache
         // excludes 'ehcache'
-        excludes 'xml-apis', 'xml-apis-ext', 'xml-resolver', 'commons-digester', 'commons-logging', 'xalan', 'xerces', 'xercesImpl'
+        excludes 'xml-apis', 'xml-apis-ext', 'xml-resolver', 'commons-digester'
     }
 
     log 'warn' // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
@@ -92,7 +92,8 @@ grails.project.dependency.resolution = {
             ":hibernate:${grailsVersion}",
             ':mail:1.0.1',
             ':quartz:1.0-RC4',
-            ':searchable:0.6.4'
+            ':searchable:0.6.4',
+            ':webdriver:0.4.1'
         )
         build(
             ':standalone:1.1.1',

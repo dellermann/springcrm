@@ -94,6 +94,7 @@ grails.spring.bean.packages = []
 grails.exceptionresolver.params.exclude = ['password']
 
 /* Settings for database migration */
+grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
@@ -134,8 +135,7 @@ environments {
 
     /* test environment */
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
-        grails.plugin.databasemigration.updateOnStart = false
+        grails.plugin.databasemigration.dropOnStart = true
     }
 
     /* production (deployment) environment */
