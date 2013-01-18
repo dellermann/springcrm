@@ -53,7 +53,7 @@ class Organization {
         phoneOther(nullable: true, maxSize: 40)
         email1(nullable: true, email: true)
         email2(nullable: true, email: true)
-        website(nullable: true)
+        website(nullable: true, widget: 'url')
 		legalForm(nullable: true)
         type(nullable: true)
         industry(nullable: true)

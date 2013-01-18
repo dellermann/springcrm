@@ -46,7 +46,7 @@ class Client {
         phone(blank: false)
         fax(nullable: true)
         email(blank: false, email: true)
-        website(nullable: true)
+        website(nullable: true, widget: 'url')
         bankName(nullable: true)
         bankCode(nullable: true)
         accountNumber(nullable: true)

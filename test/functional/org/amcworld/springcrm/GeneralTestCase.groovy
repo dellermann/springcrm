@@ -100,6 +100,51 @@ class GeneralTestCase {
     }
 
     /**
+     * Gets the n-th fieldset, i. e. an HTML {@code<div>} element with class
+     * {@code fieldset}.
+     *
+     * @param parent    the direct parent containing the fieldset to search
+     * @param index     the one-based index of the fieldset to obtain
+     * @return          the web element representing the fieldset
+     */
+    protected WebElement getFieldset(WebElement parent, int index) {
+        StringBuilder buf = new StringBuilder('div[')
+        buf << getXPathClassExpr('fieldset')
+        buf << ']['
+        buf << index
+        buf << ']'
+        return parent.findElement(By.xpath(buf.toString()))
+    }
+
+    /**
+     * Gets the field in the show view with the given parent and row number.
+     * The parent may be a column ({@code .col} element), fieldset
+     * ({@code .fieldset} element) or similar.
+     *
+     * @param parent    the parent where to search for the given field
+     * @param row       the one-based row number
+     * @return          the web element representing the field
+     */
+    protected WebElement getShowField(WebElement parent, int row) {
+        return parent.findElement(
+            By.xpath(".//div[@class='row'][${row}]/div[@class='field']")
+        )
+    }
+
+    /**
+     * Gets the text of the field in the show view with the given parent and
+     * row number.  The parent may be a column ({@code .col} element), fieldset
+     * ({@code .fieldset} element) or similar.
+     *
+     * @param parent    the parent where to search for the given field
+     * @param row       the one-based row number
+     * @return          the text of the field
+     */
+    protected String getShowFieldText(WebElement col, int row) {
+        return getShowField(col, row).text
+    }
+
+    /**
      * Gets the absolute URL in this web application using the given relative
      * URL and an optional language.
      *
@@ -114,6 +159,24 @@ class GeneralTestCase {
             buf << '?lang='
             buf << language
         }
+        return buf.toString()
+    }
+
+    /**
+     * Returns an XPath expression e. g. suitable for an XPath predicate which
+     * tests, whether nor not the {@code class} attribute of a particular HTML
+     * element contains the given class name.  The method is needed because it
+     * is complicated to test against multiple class names of HTML elements.
+     *
+     * @param className the given class name
+     * @return          the XPath expression
+     */
+    protected String getXPathClassExpr(String className) {
+        StringBuilder buf = new StringBuilder(
+            'contains(concat(" ", normalize-space(@class), " "), " '
+        )
+        buf << className.trim()
+        buf << ' ")'
         return buf.toString()
     }
 
