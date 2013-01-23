@@ -20,7 +20,12 @@
 
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes as GA
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestName
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.support.ui.Select
@@ -43,7 +48,24 @@ class InstallationTest extends GeneralTestCase {
     ].asImmutable()
 
 
+    //-- Instance variables ---------------------
+
+    @Rule
+    public TestName name = new TestName()
+
+    InstallService installService
+
+
     //-- Public methods -------------------------
+
+    @Before
+    @Override
+    void setUp() {
+        super.setUp()
+        def ctx = SCH.servletContext.getAttribute(GA.APPLICATION_CONTEXT)
+        installService = ctx.getBean('installService')
+        installService.disableInstaller()
+    }
 
     @Test
     void testNavigationBar() {
@@ -60,6 +82,10 @@ class InstallationTest extends GeneralTestCase {
             }
         }
         driver.quit()
+
+        assert 0 == SelValue.count()
+        assert 0 == SeqNumber.count()
+        assert 0 == Config.count()
     }
 
     @Test
@@ -83,6 +109,10 @@ class InstallationTest extends GeneralTestCase {
             assert TITLE == driver.title
         }
         driver.quit()
+
+        assert 0 == SelValue.count()
+        assert 0 == SeqNumber.count()
+        assert 0 == Config.count()
     }
 
     @Test
@@ -178,13 +208,84 @@ class InstallationTest extends GeneralTestCase {
         step = driver.findElement(stepSel)
         assert 'Fertigstellen' == step.text
         driver.findElement(link2Sel).click()
-        assert baseUrl + '/user/login'
+        assert getUrl('/user/login') == driver.currentUrl
 
+        driver.quit()
+
+        assert installService.installerDisabled
+        assert 1 < Salutation.count()
+        assert 2 == TaxRate.count()
+        def taxRate = TaxRate.get(400)
+        assert '19 %' == taxRate.name
+        assert 0.19d == taxRate.taxValue
+        taxRate = TaxRate.get(401)
+        assert '7 %' == taxRate.name
+        assert 0.07d == taxRate.taxValue
+        assert 11 == SeqNumber.count()
+        assert 0 < Config.count()
+        assert 0 < OrgType.count()
+        assert 0 < Rating.count()
+        assert 0 < Unit.count()
+        assert 0 < Carrier.count()
+        assert 0 < QuoteStage.count()
+        assert 0 < TermsAndConditions.count()
+        assert 0 < SalesOrderStage.count()
+        assert 0 < InvoiceStage.count()
+        assert 0 < Industry.count()
+        assert 0 < ServiceCategory.count()
+        assert 0 < PurchaseInvoiceStage.count()
+        assert 0 < DunningStage.count()
+        assert 0 < DunningLevel.count()
+        assert 0 < PaymentMethod.count()
+        assert 0 < CreditMemoStage.count()
+        assert 0 < ProductCategory.count()
+    }
+
+    @Test
+    void testExistingInstallationDisabled() {
+        open('', 'de')
+        assert getUrl('/user/login') == driver.currentUrl
+
+        String urlExpected = getUrl('/user/login')
+        for (int i = 0; i < URL_ACTIONS.size(); i++) {
+            driver.get(getUrl(i))
+            assert urlExpected == driver.currentUrl
+        }
+        driver.quit()
+    }
+
+    @Test
+    void testExistingInstallationEnabled() {
+        installService.enableInstaller()
+        open('', 'de')
+        assert getUrl('/user/login') == driver.currentUrl
+        open('/install')
+        assert getUrl('/install') == driver.currentUrl
+        assert TITLE == driver.title
+        assert 'Willkommen zur Installation von SpringCRM' == driver.findElement(By.cssSelector('#main-container-header > h2')).text
+        assert 'Willkommen' == driver.findElement(By.cssSelector('#install-progress > .current > a')).text
+
+        for (int i = 0; i < URL_ACTIONS.size(); i++) {
+            String url = getUrl(i)
+            driver.get(url)
+            assert url == driver.currentUrl
+        }
         driver.quit()
     }
 
 
     //-- Non-public methods ---------------------
+
+    @Override
+    protected Object getDatasets() {
+        def res = []
+        if (name.methodName.startsWith('testExisting')) {
+            res << 'test-data/install-data.xml'
+        } else {
+            res << 'test-data/empty-install-data.xml'
+        }
+        return res
+    }
 
     protected String getUrl(int i) {
         return getUrl('/install/' + URL_ACTIONS[i])

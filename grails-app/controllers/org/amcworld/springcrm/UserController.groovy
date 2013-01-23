@@ -1,7 +1,7 @@
 /*
  * UserController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,14 +180,7 @@ class UserController {
         }
     }
 
-    def login() {
-        def installStatus = org.amcworld.springcrm.Config.findByName('installStatus')
-        if (!installStatus || !installStatus.value) {
-            installService.enableInstaller()
-            redirect(controller: 'install', action: 'index')
-            return
-        }
-    }
+    def login() {}
 
     def authenticate() {
         def userInstance = User.findByUserNameAndPassword(params.userName, params.password)

@@ -1,7 +1,7 @@
 /*
  * _Events.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,17 @@ eventCompileStart = { kind ->
         buildNumber = Long.valueOf(buildNumber) + 1
     }
     metadata.'app.buildNumber' = buildNumber.toString()
- 
+
     def formatter = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
     metadata.'app.buildDate' = formatter.format(new Date())
     metadata.'app.buildProfile' = grailsEnv
 
     metadata.persist()
     println "| Set build number #${buildNumber}."
+}
+
+eventAllTestsStart = {
+    if (!functionalTests.contains("functional")) {
+        functionalTests << "functional"
+    }
 }

@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
 import org.junit.Before
 import org.openqa.selenium.By
@@ -36,7 +37,7 @@ import org.openqa.selenium.firefox.FirefoxDriver
  * @version 1.3
  * @since   1.3
  */
-class GeneralTestCase {
+abstract class GeneralTestCase extends DbUnitTestCase {
 
     //-- Constants ------------------------------
 
@@ -56,7 +57,9 @@ class GeneralTestCase {
     //-- Public methods -------------------------
 
     @Before
+    @Override
     void setUp() {
+        super.setUp()
         String appName = Metadata.current.getProperty('app.name')
         String portNumber = System.getProperty('server.port') ?: '8080'
         baseUrl = "http://localhost:${portNumber}/${appName}"

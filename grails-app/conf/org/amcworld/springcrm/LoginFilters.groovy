@@ -1,7 +1,7 @@
 /*
  * LoginFilters.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,14 @@ package org.amcworld.springcrm
  * access permissions.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class LoginFilters {
 
-    def securityService
+    //-- Instance variables ---------------------
+
+    InstallService installService
+    SecurityService securityService
 
 
     //-- Public methods -------------------------
@@ -48,6 +51,12 @@ class LoginFilters {
               action: '*', actionExclude: 'login|authenticate')
         {
             before = {
+                def installStatus = Config.findByName('installStatus')
+                if (!installStatus?.value) {
+                    installService.enableInstaller()
+                    redirect(controller: 'install', action: 'index')
+                    return false
+                }
 				if (!session?.user) {
 					redirect(controller: 'user', action: 'login')
 					return false
@@ -55,7 +64,19 @@ class LoginFilters {
             }
         }
 
-		permission(controller: '*',
+        install(controller: 'install', action: '*') {
+            before = {
+                def installStatus = Config.findByName('installStatus')
+                if (installStatus?.value && installService.installerDisabled) {
+                    redirect(uri: '/')
+                    return false
+                }
+
+                return true
+            }
+        }
+
+        permission(controller: '*',
                    controllerExclude: 'about|i18n|install|notification|overview|searchable',
                    action: '*',
                    actionExclude: 'login|authenticate|logout|settings*')

@@ -52,6 +52,7 @@ environments {
             url = 'jdbc:h2:mem:testDb'
             username = 'sa'
             password = ''
+            dbunitXmlType = 'flat'
         }
     }
 

@@ -22,6 +22,9 @@ grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir = 'target/test-reports'
 grails.project.war.file = "target/${appName}.war"
+grails.war.resources = { stagingDir ->
+    delete(dir: "${stagingDir}/test-data")
+}
 grails.project.dependency.resolution = {
 
     // inherit Grails' default dependencies
@@ -81,6 +84,10 @@ grails.project.dependency.resolution = {
             transitive = false
         }
         */
+
+        test(
+            'org.seleniumhq.selenium:selenium-java:2.29.0'
+        )
     }
 
     plugins {
@@ -88,12 +95,12 @@ grails.project.dependency.resolution = {
             export = false
         }
         compile(
+            ':dbunit-operator:1.6.2',
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
             ':mail:1.0.1',
             ':quartz:1.0-RC4',
-            ':searchable:0.6.4',
-            ':webdriver:0.4.1'
+            ':searchable:0.6.4'
         )
         build(
             ':standalone:1.1.1',

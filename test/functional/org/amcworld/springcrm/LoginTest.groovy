@@ -88,4 +88,12 @@ class LoginTest extends GeneralTestCase {
         assert TITLE == driver.title
         driver.quit()
     }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected Object getDatasets() {
+        return ['test-data/install-data.xml']
+    }
 }

@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
@@ -37,10 +39,20 @@ import org.openqa.selenium.support.ui.Select
  */
 class OrganizationTest extends GeneralTestCase {
 
+    //-- Instance variables ---------------------
+
+    @Rule
+    public TestName name = new TestName()
+
+
     //-- Public methods -------------------------
 
     @Before
     void login() {
+        if (!name.methodName.startsWith('testCreate')) {
+            prepareOrganization()
+        }
+
         open('/')
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
@@ -53,17 +65,13 @@ class OrganizationTest extends GeneralTestCase {
     }
 
     @Test
-    void testCreateOrganization() {
+    void testCreateOrganizationSuccess() {
         assert getUrl('/organization/list') == driver.currentUrl
-        assert 'Organisationen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
         assert getUrl('/organization/create?recType=0') == driver.currentUrl
         assert 'Organisation anlegen' == driver.title
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         assert 'Neue Organisation' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert checkErrorFields(['recType', 'name'])
         driver.findElement(By.id('rec-type-1')).click()
         driver.findElement(By.name('name')).sendKeys('Landschaftsbau Duvensee GbR')
         driver.findElement(By.name('legalForm')).sendKeys('GbR')
@@ -88,15 +96,42 @@ class OrganizationTest extends GeneralTestCase {
         assert getUrl('/organization/show/1') == driver.currentUrl
         assert 'Organisation Landschaftsbau Duvensee GbR wurde angelegt.' == driver.findElement(By.className('flash-message')).text
         driver.quit()
+
+        assert 1 == Organization.count()
+    }
+
+    @Test
+    void testCreateOrganizationErrors() {
+        assert getUrl('/organization/list') == driver.currentUrl
+        assert 'Organisationen' == driver.title
+        assert 'Organisationen' == driver.findElement(BY_HEADER).text
+        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
+        assert getUrl('/organization/create?recType=0') == driver.currentUrl
+        assert 'Organisation anlegen' == driver.title
+        assert 'Organisationen' == driver.findElement(BY_HEADER).text
+        assert 'Neue Organisation' == driver.findElement(BY_SUBHEADER).text
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        assert getUrl('/organization/save') == driver.currentUrl
+        assert checkErrorFields(['recType', 'name'])
+        driver.findElement(By.linkText('Abbruch')).click()
+        assert getUrl('/organization/list') == driver.currentUrl
+        def emptyList = driver.findElement(By.className('empty-list'))
+        assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
+        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        assert 'Organisation anlegen' == link.text
+        assert getUrl('/organization/create') == link.getAttribute('href')
+        driver.quit()
+
+        assert 0 == Organization.count()
     }
 
     @Test
     void testShowOrganization() {
         assert getUrl('/organization/list') == driver.currentUrl
-        assert 'Organisationen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        assert getUrl('/organization/show/1?type=') == driver.currentUrl
+        def m = (driver.currentUrl =~ '/organization/show/(\\d+)')
+        assert !!m
+        int id = m[0][1] as Integer
         assert 'Organisation anzeigen' == driver.title
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
@@ -143,100 +178,101 @@ class OrganizationTest extends GeneralTestCase {
         assert 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.' == notes.text
         assert 1 == notes.findElements(By.tagName('br')).size()
 
+        String param = "organization=${id}"
         fieldSet = getFieldset(dataSheet, 4)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/person/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Personen' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/person/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/person/create?organization.id=${id}"))
         assert 'Person anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 5)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/quote/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Angebote' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/quote/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/quote/create?organization.id=${id}"))
         assert 'Angebot anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 6)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/sales-order/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Verkaufsbestellungen' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/sales-order/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?organization.id=${id}"))
         assert 'Verkaufsbestellung anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 7)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/invoice/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Rechnungen' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/invoice/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?organization.id=${id}"))
         assert 'Rechnung anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 8)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/dunning/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Mahnungen' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/dunning/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/dunning/create?organization.id=${id}"))
         assert 'Mahnung anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 9)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/credit-memo/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Gutschriften' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/credit-memo/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/credit-memo/create?organization.id=${id}"))
         assert 'Gutschrift anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 10)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/project/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Projekte' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/project/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/project/create?organization.id=${id}"))
         assert 'Projekt anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 11)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/document/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Dokumente' == fieldSet.findElement(By.tagName('h4')).text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 12)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/call/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Anrufe' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/call/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/call/create?organization.id=${id}"))
         assert 'Anruf anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         fieldSet = getFieldset(dataSheet, 13)
         assert fieldSet.getAttribute('class').contains('remote-list')
-        assert 'organization=1' == fieldSet.getAttribute('data-load-params')
+        assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/note/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Notizen' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/note/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/note/create?organization.id=${id}"))
         assert 'Notiz anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
@@ -253,35 +289,37 @@ class OrganizationTest extends GeneralTestCase {
         assert 'Anlegen' == link.text
         link = toolbar.findElement(By.xpath('li[3]/a'))
         assert 'green' == link.getAttribute('class')
-        assert getUrl('/organization/edit/1') == link.getAttribute('href')
+        assert getUrl("/organization/edit/${id}") == link.getAttribute('href')
         assert 'Bearbeiten' == link.text
         link = toolbar.findElement(By.xpath('li[4]/a'))
         assert 'blue' == link.getAttribute('class')
-        assert getUrl('/organization/copy/1') == link.getAttribute('href')
+        assert getUrl("/organization/copy/${id}") == link.getAttribute('href')
         assert 'Kopieren' == link.text
         link = toolbar.findElement(By.xpath('li[5]/a'))
         assert link.getAttribute('class').contains('red')
         assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl('/organization/delete/1') == link.getAttribute('href')
+        assert getUrl("/organization/delete/${id}") == link.getAttribute('href')
         assert 'Löschen' == link.text
         link.click()
         driver.switchTo().alert().dismiss()
-        assert getUrl('/organization/show/1?type=') == driver.currentUrl
+        assert getUrl("/organization/show/${id}?type=") == driver.currentUrl
 
         def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
         link = actions.findElement(By.xpath('li[1]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('href').startsWith(getUrl('/call/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/call/create?organization.id=${id}"))
         assert 'Anruf anlegen' == link.text
         link = actions.findElement(By.xpath('li[2]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('href').startsWith(getUrl('/quote/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/quote/create?organization.id=${id}"))
         assert 'Angebot anlegen' == link.text
         link = actions.findElement(By.xpath('li[3]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('href').startsWith(getUrl('/invoice/create?organization.id=1'))
+        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?organization.id=${id}"))
         assert 'Rechnung anlegen' == link.text
         driver.quit()
+
+        assert 1 == Organization.count()
     }
 
     @Test
@@ -300,12 +338,12 @@ class OrganizationTest extends GeneralTestCase {
         def td = tr.findElement(By.xpath('td[2]'))
         assert td.getAttribute('class').contains('id')
         link = td.findElement(By.tagName('a'))
-        assert getUrl('/organization/show/1?type=') == link.getAttribute('href')
+        assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
         assert 'O-10000' == link.text
         td = tr.findElement(By.xpath('td[3]'))
         assert td.getAttribute('class').contains('string')
         link = td.findElement(By.tagName('a'))
-        assert getUrl('/organization/show/1?type=') == link.getAttribute('href')
+        assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
         assert 'Landschaftsbau Duvensee GbR' == link.text
         td = tr.findElement(By.xpath('td[4]'))
         assert td.getAttribute('class').contains('string')
@@ -329,12 +367,12 @@ class OrganizationTest extends GeneralTestCase {
         td = tr.findElement(By.xpath('td[8]'))
         assert td.getAttribute('class').contains('action-buttons')
         link = td.findElement(By.xpath('a[1]'))
-        assert getUrl('/organization/edit/1?listType=') == link.getAttribute('href')
+        assert link.getAttribute('href').startsWith(getUrl('/organization/edit/'))
         assert link.getAttribute('class').contains('button')
         assert link.getAttribute('class').contains('green')
         assert 'Bearbeiten' == link.text
         link = td.findElement(By.xpath('a[2]'))
-        assert getUrl('/organization/delete/1?type=') == link.getAttribute('href')
+        assert link.getAttribute('href').startsWith(getUrl('/organization/delete/'))
         assert link.getAttribute('class').contains('button')
         assert link.getAttribute('class').contains('red')
         assert link.getAttribute('class').contains('delete-btn')
@@ -343,15 +381,53 @@ class OrganizationTest extends GeneralTestCase {
         driver.switchTo().alert().dismiss()
         assert getUrl('/organization/list') == driver.currentUrl
         driver.quit()
+
+        assert 1 == Organization.count()
     }
 
     @Test
     void testEditOrganization() {
         assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert getUrl('/organization/edit/1?listType=') == driver.currentUrl
+        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
         assert 'Organisation bearbeiten' == driver.title
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+
+        assert 1 == Organization.count()
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected Object getDatasets() {
+        return ['test-data/install-data.xml']
+    }
+
+    protected void prepareOrganization() {
+        def org = new Organization(
+            recType: (byte) 1,
+            name: 'Landschaftsbau Duvensee GbR',
+            legalForm: 'GbR',
+            type: OrgType.get(100),
+            industry: Industry.get(1012),
+            phone: '04543 31233',
+            fax: '04543 31235',
+            email1: 'info@landschaftsbau-duvensee.example',
+            website: 'http://www.landschaftsbau-duvensee.example',
+            billingAddrStreet: 'Dörpstraat 25',
+            billingAddrPostalCode: '23898',
+            billingAddrLocation: 'Duvensee',
+            billingAddrState: 'Schleswig-Holstein',
+            billingAddrCountry: 'Deutschland',
+            shippingAddrStreet: 'Dörpstraat 25',
+            shippingAddrPostalCode: '23898',
+            shippingAddrLocation: 'Duvensee',
+            shippingAddrState: 'Schleswig-Holstein',
+            shippingAddrCountry: 'Deutschland',
+            notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
+        )
+        org.save(flush: true)
     }
 }
