@@ -119,6 +119,28 @@ abstract class GeneralTestCase extends DbUnitTestCase {
         return parent.findElement(By.xpath(buf.toString()))
     }
 
+    protected String getInputValue(String name) {
+        def input = driver.findElement(By.name(name))
+        if (input.tagName == 'textarea') {
+            return input.text
+        }
+
+        String type = input.getAttribute('type')
+        switch (type) {
+        case 'checkbox':
+            return input.getAttribute('checked') != null
+        case 'radio':
+            for (WebElement radio : driver.findElements(By.name(name))) {
+                if (radio.getAttribute('checked') != null) {
+                    return radio.getAttribute('value')
+                }
+                return null
+            }
+        default:
+            return input.getAttribute('value')
+        }
+    }
+
     /**
      * Gets the field in the show view with the given parent and row number.
      * The parent may be a column ({@code .col} element), fieldset
@@ -194,5 +216,34 @@ abstract class GeneralTestCase extends DbUnitTestCase {
      */
     protected void open(String url, String language = null) {
         driver.get(getUrl(url, language))
+    }
+
+    /**
+     * Prepares an organization fixture and stores it into the database.
+     */
+    protected void prepareOrganization() {
+        def org = new Organization(
+            recType: (byte) 1,
+            name: 'Landschaftsbau Duvensee GbR',
+            legalForm: 'GbR',
+            type: OrgType.get(100),
+            industry: Industry.get(1012),
+            phone: '04543 31233',
+            fax: '04543 31235',
+            email1: 'info@landschaftsbau-duvensee.example',
+            website: 'http://www.landschaftsbau-duvensee.example',
+            billingAddrStreet: 'Dörpstraat 25',
+            billingAddrPostalCode: '23898',
+            billingAddrLocation: 'Duvensee',
+            billingAddrState: 'Schleswig-Holstein',
+            billingAddrCountry: 'Deutschland',
+            shippingAddrStreet: 'Dörpstraat 25',
+            shippingAddrPostalCode: '23898',
+            shippingAddrLocation: 'Duvensee',
+            shippingAddrState: 'Schleswig-Holstein',
+            shippingAddrCountry: 'Deutschland',
+            notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
+        )
+        org.save(flush: true)
     }
 }

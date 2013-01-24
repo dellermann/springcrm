@@ -3,6 +3,16 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="install" />
   <title><g:message code="install.title" /></title>
+  <g:if test="${existingData}">
+  <r:script disposition="defer">//<![CDATA[
+  $("#install-base-data-form").submit(function () {
+          if (window.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
+              return window.confirm("${message(code: 'install.installBaseData.confirm2')}");
+          }
+          return false;
+      });
+  //]]></r:script>
+  </g:if>
 </head>
 
 <body>
@@ -23,7 +33,7 @@
       <p><g:message code="install.installBaseData.description" /></p>
       <p><g:message code="install.installBaseData.selectPackageHint" /></p>
     </div>
-    <g:form name="install-base-data-form" action="installBaseDataSave">
+    <g:form elementId="install-base-data-form" name="install-base-data-form" action="installBaseDataSave">
       <div class="row">
         <div class="label">
           <label for="package"><g:message code="install.installBaseData.package.label" default="Data package" /></label>
@@ -32,9 +42,11 @@
           <g:select name="package" from="${packages}" optionValue="${{message(code: 'install.installBaseData.package.' + it.toLowerCase().replace('-', '_'))}}" /><br /><span class="info-msg"><g:message code="default.required" default="required" /></span>
         </div>
       </div>
+      <g:if test="${existingData}">
       <div class="warning">
         <p><g:message code="install.installBaseData.warning" /></p>
       </div>
+      </g:if>
     </g:form>
   </section>
 </body>

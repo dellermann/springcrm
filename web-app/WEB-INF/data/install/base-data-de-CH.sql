@@ -1,4 +1,62 @@
+--
+-- base-data-de-DE.sql
+-- Base data for installer, German (Germany)
+--
+-- Copyright (c) 2011-2013, Daniel Ellermann
+--
+-- This program is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+--
+
+
+-- Rules for this file
+-- 1. Empty lines and lines starting with -- after optional white spaces
+--    (comments) are ignored.
+-- 2. All other lines must be valid SQL commands such as DELETE FROM or
+--    INSERT INTO.  No white spaces before the SQL commands are permitted.
+-- 3. SQL commands must not be terminated by a semicolon.
+-- 4. Line breaks within SQL commands are not permitted.
+
+
+-- empty all tables
+DELETE FROM calendar_event
+DELETE FROM config
+DELETE FROM google_data_sync_status
+DELETE FROM invoicing_item
+DELETE FROM invoicing_transaction
+DELETE FROM invoicing_transaction_terms_and_conditions
+DELETE FROM ldap_sync_status
+DELETE FROM lru_entry
+DELETE FROM note
+DELETE FROM organization
+DELETE FROM panel
+DELETE FROM person
+DELETE FROM phone_call
+DELETE FROM project
+DELETE FROM project_document
+DELETE FROM project_item
+DELETE FROM purchase_invoice
+DELETE FROM purchase_invoice_item
+DELETE FROM reminder
+DELETE FROM sales_item
+DELETE FROM sales_item_pricing
+DELETE FROM sales_item_pricing_item
 DELETE FROM sel_value
+DELETE FROM seq_number
+DELETE FROM user_data
+DELETE FROM user_setting
+
+-- insert basic selection values
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1, 0, 'Herr', 10, 'org.amcworld.springcrm.Salutation')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2, 0, 'Frau', 20, 'org.amcworld.springcrm.Salutation')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (100, 0, 'Kunde', 10, 'org.amcworld.springcrm.OrgType')
@@ -127,7 +185,8 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2604, 0, 'abg
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2605, 0, 'abgebrochen', 60, 'org.amcworld.springcrm.ProjectStatus');
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory')
-DELETE FROM seq_number
+
+-- insert sequence number predefinitions
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (1, 0, 'quote', 99999, 'A', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (2, 0, 'salesOrder', 99999, 'B', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (3, 0, 'invoice', 99999, 'R', 10000, '')
@@ -139,11 +198,12 @@ INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_v
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (9, 0, 'note', 99999, 'N', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (10, 0, 'creditMemo', 99999, 'G', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (11, 0, 'project', 99999, 'J', 10000, '')
-DELETE FROM config
+
+-- insert basic configurations
 INSERT INTO config (version, name, value) VALUES (0, 'currency', 'EUR')
-INSERT INTO config (version, name, value) VALUES (0, 'ldapBindDn', NULL)
-INSERT INTO config (version, name, value) VALUES (0, 'ldapBindPasswd', NULL)
-INSERT INTO config (version, name, value) VALUES (0, 'ldapContactDn', NULL)
-INSERT INTO config (version, name, value) VALUES (0, 'ldapHost', NULL)
-INSERT INTO config (version, name, value) VALUES (0, 'ldapPort', NULL)
+INSERT INTO config (version, name) VALUES (0, 'ldapBindDn')
+INSERT INTO config (version, name) VALUES (0, 'ldapBindPasswd')
+INSERT INTO config (version, name) VALUES (0, 'ldapContactDn')
+INSERT INTO config (version, name) VALUES (0, 'ldapHost')
+INSERT INTO config (version, name) VALUES (0, 'ldapPort')
 INSERT INTO config (version, name, value) VALUES (0, 'numFractionDigits', '2')

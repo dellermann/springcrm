@@ -32,7 +32,8 @@ import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code InstallationTest} represents ...
+ * The class {@code InstallationTest} represents a functional test case for the
+ * installer in SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
@@ -116,7 +117,73 @@ class InstallationTest extends GeneralTestCase {
     }
 
     @Test
-    void testWelcomePage() {
+    void testNewInstallation() {
+        open('', 'de')
+        performInstallation()
+    }
+
+    @Test
+    void testExistingInstallationDisabled() {
+        open('', 'de')
+        assert getUrl('/user/login') == driver.currentUrl
+
+        String urlExpected = getUrl('/user/login')
+        for (int i = 0; i < URL_ACTIONS.size(); i++) {
+            driver.get(getUrl(i))
+            assert urlExpected == driver.currentUrl
+        }
+        driver.quit()
+    }
+
+    @Test
+    void testExistingInstallationEnabled() {
+        installService.enableInstaller()
+        open('', 'de')
+        assert getUrl('/user/login') == driver.currentUrl
+        open('/install')
+        assert getUrl('/install') == driver.currentUrl
+        assert TITLE == driver.title
+        assert 'Willkommen zur Installation von SpringCRM' == driver.findElement(By.cssSelector('#main-container-header > h2')).text
+        assert 'Willkommen' == driver.findElement(By.cssSelector('#install-progress > .current > a')).text
+
+        for (int i = 0; i < URL_ACTIONS.size(); i++) {
+            String url = getUrl(i)
+            driver.get(url)
+            assert url == driver.currentUrl
+        }
+        driver.quit()
+    }
+
+    @Test
+    void testExistingInstallation() {
+        installService.enableInstaller()
+        prepareOrganization()
+
+        driver.get(getUrl('/install/' + URL_ACTIONS[0], 'de'))
+        performInstallation(true)
+
+        assert 0 == Organization.count()
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected Object getDatasets() {
+        def res = []
+        if (name.methodName.startsWith('testExisting')) {
+            res << 'test-data/install-data.xml'
+        } else {
+            res << 'test-data/empty-install-data.xml'
+        }
+        return res
+    }
+
+    protected String getUrl(int i) {
+        return getUrl('/install/' + URL_ACTIONS[i])
+    }
+
+    protected void performInstallation(boolean existingData = false) {
         def headerSel = By.cssSelector('#main-container-header > h2')
         def stepSel = By.cssSelector('#install-progress > .current > a')
         def link1Sel = By.xpath('//ul[@id="toolbar"]/li[1]/a')
@@ -124,8 +191,7 @@ class InstallationTest extends GeneralTestCase {
 
         /* page "welcome" */
         int page = 0
-        open('', 'de')
-        assert getUrl(page) == driver.currentUrl
+        assert driver.currentUrl.startsWith(getUrl(page))
         assert TITLE == driver.title
         def h2 = driver.findElement(headerSel)
         assert 'Willkommen zur Installation von SpringCRM' == h2.text
@@ -141,11 +207,21 @@ class InstallationTest extends GeneralTestCase {
         assert 'Basisdaten installieren' == h2.text
         step = driver.findElement(stepSel)
         assert 'Basisdaten installieren' == step.text
-        assert 'Achtung! Dieser Vorgang überschreibt ggf. bestehende Daten. Dies betrifft die Daten von Auswahllisten und Systemeinstellungen.' == driver.findElement(By.className('warning')).text
+        if (existingData) {
+            assert 'Achtung! Dieser Vorgang überschreibt alle bestehenden SpringCRM-Daten. Dieser Vorgang kann nicht rückgängig gemacht werden.' == driver.findElement(By.className('warning')).text
+        }
         Select select = new Select(driver.findElement(By.name('package')))
         assert select.options.size() >= 3
         select.selectByValue('de-DE')
         driver.findElement(link2Sel).click()
+        if (existingData) {
+            def alert = driver.switchTo().alert()
+            assert 'Sind Sie sicher, dass Sie alle SpringCRM-Daten löschen wollen?' == alert.text
+            alert.accept()
+            alert = driver.switchTo().alert()
+            assert 'Sind Sie wirklich sicher? Dies ist die letzte Warnung!' == alert.text
+            alert.accept()
+        }
 
         /* page "client data" */
         page++
@@ -213,7 +289,7 @@ class InstallationTest extends GeneralTestCase {
         driver.quit()
 
         assert installService.installerDisabled
-        assert 1 < Salutation.count()
+        assert 2 == Salutation.count()
         assert 2 == TaxRate.count()
         def taxRate = TaxRate.get(400)
         assert '19 %' == taxRate.name
@@ -239,55 +315,5 @@ class InstallationTest extends GeneralTestCase {
         assert 0 < PaymentMethod.count()
         assert 0 < CreditMemoStage.count()
         assert 0 < ProductCategory.count()
-    }
-
-    @Test
-    void testExistingInstallationDisabled() {
-        open('', 'de')
-        assert getUrl('/user/login') == driver.currentUrl
-
-        String urlExpected = getUrl('/user/login')
-        for (int i = 0; i < URL_ACTIONS.size(); i++) {
-            driver.get(getUrl(i))
-            assert urlExpected == driver.currentUrl
-        }
-        driver.quit()
-    }
-
-    @Test
-    void testExistingInstallationEnabled() {
-        installService.enableInstaller()
-        open('', 'de')
-        assert getUrl('/user/login') == driver.currentUrl
-        open('/install')
-        assert getUrl('/install') == driver.currentUrl
-        assert TITLE == driver.title
-        assert 'Willkommen zur Installation von SpringCRM' == driver.findElement(By.cssSelector('#main-container-header > h2')).text
-        assert 'Willkommen' == driver.findElement(By.cssSelector('#install-progress > .current > a')).text
-
-        for (int i = 0; i < URL_ACTIONS.size(); i++) {
-            String url = getUrl(i)
-            driver.get(url)
-            assert url == driver.currentUrl
-        }
-        driver.quit()
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    @Override
-    protected Object getDatasets() {
-        def res = []
-        if (name.methodName.startsWith('testExisting')) {
-            res << 'test-data/install-data.xml'
-        } else {
-            res << 'test-data/empty-install-data.xml'
-        }
-        return res
-    }
-
-    protected String getUrl(int i) {
-        return getUrl('/install/' + URL_ACTIONS[i])
     }
 }

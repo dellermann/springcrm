@@ -1,5 +1,3 @@
-import java.security.MessageDigest
-
 /*
  * ConvertInstallationFixture.groovy
  *
@@ -20,6 +18,9 @@ import java.security.MessageDigest
  */
 
 
+import java.security.MessageDigest
+
+
 includeTargets << grailsScript('_GrailsInit')
 includeTargets << grailsScript('_GrailsArgParsing')
 
@@ -32,12 +33,15 @@ target(main: 'Generates test fixture files for installation test.') {
     File input = new File("${baseDir}/web-app/WEB-INF/data/install/base-data-${lang}.sql")
 
     def tables = [] as Set
+    def tablesWithInserts = ['user_data'] as Set
     StringBuilder buf = new StringBuilder('<?xml version="1.0" encoding="utf-8"?>\n\n<dataset>\n\n  <!-- Base data -->\n')
     input.eachLine {
         def m = (it =~ /(?i)^\s*INSERT(?:\s+INTO)\s+(\w+)\s+\(([^)]+)\)\s+VALUES\s+\(([^)]+)\)\s*$/)
         if (m) {
-            tables << m[0][1]
-            buf << '  <' << m[0][1]
+            String table = m[0][1]
+            tables << table
+            tablesWithInserts << table
+            buf << '  <' << table
             def fields = m[0][2].split(/,\s*/)
             def values = m[0][3].split(/,\s*/)
             for (int i = 0; i < fields.size(); i++) {
@@ -55,6 +59,10 @@ target(main: 'Generates test fixture files for installation test.') {
                 }
             }
             buf << '/>\n'
+        }
+        m = (it =~ /(?i)^\s*DELETE(?:\s+FROM)\s+(\w+)\s*$/)
+        if (m) {
+            tables << m[0][1]
         }
     }
     buf << '\n  <!-- Client data -->\n'
@@ -74,29 +82,10 @@ target(main: 'Generates test fixture files for installation test.') {
     buf << '  <user_data version="0" date_created="2013-01-23 15:52:19" email="m.kampe@kampe.example" fax="04536 45301-90" first_name="Marcus" last_name="Kampe" last_updated="2013-01-23 15:52:19" mobile="0172 12034056" password="'
     buf << MessageDigest.getInstance('SHA-1').digest('abc1234'.bytes).encodeHex()
     buf << '" phone="04536 45301-10" phone_home="04536 65530" user_name="mkampe" admin="1"/>\n'
-    buf << '\n  <!-- Empty all other table to maintain referential integrity -->\n'
-    buf << '  <calendar_event/>\n'
-    buf << '  <google_data_sync_status/>\n'
-    buf << '  <invoicing_item/>\n'
-    buf << '  <invoicing_transaction/>\n'
-    buf << '  <invoicing_transaction_terms_and_conditions/>\n'
-    buf << '  <ldap_sync_status/>\n'
-    buf << '  <lru_entry/>\n'
-    buf << '  <note/>\n'
-    buf << '  <organization/>\n'
-    buf << '  <panel/>\n'
-    buf << '  <person/>\n'
-    buf << '  <phone_call/>\n'
-    buf << '  <project/>\n'
-    buf << '  <project_document/>\n'
-    buf << '  <project_item/>\n'
-    buf << '  <purchase_invoice/>\n'
-    buf << '  <purchase_invoice_item/>\n'
-    buf << '  <reminder/>\n'
-    buf << '  <sales_item/>\n'
-    buf << '  <sales_item_pricing/>\n'
-    buf << '  <sales_item_pricing_item/>\n'
-    buf << '  <user_setting/>\n'
+    buf << '\n  <!-- Empty all other tables to maintain referential integrity -->\n'
+    for (String table : tables - tablesWithInserts) {
+        buf << '  <' << table << '/>\n'
+    }
     buf << '</dataset>\n'
     new File("${baseDir}/web-app/test-data/install-data.xml").write(buf.toString(), 'utf-8')
 

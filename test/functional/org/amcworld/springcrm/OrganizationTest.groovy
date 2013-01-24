@@ -20,10 +20,10 @@
 
 package org.amcworld.springcrm
 
-import org.junit.Rule;
-import org.junit.rules.TestName;
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestName
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.Actions
@@ -31,7 +31,8 @@ import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code OrganizationTest} represents ...
+ * The class {@code OrganizationTest} represents a functional test case for the
+ * organization section of SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
@@ -53,7 +54,7 @@ class OrganizationTest extends GeneralTestCase {
             prepareOrganization()
         }
 
-        open('/')
+        open('/', 'de')
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
@@ -393,6 +394,39 @@ class OrganizationTest extends GeneralTestCase {
         assert 'Organisation bearbeiten' == driver.title
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+        def col = driver.findElement(By.xpath('//form[@id="organization-form"]/fieldset[1]')).findElement(By.className('col-l'))
+        assert getShowField(col, 1).text.startsWith('O-')
+        assert '10000' == getInputValue('number')
+        assert getInputValue('autoNumber')
+        assert null != driver.findElement(By.id('rec-type-1')).getAttribute('checked')
+        assert 'Landschaftsbau Duvensee GbR' == getInputValue('name')
+        assert 'GbR' == getInputValue('legalForm')
+        def select = new Select(driver.findElement(By.id('type')))
+        assert 'Kunde' == select.firstSelectedOption.text
+        select = new Select(driver.findElement(By.id('industry')))
+        assert 'Umwelt' == select.firstSelectedOption.text
+        select = new Select(driver.findElement(By.id('rating')))
+        assert '' == select.firstSelectedOption.text
+        assert '04543 31233' == getInputValue('phone')
+        assert '04543 31235' == getInputValue('fax')
+        assert 'info@landschaftsbau-duvensee.example' == getInputValue('email1')
+        assert '' == getInputValue('email2')
+        assert 'http://www.landschaftsbau-duvensee.example' == getInputValue('website')
+        assert '' == getInputValue('owner')
+        assert '' == getInputValue('numEmployees')
+        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
+        assert '' == getInputValue('billingAddrPoBox')
+        assert '23898' == getInputValue('billingAddrPostalCode')
+        assert 'Duvensee' == getInputValue('billingAddrLocation')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
+        assert 'Deutschland' == getInputValue('billingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
+        assert '' == getInputValue('shippingAddrPoBox')
+        assert '23898' == getInputValue('shippingAddrPostalCode')
+        assert 'Duvensee' == getInputValue('shippingAddrLocation')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
+        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Kontakt über Peter Hermann hergestellt. Erstes Treffen am 13.06.2012.' == getInputValue('notes')
 
         assert 1 == Organization.count()
     }
@@ -403,31 +437,5 @@ class OrganizationTest extends GeneralTestCase {
     @Override
     protected Object getDatasets() {
         return ['test-data/install-data.xml']
-    }
-
-    protected void prepareOrganization() {
-        def org = new Organization(
-            recType: (byte) 1,
-            name: 'Landschaftsbau Duvensee GbR',
-            legalForm: 'GbR',
-            type: OrgType.get(100),
-            industry: Industry.get(1012),
-            phone: '04543 31233',
-            fax: '04543 31235',
-            email1: 'info@landschaftsbau-duvensee.example',
-            website: 'http://www.landschaftsbau-duvensee.example',
-            billingAddrStreet: 'Dörpstraat 25',
-            billingAddrPostalCode: '23898',
-            billingAddrLocation: 'Duvensee',
-            billingAddrState: 'Schleswig-Holstein',
-            billingAddrCountry: 'Deutschland',
-            shippingAddrStreet: 'Dörpstraat 25',
-            shippingAddrPostalCode: '23898',
-            shippingAddrLocation: 'Duvensee',
-            shippingAddrState: 'Schleswig-Holstein',
-            shippingAddrCountry: 'Deutschland',
-            notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
-        )
-        org.save(flush: true)
     }
 }

@@ -1,7 +1,7 @@
 /*
  * InstallController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import groovy.sql.Sql
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class InstallController {
 
@@ -47,14 +47,19 @@ class InstallController {
     def index() {}
 
     def installBaseData() {
-        return [packages: installService.getBaseDataPackages(), step: 1]
+        def installStatus = Config.findByName('installStatus')
+        return [packages: installService.getBaseDataPackages(), existingData: installStatus?.value, step: 1]
     }
 
     def installBaseDataSave() {
         InputStream is = installService.loadPackage(params.package)
         Reader r = is.newReader('utf-8')
         Sql sql = new Sql(sessionFactory.currentSession.connection())
-        r.eachLine { sql.execute(it) }
+        r.eachLine {
+            if (!(it =~ /^\s*$/) && !(it =~ /^\s*--/)) {
+                sql.execute it
+            }
+        }
         redirect(action: 'clientData')
     }
 
