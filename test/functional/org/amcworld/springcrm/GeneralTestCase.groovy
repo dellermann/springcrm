@@ -119,8 +119,35 @@ abstract class GeneralTestCase extends DbUnitTestCase {
         return parent.findElement(By.xpath(buf.toString()))
     }
 
+    /**
+     * Gets the text of the flash message.
+     *
+     * @return  the flash message text
+     */
+    protected String getFlashMessage() {
+        return driver.findElement(By.className('flash-message')).text
+    }
+
+    /**
+     * Gets the input field with the given name.
+     *
+     * @param name  the given name of the input field
+     * @return      the input field
+     */
+    protected WebElement getInput(String name) {
+        return driver.findElement(By.name(name))
+    }
+
+    /**
+     * Gets the value of the input field with the given name.  The method
+     * correctly handles all input field types including text areas,
+     * check boxes, and radio buttons.
+     *
+     * @param name  the given name of the input field
+     * @return      the value of that input field
+     */
     protected String getInputValue(String name) {
-        def input = driver.findElement(By.name(name))
+        def input = getInput(name)
         if (input.tagName == 'textarea') {
             return input.text
         }
@@ -245,5 +272,42 @@ abstract class GeneralTestCase extends DbUnitTestCase {
             notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         )
         org.save(flush: true)
+    }
+
+    /**
+     * Sets the input field with the given name to the stated value.  The
+     * method correctly handles all input field types including text areas,
+     * check boxes, and radio buttons.
+     *
+     * @param name  the given name of the input field
+     * @param value the value to set
+     */
+    protected void setInputValue(String name, String value) {
+        def input = getInput(name)
+        if (input.tagName == 'input') {
+            String type = input.getAttribute('type')
+            switch (type) {
+            case 'checkbox':
+                boolean oldState = input.getAttribute('checked') != null
+                boolean newState = value as boolean
+                if (oldState != newState) {
+                    input.click()
+                }
+                return
+            case 'radio':
+                for (WebElement radio : driver.findElements(By.name(name))) {
+                    if (radio.getAttribute('value') == value) {
+                        radio.click()
+                        break
+                    }
+                }
+                return
+            }
+        }
+
+        input.clear()
+        if (value) {
+            input.sendKeys(value)
+        }
     }
 }

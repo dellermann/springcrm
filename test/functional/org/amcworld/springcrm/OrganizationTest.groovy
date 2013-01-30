@@ -74,28 +74,68 @@ class OrganizationTest extends GeneralTestCase {
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         assert 'Neue Organisation' == driver.findElement(BY_SUBHEADER).text
         driver.findElement(By.id('rec-type-1')).click()
-        driver.findElement(By.name('name')).sendKeys('Landschaftsbau Duvensee GbR')
-        driver.findElement(By.name('legalForm')).sendKeys('GbR')
+        setInputValue('name', 'Landschaftsbau Duvensee GbR')
+        setInputValue('legalForm', 'GbR')
         new Select(driver.findElement(By.id('type'))).selectByValue('100')
         new Select(driver.findElement(By.id('industry'))).selectByValue('1012')
-        driver.findElement(By.name('phone')).sendKeys('04543 31233')
-        driver.findElement(By.name('fax')).sendKeys('04543 31235')
-        driver.findElement(By.name('email1')).sendKeys('info@landschaftsbau-duvensee.example')
-        driver.findElement(By.name('website')).sendKeys('http://www.landschaftsbau-duvensee.example')
-        driver.findElement(By.name('billingAddrStreet')).sendKeys('Dörpstraat 25')
-        driver.findElement(By.name('billingAddrPostalCode')).sendKeys('23898')
-        driver.findElement(By.name('billingAddrLocation')).sendKeys('Duvensee')
-        driver.findElement(By.name('billingAddrState')).sendKeys('Schleswig-Holstein')
-        driver.findElement(By.name('billingAddrCountry')).sendKeys('Deutschland')
-        driver.findElement(By.name('shippingAddrStreet')).sendKeys('Dörpstraat 25')
-        driver.findElement(By.name('shippingAddrPostalCode')).sendKeys('23898')
-        driver.findElement(By.name('shippingAddrLocation')).sendKeys('Duvensee')
-        driver.findElement(By.name('shippingAddrState')).sendKeys('Schleswig-Holstein')
-        driver.findElement(By.name('shippingAddrCountry')).sendKeys('Deutschland')
-        driver.findElement(By.name('notes')).sendKeys('Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.')
+        setInputValue('phone', '04543 31233')
+        setInputValue('fax', '04543 31235')
+        setInputValue('email1', 'info@landschaftsbau-duvensee.example')
+        setInputValue('website', 'http://www.landschaftsbau-duvensee.example')
+        setInputValue('billingAddrStreet', 'Dörpstraat 25')
+        setInputValue('billingAddrPostalCode', '23898')
+        setInputValue('billingAddrLocation', 'Duvensee')
+        setInputValue('billingAddrState', 'Schleswig-Holstein')
+        setInputValue('billingAddrCountry', 'Deutschland')
+        setInputValue('shippingAddrStreet', 'Dörpstraat 25')
+        setInputValue('shippingAddrPostalCode', '23898')
+        setInputValue('shippingAddrLocation', 'Duvensee')
+        setInputValue('shippingAddrState', 'Schleswig-Holstein')
+        setInputValue('shippingAddrCountry', 'Deutschland')
+        setInputValue('notes', 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.')
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert getUrl('/organization/show/1') == driver.currentUrl
-        assert 'Organisation Landschaftsbau Duvensee GbR wurde angelegt.' == driver.findElement(By.className('flash-message')).text
+
+        assert driver.currentUrl.startsWith(getUrl('/organization/show/'))
+        assert 'Organisation Landschaftsbau Duvensee GbR wurde angelegt.' == flashMessage
+        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        def col = fieldSet.findElement(By.className('col-l'))
+        assert 'O-10000' == getShowFieldText(col, 1)
+        assert 'Kunde' == getShowFieldText(col, 2)
+        assert 'Landschaftsbau Duvensee GbR' == getShowFieldText(col, 3)
+        assert 'GbR' == getShowFieldText(col, 4)
+        assert 'Kunde' == getShowFieldText(col, 5)
+        assert 'Umwelt' == getShowFieldText(col, 6)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '04543 31233' == getShowFieldText(col, 1)
+        assert '04543 31235' == getShowFieldText(col, 2)
+        def link = getShowField(col, 4).findElement(By.tagName('a'))
+        assert 'mailto:info@landschaftsbau-duvensee.example' == link.getAttribute('href')
+        assert 'info@landschaftsbau-duvensee.example' == link.text
+        link = getShowField(col, 6).findElement(By.tagName('a'))
+        assert 'http://www.landschaftsbau-duvensee.example/' == link.getAttribute('href')
+        assert '_blank' == link.getAttribute('target')
+        assert 'http://www.landschaftsbau-duvensee.example' == link.text
+        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'Dörpstraat 25' == getShowFieldText(col, 1)
+        assert '23898' == getShowFieldText(col, 3)
+        assert 'Duvensee' == getShowFieldText(col, 4)
+        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
+        assert 'Deutschland' == getShowFieldText(col, 6)
+        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
+        col = fieldSet.findElement(By.className('col-r'))
+        assert 'Dörpstraat 25' == getShowFieldText(col, 1)
+        assert '23898' == getShowFieldText(col, 3)
+        assert 'Duvensee' == getShowFieldText(col, 4)
+        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
+        assert 'Deutschland' == getShowFieldText(col, 6)
+        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
+        fieldSet = getFieldset(dataSheet, 2)
+        def notes = getShowField(fieldSet, 1)
+        assert 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.' == notes.text
+        assert 1 == notes.findElements(By.tagName('br')).size()
         driver.quit()
 
         assert 1 == Organization.count()
@@ -387,7 +427,7 @@ class OrganizationTest extends GeneralTestCase {
     }
 
     @Test
-    void testEditOrganization() {
+    void testEditOrganizationSuccess() {
         assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
         assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
@@ -427,6 +467,117 @@ class OrganizationTest extends GeneralTestCase {
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
         assert 'Kontakt über Peter Hermann hergestellt. Erstes Treffen am 13.06.2012.' == getInputValue('notes')
+
+        driver.findElement(By.id('rec-type-1')).click()
+        driver.findElement(By.id('rec-type-2')).click()
+        setInputValue('name', 'Arne Friesing')
+        setInputValue('legalForm', 'Einzelunternehmen')
+        new Select(driver.findElement(By.id('type'))).selectByValue('104')
+        new Select(driver.findElement(By.id('industry'))).selectByValue('1021')
+        setInputValue('phone', '04541 428717')
+        setInputValue('fax', '04541 428719')
+        setInputValue('email1', 'arne@friesing.example')
+        setInputValue('website', 'http://friesing.example')
+        setInputValue('numEmployees', '1')
+        setInputValue('billingAddrStreet', 'Kirschenallee 17a')
+        setInputValue('billingAddrPostalCode', '23909')
+        setInputValue('billingAddrLocation', 'Ratzeburg')
+        setInputValue('billingAddrState', 'Schleswig-Holstein')
+        setInputValue('billingAddrCountry', 'Deutschland')
+        setInputValue('shippingAddrStreet', 'Kirschenallee 17a')
+        setInputValue('shippingAddrPostalCode', '23909')
+        setInputValue('shippingAddrLocation', 'Ratzeburg')
+        setInputValue('shippingAddrState', 'Schleswig-Holstein')
+        setInputValue('shippingAddrCountry', 'Deutschland')
+        setInputValue('notes', 'Guter, zuverlässiger Designer')
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+
+        assert driver.currentUrl.startsWith(getUrl('/organization/show/'))
+        assert 'Organisation Arne Friesing wurde geändert.' == flashMessage
+        assert 'Arne Friesing' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'O-10000' == getShowFieldText(col, 1)
+        assert 'Lieferant' == getShowFieldText(col, 2)
+        assert 'Arne Friesing' == getShowFieldText(col, 3)
+        assert 'Einzelunternehmen' == getShowFieldText(col, 4)
+        assert 'Verkäufer' == getShowFieldText(col, 5)
+        assert 'Medien' == getShowFieldText(col, 6)
+        assert '1' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '04541 428717' == getShowFieldText(col, 1)
+        assert '04541 428719' == getShowFieldText(col, 2)
+        def link = getShowField(col, 4).findElement(By.tagName('a'))
+        assert 'mailto:arne@friesing.example' == link.getAttribute('href')
+        assert 'arne@friesing.example' == link.text
+        link = getShowField(col, 6).findElement(By.tagName('a'))
+        assert 'http://friesing.example/' == link.getAttribute('href')
+        assert '_blank' == link.getAttribute('target')
+        assert 'http://friesing.example' == link.text
+        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'Kirschenallee 17a' == getShowFieldText(col, 1)
+        assert '23909' == getShowFieldText(col, 3)
+        assert 'Ratzeburg' == getShowFieldText(col, 4)
+        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
+        assert 'Deutschland' == getShowFieldText(col, 6)
+        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
+        col = fieldSet.findElement(By.className('col-r'))
+        assert 'Kirschenallee 17a' == getShowFieldText(col, 1)
+        assert '23909' == getShowFieldText(col, 3)
+        assert 'Ratzeburg' == getShowFieldText(col, 4)
+        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
+        assert 'Deutschland' == getShowFieldText(col, 6)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Guter, zuverlässiger Designer' == getShowFieldText(fieldSet, 1)
+        driver.quit()
+
+        assert 1 == Organization.count()
+    }
+
+    @Test
+    void testEditOrganizationErrors() {
+        assert getUrl('/organization/list') == driver.currentUrl
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
+        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
+        assert 'Organisation bearbeiten' == driver.title
+        assert 'Organisationen' == driver.findElement(BY_HEADER).text
+        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+
+        driver.findElement(By.id('rec-type-1')).click()
+        driver.findElement(By.name('name')).clear()
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        assert getUrl('/organization/update') == driver.currentUrl
+        assert checkErrorFields(['recType', 'name'])
+        driver.findElement(By.linkText('Abbruch')).click()
+        assert driver.currentUrl.startsWith(getUrl('/organization/list'))
+        driver.quit()
+
+        assert 1 == Organization.count()
+    }
+
+    @Test
+    void testDeleteOrganizationAction() {
+        assert getUrl('/organization/list') == driver.currentUrl
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        driver.switchTo().alert().accept()
+        assert driver.currentUrl.startsWith(getUrl('/organization/list'))
+        assert 'Organisation wurde gelöscht.' == flashMessage
+        def emptyList = driver.findElement(By.className('empty-list'))
+        assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
+        driver.quit()
+
+        assert 0 == Organization.count()
+    }
+
+    @Test
+    void testDeleteOrganizationNoAction() {
+        assert getUrl('/organization/list') == driver.currentUrl
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl('/organization/list') == driver.currentUrl
+        driver.quit()
 
         assert 1 == Organization.count()
     }
