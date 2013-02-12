@@ -89,6 +89,9 @@ class PersonController {
 
     def save() {
         def personInstance = new Person(params)
+        if (!params.picture?.size) {
+            personInstance.picture = null
+        }
         if (!personInstance.save(flush: true)) {
             render(view: 'create', model: [personInstance: personInstance])
             return

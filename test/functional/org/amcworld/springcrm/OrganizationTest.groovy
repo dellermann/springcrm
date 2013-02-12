@@ -59,15 +59,11 @@ class OrganizationTest extends GeneralTestCase {
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        new Actions(driver).moveToElement(driver.findElement(By.xpath('//ul[@id="main-menu"]/li[2]/a')))
-            .moveToElement(driver.findElement(By.xpath('//ul[@id="main-menu"]/li[2]/ul/li[1]/a')))
-            .click()
-            .perform()
+        open('/organization/list')
     }
 
     @Test
     void testCreateOrganizationSuccess() {
-        assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
         assert getUrl('/organization/create?recType=0') == driver.currentUrl
         assert 'Organisation anlegen' == driver.title
@@ -143,7 +139,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testCreateOrganizationErrors() {
-        assert getUrl('/organization/list') == driver.currentUrl
         assert 'Organisationen' == driver.title
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
@@ -168,7 +163,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testShowOrganization() {
-        assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
         def m = (driver.currentUrl =~ '/organization/show/(\\d+)')
         assert !!m
@@ -365,7 +359,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testListOrganizations() {
-        assert getUrl('/organization/list') == driver.currentUrl
         assert 'Organisationen' == driver.title
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
@@ -428,7 +421,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testEditOrganizationSuccess() {
-        assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
         assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
         assert 'Organisation bearbeiten' == driver.title
@@ -538,7 +530,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testEditOrganizationErrors() {
-        assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
         assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
         assert 'Organisation bearbeiten' == driver.title
@@ -559,7 +550,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testDeleteOrganizationAction() {
-        assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/organization/list'))
@@ -573,7 +563,6 @@ class OrganizationTest extends GeneralTestCase {
 
     @Test
     void testDeleteOrganizationNoAction() {
-        assert getUrl('/organization/list') == driver.currentUrl
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
         driver.switchTo().alert().dismiss()
         assert getUrl('/organization/list') == driver.currentUrl

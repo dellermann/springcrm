@@ -24,6 +24,7 @@ import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
 import org.junit.Before
 import org.openqa.selenium.By
+import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.firefox.FirefoxDriver
@@ -247,8 +248,10 @@ abstract class GeneralTestCase extends DbUnitTestCase {
 
     /**
      * Prepares an organization fixture and stores it into the database.
+     *
+     * @return      the prepared organization
      */
-    protected void prepareOrganization() {
+    protected Organization prepareOrganization() {
         def org = new Organization(
             recType: (byte) 1,
             name: 'Landschaftsbau Duvensee GbR',
@@ -272,6 +275,62 @@ abstract class GeneralTestCase extends DbUnitTestCase {
             notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         )
         org.save(flush: true)
+        return org
+    }
+
+    /**
+     * Prepares a person fixture and stores it into the database.
+     *
+     * @param org   the organization the person belongs to; if {@code null} a
+     *              new organization is created
+     * @return      the prepared person
+     */
+    protected Person preparePerson(Organization org = null) {
+        if (!org) {
+            org = prepareOrganization()
+        }
+        def person = new Person(
+            organization: org,
+            salutation: Salutation.get(1),
+            firstName: 'Henry',
+            lastName: 'Brackmann',
+            mailingAddrStreet: 'Dörpstraat 25',
+            mailingAddrPostalCode: '23898',
+            mailingAddrLocation: 'Duvensee',
+            mailingAddrState: 'Schleswig-Holstein',
+            mailingAddrCountry: 'Deutschland',
+            phone: '04543 31233',
+            mobile: '0163 3343267',
+            fax: '04543 31235',
+            email1: 'h.brackmann@landschaftsbau-duvensee.example',
+            jobTitle: 'Geschäftsführer',
+            department: 'Geschäftsleitung',
+            assistant: 'Anna Schmarge',
+            birthday: new GregorianCalendar(1962, Calendar.FEBRUARY, 14).time
+        )
+        person.save(flush: true)
+        return person
+    }
+
+    /**
+     * Set the value of an autocompleteex input control and selects the item
+     * with the given index.
+     *
+     * @param id    the ID of the autocompleteex input control
+     * @param value the value to enter into the input control
+     * @param idx   the one-based position of the item which is to select
+     * @return      the selected text
+     */
+    protected String selectAutocompleteEx(String id, String value, int idx = 1)
+    {
+        def input = driver.findElement(By.id(id))
+        input.sendKeys(value)
+        Thread.sleep(1000)
+        for (int i = 0; i < idx; i++) {
+            input.sendKeys(Keys.ARROW_DOWN)
+        }
+        input.sendKeys(Keys.TAB)
+        return input.getAttribute('value')
     }
 
     /**
