@@ -33,7 +33,7 @@ class Call {
 
     static constraints = {
 		subject(blank: false)
-		notes(widget: 'textarea')
+		notes(nullable: true, widget: 'textarea')
 		organization(nullable: true)
 		person(nullable: true)
 		phone(nullable: true, maxSize: 40)

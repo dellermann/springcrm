@@ -16,6 +16,8 @@ Features
   * manage customers and vendors
   * manage quotes, sales orders, invoices, dunnings, and credit memos and
     produce a printable version (PDF) using an XSL template
+  * manage sales items, that is, products and services
+  * allow pricing of products and services
   * view invoices of a month or year in a report
   * manage purchase invoices with invoice document
   * calendar
@@ -40,7 +42,7 @@ Daniel Ellermann (AMC World Technologies GmbH)
 Copyright/License
 -----------------
 
-Copyright (c) 2011-2012, AMC World Technologies GmbH
+Copyright (c) 2011-2013, AMC World Technologies GmbH
 All rights reserved.
 
 SpringCRM is distributed under the GNU General Public License version 3.
