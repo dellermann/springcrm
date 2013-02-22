@@ -55,6 +55,21 @@ class SeqNumber {
 
     //-- Public methods -------------------------
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SeqNumber) {
+            return obj.controllerName == controllerName
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return controllerName.hashCode()
+    }
+
+    @Override
     String toString() {
         return controllerName
     }

@@ -226,6 +226,21 @@ class Organization {
 		return (this.recType & 2) != 0
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Organization) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
     String toString() {
         return name ?: ''
     }

@@ -60,6 +60,21 @@ class Panel {
 
     //-- Public methods -------------------------
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Panel) {
+            return obj.user == user && obj.panelId == panelId
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode()
+    }
+
+    @Override
 	String toString() {
 		return "${user.userName}-${panelId}"
 	}

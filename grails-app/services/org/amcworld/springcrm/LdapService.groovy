@@ -1,7 +1,7 @@
 /*
  * LdapService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.apache.directory.groovyldap.LDAP
  * server and store person data.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class LdapService {
 
@@ -93,7 +93,7 @@ class LdapService {
 					status.dn = cn.toString()
 					status.save(flush:true)
 					break
-				} catch (NameAlreadyBoundException e) { /* ignored */ }
+				} catch (NameAlreadyBoundException ignored) { /* ignored */ }
 			}
 			log.debug "Successfully exported person ${p} to LDAP."
 		}

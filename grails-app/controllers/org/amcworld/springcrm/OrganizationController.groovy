@@ -1,7 +1,7 @@
 /*
  * OrganizationController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import grails.converters.JSON
-import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -29,7 +28,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * organizations.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class OrganizationController {
 

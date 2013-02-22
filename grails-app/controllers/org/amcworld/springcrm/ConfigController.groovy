@@ -206,7 +206,7 @@ class ConfigController {
                 seqNumber.properties['prefix', 'suffix', 'startValue', 'endValue'] = entry.value
                 l.add(seqNumber)
                 hasErrors |= (seqNumber.save(flush: true) == null)
-            } catch (NumberFormatException e) { /* ignored */ }
+            } catch (NumberFormatException ignored) { /* ignored */ }
         }
         if (hasErrors) {
             l.sort { it.ident() }

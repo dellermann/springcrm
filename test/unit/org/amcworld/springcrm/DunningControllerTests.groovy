@@ -1,7 +1,7 @@
 /*
  * DunningControllerTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.util.Date
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 
@@ -30,7 +29,7 @@ import grails.test.mixin.TestFor
  * {@code DunningController}.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 @TestFor(DunningController)
 @Mock([Dunning, Organization, Person, InvoicingItem, Invoice, DunningStage, SeqNumberService])
@@ -332,7 +331,7 @@ class DunningControllerTests {
 
     void testEditNonExisting() {
         params.id = 1000
-        def model = controller.edit()
+        controller.edit()
         assert 'default.not.found.message' == flash.message
         assert '/dunning/list' == response.redirectedUrl
     }
@@ -389,7 +388,7 @@ class DunningControllerTests {
 
     void testEditPaymentNonExisting() {
         params.id = 1000
-        def model = controller.editPayment()
+        controller.editPayment()
         assert 'default.not.found.message' == flash.message
         assert '/dunning/list' == response.redirectedUrl
     }

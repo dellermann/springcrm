@@ -1,7 +1,7 @@
 /*
  * Person.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Person} represents a person of an organization.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class Person {
 
@@ -210,6 +210,21 @@ class Person {
 		return s.toString()
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Person) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
     String toString() {
 		StringBuilder s = new StringBuilder()
 		if (lastName) {

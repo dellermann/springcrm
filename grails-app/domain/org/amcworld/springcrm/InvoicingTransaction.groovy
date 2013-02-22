@@ -20,9 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static java.math.RoundingMode.HALF_UP
-import java.util.List;
-
 
 /**
  * The class {@code InvoicingTransaction} acts as a base class of invoicing
@@ -293,6 +290,20 @@ class InvoicingTransaction {
 	double computeTotal() {
 		return subtotalGross - discountPercentAmount - discountAmount + adjustment
 	}
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof InvoicingTransaction) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
 
 	String toString() {
 		return subject

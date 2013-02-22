@@ -83,7 +83,22 @@ class Call {
 
     //-- Public methods -------------------------
 
-	String toString() {
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Call) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+	@Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
+    String toString() {
 		return subject
 	}
 }

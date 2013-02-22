@@ -1,7 +1,7 @@
 /*
  * GoogleDataSyncStatus.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * synchronization state of a content item with Google.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class GoogleDataSyncStatus {
 
@@ -49,6 +49,25 @@ class GoogleDataSyncStatus {
 
 
     //-- Public methods -------------------------
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Call) {
+            return obj.user == user && obj.type == type && obj.itemId == itemId
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode()
+    }
+
+    @Override
+    String toString() {
+        return "${user.userName}/${type}/${itemId}"
+    }
 
     /**
      * Sets the synchronization status to the current date and ETag.

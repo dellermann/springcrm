@@ -1,7 +1,7 @@
 /*
  * ProxyRequest.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,13 @@
 
 package org.amcworld.springcrm.google
 
-import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.HttpRequest
 import com.google.api.client.http.HttpRequestFactory
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpResponse
+import com.google.api.client.http.HttpResponseException
 import com.google.api.client.http.HttpTransport
-import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.JsonFactory
 import com.google.api.client.util.GenericData
 
 
@@ -36,7 +35,7 @@ import com.google.api.client.util.GenericData
  * AMC World proxy in order to perform OAuth2 communication.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  * @since   1.0
  */
 class ProxyRequest extends GenericData {

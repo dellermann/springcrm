@@ -1,7 +1,7 @@
 /*
  * CalendarEventController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,20 +20,13 @@
 
 package org.amcworld.springcrm
 
-import com.google.api.services.calendar.CalendarScopes
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.jackson.JacksonFactory
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code CalendarEventController} contains actions which manage
  * calendar events and reminders.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class CalendarEventController {
 

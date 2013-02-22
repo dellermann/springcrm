@@ -1,7 +1,7 @@
 /*
  * ParentsCommand.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +30,14 @@ import org.apache.commons.logging.LogFactory
  * The class {@code ParentsCommand} represents ...
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  * @since   1.2
  */
 class ParentsCommand extends Command {
 
     //-- Constants ------------------------------
 
-    private static final log = LogFactory.getLog(this)
+//    private static final log = LogFactory.getLog(this)
 
 
     //-- Public methods -------------------------

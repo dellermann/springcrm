@@ -1,7 +1,7 @@
 /*
  * CalendarEventControllerTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import grails.test.mixin.TestFor
  * for {@code CalendarEventController}.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 @TestFor(CalendarEventController)
 @Mock([CalendarEvent, RecurrenceData, Reminder, Organization, User])
@@ -244,7 +244,7 @@ class CalendarEventControllerTests {
 
     void testEditNonExisting() {
         params.id = 1
-        def model = controller.edit()
+        controller.edit()
         assert 'default.not.found.message' == flash.message
         assert '/calendarEvent/list' == response.redirectedUrl
     }

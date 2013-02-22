@@ -95,6 +95,7 @@ grails.project.dependency.resolution = {
             export = false
         }
         compile(
+            ':codenarc:0.18.1',
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
@@ -115,4 +116,14 @@ grails.project.dependency.resolution = {
             ':resources:1.2.RC2'
         )
     }
+}
+
+/* CodeNarc configuration */
+codenarc.properties = {
+    CatchException.enabled = false
+    DoubleNegative.enabled = false
+    EmptyMethod.enabled = false
+    GrailsPublicControllerMethod.enabled = false
+    GrailsServletContextReference.enabled = false
+    ReturnNullFromCatchBlock.enabled = false
 }

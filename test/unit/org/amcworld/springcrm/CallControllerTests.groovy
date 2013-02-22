@@ -1,7 +1,7 @@
 /*
  * CallControllerTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import grails.test.mixin.TestFor
  * {@code CallController}.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 @TestFor(CallController)
 @Mock([Call, Organization, Person])
@@ -63,7 +63,7 @@ class CallControllerTests {
 
     void testListNonEmpty() {
         def d = new Date()
-        def callEvent = makeCallFixture(d)
+        makeCallFixture(d)
         def model = controller.list()
         assert null != model.callInstanceList
         assert 1 == model.callInstanceList.size()
@@ -79,7 +79,7 @@ class CallControllerTests {
     }
 
     void testListWithLetter() {
-        def callEvent = makeCallFixture()
+        makeCallFixture()
         params.letter = 'T'
         def model = controller.list()
         assert null != model.callInstanceList
@@ -295,7 +295,7 @@ class CallControllerTests {
 
     void testEditNonExisting() {
         params.id = 1
-        def model = controller.edit()
+        controller.edit()
         assert 'default.not.found.message' == flash.message
         assert '/call/list' == response.redirectedUrl
     }

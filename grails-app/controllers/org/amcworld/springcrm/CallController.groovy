@@ -1,7 +1,7 @@
 /*
  * CallController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,13 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code CallController} contains actions which manage phone calls
  * associated to an organization or person.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class CallController {
 

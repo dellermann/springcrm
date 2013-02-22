@@ -241,6 +241,21 @@ class PurchaseInvoice {
         return color
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PurchaseInvoice) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
 	String toString() {
 		return subject
 	}

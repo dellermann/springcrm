@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import groovy.io.FileType
 import javax.servlet.ServletContext
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 
@@ -52,7 +51,7 @@ class InstallService {
     //-- Instance variables ---------------------
 
     def grailsApplication
-    ServletContext servletContext = SCH.servletContext
+    final ServletContext servletContext = SCH.servletContext
 
 
     //-- Public methods -------------------------

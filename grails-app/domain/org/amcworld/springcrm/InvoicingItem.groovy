@@ -81,6 +81,21 @@ class InvoicingItem {
 		return quantity * unitPrice
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof InvoicingItem) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
 	String toString() {
 		return name
 	}

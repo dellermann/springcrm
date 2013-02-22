@@ -1,7 +1,7 @@
 /*
  * ProxyCredential.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,11 @@
 package org.amcworld.springcrm.google
 
 import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.auth.oauth2.Credential.AccessMethod;
-import com.google.api.client.auth.oauth2.CredentialRefreshListener;
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.http.HttpExecuteInterceptor;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
+import com.google.api.client.auth.oauth2.CredentialRefreshListener
+import com.google.api.client.auth.oauth2.TokenResponse
+import com.google.api.client.auth.oauth2.Credential.AccessMethod
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.json.JsonFactory
 
 
 /**
@@ -36,7 +34,7 @@ import com.google.api.client.json.JsonFactory;
  * instead of to the Google server.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  * @since   1.0
  */
 class ProxyCredential extends Credential {

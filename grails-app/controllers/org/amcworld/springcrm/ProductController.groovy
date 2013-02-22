@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import grails.converters.JSON
-import org.springframework.dao.DataIntegrityViolationException
 
 
 /**

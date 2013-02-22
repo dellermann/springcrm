@@ -1,7 +1,7 @@
 /*
  * GoogleSync.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory
  *              service
  * @param <G>   the type of Google entries which are handled by this service
  * @author      Daniel Ellermann
- * @version     1.2
+ * @version     1.3
  * @since       1.0
  */
 abstract class GoogleSync<E, G> implements GoogleService {
@@ -179,7 +179,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
                     }
                     status.delete(flush: true)
                 }
-            } catch (RecoverableGoogleSyncException e) { /* ignore */ }
+            } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
         }
 
         /* create new entries */
@@ -189,7 +189,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
                 log.debug "L exists, G doesn't exist → create G: L = ${localEntry}"
                 G googleEntry = syncInsertGoogle(localEntry)
                 insertStatus(localEntry, googleEntry)
-            } catch (RecoverableGoogleSyncException e) { /* ignore */ }
+            } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
         }
         log.debug 'Start syncing with Google, part III (L = local entry, G = Google entry)'
         if (allowLocalCreate) {
@@ -198,7 +198,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
                     log.debug "L doesn't exist, G exists → create L: G = ${googleEntryToString(googleEntry)}"
                     E localEntry = syncInsertLocal(googleEntry)
                     insertStatus(localEntry, googleEntry)
-                } catch (RecoverableGoogleSyncException e) { /* ignore */ }
+                } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
             }
         } else if (log.debugEnabled && googleEntries.size()) {
             log.debug "    Creating local entries denied by administrator (${googleEntries.size()} entries)."

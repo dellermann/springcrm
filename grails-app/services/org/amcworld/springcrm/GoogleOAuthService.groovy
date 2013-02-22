@@ -1,7 +1,7 @@
 /*
  * GoogleOAuthService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,10 @@
 package org.amcworld.springcrm
 
 import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.jackson.JacksonFactory
-import javax.servlet.http.HttpSession;
-import org.amcworld.springcrm.google.ProxyAuthorizationCodeFlow;
+import com.google.api.client.http.HttpResponseException
+import org.amcworld.springcrm.google.ProxyAuthorizationCodeFlow
 import org.amcworld.springcrm.google.ProxyCredential
-import org.amcworld.springcrm.google.UserCredentialStore;
+import org.amcworld.springcrm.google.UserCredentialStore
 
 
 /**
@@ -37,19 +34,10 @@ import org.amcworld.springcrm.google.UserCredentialStore;
  * authentication.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  * @since   1.0
  */
 class GoogleOAuthService extends GoogleService {
-
-    //-- Instance variables ---------------------
-
-    /**
-     * The authorization code flow to obtain credential for the Google API via
-     * the AMC World proxy.
-     */
-    protected ProxyAuthorizationCodeFlow flow
-
 
     //-- Public methods -------------------------
 
@@ -59,11 +47,9 @@ class GoogleOAuthService extends GoogleService {
      *
      * @return  the authorization code flow instance
      */
-    synchronized ProxyAuthorizationCodeFlow getAuthorizationCodeFlow() {
-        if (flow == null) {
-            flow = new ProxyAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY)
-            flow.setCredentialStore(new UserCredentialStore())
-        }
+    ProxyAuthorizationCodeFlow getAuthorizationCodeFlow() {
+        def flow = new ProxyAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY)
+        flow.credentialStore = new UserCredentialStore()
         return flow
     }
 

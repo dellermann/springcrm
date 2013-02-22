@@ -51,4 +51,27 @@ class LruEntry {
 	long itemId
 	long pos
 	String name
+
+
+    //-- Public methods -------------------------
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof LruEntry) {
+            return obj.user == user && obj.controller == controller &&
+                obj.itemId == itemId
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode()
+    }
+
+    @Override
+    String toString() {
+        return "${user.userName}/${controller}/${itemId}"
+    }
 }

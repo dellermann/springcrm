@@ -1,7 +1,7 @@
 /*
  * FopService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class FopService {
 
@@ -67,7 +67,7 @@ class FopService {
 
     def grailsApplication
     def messageSource
-	ServletContext servletContext = SCH.servletContext
+	final ServletContext servletContext = SCH.servletContext
 
 
     //-- Public methods -------------------------
@@ -189,7 +189,7 @@ class FopService {
             try {
                 InputStream is = getTemplateFile("${entry.value}/meta.properties")
                 if (is) props.load(is)
-            } catch (IOException e) { /* ignored */ }
+            } catch (IOException ignored) { /* ignored */ }
             String name = props.getProperty('name')
             if (!name) {
                 name = messageSource.getMessage(

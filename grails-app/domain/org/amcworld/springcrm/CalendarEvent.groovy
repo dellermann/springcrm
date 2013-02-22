@@ -93,6 +93,15 @@ class CalendarEvent {
 
     //-- Public methods -------------------------
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CalendarEvent) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
     CalendarEvent eventAtDate(Date d) {
         def res = new CalendarEvent([
             subject: subject, location: location, description: description,
@@ -104,7 +113,13 @@ class CalendarEvent {
         return res
     }
 
-	String toString() {
+	@Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
+    String toString() {
 		return subject
 	}
 }
@@ -167,6 +182,18 @@ class RecurrenceData implements MessageSourceResolvable {
 
     //-- Public methods -------------------------
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof RecurrenceData) {
+            return obj.type == type && obj.until == until &&
+                obj.interval == interval && obj.monthDay == monthDay &&
+                obj.weekdays == weekdays && obj.weekdayOrd == weekdayOrd &&
+                obj.month == month
+        } else {
+            return false
+        }
+    }
+
 	List<Integer> getWeekdaysAsList() {
 		List<Integer> res = null
 		if (weekdays != null && weekdays.length() > 0) {
@@ -218,5 +245,29 @@ class RecurrenceData implements MessageSourceResolvable {
 
     String getDefaultMessage() {
         return ''
+    }
+
+    @Override
+    public int hashCode() {
+        return type
+    }
+
+    @Override
+    String toString() {
+        def buf = new StringBuilder()
+        buf << type
+        buf << ': '
+        buf << (monthDay ?: '*')
+        buf << ' '
+        buf << month ?: '*'
+        buf << ' '
+        buf << weekdays ?: '*'
+        if (weekdayOrd) {
+            buf << ':' << weekdayOrd
+        }
+        if (interval > 1) {
+            buf << ' /' << interval
+        }
+        return buf.toString()
     }
 }

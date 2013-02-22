@@ -86,4 +86,23 @@ class Reminder {
         }
         return new Reminder([value: m[0][1] as Integer, unit: m[0][2]])
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Reminder) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
+    String toString() {
+        return value + unit
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * SelValue.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * which may be defined by the user.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class SelValue {
 
@@ -50,6 +50,21 @@ class SelValue {
 
     //-- Public methods -------------------------
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SelValue) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
     String toString() {
         return name ?: ''
     }

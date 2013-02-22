@@ -22,8 +22,6 @@ package org.amcworld.springcrm
 
 import com.google.api.client.auth.oauth2.Credential
 import org.apache.commons.lang.LocaleUtils
-import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
 /**

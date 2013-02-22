@@ -1,7 +1,7 @@
 /*
  * Connector.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory
  * The class {@code Connector} represents ...
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  * @since   1.2
  */
 class Connector {
@@ -215,9 +215,7 @@ class Connector {
     protected Command createCommandClass(String command) {
         def name = "${this.class.package.name}.command.${command.capitalize()}Command"
         try {
-            Class<?> cls = Class.forName(
-                name, true, Thread.currentThread().contextClassLoader
-            )
+            Class<?> cls = Thread.currentThread().contextClassLoader.loadClass(name)
             log.debug "Found class ${name} for command '${command}'."
             return cls.newInstance()
         } catch (ClassNotFoundException up) {

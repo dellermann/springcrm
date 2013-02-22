@@ -1,7 +1,7 @@
 /*
  * I18nController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,8 @@
 
 package org.amcworld.springcrm
 
-import java.io.File
 import java.text.Bidi
 import java.text.DateFormatSymbols
-import java.util.Map
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
@@ -33,7 +31,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * {@code /js/i18n/i18n-source.js}.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class I18nController {
 

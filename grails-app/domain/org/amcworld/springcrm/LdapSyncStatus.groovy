@@ -1,7 +1,7 @@
 /*
  * LdapSyncStatus.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * a content item with LDAP.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class LdapSyncStatus {
 
@@ -43,4 +43,26 @@ class LdapSyncStatus {
 	Long itemId
 	String dn
 	Date lastSync = new Date()
+
+
+    //-- Public methods -------------------------
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof LdapSyncStatus) {
+            return obj.itemId == itemId
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return itemId as int
+    }
+
+    @Override
+    String toString() {
+        return "${itemId} → ${dn}"
+    }
 }

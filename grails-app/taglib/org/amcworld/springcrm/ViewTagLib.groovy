@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,7 +141,6 @@ class ViewTagLib {
 	 *                         the currency symbol; defaults to false
 	 */
 	def formatCurrency = { attrs, body ->
-        def withCurrencySymbol = true
 		def number = attrs.number
 		if (number || attrs.displayZero) {
             Locale locale = userService.currentLocale

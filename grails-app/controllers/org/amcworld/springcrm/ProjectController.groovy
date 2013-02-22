@@ -1,7 +1,7 @@
 /*
  * ProjectController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ package org.amcworld.springcrm
 
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.codehaus.groovy.grails.commons.GrailsClass
-import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -30,7 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * project management.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class ProjectController {
 
@@ -217,7 +216,7 @@ class ProjectController {
             } else {
                 redirect(action: 'list')
             }
-        } catch (DataIntegrityViolationException e) {
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project')])
             redirect(action: 'show', id: params.id)
         }
@@ -265,7 +264,6 @@ class ProjectController {
                 }
             }
             if (params.documents) {
-                String rootDir = fileService.rootDir
                 Volume volume = fileService.localVolume
                 params.documents.split(',').each {
                     Map<String, Object> stat = volume.file(it)

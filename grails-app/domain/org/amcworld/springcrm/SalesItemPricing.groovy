@@ -209,4 +209,23 @@ class SalesItemPricing {
     double getStep3TotalPrice() {
         return step2Total
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SalesItemPricing) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
+    String toString() {
+        return "Sales item pricing ${id}"
+    }
 }

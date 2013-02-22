@@ -1,7 +1,7 @@
 /*
  * GoogleCalendarSync.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,9 @@
 
 package org.amcworld.springcrm.google
 
-import com.google.gdata.client.GoogleService;
-import java.util.Map;
-import com.google.gdata.data.contacts.ContactEntry;
-import org.amcworld.springcrm.CalendarEvent;
+import com.google.gdata.client.GoogleService
+import com.google.gdata.data.contacts.ContactEntry
+import org.amcworld.springcrm.CalendarEvent
 
 
 /**
@@ -31,7 +30,7 @@ import org.amcworld.springcrm.CalendarEvent;
  * Google.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  * @since   1.0
  */
 class GoogleCalendarSync extends GoogleSync<CalendarEvent, ContactEntry> {
@@ -117,6 +116,7 @@ class GoogleCalendarSync extends GoogleSync<CalendarEvent, ContactEntry> {
         return null
     }
 
+    @Override
     protected String getUrl(ContactEntry entry) {
         return null
     }

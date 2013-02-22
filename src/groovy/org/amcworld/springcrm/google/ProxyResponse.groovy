@@ -1,7 +1,7 @@
 /*
  * ProxyResponse.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,15 +28,9 @@ import com.google.api.client.util.GenericData
  * The class {@code ProxyResponse} represents ...
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class ProxyResponse extends GenericData {
-
-    //-- Instance variables ---------------------
-
-    private short code
-    private String message
-
 
     //-- Properties -----------------------------
 

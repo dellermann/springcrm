@@ -1,7 +1,7 @@
 /*
  * InvoiceController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,12 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class InvoiceController {
 
@@ -326,7 +324,7 @@ class InvoiceController {
 		Integer number = null
 		try {
 			number = params.name as Integer
-		} catch (NumberFormatException) { /* ignored */ }
+		} catch (NumberFormatException ignored) { /* ignored */ }
 		def organization = params.organization ? Organization.get(params.organization) : null
 
 		def c = Invoice.createCriteria()
@@ -373,7 +371,6 @@ class InvoiceController {
 	}
 
 	def listUnpaidBills() {
-		InvoiceStage stage = InvoiceStage.get(902)
 		def c = Invoice.createCriteria()
 		def invoiceInstanceList = c.list {
 			and {

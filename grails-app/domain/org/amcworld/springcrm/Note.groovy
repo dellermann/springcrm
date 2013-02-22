@@ -79,6 +79,21 @@ class Note {
 		return seqNumberService.format(getClass(), number)
 	}
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Note) {
+            return obj.id == id
+        } else {
+            return false
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id as int
+    }
+
+    @Override
 	String toString() {
 		return title ?: ''
 	}

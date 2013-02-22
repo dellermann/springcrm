@@ -1,7 +1,7 @@
 /*
  * LocalFileSystemVolume.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,16 @@
 
 package org.amcworld.springcrm.elfinder.fs
 
-import org.apache.commons.io.FileUtils;
-import java.io.InputStream;
 import net.sf.jmimemagic.Magic
 import net.sf.jmimemagic.MagicMatchNotFoundException
+import org.apache.commons.io.FileUtils
 
 
 /**
  * The class {@code LocalFileSystemVolume} represents ...
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
  */
 class LocalFileSystemVolume extends Volume {
 

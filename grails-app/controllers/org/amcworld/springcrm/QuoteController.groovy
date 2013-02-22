@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,12 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class QuoteController {
 
@@ -246,7 +244,7 @@ class QuoteController {
 		Integer number = null
 		try {
 			number = params.name as Integer
-		} catch (NumberFormatException) { /* ignored */ }
+		} catch (NumberFormatException ignored) { /* ignored */ }
 		def organization = params.organization ? Organization.get(params.organization) : null
 
 		def c = Quote.createCriteria()

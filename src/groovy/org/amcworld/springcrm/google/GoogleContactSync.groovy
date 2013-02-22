@@ -1,7 +1,7 @@
 /*
  * GoogleContactSync.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,22 +20,21 @@
 
 package org.amcworld.springcrm.google
 
-import com.google.gdata.util.PreconditionFailedException;
 import com.google.gdata.client.GoogleService
-import com.google.gdata.client.Query;
+import com.google.gdata.client.Query
 import com.google.gdata.client.Service.GDataRequest
 import com.google.gdata.client.contacts.ContactsService
+import com.google.gdata.data.Link
 import com.google.gdata.data.contacts.*
 import com.google.gdata.data.contacts.ContactEntry
 import com.google.gdata.data.extensions.*
 import com.google.gdata.data.extensions.Organization as GDataOrg
-import com.google.gdata.data.Link
 import com.google.gdata.util.ContentType
-import com.google.gdata.util.InvalidEntryException;
+import com.google.gdata.util.InvalidEntryException
+import com.google.gdata.util.PreconditionFailedException
 import com.google.gdata.util.ResourceNotFoundException
 import net.sf.jmimemagic.Magic
 import org.amcworld.springcrm.Person
-import org.amcworld.springcrm.google.RecoverableGoogleSyncException
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
@@ -44,7 +43,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  * @since   1.0
  */
 class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
@@ -469,7 +468,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                     log.debug "Loaded ${res.size()}/${numEntries} Google entries."
                 }
             }
-        } catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException ignored) {
             /* already handled -> res = null */
         }
         return res
