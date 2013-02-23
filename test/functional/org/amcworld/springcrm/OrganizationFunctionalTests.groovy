@@ -1,5 +1,5 @@
 /*
- * OrganizationTest.groovy
+ * OrganizationFunctionalTests.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -31,14 +31,14 @@ import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code OrganizationTest} represents a functional test case for the
- * organization section of SpringCRM.
+ * The class {@code OrganizationFunctionalTests} represents a functional test
+ * case for the organization section of SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class OrganizationTest extends GeneralTestCase {
+class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------
 

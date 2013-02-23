@@ -1,5 +1,5 @@
 /*
- * PersonTest.groovy
+ * PersonFunctionalTests.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -29,14 +29,14 @@ import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code PersonTest} represents a functional test case for the
+ * The class {@code PersonFunctionalTests} represents a functional test case for the
  * person section of SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class PersonTest extends GeneralTestCase {
+class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------
 

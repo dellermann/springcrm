@@ -1,5 +1,5 @@
 /*
- * InstallationTest.groovy
+ * InstallationFunctionalTests.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -32,14 +32,14 @@ import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code InstallationTest} represents a functional test case for the
- * installer in SpringCRM.
+ * The class {@code InstallationFunctionalTests} represents a functional test
+ * case for the installer in SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class InstallationTest extends GeneralTestCase {
+class InstallationFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Constants ------------------------------
 

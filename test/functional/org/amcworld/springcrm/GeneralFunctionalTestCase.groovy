@@ -1,5 +1,5 @@
 /*
- * GeneralTestCase.groovy
+ * GeneralFunctionalTestCase.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -31,14 +31,14 @@ import org.openqa.selenium.firefox.FirefoxDriver
 
 
 /**
- * The class {@code GeneralTestCase} represents a general base class for all
+ * The class {@code GeneralFunctionalTestCase} represents a general base class for all
  * functional test cases using Selenium.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-abstract class GeneralTestCase extends DbUnitTestCase {
+abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
 
     //-- Constants ------------------------------
 

@@ -1,5 +1,5 @@
 /*
- * CallTest.groovy
+ * CallFunctionalTests.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -29,14 +29,14 @@ import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code CallTest} represents a functional test case for the phone
- * call section of SpringCRM.
+ * The class {@code CallFunctionalTests} represents a functional test case for
+ * the phone call section of SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class CallTest extends GeneralTestCase {
+class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------
 

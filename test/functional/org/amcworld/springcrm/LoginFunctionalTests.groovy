@@ -1,5 +1,5 @@
 /*
- * LoginTest.groovy
+ * LoginFunctionalTests.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -26,13 +26,14 @@ import org.openqa.selenium.By
 
 
 /**
- * The class {@code LoginTest} represents ...
+ * The class {@code LoginFunctionalTests} contains functional test cases for
+ * the login procedure.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class LoginTest extends GeneralTestCase {
+class LoginFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Constants ------------------------------
 
