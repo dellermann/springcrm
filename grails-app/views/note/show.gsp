@@ -14,6 +14,7 @@
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
+        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <li><g:link action="edit" id="${noteInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${noteInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
         <li><g:link action="delete" id="${noteInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
