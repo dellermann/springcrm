@@ -53,6 +53,7 @@ environments {
             username = 'sa'
             password = ''
             dbunitXmlType = 'flat'
+            jndiName = null
         }
     }
 
