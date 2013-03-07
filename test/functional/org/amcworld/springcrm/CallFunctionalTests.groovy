@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.junit.After;
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -60,6 +61,11 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         driver.findElement(BY_LOGIN_BTN).click()
 
         open('/call/list')
+    }
+
+    @After
+    void deleteFixture() {
+        Call.executeUpdate 'delete Call c'
     }
 
     @Test

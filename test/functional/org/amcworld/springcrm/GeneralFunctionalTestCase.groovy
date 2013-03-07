@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.junit.After;
 import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
 import org.junit.Before
@@ -65,6 +66,12 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         String portNumber = System.getProperty('server.port') ?: '8080'
         baseUrl = "http://localhost:${portNumber}/${appName}"
         driver = new FirefoxDriver()
+    }
+
+    @After
+    void deleteBaseFixture() {
+        Person.executeUpdate 'delete Person p'
+        Organization.executeUpdate 'delete Organization o'
     }
 
 
