@@ -1,7 +1,7 @@
 /*
  * Quote.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Quote} represents a quote.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class Quote extends InvoicingTransaction {
 
@@ -45,7 +45,7 @@ class Quote extends InvoicingTransaction {
     //-- Instance variables ---------------------
 
 	QuoteStage stage
-	Date validUntil; /* leave semicolon here! */
+	Date validUntil
 
 
     //-- Constructors ---------------------------

@@ -244,7 +244,7 @@ class InvoicingTransaction {
 	 * @see		#getSubtotalNet()
 	 */
 	double getSubtotalGross() {
-		return subtotalNet + taxRateSums.values().sum()
+		return subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
 	}
 
 	/**

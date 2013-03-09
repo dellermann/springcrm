@@ -117,7 +117,7 @@ class QuoteController {
     def save() {
         def quoteInstance = new Quote(params)
         if (!quoteInstance.save(flush: true)) {
-            log.debug(quoteInstance.errors)
+            log.debug quoteInstance.errors
             render(view: 'create', model: [quoteInstance: quoteInstance])
             return
         }
@@ -200,7 +200,7 @@ class QuoteController {
         }
 
         if (!quoteInstance.save(flush: true)) {
-            log.debug(quoteInstance.errors)
+            log.debug quoteInstance.errors
             render(view: 'edit', model: [quoteInstance: quoteInstance])
             return
         }

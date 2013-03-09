@@ -20,15 +20,16 @@
 
 package org.amcworld.springcrm
 
-import org.junit.After;
 import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
+import org.junit.After
 import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.support.ui.Select
 
 
 /**
@@ -152,12 +153,20 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * check boxes, and radio buttons.
      *
      * @param name  the given name of the input field
-     * @return      the value of that input field
+     * @return      the value of that input field; if the input is a multiple
+     *              select control, a list of strings representing the selected
+     *              values is returned
      */
-    protected String getInputValue(String name) {
+    protected def getInputValue(String name) {
         def input = getInput(name)
         if (input.tagName == 'textarea') {
-            return input.text
+            return input.getAttribute('value') ?: input.text
+        }
+        if (input.tagName == 'select') {
+            def select = new Select(input)
+            return select.multiple \
+                ? select.allSelectedOptions*.getAttribute('value')
+                : select.firstSelectedOption.getAttribute('value')
         }
 
         String type = input.getAttribute('type')
@@ -201,7 +210,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return          the text of the field
      */
     protected String getShowFieldText(WebElement col, int row) {
-        return getShowField(col, row).text
+        return getShowField(col, row).text.trim()
     }
 
     /**
@@ -323,14 +332,24 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * Set the value of an autocompleteex input control and selects the item
      * with the given index.
      *
-     * @param id    the ID of the autocompleteex input control
-     * @param value the value to enter into the input control
-     * @param idx   the one-based position of the item which is to select
-     * @return      the selected text
+     * @param idOrName  the ID or the name of the autocompleteex input control
+     * @param value     the value to enter into the input control
+     * @param idx       the one-based position of the item which is to select
+     * @return          the selected text; {@code null} if no such element
+     *                  exists
      */
-    protected String selectAutocompleteEx(String id, String value, int idx = 1)
+    protected String selectAutocompleteEx(String idOrName, String value,
+                                          int idx = 1)
     {
-        def input = driver.findElement(By.id(id))
+        def inputs = driver.findElements(By.id(idOrName))
+        if (!inputs) {
+            inputs = driver.findElements(By.name(idOrName))
+        }
+        if (!inputs) {
+            return null
+        }
+
+        def input = inputs[0]
         input.sendKeys(value)
         Thread.sleep(1000)
         for (int i = 0; i < idx; i++) {

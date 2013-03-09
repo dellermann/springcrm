@@ -32,7 +32,7 @@
       <td class="string product-category"><g:fieldValue bean="${productInstance}" field="category" /></td>
       <td class="number product-quantity"><g:fieldValue bean="${productInstance}" field="quantity" /></td>
       <td class="string product-unit"><g:fieldValue bean="${productInstance}" field="unit" /></td>
-      <td class="currency product-unit-price"><g:formatCurrency number="${productInstance}" field="unitPrice" displayZero="true" /></td>
+      <td class="currency product-unit-price"><g:formatCurrency number="${productInstance.unitPrice}" displayZero="true" /></td>
     </tr>
   </g:each>
   </tbody>

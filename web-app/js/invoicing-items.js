@@ -45,7 +45,7 @@
         ],
 
         options: {
-            currency: "€",
+            currency: $("html").data("currency-symbol"),
             fieldNamePrefix: "items",
             imgPath: $(".price-table").data("img-path"),
             productListUrl: $(".price-table").data("product-list-url"),

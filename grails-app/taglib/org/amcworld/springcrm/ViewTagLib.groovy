@@ -335,10 +335,21 @@ class ViewTagLib {
         String currencyId = ConfigHolder.instance['currency'] as String
 
         /* fix for old currency symbols in table config */
-        if (currencyId.length() != 3) {
+        if (currencyId != null && currencyId.length() != 3) {
             currencyId = 'EUR'
         }
-        return currencyId ? Currency.getInstance(currencyId)
-                : Currency.getInstance(locale)
+
+        Currency currency = null
+        if (currencyId) {
+            try {
+                currency = Currency.getInstance(currencyId)
+            } catch (IllegalArgumentException ignored) { /* ignored */ }
+        }
+        if (!currency) {
+            try {
+                currency = Currency.getInstance(locale)
+            } catch (IllegalArgumentException ignored) { /* ignored */ }
+        }
+        return currency ?: Currency.getInstance('EUR')
     }
 }

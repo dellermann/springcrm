@@ -3,6 +3,18 @@
 <dataset>
 
   <!-- Base data -->
+
+  <!--
+
+    XXX: The TaxRate entries must come first because otherwise DbUnit thinks
+    there is no tax_value column in table sel_value.  According to the DbUnit
+    documentation [http://www.dbunit.org/apidocs/org/dbunit/dataset/xml/FlatXmlDataSet.html]
+    you can enable column sensing or provide a DTD for a clean solution of this
+    problem.
+
+  -->
+  <sel_value id="400" version="0" name="19 %" order_id="10" class="org.amcworld.springcrm.TaxRate" tax_value="0.19"/>
+  <sel_value id="401" version="0" name="7 %" order_id="20" class="org.amcworld.springcrm.TaxRate" tax_value="0.07"/>
   <sel_value id="1" version="0" name="Herr" order_id="10" class="org.amcworld.springcrm.Salutation"/>
   <sel_value id="2" version="0" name="Frau" order_id="20" class="org.amcworld.springcrm.Salutation"/>
   <sel_value id="100" version="0" name="Kunde" order_id="10" class="org.amcworld.springcrm.OrgType"/>
@@ -19,13 +31,12 @@
   <sel_value id="204" version="0" name="stillgelegt" order_id="50" class="org.amcworld.springcrm.Rating"/>
   <sel_value id="300" version="0" name="Stück" order_id="10" class="org.amcworld.springcrm.Unit"/>
   <sel_value id="301" version="0" name="Einheiten" order_id="20" class="org.amcworld.springcrm.Unit"/>
-  <sel_value id="302" version="0" name="Kartons" order_id="30" class="org.amcworld.springcrm.Unit"/>
-  <sel_value id="303" version="0" name="Stunden" order_id="40" class="org.amcworld.springcrm.Unit"/>
-  <sel_value id="304" version="0" name="Minuten" order_id="50" class="org.amcworld.springcrm.Unit"/>
-  <sel_value id="305" version="0" name="m" order_id="60" class="org.amcworld.springcrm.Unit"/>
-  <sel_value id="306" version="0" name="kg" order_id="70" class="org.amcworld.springcrm.Unit"/>
-  <sel_value id="400" version="0" name="19 %" order_id="10" class="org.amcworld.springcrm.TaxRate" tax_value="0.19"/>
-  <sel_value id="401" version="0" name="7 %" order_id="20" class="org.amcworld.springcrm.TaxRate" tax_value="0.07"/>
+  <sel_value id="302" version="0" name="Packung" order_id="30" class="org.amcworld.springcrm.Unit"/>
+  <sel_value id="303" version="0" name="Kartons" order_id="40" class="org.amcworld.springcrm.Unit"/>
+  <sel_value id="304" version="0" name="Stunden" order_id="50" class="org.amcworld.springcrm.Unit"/>
+  <sel_value id="305" version="0" name="Minuten" order_id="60" class="org.amcworld.springcrm.Unit"/>
+  <sel_value id="306" version="0" name="m" order_id="70" class="org.amcworld.springcrm.Unit"/>
+  <sel_value id="307" version="0" name="kg" order_id="80" class="org.amcworld.springcrm.Unit"/>
   <sel_value id="500" version="0" name="Abholung" order_id="10" class="org.amcworld.springcrm.Carrier"/>
   <sel_value id="501" version="0" name="elektronisch" order_id="20" class="org.amcworld.springcrm.Carrier"/>
   <sel_value id="502" version="0" name="DHL" order_id="30" class="org.amcworld.springcrm.Carrier"/>
@@ -124,8 +135,9 @@
   <sel_value id="2502" version="0" name="versendet" order_id="30" class="org.amcworld.springcrm.CreditMemoStage"/>
   <sel_value id="2503" version="0" name="bezahlt" order_id="40" class="org.amcworld.springcrm.CreditMemoStage"/>
   <sel_value id="2504" version="0" name="storniert" order_id="50" class="org.amcworld.springcrm.CreditMemoStage"/>
-  <sel_value id="3000" version="0" name="Hardware" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
-  <sel_value id="3001" version="0" name="Software" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
+  <sel_value id="3000" version="0" name="Materialien" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
+  <sel_value id="3001" version="0" name="Maschinen" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
+  <sel_value id="3002" version="0" name="Technik" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
   <seq_number id="1" version="0" controller_name="quote" end_value="99999" prefix="A" start_value="10000" suffix=""/>
   <seq_number id="2" version="0" controller_name="salesOrder" end_value="99999" prefix="B" start_value="10000" suffix=""/>
   <seq_number id="3" version="0" controller_name="invoice" end_value="99999" prefix="R" start_value="10000" suffix=""/>
@@ -160,7 +172,12 @@
   <config version="0" name="installStatus" value="1"/>
 
   <!-- Default administrator user -->
-  <user_data version="0" date_created="2013-01-23 15:52:19" email="m.kampe@kampe.example" fax="04536 45301-90" first_name="Marcus" last_name="Kampe" last_updated="2013-01-23 15:52:19" mobile="0172 12034056" password="c9b359951c09c5d04de4f852746671ab2b2d0994" phone="04536 45301-10" phone_home="04536 65530" user_name="mkampe" admin="1"/>
+  <user_data id="1" version="0" date_created="2013-01-23 15:52:19"
+    email="m.kampe@kampe.example" fax="04536 45301-90" first_name="Marcus"
+    last_name="Kampe" last_updated="2013-01-23 15:52:19" mobile="0172 12034056"
+    password="c9b359951c09c5d04de4f852746671ab2b2d0994" phone="04536 45301-10"
+    phone_home="04536 65530" user_name="mkampe" admin="1"/>
+  <user_setting id="1" version="0" name="locale" user_id="1" value="de_DE"/>
 
   <!-- Empty all other tables to maintain referential integrity -->
   <calendar_event/>

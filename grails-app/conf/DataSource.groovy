@@ -50,6 +50,7 @@ environments {
         dataSource {
             driverClassName = 'org.h2.Driver'
             url = 'jdbc:h2:mem:testDb'
+//            url = "jdbc:h2:file:${appName}"
             username = 'sa'
             password = ''
             dbunitXmlType = 'flat'
@@ -89,8 +90,8 @@ environments {
     standalone {
         dataSource {
             driverClassName = 'org.h2.Driver'
-            url = "jdbc:h2:file:${userHome}/.${appName}/database/springcrm"
-            username = 'springcrm'
+            url = "jdbc:h2:file:${userHome}/.${appName}/database/${appName}"
+            username = appName
             password = ''
             properties {
                 validationQuery = 'select 1'

@@ -32,7 +32,7 @@
       <td class="string service-category"><g:fieldValue bean="${serviceInstance}" field="category" /></td>
       <td class="number service-quantity"><g:fieldValue bean="${serviceInstance}" field="quantity" /></td>
       <td class="string service-unit"><g:fieldValue bean="${serviceInstance}" field="unit" /></td>
-      <td class="currency service-unit-price"><g:formatCurrency number="${serviceInstance}" field="unitPrice" displayZero="true" /></td>
+      <td class="currency service-unit-price"><g:formatCurrency number="${serviceInstance.unitPrice}" displayZero="true" /></td>
     </tr>
   </g:each>
   </tbody>

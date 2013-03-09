@@ -13,9 +13,8 @@
     <addNotNullConstraint columnDataType="double precision"
       columnName="discount_percent" tableName="invoicing_transaction"
       defaultNullValue="0" />
-    <addNotNullConstraint columnDataType="double precision"
-      columnName="payment_amount" tableName="invoicing_transaction"
-      defaultNullValue="0" />
+    <modifyDataType tableName="invoicing_transaction"
+      columnName="payment_amount" newDataType="double precision" />
     <addNotNullConstraint columnDataType="double precision"
       columnName="shipping_costs" tableName="invoicing_transaction"
       defaultNullValue="0" />
