@@ -285,6 +285,139 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     }
 
     /**
+     * Prepares a quote and stores it into the database.
+     *
+     * @param org   the organization the quote belongs to
+     * @param p     the person the quote belongs to
+     * @return      the created quote
+     */
+    protected Quote prepareQuote(Organization org, Person p) {
+        def quote = new Quote(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.FEBRUARY, 20).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.FEBRUARY, 21).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
+            footerText: 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.',
+            notes: 'Angebot unterliegt möglicherweise weiteren Änderungen.',
+            stage: QuoteStage.get(602),
+            validUntil: new GregorianCalendar(2013, Calendar.MARCH, 20).time
+        )
+        quote.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        return quote
+    }
+
+    /**
+     * Prepares a sales order and stores it into the database.
+     *
+     * @param org   the organization the quote belongs to
+     * @param p     the person the quote belongs to
+     * @param quote the quote associated to this sales order
+     * @return      the created sales order
+     */
+    protected SalesOrder prepareSalesOrder(Organization org, Person p,
+                                           Quote quote)
+    {
+        def salesOrder = new SalesOrder(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.MARCH, 4).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.MARCH, 5).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".',
+            footerText: 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.',
+            notes: 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.',
+            stage: SalesOrderStage.get(802),
+            dueDate: new GregorianCalendar(2013, Calendar.MARCH, 28).time,
+            quote: quote
+        )
+        salesOrder.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        return salesOrder
+    }
+
+    /**
      * Removes the row with the given index.
      *
      * @param rowIdx    the zero-based index of the table row
