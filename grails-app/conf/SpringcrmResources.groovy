@@ -101,8 +101,8 @@ modules = {
         dependsOn 'core'
         defaultBundle 'invoicing-transaction-form'
 
-        resource '/js/invoicing-items.js'
-        resource '/js/invoicing-transaction-form.js'
+        resource '/js/app/invoicing-items.js'
+        resource '/js/app/invoicing-transaction-form.js'
     }
 
     'jquery-ui-selectmenu' {

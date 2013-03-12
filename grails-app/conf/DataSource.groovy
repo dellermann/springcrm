@@ -55,6 +55,11 @@ environments {
             password = ''
             dbunitXmlType = 'flat'
             jndiName = null
+            properties {
+                connectionInitSqls = [
+                    'SET REFERENTIAL_INTEGRITY FALSE'
+                ]
+            }
         }
     }
 

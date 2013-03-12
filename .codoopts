@@ -1,0 +1,5 @@
+--name "SpringCRM"
+--title "SpringCRM documentation"
+--private
+--output-dir ./target/docs/coffeescript
+./src/coffee

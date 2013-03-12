@@ -36,8 +36,9 @@ class QuoteController {
 
     //-- Instance variables ---------------------
 
-	def fopService
-	def seqNumberService
+	FopService fopService
+    InvoicingTransactionService invoicingTransactionService
+	SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
@@ -115,8 +116,8 @@ class QuoteController {
 	}
 
     def save() {
-        def quoteInstance = new Quote(params)
-        if (!quoteInstance.save(flush: true)) {
+        def quoteInstance = new Quote()
+        if (!invoicingTransactionService.saveInvoicingTransaction(quoteInstance, params)) {
             log.debug quoteInstance.errors
             render(view: 'create', model: [quoteInstance: quoteInstance])
             return
@@ -170,36 +171,8 @@ class QuoteController {
                 return
             }
         }
-		if (params.autoNumber) {
-			params.number = quoteInstance.number
-		}
 
-        /*
-         * The original implementation which worked in Grails 2.0.0.
-         */
-        quoteInstance.properties = params
-//        quoteInstance.items?.retainAll { it != null }
-
-        /*
-         * XXX  This code is necessary because the default implementation
-         *      in Grails does not work.  The above lines worked in Grails
-         *      2.0.0.  Now, either data binding or saving does not work
-         *      correctly if items were deleted and gaps in the indices
-         *      occurred (e. g. 0, 1, null, null, 4) or the items were
-         *      re-ordered.  Then I observed cluttering in saved data
-         *      columns.
-         *      The following lines do not make me happy but they work.
-         *      In future, this problem hopefully will be fixed in Grails
-         *      so we can remove these lines.
-         */
-        quoteInstance.items?.clear()
-        for (int i = 0; params."items[${i}]"; i++) {
-            if (params."items[${i}]".id != 'null') {
-                quoteInstance.addToItems(params."items[${i}]")
-            }
-        }
-
-        if (!quoteInstance.save(flush: true)) {
+        if (!invoicingTransactionService.saveInvoicingTransaction(quoteInstance, params)) {
             log.debug quoteInstance.errors
             render(view: 'edit', model: [quoteInstance: quoteInstance])
             return

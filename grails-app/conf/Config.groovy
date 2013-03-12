@@ -107,6 +107,18 @@ grails {
     }
 }
 
+/* CoffeeScript compiler settings */
+'coffeescript-compiler' {
+    appSource {
+        coffeeSourcePath = 'src/coffee'
+        jsOutputPath = 'web-app/js/app'
+    }
+    pluginConfig {
+        minifyInEnvironment = ['production', 'live', 'cloud', 'standalone']
+        purgeJS = true
+    }
+}
+
 /* SpringCRM settings */
 springcrm.dir.base = "${userHome}/.${appName}"
 if (System.getenv('SPRINGCRM_HOME')) {
@@ -195,6 +207,8 @@ log4j = {
 //        'org.amcworld.springcrm.elfinder.command',
 //        'org.amcworld.springcrm.elfinder.fs',
     )
+
+    info 'org.grails.plugins.coffee.compiler'
 
     environments {
         test {

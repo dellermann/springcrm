@@ -96,6 +96,7 @@ grails.project.dependency.resolution = {
         }
         compile(
             ':codenarc:0.18.1',
+            ':coffeescript-compiler:0.9.2',
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
@@ -105,7 +106,7 @@ grails.project.dependency.resolution = {
         )
         build(
             ':standalone:1.1.1',
-            ':svn:1.0.0.M1',
+//            ':svn:1.0.0.M1',
             ":tomcat:${grailsVersion}"
         )
         runtime(

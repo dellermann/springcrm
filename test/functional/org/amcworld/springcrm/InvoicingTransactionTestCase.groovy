@@ -70,6 +70,7 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
      * @see             #CELL_NAMES
      */
     protected void checkRowValues(int rowIdx, String... values) {
+        getPriceTableInput(rowIdx, 'name').click()
         String prefix = "items[${rowIdx}].".toString()
         for (int i = 0; i < values.length; i++) {
             String value = values[i]
@@ -168,6 +169,17 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     }
 
     /**
+     * Gets the input field with the given name in the stated row in the price
+     * table.
+     *
+     * @param rowIdx    the zero-based index of the table row
+     * @param name      the name of the field such as "quantity", "name" etc.
+     */
+    protected WebElement getPriceTableInput(int rowIdx, String name) {
+        return getInput("items[${rowIdx}].${name}")
+    }
+
+    /**
      * Gets the web element representing a row in the price table.
      *
      * @param rowIdx    the zero-based index of the row
@@ -184,6 +196,7 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
      * @return          the total value
      */
     protected String getPriceTableRowTotal(int rowIdx) {
+        getPriceTableInput(rowIdx, 'name').click()
         return getPriceTableCell(rowIdx, 'total-price').
             findElement(By.tagName('output')).
             text
@@ -253,5 +266,17 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     protected int removeRow(int rowIdx) {
         getPriceTableRow(rowIdx).findElement(By.className('remove-btn')).click()
         return numPriceTableRows
+    }
+
+    /**
+     * Sets the value of the input field with the given name in the stated row
+     * in the price table.
+     *
+     * @param rowIdx    the zero-based index of the table row
+     * @param name      the name of the field such as "quantity", "name" etc.
+     * @param value     the value to set
+     */
+    protected void setPriceTableInputValue(int rowIdx, String name, String value) {
+        setInputValue "items[${rowIdx}].${name}", value
     }
 }
