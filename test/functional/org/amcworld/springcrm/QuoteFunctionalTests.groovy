@@ -514,7 +514,50 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '540,83' == total
 
         assert 3 == addNewPriceTableRow()
-        openSelectorAndSelect 2, 'products', 'P-10700'
+        WebElement dialog = openSelector(2, 'products')
+        dialog.findElement(By.xpath('.//th[2]/a')).click()
+        def tbody = dialog.findElement(By.tagName('tbody'))
+        def wait = new WebDriverWait(driver, 5)
+        assert wait.until(ExpectedConditions.stalenessOf(tbody))
+        tbody = dialog.findElement(By.tagName('tbody'))
+        assert 3 == tbody.findElements(By.xpath('./tr')).size()
+        assert 'Papier A4 80 g/m²' == tbody.findElement(By.xpath('./tr[1]/td[2]')).text
+        assert 'Papier A4 90 g/m²' == tbody.findElement(By.xpath('./tr[2]/td[2]')).text
+        assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
+        dialog.findElement(By.xpath('.//th[2]/a')).click()
+        assert wait.until(ExpectedConditions.stalenessOf(tbody))
+        tbody = dialog.findElement(By.tagName('tbody'))
+        assert 3 == tbody.findElements(By.xpath('./tr')).size()
+        assert 'Stempel' == tbody.findElement(By.xpath('./tr[1]/td[2]')).text
+        assert 'Papier A4 90 g/m²' == tbody.findElement(By.xpath('./tr[2]/td[2]')).text
+        assert 'Papier A4 80 g/m²' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
+        assert 2 == dialog.findElements(By.xpath('.//ul[@class="letter-bar"]/li[@class="available"]')).size()
+        dialog.findElement(By.xpath('.//ul[@class="letter-bar"]/li[6]/a')).click()
+        assert wait.until(ExpectedConditions.stalenessOf(tbody))
+        tbody = dialog.findElement(By.tagName('tbody'))
+        assert 3 == tbody.findElements(By.xpath('./tr')).size()
+        assert 'Papier A4 80 g/m²' == tbody.findElement(By.xpath('./tr[1]/td[2]')).text
+        assert 'Papier A4 90 g/m²' == tbody.findElement(By.xpath('./tr[2]/td[2]')).text
+        assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
+        dialog.findElement(By.name('search')).sendKeys('Papier')
+        dialog.findElement(By.tagName('button')).click()
+        assert wait.until(ExpectedConditions.stalenessOf(tbody))
+        tbody = dialog.findElement(By.tagName('tbody'))
+        assert 2 == tbody.findElements(By.xpath('./tr')).size()
+        assert 'Papier A4 80 g/m²' == tbody.findElement(By.xpath('./tr[1]/td[2]')).text
+        assert 'Papier A4 90 g/m²' == tbody.findElement(By.xpath('./tr[2]/td[2]')).text
+        assert 'Papier' == dialog.findElement(By.name('search')).getAttribute('value')
+        assert 1 == dialog.findElements(By.xpath('.//ul[@class="letter-bar"]/li[@class="available"]')).size()
+        dialog.findElement(By.name('search')).clear()
+        dialog.findElement(By.tagName('button')).click()
+        assert wait.until(ExpectedConditions.stalenessOf(tbody))
+        tbody = dialog.findElement(By.tagName('tbody'))
+        assert 3 == tbody.findElements(By.xpath('./tr')).size()
+        assert 'Papier A4 80 g/m²' == tbody.findElement(By.xpath('./tr[1]/td[2]')).text
+        assert 'Papier A4 90 g/m²' == tbody.findElement(By.xpath('./tr[2]/td[2]')).text
+        assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
+        dialog.findElement(By.linkText('P-10700')).click()
+
         checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '8,99', '19,0'
         setPriceTableInputValue 2, 'quantity', '4'
         checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
@@ -522,6 +565,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
         assert '583,62' == subtotalGross
         assert '583,62' == total
+        openSelectorAndAbort 2, 'products'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
         moveRowUp 2
         moveRowUp 1
         checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
@@ -550,6 +595,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         checkTaxRates([['7,0', '0,56'], ['19,0', '92,33']])
         assert '586,82' == subtotalGross
         assert '586,82' == total
+
+        assert !getPriceTableRow(0).findElement(By.className('up-btn')).displayed
+        assert !getPriceTableRow(3).findElement(By.className('down-btn')).displayed
 
         setInputValue('discountPercent', '2')
         getInput('discountAmount').click()

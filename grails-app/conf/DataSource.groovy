@@ -99,6 +99,9 @@ environments {
             username = appName
             password = ''
             properties {
+                connectionInitSqls = [
+                    'SET REFERENTIAL_INTEGRITY FALSE'
+                ]
                 validationQuery = 'select 1'
                 testWhileIdle = true
                 timeBetweenEvictionRunsMillis = 60000

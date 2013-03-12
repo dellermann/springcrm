@@ -234,6 +234,40 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
 
     /**
      * Opens a sales item selector dialog by clicking the corresponding link in
+     * the table row with the given index.
+     *
+     * @param rowIdx    the zero-based index of the table row
+     * @param type      the type of selector which is to open; may be either
+     *                  {@code products} or {@code services}
+     * @return          the web element representing the dialog
+     */
+    protected WebElement openSelector(int rowIdx, String type) {
+        getPriceTableRow(rowIdx).
+            findElement(By.className("select-btn-${type}")).
+            click()
+        def by = By.id("inventory-selector-${type}")
+        def wait = new WebDriverWait(driver, 5)
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(by))
+    }
+
+    /**
+     * Opens a sales item selector dialog by clicking the corresponding link in
+     * the table row with the given index.  After opening the dialog the dialog
+     * is closed again.
+     *
+     * @param rowIdx    the zero-based index of the table row
+     * @param type      the type of selector which is to open; may be either
+     *                  {@code products} or {@code services}
+     */
+    protected void openSelectorAndAbort(int rowIdx, String type) {
+        WebElement dialog = openSelector rowIdx, type
+        dialog.findElement(By.xpath('./preceding-sibling::div'))
+            .findElement(By.className('ui-dialog-titlebar-close'))
+            .click()
+    }
+
+    /**
+     * Opens a sales item selector dialog by clicking the corresponding link in
      * the table row with the given index.  After opening the dialog the stated
      * link is clicked.
      *
@@ -246,14 +280,8 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     protected void openSelectorAndSelect(int rowIdx, String type,
                                          String selectLink)
     {
-        getPriceTableRow(rowIdx).
-            findElement(By.className("select-btn-${type}")).
-            click()
-        def by = By.id("inventory-selector-${type}")
-        def wait = new WebDriverWait(driver, 5)
-        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(by))
+        WebElement dialog = openSelector rowIdx, type
         dialog.findElement(By.linkText(selectLink)).click()
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(by))
     }
 
     /**
