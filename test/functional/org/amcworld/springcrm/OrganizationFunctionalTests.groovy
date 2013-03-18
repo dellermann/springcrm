@@ -70,25 +70,25 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Organisationen' == driver.findElement(BY_HEADER).text
         assert 'Neue Organisation' == driver.findElement(BY_SUBHEADER).text
         driver.findElement(By.id('rec-type-1')).click()
-        setInputValue('name', 'Landschaftsbau Duvensee GbR')
-        setInputValue('legalForm', 'GbR')
-        new Select(driver.findElement(By.id('type'))).selectByValue('100')
-        new Select(driver.findElement(By.id('industry'))).selectByValue('1012')
-        setInputValue('phone', '04543 31233')
-        setInputValue('fax', '04543 31235')
-        setInputValue('email1', 'info@landschaftsbau-duvensee.example')
-        setInputValue('website', 'http://www.landschaftsbau-duvensee.example')
-        setInputValue('billingAddrStreet', 'Dörpstraat 25')
-        setInputValue('billingAddrPostalCode', '23898')
-        setInputValue('billingAddrLocation', 'Duvensee')
-        setInputValue('billingAddrState', 'Schleswig-Holstein')
-        setInputValue('billingAddrCountry', 'Deutschland')
-        setInputValue('shippingAddrStreet', 'Dörpstraat 25')
-        setInputValue('shippingAddrPostalCode', '23898')
-        setInputValue('shippingAddrLocation', 'Duvensee')
-        setInputValue('shippingAddrState', 'Schleswig-Holstein')
-        setInputValue('shippingAddrCountry', 'Deutschland')
-        setInputValue('notes', 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.')
+        setInputValue 'name', 'Landschaftsbau Duvensee GbR'
+        setInputValue 'legalForm', 'GbR'
+        setInputValue 'type', '100'
+        setInputValue 'industry', '1012'
+        setInputValue 'phone', '04543 31233'
+        setInputValue 'fax', '04543 31235'
+        setInputValue 'email1', 'info@landschaftsbau-duvensee.example'
+        setInputValue 'website', 'http://www.landschaftsbau-duvensee.example'
+        setInputValue 'billingAddrStreet', 'Dörpstraat 25'
+        setInputValue 'billingAddrPostalCode', '23898'
+        setInputValue 'billingAddrLocation', 'Duvensee'
+        setInputValue 'billingAddrState', 'Schleswig-Holstein'
+        setInputValue 'billingAddrCountry', 'Deutschland'
+        setInputValue 'shippingAddrStreet', 'Dörpstraat 25'
+        setInputValue 'shippingAddrPostalCode', '23898'
+        setInputValue 'shippingAddrLocation', 'Duvensee'
+        setInputValue 'shippingAddrState', 'Schleswig-Holstein'
+        setInputValue 'shippingAddrCountry', 'Deutschland'
+        setInputValue 'notes', 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/organization/show/'))
@@ -462,26 +462,26 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
         driver.findElement(By.id('rec-type-1')).click()
         driver.findElement(By.id('rec-type-2')).click()
-        setInputValue('name', 'Arne Friesing')
-        setInputValue('legalForm', 'Einzelunternehmen')
-        new Select(driver.findElement(By.id('type'))).selectByValue('104')
-        new Select(driver.findElement(By.id('industry'))).selectByValue('1021')
-        setInputValue('phone', '04541 428717')
-        setInputValue('fax', '04541 428719')
-        setInputValue('email1', 'arne@friesing.example')
-        setInputValue('website', 'http://friesing.example')
-        setInputValue('numEmployees', '1')
-        setInputValue('billingAddrStreet', 'Kirschenallee 17a')
-        setInputValue('billingAddrPostalCode', '23909')
-        setInputValue('billingAddrLocation', 'Ratzeburg')
-        setInputValue('billingAddrState', 'Schleswig-Holstein')
-        setInputValue('billingAddrCountry', 'Deutschland')
-        setInputValue('shippingAddrStreet', 'Kirschenallee 17a')
-        setInputValue('shippingAddrPostalCode', '23909')
-        setInputValue('shippingAddrLocation', 'Ratzeburg')
-        setInputValue('shippingAddrState', 'Schleswig-Holstein')
-        setInputValue('shippingAddrCountry', 'Deutschland')
-        setInputValue('notes', 'Guter, zuverlässiger Designer')
+        setInputValue 'name', 'Arne Friesing'
+        setInputValue 'legalForm', 'Einzelunternehmen'
+        setInputValue 'type', '104'
+        setInputValue 'industry', '1021'
+        setInputValue 'phone', '04541 428717'
+        setInputValue 'fax', '04541 428719'
+        setInputValue 'email1', 'arne@friesing.example'
+        setInputValue 'website', 'http://friesing.example'
+        setInputValue 'numEmployees', '1'
+        setInputValue 'billingAddrStreet', 'Kirschenallee 17a'
+        setInputValue 'billingAddrPostalCode', '23909'
+        setInputValue 'billingAddrLocation', 'Ratzeburg'
+        setInputValue 'billingAddrState', 'Schleswig-Holstein'
+        setInputValue 'billingAddrCountry', 'Deutschland'
+        setInputValue 'shippingAddrStreet', 'Kirschenallee 17a'
+        setInputValue 'shippingAddrPostalCode', '23909'
+        setInputValue 'shippingAddrLocation', 'Ratzeburg'
+        setInputValue 'shippingAddrState', 'Schleswig-Holstein'
+        setInputValue 'shippingAddrCountry', 'Deutschland'
+        setInputValue 'notes', 'Guter, zuverlässiger Designer'
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/organization/show/'))

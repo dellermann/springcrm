@@ -150,12 +150,18 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     /**
      * Gets the value of the input field with the given name.  The method
      * correctly handles all input field types including text areas,
-     * check boxes, and radio buttons.
+     * check boxes, radio buttons, and select fields.
      *
      * @param name  the given name of the input field
-     * @return      the value of that input field; if the input is a multiple
-     *              select control, a list of strings representing the selected
-     *              values is returned
+     * @return      the value of that input field; the type of value depends on
+     *              the type of input:
+     *              <ul>
+     *                <li>if the input is a multiple select field a
+     *                {@code List} is returned</li>
+     *                <li>if the input is a checkbox a {@code boolean} value is
+     *                returned</li>
+     *                <li>otherwise a string is returned</li>
+     *              </ul>
      */
     protected def getInputValue(String name) {
         def input = getInput(name)
@@ -172,14 +178,14 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         String type = input.getAttribute('type')
         switch (type) {
         case 'checkbox':
-            return input.getAttribute('checked') != null
+            return input.selected
         case 'radio':
             for (WebElement radio : driver.findElements(By.name(name))) {
-                if (radio.getAttribute('checked') != null) {
+                if (radio.selected) {
                     return radio.getAttribute('value')
                 }
-                return null
             }
+            return null
         default:
             return input.getAttribute('value')
         }
@@ -362,12 +368,21 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     /**
      * Sets the input field with the given name to the stated value.  The
      * method correctly handles all input field types including text areas,
-     * check boxes, and radio buttons.
+     * check boxes, radio buttons, and select fields.
      *
      * @param name  the given name of the input field
-     * @param value the value to set
+     * @param value the value to set; the type of value depends on the type of
+     *              input:
+     *              <ul>
+     *                <li>if the input is a multiple select field you may state
+     *                a {@code Collection} of values</li>
+     *                <li>if the input is a checkbox the value is interpreted
+     *                as {@code boolean}</li>
+     *                <li>otherwise the value is converted to a {@code String}
+     *                before setting it</li>
+     *              </ul>
      */
-    protected void setInputValue(String name, String value) {
+    protected void setInputValue(String name, def value) {
         def input = getInput(name)
         if (input.tagName == 'input') {
             String type = input.getAttribute('type')
@@ -380,6 +395,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
                 }
                 return
             case 'radio':
+                value = value.String toString()
                 for (WebElement radio : driver.findElements(By.name(name))) {
                     if (radio.getAttribute('value') == value) {
                         radio.click()
@@ -388,11 +404,21 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
                 }
                 return
             }
+        } else if (input.tagName == 'select') {
+            def select = new Select(input)
+            if (select.multiple && value instanceof Collection) {
+                for (val in value) {
+                    select.selectByValue val
+                }
+            } else {
+                select.selectByValue value.toString()
+            }
+            return
         }
 
         input.clear()
         if (value) {
-            input.sendKeys(value)
+            input.sendKeys value.toString()
         }
     }
 }

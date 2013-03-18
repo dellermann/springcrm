@@ -285,6 +285,77 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     }
 
     /**
+     * Prepares an invoice and stores it into the database.
+     *
+     * @param org           the organization the invoice belongs to
+     * @param p             the person the invoice belongs to
+     * @param quote         the quote associated to this invoice
+     * @param salesOrder    the sales order associated to the invoice
+     * @return              the created invoice
+     */
+    protected Invoice prepareInvoice(Organization org, Person p, Quote quote,
+                                     SalesOrder salesOrder)
+    {
+        def invoice = new Invoice(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.APRIL, 1).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.APRIL, 2).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''',
+            footerText: 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.',
+            notes: 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!',
+            stage: InvoiceStage.get(902),
+            dueDatePayment: new GregorianCalendar(2013, Calendar.APRIL, 16).time,
+            quote: quote,
+            salesOrder: salesOrder
+        )
+        invoice.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        return invoice
+    }
+
+    /**
      * Prepares a quote and stores it into the database.
      *
      * @param org   the organization the quote belongs to
@@ -352,8 +423,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
     /**
      * Prepares a sales order and stores it into the database.
      *
-     * @param org   the organization the quote belongs to
-     * @param p     the person the quote belongs to
+     * @param org   the organization the sales order belongs to
+     * @param p     the person the sales order belongs to
      * @param quote the quote associated to this sales order
      * @return      the created sales order
      */

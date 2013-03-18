@@ -29,7 +29,6 @@ import org.junit.rules.TestName
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.WebDriverWait
 
 
@@ -79,15 +78,15 @@ class QuoteFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Angebot anlegen' == driver.title
         assert 'Angebote' == driver.findElement(BY_HEADER).text
         assert 'Neues Angebot' == driver.findElement(BY_SUBHEADER).text
-        setInputValue('subject', 'Werbekampagne Frühjahr 2013')
+        setInputValue 'subject', 'Werbekampagne Frühjahr 2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
-        new Select(getInput('stage.id')).selectByValue('602')
+        setInputValue 'stage.id', '602'
         DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()) == getInputValue('shippingDate_date')
-        setInputValue('docDate_date', '20.02.2013')
-        setInputValue('validUntil_date', '20.03.2013')
-        setInputValue('shippingDate_date', '21.02.2013')
-        new Select(getInput('carrier.id')).selectByValue('501')
+        setInputValue 'docDate_date', '20.02.2013'
+        setInputValue 'validUntil_date', '20.03.2013'
+        setInputValue 'shippingDate_date', '21.02.2013'
+        setInputValue 'carrier.id', '501'
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '23898' == getInputValue('billingAddrPostalCode')
         assert 'Duvensee' == getInputValue('billingAddrLocation')
@@ -181,11 +180,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        setInputValue('footerText', 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.')
-        def select = new Select(getInput('termsAndConditions'))
-        select.selectByValue('700')
-        select.selectByValue('701')
-        setInputValue('notes', 'Angebot unterliegt möglicherweise weiteren Änderungen.')
+        setInputValue 'footerText', 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.'
+        setInputValue 'termsAndConditions', ['700', '701']
+        setInputValue 'notes', 'Angebot unterliegt möglicherweise weiteren Änderungen.'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -494,9 +491,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert ['700', '701'] == getInputValue('termsAndConditions')
         assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getInputValue('notes')
 
-        setInputValue('subject', 'Werbekampagne Frühjahr 2013/03')
-        setInputValue('validUntil_date', '17.04.2013')
-        setInputValue('shippingDate_date', '6.3.2013')
+        setInputValue 'subject', 'Werbekampagne Frühjahr 2013/03'
+        setInputValue 'validUntil_date', '17.04.2013'
+        setInputValue 'shippingDate_date', '6.3.2013'
 
         setPriceTableInputValue 0, 'unitPrice', '450'
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
@@ -599,21 +596,21 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert !getPriceTableRow(0).findElement(By.className('up-btn')).displayed
         assert !getPriceTableRow(3).findElement(By.className('down-btn')).displayed
 
-        setInputValue('discountPercent', '2')
+        setInputValue 'discountPercent', '2'
         getInput('discountAmount').click()
         assert '493,93' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '92,33']])
         assert '586,82' == subtotalGross
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '575,08' == total
-        setInputValue('discountAmount', '5')
+        setInputValue 'discountAmount', '5'
         getInput('adjustment').click()
         assert '493,93' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '92,33']])
         assert '586,82' == subtotalGross
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '570,08' == total
-        setInputValue('adjustment', '-0,09')
+        setInputValue 'adjustment', '-0,09'
         getInput('discountAmount').click()
         assert '493,93' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '92,33']])

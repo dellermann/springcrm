@@ -1,5 +1,5 @@
 /*
- * SalesOrderFunctionalTests.groovy
+ * InvoiceFunctionalTests.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -33,14 +33,14 @@ import org.openqa.selenium.support.ui.WebDriverWait
 
 
 /**
- * The class {@code SalesOrderFunctionalTests} represents a functional test
- * case for the sales order section of SpringCRM.
+ * The class {@code InvoiceFunctionalTests} represents a functional test case
+ * for the quotes section of SpringCRM.
  *
  * @author	Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
-class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
+class InvoiceFunctionalTests extends InvoicingTransactionTestCase {
 
     //-- Instance variables ---------------------
 
@@ -55,8 +55,9 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         def org = prepareOrganization()
         def p = preparePerson(org)
         def quote = prepareQuote(org, p)
+        def salesOrder = prepareSalesOrder(org, p, quote)
         if (!name.methodName.startsWith('testCreate')) {
-            prepareSalesOrder(org, p, quote)
+            prepareInvoice(org, p, quote, salesOrder)
         }
 
         open('/', 'de')
@@ -64,31 +65,33 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/sales-order/list')
+        open('/invoice/list')
     }
 
     @After
     void deleteFixture() {
-        SalesOrder.executeUpdate 'delete SalesOrder s'
+        Invoice.executeUpdate 'delete Invoice i'
     }
 
     @Test
-    void testCreateSalesOrderSuccess() {
+    void testCreateInvoiceSuccess() {
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/sales-order/create') == driver.currentUrl
-        assert 'Verkaufsbestellung anlegen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Verkaufsbestellung' == driver.findElement(BY_SUBHEADER).text
+        assert getUrl('/invoice/create') == driver.currentUrl
+        assert 'Rechnung anlegen' == driver.title
+        assert 'Rechnungen' == driver.findElement(BY_HEADER).text
+        assert 'Neue Rechnung' == driver.findElement(BY_SUBHEADER).text
         setInputValue 'subject', 'Werbekampagne Frühjahr 2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
         assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == selectAutocompleteEx('quote', 'Werbe')
-        setInputValue 'stage.id', '802'
+        assert 'B-10000-10000 Werbekampagne Frühjahr 2013' == selectAutocompleteEx('salesOrder', 'Werbe')
+        setInputValue 'stage.id', '902'
         DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()) == getInputValue('shippingDate_date')
-        setInputValue 'docDate_date', '4.3.2013'
-        setInputValue 'dueDate_date', '28.3.2013'
-        setInputValue 'shippingDate_date', '5.3.2013'
+        setInputValue 'docDate_date', '1.4.2013'
+        setInputValue 'dueDatePayment_date', '16.4.2013'
+        setInputValue 'shippingDate_date', '2.4.2013'
         setInputValue 'carrier.id', '501'
+        assert '0,00' == getInputValue('paymentAmount')
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '23898' == getInputValue('billingAddrPostalCode')
         assert 'Duvensee' == getInputValue('billingAddrLocation')
@@ -99,7 +102,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".'
+        setInputValue('headerText', '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
 
         assert 1 == numPriceTableRows
         setPriceTableInputValue 0, 'number', 'S-10000'
@@ -181,19 +185,19 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.'
+        setInputValue 'footerText', 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.'
         setInputValue 'termsAndConditions', ['700', '701']
-        setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.'
+        setInputValue 'notes', 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/show/'))
-        assert 'Verkaufsbestellung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
+        assert driver.currentUrl.startsWith(getUrl('/invoice/show/'))
+        assert 'Rechnung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
-        assert 'B-10000-10000' == getShowFieldText(col, 1)
+        assert 'R-10000-10000' == getShowFieldText(col, 1)
         assert 'Werbekampagne Frühjahr 2013' == getShowFieldText(col, 2)
         def link = getShowField(col, 3).findElement(By.tagName('a'))
         assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
@@ -204,13 +208,15 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         link = getShowField(col, 5).findElement(By.tagName('a'))
         assert link.getAttribute('href').startsWith(getUrl('/quote/show/'))
         assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == link.text
-        assert 'versendet' == getShowFieldText(col, 6)
+        link = getShowField(col, 6).findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/sales-order/show/'))
+        assert 'B-10000-10000 Werbekampagne Frühjahr 2013' == link.text
+        assert 'versendet' == getShowFieldText(col, 7)
         col = fieldSet.findElement(By.className('col-r'))
-        assert '04.03.2013' == getShowFieldText(col, 1)
-        assert '28.03.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '05.03.2013' == getShowFieldText(col, 4)
-        assert '' == getShowFieldText(col, 5)
+        assert '01.04.2013' == getShowFieldText(col, 1)
+        assert '16.04.2013' == getShowFieldText(col, 2)
+        assert '02.04.2013' == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -228,7 +234,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert 'für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.\nEinzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.' == field.text
+        assert field.findElement(By.tagName('br'))
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
@@ -245,50 +252,54 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        assert 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.' == getShowFieldText(fieldSet, 1)
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getShowFieldText(fieldSet, 1)
         driver.quit()
 
-        assert 1 == SalesOrder.count()
+        assert 1 == Invoice.count()
     }
 
     @Test
-    void testCreateSalesOrderErrors() {
+    void testCreateInvoiceErrors() {
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/sales-order/create') == driver.currentUrl
-        assert 'Verkaufsbestellung anlegen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Verkaufsbestellung' == driver.findElement(BY_SUBHEADER).text
+        assert getUrl('/invoice/create') == driver.currentUrl
+        assert 'Rechnung anlegen' == driver.title
+        assert 'Rechnungen' == driver.findElement(BY_HEADER).text
+        assert 'Neue Rechnung' == driver.findElement(BY_SUBHEADER).text
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/save'))
-        assert checkErrorFields(['subject', 'organization.id'])
+        assert driver.currentUrl.startsWith(getUrl('/invoice/save'))
+        assert checkErrorFields([
+            'subject', 'organization.id', 'dueDatePayment',
+            'dueDatePayment_date'
+        ])
+        // TODO check for errors in items[0]
         driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/sales-order/list') == driver.currentUrl
+        assert getUrl('/invoice/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
-        assert 'Verkaufsbestellung anlegen' == link.text
-        assert getUrl('/sales-order/create') == link.getAttribute('href')
+        assert 'Rechnung anlegen' == link.text
+        assert getUrl('/invoice/create') == link.getAttribute('href')
         driver.quit()
 
-        assert 0 == SalesOrder.count()
+        assert 0 == Invoice.count()
     }
 
     @Test
-    void testShowSalesOrder() {
+    void testShowInvoice() {
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/sales-order/show/(\\d+)')
+        def m = (driver.currentUrl =~ '/invoice/show/(\\d+)')
         assert !!m
         int id = m[0][1] as Integer
-        assert 'Verkaufsbestellung anzeigen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
+        assert 'Rechnung anzeigen' == driver.title
+        assert 'Rechnungen' == driver.findElement(BY_HEADER).text
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
-        assert 'B-10000-10000' == getShowFieldText(col, 1)
+        assert 'R-10000-10000' == getShowFieldText(col, 1)
         assert 'Werbekampagne Frühjahr 2013' == getShowFieldText(col, 2)
         def link = getShowField(col, 3).findElement(By.tagName('a'))
         assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
@@ -299,13 +310,18 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         link = getShowField(col, 5).findElement(By.tagName('a'))
         assert link.getAttribute('href').startsWith(getUrl('/quote/show/'))
         assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == link.text
-        assert 'versendet' == getShowFieldText(col, 6)
+        link = getShowField(col, 6).findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/sales-order/show/'))
+        assert 'B-10000-10000 Werbekampagne Frühjahr 2013' == link.text
+        assert 'versendet' == getShowFieldText(col, 7)
         col = fieldSet.findElement(By.className('col-r'))
-        assert '04.03.2013' == getShowFieldText(col, 1)
-        assert '28.03.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '05.03.2013' == getShowFieldText(col, 4)
+        assert '01.04.2013' == getShowFieldText(col, 1)
+        assert '16.04.2013' == getShowFieldText(col, 2)
+        assert '02.04.2013' == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
+        assert '' == getShowFieldText(col, 6)
+        assert '' == getShowFieldText(col, 7)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -323,7 +339,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert 'für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.\nEinzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.' == field.text
+        assert field.findElement(By.tagName('br'))
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
@@ -340,20 +357,30 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        assert 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.' == getShowFieldText(fieldSet, 1)
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getShowFieldText(fieldSet, 1)
 
-        String param = "salesOrder=${id}"
+        String param = "invoice=${id}"
         fieldSet = getFieldset(dataSheet, 6)
         assert fieldSet.getAttribute('class').contains('remote-list')
         assert param == fieldSet.getAttribute('data-load-params')
-        assert '/springcrm/invoice/list-embedded' == fieldSet.getAttribute('data-load-url')
-        assert 'Rechnungen' == fieldSet.findElement(By.tagName('h4')).text
+        assert '/springcrm/dunning/list-embedded' == fieldSet.getAttribute('data-load-url')
+        assert 'Mahnungen' == fieldSet.findElement(By.tagName('h4')).text
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?salesOrder=${id}"))
-        assert 'Rechnung anlegen' == link.text
+        assert link.getAttribute('href').startsWith(getUrl("/dunning/create?${param}"))
+        assert 'Mahnung anlegen' == link.text
+        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+
+        fieldSet = getFieldset(dataSheet, 7)
+        assert fieldSet.getAttribute('class').contains('remote-list')
+        assert param == fieldSet.getAttribute('data-load-params')
+        assert '/springcrm/credit-memo/list-embedded' == fieldSet.getAttribute('data-load-url')
+        assert 'Gutschriften' == fieldSet.findElement(By.tagName('h4')).text
+        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
+        assert link.getAttribute('href').startsWith(getUrl("/credit-memo/create?${param}"))
+        assert 'Gutschrift anlegen' == link.text
         assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
@@ -361,49 +388,69 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
         link = toolbar.findElement(By.xpath('li[1]/a'))
         assert 'white' == link.getAttribute('class')
-        assert getUrl('/sales-order/list') == link.getAttribute('href')
+        assert getUrl('/invoice/list') == link.getAttribute('href')
         assert 'Liste' == link.text
         link = toolbar.findElement(By.xpath('li[2]/a'))
         assert 'green' == link.getAttribute('class')
-        assert getUrl('/sales-order/create') == link.getAttribute('href')
+        assert getUrl('/invoice/create') == link.getAttribute('href')
         assert 'Anlegen' == link.text
         link = toolbar.findElement(By.xpath('li[3]/a'))
         assert 'green' == link.getAttribute('class')
-        assert getUrl("/sales-order/edit/${id}") == link.getAttribute('href')
+        assert getUrl("/invoice/edit/${id}") == link.getAttribute('href')
         assert 'Bearbeiten' == link.text
         link = toolbar.findElement(By.xpath('li[4]/a'))
         assert 'blue' == link.getAttribute('class')
-        assert getUrl("/sales-order/copy/${id}") == link.getAttribute('href')
+        assert getUrl("/invoice/copy/${id}") == link.getAttribute('href')
         assert 'Kopieren' == link.text
         link = toolbar.findElement(By.xpath('li[5]/a'))
         assert link.getAttribute('class').contains('red')
         assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/sales-order/delete/${id}") == link.getAttribute('href')
+        assert getUrl("/invoice/delete/${id}") == link.getAttribute('href')
         assert 'Löschen' == link.text
         link.click()
         driver.switchTo().alert().dismiss()
-        assert getUrl("/sales-order/show/${id}") == driver.currentUrl
+        assert getUrl("/invoice/show/${id}") == driver.currentUrl
+
+        def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
+        link = actions.findElement(By.xpath('li[1]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('menu-button')
+        assert link.getAttribute('href').startsWith(getUrl("/invoice/print/${id}"))
+        assert 'Drucken' == link.text
+        link = actions.findElement(By.xpath('li[2]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('menu-button')
+        assert link.getAttribute('href').startsWith(getUrl("/invoice/print/${id}?duplicate=1"))
+        assert 'Kopie drucken' == link.text
+        link = actions.findElement(By.xpath('li[3]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('href').startsWith(getUrl("/dunning/create?invoice=${id}"))
+        assert 'Mahnung erzeugen' == link.text
+        link = actions.findElement(By.xpath('li[4]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('href').startsWith(getUrl("/credit-memo/create?invoice=${id}"))
+        assert 'Gutschrift erzeugen' == link.text
         driver.quit()
 
-        assert 1 == SalesOrder.count()
+        assert 1 == Invoice.count()
     }
 
     @Test
-    void testListSalesOrders() {
-        assert 'Verkaufsbestellungen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
+    void testListInvoices() {
+        assert 'Rechnungen' == driver.title
+        assert 'Rechnungen' == driver.findElement(BY_HEADER).text
         def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
         assert 1 == tbody.findElements(By.tagName('tr')).size()
         def tr = tbody.findElement(By.xpath('tr[1]'))
         def td = tr.findElement(By.xpath('td[2]'))
         assert td.getAttribute('class').contains('id')
         def link = td.findElement(By.tagName('a'))
-        assert link.getAttribute('href').startsWith(getUrl('/sales-order/show/'))
-        assert 'B-10000-10000' == link.text
+        assert link.getAttribute('href').startsWith(getUrl('/invoice/show/'))
+        assert 'R-10000-10000' == link.text
         td = tr.findElement(By.xpath('td[3]'))
         assert td.getAttribute('class').contains('string')
         link = td.findElement(By.tagName('a'))
-        assert link.getAttribute('href').startsWith(getUrl('/sales-order/show/'))
+        assert link.getAttribute('href').startsWith(getUrl('/invoice/show/'))
         assert 'Werbekampagne Frühjahr 2013' == link.text
         td = tr.findElement(By.xpath('td[4]'))
         assert td.getAttribute('class').contains('ref')
@@ -415,53 +462,63 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'versendet' == td.text
         td = tr.findElement(By.xpath('td[6]'))
         assert td.getAttribute('class').contains('date')
-        assert '04.03.2013' == td.text
+        assert '01.04.2013' == td.text
         td = tr.findElement(By.xpath('td[7]'))
         assert td.getAttribute('class').contains('date')
-        assert '28.03.2013' == td.text
+        assert '16.04.2013' == td.text
         td = tr.findElement(By.xpath('td[8]'))
         assert td.getAttribute('class').contains('currency')
         assert '1.064,43 €' == td.text
         td = tr.findElement(By.xpath('td[9]'))
+        assert td.getAttribute('class').contains('currency')
+        assert td.getAttribute('class').contains('balance-state-red')
+        assert '-1.064,43 €' == td.text
+        td = tr.findElement(By.xpath('td[10]'))
         assert td.getAttribute('class').contains('action-buttons')
         link = td.findElement(By.xpath('a[1]'))
-        assert link.getAttribute('href').startsWith(getUrl('/sales-order/edit/'))
+        assert link.getAttribute('href').startsWith(getUrl('/invoice/edit/'))
         assert link.getAttribute('class').contains('button')
         assert link.getAttribute('class').contains('green')
         assert 'Bearbeiten' == link.text
         link = td.findElement(By.xpath('a[2]'))
-        assert link.getAttribute('href').startsWith(getUrl('/sales-order/delete/'))
+        assert link.getAttribute('href').startsWith(getUrl('/invoice/delete/'))
         assert link.getAttribute('class').contains('button')
         assert link.getAttribute('class').contains('red')
         assert link.getAttribute('class').contains('delete-btn')
         assert 'Löschen' == link.text
         link.click()
         driver.switchTo().alert().dismiss()
-        assert getUrl('/sales-order/list') == driver.currentUrl
+        assert getUrl('/invoice/list') == driver.currentUrl
         driver.quit()
 
-        assert 1 == SalesOrder.count()
+        assert 1 == Invoice.count()
     }
 
     @Test
-    void testEditSalesOrderSuccess() {
+    void testEditInvoiceSuccess() {
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/edit/'))
-        assert 'Verkaufsbestellung bearbeiten' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
+        assert driver.currentUrl.startsWith(getUrl('/invoice/edit/'))
+        assert 'Rechnung bearbeiten' == driver.title
+        assert 'Rechnungen' == driver.findElement(BY_HEADER).text
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
-        def col = driver.findElement(By.xpath('//form[@id="sales-order-form"]/fieldset[1]')).findElement(By.className('col-l'))
-        assert getShowField(col, 1).text.startsWith('B-')
+        def col = driver.findElement(By.xpath('//form[@id="invoice-form"]/fieldset[1]')).findElement(By.className('col-l'))
+        assert getShowField(col, 1).text.startsWith('R-')
         assert '10000' == getInputValue('number')
         assert getInputValue('autoNumber')
         assert 'Werbekampagne Frühjahr 2013' == getInputValue('subject')
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(By.id('organization')).getAttribute('value')
         assert 'Henry Brackmann' == driver.findElement(By.id('person')).getAttribute('value')
         assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == driver.findElement(By.id('quote')).getAttribute('value')
-        assert '802' == getInputValue('stage.id')
-        assert '04.03.2013' == getInputValue('docDate_date')
-        assert '28.03.2013' == getInputValue('dueDate_date')
-        assert '05.03.2013' == getInputValue('shippingDate_date')
+        assert 'B-10000-10000 Werbekampagne Frühjahr 2013' == driver.findElement(By.id('salesOrder')).getAttribute('value')
+        assert '902' == getInputValue('stage.id')
+        assert '01.04.2013' == getInputValue('docDate_date')
+        assert '16.04.2013' == getInputValue('dueDatePayment_date')
+        assert '02.04.2013' == getInputValue('shippingDate_date')
+        assert '501' == getInputValue('carrier.id')
+        assert '0,00' == getInputValue('paymentAmount')
+        def stillUnpaidLink = driver.findElement(By.id('still-unpaid'))
+        assert '0.0' == stillUnpaidLink.getAttribute('data-closing-balance')
+        assert '1.064,43' == stillUnpaidLink.findElement(By.tagName('span')).text
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
         assert '23898' == getInputValue('billingAddrPostalCode')
@@ -474,7 +531,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == getInputValue('headerText')
+        assert '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == getInputValue('headerText')
 
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
         checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
@@ -484,13 +542,18 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getInputValue('footerText')
+        assert 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getInputValue('notes')
+        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getInputValue('notes')
 
-        setInputValue 'subject', 'Big Sale Spring \'13'
-        setInputValue 'dueDate_date', '19.04.2013'
-        setInputValue 'shippingDate_date', '6.3.2013'
+        setInputValue 'subject', 'Werbekampagne Spring \'13'
+        setInputValue 'stage.id', '903'
+        DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()) == getInputValue('paymentDate_date')
+        setInputValue 'paymentDate_date', '15.4.2013'
+        stillUnpaidLink.click()
+        assert '1.064,43' == getInputValue('paymentAmount')
+        assert '0,00' == stillUnpaidLink.findElement(By.tagName('span')).text
+        setInputValue 'paymentMethod.id', '2401'
 
         setPriceTableInputValue 0, 'unitPrice', '450'
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
@@ -617,14 +680,14 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/show/'))
-        assert 'Verkaufsbestellung Big Sale Spring \'13 wurde geändert.' == flashMessage
-        assert 'Big Sale Spring \'13' == driver.findElement(BY_SUBHEADER).text
+        assert driver.currentUrl.startsWith(getUrl('/invoice/show/'))
+        assert 'Rechnung Werbekampagne Spring \'13 wurde geändert.' == flashMessage
+        assert 'Werbekampagne Spring \'13' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         col = fieldSet.findElement(By.className('col-l'))
-        assert 'B-10000-10000' == getShowFieldText(col, 1)
-        assert 'Big Sale Spring \'13' == getShowFieldText(col, 2)
+        assert 'R-10000-10000' == getShowFieldText(col, 1)
+        assert 'Werbekampagne Spring \'13' == getShowFieldText(col, 2)
         def link = getShowField(col, 3).findElement(By.tagName('a'))
         assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
         assert 'Landschaftsbau Duvensee GbR' == link.text
@@ -634,13 +697,18 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         link = getShowField(col, 5).findElement(By.tagName('a'))
         assert link.getAttribute('href').startsWith(getUrl('/quote/show/'))
         assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == link.text
-        assert 'versendet' == getShowFieldText(col, 6)
+        link = getShowField(col, 6).findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/sales-order/show/'))
+        assert 'B-10000-10000 Werbekampagne Frühjahr 2013' == link.text
+        assert 'bezahlt' == getShowFieldText(col, 7)
         col = fieldSet.findElement(By.className('col-r'))
-        assert '04.03.2013' == getShowFieldText(col, 1)
-        assert '19.04.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '06.03.2013' == getShowFieldText(col, 4)
-        assert '' == getShowFieldText(col, 5)
+        assert '01.04.2013' == getShowFieldText(col, 1)
+        assert '16.04.2013' == getShowFieldText(col, 2)
+        assert '02.04.2013' == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
+        assert '15.04.2013' == getShowFieldText(col, 5)
+        assert '1.064,43 €' == getShowFieldText(col, 6)
+        assert 'Überweisung' == getShowFieldText(col, 7)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -658,7 +726,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert 'für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.\nEinzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.' == field.text
+        assert field.findElement(By.tagName('br'))
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 1, 'P-10700', '4', 'Stück', 'Stempel\nMit Firmenaufdruck nach Kundenvorgabe.', '8,99 €', '35,96 €', '19,0 %'
@@ -686,55 +755,60 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '569,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        assert 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.' == getShowFieldText(fieldSet, 1)
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getShowFieldText(fieldSet, 1)
         driver.quit()
 
-        assert 1 == SalesOrder.count()
+        assert 1 == Invoice.count()
     }
 
     @Test
-    void testEditSalesOrderErrors() {
+    void testEditInvoiceErrors() {
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/edit/'))
-        assert 'Verkaufsbestellung bearbeiten' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
+        assert driver.currentUrl.startsWith(getUrl('/invoice/edit/'))
+        assert 'Rechnung bearbeiten' == driver.title
+        assert 'Rechnungen' == driver.findElement(BY_HEADER).text
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
 
         driver.findElement(By.name('subject')).clear()
         driver.findElement(By.id('organization')).clear()
+        driver.findElement(By.name('dueDatePayment_date')).clear()
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/update'))
-        assert checkErrorFields(['subject', 'organization.id'])
+        assert driver.currentUrl.startsWith(getUrl('/invoice/update'))
+        assert checkErrorFields([
+            'subject', 'organization.id', 'dueDatePayment',
+            'dueDatePayment_date'
+        ])
+        // TODO check for errors in items[0]
         driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/list'))
+        assert driver.currentUrl.startsWith(getUrl('/invoice/list'))
         driver.quit()
 
-        assert 1 == SalesOrder.count()
+        assert 1 == Invoice.count()
     }
 
     @Test
-    void testDeleteSalesOrderAction() {
+    void testDeleteInvoiceAction() {
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
         driver.switchTo().alert().accept()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/list'))
-        assert 'Verkaufsbestellung wurde gelöscht.' == flashMessage
+        assert driver.currentUrl.startsWith(getUrl('/invoice/list'))
+        assert 'Rechnung wurde gelöscht.' == flashMessage
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         driver.quit()
 
-        assert 0 == SalesOrder.count()
+        assert 0 == Invoice.count()
     }
 
     @Test
-    void testDeleteSalesOrderNoAction() {
+    void testDeleteInvoiceNoAction() {
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
         driver.switchTo().alert().dismiss()
-        assert getUrl('/sales-order/list') == driver.currentUrl
+        assert getUrl('/invoice/list') == driver.currentUrl
         driver.quit()
 
-        assert 1 == SalesOrder.count()
+        assert 1 == Invoice.count()
     }
 }

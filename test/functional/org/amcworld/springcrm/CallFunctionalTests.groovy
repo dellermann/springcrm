@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import org.junit.After;
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -75,14 +75,14 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Anruf anlegen' == driver.title
         assert 'Anrufe' == driver.findElement(BY_HEADER).text
         assert 'Neuer Anruf' == driver.findElement(BY_SUBHEADER).text
-        setInputValue('subject', 'Bitte um Angebot')
-        setInputValue('start_date', '13.02.2013')
-        setInputValue('start_time', '09:15')
+        setInputValue 'subject', 'Bitte um Angebot'
+        setInputValue 'start_date', '13.02.2013'
+        setInputValue 'start_time', '09:15'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
         assert '04543 31233' == selectAutocompleteEx('phone', '04')
-        new Select(getInput('status')).selectByValue('completed')
-        setInputValue('notes', 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.')
+        setInputValue 'status', 'completed'
+        setInputValue 'notes', 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.'
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/call/show/'))
@@ -272,14 +272,14 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert 'durchgeführt' == option.text
         assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.' == getInputValue('notes')
 
-        setInputValue('subject', 'Fragen zur Marketing-Aktion')
-        setInputValue('start_date', '14.02.2013')
-        setInputValue('start_time', '13:45')
-        setInputValue('phone', '')
+        setInputValue 'subject', 'Fragen zur Marketing-Aktion'
+        setInputValue 'start_date', '14.02.2013'
+        setInputValue 'start_time', '13:45'
+        setInputValue 'phone', ''
         assert '0163 3343267' == selectAutocompleteEx('phone', '016')
-        new Select(getInput('type')).selectByValue('outgoing')
-        new Select(getInput('status')).selectByValue('planned')
-        setInputValue('notes', 'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?')
+        setInputValue 'type', 'outgoing'
+        setInputValue 'status', 'planned'
+        setInputValue 'notes', 'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?'
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/call/show/'))

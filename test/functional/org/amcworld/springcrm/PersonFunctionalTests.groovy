@@ -68,23 +68,23 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Person anlegen' == driver.title
         assert 'Personen' == driver.findElement(BY_HEADER).text
         assert 'Neue Person' == driver.findElement(BY_SUBHEADER).text
-        new Select(driver.findElement(By.id('salutation'))).selectByValue('1')
-        setInputValue('firstName', 'Henry')
-        setInputValue('lastName', 'Brackmann')
+        setInputValue 'salutation', '1'
+        setInputValue 'firstName', 'Henry'
+        setInputValue 'lastName', 'Brackmann'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
-        setInputValue('department', 'Geschäftsleitung')
-        setInputValue('jobTitle', 'Geschäftsführer')
-        setInputValue('assistant', 'Anna Schmarge')
-        setInputValue('birthday_date', '14.02.1962')
-        setInputValue('phone', '04543 31233')
-        setInputValue('mobile', '0163 3343267')
-        setInputValue('fax', '04543 31235')
-        setInputValue('email1', 'h.brackmann@landschaftsbau-duvensee.example')
-        setInputValue('mailingAddrStreet', 'Dörpstraat 25')
-        setInputValue('mailingAddrPostalCode', '23898')
-        setInputValue('mailingAddrLocation', 'Duvensee')
-        setInputValue('mailingAddrState', 'Schleswig-Holstein')
-        setInputValue('mailingAddrCountry', 'Deutschland')
+        setInputValue 'department', 'Geschäftsleitung'
+        setInputValue 'jobTitle', 'Geschäftsführer'
+        setInputValue 'assistant', 'Anna Schmarge'
+        setInputValue 'birthday_date', '14.02.1962'
+        setInputValue 'phone', '04543 31233'
+        setInputValue 'mobile', '0163 3343267'
+        setInputValue 'fax', '04543 31235'
+        setInputValue 'email1', 'h.brackmann@landschaftsbau-duvensee.example'
+        setInputValue 'mailingAddrStreet', 'Dörpstraat 25'
+        setInputValue 'mailingAddrPostalCode', '23898'
+        setInputValue 'mailingAddrLocation', 'Duvensee'
+        setInputValue 'mailingAddrState', 'Schleswig-Holstein'
+        setInputValue 'mailingAddrCountry', 'Deutschland'
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/person/show/'))
@@ -413,16 +413,16 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Deutschland' == getInputValue('mailingAddrCountry')
 
         select.selectByValue('2')
-        setInputValue('firstName', 'Marlen')
-        setInputValue('lastName', 'Thoss')
-        setInputValue('department', '')
-        setInputValue('jobTitle', 'Landschaftsarchitektin')
-        setInputValue('assistant', '')
-        setInputValue('birthday_date', '26.05.1970')
-        setInputValue('phone', '04543 31234')
-        setInputValue('mobile', '0170 1896043')
-        setInputValue('email1', 'm.thoss@landschaftsbau-duvensee.example')
-        setInputValue('notes', 'Häufig unterwegs; mobil anrufen.')
+        setInputValue 'firstName', 'Marlen'
+        setInputValue 'lastName', 'Thoss'
+        setInputValue 'department', ''
+        setInputValue 'jobTitle', 'Landschaftsarchitektin'
+        setInputValue 'assistant', ''
+        setInputValue 'birthday_date', '26.05.1970'
+        setInputValue 'phone', '04543 31234'
+        setInputValue 'mobile', '0170 1896043'
+        setInputValue 'email1', 'm.thoss@landschaftsbau-duvensee.example'
+        setInputValue 'notes', 'Häufig unterwegs; mobil anrufen.'
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/person/show/'))

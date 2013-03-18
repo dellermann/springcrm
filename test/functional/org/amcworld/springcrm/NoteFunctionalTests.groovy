@@ -75,7 +75,7 @@ class NoteFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Notiz anlegen' == driver.title
         assert 'Notizen' == driver.findElement(BY_HEADER).text
         assert 'Neue Notiz' == driver.findElement(BY_SUBHEADER).text
-        setInputValue('title', 'Besprechung vom 21.01.2013')
+        setInputValue 'title', 'Besprechung vom 21.01.2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
         def iframeDriver = driver.switchTo().frame('note-content_ifr')
@@ -272,7 +272,7 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(By.id('organization')).getAttribute('value')
         assert 'Henry Brackmann' == driver.findElement(By.id('person')).getAttribute('value')
 
-        setInputValue('title', 'Besprechung vom 22.01.2013')
+        setInputValue 'title', 'Besprechung vom 22.01.2013'
         def iframeDriver = driver.switchTo().frame('note-content_ifr')
         def rte = iframeDriver.findElement(By.xpath('//body'))
         assert 'Besprechung der PR-Aktion am 21.01.2013' == rte.findElement(By.tagName('h1')).text
