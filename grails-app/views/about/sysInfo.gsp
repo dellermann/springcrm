@@ -2,6 +2,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
+  <r:require modules="about" />
   <title><g:message code="about.sysInfo" default="System information" /></title>
 </head>
 
@@ -30,7 +31,7 @@
     <p><g:message code="about.sysInfo.totalMemory" args="${[Runtime.runtime.totalMemory()]}" /></p>
     <p><g:message code="about.sysInfo.maxMemory" args="${[Runtime.runtime.maxMemory()]}" /></p>
     <p><g:message code="about.sysInfo.cpus" args="${[Runtime.runtime.availableProcessors()]}" /></p>
-    
+
     <h3><g:message code="about.sysInfo.pathes" /></h3>
     <p><g:message code="about.sysInfo.appHome" args="${[grailsApplication.config.springcrm.dir.base]}" /></p>
     <p><g:message code="about.sysInfo.userDir" args="${[System.getProperty('user.dir')]}" /></p>

@@ -2,6 +2,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
+  <r:require modules="about" />
   <title><g:message code="about.title" default="About" /></title>
 </head>
 
@@ -19,7 +20,7 @@
     <p><g:message code="about.app.description" /></p>
     <p><g:message code="about.app.version" args="${[meta(name: 'app.version'), meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'), meta(name: 'app.buildProfile')]}" /></p>
     <p><g:message code="about.app.copyright" /></p>
-    
+
     <h3><g:message code="about.license" default="License" /></h3>
     <p><g:message code="about.license.name" /></p>
     <pre class="license-text">                    GNU GENERAL PUBLIC LICENSE
@@ -676,7 +677,7 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</pre>
-    
+
     <h3><g:message code="about.authors" default="Authors" /></h3>
     <ul>
       <li><a href="mailto:d.ellermann@amc-world.de">Daniel Ellermann</a></li>

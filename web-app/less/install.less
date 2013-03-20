@@ -1,0 +1,82 @@
+/*
+ * installer.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+#install-progress {
+  .linear-gradient(@color-gradient-panel-0; @color-gradient-panel-1; #80A322);
+  left: 0;
+  margin: 2em 0 0;
+  position: relative;
+  top: 0;
+
+  li {
+    float: left;
+    list-style: none;
+    margin-bottom: 0;
+  
+    &.current {
+      .linear-gradient(
+        @color-gradient-hover-0; @color-gradient-hover-1; #597F12
+      );
+    }
+  }
+  a {
+    background-image: url("../img/arrows-right.png");
+    background-repeat: no-repeat;
+    background-position: right center;
+    color: white;
+    display: block;
+    font-weight: bold;
+    left: 0;
+    margin-right: -4px;
+    padding: .6em 1.9em .6em 1.5em;
+    position: relative;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
+    top: 0;
+    z-index: 1;
+  }
+  li:last-child a {
+    background-image: none;
+  }
+}
+.install-description {
+  margin-bottom: 2em;
+  width: 75%;
+}
+.warning {
+  -khtml-border-radius: .3em;
+  -moz-border-radius: .3em;
+  -webkit-border-radius: .3em;
+  background: @color-default-bg-1;
+  border: .1em solid @color-error;
+  border-radius: .3em;
+  color: @color-error;
+  margin-top: 2em;
+  padding: 1em;
+  width: 75%;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+

@@ -1,0 +1,94 @@
+/*
+ * mixins.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+.background-alpha(@color-with-alpha) {
+  background-color: rgb(
+    red(@color-with-alpha), green(@color-with-alpha), blue(@color-with-alpha)
+  );
+  background-color: @color-with-alpha;
+}
+
+.border-radius(@radius) {
+  -khtml-border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+  border-radius: @radius;
+}
+.border-radius-bottom(@radius) {
+  -khtml-border-radius-bottomleft: @radius;
+  -khtml-border-radius-bottomright: @radius;
+  -moz-border-radius-bottomleft: @radius;
+  -moz-border-radius-bottomright: @radius;
+  -webkit-border-radius-bottomleft: @radius;
+  -webkit-border-radius-bottomright: @radius;
+  border-bottom-left-radius: @radius;
+  border-bottom-right-radius: @radius;
+}
+.border-radius-left(@radius: 0) {
+  -khtml-border-radius-bottomleft: @radius;
+  -khtml-border-radius-topleft: @radius;
+  -moz-border-radius-bottomleft: @radius;
+  -moz-border-radius-topleft: @radius;
+  -webkit-border-radius-bottomleft: @radius;
+  -webkit-border-radius-topleft: @radius;
+  border-bottom-left-radius: @radius;
+  border-top-left-radius: @radius;
+}
+.border-radius-right(@radius: 0) {
+  -khtml-border-radius-bottomright: @radius;
+  -khtml-border-radius-topright: @radius;
+  -moz-border-radius-bottomright: @radius;
+  -moz-border-radius-topright: @radius;
+  -webkit-border-radius-bottomright: @radius;
+  -webkit-border-radius-topright: @radius;
+  border-bottom-right-radius: @radius;
+  border-top-right-radius: @radius;
+}
+
+.box-shadow(...) {
+  -khtml-box-shadow: @arguments;
+  -moz-box-shadow: @arguments;
+  -webkit-box-shadow: @arguments;
+  box-shadow: @arguments;
+}
+
+.box-sizing(@type: border-box) {
+  -moz-box-sizing: @type;
+  -webkit-box-sizing: @type;
+  box-sizing: @type;
+}
+
+.linear-gradient(@default; @from; @to; @fromX: left; @fromY: top; @toX: left; @toY: bottom) {
+  @fromSideOrCorner: `("@{fromX}" == "@{toX}" ? "@{fromY}" : ("@{fromY}" == "@{toY}" ? "@{fromX}" : "@{fromX} @{fromY}"))`;
+  background: @default;
+  background: -khtml-gradient(
+      linear, @fromX @fromY, @toX @toY, from(@from), to(@to)
+    );
+  background: -ms-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
+  background: -moz-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
+  background: -o-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
+  background: -webkit-gradient(
+      linear, @fromX @fromY, @toX @toY, from(@from), to(@to)
+    );
+  background: -webkit-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
+  background: linear-gradient(~"@{fromSideOrCorner}", @from, @to);
+}
+
+/* vim:set ts=2 sw=2 sts=2: */

@@ -1,0 +1,163 @@
+/*
+ * project.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+.project-status-2600 {
+  .background-alpha(rgba(183, 255, 29, .6));
+}
+.project-status-2601 {
+  .background-alpha(rgba(255, 30, 2, .6));
+}
+.project-status-2602 {
+  .background-alpha(rgba(255, 238, 28, .6));
+}
+.project-status-2603 {
+  .background-alpha(rgba(255, 190, 28, .6));
+}
+.project-status-2604 {
+  .background-alpha(rgba(128, 128, 128, .6));
+}
+.project-status-2605 {
+  .background-alpha(rgba(0, 7, 24, .6));
+  color: white;
+}
+#project-status {
+  min-width: 15em;
+}
+#project-status-indicator {
+  border: .1em solid @color-default;
+  font-size: 131%;
+  font-weight: bold;
+  padding: 3em 1em;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+}
+#project-phases {
+  display: table;
+  width: 100%;
+
+  section {
+    display: table-row;
+
+    &:last-child {
+      height: 5em;
+
+      div {
+        width: 0;
+        height: 0;
+        border-top: 5em solid @color-default-border-2;
+        border-left: 7em solid transparent;
+        border-right: 7em solid transparent;
+      }
+    }
+  }
+  h5 {
+    background: @color-default-border-2;
+    border-bottom: .1em solid white;
+    color: white;
+    cursor: pointer;
+    display: table-cell;
+    padding: 2em;
+    width: 10em;
+  }
+  .current h5 {
+    background: @color-link-hover;
+  }
+}
+.project-phase-content {
+  border-bottom: .1em solid @color-default-bg-3;
+  display: table-cell;
+  padding: 1em 0 1em 2em;
+
+  ul {
+    margin: 0;
+  }
+  li {
+    list-style: none;
+    margin-bottom: .5em;
+  }
+}
+.project-phase-actions {
+  margin: 0 0 1em;
+  padding-bottom: 1em;
+  text-align: right;
+
+  li {
+    cursor: pointer;
+    display: inline;
+  }
+}
+#create-project-item-dialog {
+  ul {
+    margin: 1em 0;
+  }
+  li {
+    list-style: none;
+    margin-bottom: .2em;
+
+    a {
+      display: block;
+    }
+  }
+}
+#select-project-item-dialog {
+  .dialog-toolbar {
+    display: table;
+    margin-top: .5em;
+    width: 100%;
+  }
+  .search-field {
+    text-align: center;
+  }
+  .submit-field {
+    text-align: right;
+  }
+  .label {
+    width: 10em;
+  }
+  h2 {
+    margin-top: 1em;
+  }
+}
+#select-project-content {
+  left: 0;
+  margin-top: .5em;
+  position: relative;
+  top: 0;
+}
+#select-project-item-list {
+  left: 0;
+  position: absolute;
+  top: 0;
+
+  .content-table a {
+    color: @color-link;
+  }
+}
+#select-project-document-list {
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+

@@ -1,0 +1,66 @@
+/*
+ * invoicing-transaction.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+.balance-state-green {
+  color: #080;
+}
+.balance-state-red {
+  color: #800;
+}
+.payment-state-green {
+  .background-alpha(rgba(183, 255, 29, .6));
+}
+.payment-state-yellow {
+  .background-alpha(rgba(255, 238, 28, .6));
+}
+.payment-state-orange {
+  .background-alpha(rgba(255, 190, 28, .6));
+}
+.payment-state-red {
+  .background-alpha(rgba(255, 30, 2, .6));
+}
+.payment-state-purple {
+  .background-alpha(rgba(145, 0, 245, .6));
+  color: white;
+}
+.payment-state-blue {
+  .background-alpha(rgba(38, 125, 254, .6));
+}
+.payment-state-black {
+  .background-alpha(rgba(0, 7, 24, .6));
+  color: white;
+}
+#still-unpaid:hover {
+  text-decoration: underline;
+}
+.still-unpaid-unpaid, .still-unpaid-unpaid:hover {
+  color: #800;
+}
+.still-unpaid-paid, .still-unpaid-paid:hover {
+  color: #080;
+}
+.still-unpaid-too-much, .still-unpaid-too-much:hover {
+  color: #880;
+}
+

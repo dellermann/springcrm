@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <title><g:layoutTitle default="SpringCRM" /></title>
-  <r:require modules="core" />
+  <r:require modules="install" />
   <r:layoutResources />
   <r:external uri="/img/favicon.ico" />
   <r:script disposition="defer">//<![CDATA[

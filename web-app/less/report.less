@@ -1,0 +1,48 @@
+/*
+ * report.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+.report tfoot td {
+  font-weight: bold;
+}
+.filter-bar {
+  margin-bottom: 2em;
+}
+#month-selector {
+  float: left;
+  margin: 0;
+  width: 75%;
+
+  li {
+    height: 2.2em;
+    padding: 0 .1em;
+    vertical-align: middle;
+  }
+}
+#year-selector {
+  float: left;
+  margin-left: 2em;
+  margin-top: .3em;
+  min-width: 10em;
+}
+

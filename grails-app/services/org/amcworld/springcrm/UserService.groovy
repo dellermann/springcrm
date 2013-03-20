@@ -71,13 +71,14 @@ class UserService {
      *          immutable
      */
     List<String> getAvailableLanguages() {
-        return Collections.unmodifiableList(AVAILABLE_LANGUAGES as List)
+        Collections.unmodifiableList(AVAILABLE_LANGUAGES as List)
     }
 
     /**
      * Gets a list of locales which are fully supported by this application.
      *
-     * @return  the list of supported locales
+     * @return  the list of supported locales; the returned list is
+     *          immutable
      */
     List<Locale> getAvailableLocales() {
         def availLangs = availableLanguages
@@ -87,7 +88,7 @@ class UserService {
                 res << l
             }
         }
-        return res
+        Collections.unmodifiableList res
     }
 
     /**
@@ -97,6 +98,6 @@ class UserService {
      */
     Locale getCurrentLocale() {
         def request = WebUtils.retrieveGrailsWebRequest().currentRequest
-        return RCU.getLocale(request) ?: Locale.default
+        RCU.getLocale(request) ?: Locale.default
     }
 }

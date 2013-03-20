@@ -1,0 +1,86 @@
+/*
+ * login.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+#login {
+  aside {
+    background: #EEE;
+    border-bottom: .1em solid @color-default-border-2;
+    padding: 2em 5em;
+
+    div {
+      font-size: 108%;
+      margin: 0 auto;
+      text-align: center;
+      width: 40em;
+    }
+  }
+  #outer-container {
+    display: table;
+    margin: 10em auto 0;
+  }
+  #inner-container {
+    display: table-cell;
+  }
+  #login-form-container {
+    .border-radius(.5em);
+    border: .1em solid @color-default-border-2;
+    padding: 2em 6em;
+  }
+  #logo {
+    background: url("../img/logo.png") no-repeat;
+    height: 91px;
+    margin: 0 0 3em;
+    min-width: 92px;
+  
+    strong {
+      padding-left: 120px;
+    }
+  }
+  fieldset, .row:last-child .label, .row:last-child .field {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .label {
+    padding-bottom: 1em;
+    width: 120px;
+  }
+  .field {
+    padding-bottom: 1em;
+  }
+  input {
+    width: 120px;
+  }
+  .button {
+    margin: 0;
+  }
+  footer {
+    border-top: none;
+    padding-top: .7em;
+  
+    div {
+      padding: 0;
+    }
+  }
+}
+

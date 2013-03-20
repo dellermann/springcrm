@@ -25,13 +25,20 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.xtext.ui.shared.xtextBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.grails.ide.eclipse.core.nature</nature>
+		<nature>net.vtst.ow.eclipse.less.nature</nature>
+		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 		<nature>org.eclipse.jdt.groovy.core.groovyNature</nature>
+		<nature>org.grails.ide.eclipse.core.nature</nature>
+		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
-		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
 	<linkedResources>
 		<link>

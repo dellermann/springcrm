@@ -19,6 +19,12 @@
 
 
 modules = {
+    about {
+        dependsOn 'core'
+
+        resource url: 'less/about.less', attrs: [rel: 'stylesheet/less', type: 'css']
+    }
+
     calendarForm {
         dependsOn 'core'
 
@@ -28,6 +34,7 @@ modules = {
     calendarView {
         dependsOn 'core'
 
+        resource url: 'less/calendar.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/css/fullcalendar.css'
         resource url: '/js/fullcalendar.min.js', exclude: 'minify'
     }
@@ -46,6 +53,8 @@ modules = {
 
     config {
         dependsOn 'core'
+
+        resource url: 'less/config.less', attrs: [rel: 'stylesheet/less', type: 'css']
     }
 
     configSelValues {
@@ -66,7 +75,7 @@ modules = {
         dependsOn 'jquery-ui, jquery-json'
 
         resource url: '/css/reset.css', attrs: [ media: 'all' ]
-        resource url: '/css/styles.css', attrs: [ media: 'all' ]
+        resource url: 'less/main.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource url: '/css/print.css', attrs: [ media: 'print' ]
         resource '/css/jquery-ui-springcrm.css'
         resource '/js/jquery.ui.datepicker-de.js'
@@ -79,6 +88,7 @@ modules = {
     document {
         dependsOn 'elfinder'
 
+        resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/js/document.js'
     }
 
@@ -97,10 +107,17 @@ modules = {
         resource '/js/error-page.js'
     }
 
+    install {
+        dependsOn 'core'
+
+        resource url: 'less/install.less', attrs: [rel: 'stylesheet/less', type: 'css']
+    }
+
     invoicingTransactionForm {
         dependsOn 'core'
         defaultBundle 'invoicing-transaction-form'
 
+        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/js/app/invoicing-items.js'
         resource '/js/app/invoicing-transaction-form.js'
     }
@@ -110,6 +127,12 @@ modules = {
 
         resource '/css/jquery/default/jquery.ui.selectmenu.css'
         resource '/js/jquery.ui.selectmenu.js'
+    }
+
+    login {
+        dependsOn 'core'
+
+        resource url: 'less/login.less', attrs: [rel: 'stylesheet/less', type: 'css']
     }
 
     noteForm {
@@ -127,6 +150,7 @@ modules = {
     overview {
         dependsOn 'core'
 
+        resource url: 'less/overview.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/js/overview.js'
     }
 
@@ -143,14 +167,20 @@ modules = {
         resource '/js/jquery.lightbox.min.js'
     }
 
-    projectForm {
+    project {
         dependsOn 'core'
+
+        resource url: 'less/project.less', attrs: [rel: 'stylesheet/less', type: 'css']
+    }
+
+    projectForm {
+        dependsOn 'project'
 
         resource '/js/project-form.js'
     }
 
     projectShow {
-        dependsOn 'core, jquery-ui-selectmenu, elfinder'
+        dependsOn 'project, jquery-ui-selectmenu, elfinder'
 
         resource '/js/project-show.js'
     }
@@ -162,9 +192,16 @@ modules = {
         resource '/js/purchase-invoice-form.js'
     }
 
-    reportSalesJournal {
-        dependsOn 'core, jquery-ui-selectmenu'
+    report {
+        dependsOn 'core'
 
+        resource url: 'less/report.less', attrs: [rel: 'stylesheet/less', type: 'css']
+    }
+
+    reportSalesJournal {
+        dependsOn 'report, jquery-ui-selectmenu'
+
+        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/js/report-sales-journal.js'
     }
 
@@ -175,6 +212,7 @@ modules = {
     salesItemPricing {
         dependsOn 'core'
 
+        resource url: 'less/pricing.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/js/sales-item-pricing.js'
     }
 

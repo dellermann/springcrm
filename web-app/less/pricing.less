@@ -1,0 +1,62 @@
+/*
+ * pricing.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+#step1-pricing-items {
+  .step1-unit-price {
+    font-weight: bold;
+  }
+  .relative-to-pos {
+    img {
+      vertical-align: middle;
+    }
+    strong {
+      line-height: 16px;
+      padding-left: 1ex;
+    
+      &:not(:empty):after {
+        content: ".";
+      }
+    }
+  }
+  .not-removable .remove-btn {
+    cursor: default;
+  
+    img {
+      -moz-filter: grayscale(100%);
+      -ms-filter: grayscale(100%);
+      -o-filter: grayscale(100%);
+      -webkit-filter: grayscale(100%);
+      filter: grayscale(100%);
+    }
+  }
+}
+#step2, #step3 {
+  .quantity, .unit, .percentage {
+    width: 7.5em;
+  }
+  .unit-price-label {
+    text-align: right;
+  }
+}
+

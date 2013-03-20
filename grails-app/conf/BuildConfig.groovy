@@ -100,6 +100,7 @@ grails.project.dependency.resolution = {
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
+            ':lesscss-resources:1.3.3',
             ':mail:1.0.1',
             ':quartz:1.0-RC4',
             ':searchable:0.6.4'

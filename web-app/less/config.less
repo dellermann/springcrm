@@ -1,0 +1,139 @@
+/*
+ * config.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+.configuration-overview {
+  dl {
+    background-repeat: no-repeat;
+    margin-bottom: 1.5em;
+    min-height: 64px;
+    padding-left: 80px;
+  }
+  dt {
+    font-size: 108%;
+    margin-bottom: .5em;
+    padding-top: .5em;
+  }
+  dd {
+    margin-left: 0;
+  }
+}
+#configuration-client {
+  background-image: url("../img/configuration/client.png");
+}
+#configuration-currency {
+  background-image: url("../img/configuration/currency.png");
+}
+#configuration-google-auth {
+  background-image: url("../img/configuration/google-auth.png");
+}
+#configuration-language {
+  background-image: url("../img/configuration/language.png");
+}
+#configuration-ldap {
+  background-image: url("../img/configuration/network.png");
+}
+#configuration-pathes {
+  background-image: url("../img/configuration/pathes.png");
+}
+#configuration-sel-values {
+  background-image: url("../img/configuration/list.png");
+}
+#configuration-seq-numbers {
+  background-image: url("../img/configuration/numbers.png");
+}
+#configuration-sync {
+  background-image: url("../img/configuration/sync.png");
+}
+#configuration-tax-rates {
+  background-image: url("../img/configuration/tax-rates.png");
+}
+.sel-values-list {
+  margin-bottom: 2em;
+  min-width: 25em;
+
+  .scroll-pane {
+    max-height: 20em;
+    overflow-y: scroll;
+  }
+  ul {
+    margin: 0 .5em 0 0;
+  }
+  li {
+    line-height: 16px;
+    list-style-type: none;
+    margin-bottom: .3em;
+    min-height: 16px;
+    padding: .5em 1em;
+  
+    &:last-child {
+      margin-bottom: 0;
+    }
+    a {
+      background-repeat: no-repeat;
+      direction: ltr;
+      float: right;
+      height: 16px;
+      outline: 0;
+      padding-left: 4px;
+      text-indent: -9999px;
+      width: 16px;
+    }
+  }
+  .edit-btn {
+    background-image: url("../img/edit.png");
+  }
+  .delete-btn {
+    background-image: url("../img/remove.png");
+  }
+  .button {
+    margin-top: 1em;
+    margin-left: .5em;
+  }
+  .add-btn {
+    margin-left: 0;
+  }
+}
+#tax-rates-list span:after {
+  content: " %";
+}
+#seq-numbers-header-name {
+  width: 13em;
+}
+#seq-numbers-header-prefix, #seq-numbers-header-suffix {
+  width: 6em;
+}
+#seq-numbers-header-start-value, #seq-numbers-header-end-value {
+  width: 9em;
+}
+#seq-numbers td {
+  vertical-align: top;
+
+  &:first-child, &:last-child {
+    padding-top: .8em;
+  }
+  &:nth-child(2), &:nth-child(3), &:nth-child(4), &:nth-child(5) {
+    text-align: center;
+  }
+}
+
