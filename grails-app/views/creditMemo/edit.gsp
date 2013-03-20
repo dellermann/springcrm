@@ -13,7 +13,7 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="#" class="green submit-btn" data-form="creditMemo-form"><g:message code="default.button.save.label" /></a></li>
+        <li><a href="#" class="green submit-btn" data-form="credit-memo-form"><g:message code="default.button.save.label" /></a></li>
         <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
       </ul>
     </nav>
@@ -26,7 +26,7 @@
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${creditMemoInstance?.toString()}</h3>
-    <g:form name="creditMemo-form" action="update" method="post" params="[returnUrl: params.returnUrl]">
+    <g:form name="credit-memo-form" action="update" method="post" params="[returnUrl: params.returnUrl]">
       <g:hiddenField name="id" value="${creditMemoInstance?.id}" />
       <g:hiddenField name="version" value="${creditMemoInstance?.version}" />
       <g:render template="/creditMemo/form" />

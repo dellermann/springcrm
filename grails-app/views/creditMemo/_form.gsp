@@ -6,7 +6,7 @@
 
     var params;
 
-    params = $("#creditMemo-form").invoicingtransaction({
+    params = $("#credit-memo-form").invoicingtransaction({
             stageValues: {
                 payment: 2503,
                 shipping: 2502

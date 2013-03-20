@@ -285,6 +285,74 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     }
 
     /**
+     * Prepares a credit memo and stores it into the database.
+     *
+     * @param org       the organization the credit memo belongs to
+     * @param p         the person the credit memo belongs to
+     * @param invoice   the invoice associated to this credit memo
+     * @return          the created credit memo
+     */
+    protected CreditMemo prepareCreditMemo(Organization org, Person p,
+                                           Invoice invoice)
+    {
+        def creditMemo = new CreditMemo(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.APRIL, 8).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.APRIL, 9).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.',
+            footerText: 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.',
+            notes: 'Gutschrift für nicht lieferbare Artikel.',
+            stage: CreditMemoStage.get(2502),
+            dueDatePayment: new GregorianCalendar(2013, Calendar.APRIL, 16).time,
+            invoice: invoice
+        )
+        creditMemo.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        return creditMemo
+    }
+
+    /**
      * Prepares an invoice and stores it into the database.
      *
      * @param org           the organization the invoice belongs to

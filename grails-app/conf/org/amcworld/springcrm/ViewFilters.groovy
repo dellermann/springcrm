@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import java.text.DecimalFormatSymbols
 import org.codehaus.groovy.grails.commons.GrailsClass
 
 
@@ -59,6 +60,10 @@ class ViewFilters {
                         numFractionDigits = currency.defaultFractionDigits
                     }
                     model.numFractionDigits = numFractionDigits
+
+                    def dfs = DecimalFormatSymbols.getInstance(locale)
+                    model.decimalSeparator = dfs.decimalSeparator
+                    model.groupingSeparator = dfs.groupingSeparator
                 }
             }
         }

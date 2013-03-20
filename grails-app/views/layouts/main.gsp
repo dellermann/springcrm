@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
-<html lang="${locale}" data-currency-symbol="${currencySymbol}" data-num-fraction-digits="${numFractionDigits}">
+<html lang="${locale}" data-currency-symbol="${currencySymbol}"
+  data-num-fraction-digits="${numFractionDigits}"
+  data-decimal-separator="${decimalSeparator}"
+  data-grouping-separator="${groupingSeparator}">
 <head>
   <meta charset="utf-8" />
   <title><g:layoutTitle default="SpringCRM" /></title>

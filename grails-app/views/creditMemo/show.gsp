@@ -14,6 +14,7 @@
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
+        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
         <li><g:link action="edit" id="${creditMemoInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         </g:if>

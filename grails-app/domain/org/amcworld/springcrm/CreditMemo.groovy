@@ -115,7 +115,7 @@ class CreditMemo extends InvoicingTransaction {
      * @see     Dunning#getClosingBalance()
      */
     double getClosingBalance() {
-        return (invoice ? invoice : dunning).closingBalance
+        return (invoice ? invoice : dunning)?.closingBalance ?: 0.0d
     }
 
     /**
