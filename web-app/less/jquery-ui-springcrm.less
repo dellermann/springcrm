@@ -1,0 +1,177 @@
+/*
+ * jquery-ui-springcrm.less
+ *
+ * Copyright (c) 2011-2013, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "definitions.less";
+@import "mixins.less";
+
+
+@img-path: "../css/jquery/default/images";
+
+
+.ui-widget {
+  font-family: @font-default;
+  font-size: 1em;
+
+  input, select, textarea, button {
+    font-family: @font-default;
+    font-size: 1em;
+  }
+}
+.ui-widget-content {
+  background-image: none;
+  border: 1px solid #888;
+  color: #444;
+}
+.ui-widget-header {
+  .linear-gradient(#97B42D; #C5D58B; #97B42D);
+  border-color: #6C8F18;
+}
+.ui-state-default, .ui-widget-content .ui-state-default,
+  .ui-widget-header .ui-state-default
+{
+  .linear-gradient(#64991E; #92B761; #64991E);
+  border-color: #538312;
+  color: #E8F0DE;
+}
+.ui-state-default {
+  a, a:link, a:visited {
+    color: #E8F0DE;
+  }
+}
+.ui-state-hover, .ui-widget-content .ui-state-hover,
+  .ui-widget-header .ui-state-hover, .ui-state-focus,
+  .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus
+{
+  .linear-gradient(#538018; #86A65D; #538018);
+  border-color: #538312;
+  color: #E8F0DE;
+}
+.ui-state-hover {
+  a, a:hover {
+    color: #E8F0DE;
+  }
+}
+.ui-state-active, .ui-widget-content .ui-state-active,
+  .ui-widget-header .ui-state-active
+{
+  .linear-gradient(#538018; #86A65D; #538018);
+  border-color: #538312;
+}
+.ui-state-active {
+  a, a:link, a:visited {
+    color: white;
+  }
+}
+.ui-state-highlight, .ui-widget-content .ui-state-highlight,
+  .ui-widget-header .ui-state-highlight
+{
+  background: #DDD;
+}
+.ui-state-error, .ui-widget-content .ui-state-error,
+  .ui-widget-header .ui-state-error
+{
+  background-image: none;
+}
+.ui-icon {
+  background-image: url("@{img-path}/ui-icons_444444_256x240.png");
+}
+.ui-widget-content .ui-icon {
+  background-image: url("@{img-path}/ui-icons_444444_256x240.png");
+}
+.ui-widget-header .ui-icon {
+  background-image: url("@{img-path}/ui-icons_ffffff_256x240.png");
+}
+.ui-state-default .ui-icon {
+  background-image: url("@{img-path}/ui-icons_e8f0de_256x240.png");
+}
+.ui-state-hover .ui-icon, .ui-state-focus .ui-icon {
+  background-image: url("@{img-path}/ui-icons_e8f0de_256x240.png");
+}
+.ui-state-active .ui-icon {
+  background-image: url("@{img-path}/ui-icons_ffffff_256x240.png");
+}
+.ui-state-highlight .ui-icon {
+  background-image: url("@{img-path}/ui-icons_2e83ff_256x240.png");
+}
+.ui-state-error .ui-icon, .ui-state-error-text .ui-icon {
+  background-image: url("@{img-path}/ui-icons_cc171d_256x240.png");
+}
+.ui-widget-overlay {
+  background-image: none;
+}
+.ui-widget-shadow {
+  background-image: none;
+  border-radius: .8em;
+  -moz-border-radius: .8em;
+  -webkit-border-radius: .8em;
+}
+.ui-menu-item {
+  list-style: none;
+}
+.ui-autocomplete {
+  .box-shadow(3px; 3px; 3px; rgba(0, 0, 0, .6));
+  .border-radius-top(0) !important;
+  max-height: 150px;
+  max-width: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 20px;
+}
+.ui-accordion .ui-accordion-header {
+  margin-bottom: 0 !important;
+}
+.ui-tabs {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  .ui-widget-header {
+    background: none;
+    border: none;
+  }
+  .ui-tabs-nav {
+    padding: 0;
+
+    li {
+      border-left-style: none;
+      margin-right: 0;
+
+      &:first-child {
+        border-left-style: solid;
+      }
+      a {
+        padding: .5em;
+      }
+    }
+  }
+  .ui-corner-all {
+    .border-radius(0);
+  }
+  .ui-tabs-panel {
+    border: 1px solid #888;
+  }
+}
+.ui-tabs-nav input {
+  float: left;
+  margin: .5em 0 0 .5em;
+}
+.ui-tabs-panel p:last-child {
+  margin-bottom: 0;
+}

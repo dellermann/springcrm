@@ -61,6 +61,16 @@
   border-bottom-right-radius: @radius;
   border-top-right-radius: @radius;
 }
+.border-radius-top(@radius: 0) {
+  -khtml-border-radius-topleft: @radius;
+  -khtml-border-radius-topright: @radius;
+  -moz-border-radius-topleft: @radius;
+  -moz-border-radius-topright: @radius;
+  -webkit-border-radius-topleft: @radius;
+  -webkit-border-radius-topright: @radius;
+  border-top-left-radius: @radius;
+  border-top-right-radius: @radius;
+}
 
 .box-shadow(...) {
   -khtml-box-shadow: @arguments;

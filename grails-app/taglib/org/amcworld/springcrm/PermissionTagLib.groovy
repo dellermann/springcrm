@@ -1,7 +1,7 @@
 /*
  * PermissionTagLib.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * permissions.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class PermissionTagLib {
 
@@ -87,7 +87,7 @@ class PermissionTagLib {
 		if (!(modules instanceof List)) {
 			modules = [modules]
 		}
-		if (session.user.checkAllowedModules(modules)) {
+		if (session.user?.checkAllowedModules(modules)) {
 			out << body()
 		}
 	}

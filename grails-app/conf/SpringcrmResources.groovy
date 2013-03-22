@@ -36,6 +36,7 @@ modules = {
 
         resource url: 'less/calendar.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/css/fullcalendar.css'
+
         resource url: '/js/fullcalendar.min.js', exclude: 'minify'
     }
 
@@ -74,13 +75,14 @@ modules = {
     core {
         dependsOn 'jquery-ui, jquery-json'
 
-        resource url: '/css/reset.css', attrs: [ media: 'all' ]
-        resource url: 'less/main.less', attrs: [rel: 'stylesheet/less', type: 'css']
-        resource url: '/css/print.css', attrs: [ media: 'print' ]
-        resource '/css/jquery-ui-springcrm.css'
+        resource url: '/less/reset.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
+        resource url: '/less/main.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
+        resource url: '/css/print.css', attrs: [media: 'print']
+        resource url: '/less/jquery-ui-springcrm.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
+
         resource '/js/jquery.ui.datepicker-de.js'
         resource '/js/jquery.ba-bbq.min.js'
-        resource '/js/core.js'
+        resource '/js/app/core.js'
         resource '/js/scripts.js'
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
@@ -89,6 +91,7 @@ modules = {
         dependsOn 'elfinder'
 
         resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
         resource '/js/document.js'
     }
 
@@ -97,6 +100,7 @@ modules = {
 
         resource url: '/css/elfinder/elfinder.min.css', exclude: 'minify'
         resource '/css/elfinder/theme.css'
+
         resource url: '/js/elfinder/elfinder.min.js', exclude: 'minify'
         resource '/js/elfinder/i18n/elfinder.de.js'
     }
@@ -118,6 +122,7 @@ modules = {
         defaultBundle 'invoicing-transaction-form'
 
         resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
         resource '/js/app/invoicing-items.js'
         resource '/js/app/invoicing-transaction-form.js'
     }
@@ -126,13 +131,15 @@ modules = {
         dependsOn 'jquery-ui'
 
         resource '/css/jquery/default/jquery.ui.selectmenu.css'
+
         resource '/js/jquery.ui.selectmenu.js'
     }
 
     login {
         dependsOn 'core'
+        defaultBundle 'core'
 
-        resource url: 'less/login.less', attrs: [rel: 'stylesheet/less', type: 'css']
+        resource url: 'less/login.less', attrs: [rel: 'stylesheet/less', type: 'css'], bundle: 'core'
     }
 
     noteForm {
@@ -149,8 +156,10 @@ modules = {
 
     overview {
         dependsOn 'core'
+        defaultBundle 'core'
 
-        resource url: 'less/overview.less', attrs: [rel: 'stylesheet/less', type: 'css']
+        resource url: 'less/overview.less', attrs: [rel: 'stylesheet/less', type: 'css'], bundle: 'core'
+
         resource '/js/overview.js'
     }
 
@@ -164,6 +173,7 @@ modules = {
         dependsOn 'core'
 
         resource url: '/css/jquery.lightbox.css', attrs: [ media: 'screen' ]
+
         resource '/js/jquery.lightbox.min.js'
     }
 
@@ -202,6 +212,7 @@ modules = {
         dependsOn 'report, jquery-ui-selectmenu'
 
         resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
         resource '/js/report-sales-journal.js'
     }
 
@@ -213,6 +224,7 @@ modules = {
         dependsOn 'core'
 
         resource url: 'less/pricing.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
         resource '/js/sales-item-pricing.js'
     }
 

@@ -100,14 +100,14 @@ grails.project.dependency.resolution = {
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
-            ':lesscss-resources:1.3.3',
+            ':less-resources:1.3.3.1',
+//            ':lesscss-resources:1.3.3',
             ':mail:1.0.1',
             ':quartz:1.0-RC4',
             ':searchable:0.6.4'
         )
         build(
             ':standalone:1.1.1',
-//            ':svn:1.0.0.M1',
             ":tomcat:${grailsVersion}"
         )
         runtime(
