@@ -223,6 +223,7 @@ modules = {
     salesItemPricing {
         dependsOn 'core'
 
+        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource url: 'less/pricing.less', attrs: [rel: 'stylesheet/less', type: 'css']
 
         resource '/js/sales-item-pricing.js'

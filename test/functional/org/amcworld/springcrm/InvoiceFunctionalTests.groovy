@@ -47,6 +47,8 @@ class InvoiceFunctionalTests extends InvoicingTransactionTestCase {
     @Rule
     public TestName name = new TestName()
 
+    SalesOrder salesOrder
+
 
     //-- Public methods -------------------------
 
@@ -55,7 +57,7 @@ class InvoiceFunctionalTests extends InvoicingTransactionTestCase {
         def org = prepareOrganization()
         def p = preparePerson(org)
         def quote = prepareQuote(org, p)
-        def salesOrder = prepareSalesOrder(org, p, quote)
+        salesOrder = prepareSalesOrder(org, p, quote)
         if (!name.methodName.startsWith('testCreate')) {
             prepareInvoice(org, p, quote, salesOrder)
         }
@@ -259,6 +261,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         driver.quit()
 
         assert 1 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -274,7 +277,12 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
             'subject', 'organization.id', 'dueDatePayment',
             'dueDatePayment_date'
         ])
-        // TODO check for errors in items[0]
+        List<WebElement> errorMsgs = driver.findElements(By.xpath(
+            '//form[@id="invoice-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
+        ))
+        assert 2 == errorMsgs.size()
+        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/invoice/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -285,6 +293,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         driver.quit()
 
         assert 0 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -433,6 +442,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         driver.quit()
 
         assert 1 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -492,6 +502,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         driver.quit()
 
         assert 1 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -762,6 +773,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         driver.quit()
 
         assert 1 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -775,18 +787,22 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         driver.findElement(By.name('subject')).clear()
         driver.findElement(By.id('organization')).clear()
         driver.findElement(By.name('dueDatePayment_date')).clear()
+        for (int i = 0; i < 2; i++) {
+            removeRow 0
+        }
+        assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/invoice/update'))
         assert checkErrorFields([
             'subject', 'organization.id', 'dueDatePayment',
             'dueDatePayment_date'
         ])
-        // TODO check for errors in items[0]
         driver.findElement(By.linkText('Abbruch')).click()
         assert driver.currentUrl.startsWith(getUrl('/invoice/list'))
         driver.quit()
 
         assert 1 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -800,6 +816,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         driver.quit()
 
         assert 0 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 
     @Test
@@ -810,5 +827,6 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         driver.quit()
 
         assert 1 == Invoice.count()
+        checkSalesOrder salesOrder
     }
 }

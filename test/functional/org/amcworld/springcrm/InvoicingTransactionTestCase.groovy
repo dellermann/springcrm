@@ -59,6 +59,85 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
     }
 
     /**
+     * Checks whether the given invoice has the values as defined in
+     * {@code prepareInvoice}.
+     *
+     * @param i the invoice to check
+     * @see     #prepareInvoice(Organization, Person, Quote, SalesOrder)
+     */
+    protected void checkInvoice(Invoice i) {
+        checkInvoicingTransaction i
+        assert 'R-10000-10000' == i.fullNumber
+        assert new GregorianCalendar(2013, Calendar.APRIL, 1).time == i.docDate
+        assert new GregorianCalendar(2013, Calendar.APRIL, 2).time == i.shippingDate
+        assert '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == i.headerText
+        assert 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.' == i.footerText
+        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == i.notes
+        assert 902L == i.stage.id
+        assert new GregorianCalendar(2013, Calendar.APRIL, 16).time == i.dueDatePayment
+        checkQuote i.quote
+        checkSalesOrder i.salesOrder
+    }
+
+    /**
+     * Checks whether the given invoicing transaction has the values as defined
+     * in {@code prepareQuote}, {@code prepareSalesOrder}, or
+     * {@code prepareInvoice}.
+     *
+     * @param i the invoicing transaction to check
+     * @see     #prepareQuote(Organization, Person)
+     * @see     #prepareSalesOrder(Organization, Person, Quote)
+     * @see     #prepareInvoice(Organization, Person, Quote, SalesOrder)
+     */
+    protected void checkInvoicingTransaction(InvoicingTransaction i) {
+        assert 'Werbekampagne Frühjahr 2013' == i.subject
+        assert 'Landschaftsbau Duvensee GbR' == i.organization.name
+        assert 'Brackmann' == i.person.lastName
+        assert 'Henry' == i.person.firstName
+        assert 501L == i.carrier.id
+        assert 'Dörpstraat 25' == i.billingAddrStreet
+        assert '23898' == i.billingAddrPostalCode
+        assert 'Duvensee' == i.billingAddrLocation
+        assert 'Schleswig-Holstein' == i.billingAddrState
+        assert 'Deutschland' == i.billingAddrCountry
+        assert 'Dörpstraat 25' == i.shippingAddrStreet
+        assert '23898' == i.shippingAddrPostalCode
+        assert 'Duvensee' == i.shippingAddrLocation
+        assert 'Schleswig-Holstein' == i.shippingAddrState
+        assert 'Deutschland' == i.shippingAddrCountry
+        List<InvoicingItem> items = i.items
+        assert 3 == items.size()
+        def item = items[0]
+        assert 'S-10000' == item.number
+        assert 1.0d == item.quantity
+        assert 'Einheiten' == item.unit
+        assert 'Konzeption und Planung' == item.name
+        assert 'Konzeption der geplanten Werbekampagne' == item.description
+        assert 440.0d == item.unitPrice
+        assert 19.0d == item.tax
+        item = items[1]
+        assert 'S-10100' == item.number
+        assert 1.0d == item.quantity
+        assert 'Einheiten' == item.unit
+        assert 'Mustervorschau' == item.name
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == item.description
+        assert 450.0d == item.unitPrice
+        assert 19.0d == item.tax
+        item = items[2]
+        assert 'P-10000' == item.number
+        assert 2.0d == item.quantity
+        assert 'Packung' == item.unit
+        assert 'Papier A4 80 g/m²' == item.name
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == item.description
+        assert 2.49d == item.unitPrice
+        assert 7.0d == item.tax
+        def termsAndConditions = i.termsAndConditions
+        assert 2 == termsAndConditions.size()
+        assert (termsAndConditions*.id as Set) == ([700L, 701L] as Set)
+    }
+
+    /**
      * Checks the values of the input fields and the total value of the row
      * with the given index.
      *
@@ -83,6 +162,46 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
                 }
             }
         }
+    }
+
+    /**
+     * Checks whether the given quote has the values as defined in
+     * {@code prepareQuote}.
+     *
+     * @param q the quote to check
+     * @see     #prepareQuote(Organization, Person)
+     */
+    protected void checkQuote(Quote q) {
+        checkInvoicingTransaction q
+        assert 'A-10000-10000' == q.fullNumber
+        assert new GregorianCalendar(2013, Calendar.FEBRUARY, 20).time == q.docDate
+        assert new GregorianCalendar(2013, Calendar.FEBRUARY, 21).time == q.shippingDate
+        assert '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == q.headerText
+        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == q.footerText
+        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == q.notes
+        assert 602L == q.stage.id
+        assert new GregorianCalendar(2013, Calendar.MARCH, 20).time == q.validUntil
+    }
+
+    /**
+     * Checks whether the given sales order has the values as defined in
+     * {@code prepareSalesOrder}.
+     *
+     * @param so    the sales order to check
+     * @see         #prepareSalesOrder(Organization, Person, Quote)
+     */
+    protected void checkSalesOrder(SalesOrder so) {
+        checkInvoicingTransaction so
+        assert 'B-10000-10000' == so.fullNumber
+        assert new GregorianCalendar(2013, Calendar.MARCH, 4).time == so.docDate
+        assert new GregorianCalendar(2013, Calendar.MARCH, 5).time == so.shippingDate
+        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == so.headerText
+        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == so.footerText
+        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == so.notes
+        assert 802L == so.stage.id
+        assert new GregorianCalendar(2013, Calendar.MARCH, 28).time == so.dueDate
+        checkQuote so.quote
     }
 
     /**

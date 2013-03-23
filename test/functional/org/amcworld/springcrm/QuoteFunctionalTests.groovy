@@ -260,6 +260,12 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/quote/save'))
         assert checkErrorFields(['subject', 'organization.id'])
+        List<WebElement> errorMsgs = driver.findElements(By.xpath(
+            '//form[@id="quote-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
+        ))
+        assert 2 == errorMsgs.size()
+        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/quote/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -705,6 +711,10 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
         driver.findElement(By.name('subject')).clear()
         driver.findElement(By.id('organization')).clear()
+        for (int i = 0; i < 2; i++) {
+            removeRow 0
+        }
+        assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/quote/update'))
         assert checkErrorFields(['subject', 'organization.id'])

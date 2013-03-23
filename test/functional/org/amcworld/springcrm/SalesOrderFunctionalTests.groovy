@@ -47,6 +47,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
     @Rule
     public TestName name = new TestName()
 
+    Quote quote
+
 
     //-- Public methods -------------------------
 
@@ -54,7 +56,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
     void login() {
         def org = prepareOrganization()
         def p = preparePerson(org)
-        def quote = prepareQuote(org, p)
+        quote = prepareQuote(org, p)
         if (!name.methodName.startsWith('testCreate')) {
             prepareSalesOrder(org, p, quote)
         }
@@ -252,6 +254,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -264,6 +267,12 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/sales-order/save'))
         assert checkErrorFields(['subject', 'organization.id'])
+        List<WebElement> errorMsgs = driver.findElements(By.xpath(
+            '//form[@id="sales-order-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
+        ))
+        assert 2 == errorMsgs.size()
+        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/sales-order/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -274,6 +283,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 0 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -386,6 +396,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -441,6 +452,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -693,6 +705,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -705,6 +718,10 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
 
         driver.findElement(By.name('subject')).clear()
         driver.findElement(By.id('organization')).clear()
+        for (int i = 0; i < 2; i++) {
+            removeRow 0
+        }
+        assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/sales-order/update'))
         assert checkErrorFields(['subject', 'organization.id'])
@@ -713,6 +730,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -726,6 +744,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 0 == SalesOrder.count()
+        checkQuote quote
     }
 
     @Test
@@ -736,5 +755,6 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == SalesOrder.count()
+        checkQuote quote
     }
 }

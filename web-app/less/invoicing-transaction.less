@@ -22,12 +22,73 @@
 @import "mixins.less";
 
 
+/* price tables */
+.price-table {
+  td {
+    vertical-align: top;
+  }
+  .item-number, .type {
+    text-align: center;
+  }
+  &.read-only .type {
+    text-align: left;
+  }
+  .pos, .number, .label, .number input {
+    text-align: right;
+  }
+  .name textarea {
+    margin-top: .5em;
+  }
+  .currency, .percentage {
+    line-height: 1.4em;
+  }
+  .currency {
+    width: 7.5em;
+  }
+  .action-buttons {
+    width: 70px;
+
+    img {
+      cursor: pointer;
+      padding-left: .3em;
+
+      &:first-child {
+        padding-left: 0;
+      }
+    }
+  }
+  tr:first-child .up-btn, tr:last-child .down-btn,
+    tr:first-child:last-child .remove-btn
+  {
+    display: none;
+  }
+  output {
+    padding-top: .3em;
+  }
+  .label {
+    vertical-align: middle;
+  }
+  .total, .subtotal {
+    font-weight: bold;
+  }
+  .select-btn-products, .select-btn-services {
+    cursor: pointer;
+    vertical-align: middle;
+  }
+}
+form .price-table .pos {
+  padding-top: .7em;
+}
+
+/* balance markers */
 .balance-state-green {
   color: #080;
 }
 .balance-state-red {
   color: #800;
 }
+
+/* payment markers */
 .payment-state-green {
   .background-alpha(rgba(183, 255, 29, .6));
 }
@@ -51,6 +112,8 @@
   .background-alpha(rgba(0, 7, 24, .6));
   color: white;
 }
+
+/* markers for still unpaid text */
 #still-unpaid:hover {
   text-decoration: underline;
 }

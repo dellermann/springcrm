@@ -47,6 +47,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
     @Rule
     public TestName name = new TestName()
 
+    Invoice invoice
+
 
     //-- Public methods -------------------------
 
@@ -56,7 +58,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         def p = preparePerson(org)
         def quote = prepareQuote(org, p)
         def salesOrder = prepareSalesOrder(org, p, quote)
-        def invoice = prepareInvoice(org, p, quote, salesOrder)
+        invoice = prepareInvoice(org, p, quote, salesOrder)
         if (!name.methodName.startsWith('testCreate')) {
             prepareCreditMemo(org, p, invoice)
         }
@@ -252,6 +254,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -264,7 +267,12 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/credit-memo/save'))
         assert checkErrorFields(['subject', 'organization.id'])
-        // TODO check for errors in items[0]
+        List<WebElement> errorMsgs = driver.findElements(By.xpath(
+            '//form[@id="credit-memo-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
+        ))
+        assert 2 == errorMsgs.size()
+        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/credit-memo/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -275,6 +283,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 0 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -390,6 +399,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -449,6 +459,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -474,7 +485,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '' == getInputValue('paymentAmount')
         def stillUnpaidLink = driver.findElement(By.id('still-unpaid'))
         assert '1064.4286' == stillUnpaidLink.getAttribute('data-closing-balance')
-        assert '-0,00' == stillUnpaidLink.findElement(By.tagName('span')).text
+        assert stillUnpaidLink.findElement(By.tagName('span')).text ==~ /^-?0,00$/
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
         assert '23898' == getInputValue('billingAddrPostalCode')
@@ -507,7 +518,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'paymentDate_date', '10.4.2013'
         stillUnpaidLink.click()
         assert '' == getInputValue('paymentAmount')
-        assert '-0,00' == stillUnpaidLink.findElement(By.tagName('span')).text
+        assert stillUnpaidLink.findElement(By.tagName('span')).text ==~ /^-?0,00$/
         setInputValue 'paymentMethod.id', '2401'
 
         setPriceTableInputValue 0, 'unitPrice', '450'
@@ -713,6 +724,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -725,15 +737,19 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
         driver.findElement(By.name('subject')).clear()
         driver.findElement(By.id('organization')).clear()
+        for (int i = 0; i < 2; i++) {
+            removeRow 0
+        }
+        assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert driver.currentUrl.startsWith(getUrl('/credit-memo/update'))
         assert checkErrorFields(['subject', 'organization.id'])
-        // TODO check for errors in items[0]
         driver.findElement(By.linkText('Abbruch')).click()
         assert driver.currentUrl.startsWith(getUrl('/credit-memo/list'))
         driver.quit()
 
         assert 1 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -747,6 +763,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 0 == CreditMemo.count()
+        checkInvoice invoice
     }
 
     @Test
@@ -757,5 +774,6 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == CreditMemo.count()
+        checkInvoice invoice
     }
 }
