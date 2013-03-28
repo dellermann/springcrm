@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.text.DateFormat
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -82,7 +81,7 @@ class QuoteFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
         setInputValue 'stage.id', '602'
-        DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()) == getInputValue('shippingDate_date')
+        checkDate 'shippingDate_date'
         setInputValue 'docDate_date', '20.02.2013'
         setInputValue 'validUntil_date', '20.03.2013'
         setInputValue 'shippingDate_date', '21.02.2013'
@@ -392,6 +391,26 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         link.click()
         driver.switchTo().alert().dismiss()
         assert getUrl("/quote/show/${id}") == driver.currentUrl
+
+        def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
+        link = actions.findElement(By.xpath('li[1]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('menu-button')
+        assert link.getAttribute('href').startsWith(getUrl("/quote/print/${id}"))
+        assert 'Drucken' == link.text
+        link = actions.findElement(By.xpath('li[2]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('menu-button')
+        assert link.getAttribute('href').startsWith(getUrl("/quote/print/${id}?duplicate=1"))
+        assert 'Kopie drucken' == link.text
+        link = actions.findElement(By.xpath('li[3]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?quote=${id}"))
+        assert 'Bestellung erzeugen' == link.text
+        link = actions.findElement(By.xpath('li[4]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?quote=${id}"))
+        assert 'Rechnung erzeugen' == link.text
         driver.quit()
 
         assert 1 == Quote.count()

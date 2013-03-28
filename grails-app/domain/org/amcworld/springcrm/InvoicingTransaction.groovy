@@ -133,7 +133,6 @@ class InvoicingTransaction {
 		subject = i.subject
 		organization = i.organization
 		person = i.person
-		carrier = i.carrier
 		billingAddrStreet = i.billingAddrStreet
 		billingAddrPoBox = i.billingAddrPoBox
 		billingAddrPostalCode = i.billingAddrPostalCode

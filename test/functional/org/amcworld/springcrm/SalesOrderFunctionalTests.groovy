@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.text.DateFormat
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -86,7 +85,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
         assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == selectAutocompleteEx('quote', 'Werbe')
         setInputValue 'stage.id', '802'
-        DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date()) == getInputValue('shippingDate_date')
+        checkDate 'shippingDate_date'
         setInputValue 'docDate_date', '4.3.2013'
         setInputValue 'dueDate_date', '28.3.2013'
         setInputValue 'shippingDate_date', '5.3.2013'
@@ -287,6 +286,136 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
     }
 
     @Test
+    void testCreateSalesOrderFromQuote() {
+        open('/quote/list')
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
+        driver.findElement(By.xpath('//aside[@id="action-bar"]/ul/li[3]/a')).click()
+        assert driver.currentUrl.startsWith(getUrl('/sales-order/create?quote='))
+        assert 'Verkaufsbestellung anlegen' == driver.title
+        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
+        assert 'Neue Verkaufsbestellung' == driver.findElement(BY_SUBHEADER).text
+
+        def col = driver.findElement(By.xpath('//form[@id="sales-order-form"]/fieldset[1]')).findElement(By.className('col-l'))
+        assert getShowField(col, 1).text.startsWith('B-')
+        assert '10000' == getInputValue('number')
+        assert getInputValue('autoNumber')
+        assert 'Werbekampagne Frühjahr 2013' == getInputValue('subject')
+        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(By.id('organization')).getAttribute('value')
+        assert 'Henry Brackmann' == driver.findElement(By.id('person')).getAttribute('value')
+        assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == driver.findElement(By.id('quote')).getAttribute('value')
+        assert '800' == getInputValue('stage.id')
+        checkDate 'docDate_date'
+        assert '' == getInputValue('dueDate_date')
+        assert '' == getInputValue('shippingDate_date')
+        assert 'null' == getInputValue('carrier.id')
+        assert '' == getInputValue('deliveryDate_date')
+        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
+        assert '' == getInputValue('billingAddrPoBox')
+        assert '23898' == getInputValue('billingAddrPostalCode')
+        assert 'Duvensee' == getInputValue('billingAddrLocation')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
+        assert 'Deutschland' == getInputValue('billingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
+        assert '' == getInputValue('shippingAddrPoBox')
+        assert '23898' == getInputValue('shippingAddrPostalCode')
+        assert 'Duvensee' == getInputValue('shippingAddrLocation')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
+        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue('headerText')
+
+        checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
+        assert '894,98' == subtotalNet
+        checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
+        assert '1.064,43' == subtotalGross
+        assert '1.064,43' == total
+
+        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == getInputValue('footerText')
+        assert ['700', '701'] == getInputValue('termsAndConditions')
+        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getInputValue('notes')
+
+        setInputValue 'stage.id', '802'
+        checkDate 'shippingDate_date'
+        setInputValue 'docDate_date', '4.3.2013'
+        setInputValue 'dueDate_date', '28.3.2013'
+        setInputValue 'carrier.id', '501'
+        setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".'
+        setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.'
+        setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.'
+
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+
+        assert driver.currentUrl.startsWith(getUrl('/sales-order/show/'))
+        assert 'Verkaufsbestellung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
+        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'B-10000-10000' == getShowFieldText(col, 1)
+        assert 'Werbekampagne Frühjahr 2013' == getShowFieldText(col, 2)
+        def link = getShowField(col, 3).findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
+        assert 'Landschaftsbau Duvensee GbR' == link.text
+        link = getShowField(col, 4).findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/person/show/'))
+        assert 'Brackmann, Henry' == link.text
+        link = getShowField(col, 5).findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/quote/show/'))
+        assert 'A-10000-10000 Werbekampagne Frühjahr 2013' == link.text
+        assert 'versendet' == getShowFieldText(col, 6)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '04.03.2013' == getShowFieldText(col, 1)
+        assert '28.03.2013' == getShowFieldText(col, 2)
+        assert 'elektronisch' == getShowFieldText(col, 3)
+        assert '' == getShowFieldText(col, 4)
+        assert '' == getShowFieldText(col, 5)
+        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'Dörpstraat 25' == getShowFieldText(col, 1)
+        assert '23898' == getShowFieldText(col, 3)
+        assert 'Duvensee' == getShowFieldText(col, 4)
+        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
+        assert 'Deutschland' == getShowFieldText(col, 6)
+        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
+        col = fieldSet.findElement(By.className('col-r'))
+        assert 'Dörpstraat 25' == getShowFieldText(col, 1)
+        assert '23898' == getShowFieldText(col, 3)
+        assert 'Duvensee' == getShowFieldText(col, 4)
+        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
+        assert 'Deutschland' == getShowFieldText(col, 6)
+        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
+        fieldSet = getFieldset(dataSheet, 2)
+        def field = getShowField(fieldSet, 1)
+        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+
+        checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
+        checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
+        checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+
+        WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
+        assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
+        WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
+        assert '7 % MwSt.' == tr.findElement(By.className('label')).text
+        assert '0,35 €' == tr.findElement(By.className('currency')).text
+        tr = tfoot.findElement(By.xpath('./tr[3]'))
+        assert '19 % MwSt.' == tr.findElement(By.className('label')).text
+        assert '169,10 €' == tr.findElement(By.className('currency')).text
+        assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+
+        fieldSet = getFieldset(dataSheet, 4)
+        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
+        fieldSet = getFieldset(dataSheet, 5)
+        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        driver.quit()
+
+        assert 1 == SalesOrder.count()
+        checkQuote quote
+    }
+
+    @Test
     void testShowSalesOrder() {
         driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
         def m = (driver.currentUrl =~ '/sales-order/show/(\\d+)')
@@ -393,6 +522,22 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         link.click()
         driver.switchTo().alert().dismiss()
         assert getUrl("/sales-order/show/${id}") == driver.currentUrl
+
+        def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
+        link = actions.findElement(By.xpath('li[1]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('menu-button')
+        assert link.getAttribute('href').startsWith(getUrl("/sales-order/print/${id}"))
+        assert 'Drucken' == link.text
+        link = actions.findElement(By.xpath('li[2]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('menu-button')
+        assert link.getAttribute('href').startsWith(getUrl("/sales-order/print/${id}?duplicate=1"))
+        assert 'Kopie drucken' == link.text
+        link = actions.findElement(By.xpath('li[3]/a'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?salesOrder=${id}"))
+        assert 'Rechnung erzeugen' == link.text
         driver.quit()
 
         assert 1 == SalesOrder.count()

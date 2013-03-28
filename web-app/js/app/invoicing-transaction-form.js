@@ -130,15 +130,21 @@
       }
     },
     _onChangeStage: function(event) {
-      var stageValues;
+      var $input, stageValues;
       $ = jQuery;
       stageValues = this.options.stageValues;
+      $input = null;
       switch (parseInt($(event.target).val(), 10)) {
         case stageValues.shipping:
-          return $("#shippingDate-date").datepicker("setDate", new Date());
+          $input = $("#shippingDate-date");
+          break;
         case stageValues.payment:
-          return $("#paymentDate-date").datepicker("setDate", new Date());
+          $input = $("#paymentDate-date");
       }
+      if ($input) {
+        $input.datepicker("setDate", new Date()).trigger("change");
+      }
+      return true;
     },
     _onClickStillUnpaid: function(event) {
       var $paymentAmount, val;

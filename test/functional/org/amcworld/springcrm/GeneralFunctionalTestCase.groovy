@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
+import java.text.DateFormat
 import org.junit.After
 import org.junit.Before
 import org.openqa.selenium.By
@@ -79,6 +80,17 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     //-- Non-public methods ---------------------
 
     /**
+     * Checks whether the value of the field with the given name is represents
+     * the formatted given date or current date.
+     *
+     * @param fieldName the name of the field to check
+     * @param date      the date to check; if missing the current date is used
+     */
+    protected void checkDate(String fieldName, Date date = new Date()) {
+        assert getDateFormatted(date) == getInputValue(fieldName)
+    }
+
+    /**
      * Checks whether exactly the given list of fields are marked as error.
      *
      * @param fieldNames    the names of the field which must be marked as
@@ -109,6 +121,17 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             println "Fields ${shouldNotBeErrors.toListString()} marked as error, but shouldn't."
         }
         return shouldBeErrors.empty && shouldNotBeErrors.empty
+    }
+
+    /**
+     * Gets the given date or the current date formatted with the medium
+     * format.
+     *
+     * @param date  the date to format; if missing, the current date is used
+     * @return      the formatted date
+     */
+    protected String getDateFormatted(Date date = new Date()) {
+        DateFormat.getDateInstance(DateFormat.MEDIUM).format(date)
     }
 
     /**

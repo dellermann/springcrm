@@ -187,11 +187,14 @@ InvoicingTransactionWidget =
     $ = jQuery
 
     stageValues = @options.stageValues
+    $input = null
     switch parseInt $(event.target).val(), 10
       when stageValues.shipping
-        $("#shippingDate-date").datepicker "setDate", new Date()
+        $input = $("#shippingDate-date")
       when stageValues.payment
-        $("#paymentDate-date").datepicker "setDate", new Date()
+        $input = $("#paymentDate-date")
+    $input.datepicker("setDate", new Date()).trigger("change") if $input
+    true
 
   # Called if the user clicks the link "still unpaid".  The method sets the
   # payment amount to the balanced value indicating that the invoicing
