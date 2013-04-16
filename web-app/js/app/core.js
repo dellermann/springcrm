@@ -120,7 +120,9 @@
   };
 
   Number.prototype.round = function(n) {
-    return parseFloat(this.toFixed(n));
+    var power;
+    power = Math.pow(10, n);
+    return Math.round(this * power) / power;
   };
 
   RegExp.escape = function(s) {
@@ -210,7 +212,7 @@
     var reD, reG, s;
     reD = new RegExp(RegExp.escape(decimalSeparator), "g");
     reG = new RegExp(RegExp.escape(groupingSeparator), "g");
-    s = this;
+    s = this.toString();
     if (s === "") {
       return 0;
     } else {

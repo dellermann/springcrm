@@ -36,15 +36,19 @@ class SalesItem {
         number(unique: 'type', widget: 'autonumber')
         type(blank: false, maxSize: 1)
         name(blank: false)
-        quantity(min: 0.0d)
-        unit(nullable: true)
+        quantity(min: 0.0d, validator: { quantity, salesItem ->
+            ((quantity <= 0.0d) && (salesItem.pricing != null)) ? ['default.invalid.notGreater.message', 0] : null
+        })
+        unit(nullable: true, validator: { unit, salesItem ->
+            ((unit == null) && (salesItem.pricing != null)) ? 'default.null.message' : null
+        })
         unitPrice(min: 0.0d, widget: 'currency')
         taxRate(nullable: true)
         purchasePrice(nullable: true, min: 0.0d, widget: 'currency')
         salesStart(nullable: true)
         salesEnd(nullable: true)
         description(nullable: true, widget: 'textarea')
-        pricing(nullable: true)
+        pricing(nullable: true, validator: { it?.validate() })
         dateCreated()
         lastUpdated()
     }

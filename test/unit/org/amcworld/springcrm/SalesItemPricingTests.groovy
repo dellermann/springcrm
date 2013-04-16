@@ -71,19 +71,19 @@ class SalesItemPricingTests {
 
     void testGetCurrentSum() {
         def pricing = mockDomain()
-        assert 393.25 == pricing.getCurrentSum()
-        assert 393.25 == pricing.getCurrentSum(5)
-        assert 357.5 == pricing.getCurrentSum(4)
-        assert 341.25 == pricing.getCurrentSum(3)
-        assert 325 == pricing.getCurrentSum(2)
-        assert 325 == pricing.getCurrentSum(1)
-        assert 300 == pricing.getCurrentSum(0)
+        assert 393.25 == pricing.computeCurrentSum()
+        assert 393.25 == pricing.computeCurrentSum(5)
+        assert 357.5 == pricing.computeCurrentSum(4)
+        assert 341.25 == pricing.computeCurrentSum(3)
+        assert 325 == pricing.computeCurrentSum(2)
+        assert 325 == pricing.computeCurrentSum(1)
+        assert 300 == pricing.computeCurrentSum(0)
 
         pricing.items = []
-        assert 0.0 == pricing.getCurrentSum()
+        assert 0.0 == pricing.computeCurrentSum()
 
         pricing.items = null
-        assert 0.0 == pricing.getCurrentSum()
+        assert 0.0 == pricing.computeCurrentSum()
     }
 
     void testGetDiscoundPercentAmount() {
@@ -102,13 +102,13 @@ class SalesItemPricingTests {
 
     void testGetLastSumPos() {
         def pricing = mockDomain()
-        assert 2 == pricing.getLastSumPos()
-        assert 2 == pricing.getLastSumPos(5)
-        assert 2 == pricing.getLastSumPos(4)
-        assert 2 == pricing.getLastSumPos(3)
-        assert 2 == pricing.getLastSumPos(2)
-        assert -1 == pricing.getLastSumPos(1)
-        assert -1 == pricing.getLastSumPos(0)
+        assert 2 == pricing.computeLastSumPos()
+        assert 2 == pricing.computeLastSumPos(5)
+        assert 2 == pricing.computeLastSumPos(4)
+        assert 2 == pricing.computeLastSumPos(3)
+        assert 2 == pricing.computeLastSumPos(2)
+        assert -1 == pricing.computeLastSumPos(1)
+        assert -1 == pricing.computeLastSumPos(0)
     }
 
 

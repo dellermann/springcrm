@@ -34,7 +34,9 @@ class SalesItemPricing {
     //-- Class variables ------------------------
 
     static constraints = {
-        quantity(min: 0.0d)
+        quantity(min: 0.0d, validator: {
+            it <= 0.0d ? ['default.invalid.notGreater.message', 0] : null
+        })
         unit()
         discountPercent(scale: 2, min: 0.0d, widget: 'percent')
         adjustment(widget: 'currency')
@@ -72,6 +74,40 @@ class SalesItemPricing {
     }
 
     /**
+     * Computes the sum of all items' total prices at the given position and
+     * before.
+     *
+     * @param pos   the given zero-based position
+     * @return      the current sum
+     */
+    double computeCurrentSum(int pos = items.size() - 1) {
+        double sum = 0.0d
+        for (int i = pos; i >= 0; --i) {
+            if (items[i] && PricingItemType.sum != items[i].type) {
+                sum += computeTotalOfItem(i)
+            }
+        }
+        return sum
+    }
+
+    /**
+     * Computes the last position of the item of type {@code SUM}.
+     *
+     * @param pos   the given zero-based position
+     * @return      the zero-based position of the last subtotal sum; -1 if no
+     *              such an item exists
+     */
+    int computeLastSumPos(int start = items.size() - 1) {
+        for (int i = start; i >= 0; --i) {
+            if (items[i] && PricingItemType.sum == items[i].type) {
+                return i
+            }
+        }
+
+        return -1
+    }
+
+    /**
      * Computes the total price for the item at the given position.
      *
      * @param pos   the given zero-based item position
@@ -80,7 +116,7 @@ class SalesItemPricing {
     double computeTotalOfItem(int pos) {
         SalesItemPricingItem item = items[pos]
         if (PricingItemType.sum == item.type) {
-            return getCurrentSum(pos - 1)
+            return computeCurrentSum(pos - 1)
         } else {
             return item.quantity * computeUnitPriceOfItem(pos)
         }
@@ -103,33 +139,16 @@ class SalesItemPricing {
             return (item.relToPos == null) ? 0.0d
                 : item.unitPercent * computeTotalOfItem(item.relToPos) / 100.0d
         case PricingItemType.relativeToLastSum:
-            int otherPos = getLastSumPos(pos - 1)
+            int otherPos = computeLastSumPos(pos - 1)
             if (otherPos >= 0) {
                 return item.unitPercent * computeTotalOfItem(otherPos) / 100.0d
             }
             // fall through
         case PricingItemType.relativeToCurrentSum:
-            return item.unitPercent * getCurrentSum(pos - 1) / 100.0d
+            return item.unitPercent * computeCurrentSum(pos - 1) / 100.0d
         default:
             return 0.0d
         }
-    }
-
-    /**
-     * Gets the sum of all items' total prices at the given position and
-     * before.
-     *
-     * @param pos   the given zero-based position
-     * @return      the current sum
-     */
-    double getCurrentSum(int pos = items.size() - 1) {
-        double sum = 0.0d
-        for (int i = pos; i >= 0; --i) {
-            if (items[i] && PricingItemType.sum != items[i].type) {
-                sum += computeTotalOfItem(i)
-            }
-        }
-        return sum
     }
 
     /**
@@ -142,30 +161,13 @@ class SalesItemPricing {
     }
 
     /**
-     * Gets the last position of the item of type {@code SUM}.
-     *
-     * @param pos   the given zero-based position
-     * @return      the zero-based position of the last subtotal sum; -1 if no
-     *              such an item exists
-     */
-    int getLastSumPos(int start = items.size() - 1) {
-        for (int i = start; i >= 0; --i) {
-            if (items[i] && PricingItemType.sum == items[i].type) {
-                return i
-            }
-        }
-
-        return -1
-    }
-
-    /**
      * Gets the total price of this sales item in step 1 as sum of all pricing
      * items.
      *
      * @return  the total price of the sales item in step 1
      */
     double getStep1TotalPrice() {
-        return getCurrentSum()
+        return computeCurrentSum()
     }
 
     /**
@@ -221,7 +223,7 @@ class SalesItemPricing {
 
     @Override
     public int hashCode() {
-        return id as int
+        return (id ?: 0i) as int
     }
 
     @Override

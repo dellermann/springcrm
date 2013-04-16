@@ -46,7 +46,7 @@ numFractions = $html.data("num-fraction-digits") or 2
 # @return {String}        the formatted date
 #
 Date::format = (format = "datetime") ->
-	if (format is "date") or (format is "time") or (format is "datetime")
+  if (format is "date") or (format is "time") or (format is "datetime")
     fmt = ""
     fmt += $L("default.format.date") if (format is "date") or (format is "datetime")
     fmt += " " if format is "datetime"
@@ -145,7 +145,8 @@ Number::formatCurrencyValue = ->
 # @return {Number}  the rounded number
 #
 Number::round = (n) ->
-  parseFloat @toFixed(n)
+  power = Math.pow 10, n
+  Math.round(this * power) / power
 
 # Escapes all characters in the given string which have special meaning in
 # regular expressions.
@@ -234,5 +235,5 @@ String::parseDate = (format = "datetime", baseYear = 35) ->
 String::parseNumber = ->
   reD = new RegExp(RegExp.escape(decimalSeparator), "g")
   reG = new RegExp(RegExp.escape(groupingSeparator), "g")
-  s = this
+  s = this.toString()
   (if (s is "") then 0 else parseFloat(s.replace(reG, "").replace(reD, ".")))

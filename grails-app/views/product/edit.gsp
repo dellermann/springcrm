@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.Product" %>
 <html>
 <head>
@@ -25,9 +23,6 @@
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <g:hasErrors bean="${productInstance}">
-    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
-    </g:hasErrors>
-    <g:hasErrors bean="${productInstance?.pricing}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
     <h3>${productInstance?.toString()}</h3>

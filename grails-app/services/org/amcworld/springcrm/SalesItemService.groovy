@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.springframework.validation.ObjectError;
+
 
 /**
  * The class {@code SalesItemService} contains service methods which handle
@@ -58,7 +60,7 @@ class SalesItemService {
         def pricing = salesItem.pricing
         if (params.pricingEnabled) {
             if (pricing == null) {
-                pricing = new SalesItemPricing(salesItem: salesItem)
+                pricing = new SalesItemPricing()
                 salesItem.pricing = pricing
             }
             pricing.properties = params.pricing
@@ -68,37 +70,9 @@ class SalesItemService {
                 pricing.items.clear()
             }
             for (int i = 0; params.pricing?."items[${i}]"; i++) {
-                pricing.addToItems(params.pricing."items[${i}]")
+                pricing.addToItems params.pricing."items[${i}]"
             }
-
-            boolean anyItemErrors = false
-            for (SalesItemPricingItem item in pricing.items) {
-                if (item.type != PricingItemType.sum) {
-                    if (item.quantity == null) {
-                        item.errors.rejectValue('quantity', 'default.null.message')
-                    }
-                    if (!item.name) {
-                        item.errors.rejectValue('name', 'default.null.message')
-                    }
-                    if (item.unitPrice == null) {
-                        item.errors.rejectValue('unitPrice', 'default.null.message')
-                    }
-                }
-                if ((item.type == PricingItemType.relativeToPos)
-                    && (item.relToPos == null))
-                {
-                    item.errors.rejectValue('relToPos', 'default.null.message')
-                }
-                if (((item.type == PricingItemType.relativeToCurrentSum)
-                    || (item.type == PricingItemType.relativeToLastSum)
-                    || (item.type == PricingItemType.relativeToPos))
-                    && (item.unitPercent == null))
-                {
-                    item.errors.rejectValue('unitPercent', 'default.null.message')
-                }
-                anyItemErrors |= item.hasErrors()
-            }
-            if (anyItemErrors || !pricing.save()) {
+            if (!salesItem.validate() || !pricing.save()) {
                 return false
             }
         } else if (pricing) {

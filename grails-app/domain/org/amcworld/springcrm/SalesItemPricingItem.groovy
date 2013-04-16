@@ -36,10 +36,16 @@ class SalesItemPricingItem {
     static belongsTo = [pricing: SalesItemPricing]
     static constraints = {
         quantity(min: 0.0d)
-        unit(nullable: true)
-        name(nullable: true)
+        unit(nullable: true, validator: { unit, pricing ->
+            ((unit == null) && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
+        })
+        name(nullable: true, validator: { name, pricing ->
+            ((name == null) && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
+        })
         type()
-        relToPos(nullable: true, min: 0i)
+        relToPos(nullable: true, min: 0i, validator: { relToPos, pricing ->
+            ((relToPos == null) && (pricing.type == PricingItemType.relativeToPos)) ? 'default.null.message' : null
+        })
         unitPercent(scale: 2, min: 0.0d, widget: 'percent')
         unitPrice(widget: 'currency')
     }
@@ -70,7 +76,7 @@ class SalesItemPricingItem {
 
     @Override
     public int hashCode() {
-        return id as int
+        return (id ?: 0i) as int
     }
 
     @Override
