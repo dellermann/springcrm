@@ -6,6 +6,7 @@
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <r:require modules="invoicingTransactionShow" />
   <r:script>/*<![CDATA[*/
   (function ($) {
 
@@ -77,6 +78,7 @@
             <f:display bean="${invoiceInstance}" property="paymentDate" />
             <f:display bean="${invoiceInstance}" property="paymentAmount" />
             <f:display bean="${invoiceInstance}" property="paymentMethod" />
+            <f:display bean="${invoiceInstance}" property="closingBalance" />
           </div>
         </div>
       </div>

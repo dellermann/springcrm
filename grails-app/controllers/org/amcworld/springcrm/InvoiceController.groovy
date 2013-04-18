@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import grails.converters.JSON
+
 
 /**
  * The class {@code InvoiceController} contains actions which manage invoices.
@@ -389,4 +391,9 @@ class InvoiceController {
 		}
 		return [invoiceInstanceList: invoiceInstanceList]
 	}
+
+    def getClosingBalance(Long id) {
+        def invoiceInstance = Invoice.get(id)
+        render([closingBalance: invoiceInstance.closingBalance] as JSON)
+    }
 }

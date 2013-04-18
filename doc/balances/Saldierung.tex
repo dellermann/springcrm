@@ -1,0 +1,403 @@
+%
+% Saldierung.tex
+%
+% Copyright (c) 2011-2013, Daniel Ellermann
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%
+
+
+%================================================
+%
+%
+% Praeambel
+%
+%
+%================================================
+\documentclass[a4paper]{article}
+
+%--------------------------------------
+%
+% Packages
+%
+%--------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{ngerman}
+\usepackage{tabularx}
+
+
+%--------------------------------------
+%
+% Kommandos
+%
+%--------------------------------------
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\numberwithin{equation}{section}
+\newtheorem{dfn}{Definition}
+\newtheorem{thm}{Satz}
+\newtheorem{lmm}{Lemma}
+
+
+%--------------------------------------
+%
+% Laengen
+%
+%--------------------------------------
+\newlength{\widthTab}  % Breite von bestimmten Tabellen
+
+
+%--------------------------------------
+%
+% Titel
+%
+%--------------------------------------
+\title{Saldierung von Fakturavorg"angen}
+\author{Daniel Ellermann}
+\date{17. April 2013}
+
+
+%--------------------------------------
+%
+% Dokumentstart
+%
+%--------------------------------------
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+
+%================================================
+%
+%
+% Betrifft
+%
+%
+%================================================
+\section{Betrifft}
+Dieses Dokument beschreibt die Berechnung von Salden von Rechnungen,
+Gutschriften und Mahnungen in SpringCRM. Es liefert wichtige Formeln f"ur die
+Berechnung und eine Beschreibung der Herleitung dieser Formeln.
+
+
+
+%================================================
+%
+%
+% Definitionen
+%
+%
+%================================================
+\section{Definitionen}
+Zun"achst definieren wir folgende Werte:
+\begin{dfn}[Rechnungsbetr"age]
+Die Summe einer Rechnung (einschlie"slich MwSt.) bezeichnen wir mit $\sigma_r$.
+
+Den Zahlungsbetrag einer Rechnung, d. h. den durch den Kunden bereits bezahlten
+Betrag, bezeichnen wir mit $b_r$.
+\end{dfn}
+\begin{dfn}[Gutschriftsbetr"age]
+Die Summe einer Gutschrift (einschlie"slich MwSt.) bezeichnen wir mit
+$\sigma_g$.
+
+Den Zahlungsbetrag einer Gutschrift, d. h. den durch uns bereits bezahlten
+Betrag, bezeichnen wir mit $b_g$.
+\end{dfn}
+
+\noindent Im folgenden gelten alle Definitionen und Berechnungen von Mahnungen 
+wie f"ur Rechnungen, da eine Mahnung eine Art anschlie"sende Rechnung darstellt.
+
+
+
+%================================================
+%
+%
+% Salden und Endsalden
+%
+%
+%================================================
+\section{Salden und Endsaldo}
+\subsection{Salden}
+Zu jeder Rechnung und jeder Gutschrift kann ein Saldo errechnet werden. Wir
+berechnen den Saldo so, dass ein positiver Saldo (Werte gr"o"ser als null) ein
+Guthaben f"ur uns (bzw. eine Verbindungkeit unserseits) und ein negativer Saldo 
+(Werte kleiner als null) eine Forderung an den Kunden darstellt. Ein Saldo von
+null stellt eine ausgeglichene Forderung dar.
+
+\noindent F"ur Rechnungen ergibt sich somit der Saldo $s_r$ wie folgt:
+\begin{equation}s_r := b_r - \sigma_r\end{equation}
+
+\noindent Damit ergibt sich, dass eine nicht oder teilweise bezahlte Rechnung 
+einen negativen Saldo aufweist, also $s_r < 0$. Hat der Kunde die Rechnung 
+vollst"andig bezahlt, gilt $s_r = 0$.
+
+Der Saldo einer Gutschrift $s_g$ wird genau umgekehrt berechnet:
+\begin{equation}s_g := \sigma_g - b_g\end{equation}
+
+\noindent Hier ergibt sich bei einer nicht oder teilweise bezahlten Gutschrift
+ein positiver Saldo, also $s_g > 0$. Wurde die Gutschrift vollst"andig bezahlt,
+gilt $s_g = 0$.
+
+
+\subsection{Endsaldo}
+F"ur eine abschlie"sende Betrachtung der Salden m"ussen jedoch die Salden der
+Rechnung den Salden von eventuellen Gutschriften gegen"ubergestellt werden. Dies
+funktioniert wie die Darstellung in einer Bilanz. Wir berechnen das im Endsaldo
+$s$, der f"ur Rechnungen und Gutschriften gleich ist:
+\begin{equation}s := s_r + \sum s_g\end{equation}
+
+\noindent Es gelten folgende Zusammenh"ange:
+\begin{itemize}
+  \item Positiver Endsaldo $s > 0$. Der Kunde hat ein Guthaben bei uns, d. h.
+    wir schulden ihm Geld.
+  \item Negativer Endsaldo $s < 0$. Der Kunde schuldet uns Geld, d. h. wir haben
+    Forderungen an ihn.
+  \item Endsaldo $s = 0$. Die Rechnung und event. Gutschriften sind 
+    ausgeglichen.
+\end{itemize}
+
+
+\subsection{Beispiele}
+Ein Kunde kauft Artikel "uber 1.000 EUR. Dann gibt es folgende Beispielf"alle:
+\begin{itemize}
+  \item Er hat die Rechnung nicht bezahlt. Dann gilt $s_r = 0 - 1000 = -1000$
+    und $s = -1000$.
+  \item Er bezahlt 800 EUR. Dann gilt $s_r = 800 - 1000 = -200$ und $s = -200$.
+  \item Er bezahlt die komplette Rechnung, d. h. 1.000 EUR. Dann gilt
+    $s_r = 1000 - 1000 = 0$ und $s = 0$.
+\end{itemize}
+
+\noindent Zu dieser Rechnung gibt es zwei Gutschriften "uber 100 EUR und 200
+EUR. Dann gibt es folgende Beispielf"alle:
+\begin{itemize}
+  \item Er hat die Rechnung nicht bezahlt und die Gutschriften wurden auch nicht
+    bezahlt. Dann gilt $s_r = 0 - 1000 = -1000$, $s_{g1} = 100 - 0 = 100$,
+    $s_{g2} = 200 - 0 = 200$ sowie $s = -1000 + 100 + 200 = -700$. Der Kunde
+    muss also noch 700 EUR bezahlen.
+  \item Er bezahlt 400 EUR, die Gutschriften wurden nicht bezahlt. Dann gilt
+    $s_r = 400 - 1000 = -600$, $s_{g1} = 100 - 0 = 100$, 
+    $s_{g2} = 200 - 0 = 200$ sowie $s = -600 + 100 + 200 = -300$. Der Kunde muss
+    also noch 300 EUR bezahlen.
+  \item Er bezahlt 700 EUR, die Gutschriften wurden nicht bezahlt. Dann gilt
+    $s_r = 700 - 1000 = -300$, $s_{g1} = 100 - 0 = 100$, 
+    $s_{g2} = 200 - 0 = 200$ sowie $s = -300 + 100 + 200 = 0$. Die Rechnung
+    wurde damit vollst"andig bezahlt.
+  \item Er bezahlt 900 EUR, die Gutschriften wurden nicht bezahlt. Dann gilt
+    $s_r = 900 - 1000 = -100$, $s_{g1} = 100 - 0 = 100$, 
+    $s_{g2} = 200 - 0 = 200$ sowie $s = -100 + 100 + 200 = 200$. Wir m"ussen
+    noch 200 EUR an den Kunden auszahlen.
+  \item Er bezahlt 900 EUR, die Gutschrift "uber 100 EUR wurde bezahlt, die
+    andere Gutschrift nicht. Dann gilt $s_r = 900 - 1000 = -100$, 
+    $s_{g1} = 100 - 100 = 0$, $s_{g2} = 200 - 0 = 200$ sowie 
+    $s = -100 + 0 + 200 = 100$. Wir m"ussen noch 100 EUR an den Kunden 
+    auszahlen.
+  \item Er bezahlt 1.000 EUR, die Gutschriften wurden bezahlt. Dann gilt 
+    $s_r = 1000 - 1000 = 0$, $s_{g1} = 100 - 100 = 0$, $s_{g2} = 200 - 200 = 0$ 
+    sowie $s = 0 + 0 + 0 = 0$. Die Rechnung und die Gutschriften wurde damit 
+    vollst"andig bezahlt.
+\end{itemize}
+
+
+
+%================================================
+%
+%
+% Modifizierter Endsaldo
+%
+%
+%================================================
+\section{Modifizierter Endsaldo}
+Die Formulare f"ur Rechnungen und Gutschriften sollen den noch zu zahlenden
+Betrag dynamisch anzeigen k"onnen, d. h. bei "Anderungen der Rechnungs- bzw.
+Gutschriftenposten oder des Zahlungsbetrages soll sich eine Angabe "`noch zu
+zahlen"' dynamisch neu berechnen. Dies wird mit JavaScript erledigt.
+
+Um die dynamische Berechnung zu vereinheitlichen muss der JavaScript-Funktion
+ein normierter Endsaldo mitgegeben werden, der sog. "`modifizierte Endsaldo"'.
+Der modifizierte Endsaldo muss zwei Funktionen erf"ullen:
+\begin{itemize}
+  \item Der Saldo der Rechnung bzw. Gutschrift muss vom Endsaldo subtrahiert
+    werden damit die JavaScript-Funktion den Rechnungs- bzw. Gutschriftensaldo
+    dynamisch hinzuaddieren kann.
+  \item Das Vorzeichen des modifizierten Endsaldos muss geeignet gesetzt sein.
+    Bei Rechnungen ist es positiv, damit vom Kunden zu zahlende Betr"age
+    positiv erscheinen. Bei Gutschriften ist es dagegen negativ, damit von uns
+    zu zahlende Betr"age positiv erscheinen.
+\end{itemize}
+
+\noindent Unter diesen Gesichtspunkten definieren wir den modifizierten Endsaldo 
+f"ur Rechnungen $m_r$ wie folgt:
+\begin{equation}m_r := s - s_r\end{equation}
+
+\noindent Den modifizierten Endsaldo f"ur Gutschriften $m_g$ definieren wir
+dagegen wie folgt:
+\begin{equation}m_g := -(s - s_g) = s_g - s\end{equation}
+Durch das negative Vorzeichen erf"ullen wir das zweite oben genannte Kriterium.
+In beiden F"allen wird vom Endsaldo $s$ der Rechnungs- bzw. Gutschriftssaldo
+abgezogen (erstes Kriterium), damit ihn die JavaScript-Funktion f"ur den "`noch
+zu zahlenden Betrag"' (s. Abschnitt~\ref{sec:stillUnpaid} auf 
+Seite~\pageref{sec:stillUnpaid}) dynamisch aufaddieren kann.
+
+
+
+%================================================
+%
+%
+% Noch zu zahlender Betrag
+%
+%
+%================================================
+\section{Noch zu zahlender Betrag}\label{sec:stillUnpaid}
+Wie oben beschrieben, wurde im modifizierten Endsaldo der Rechnungs- bzw. 
+Gutschriftssaldo vom Endsaldo abgezogen. Die JavaScript-Funktion kann nun den 
+Wert "`noch zu zahlen"' basierend auf dem modifizierten Endsaldo und aktuellen 
+Werten f"ur Rechnungssumme und Zahlungsbetrag berechnen. Die aktuelle 
+Rechnungssumme bezeichnen wir mit $\sigma'_r$ und den aktuellen Zahlungsbetrag 
+mit $b'_r$. Die Differenz zur Rechnungssumme $\sigma_r$ bezeichnen wir mit 
+$\Delta\sigma_r$ mit
+\begin{equation}\Delta\sigma_r := \sigma'_r - \sigma_r\end{equation}
+Weiterhin bezeichnen wir die Differenz zwischen aktuellem Zahlungsbetrag $b'_r$
+und Zahlungsbetrag $b_r$ mit $\Delta b_r$ mit
+\begin{equation}\Delta b_r := b'_r - b_r\end{equation}
+Beim Betrag "`noch zu zahlen"' muss zwei Kriterien erf"ullen:
+\begin{itemize}
+  \item Das Vorzeichen muss umgekehrt werden, damit negative Salden, die ja 
+    eine Forderung an den Kunden bedeuten, als positive "`Noch zu zahlen"'-Werte
+    erscheinen.
+  \item Der Wert ergibt sich durch Addition des aktuellen Rechnungssaldos $s'_r$
+    mit $s'_r := b'_r - \sigma'_r$ bzw. Subtraktion des aktuellen 
+    Gutschriftssaldos $s'_g$ mit $s'_g := \sigma'_g - b'_g$ zum bzw. vom
+    modifizierten Endsaldo $m_r$ bzw. $m_g$. Durch Addition bzw. Subtraktion der
+    \emph{aktuellen} Werte zeigt der "`noch zu zahlende"' Betrag immer den 
+    aktuellen offenen Zahlbetrag an.
+\end{itemize}
+
+\noindent F"ur Rechnungen ergibt sich die Angabe "`noch zu zahlen"' $z_r$ unter
+Beachtung der genannten Kriterien wie folgt:
+\begin{equation}
+\begin{split}
+  z_r := & \,-(m_r + s'_r) \\
+    = & \,-(s - s_r + s'_r) \\
+    = & \,-(s - b_r + \sigma_r + b'_r - \sigma'_r) \\
+    = & \,-(s + b'_r - b_r - \sigma'_r + \sigma_r) \\
+    = & \,-(s + \Delta b_r - \Delta\sigma_r) \\
+    = & \,\Delta\sigma_r - \Delta b_r - s
+\end{split}
+\end{equation}
+Im speziellen Fall $\sigma'_r = \sigma_r$ und $b'_r = b_r$, also 
+$\Delta\sigma_r = \Delta b_r = 0$ gilt:
+\begin{equation}z_r = -s\end{equation}
+
+\noindent F"ur Gutschriften ergibt sich die Berechnung analog. Hier bezeichnen
+wir die aktuelle Gutschriftssumme mit $\sigma'_g$ und den aktuellen 
+Zahlungsbetrag mit $b'_g$. Die Differenz zwischen aktueller Gutschriftssumme
+$\sigma'_g$ und Gutschriftssumme $\sigma_g$ bezeichnen wir mit $\Delta\sigma_g$
+mit
+\begin{equation}\Delta\sigma_g := \sigma'_g - \sigma_g\end{equation}
+Weiterhin bezeichnen wir die Differenz zwischen aktuellem Zahlungsbetrag $b'_g$
+und Zahlungsbetrag $b_g$ mit $\Delta b_g$ mit
+\begin{equation}\Delta b_g := b'_g - b_g\end{equation}
+Dann ergibt sich die Angabe "`noch zu zahlen"' $z_g$ f"ur Gutschriften wie
+folgt:
+\begin{equation}
+\begin{split}
+  z_g := & \,-(m_g - s'_g) \\
+    = & \,-(-(s - s_g) - s'_g) \\
+    = & \,-(s_g - s - s'_g) \\
+    = & \,-(\sigma_g - b_g - s - \sigma'_g + b'_g) \\
+    = & \,-(b'_g - b_g - \sigma'_g + \sigma_g - s) \\
+    = & \,-(\Delta b_g - \Delta\sigma_g - s) \\
+    = & \,\Delta\sigma_g - \Delta b_g + s
+\end{split}
+\end{equation}
+Auch hier gilt im speziellen Fall $\sigma'_g = \sigma_g$ und $b'_g = b_g$, also 
+$\Delta\sigma_g = \Delta b_g = 0$:
+\begin{equation}z_g = s\end{equation}
+
+
+
+%================================================
+%
+%
+% Saldenausgleich
+%
+%
+%================================================
+\section{Saldenausgleich}
+Der Benutzer soll durch Klick auf "`noch zu zahlen"' einen Saldenausgleich
+herbeif"uhren k"onnen. Dadurch soll der Zahlungsbetrag einer Rechnung bzw.
+Gutschrift berechnet werden, dass sich ein ausgeglichener Endsaldo $s = 0$
+ergibt.
+Der Zahlungsbetrag $c_r$, der bei Klick auf "`noch zu zahlen"' bei einer 
+Rechnung einzutragen ist, ergibt sich wie folgt:
+\begin{equation}
+\begin{split}
+  c_r := & \,\sigma_r - m_r \\
+    = & \,\sigma_r - s + s_r \\
+    = & \,\sigma_r - s + b_r - \sigma_r \\
+    = & \,b_r - s \\
+    = & \,b_r - s_r - \sum s_g \\
+    = & \,b_r - b_r + \sigma_r - \sum s_g \\
+    = & \,\sigma_r - \sum s_g 
+\end{split}
+\end{equation}
+Nach Klick auf "`noch zu zahlen"' ist der Zahlungsbetrag also so hoch wie die
+Rechnungssumme abz"uglich eventueller Gutschriftssalden. Dadurch ergibt sich
+ein ausgeglichener Endsaldo, wenn wir $c_r$ f"ur $b_r$ einsetzen:
+\begin{equation}
+\begin{split}
+  s = & \,s_r + \sum s_g \\
+    = & \,c_r - \sigma_r + \sum s_g \\
+    = & \,\sigma_r - \sum s_g - \sigma_r + \sum s_g \\
+    = & \,0
+\end{split}
+\end{equation}
+Bei Gutschriften erfolgt die Berechnung analog. Der Zahlungsbetrag $c_{g_i}$, 
+der bei Klick auf "`noch zu zahlen"' bei einer Gutschrift Nr. $i$ einzutragen 
+ist, ergibt sich wie folgt:
+\begin{equation}
+\begin{split}
+  c_{g_i} := & \,\sigma_{g_i} - m_{g_i} \\
+    = & \,\sigma_{g_i} - s_{g_i} + s \\
+    = & \,\sigma_{g_i} - \sigma_{g_i} + b_{g_i} + s \\
+    = & \,b_{g_i} + s \\
+    = & \,b_{g_i} + s_r + \sum s_g \\
+    = & \,b_{g_i} + s_r + \sum \sigma_g - \sum b_g \\
+    = & \,b_{g_i} + s_r + \sum \sigma_g - b_{g_1} - \ldots - b_{g_n} \\
+    = & \,s_r + \sum \sigma_g - b_{g_1} - \ldots - b_{g_{i-1}} - b_{g_{i+1}} - 
+      \ldots - b_{g_n} \\
+\end{split}
+\end{equation}
+Setzt man den berechneten Zahlungsbetrag $c_{g_i}$ f"ur den Zahlungsbetrag
+$b_{g_i}$ der Gutschrift Nr. $i$ ein, ergibt sich ein ausgeglichener Endsaldo
+wie folgt:
+\begin{equation}
+\begin{split}
+  s = & \,s_r + \sum s_g \\
+    = & \,s_r + \sum \sigma_g - \sum b_g \\
+    = & \,s_r + \sum \sigma_g - b_{g_1} - \ldots - b_{g_{i-1}} - \\
+      & \,(s_r + \sum \sigma_g - b_{g_1} - \ldots - b_{g_{i-1}} - b_{g_{i+1}} - 
+      \ldots - b_{g_n}) - \\
+      & \,b_{g_{i+1}} - \ldots - b_{g_n} \\
+    = & \,s_r + \sum \sigma_g - b_{g_1} - \ldots - b_{g_{i-1}} - \\
+      & \,s_r - \sum \sigma_g + b_{g_1} + \ldots + b_{g_{i-1}} + b_{g_{i+1}} + 
+      \ldots + b_{g_n} - \\
+      & \,b_{g_{i+1}} - \ldots - b_{g_n} \\
+    = & \,0
+\end{split}
+\end{equation}
+
+\end{document}

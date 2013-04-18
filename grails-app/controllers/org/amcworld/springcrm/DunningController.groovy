@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import grails.converters.JSON
+
 
 /**
  * The class {@code DunningController} contains actions which manage dunnings.
@@ -398,6 +400,11 @@ class DunningController {
             xml, 'dunning', params.template, response, fileName
         )
 	}
+
+    def getClosingBalance(Long id) {
+        def dunningInstance = Dunning.get(id)
+        render([closingBalance: dunningInstance.closingBalance] as JSON)
+    }
 
 
     //-- Non-public methods ---------------------

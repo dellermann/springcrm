@@ -4,9 +4,11 @@
 
     "use strict";
 
-    var params;
+    var $form,
+        params;
 
-    params = $("#credit-memo-form").invoicingtransaction({
+    $form = $("#credit-memo-form");
+    params = $form.invoicingtransaction({
             stageValues: {
                 payment: 2503,
                 shipping: 2502
@@ -15,10 +17,28 @@
         })
         .invoicingtransaction("getOrganizationId");
     $("#invoice").autocompleteex({
-            loadParameters: params
+            loadParameters: params,
+            select: function (event, ui) {
+                $form.invoicingtransaction(
+                    "refreshModifiedClosingBalance",
+                    {
+                        id: ui.item.value,
+                        url: "${createLink(controller: 'invoice', action: 'getClosingBalance')}"
+                    }
+                );
+            }
         });
     $("#dunning").autocompleteex({
-            loadParameters: params
+            loadParameters: params,
+            select: function (event, ui) {
+                $form.invoicingtransaction(
+                    "refreshModifiedClosingBalance",
+                    {
+                        id: ui.item.value,
+                        url: "${createLink(controller: 'dunning', action: 'getClosingBalance')}"
+                    }
+                );
+            }
         });
 }(jQuery));
 /*]]>*/</r:script>

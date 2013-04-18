@@ -127,6 +127,13 @@ modules = {
         resource '/js/app/invoicing-transaction-form.js'
     }
 
+    invoicingTransactionShow {
+        dependsOn 'core'
+        defaultBundle 'invoicing-transaction-show'
+
+        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
+    }
+
     'jquery-ui-selectmenu' {
         dependsOn 'jquery-ui'
 
