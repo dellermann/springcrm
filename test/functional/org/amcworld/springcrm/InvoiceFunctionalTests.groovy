@@ -94,6 +94,7 @@ class InvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'shippingDate_date', '2.4.2013'
         setInputValue 'carrier.id', '501'
         assert '0,00' == getInputValue('paymentAmount')
+        checkStillUnpaid '0.0', '0,00', 'still-unpaid-paid'
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '23898' == getInputValue('billingAddrPostalCode')
         assert 'Duvensee' == getInputValue('billingAddrLocation')
@@ -190,6 +191,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         setInputValue 'footerText', 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.'
         setInputValue 'termsAndConditions', ['700', '701']
         setInputValue 'notes', 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!'
+        checkStillUnpaid '0.0', '1.064,43', 'still-unpaid-unpaid'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -219,6 +221,9 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         assert '16.04.2013' == getShowFieldText(col, 2)
         assert '02.04.2013' == getShowFieldText(col, 3)
         assert 'elektronisch' == getShowFieldText(col, 4)
+        WebElement balanceField = getShowField(col, 8)
+        assert '-1.064,43 €' == balanceField.text.trim()
+        assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -281,8 +286,8 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
             '//form[@id="invoice-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
-        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
-        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
+        assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/invoice/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -322,9 +327,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         assert 'null' == getInputValue('carrier.id')
         assert '' == getInputValue('paymentDate_date')
         assert '0,00' == getInputValue('paymentAmount')
-        def stillUnpaid = driver.findElement(By.id('still-unpaid'))
-        assert '0.0' == stillUnpaid.getAttribute('data-closing-balance')
-        assert '1.064,43' == stillUnpaid.findElement(By.tagName('span')).text
+        checkStillUnpaid '0.0', '1.064,43', 'still-unpaid-unpaid'
         assert 'null' == getInputValue('paymentMethod.id')
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
@@ -362,6 +365,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.'''
         setInputValue 'footerText', 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.'
         setInputValue 'notes', 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!'
+        checkStillUnpaid '0.0', '1.064,43', 'still-unpaid-unpaid'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -387,11 +391,14 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.'''
         col = fieldSet.findElement(By.className('col-r'))
         assert '01.04.2013' == getShowFieldText(col, 1)
         assert '16.04.2013' == getShowFieldText(col, 2)
-        assert '' == getShowFieldText(col, 3)
+        assert dateFormatted == getShowFieldText(col, 3)
         assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         assert '' == getShowFieldText(col, 6)
         assert '' == getShowFieldText(col, 7)
+        WebElement balanceField = getShowField(col, 8)
+        assert '-1.064,43 €' == balanceField.text.trim()
+        assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -463,9 +470,8 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == fi
         assert 'null' == getInputValue('carrier.id')
         assert '' == getInputValue('paymentDate_date')
         assert '0,00' == getInputValue('paymentAmount')
-        def stillUnpaid = driver.findElement(By.id('still-unpaid'))
-        assert '0.0' == stillUnpaid.getAttribute('data-closing-balance')
-        assert '1.064,43' == stillUnpaid.findElement(By.tagName('span')).text
+        checkStillUnpaid '0.0', '1.064,43', 'still-unpaid-unpaid'
+        assert '1.064,43' == stillUnpaid.findElement(By.tagName('output')).text
         assert 'null' == getInputValue('paymentMethod.id')
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
@@ -502,6 +508,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == fi
 Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.'''
         setInputValue 'footerText', 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.'
         setInputValue 'notes', 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!'
+        checkStillUnpaid '0.0', '1.064,43', 'still-unpaid-unpaid'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -529,11 +536,14 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.'''
         col = fieldSet.findElement(By.className('col-r'))
         assert '01.04.2013' == getShowFieldText(col, 1)
         assert '16.04.2013' == getShowFieldText(col, 2)
-        assert '' == getShowFieldText(col, 3)
+        assert dateFormatted == getShowFieldText(col, 3)
         assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         assert '' == getShowFieldText(col, 6)
         assert '' == getShowFieldText(col, 7)
+        WebElement balanceField = getShowField(col, 8)
+        assert '-1.064,43 €' == balanceField.text.trim()
+        assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -614,6 +624,9 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == fi
         assert '' == getShowFieldText(col, 5)
         assert '' == getShowFieldText(col, 6)
         assert '' == getShowFieldText(col, 7)
+        WebElement balanceField = getShowField(col, 8)
+        assert '-1.064,43 €' == balanceField.text.trim()
+        assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -810,9 +823,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == fi
         assert '02.04.2013' == getInputValue('shippingDate_date')
         assert '501' == getInputValue('carrier.id')
         assert '0,00' == getInputValue('paymentAmount')
-        def stillUnpaidLink = driver.findElement(By.id('still-unpaid'))
-        assert '0.0' == stillUnpaidLink.getAttribute('data-closing-balance')
-        assert '1.064,43' == stillUnpaidLink.findElement(By.tagName('span')).text
+        checkStillUnpaid '0.0', '1.064,43', 'still-unpaid-unpaid'
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
         assert '23898' == getInputValue('billingAddrPostalCode')
@@ -844,9 +855,9 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         setInputValue 'stage.id', '903'
         checkDate 'paymentDate_date'
         setInputValue 'paymentDate_date', '15.4.2013'
-        stillUnpaidLink.click()
+        stillUnpaid.click()
         assert '1.064,43' == getInputValue('paymentAmount')
-        assert '0,00' == stillUnpaidLink.findElement(By.tagName('span')).text
+        checkStillUnpaid '0.0', '0,00', 'still-unpaid-paid'
         setInputValue 'paymentMethod.id', '2401'
 
         setPriceTableInputValue 0, 'unitPrice', '450'
@@ -971,6 +982,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         assert '586,82' == subtotalGross
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '569,99' == total
+        checkStillUnpaid '0.0', '-494,44', 'still-unpaid-too-much'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -1003,6 +1015,9 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == ge
         assert '15.04.2013' == getShowFieldText(col, 5)
         assert '1.064,43 €' == getShowFieldText(col, 6)
         assert 'Überweisung' == getShowFieldText(col, 7)
+        WebElement balanceField = getShowField(col, 8)
+        assert '494,44 €' == balanceField.text.trim()
+        assert 'still-unpaid-too-much' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)

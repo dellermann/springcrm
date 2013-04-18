@@ -209,8 +209,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         col = fieldSet.findElement(By.className('col-r'))
         assert '04.03.2013' == getShowFieldText(col, 1)
         assert '28.03.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '05.03.2013' == getShowFieldText(col, 4)
+        assert '05.03.2013' == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
@@ -270,8 +270,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
             '//form[@id="sales-order-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
-        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
-        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
+        assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/sales-order/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -368,8 +368,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         col = fieldSet.findElement(By.className('col-r'))
         assert '04.03.2013' == getShowFieldText(col, 1)
         assert '28.03.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '' == getShowFieldText(col, 4)
+        assert dateFormatted == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
@@ -442,8 +442,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         col = fieldSet.findElement(By.className('col-r'))
         assert '04.03.2013' == getShowFieldText(col, 1)
         assert '28.03.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '05.03.2013' == getShowFieldText(col, 4)
+        assert '05.03.2013' == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
@@ -795,8 +795,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         col = fieldSet.findElement(By.className('col-r'))
         assert '04.03.2013' == getShowFieldText(col, 1)
         assert '19.04.2013' == getShowFieldText(col, 2)
-        assert 'elektronisch' == getShowFieldText(col, 3)
-        assert '06.03.2013' == getShowFieldText(col, 4)
+        assert '06.03.2013' == getShowFieldText(col, 3)
+        assert 'elektronisch' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))

@@ -226,6 +226,26 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == q.headerText
     }
 
     /**
+     * Checks the given values against the values of the "still unpaid" link.
+     *
+     * @param modifiedClosingBalance    the expected modified closing balance
+     * @param stillUnpaid               the expected text of the "still unpaid"
+     *                                  link
+     * @param statusClass               the expected status class such as
+     *                                  {@code still-unpaid-unpaid},
+     *                                  {@code still-unpaid-too-much}, and
+     *                                  {@code still-unpaid-paid}
+     */
+    protected void checkStillUnpaid(String modifiedClosingBalance,
+                                    String stillUnpaid, String statusClass)
+    {
+        WebElement link = getStillUnpaid()
+        assert modifiedClosingBalance == link.getAttribute('data-modified-closing-balance')
+        assert stillUnpaid == link.findElement(By.tagName('output')).text.trim()
+        assert statusClass == link.getAttribute('class')
+    }
+
+    /**
      * Checks the tax rates in the price table.  The method checks the number
      * of tax rates, their order and values.
      *
@@ -319,6 +339,10 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == q.headerText
         return getPriceTableCell(rowIdx, 'total-price').
             findElement(By.tagName('output')).
             text
+    }
+
+    protected WebElement getStillUnpaid() {
+        return driver.findElement(By.id('still-unpaid'))
     }
 
     protected String getSubtotalGross() {

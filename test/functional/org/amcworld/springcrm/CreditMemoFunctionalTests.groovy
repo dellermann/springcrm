@@ -91,6 +91,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'docDate_date', '8.4.2013'
         setInputValue 'shippingDate_date', '9.4.2013'
         setInputValue 'carrier.id', '501'
+
+        /*
+         * The modified closing balance is changed by JavaScript to 1064,43 €
+         * after setting the associated invoice.  But JavaScript set the
+         * new modified closing balance via data() function which does not
+         * change the value of attribute "data-modified-closing-balance".  So
+         * we must expect "0.0" instead of "1064.43" here.
+         */
+        checkStillUnpaid '0.0', '-1.064,43', 'still-unpaid-too-much'
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '23898' == getInputValue('billingAddrPostalCode')
         assert 'Duvensee' == getInputValue('billingAddrLocation')
@@ -187,6 +196,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'termsAndConditions', ['700', '701']
         setInputValue 'notes', 'Gutschrift für nicht lieferbare Artikel.'
 
+        /*
+         * The modified closing balance is changed by JavaScript to 1064,43 €
+         * after setting the associated invoice.  But JavaScript set the
+         * new modified closing balance via data() function which does not
+         * change the value of attribute "data-modified-closing-balance".  So
+         * we must expect "0.0" instead of "1064.43" here.
+         */
+        checkStillUnpaid '0.0', '0,00', 'still-unpaid-paid'
+
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
         assert driver.currentUrl.startsWith(getUrl('/credit-memo/show/'))
@@ -212,6 +230,9 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '08.04.2013' == getShowFieldText(col, 1)
         assert '09.04.2013' == getShowFieldText(col, 2)
         assert 'elektronisch' == getShowFieldText(col, 3)
+        WebElement balanceField = getShowField(col, 7)
+        assert '0,00 €' == balanceField.text.trim()
+        assert 'still-unpaid-paid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -270,8 +291,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
             '//form[@id="credit-memo-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
-        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
-        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
+        assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/credit-memo/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -310,9 +331,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert 'null' == getInputValue('carrier.id')
         assert '' == getInputValue('paymentDate_date')
         assert '' == getInputValue('paymentAmount')
-        def stillUnpaid = driver.findElement(By.id('still-unpaid'))
-        assert '0.0' == stillUnpaid.getAttribute('data-closing-balance')
-        assert '0,00' == stillUnpaid.findElement(By.tagName('span')).text
+        checkStillUnpaid '1064.43', '0,00', 'still-unpaid-paid'
         assert 'null' == getInputValue('paymentMethod.id')
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
@@ -347,6 +366,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.'
         setInputValue 'footerText', 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.'
         setInputValue 'notes', 'Gutschrift für nicht lieferbare Artikel.'
+        checkStillUnpaid '1064.43', '0,00', 'still-unpaid-paid'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -373,6 +393,9 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '08.04.2013' == getShowFieldText(col, 1)
         assert dateFormatted == getShowFieldText(col, 2)
         assert 'elektronisch' == getShowFieldText(col, 3)
+        WebElement balanceField = getShowField(col, 7)
+        assert '0,00 €' == balanceField.text.trim()
+        assert 'still-unpaid-paid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -449,6 +472,9 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         assert '' == getShowFieldText(col, 6)
+        WebElement balanceField = getShowField(col, 7)
+        assert '0,00 €' == balanceField.text.trim()
+        assert 'still-unpaid-paid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -614,9 +640,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '09.04.2013' == getInputValue('shippingDate_date')
         assert '501' == getInputValue('carrier.id')
         assert '' == getInputValue('paymentAmount')
-        def stillUnpaidLink = driver.findElement(By.id('still-unpaid'))
-        assert '1064.4286' == stillUnpaidLink.getAttribute('data-closing-balance')
-        assert stillUnpaidLink.findElement(By.tagName('span')).text ==~ /^-?0,00$/
+        checkStillUnpaid '1064.43', '0,00', 'still-unpaid-paid'
         assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
         assert '' == getInputValue('billingAddrPoBox')
         assert '23898' == getInputValue('billingAddrPostalCode')
@@ -647,9 +671,9 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'stage.id', '2503'
         checkDate 'paymentDate_date'
         setInputValue 'paymentDate_date', '10.4.2013'
-        stillUnpaidLink.click()
+        stillUnpaid.click()
         assert '' == getInputValue('paymentAmount')
-        assert stillUnpaidLink.findElement(By.tagName('span')).text ==~ /^-?0,00$/
+        checkStillUnpaid '1064.43', '0,00', 'still-unpaid-paid'
         setInputValue 'paymentMethod.id', '2401'
 
         setPriceTableInputValue 0, 'unitPrice', '450'
@@ -774,6 +798,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '586,82' == subtotalGross
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '569,99' == total
+        checkStillUnpaid '1064.43', '-494,44', 'still-unpaid-too-much'
 
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
 
@@ -803,6 +828,9 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '10.04.2013' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
         assert 'Überweisung' == getShowFieldText(col, 6)
+        WebElement balanceField = getShowField(col, 7)
+        assert '-494,43 €' == balanceField.text.trim()      // XXX seems to be a rounding problem; should be -494,44 €
+        assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
         fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)

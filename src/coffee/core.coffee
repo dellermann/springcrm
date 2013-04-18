@@ -111,7 +111,8 @@ Number::format = (n = null) ->
   gs = groupingSeparator
 
   num = this
-  sgn = (if num < 0 then "-" else "")
+  numSgn = (if (n is null) then num else num.round(n))
+  sgn = (if numSgn < 0 then "-" else "")
   n = (if (n is null) then undefined else Math.abs(n))
   num = Math.abs(+num or 0)
   int = String(parseInt(num = (if isNaN(n) then num.toString() else num.toFixed(n)), 10))
@@ -144,7 +145,7 @@ Number::formatCurrencyValue = ->
 # @param {Number} n the given number of fraction digits
 # @return {Number}  the rounded number
 #
-Number::round = (n) ->
+Number::round = (n = numFractions) ->
   power = Math.pow 10, n
   Math.round(this * power) / power
 

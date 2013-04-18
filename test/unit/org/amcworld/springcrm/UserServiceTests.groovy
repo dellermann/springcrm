@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import grails.test.mixin.TestFor
+
 
 /**
  * The class {@code UserServiceTests} contains the unit test cases for

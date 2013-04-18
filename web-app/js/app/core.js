@@ -92,13 +92,14 @@
   };
 
   Number.prototype.format = function(n) {
-    var dotPos, frac, gs, int, num, pos, sgn;
+    var dotPos, frac, gs, int, num, numSgn, pos, sgn;
     if (n == null) {
       n = null;
     }
     gs = groupingSeparator;
     num = this;
-    sgn = (num < 0 ? "-" : "");
+    numSgn = (n === null ? num : num.round(n));
+    sgn = (numSgn < 0 ? "-" : "");
     n = (n === null ? void 0 : Math.abs(n));
     num = Math.abs(+num || 0);
     int = String(parseInt(num = (isNaN(n) ? num.toString() : num.toFixed(n)), 10));
@@ -121,6 +122,9 @@
 
   Number.prototype.round = function(n) {
     var power;
+    if (n == null) {
+      n = numFractions;
+    }
     power = Math.pow(10, n);
     return Math.round(this * power) / power;
   };

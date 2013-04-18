@@ -61,8 +61,8 @@
           <div class="col col-r">
             <f:display bean="${salesOrderInstance}" property="docDate" />
             <f:display bean="${salesOrderInstance}" property="dueDate" />
-            <f:display bean="${salesOrderInstance}" property="carrier" />
             <f:display bean="${salesOrderInstance}" property="shippingDate" />
+            <f:display bean="${salesOrderInstance}" property="carrier" />
             <f:display bean="${salesOrderInstance}" property="deliveryDate" />
           </div>
         </div>

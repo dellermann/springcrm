@@ -263,8 +263,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
             '//form[@id="quote-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
-        assert 'Artikel/Leistung in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[0].text
-        assert 'Nummer in Pos. 1: Feld darf nicht leer sein.' == errorMsgs[1].text
+        assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/quote/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
