@@ -63,14 +63,12 @@ class PurchaseInvoice {
 	}
 	static searchable = true
 	static transients = [
-		'balance', 'balanceColor', 'discountPercentAmount', 'itemErrors',
+		'balance', 'balanceColor', 'discountPercentAmount',
         'paymentStateColor', 'subtotalNet', 'subtotalGross', 'taxRateSums'
 	]
 
 
     //-- Instance variables ---------------------
-
-    def viewService
 
 	String number
 	String subject
@@ -208,16 +206,6 @@ class PurchaseInvoice {
             color = 'green'
         }
         return color
-    }
-
-    /**
-     * Renders a list of error messages in the embedded items.
-     *
-     * @return  a list of error messages
-     * @since   1.2
-     */
-    List<String> getItemErrors() {
-        return viewService.getItemErrorMessages(this)
     }
 
     /**

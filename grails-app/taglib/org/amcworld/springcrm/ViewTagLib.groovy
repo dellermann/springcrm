@@ -20,6 +20,10 @@
 
 package org.amcworld.springcrm
 
+import grails.util.GrailsNameUtils;
+import java.util.regex.Pattern
+import org.springframework.validation.FieldError
+
 
 /**
  * The class {@code ViewTagLib} contains various tags which are needed in the
@@ -320,6 +324,67 @@ class ViewTagLib {
 			createLink(attrs, body)
 		}
 	}
+
+    /**
+     * Renders the errors of child items of the given bean.  If you specify a
+     * body it may be used to output the error messages using either the
+     * variable in attribute <code>var</code> or <code>it</code>.  If you omit
+     * the body the error message are rendered one after another with a space
+     * between.
+     *
+     * @attr bean       REQUIRED the bean where to look for input errors
+     * @attr field      the name of the field which input errors are looked
+     *                  for; if missing <code>items</code> is used
+     * @attr code       the code in the message resources which is used to
+     *                  localize the general error message; argument 0 is the
+     *                  one-based item position, argument 1 the localized name
+     *                  of the input field, and argument 2 the localized error
+     *                  message
+     * @attr prefix     the message prefix to localize the input field names
+     *                  (without trailling dot)
+     * @attr var        the name of the variable which contains the localized
+     *                  error message when rendering the body; if missing, the
+     *                  variable <code>it</code> is used
+     */
+    def renderItemErrors = { attrs, body ->
+        def bean = attrs.bean
+        if (bean == null) {
+            return
+        }
+
+        String field = attrs.field?.toString() ?: 'items'
+        String code = attrs.code ?: 'default.invalid.item.message'
+        String prefix = attrs.prefix ?: GrailsNameUtils.getPropertyName(bean.getClass())
+        def var = attrs.var
+
+        StringBuilder buf = new StringBuilder('^')
+        buf << Pattern.quote(field)
+        buf << /\[(\d+)\]\.([\w.]+)$/
+        Pattern pattern = Pattern.compile(buf.toString())
+        List<FieldError> errors = bean.errors.getFieldErrors("${field}[*")
+        for (FieldError err : errors) {
+            def m = err.field =~ pattern
+            if (m) {
+                int idx = m[0][1] as int
+                String name = m[0][2]
+                String fieldName = message(code: "${prefix}.${name}.label", default: name)
+                String errorMsg = message(error: err)
+                String msg = message(code: code, args: [idx + 1, fieldName, errorMsg])
+
+                def result
+                if (body) {
+                    if (var) {
+                        result = body([(var): msg])
+                    } else {
+                        result = body(msg)
+                    }
+                } else {
+                    result = msg + ' '
+                }
+                out << result
+            }
+        }
+    }
 
 
     //-- Non-public methods ---------------------

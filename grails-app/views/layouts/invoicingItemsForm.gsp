@@ -132,11 +132,6 @@
 <div class="table-actions">
   <a href="#" class="add-invoicing-item-btn button medium green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
 </div>
-<g:each var="err" in="${invoicingTransaction.itemErrors}">
-  <span class="error-msg">${err}</span>
-</g:each>
-<g:hasErrors bean="${invoicingTransaction}" field="items">
-  <span class="error-msg"><g:eachError bean="${invoicingTransaction}" field="items.*">${it.arguments[0]}: <g:message error="${it}" /> </g:eachError></span>
-</g:hasErrors>
+<g:renderItemErrors bean="${invoicingTransaction}" prefix="invoicingTransaction"><span class="error-msg">${it}</span></g:renderItemErrors>
 <div id="inventory-selector-products" title="${message(code: 'invoicingTransaction.selector.products.title')}"></div>
 <div id="inventory-selector-services" title="${message(code: 'invoicingTransaction.selector.services.title')}"></div>

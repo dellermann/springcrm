@@ -90,7 +90,6 @@ class InvoicingTransaction {
     //-- Instance variables ---------------------
 
 	def seqNumberService
-    def viewService
 
 	int number
 	String type
@@ -214,16 +213,6 @@ class InvoicingTransaction {
 		return s.toString()
 	}
 
-    /**
-     * Renders a list of error messages in the embedded items.
-     *
-     * @return  a list of error messages
-     * @since   1.2
-     */
-    List<String> getItemErrors() {
-        return viewService.getItemErrorMessages(this)
-    }
-
 	/**
 	 * Gets the subtotal net value. It is computed by accumulating the total
 	 * values of the items plus the shipping costs.
@@ -301,7 +290,7 @@ class InvoicingTransaction {
 
     @Override
     public int hashCode() {
-        return id as int
+        return (id ?: 0i) as int
     }
 
 	String toString() {
