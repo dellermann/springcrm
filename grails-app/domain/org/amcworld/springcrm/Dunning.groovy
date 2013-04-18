@@ -47,11 +47,14 @@ class Dunning extends InvoicingTransaction {
 	}
 	static searchable = true
     static transients = [
-        'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+        'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
+        'paymentStateColor'
     ]
 
 
     //-- Instance variables ---------------------
+
+    def userService
 
 	DunningLevel level
 	DunningStage stage
@@ -136,6 +139,17 @@ class Dunning extends InvoicingTransaction {
             color = 'green'
         }
         return color
+    }
+
+    /**
+     * Gets the modified closing balance which is needed in views to compute
+     * the still unpaid value dynamically.
+     *
+     * @return  the modified closing balance
+     * @since   1.3
+     */
+    double getModifiedClosingBalance() {
+        (closingBalance - balance).round(userService.numFractionDigits)
     }
 
     /**

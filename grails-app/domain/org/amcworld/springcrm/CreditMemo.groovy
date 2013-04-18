@@ -45,11 +45,14 @@ class CreditMemo extends InvoicingTransaction {
 	}
 	static searchable = true
     static transients = [
-        'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+        'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
+        'paymentStateColor'
     ]
 
 
     //-- Instance variables ---------------------
+
+    def userService
 
 	CreditMemoStage stage
 	Date paymentDate
@@ -69,6 +72,7 @@ class CreditMemo extends InvoicingTransaction {
         headerText = ''
         footerText = ''
 		invoice = i
+        i.creditMemos << this
 	}
 
 	CreditMemo(Dunning d) {
@@ -77,6 +81,7 @@ class CreditMemo extends InvoicingTransaction {
         headerText = ''
         footerText = ''
 		dunning = d
+        d.creditMemos << this
 	}
 
 	CreditMemo(CreditMemo cm) {
@@ -134,6 +139,17 @@ class CreditMemo extends InvoicingTransaction {
             color = 'green'
         }
         return color
+    }
+
+    /**
+     * Gets the modified closing balance which is needed in views to compute
+     * the still unpaid value dynamically.
+     *
+     * @return  the modified closing balance
+     * @since   1.3
+     */
+    double getModifiedClosingBalance() {
+        (balance - closingBalance).round(userService.numFractionDigits)
     }
 
     /**

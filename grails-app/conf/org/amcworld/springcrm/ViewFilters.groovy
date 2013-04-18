@@ -34,36 +34,17 @@ class ViewFilters {
 
     def dependsOn = [LoginFilters]
 
-    def userService
+    UserService userService
 
     def filters = {
         commonData(controller: '*', action: '*') {
             after = { model ->
                 if (model) {
-                    Locale locale = userService.currentLocale
-                    model.locale = locale.toString().replace('_', '-')
-
-                    Currency currency = null
-                    try {
-                        String currencyCode = ConfigHolder.instance['currency'] as String
-                        if (currencyCode) {
-                            currency = Currency.getInstance(currencyCode)
-                        }
-                    } catch (IllegalArgumentException e) { /* ignored */ }
-                    if (currency == null) {
-                        currency = Currency.getInstance('EUR')
-                    }
-                    model.currencySymbol = currency.getSymbol(locale)
-
-                    Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
-                    if (numFractionDigits == null) {
-                        numFractionDigits = currency.defaultFractionDigits
-                    }
-                    model.numFractionDigits = numFractionDigits
-
-                    def dfs = DecimalFormatSymbols.getInstance(locale)
-                    model.decimalSeparator = dfs.decimalSeparator
-                    model.groupingSeparator = dfs.groupingSeparator
+                    model.locale = userService.currentLocale.toString().replace('_', '-')
+                    model.currencySymbol = userService.currencySymbol
+                    model.numFractionDigits = userService.numFractionDigits
+                    model.decimalSeparator = userService.decimalSeparator
+                    model.groupingSeparator = userService.groupingSeparator
                 }
             }
         }

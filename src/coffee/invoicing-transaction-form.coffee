@@ -42,6 +42,23 @@ InvoicingTransactionWidget =
   getOrganizationId: ->
     organization: $(@options.organizationId).val()
 
+  # Refreshes the modified closing balance after changing the invoice or
+  # dunning associated with a credit memo.  The method obtains the closing
+  # balance of the invoice or dunning and re-computes the "still unpaid" value.
+  #
+  # @param {Object} data      any data of the changed invoice or dunning
+  # @option {Number} data id  the ID of the selected invoice or dunning
+  # @option {String} data url the URL used to obtain the closing balance from the invoice or dunning
+  #
+  refreshModifiedClosingBalance: (data) ->
+    $.getJSON data.url, { id: data.id }, (d) =>
+      @element
+        .find("#still-unpaid")
+          .data("modified-closing-balance", -d.closingBalance)
+        .end()
+        .find("#paymentAmount")
+          .trigger("change")
+
   # Initializes this widget.
   #
   _create: ->
@@ -92,13 +109,14 @@ InvoicingTransactionWidget =
         )
     @_initStageValues()
 
-  # Gets the closing balance of this invoicing transaction.
+  # Gets the modified closing balance of this invoicing transaction used as
+  # base for dynamic balance computation.
   #
-  # @param {jQuery} $a  the link which contains the closing balance as data attribute
-  # @return {Number}    the closing balance
+  # @param {jQuery} $a  the link which contains the modified closing balance as data attribute
+  # @return {Number}    the modified closing balance
   #
   _getModifiedClosingBalance: ($a = @element.find("#still-unpaid")) ->
-    parseFloat $a.data("closing-balance")
+    parseFloat $a.data("modified-closing-balance")
 
   # Gets the total value of this invoicing transaction.
   #
@@ -113,9 +131,8 @@ InvoicingTransactionWidget =
   # @return {Number}  the unpaid amount
   #
   _getUnpaid: ->
-    sgn = (if @options.type is "C" then 1 else -1)
     paymentAmount = @element.find("#paymentAmount").val().parseNumber()
-    -sgn * (@_getTotal() + sgn * paymentAmount - @_getModifiedClosingBalance())
+    (@_getTotal() - paymentAmount - @_getModifiedClosingBalance()).round()
 
   # Initializes the input fields according to the stage values defined in the
   # options.
@@ -154,7 +171,7 @@ InvoicingTransactionWidget =
     @element.find("#still-unpaid")
       .removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much")
       .addClass(cls)
-      .find("span")
+      .find("output")
         .text(val.formatCurrencyValue())
 
   # Called if the payment date is changed.  The method also changes the stage
@@ -207,7 +224,6 @@ InvoicingTransactionWidget =
     if @_getUnpaid() > 0
       val = @_getTotal() - @_getModifiedClosingBalance($(event.target))
       $paymentAmount = @element.find("#paymentAmount")
-      val = 2 * $paymentAmount.val().parseNumber() - val if @options.type is "C"
       if val
         $paymentAmount.val(val.formatCurrencyValue())
           .trigger("change")

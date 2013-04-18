@@ -1,7 +1,7 @@
 /*
  * UserService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import java.text.DecimalFormatSymbols
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
@@ -92,6 +93,35 @@ class UserService {
     }
 
     /**
+     * Gets the currency defined in the application configuration.
+     *
+     * @return  the currency
+     * @since   1.3
+     */
+    Currency getCurrency() {
+        Currency currency = null
+        try {
+            String currencyCode = ConfigHolder.instance['currency'] as String
+            if (currencyCode) {
+                currency = Currency.getInstance(currencyCode)
+            }
+        } catch (IllegalArgumentException e) { /* ignored */ }
+        return currency ?: Currency.getInstance('EUR')
+    }
+
+    /**
+     * Gets the currency symbol defined in the application configuration
+     * localized for the current locale.
+     *
+     * @return  the localized currency symbol
+     * @see     #getCurrentLocale()
+     * @since   1.3
+     */
+    String getCurrencySymbol() {
+        return currency.getSymbol(currentLocale)
+    }
+
+    /**
      * Gets the currently selected locale or the locale from the request.
      *
      * @return  the current locale
@@ -99,5 +129,41 @@ class UserService {
     Locale getCurrentLocale() {
         def request = WebUtils.retrieveGrailsWebRequest().currentRequest
         RCU.getLocale(request) ?: Locale.default
+    }
+
+    /**
+     * Gets the decimal separator for the current locale.
+     *
+     * @return  the decimal separator
+     * @see     #getCurrentLocale()
+     * @see     #getGroupingSeparator()
+     * @since   1.3
+     */
+    String getDecimalSeparator() {
+        return DecimalFormatSymbols.getInstance(currentLocale).decimalSeparator
+    }
+
+    /**
+     * Gets the grouping separator for the current locale.
+     *
+     * @return  the grouping separator
+     * @see     #getDecimalSeparator()
+     * @see     #getCurrentLocale()
+     * @since   1.3
+     */
+    String getGroupingSeparator() {
+        return DecimalFormatSymbols.getInstance(currentLocale).groupingSeparator
+    }
+
+    /**
+     * Gets the number of fraction digits as defined in the application
+     * configuration.
+     *
+     * @return  the number of fraction digits
+     * @since   1.3
+     */
+    int getNumFractionDigits() {
+        Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
+        return numFractionDigits ?: currency.defaultFractionDigits
     }
 }

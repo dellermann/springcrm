@@ -15,6 +15,14 @@
         organization: $(this.options.organizationId).val()
       };
     },
+    refreshModifiedClosingBalance: function(data) {
+      var _this = this;
+      return $.getJSON(data.url, {
+        id: data.id
+      }, function(d) {
+        return _this.element.find("#still-unpaid").data("modified-closing-balance", -d.closingBalance).end().find("#paymentAmount").trigger("change");
+      });
+    },
     _create: function() {
       var _this = this;
       this.element.find(".price-table").invoicingitems().end().find("#organization").autocompleteex({
@@ -61,16 +69,15 @@
       if ($a == null) {
         $a = this.element.find("#still-unpaid");
       }
-      return parseFloat($a.data("closing-balance"));
+      return parseFloat($a.data("modified-closing-balance"));
     },
     _getTotal: function() {
       return $("#total-price").text().parseNumber();
     },
     _getUnpaid: function() {
-      var paymentAmount, sgn;
-      sgn = (this.options.type === "C" ? 1 : -1);
+      var paymentAmount;
       paymentAmount = this.element.find("#paymentAmount").val().parseNumber();
-      return -sgn * (this._getTotal() + sgn * paymentAmount - this._getModifiedClosingBalance());
+      return (this._getTotal() - paymentAmount - this._getModifiedClosingBalance()).round();
     },
     _initStageValues: function() {
       var el, opts, stageValues,
@@ -111,7 +118,7 @@
       } else {
         cls = "still-unpaid-paid";
       }
-      return this.element.find("#still-unpaid").removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much").addClass(cls).find("span").text(val.formatCurrencyValue());
+      return this.element.find("#still-unpaid").removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much").addClass(cls).find("output").text(val.formatCurrencyValue());
     },
     _onChangePaymentDate: function(event) {
       var $stage, v;
@@ -151,9 +158,6 @@
       if (this._getUnpaid() > 0) {
         val = this._getTotal() - this._getModifiedClosingBalance($(event.target));
         $paymentAmount = this.element.find("#paymentAmount");
-        if (this.options.type === "C") {
-          val = 2 * $paymentAmount.val().parseNumber() - val;
-        }
         if (val) {
           $paymentAmount.val(val.formatCurrencyValue()).trigger("change");
         }

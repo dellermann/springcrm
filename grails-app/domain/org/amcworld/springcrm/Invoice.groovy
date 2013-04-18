@@ -47,17 +47,20 @@ class Invoice extends InvoicingTransaction {
 	}
 	static searchable = true
     static transients = [
-        'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+        'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
+        'paymentStateColor'
     ]
 
 
     //-- Instance variables ---------------------
 
+    def userService
+
 	InvoiceStage stage
 	Date dueDatePayment
 	Date paymentDate
 	double paymentAmount
-	PaymentMethod paymentMethod; /* leave semicolon here! */
+	PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
@@ -134,6 +137,17 @@ class Invoice extends InvoicingTransaction {
             color = 'green'
         }
         return color
+    }
+
+    /**
+     * Gets the modified closing balance which is needed in views to compute
+     * the still unpaid value dynamically.
+     *
+     * @return  the modified closing balance
+     * @since   1.3
+     */
+    double getModifiedClosingBalance() {
+        (closingBalance - balance).round(userService.numFractionDigits)
     }
 
     /**
