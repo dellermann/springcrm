@@ -73,7 +73,7 @@
             <input type="text" name="pricing.items[${i}].name" size="30" value="${item.name}" />
           </td>
           <td class="type">
-            <g:select name="pricing.items[${i}].type" from="${PricingItemType.values()}" value="${item.type}" valueMessagePrefix="salesItem.pricing.type" />
+            <g:select name="pricing.items[${i}].type" id="" from="${PricingItemType.values()}" value="${item.type}" valueMessagePrefix="salesItem.pricing.type" />
           </td>
           <td class="relative-to-pos">
             <input type="hidden" name="pricing.items[${i}].relToPos" value="${item.relToPos ?: ''}" />
@@ -100,9 +100,7 @@
         </g:each>
       </tbody>
     </table>
-    <g:hasErrors bean="${salesItem.pricing}" field="items[*">
-      <span class="error-msg"><g:eachError bean="${salesItem.pricing}" field="items[*"><g:message code="salesItem.pricing.${it.arguments[0]}.label" default="${it.arguments[0]}" />: <g:message error="${it}" /> </g:eachError></span>
-    </g:hasErrors>
+    <g:renderItemErrors bean="${salesItem.pricing}" prefix="salesItem.pricing"><span class="error-msg">${it}</span></g:renderItemErrors>
   </div>
   <div class="empty-list toggle-visibility">
     <p><g:message code="salesItem.pricing.empty" /></p>

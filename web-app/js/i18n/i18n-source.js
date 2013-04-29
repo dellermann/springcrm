@@ -1,7 +1,7 @@
 //
 // i18n-source.js
 //
-// Copyright (c) 2011-2012, Daniel Ellermann
+// Copyright (c) 2011-2013, Daniel Ellermann
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,6 +85,8 @@
     'person.mailingAddr.copy',
     'person.otherAddr.copy',
     'salesItem.pricing.button.notRemovable',
+    'salesItem.pricing.error.notMovable.refBeforeReferee',
+    'salesItem.pricing.error.notRemovable',
     'salesItem.pricing.relativeToPos.finder',
     'salesItem.pricing.removePricing.confirm',
     'salesItem.pricing.type.absolute',

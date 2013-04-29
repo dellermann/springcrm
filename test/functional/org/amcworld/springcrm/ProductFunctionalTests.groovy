@@ -20,13 +20,14 @@
 
 package org.amcworld.springcrm
 
+import org.openqa.selenium.Alert;
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
 import org.openqa.selenium.By
+import org.openqa.selenium.Keys
 import org.openqa.selenium.WebElement
-import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.Select
 
 
@@ -50,8 +51,13 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Before
     void login() {
-        if (!name.methodName.startsWith('testCreate')) {
-//            prepareProduct()
+        String methodName = name.methodName
+        if (!methodName.startsWith('testCreate')) {
+            if (methodName.endsWith('NoPricing')) {
+                prepareProductWithoutPricing()
+            } else {
+                prepareProductWithPricing()
+            }
         }
 
         open('/', 'de')
@@ -63,7 +69,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
     }
 
     @Test
-    void testCreateProductNoPricingSuccess() {
+    void testCreateProductSuccessNoPricing() {
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
         assert getUrl('/product/create') == driver.currentUrl
         assert 'Produkt anlegen' == driver.title
@@ -112,7 +118,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
     }
 
     @Test
-    void testCreateProductPricingSuccess() {
+    void testCreateProductSuccessPricing() {
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
         assert getUrl('/product/create') == driver.currentUrl
         assert 'Produkt anlegen' == driver.title
@@ -260,6 +266,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
         fieldSet = getFieldset(dataSheet, 3)
+        assert 'In der folgenden Tabelle berechne ich den Preis für 10 Packung:' == fieldSet.findElement(By.xpath('./p')).text
         WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
         checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,19 €', '21,90 €'
         checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
@@ -285,7 +292,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
     }
 
     @Test
-    void testCreateProductNoPricingErrors() {
+    void testCreateProductErrorsNoPricing() {
         assert 'Produkte' == driver.title
         assert 'Produkte' == driver.findElement(BY_HEADER).text
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
@@ -309,7 +316,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
     }
 
     @Test
-    void testCreateProductPricingErrors() {
+    void testCreateProductErrorsPricing() {
         assert 'Produkte' == driver.title
         assert 'Produkte' == driver.findElement(BY_HEADER).text
         driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
@@ -321,9 +328,19 @@ class ProductFunctionalTests extends SalesItemTestCase {
         driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
         assert getUrl('/product/save?returnUrl=') == driver.currentUrl
         assert checkErrorFields(['name', 'quantity'])
-        assert 2 == driver.findElements(By.xpath('//fieldset[3]//p//span[@class="error-msg"]')).size()
-        assert 1 == driver.findElements(By.xpath('//fieldset[3]//table[@id="step1-pricing-items"]/following-sibling::span[@class="error-msg"]')).size()
-        assert 1 == driver.findElements(By.xpath('//select[@id="step3-unit"]/following-sibling::span[@class="error-msg"]')).size()
+        WebElement fieldSet = driver.findElement(By.xpath('//fieldset[3]'))
+        List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//p//span[@class="error-msg"]'))
+        assert 2 == errorMsgs.size()
+        assert 'Muss größer als 0 sein.' == errorMsgs[0].text
+        assert 'Feld darf nicht leer sein.' == errorMsgs[1].text
+        errorMsgs = fieldSet.findElements(By.xpath(
+            './/table[@id="step1-pricing-items"]/following-sibling::span[@class="error-msg"]'
+        ))
+        assert 2 == errorMsgs.size()
+        assert 'Pos. 1, Bezeichnung: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Pos. 1, Einheit: Feld darf nicht leer sein.' == errorMsgs[1].text
+        WebElement errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::span[@class="error-msg"]'))
+        assert 'Feld darf nicht leer sein.' == errorMsg.text
         driver.findElement(By.linkText('Abbruch')).click()
         assert getUrl('/product/list') == driver.currentUrl
         def emptyList = driver.findElement(By.className('empty-list'))
@@ -336,375 +353,543 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 0 == Product.count()
     }
 
+    @Test
+    void testShowProductNoPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
+        def m = (driver.currentUrl =~ '/product/show/(\\d+)')
+        assert !!m
+        int id = m[0][1] as Integer
+        assert 'Produkt anzeigen' == driver.title
+        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
+        def col = fieldSet.findElement(By.className('col-l'))
+        assert 'P-10000' == getShowFieldText(col, 1)
+        assert 'Papier A4 80 g/m²' == getShowFieldText(col, 2)
+        assert 'Materialien' == getShowFieldText(col, 3)
+        assert 'Papierwerk Brandenburg' == getShowFieldText(col, 4)
+        assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
+        assert '1' == getShowFieldText(col, 6)
+        assert 'Packung' == getShowFieldText(col, 7)
+        assert '2,49 €' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '200' == getShowFieldText(col, 1)
+        assert '7 %' == getShowFieldText(col, 2)
+        assert '2,19 €' == getShowFieldText(col, 3)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Beschreibung' == fieldSet.findElement(By.tagName('h4')).text
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
+
+        assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
+
+        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
+        WebElement link = toolbar.findElement(By.xpath('li[1]/a'))
+        assert 'white' == link.getAttribute('class')
+        assert getUrl('/product/list') == link.getAttribute('href')
+        assert 'Liste' == link.text
+        link = toolbar.findElement(By.xpath('li[2]/a'))
+        assert 'green' == link.getAttribute('class')
+        assert getUrl('/product/create') == link.getAttribute('href')
+        assert 'Anlegen' == link.text
+        link = toolbar.findElement(By.xpath('li[3]/a'))
+        assert 'green' == link.getAttribute('class')
+        assert getUrl("/product/edit/${id}") == link.getAttribute('href')
+        assert 'Bearbeiten' == link.text
+        link = toolbar.findElement(By.xpath('li[4]/a'))
+        assert 'blue' == link.getAttribute('class')
+        assert getUrl("/product/copy/${id}") == link.getAttribute('href')
+        assert 'Kopieren' == link.text
+        link = toolbar.findElement(By.xpath('li[5]/a'))
+        assert link.getAttribute('class').contains('red')
+        assert link.getAttribute('class').contains('delete-btn')
+        assert getUrl("/product/delete/${id}") == link.getAttribute('href')
+        assert 'Löschen' == link.text
+        link.click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl("/product/show/${id}") == driver.currentUrl
+
+        assert 0 == driver.findElements(By.xpath('//aside[@id="action-bar"]/ul')).size()
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testShowProductPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
+        def m = (driver.currentUrl =~ '/product/show/(\\d+)')
+        assert !!m
+        int id = m[0][1] as Integer
+        assert 'Produkt anzeigen' == driver.title
+        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
+        def col = fieldSet.findElement(By.className('col-l'))
+        assert 'P-10000' == getShowFieldText(col, 1)
+        assert 'Papier A4 80 g/m²' == getShowFieldText(col, 2)
+        assert 'Materialien' == getShowFieldText(col, 3)
+        assert 'Papierwerk Brandenburg' == getShowFieldText(col, 4)
+        assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
+        assert '10' == getShowFieldText(col, 6)
+        assert 'Packung' == getShowFieldText(col, 7)
+        assert '3,49 €' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '200' == getShowFieldText(col, 1)
+        assert '7 %' == getShowFieldText(col, 2)
+        assert '2,19 €' == getShowFieldText(col, 3)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Beschreibung' == fieldSet.findElement(By.tagName('h4')).text
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
+
+        fieldSet = getFieldset(dataSheet, 3)
+        assert 'In der folgenden Tabelle berechne ich den Preis für 10 Packung:' == fieldSet.findElement(By.xpath('./p')).text
+        WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,19 €', '21,90 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
+        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,90 €'
+        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,60 €', '1,60 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,60 €', '1,60 €'
+        WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '35,09 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '3,51 €'
+        fieldSet = getFieldset(dataSheet, 4)
+        tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,51 €', '35,09 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,35 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,15 €'
+        tfoot = fieldSet.findElement(By.tagName('tfoot'))
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,49 €', '34,89 €'
+        fieldSet = getFieldset(dataSheet, 5)
+        tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '10', 'Packung', 'zu je', '3,49 €', '34,89 €'
+
+        assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
+
+        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
+        WebElement link = toolbar.findElement(By.xpath('li[1]/a'))
+        assert 'white' == link.getAttribute('class')
+        assert getUrl('/product/list') == link.getAttribute('href')
+        assert 'Liste' == link.text
+        link = toolbar.findElement(By.xpath('li[2]/a'))
+        assert 'green' == link.getAttribute('class')
+        assert getUrl('/product/create') == link.getAttribute('href')
+        assert 'Anlegen' == link.text
+        link = toolbar.findElement(By.xpath('li[3]/a'))
+        assert 'green' == link.getAttribute('class')
+        assert getUrl("/product/edit/${id}") == link.getAttribute('href')
+        assert 'Bearbeiten' == link.text
+        link = toolbar.findElement(By.xpath('li[4]/a'))
+        assert 'blue' == link.getAttribute('class')
+        assert getUrl("/product/copy/${id}") == link.getAttribute('href')
+        assert 'Kopieren' == link.text
+        link = toolbar.findElement(By.xpath('li[5]/a'))
+        assert link.getAttribute('class').contains('red')
+        assert link.getAttribute('class').contains('delete-btn')
+        assert getUrl("/product/delete/${id}") == link.getAttribute('href')
+        assert 'Löschen' == link.text
+        link.click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl("/product/show/${id}") == driver.currentUrl
+
+        assert 0 == driver.findElements(By.xpath('//aside[@id="action-bar"]/ul')).size()
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testListProductsNoPricing() {
+        assert 'Produkte' == driver.title
+        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
+        assert getUrl('/product/list?letter=P') == link.getAttribute('href')
+        assert 'P' == link.text
+        assert 1 == driver.findElements(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]')).size()
+
+        def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
+        assert 1 == tbody.findElements(By.tagName('tr')).size()
+        def tr = tbody.findElement(By.xpath('tr[1]'))
+        def td = tr.findElement(By.xpath('td[2]'))
+        assert td.getAttribute('class').contains('id')
+        link = td.findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/show/'))
+        assert 'P-10000' == link.text
+        td = tr.findElement(By.xpath('td[3]'))
+        assert td.getAttribute('class').contains('string')
+        link = td.findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/show/'))
+        assert 'Papier A4 80 g/m²' == link.text
+        td = tr.findElement(By.xpath('td[4]'))
+        assert td.getAttribute('class').contains('string')
+        assert 'Materialien' == td.text
+        td = tr.findElement(By.xpath('td[5]'))
+        assert td.getAttribute('class').contains('number')
+        assert '1' == td.text
+        td = tr.findElement(By.xpath('td[6]'))
+        assert td.getAttribute('class').contains('string')
+        assert 'Packung' == td.text
+        td = tr.findElement(By.xpath('td[7]'))
+        assert td.getAttribute('class').contains('currency')
+        assert '2,49 €' == td.text
+        td = tr.findElement(By.xpath('td[8]'))
+        assert td.getAttribute('class').contains('action-buttons')
+        link = td.findElement(By.xpath('a[1]'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/edit/'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('green')
+        assert 'Bearbeiten' == link.text
+        link = td.findElement(By.xpath('a[2]'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/delete/'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('red')
+        assert link.getAttribute('class').contains('delete-btn')
+        assert 'Löschen' == link.text
+        link.click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl('/product/list') == driver.currentUrl
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testListProductsPricing() {
+        assert 'Produkte' == driver.title
+        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
+        assert getUrl('/product/list?letter=P') == link.getAttribute('href')
+        assert 'P' == link.text
+        assert 1 == driver.findElements(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]')).size()
+
+        def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
+        assert 1 == tbody.findElements(By.tagName('tr')).size()
+        def tr = tbody.findElement(By.xpath('tr[1]'))
+        def td = tr.findElement(By.xpath('td[2]'))
+        assert td.getAttribute('class').contains('id')
+        link = td.findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/show/'))
+        assert 'P-10000' == link.text
+        td = tr.findElement(By.xpath('td[3]'))
+        assert td.getAttribute('class').contains('string')
+        link = td.findElement(By.tagName('a'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/show/'))
+        assert 'Papier A4 80 g/m²' == link.text
+        td = tr.findElement(By.xpath('td[4]'))
+        assert td.getAttribute('class').contains('string')
+        assert 'Materialien' == td.text
+        td = tr.findElement(By.xpath('td[5]'))
+        assert td.getAttribute('class').contains('number')
+        assert '10' == td.text
+        td = tr.findElement(By.xpath('td[6]'))
+        assert td.getAttribute('class').contains('string')
+        assert 'Packung' == td.text
+        td = tr.findElement(By.xpath('td[7]'))
+        assert td.getAttribute('class').contains('currency')
+        assert '3,49 €' == td.text
+        td = tr.findElement(By.xpath('td[8]'))
+        assert td.getAttribute('class').contains('action-buttons')
+        link = td.findElement(By.xpath('a[1]'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/edit/'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('green')
+        assert 'Bearbeiten' == link.text
+        link = td.findElement(By.xpath('a[2]'))
+        assert link.getAttribute('href').startsWith(getUrl('/product/delete/'))
+        assert link.getAttribute('class').contains('button')
+        assert link.getAttribute('class').contains('red')
+        assert link.getAttribute('class').contains('delete-btn')
+        assert 'Löschen' == link.text
+        link.click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl('/product/list') == driver.currentUrl
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testEditProductSuccessNoPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
+        assert driver.currentUrl.startsWith(getUrl('/product/edit/'))
+        assert 'Produkt bearbeiten' == driver.title
+        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        def col = driver.findElement(By.xpath('//form[@id="product-form"]/fieldset[1]')).findElement(By.className('col-l'))
+        assert getShowField(col, 1).text.startsWith('P-')
+        assert '10000' == getInputValue('number')
+        assert getInputValue('autoNumber')
+        assert 'Papier A4 80 g/m²' == getInputValue('name')
+        assert '3000' == getInputValue('category.id')
+        assert 'Papierwerk Brandenburg' == getInputValue('manufacturer')
+        assert 'Druckereibedarf Kiel GmbH' == getInputValue('retailer')
+        assert '1' == getInputValue('quantity')
+        assert '302' == getInputValue('unit.id')
+        assert '200' == getInputValue('weight')
+        assert '401' == getInputValue('taxRate.id')
+        assert '2,19' == getInputValue('purchasePrice')
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getInputValue('description')
+        assert 'Für diesen Artikel wurde noch keine Kalkulation durchgeführt.' == driver.findElement(By.cssSelector('.empty-list > p')).text
+        WebElement link = driver.findElement(By.id('start-pricing'))
+        assert link.displayed
+        assert 'Kalkulation beginnen' == link.text
+
+        setInputValue 'autoNumber', false
+        setInputValue 'number', '10700'
+        setInputValue 'name', 'Stempel'
+        setInputValue 'manufacturer', 'Büromaterialien Herrmann Friesland'
+        setInputValue 'retailer', 'Büro und mehr - Schneider'
+        setInputValue 'unit.id', '300'
+        setInputValue 'unitPrice', '8,99'
+        setInputValue 'weight', '100'
+        setInputValue 'taxRate.id', '400'
+        setInputValue 'purchasePrice', '7,99'
+        setInputValue 'description', 'Mit Firmenaufdruck nach Kundenvorgabe.'
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+
+        assert driver.currentUrl.startsWith(getUrl('/product/show/'))
+        assert 'Produkt Stempel wurde geändert.' == flashMessage
+        assert 'Stempel' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'P-10700' == getShowFieldText(col, 1)
+        assert 'Stempel' == getShowFieldText(col, 2)
+        assert 'Materialien' == getShowFieldText(col, 3)
+        assert 'Büromaterialien Herrmann Friesland' == getShowFieldText(col, 4)
+        assert 'Büro und mehr - Schneider' == getShowFieldText(col, 5)
+        assert '1' == getShowFieldText(col, 6)
+        assert 'Stück' == getShowFieldText(col, 7)
+        assert '8,99 €' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '100' == getShowFieldText(col, 1)
+        assert '19 %' == getShowFieldText(col, 2)
+        assert '7,99 €' == getShowFieldText(col, 3)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == getShowFieldText(fieldSet, 1)
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testEditProductSuccessPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
+        assert driver.currentUrl.startsWith(getUrl('/product/edit/'))
+        assert 'Produkt bearbeiten' == driver.title
+        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        def col = driver.findElement(By.xpath('//form[@id="product-form"]/fieldset[1]')).findElement(By.className('col-l'))
+        assert getShowField(col, 1).text.startsWith('P-')
+        assert '10000' == getInputValue('number')
+        assert getInputValue('autoNumber')
+        assert 'Papier A4 80 g/m²' == getInputValue('name')
+        assert '3000' == getInputValue('category.id')
+        assert 'Papierwerk Brandenburg' == getInputValue('manufacturer')
+        assert 'Druckereibedarf Kiel GmbH' == getInputValue('retailer')
+        assert '200' == getInputValue('weight')
+        assert '401' == getInputValue('taxRate.id')
+        assert '2,19' == getInputValue('purchasePrice')
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getInputValue('description')
+        assert '10' == getInputValue('pricing.quantity')
+        assert '302' == getInputValue('pricing.unit.id')
+
+        checkStep1RowValues 0, '10', 'Packungen', 'Materialeinkauf', 'absolute', null, null, '2,19', '21,90'
+        checkStep1RowValues 1, '0,25', 'Stunden', 'Materialbeschaffung', 'absolute', null, null, '40,00', '10,00'
+        checkStep1RowValues 2, null, null, null, 'sum', null, null, null, '31,90'
+        checkStep1RowValues 3, '1', 'Einheit', 'Gewinn', 'relativeToCurrentSum', null, '5,00', '1,60', '1,60'
+        checkStep1RowValues 4, '1', 'Einheit', 'Risiko', 'relativeToLastSum', null, '5,00', '1,60', '1,60'
+        assert '35,09' == step1Total
+        assert '3,51' == step1UnitPrice
+        assert '10' == getValue('step2-quantity')
+        assert 'Packung' == getValue('step2-unit')
+        assert '3,51' == getValue('step2-unit-price')
+        assert '35,09' == getValue('step2-total-price')
+        assert '1,00' == getInputValue('pricing.discountPercent')
+        assert '0,35' == getValue('step2-discount-percent-amount')
+        assert '0,15' == getInputValue('pricing.adjustment')
+        assert '10' == getValue('step2-total-quantity')
+        assert 'Packung' == getValue('step2-total-unit')
+        assert '3,49' == getValue('step2-total-unit-price')
+        assert '34,89' == getValue('step2-total')
+        assert '10' == driver.findElement(By.id('step3-quantity')).getAttribute('value')
+        assert '302' == new Select(driver.findElement(By.id('step3-unit'))).firstSelectedOption.getAttribute('value')
+        assert '3,49' == getValue('step3-unit-price')
+        assert '34,89' == getValue('step3-total-price')
+
+        setInputValue 'autoNumber', false
+        setInputValue 'number', '10700'
+        setInputValue 'name', 'Stempel'
+        setInputValue 'manufacturer', 'Büromaterialien Herrmann Friesland'
+        setInputValue 'retailer', 'Büro und mehr - Schneider'
+        setInputValue 'weight', '100'
+        setInputValue 'taxRate.id', '400'
+        setInputValue 'purchasePrice', '7,99'
+        setInputValue 'description', 'Mit Firmenaufdruck nach Kundenvorgabe.'
+
+        setInputValue 'pricing.quantity', '20'
+        setInputValue 'pricing.unit.id', '300'
+        setStep1TableInputValue 0, 'quantity', '20'
+        setStep1TableInputValue 0, 'unit', 'Stück'
+        setStep1TableInputValue 0, 'unitPrice', '7,99'
+        assert '159,80' == getStep1TableRowTotal(0)
+
+        assert 6 == addNewStep1TableRow()
+        moveRowUp 5
+        moveRowUp 4
+        moveRowUp 3
+        assert 'pricing.items[2].type' == getStep1TableCell(2, 'type').findElement(By.tagName('select')).getAttribute('name')
+        setStep1TableInputValue 2, 'quantity', '1'
+        setStep1TableInputValue 2, 'unit', 'Stunde'
+        setStep1TableInputValue 2, 'name', 'Anpassungen'
+        setStep1TableInputValue 2, 'unitPrice', '45,00'
+        assert '45,00' == getStep1TableRowTotal(2)
+        assert '214,80' == getStep1TableRowTotal(3)
+
+        setStep1TableInputValue 4, 'type', 'relativeToLastSum'
+        assert '10,74' == getStep1TableRowTotal(4)
+        WebElement td = getStep1TableCell(5, 'relative-to-pos')
+        WebElement span = td.findElement(By.tagName('span'))
+        WebElement img = span.findElement(By.tagName('img'))
+        WebElement strong = span.findElement(By.tagName('strong'))
+        assert !span.displayed
+
+        setStep1TableInputValue 5, 'type', 'relativeToPos'
+        assert span.displayed
+        assert '' == strong.text
+        img.click()
+        checkStep1NonSelectableFinderRows 5
+        span.sendKeys Keys.ESCAPE
+        for (int i = 0; i <= 5; i++) {
+            assert '' == getStep1TableRow(i).getAttribute('class')
+        }
+        assert '' == strong.text
+
+        setStep1TableReference 5, 1, 5
+        getStep1TableRow(1).findElement(By.className('remove-btn')).click()
+        Alert alert = driver.switchTo().alert()
+        assert 'Diese Zeile kann nicht entfernt werden, da auf sie ein Verweis gesetzt wurde.' == alert.text
+        alert.accept()
+        assert '0,50' == getStep1TableRowTotal(5)
+        moveRowDown 1
+        assert 'pricing.items[1].type' == getStep1TableCell(1, 'type').findElement(By.tagName('select')).getAttribute('name')
+        assert '3' == strong.text
+        assert '2' == getStep1TableInput(5, 'relToPos').getAttribute('value')
+        assert '0,50' == getStep1TableRowTotal(5)
+        moveRowUp 2
+        assert 'pricing.items[2].type' == getStep1TableCell(2, 'type').findElement(By.tagName('select')).getAttribute('name')
+        assert '2' == strong.text
+        assert '1' == getStep1TableInput(5, 'relToPos').getAttribute('value')
+        assert '0,50' == getStep1TableRowTotal(5)
+
+        setStep1TableReference 5, 3, 5
+        getStep1TableRow(3).findElement(By.className('remove-btn')).click()
+        alert = driver.switchTo().alert()
+        assert 'Diese Zeile kann nicht entfernt werden, da auf sie ein Verweis gesetzt wurde.' == alert.text
+        alert.accept()
+        assert '10,74' == getStep1TableRowTotal(5)
+        assert '236,28' == getStep1Total()
+        assert '11,81' == getStep1UnitPrice()
+        moveRowUp 5
+        moveRowUp 4
+        alert = driver.switchTo().alert()
+        assert 'Zeile kann nicht verschoben werden, da "relativ zu Pos."-Einträge immer hinter der referenzierten Zeile stehen müssen.' == alert.text
+        alert.accept()
+        moveRowDown 4
+        for (int i = 0; i <= 5; i++) {
+            if (i == 3) {
+                checkDisabledTypes i, 'relativeToPos'
+            } else {
+                checkDisabledTypes i
+            }
+        }
+
+        assert 7 == addNewStep1TableRow()
+        setStep1TableInputValue 6, 'quantity', '1'
+        setStep1TableInputValue 6, 'unit', 'Einheit'
+        setStep1TableInputValue 6, 'name', 'Test'
+        setStep1TableInputValue 6, 'unitPrice', '40,00'
+        checkDisabledTypes 6
+        setStep1TableReference 5, 6, 5
+        checkDisabledTypes 6, 'relativeToPos', 'relativeToLastSum', 'relativeToCurrentSum', 'sum'
+        moveRowUp 6
+        checkDisabledTypes 5, 'relativeToPos'
+        moveRowDown 5
+        setStep1TableReference 5, 3, 5
+        setStep1TableInputValue 6, 'type', 'relativeToPos'
+        setStep1TableReference 5, 3, 5, 6
+        assert 6 == removeRow(6)
+
+        setInputValue 'pricing.discountPercent', '2'
+        assert '4,73' == getValue('step2-discount-percent-amount')
+        setInputValue 'pricing.adjustment', '-1,56'
+        assert '20' == getValue('step2-total-quantity')
+        assert 'Stück' == getValue('step2-total-unit')
+        assert '11,50' == getValue('step2-total-unit-price')
+        assert '229,99' == getValue('step2-total')
+        WebElement input = driver.findElement(By.id('step3-quantity'))
+        input.clear()
+        input.sendKeys '20'
+        new Select(driver.findElement(By.id('step3-unit'))).selectByValue '300'
+        assert '11,50' == getValue('step3-unit-price')
+        assert '229,99' == getValue('step3-total-price')
+
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+
+        assert driver.currentUrl.startsWith(getUrl('/product/show/'))
+        assert 'Produkt Stempel wurde geändert.' == flashMessage
+        assert 'Stempel' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        col = fieldSet.findElement(By.className('col-l'))
+        assert 'P-10700' == getShowFieldText(col, 1)
+        assert 'Stempel' == getShowFieldText(col, 2)
+        assert 'Materialien' == getShowFieldText(col, 3)
+        assert 'Büromaterialien Herrmann Friesland' == getShowFieldText(col, 4)
+        assert 'Büro und mehr - Schneider' == getShowFieldText(col, 5)
+        assert '20' == getShowFieldText(col, 6)
+        assert 'Stück' == getShowFieldText(col, 7)
+        assert '11,50 €' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '100' == getShowFieldText(col, 1)
+        assert '19 %' == getShowFieldText(col, 2)
+        assert '7,99 €' == getShowFieldText(col, 3)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == getShowFieldText(fieldSet, 1)
+
+        fieldSet = getFieldset(dataSheet, 3)
+        assert 'In der folgenden Tabelle berechne ich den Preis für 20 Stück:' == fieldSet.findElement(By.xpath('./p')).text
+        WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, '1.', '20', 'Stück', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '7,99 €', '159,80 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
+        checkStaticRowValues tbody, 2, '3.', '1', 'Stunde', 'Anpassungen', 'absoluter Betrag', '', '0,00', '45,00 €', '45,00 €'
+        checkStaticRowValues tbody, 3, '4.', '', 'Zwischensumme', '', '214,80 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Gewinn', 'relativ zur letzt. Zw.-summe', '', '5,00', '10,74 €', '10,74 €'
+        checkStaticRowValues tbody, 5, '6.', '1', 'Einheit', 'Risiko', 'relativ zu Pos.', '4', '5,00', '10,74 €', '10,74 €'
+        WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '236,28 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '11,81 €'
+        fieldSet = getFieldset(dataSheet, 4)
+        tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '20', 'Stück', '', 'zu je', '11,81 €', '236,28 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '2,00', '', '', '4,73 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '-1,56 €'
+        tfoot = fieldSet.findElement(By.tagName('tfoot'))
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '20', 'Stück', '', 'zu je', '11,50 €', '229,99 €'
+        fieldSet = getFieldset(dataSheet, 5)
+        tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '20', 'Stück', 'zu je', '11,50 €', '229,99 €'
+
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
 //    @Test
-//    void testShowProduct() {
-//        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-//        def m = (driver.currentUrl =~ '/organization/show/(\\d+)')
-//        assert !!m
-//        int id = m[0][1] as Integer
-//        assert 'Organisation anzeigen' == driver.title
-//        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-//        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
-//        def dataSheet = driver.findElement(By.className('data-sheet'))
-//        def fieldSet = getFieldset(dataSheet, 1)
-//        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
-//        def col = fieldSet.findElement(By.className('col-l'))
-//        assert 'O-10000' == getShowFieldText(col, 1)
-//        assert 'Kunde' == getShowFieldText(col, 2)
-//        assert 'Landschaftsbau Duvensee GbR' == getShowFieldText(col, 3)
-//        assert 'GbR' == getShowFieldText(col, 4)
-//        assert 'Kunde' == getShowFieldText(col, 5)
-//        assert 'Umwelt' == getShowFieldText(col, 6)
-//        col = fieldSet.findElement(By.className('col-r'))
-//        assert '04543 31233' == getShowFieldText(col, 1)
-//        assert '04543 31235' == getShowFieldText(col, 2)
-//        def link = getShowField(col, 4).findElement(By.tagName('a'))
-//        assert 'mailto:info@landschaftsbau-duvensee.example' == link.getAttribute('href')
-//        assert 'info@landschaftsbau-duvensee.example' == link.text
-//        link = getShowField(col, 6).findElement(By.tagName('a'))
-//        assert 'http://www.landschaftsbau-duvensee.example/' == link.getAttribute('href')
-//        assert '_blank' == link.getAttribute('target')
-//        assert 'http://www.landschaftsbau-duvensee.example' == link.text
-//        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
-//        col = fieldSet.findElement(By.className('col-l'))
-//        assert 'Rechnungsanschrift' == col.findElement(By.tagName('h4')).text
-//        assert 'Dörpstraat 25' == getShowFieldText(col, 1)
-//        assert '23898' == getShowFieldText(col, 3)
-//        assert 'Duvensee' == getShowFieldText(col, 4)
-//        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
-//        assert 'Deutschland' == getShowFieldText(col, 6)
-//        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
-//        col = fieldSet.findElement(By.className('col-r'))
-//        assert 'Lieferanschrift' == col.findElement(By.tagName('h4')).text
-//        assert 'Dörpstraat 25' == getShowFieldText(col, 1)
-//        assert '23898' == getShowFieldText(col, 3)
-//        assert 'Duvensee' == getShowFieldText(col, 4)
-//        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
-//        assert 'Deutschland' == getShowFieldText(col, 6)
-//        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
-//        fieldSet = getFieldset(dataSheet, 2)
-//        assert 'Bemerkungen' == fieldSet.findElement(By.tagName('h4')).text
-//        def notes = getShowField(fieldSet, 1)
-//        assert 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.' == notes.text
-//        assert 1 == notes.findElements(By.tagName('br')).size()
-//
-//        String param = "organization=${id}"
-//        fieldSet = getFieldset(dataSheet, 4)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/person/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Personen' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/person/create?organization.id=${id}"))
-//        assert 'Person anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 5)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/quote/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Angebote' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/quote/create?organization.id=${id}"))
-//        assert 'Angebot anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 6)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/sales-order/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Verkaufsbestellungen' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?organization.id=${id}"))
-//        assert 'Verkaufsbestellung anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 7)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/invoice/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Rechnungen' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?organization.id=${id}"))
-//        assert 'Rechnung anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 8)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/dunning/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Mahnungen' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/dunning/create?organization.id=${id}"))
-//        assert 'Mahnung anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 9)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/credit-memo/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Gutschriften' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/credit-memo/create?organization.id=${id}"))
-//        assert 'Gutschrift anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 10)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/project/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Projekte' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/project/create?organization.id=${id}"))
-//        assert 'Projekt anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 11)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/document/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Dokumente' == fieldSet.findElement(By.tagName('h4')).text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 12)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/call/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Anrufe' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/call/create?organization.id=${id}"))
-//        assert 'Anruf anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        fieldSet = getFieldset(dataSheet, 13)
-//        assert fieldSet.getAttribute('class').contains('remote-list')
-//        assert param == fieldSet.getAttribute('data-load-params')
-//        assert '/springcrm/note/list-embedded' == fieldSet.getAttribute('data-load-url')
-//        assert 'Notizen' == fieldSet.findElement(By.tagName('h4')).text
-//        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
-//        assert link.getAttribute('href').startsWith(getUrl("/note/create?organization.id=${id}"))
-//        assert 'Notiz anlegen' == link.text
-//        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
-//
-//        assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
-//
-//        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-//        link = toolbar.findElement(By.xpath('li[1]/a'))
-//        assert 'white' == link.getAttribute('class')
-//        assert getUrl('/organization/list?type=') == link.getAttribute('href')
-//        assert 'Liste' == link.text
-//        link = toolbar.findElement(By.xpath('li[2]/a'))
-//        assert 'green' == link.getAttribute('class')
-//        assert getUrl('/organization/create') == link.getAttribute('href')
-//        assert 'Anlegen' == link.text
-//        link = toolbar.findElement(By.xpath('li[3]/a'))
-//        assert 'green' == link.getAttribute('class')
-//        assert getUrl("/organization/edit/${id}") == link.getAttribute('href')
-//        assert 'Bearbeiten' == link.text
-//        link = toolbar.findElement(By.xpath('li[4]/a'))
-//        assert 'blue' == link.getAttribute('class')
-//        assert getUrl("/organization/copy/${id}") == link.getAttribute('href')
-//        assert 'Kopieren' == link.text
-//        link = toolbar.findElement(By.xpath('li[5]/a'))
-//        assert link.getAttribute('class').contains('red')
-//        assert link.getAttribute('class').contains('delete-btn')
-//        assert getUrl("/organization/delete/${id}") == link.getAttribute('href')
-//        assert 'Löschen' == link.text
-//        link.click()
-//        driver.switchTo().alert().dismiss()
-//        assert getUrl("/organization/show/${id}?type=") == driver.currentUrl
-//
-//        def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
-//        link = actions.findElement(By.xpath('li[1]/a'))
-//        assert link.getAttribute('class').contains('button')
-//        assert link.getAttribute('href').startsWith(getUrl("/call/create?organization.id=${id}"))
-//        assert 'Anruf anlegen' == link.text
-//        link = actions.findElement(By.xpath('li[2]/a'))
-//        assert link.getAttribute('class').contains('button')
-//        assert link.getAttribute('href').startsWith(getUrl("/quote/create?organization.id=${id}"))
-//        assert 'Angebot anlegen' == link.text
-//        link = actions.findElement(By.xpath('li[3]/a'))
-//        assert link.getAttribute('class').contains('button')
-//        assert link.getAttribute('href').startsWith(getUrl("/invoice/create?organization.id=${id}"))
-//        assert 'Rechnung anlegen' == link.text
-//        driver.quit()
-//
-//        assert 1 == Organization.count()
-//    }
-//
-//    @Test
-//    void testListOrganizations() {
-//        assert 'Organisationen' == driver.title
-//        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-//        def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
-//        assert getUrl('/organization/list?letter=L') == link.getAttribute('href')
-//        assert 'L' == link.text
-//        assert 1 == driver.findElements(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]')).size()
-//
-//        def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
-//        assert 1 == tbody.findElements(By.tagName('tr')).size()
-//        def tr = tbody.findElement(By.xpath('tr[1]'))
-//        def td = tr.findElement(By.xpath('td[2]'))
-//        assert td.getAttribute('class').contains('id')
-//        link = td.findElement(By.tagName('a'))
-//        assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
-//        assert 'O-10000' == link.text
-//        td = tr.findElement(By.xpath('td[3]'))
-//        assert td.getAttribute('class').contains('string')
-//        link = td.findElement(By.tagName('a'))
-//        assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
-//        assert 'Landschaftsbau Duvensee GbR' == link.text
-//        td = tr.findElement(By.xpath('td[4]'))
-//        assert td.getAttribute('class').contains('string')
-//        assert 'Dörpstraat 25, 23898 Duvensee' == td.text
-//        td = tr.findElement(By.xpath('td[5]'))
-//        assert td.getAttribute('class').contains('string')
-//        link = td.findElement(By.tagName('a'))
-//        assert 'tel:04543%2031233' == link.getAttribute('href')
-//        assert '04543 31233' == link.text
-//        td = tr.findElement(By.xpath('td[6]'))
-//        assert td.getAttribute('class').contains('string')
-//        link = td.findElement(By.tagName('a'))
-//        assert 'mailto:info@landschaftsbau-duvensee.example' == link.getAttribute('href')
-//        assert 'info@landschaftsbau-duvensee.example' == link.text
-//        td = tr.findElement(By.xpath('td[7]'))
-//        assert td.getAttribute('class').contains('string')
-//        link = td.findElement(By.tagName('a'))
-//        assert 'http://www.landschaftsbau-duvensee.example/' == link.getAttribute('href')
-//        assert '_blank' == link.getAttribute('target')
-//        assert 'www.landschaftsbau-duvensee.example' == link.text
-//        td = tr.findElement(By.xpath('td[8]'))
-//        assert td.getAttribute('class').contains('action-buttons')
-//        link = td.findElement(By.xpath('a[1]'))
-//        assert link.getAttribute('href').startsWith(getUrl('/organization/edit/'))
-//        assert link.getAttribute('class').contains('button')
-//        assert link.getAttribute('class').contains('green')
-//        assert 'Bearbeiten' == link.text
-//        link = td.findElement(By.xpath('a[2]'))
-//        assert link.getAttribute('href').startsWith(getUrl('/organization/delete/'))
-//        assert link.getAttribute('class').contains('button')
-//        assert link.getAttribute('class').contains('red')
-//        assert link.getAttribute('class').contains('delete-btn')
-//        assert 'Löschen' == link.text
-//        link.click()
-//        driver.switchTo().alert().dismiss()
-//        assert getUrl('/organization/list') == driver.currentUrl
-//        driver.quit()
-//
-//        assert 1 == Organization.count()
-//    }
-//
-//    @Test
-//    void testEditOrganizationSuccess() {
-//        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-//        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
-//        assert 'Organisation bearbeiten' == driver.title
-//        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-//        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
-//        def col = driver.findElement(By.xpath('//form[@id="organization-form"]/fieldset[1]')).findElement(By.className('col-l'))
-//        assert getShowField(col, 1).text.startsWith('O-')
-//        assert '10000' == getInputValue('number')
-//        assert getInputValue('autoNumber')
-//        assert null != driver.findElement(By.id('rec-type-1')).getAttribute('checked')
-//        assert 'Landschaftsbau Duvensee GbR' == getInputValue('name')
-//        assert 'GbR' == getInputValue('legalForm')
-//        def select = new Select(driver.findElement(By.id('type')))
-//        assert 'Kunde' == select.firstSelectedOption.text
-//        select = new Select(driver.findElement(By.id('industry')))
-//        assert 'Umwelt' == select.firstSelectedOption.text
-//        select = new Select(driver.findElement(By.id('rating')))
-//        assert '' == select.firstSelectedOption.text
-//        assert '04543 31233' == getInputValue('phone')
-//        assert '04543 31235' == getInputValue('fax')
-//        assert 'info@landschaftsbau-duvensee.example' == getInputValue('email1')
-//        assert '' == getInputValue('email2')
-//        assert 'http://www.landschaftsbau-duvensee.example' == getInputValue('website')
-//        assert '' == getInputValue('owner')
-//        assert '' == getInputValue('numEmployees')
-//        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-//        assert '' == getInputValue('billingAddrPoBox')
-//        assert '23898' == getInputValue('billingAddrPostalCode')
-//        assert 'Duvensee' == getInputValue('billingAddrLocation')
-//        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-//        assert 'Deutschland' == getInputValue('billingAddrCountry')
-//        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-//        assert '' == getInputValue('shippingAddrPoBox')
-//        assert '23898' == getInputValue('shippingAddrPostalCode')
-//        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-//        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-//        assert 'Deutschland' == getInputValue('shippingAddrCountry')
-//        assert 'Kontakt über Peter Hermann hergestellt. Erstes Treffen am 13.06.2012.' == getInputValue('notes')
-//
-//        driver.findElement(By.id('rec-type-1')).click()
-//        driver.findElement(By.id('rec-type-2')).click()
-//        setInputValue 'name', 'Arne Friesing'
-//        setInputValue 'legalForm', 'Einzelunternehmen'
-//        setInputValue 'type', '104'
-//        setInputValue 'industry', '1021'
-//        setInputValue 'phone', '04541 428717'
-//        setInputValue 'fax', '04541 428719'
-//        setInputValue 'email1', 'arne@friesing.example'
-//        setInputValue 'website', 'http://friesing.example'
-//        setInputValue 'numEmployees', '1'
-//        setInputValue 'billingAddrStreet', 'Kirschenallee 17a'
-//        setInputValue 'billingAddrPostalCode', '23909'
-//        setInputValue 'billingAddrLocation', 'Ratzeburg'
-//        setInputValue 'billingAddrState', 'Schleswig-Holstein'
-//        setInputValue 'billingAddrCountry', 'Deutschland'
-//        setInputValue 'shippingAddrStreet', 'Kirschenallee 17a'
-//        setInputValue 'shippingAddrPostalCode', '23909'
-//        setInputValue 'shippingAddrLocation', 'Ratzeburg'
-//        setInputValue 'shippingAddrState', 'Schleswig-Holstein'
-//        setInputValue 'shippingAddrCountry', 'Deutschland'
-//        setInputValue 'notes', 'Guter, zuverlässiger Designer'
-//        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-//
-//        assert driver.currentUrl.startsWith(getUrl('/organization/show/'))
-//        assert 'Organisation Arne Friesing wurde geändert.' == flashMessage
-//        assert 'Arne Friesing' == driver.findElement(BY_SUBHEADER).text
-//        def dataSheet = driver.findElement(By.className('data-sheet'))
-//        def fieldSet = getFieldset(dataSheet, 1)
-//        col = fieldSet.findElement(By.className('col-l'))
-//        assert 'O-10000' == getShowFieldText(col, 1)
-//        assert 'Lieferant' == getShowFieldText(col, 2)
-//        assert 'Arne Friesing' == getShowFieldText(col, 3)
-//        assert 'Einzelunternehmen' == getShowFieldText(col, 4)
-//        assert 'Verkäufer' == getShowFieldText(col, 5)
-//        assert 'Medien' == getShowFieldText(col, 6)
-//        assert '1' == getShowFieldText(col, 8)
-//        col = fieldSet.findElement(By.className('col-r'))
-//        assert '04541 428717' == getShowFieldText(col, 1)
-//        assert '04541 428719' == getShowFieldText(col, 2)
-//        def link = getShowField(col, 4).findElement(By.tagName('a'))
-//        assert 'mailto:arne@friesing.example' == link.getAttribute('href')
-//        assert 'arne@friesing.example' == link.text
-//        link = getShowField(col, 6).findElement(By.tagName('a'))
-//        assert 'http://friesing.example/' == link.getAttribute('href')
-//        assert '_blank' == link.getAttribute('target')
-//        assert 'http://friesing.example' == link.text
-//        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
-//        col = fieldSet.findElement(By.className('col-l'))
-//        assert 'Kirschenallee 17a' == getShowFieldText(col, 1)
-//        assert '23909' == getShowFieldText(col, 3)
-//        assert 'Ratzeburg' == getShowFieldText(col, 4)
-//        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
-//        assert 'Deutschland' == getShowFieldText(col, 6)
-//        assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
-//        col = fieldSet.findElement(By.className('col-r'))
-//        assert 'Kirschenallee 17a' == getShowFieldText(col, 1)
-//        assert '23909' == getShowFieldText(col, 3)
-//        assert 'Ratzeburg' == getShowFieldText(col, 4)
-//        assert 'Schleswig-Holstein' == getShowFieldText(col, 5)
-//        assert 'Deutschland' == getShowFieldText(col, 6)
-//        fieldSet = getFieldset(dataSheet, 2)
-//        assert 'Guter, zuverlässiger Designer' == getShowFieldText(fieldSet, 1)
-//        driver.quit()
-//
-//        assert 1 == Organization.count()
-//    }
-//
-//    @Test
-//    void testEditOrganizationErrors() {
+//    void testEditProductErrorsNoPricing() {
 //        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
 //        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
 //        assert 'Organisation bearbeiten' == driver.title
@@ -720,7 +905,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
 //        assert driver.currentUrl.startsWith(getUrl('/organization/list'))
 //        driver.quit()
 //
-//        assert 1 == Organization.count()
+//        assert 1 == Product.count()
 //    }
 //
 //    @Test
@@ -746,4 +931,75 @@ class ProductFunctionalTests extends SalesItemTestCase {
 //        assert 1 == Organization.count()
 //    }
 
+    //-- Non-public methods ---------------------
+
+    protected Product prepareProductWithoutPricing() {
+        def product = new Product(
+            name: 'Papier A4 80 g/m²',
+            quantity: 1.0d,
+            unit: Unit.get(302),
+            unitPrice: 2.49d,
+            taxRate: TaxRate.get(401),
+            purchasePrice: 2.19d,
+            description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+            category: ProductCategory.get(3000),
+            manufacturer: 'Papierwerk Brandenburg',
+            retailer: 'Druckereibedarf Kiel GmbH',
+            weight: 200.0d
+        )
+        product.save(flush: true)
+        return product
+    }
+
+    protected Product prepareProductWithPricing() {
+        def pricing = new SalesItemPricing(
+            quantity: 10.0d,
+            unit: Unit.get(302),
+            discountPercent: 1.0d,
+            adjustment: 0.15d
+        )
+        pricing.addToItems(new SalesItemPricingItem(
+                quantity: 10.0d,
+                unit: 'Packungen',
+                name: 'Materialeinkauf',
+                type: PricingItemType.absolute,
+                unitPrice: 2.19d
+            )).addToItems(new SalesItemPricingItem(
+                quantity: 0.25d,
+                unit: 'Stunden',
+                name: 'Materialbeschaffung',
+                type: PricingItemType.absolute,
+                unitPrice: 40.0d
+            )).addToItems(new SalesItemPricingItem(
+                type: PricingItemType.sum,
+            )).addToItems(new SalesItemPricingItem(
+                quantity: 1.0d,
+                unit: 'Einheit',
+                name: 'Gewinn',
+                type: PricingItemType.relativeToCurrentSum,
+                unitPercent: 5.0d
+            )).addToItems(new SalesItemPricingItem(
+                quantity: 1.0d,
+                unit: 'Einheit',
+                name: 'Risiko',
+                type: PricingItemType.relativeToLastSum,
+                unitPercent: 5.0d
+            ))
+        pricing.save()
+        def product = new Product(
+            name: 'Papier A4 80 g/m²',
+            quantity: 10.0d,
+            unit: Unit.get(302),
+            taxRate: TaxRate.get(401),
+            purchasePrice: 2.19d,
+            description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+            pricing: pricing,
+            category: ProductCategory.get(3000),
+            manufacturer: 'Papierwerk Brandenburg',
+            retailer: 'Druckereibedarf Kiel GmbH',
+            weight: 200.0d
+        )
+        product.save(flush: true)
+        return product
+    }
 }

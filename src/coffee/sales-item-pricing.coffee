@@ -19,15 +19,23 @@
 
 
 $ = jQuery
+win = window
+$doc = $(win.document)
 
 
+# Defines a jQuery widget which handles pricings in sales items such as
+# products or services.
+#
+# @mixin
+# @author   Daniel Ellermann
+# @version  1.3
+#
 SalesItemPricing =
 
   # The names of the input controls of a table row.
   #
   INPUT_FIELD_NAMES: [
-      "id", "quantity", "unit", "name", "type", "relToPos",
-      "unitPercent", "unitPrice"
+      "quantity", "unit", "name", "type", "relToPos", "unitPercent", "unitPrice"
   ]
 
   # During finder mode the row that referring item currently is searched.
@@ -46,11 +54,6 @@ SalesItemPricing =
   # to obtain the index and field name.
   #
   _inputRegExp: null
-
-  # Stores the reference to items for each pricing item.  The size and order of
-  # the elements in this array corresponds with the items in the pricing table.
-  #
-  _itemReferences: null
 
   # The form element indicating whether or not pricing is enabled for this
   # sales item.
@@ -132,7 +135,6 @@ SalesItemPricing =
     @_initItemCtrls $row
     @element.find("> .items").append $row
 
-    @_itemReferences.push -1
     @_initUnitAutocomplete $row.find(".unit input")
 
     if jumpToNewRow
@@ -203,17 +205,12 @@ SalesItemPricing =
 
     el.change((event) => @_onChange(event))
       .click((event) => @_onClick(event))
-    $(window).focusin((event) => @_onFocusIn(event))
+    $(win).focusin((event) => @_onFocusIn(event))
       .focusout((event) => @_onFocusOut(event))
 
-    itemReferences = []
     $trs = @_getRows()
     $trs.each (index, elem) =>
-      $tr = $(elem)
-      @_initItemCtrls $tr
-      ref = (if @_getRowType($tr) is "relativeToPos" then @_getFieldVal($tr, "relative-to-pos") else -1)
-      itemReferences.push ref
-    @_itemReferences = itemReferences
+      @_initItemCtrls $(elem)
     @_updateReferenceClasses()
 
     @_initUnitAutocomplete() if $trs.length isnt 0
@@ -225,6 +222,46 @@ SalesItemPricing =
     $("#step1-pricing-unit").change (event) => @_onChangeStep1PricingUnit(event)
     $("#step2").change (event) => @_onChangeStep2(event)
     $("#step3-quantity").change (event) => @_onChangeStep3Quantity(event)
+
+  # Disables all options of the type selector in the given item which are not
+  # available in the current state.  The method disables options if the item
+  # is referenced by at least one another item.
+  #
+  # @param {jQuery|Number} item either the given zero-based index or the table row representing the item
+  # @return {jQuery|Number}     the given item
+  #
+  _disableTypeOptions: (item) ->
+    @_enableTypeOptions item
+    $tr = @_getRow item
+    $select = $tr.find "td.type select"
+
+    disableOption = (name) ->
+      $select.children("option[value=#{name}]")
+        .attr("disabled", "disabled")
+
+    idx = @_getIndex item
+    referrers = @_getReferrers idx
+    if referrers.length
+      disableOption "relativeToPos"
+
+    for referrer in referrers
+      if referrer < idx
+        disableOption "relativeToLastSum"
+        disableOption "relativeToCurrentSum"
+        disableOption "sum"
+        break
+    item
+
+  # Enables all options of the type selector in the given item.  The method is
+  # needed after options have been disabled during a reference phase.
+  #
+  # @param {jQuery|Number} item either the given zero-based index or the table row representing the item
+  # @return {jQuery|Number}     the given item
+  #
+  _enableTypeOptions: (item) ->
+    @_getRow(item).find("td.type option:disabled")
+      .removeAttr("disabled")
+    item
 
   # Gets the sum of all items' total prices at the given index and before.
   #
@@ -318,13 +355,26 @@ SalesItemPricing =
         true
     res
 
+  # Gets the table row which is referred by the given item.
+  #
+  # @param {jQuery|Number} item either the given zero-based index or the table row representing the item
+  # @return {jQuery}            the referred table row; `null` if no reference is defined
+  #
+  _getReferredRow: (item) ->
+    refIdx = @_getFieldVal item, "relative-to-pos"
+    (if refIdx is -1 then null else @_getRow refIdx)
+
   # Gets a list of items which refer to the item with the given index.
   #
   # @param {Number} idx the given zero-based index
   # @return {Array}     the zero-based indices of the items referring the item with the given index
   #
   _getReferrers: (idx) ->
-    (i for ref, i in @_itemReferences when ref is idx)
+    res = []
+    @_getRows().each (i, tr) =>
+      refIdx = @_getFieldVal $(tr), "relative-to-pos"
+      res.push i if refIdx is idx
+    res
 
   # Gets the table row of the given item.
   #
@@ -347,7 +397,7 @@ SalesItemPricing =
   # Gets the type of the given item.
   #
   # @param {jQuery|Number} item either the given zero-based index or the table row representing the item
-  # @return {String}            the type of the item
+  # @return {String}            the type of the item: `absolute`, `relativeToPos`, `relativeToLastSum`, `relativeToCurrentSum`, or `sum`
   #
   _getRowType: (item) ->
     @_getFieldVal item, "type"
@@ -383,23 +433,37 @@ SalesItemPricing =
   # @param {Number} dir the direction to move; negative values move the row up, positive values down
   #
   _moveItem: ($tr, dir) ->
+    checkReferee = ($tr, dir) =>
+      if dir < 0 and @_getRowType($tr) is "relativeToPos"
+        $refTr = @_getReferredRow $tr
+        if $refTr isnt null and @_getRowType($refTr) isnt "absolute" and @_getIndex($tr) - 1 <= @_getIndex($refTr)
+          win.alert $L("salesItem.pricing.error.notMovable.refBeforeReferee")
+          return false
+      true
+
+    # obtain destination row
+    $destTr = if dir < 0 then $tr.prev() else $tr.next()
+
+    # check validation rules
+    return unless $destTr.length and checkReferee($tr, dir) and checkReferee($destTr, -dir)
 
     # swap current row with previous or next row
-    $destTr = null
-    pos = @_getIndex $tr
-    if (dir < 0) and (pos > 0)
-      $destTr = $tr.prev()
+    if dir < 0
       $destTr.before $tr
-    else if pos < @_getRows().length - 1
-      $destTr = $tr.next()
+    else
       $destTr.after $tr
 
     # swap input name positions, item positions, and references
-    if $destTr
-      @_swapInputItemPos $tr, $destTr
-      @_swapItemPos $tr, $destTr
-      @_swapItemReferences $tr, $destTr
-      @_updateItems()
+    @_swapInputItemPos $tr, $destTr
+    @_swapItemPos $tr, $destTr
+    @_swapItemReferences $tr, $destTr
+
+    # fix type options after swapping
+    @_disableTypeOptions $tr
+    @_disableTypeOptions $destTr
+
+    # update all values
+    @_updateItems()
 
   # Called if an input control in the pricing table has been changed.
   #
@@ -446,6 +510,7 @@ SalesItemPricing =
   #
   # @param {Object} event the event data
   # @return {boolean}     `true` to perform event bubbling; `false` otherwise
+  # @see                  #_updateReferenceClasses-mixin _updateReferenceClasses
   #
   _onClick: (event) ->
     $finderRow = @_$finderRow
@@ -456,38 +521,41 @@ SalesItemPricing =
 
     $img = $target.closest("img")
     $tr = $target.closest("td").parent()
-    if $img.hasClass("up-btn")
+    if $img.hasClass "up-btn"
       @_moveItem $tr, -1
       return false
-    if $img.hasClass("down-btn")
+    if $img.hasClass "down-btn"
       @_moveItem $tr, 1
       return false
-    if $img.hasClass("remove-btn")
-      @_removeItem $tr unless $tr.hasClass("not-removable")
+    if $img.hasClass "remove-btn"
+      if $tr.hasClass "not-removable"
+        win.alert $L("salesItem.pricing.error.notRemovable")
+      else
+        @_removeItem $tr
       return false
-    if $img.is(".relative-to-pos img")
+    if $img.is ".relative-to-pos img"
       @_startFinderMode $tr
       false
 
   # Called if the user is in "find reference item" mode and has clicked the
-  # reference item.
+  # reference item.  If the clicked row has the CSS class `selectable` a
+  # reference to it is stored in the finder row as defined in
+  # `this._$finderRow`.  In each case, at last, the finder mode is deactivated.
   #
   # @param {jQuery} $target the clicked element
+  # @see            #_startFinderMode-mixin _startFinderMode
+  # @see            #_stopFinderMode-mixin _stopFinderMode
   #
   _onClickReferenceItem: ($target) ->
-    $finderRow = @_$finderRow
-    $tr = $target.closest("tr")
-    unless $tr.is $finderRow
-      k = @_getIndex $finderRow
-      v = @_getIndex $tr
-      @_itemReferences[k] = v
-      $finderRow.find("> .relative-to-pos > span")
-        .find("> strong")
-          .text(String(v + 1))
-        .end()
-        .find("> input")
-          .val v
-      @_setFieldVal $finderRow, "relative-to-pos", v
+    $tr = $target.closest "tr"
+    if $tr.hasClass "selectable"
+      $finderRow = @_$finderRow
+      idx = @_getIndex $finderRow
+      refIdx = @_getIndex $tr
+      oldIdx = @_getFieldVal $finderRow, "relative-to-pos"
+      @_enableTypeOptions oldIdx unless oldIdx is -1
+      @_setItemReference idx, refIdx
+      @_disableTypeOptions $tr
       @_updateReferenceClasses()
       @_updateItems()
     @_stopFinderMode()
@@ -499,7 +567,7 @@ SalesItemPricing =
   #
   _onClickRemovePricing: ->
     if @_initialPricingEnabled
-      ok = window.confirm($L("salesItem.pricing.removePricing.confirm"))
+      ok = win.confirm($L("salesItem.pricing.removePricing.confirm"))
       return false unless ok
     @_pricingEnabled.value = ""
     @_toggleVisibility()
@@ -561,7 +629,7 @@ SalesItemPricing =
           idx = index
           prefix = fieldPrefix
           regexp = re
-          $(@).find("td:first-child")
+          $(this).find("td:first-child")
               .text(String(idx + i + 1) + ".")
              .end()
              .find(":input")
@@ -572,17 +640,7 @@ SalesItemPricing =
       .end()
       .remove()
     @_$trs = @_getRows()
-    @_removeItemReference item
     @_updateItems()
-
-  # Removes the item reference entry at the given index.
-  #
-  # @param {Number} idx the given zero-based item index
-  #
-  _removeItemReference: (idx) ->
-    refs = @_itemReferences
-    refs.splice idx, 1
-    --refs[i] for ref, i in refs when ref > idx
 
   # Sets the value of the input control in the table cell with the given name
   # in the given item.  In case of name `total-price` the text of the
@@ -610,35 +668,58 @@ SalesItemPricing =
   # @param {jQuery|Number} refItem  either the given zero-based index or the table row representing the referred item
   #
   _setItemReference: (item, refItem) ->
+    idx = @_getIndex refItem
     @_getRow(item)
       .find("> .relative-to-pos")
-        .find("> strong")
+        .find("strong")
           .text(String(idx + 1))
         .end()
         .find("> input")
           .val idx
 
-  # Starts the mode where the user should select a referred item.
+  # Starts the mode where the user should select a referred item.  The method
+  # marks all rows in the table as selectable or non-selectable depending on
+  # the following criteria.  The following list of criteria is checked in that
+  # order.  The first matching criterion is used.
+  #
+  # 1.  the current row, that is, the referring row, is always non-selectable
+  #     because a row cannot refer itself
+  # 2.  rows of type `relativeToPos` are always non-selectable because
+  #     transient references are not (yet) implemented
+  # 3.  rows of type `absolute` are always selectable because their unit price
+  #     and total price can be computed definitely
+  # 4.  rows before the current row are always selectable (if not limited by
+  #     any criterion above) and rows after the current row are always
+  #     non-selectable (if not permitted by any criterion above)
   #
   # @param {jQuery|Number} item either the given zero-based index or the table row representing the item
-  # @see                        #_stopFinderMode
+  # @see                        #_stopFinderMode-mixin _stopFinderMode
+  # @see                        #_onClickReferenceItem-mixin _onClickReferenceItem
   #
   _startFinderMode: (item) ->
     $tr = @_getRow item
     @_$finderRow = $tr
     $tr.addClass("non-selectable")
-      .siblings()
-        .addClass "selectable"
-    $(window.document).keydown (event) => @_onKeyDown(event)
+      .prevAll()
+        .each((index, tr) =>
+          $tr = $(tr)
+          $tr.addClass (if @_getRowType($tr) is "relativeToPos" then "non-" else "") + "selectable"
+        )
+      .end()
+      .nextAll()
+        .each (index, tr) =>
+          $tr = $(tr)
+          $tr.addClass (if @_getRowType($tr) is "absolute" then "" else "non-") + "selectable"
+    $doc.keydown (event) => @_onKeyDown(event)
 
   # Stops the mode where the user should select a referred item.
   #
-  # @see  #_startFinderMode
+  # @see  #_startFinderMode-mixin _startFinderMode
   #
   _stopFinderMode: ->
     @_$finderRow = null
     @_getRows().removeClass "selectable non-selectable"
-    $(window.document).unbind "keydown"
+    $doc.unbind "keydown"
 
   # Swaps the indices of the input controls of both the given table rows.
   #
@@ -650,15 +731,19 @@ SalesItemPricing =
     index = @_getIndex $tr
     destIndex = @_getIndex $destTr
     fieldNames = @INPUT_FIELD_NAMES
-    swap = (name, newName) =>
+    swap = (name, newName) ->
       elems = form.elements
       for fieldName in fieldNames
         el = elems[name + fieldName]
         el.name = newName + fieldName if el
+      null
 
-    swap @_getInputName(index), @_getInputName(destIndex, "", "-dest")
-    swap @_getInputName(destIndex), @_getInputName(index)
-    swap @_getInputName(destIndex, "", "-dest"), @_getInputName(destIndex)
+    name1 = @_getInputName(index)
+    name2 = @_getInputName(destIndex)
+    name3 = @_getInputName(destIndex, "", "-dest")
+    swap name1, name3
+    swap name2, name1
+    swap name3, name2
 
   # Swaps the position numbers of both the given table rows.
   #
@@ -673,10 +758,11 @@ SalesItemPricing =
     $td.text $destTd.text()
     $destTd.text s
 
-  # Swaps the referrences to both the given items.
+  # Swaps the references to both the given items.
   #
   # @param {jQuery|Number} item     either the given zero-based index or the table row representing the one item
   # @param {jQuery|Number} destItem either the given zero-based index or the table row representing the other item
+  # @return {jQuery|Number}         the given first item
   #
   _swapItemReferences: (item, destItem) ->
     idx = @_getIndex item
@@ -684,16 +770,11 @@ SalesItemPricing =
 
     refs = @_getReferrers idx
     for ref in refs
-      @_setItemReference ref, destIdx
+      @_setItemReference (if (ref is destIdx) then idx else ref), destIdx
     destRefs = @_getReferrers destIdx
     for ref in destRefs
-      @_setItemReference ref, idx
-
-    itemRefs = @_itemReferences
-    for ref in refs
-      itemRefs[ref] = destIdx
-    for ref in destRefs
-      itemRefs[ref] = idx
+      @_setItemReference (if (ref is idx) then destIdx else ref), idx
+    item
 
   # Toggles the visibility of the pricing form section.
   #
@@ -746,7 +827,9 @@ SalesItemPricing =
     @_updateSalesPricing()
 
   # Updates the class names for each row in the pricing table.  If a row is
-  # references by another one class "not-removable" is added.
+  # referenced by another one class "not-removable" is added.
+  #
+  # @see  #_onClick-mixin _onClick
   #
   _updateReferenceClasses: ->
     textNotRemovable = $L("salesItem.pricing.button.notRemovable")

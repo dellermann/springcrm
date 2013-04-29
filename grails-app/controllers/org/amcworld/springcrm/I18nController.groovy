@@ -40,7 +40,7 @@ class I18nController {
     def index() {
         def msgs = [: ]
 
-        loadMessages(servletContext.getResourceAsStream('/js/i18n/i18n-source.js'), msgs)
+        loadMessages servletContext.getResourceAsStream('/js/i18n/i18n-source.js'), msgs
 
         def dfs = DateFormatSymbols.getInstance(LCH.locale)
         msgs['monthNamesLong'] = '[ "' << dfs.months.join('", "') << '" ]'
@@ -53,12 +53,19 @@ class I18nController {
         String s = message(code: 'default.bidi.test')
         msgs['calendarRTL'] = !(new Bidi(s, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT).isLeftToRight())
 
-        render(contentType: 'text/javascript; charset=utf-8', view: 'index', model: [messages: msgs])
+        render contentType: 'text/javascript; charset=utf-8', view: 'index', model: [messages: msgs]
     }
 
 
     //-- Non-public methods ---------------------
 
+    /**
+     * Loads the message keys from the given input stream and produces a map of
+     * JavaScript string constants which are ready to create a JavaScript file.
+     *
+     * @param input the given input stream containing the message keys
+     * @param msgs  a map which is filled with the generated JavaScript strings
+     */
     protected void loadMessages(InputStream input, Map<String, String> msgs) {
         input.eachLine {
             if (it ==~ /^\s*$/ || it ==~ /^\s*\/\/.*$/ || it ==~ /^\s*[\[\]].*$/) {
@@ -77,13 +84,37 @@ class I18nController {
                 msgs[parentKey.replace('.', '_')] =
                     renderMessages(m[0][2].split(/\s*,\s*/), parentKey)
             } else {
-                String msg = message(code: key)
-                if (msg != null) msg = "\"${msg}\""
-                msgs[key.replace('.', '_')] = msg
+                msgs[key.replace('.', '_')] = renderMessage(key)
             }
         }
     }
 
+    /**
+     * Renders the given message key as localized JavaScript string.
+     *
+     * @param key   the given message key
+     * @return      the localized JavaScript string
+     * @since       1.3
+     */
+    protected String renderMessage(String key) {
+        String msg = message(code: key)
+        if (msg != null) {
+            msg = msg.replace '\\', '\\\\'
+            msg = msg.replace '"', '\\"'
+            msg = "\"${msg}\""
+        }
+        return msg
+    }
+
+    /**
+     * Renders the given message keys with the stated prefix as localized
+     * JavaScript strings.
+     *
+     * @param l         the given array of message keys
+     * @param keyPrefix an optional prefix used before each message keys
+     * @return          a computed JavaScript object containing the localized
+     *                  messages
+     */
     protected String renderMessages(String [] l, String keyPrefix = '') {
         def msgs = [ : ]
         for (String key : l) {
@@ -94,9 +125,7 @@ class I18nController {
                 jsKey = key.replace('.', '_')
             }
             msgKey += key
-            def msg = message(code: msgKey)
-            if (msg != null) msg = "\"${msg}\""
-            msgs[jsKey] = msg
+            msgs[jsKey] = renderMessage(msgKey)
         }
 
         StringBuilder buf = new StringBuilder('{')

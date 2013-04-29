@@ -418,7 +418,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
                 }
                 return
             case 'radio':
-                value = value.String toString()
+                value = value.toString()
                 for (WebElement radio : driver.findElements(By.name(name))) {
                     if (radio.getAttribute('value') == value) {
                         radio.click()
@@ -441,6 +441,10 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
 
         input.clear()
         if (value) {
+            String oldValue = input.getAttribute('value')
+            for (int i = 0; i < oldValue.length(); i++) {
+                input.sendKeys Keys.BACK_SPACE
+            }
             input.sendKeys value.toString()
         }
     }
