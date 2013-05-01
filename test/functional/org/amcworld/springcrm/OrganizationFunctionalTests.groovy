@@ -64,16 +64,13 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreateOrganizationSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
-        assert getUrl('/organization/create?recType=0') == driver.currentUrl
-        assert 'Organisation anlegen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Organisation' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/organization/create?recType=0')
+        checkTitles 'Organisation anlegen', 'Organisationen', 'Neue Organisation'
         driver.findElement(By.id('rec-type-1')).click()
         setInputValue 'name', 'Landschaftsbau Duvensee GbR'
         setInputValue 'legalForm', 'GbR'
-        setInputValue 'type', '100'
-        setInputValue 'industry', '1012'
+        setInputValue 'type.id', '100'
+        setInputValue 'industry.id', '1012'
         setInputValue 'phone', '04543 31233'
         setInputValue 'fax', '04543 31235'
         setInputValue 'email1', 'info@landschaftsbau-duvensee.example'
@@ -89,9 +86,8 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'shippingAddrState', 'Schleswig-Holstein'
         setInputValue 'shippingAddrCountry', 'Deutschland'
         setInputValue 'notes', 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/organization/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/organization/show/'))
         assert 'Organisation Landschaftsbau Duvensee GbR wurde angelegt.' == flashMessage
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -139,18 +135,13 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreateOrganizationErrors() {
-        assert 'Organisationen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
-        assert getUrl('/organization/create?recType=0') == driver.currentUrl
-        assert 'Organisation anlegen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Organisation' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert getUrl('/organization/save') == driver.currentUrl
+        clickToolbarButton 0, getUrl('/organization/create?recType=0')
+        checkTitles 'Organisation anlegen', 'Organisationen', 'Neue Organisation'
+        submitForm getUrl('/organization/save')
+
         assert checkErrorFields(['recType', 'name'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/organization/list') == driver.currentUrl
+        cancelForm getUrl('/organization/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -163,13 +154,8 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testShowOrganization() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/organization/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Organisation anzeigen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/organization/show'
+        checkTitles 'Organisation anzeigen', 'Organisationen', 'Landschaftsbau Duvensee GbR'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
@@ -222,7 +208,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/person/create?organization.id=${id}"))
         assert 'Person anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(4)
 
         fieldSet = getFieldset(dataSheet, 5)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -232,7 +218,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/quote/create?organization.id=${id}"))
         assert 'Angebot anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(5)
 
         fieldSet = getFieldset(dataSheet, 6)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -242,7 +228,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?organization.id=${id}"))
         assert 'Verkaufsbestellung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(6)
 
         fieldSet = getFieldset(dataSheet, 7)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -252,7 +238,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/invoice/create?organization.id=${id}"))
         assert 'Rechnung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(7)
 
         fieldSet = getFieldset(dataSheet, 8)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -262,7 +248,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/dunning/create?organization.id=${id}"))
         assert 'Mahnung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(8)
 
         fieldSet = getFieldset(dataSheet, 9)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -272,7 +258,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/credit-memo/create?organization.id=${id}"))
         assert 'Gutschrift anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(9)
 
         fieldSet = getFieldset(dataSheet, 10)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -282,14 +268,14 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/project/create?organization.id=${id}"))
         assert 'Projekt anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(10)
 
         fieldSet = getFieldset(dataSheet, 11)
         assert fieldSet.getAttribute('class').contains('remote-list')
         assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/document/list-embedded' == fieldSet.getAttribute('data-load-url')
         assert 'Dokumente' == fieldSet.findElement(By.tagName('h4')).text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(11)
 
         fieldSet = getFieldset(dataSheet, 12)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -299,7 +285,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/call/create?organization.id=${id}"))
         assert 'Anruf anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(12)
 
         fieldSet = getFieldset(dataSheet, 13)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -309,7 +295,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/note/create?organization.id=${id}"))
         assert 'Notiz anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(13)
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -359,8 +345,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testListOrganizations() {
-        assert 'Organisationen' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
+        checkTitles 'Organisationen', 'Organisationen'
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
         assert getUrl('/organization/list?letter=L') == link.getAttribute('href')
         assert 'L' == link.text
@@ -421,11 +406,8 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testEditOrganizationSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
-        assert 'Organisation bearbeiten' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/organization/edit/')
+        checkTitles 'Organisation bearbeiten', 'Organisationen', 'Landschaftsbau Duvensee GbR'
         def col = driver.findElement(By.xpath('//form[@id="organization-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('O-')
         assert '10000' == getInputValue('number')
@@ -458,14 +440,14 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert 'Kontakt über Peter Hermann hergestellt. Erstes Treffen am 13.06.2012.' == getInputValue('notes')
+        assert 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.' == getInputValue('notes')
 
         driver.findElement(By.id('rec-type-1')).click()
         driver.findElement(By.id('rec-type-2')).click()
         setInputValue 'name', 'Arne Friesing'
         setInputValue 'legalForm', 'Einzelunternehmen'
-        setInputValue 'type', '104'
-        setInputValue 'industry', '1021'
+        setInputValue 'type.id', '104'
+        setInputValue 'industry.id', '1021'
         setInputValue 'phone', '04541 428717'
         setInputValue 'fax', '04541 428719'
         setInputValue 'email1', 'arne@friesing.example'
@@ -482,9 +464,8 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'shippingAddrState', 'Schleswig-Holstein'
         setInputValue 'shippingAddrCountry', 'Deutschland'
         setInputValue 'notes', 'Guter, zuverlässiger Designer'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/organization/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/organization/show/'))
         assert 'Organisation Arne Friesing wurde geändert.' == flashMessage
         assert 'Arne Friesing' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -530,19 +511,16 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testEditOrganizationErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
-        assert 'Organisation bearbeiten' == driver.title
-        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/organization/edit/')
+        checkTitles 'Organisation bearbeiten', 'Organisationen', 'Landschaftsbau Duvensee GbR'
 
         driver.findElement(By.id('rec-type-1')).click()
-        driver.findElement(By.name('name')).clear()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert getUrl('/organization/update') == driver.currentUrl
+        clearInput 'name'
+        submitForm getUrl('/organization/update')
+
         assert checkErrorFields(['recType', 'name'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/organization/list'))
+        cancelForm getUrl('/organization/list')
+
         driver.quit()
 
         assert 1 == Organization.count()
@@ -550,7 +528,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testDeleteOrganizationAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/organization/list'))
         assert 'Organisation wurde gelöscht.' == flashMessage
@@ -563,7 +541,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testDeleteOrganizationNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/organization/list') == driver.currentUrl
         driver.quit()

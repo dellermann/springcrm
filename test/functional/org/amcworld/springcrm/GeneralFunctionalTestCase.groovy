@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
 import java.text.DateFormat
@@ -31,6 +32,7 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.support.ui.Select
+import org.openqa.selenium.support.ui.WebDriverWait
 
 
 /**
@@ -80,6 +82,21 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     //-- Non-public methods ---------------------
 
     /**
+     * Cancels the form by clicking the "cancel" button and optionally checks
+     * for the given expected URL (the current URL must start with the expected
+     * URL).
+     *
+     * @param expectedUrl   the expected URL after cancelling the form; if
+     *                      {@code null} no URL check is done
+     */
+    protected void cancelForm(String expectedUrl = null) {
+        driver.findElement(By.linkText('Abbruch')).click()
+        if (expectedUrl) {
+            assert driver.currentUrl.startsWith(expectedUrl)
+        }
+    }
+
+    /**
      * Checks whether the value of the field with the given name is represents
      * the formatted given date or current date.
      *
@@ -124,6 +141,122 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
+     * Checks whether the given page title, header, and subheader are set to
+     * the given values.
+     *
+     * @param title     the expected page title in the {@code <title>} tag
+     * @param header    the expected text in the header line; if {@code null}
+     *                  the header is not checked
+     * @param subheader the expected text in the subheader line; if
+     *                  {@code null} the subheader is not checked
+     */
+    protected void checkTitles(String title, String header = null,
+                               String subheader = null)
+    {
+        assert title == driver.title
+        if (header != null) {
+            assert header == driver.findElement(BY_HEADER).text
+        }
+        if (subheader != null) {
+            assert subheader == driver.findElement(BY_SUBHEADER).text
+        }
+    }
+
+    /**
+     * Clears the content of the input control with the given name.
+     *
+     * @param name  the name of the input control
+     */
+    protected void clearInput(String name) {
+        getInput(name).clear()
+    }
+
+    /**
+     * Clicks on a button with the given index on the action bar and optionally
+     * checks for the given URL (the current URL must start with the expected
+     * URL).
+     *
+     * @param btnIdx        the zero-based button index
+     * @param expectedUrl   the expected URL after clicking the button; if
+     *                      {@code null} no check is done
+     */
+    protected void clickActionBarButton(int btnIdx, String expectedUrl = null) {
+        By by = By.xpath("//aside[@id='action-bar']/ul/li[${btnIdx + 1}]/a")
+        driver.findElement(by).click()
+        if (expectedUrl) {
+            assert driver.currentUrl.startsWith(expectedUrl)
+        }
+    }
+
+    /**
+     * Clicks on an action button in the table row with the given index and
+     * optionally checks for the given URL (the current URL must start with the
+     * expected URL).
+     *
+     * @param rowIdx        the zero-based row index
+     * @param btnIdx        the zero-based button index among the action
+     *                      buttons
+     * @param expectedUrl   the expected URL after clicking the button; if
+     *                      {@code null} no check is done
+     */
+    protected void clickListActionButton(int rowIdx, int btnIdx,
+                                         String expectedUrl = null)
+    {
+        By by = By.xpath("//table[@class='content-table']/tbody/tr[${rowIdx + 1}]/td[@class='action-buttons']/a[${btnIdx + 1}]")
+        driver.findElement(by).click()
+        if (expectedUrl) {
+            assert driver.currentUrl.startsWith(expectedUrl)
+        }
+    }
+
+    /**
+     * Clicks on the row and column with the given indices in the table and
+     * performs an optional check for the given URL.  If the URL check is done
+     * an numeric value is expected after the given URL (normally an ID) which
+     * is returned.  So for example, if {@code expectedUrl} is set to
+     * {@code /call/show} a URL of {@code /call/show/n} is expected, where
+     * {@code n} is an number which in turn is returned.
+     *
+     * @param rowIdx        the zero-based index of the row to click
+     * @param colIdx        the zero-based index of the column to click
+     * @param expectedUrl   an expected URL as described above; the given value
+     *                      must not end with a slash. If {@code null} no URL
+     *                      check is done.
+     * @return              if {@code expectedUrl} is non-{@code null} the
+     *                      numeric value after the expected URL is returned;
+     *                      {@code null} otherwise
+     */
+    protected Integer clickListItem(int rowIdx, int colIdx,
+                                    String expectedUrl = null)
+    {
+        By by = By.xpath("//table[@class='content-table']/tbody/tr[${rowIdx + 1}]/td[${colIdx + 1}]/a")
+        driver.findElement(by).click()
+        Integer id = null
+        if (expectedUrl) {
+            def m = (driver.currentUrl =~ "${expectedUrl}/(\\d+)")
+            assert !!m
+            id = m[0][1] as Integer
+        }
+        id
+    }
+
+    /**
+     * Clicks the button with the given index in the toolbar.  After clicking
+     * the button, an optional check for the given URL is done (the current URL
+     * must start with the expected URL).
+     *
+     * @param idx           the zero-based index of the toolbar button to click
+     * @param expectedUrl   the expected URL after clicking the toolbar button;
+     *                      if {@code null} no check is done
+     */
+    protected void clickToolbarButton(int idx, String expectedUrl = null) {
+        driver.findElement(By.xpath("//ul[@id='toolbar']/li[${idx + 1}]/a")).click()
+        if (expectedUrl) {
+            assert driver.currentUrl.startsWith(expectedUrl)
+        }
+    }
+
+    /**
      * Gets the given date or the current date formatted with the medium
      * format.
      *
@@ -135,7 +268,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
-     * Gets the n-th fieldset, i. e. an HTML {@code<div>} element with class
+     * Gets the n-th fieldset, i. e. an HTML {@code <div>} element with class
      * {@code fieldset}.
      *
      * @param parent    the direct parent containing the fieldset to search
@@ -143,12 +276,23 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return          the web element representing the fieldset
      */
     protected WebElement getFieldset(WebElement parent, int index) {
+        parent.findElement(By.xpath(getFieldsetXpath(index)))
+    }
+
+    /**
+     * Gets the XPath expression to select the n-th fieldset, i. e. an HTML
+     * {@code <div>} element with class {@code fieldset}.
+     *
+     * @param index the one-based index of the fieldset to obtain
+     * @return      the computed XPath expression
+     */
+    protected String getFieldsetXpath(int index) {
         StringBuilder buf = new StringBuilder('div[')
         buf << getXPathClassExpr('fieldset')
         buf << ']['
         buf << index
         buf << ']'
-        return parent.findElement(By.xpath(buf.toString()))
+        buf.toString()
     }
 
     /**
@@ -447,5 +591,29 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             }
             input.sendKeys value.toString()
         }
+    }
+
+    /**
+     * Submits the form by clicking the "save" button and optionally checks for
+     * the given expected URL (the current URL must start with the expected
+     * URL).
+     *
+     * @param expectedUrl   the expected URL after submitting the form; if
+     *                      {@code null} no URL check is done
+     */
+    protected void submitForm(String expectedUrl = null) {
+        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        if (expectedUrl) {
+            assert driver.currentUrl.startsWith(expectedUrl)
+        }
+    }
+
+    protected WebElement waitForEmptyRemoteList(int fieldsetIdx) {
+        def wait = new WebDriverWait(driver, 10)
+        By by = By.xpath(
+            './/' + getFieldsetXpath(fieldsetIdx) +
+            '//div[@class="fieldset-content"]/div[@class="empty-list-inline"]'
+        )
+        wait.until ExpectedConditions.presenceOfElementLocated(by)
     }
 }

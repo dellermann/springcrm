@@ -77,11 +77,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateCreditMemoSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/credit-memo/create') == driver.currentUrl
-        assert 'Gutschrift anlegen' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
-        assert 'Neue Gutschrift' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/credit-memo/create')
+        checkTitles 'Gutschrift anlegen', 'Gutschriften', 'Neue Gutschrift'
         setInputValue 'subject', 'Werbekampagne Frühjahr 2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
@@ -204,10 +201,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
          * we must expect "0.0" instead of "1064.43" here.
          */
         checkStillUnpaid '0.0', '0,00', 'still-unpaid-paid'
+        submitForm getUrl('/credit-memo/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/show/'))
         assert 'Gutschrift Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -279,13 +274,10 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateCreditMemoErrors() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/credit-memo/create') == driver.currentUrl
-        assert 'Gutschrift anlegen' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
-        assert 'Neue Gutschrift' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/save'))
+        clickToolbarButton 0, getUrl('/credit-memo/create')
+        checkTitles 'Gutschrift anlegen', 'Gutschriften', 'Neue Gutschrift'
+        submitForm getUrl('/credit-memo/save')
+
         assert checkErrorFields(['subject', 'organization.id'])
         List<WebElement> errorMsgs = driver.findElements(By.xpath(
             '//form[@id="credit-memo-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
@@ -293,8 +285,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert 2 == errorMsgs.size()
         assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
         assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/credit-memo/list') == driver.currentUrl
+        cancelForm getUrl('/credit-memo/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -309,12 +301,9 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
     @Test
     void testCreateCreditMemoFromInvoice() {
         open('/invoice/list')
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        driver.findElement(By.xpath('//aside[@id="action-bar"]/ul/li[4]/a')).click()
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/create?invoice='))
-        assert 'Gutschrift anlegen' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
-        assert 'Neue Gutschrift' == driver.findElement(BY_SUBHEADER).text
+        clickListItem 0, 1
+        clickActionBarButton 3, getUrl('/credit-memo/create?invoice=')
+        checkTitles 'Gutschrift anlegen', 'Gutschriften', 'Neue Gutschrift'
 
         def col = driver.findElement(By.xpath('//form[@id="credit-memo-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('G-')
@@ -367,10 +356,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'footerText', 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.'
         setInputValue 'notes', 'Gutschrift für nicht lieferbare Artikel.'
         checkStillUnpaid '1064.43', '0,00', 'still-unpaid-paid'
+        submitForm getUrl('/credit-memo/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/show/'))
         assert 'Gutschrift Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -442,13 +429,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testShowCreditMemo() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/credit-memo/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Gutschrift anzeigen' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/credit-memo/show'
+        checkTitles 'Gutschrift anzeigen', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -561,8 +543,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testListCreditMemos() {
-        assert 'Gutschriften' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
+        checkTitles 'Gutschriften', 'Gutschriften'
         def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
         assert 1 == tbody.findElements(By.tagName('tr')).size()
         def tr = tbody.findElement(By.xpath('tr[1]'))
@@ -621,11 +602,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testEditCreditMemoSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/edit/'))
-        assert 'Gutschrift bearbeiten' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/credit-memo/edit/')
+        checkTitles 'Gutschrift bearbeiten', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="credit-memo-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('G-')
         assert '10000' == getInputValue('number')
@@ -799,10 +777,8 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '569,99' == total
         checkStillUnpaid '1064.43', '-494,44', 'still-unpaid-too-much'
+        submitForm getUrl('/credit-memo/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/show/'))
         assert 'Gutschrift Werbekampagne Spring \'13 wurde geändert.' == flashMessage
         assert 'Werbekampagne Spring \'13' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -888,23 +864,19 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testEditCreditMemoErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/edit/'))
-        assert 'Gutschrift bearbeiten' == driver.title
-        assert 'Gutschriften' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/credit-memo/edit/')
+        checkTitles 'Gutschrift bearbeiten', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
 
-        driver.findElement(By.name('subject')).clear()
+        clearInput 'subject'
         driver.findElement(By.id('organization')).clear()
         for (int i = 0; i < 2; i++) {
             removeRow 0
         }
         assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/update'))
+        submitForm getUrl('/credit-memo/update')
+
         assert checkErrorFields(['subject', 'organization.id'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/credit-memo/list'))
+        cancelForm getUrl('/credit-memo/list')
         driver.quit()
 
         assert 1 == CreditMemo.count()
@@ -913,7 +885,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testDeleteCreditMemoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/credit-memo/list'))
         assert 'Gutschrift wurde gelöscht.' == flashMessage
@@ -927,7 +899,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testDeleteCreditMemoNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/credit-memo/list') == driver.currentUrl
         driver.quit()

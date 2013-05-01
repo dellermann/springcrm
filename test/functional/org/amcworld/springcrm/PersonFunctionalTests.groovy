@@ -63,12 +63,9 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreatePersonSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[2]/a')).click()
-        assert getUrl('/person/create') == driver.currentUrl
-        assert 'Person anlegen' == driver.title
-        assert 'Personen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Person' == driver.findElement(BY_SUBHEADER).text
-        setInputValue 'salutation', '1'
+        clickToolbarButton 1, getUrl('/person/create')
+        checkTitles 'Person anlegen', 'Personen', 'Neue Person'
+        setInputValue 'salutation.id', '1'
         setInputValue 'firstName', 'Henry'
         setInputValue 'lastName', 'Brackmann'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
@@ -85,9 +82,8 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'mailingAddrLocation', 'Duvensee'
         setInputValue 'mailingAddrState', 'Schleswig-Holstein'
         setInputValue 'mailingAddrCountry', 'Deutschland'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/person/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/person/show/'))
         assert 'Person Brackmann, Henry wurde angelegt.' == flashMessage
         assert 'Brackmann, Henry' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -126,16 +122,13 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreatePersonErrors() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[2]/a')).click()
-        assert getUrl('/person/create') == driver.currentUrl
-        assert 'Person anlegen' == driver.title
-        assert 'Personen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Person' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/person/save'))
+        clickToolbarButton 1, getUrl('/person/create')
+        checkTitles 'Person anlegen', 'Personen', 'Neue Person'
+        submitForm getUrl('/person/save')
+
         assert checkErrorFields(['firstName', 'lastName', 'organization.id'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/person/list') == driver.currentUrl
+        cancelForm getUrl('/person/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -148,19 +141,14 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testShowPerson() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/person/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Person anzeigen' == driver.title
-        assert 'Personen' == driver.findElement(BY_HEADER).text
-        assert 'Brackmann, Henry' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/person/show'
+        checkTitles 'Person anzeigen', 'Personen', 'Brackmann, Henry'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
         assert 'E-10000' == getShowFieldText(col, 1)
         def link = getShowField(col, 2).findElement(By.tagName('a'))
-        m = (link.getAttribute('href') =~ '/organization/show/(\\d+)')
+        def m = (link.getAttribute('href') =~ '/organization/show/(\\d+)')
         assert !!m
         int organizationId = m[0][1] as Integer
         assert 'Landschaftsbau Duvensee GbR' == link.text
@@ -196,7 +184,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/quote/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Angebot anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(2)
 
         fieldSet = getFieldset(dataSheet, 3)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -206,7 +194,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Verkaufsbestellung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(3)
 
         fieldSet = getFieldset(dataSheet, 4)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -216,7 +204,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/invoice/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Rechnung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(4)
 
         fieldSet = getFieldset(dataSheet, 5)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -226,7 +214,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/dunning/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Mahnung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(5)
 
         fieldSet = getFieldset(dataSheet, 6)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -236,7 +224,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/credit-memo/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Gutschrift anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(6)
 
         fieldSet = getFieldset(dataSheet, 7)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -246,7 +234,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/project/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Projekt anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(7)
 
         fieldSet = getFieldset(dataSheet, 8)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -256,7 +244,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/call/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Anruf anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(8)
 
         fieldSet = getFieldset(dataSheet, 9)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -266,7 +254,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/note/create?person.id=${id}&organization.id=${organizationId}"))
         assert 'Notiz anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(9)
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -320,8 +308,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testListPersons() {
-        assert 'Personen' == driver.title
-        assert 'Personen' == driver.findElement(BY_HEADER).text
+        checkTitles 'Personen', 'Personen'
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
         assert getUrl('/person/list?letter=B') == link.getAttribute('href')
         assert 'B' == link.text
@@ -380,12 +367,9 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
     }
 
     @Test
-    void testEditOrganizationSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/person/edit/'))
-        assert 'Person bearbeiten' == driver.title
-        assert 'Personen' == driver.findElement(BY_HEADER).text
-        assert 'Brackmann, Henry' == driver.findElement(BY_SUBHEADER).text
+    void testEditPersonSuccess() {
+        clickListActionButton 0, 0, getUrl('/person/edit/')
+        checkTitles 'Person bearbeiten', 'Personen', 'Brackmann, Henry'
         def col = driver.findElement(By.xpath('//form[@id="person-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('E-')
         assert '10000' == getInputValue('number')
@@ -423,9 +407,8 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'mobile', '0170 1896043'
         setInputValue 'email1', 'm.thoss@landschaftsbau-duvensee.example'
         setInputValue 'notes', 'Häufig unterwegs; mobil anrufen.'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/person/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/person/show/'))
         assert 'Person Thoss, Marlen wurde geändert.' == flashMessage
         assert 'Thoss, Marlen' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -466,20 +449,17 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testEditPersonErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/person/edit/'))
-        assert 'Person bearbeiten' == driver.title
-        assert 'Personen' == driver.findElement(BY_HEADER).text
-        assert 'Brackmann, Henry' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/person/edit/')
+        checkTitles 'Person bearbeiten', 'Personen', 'Brackmann, Henry'
 
-        driver.findElement(By.name('firstName')).clear()
-        driver.findElement(By.name('lastName')).clear()
+        clearInput 'firstName'
+        clearInput 'lastName'
         driver.findElement(By.id('organization')).clear()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/person/update'))
+        submitForm getUrl('/person/update')
+
         assert checkErrorFields(['firstName', 'lastName', 'organization.id'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/person/list'))
+        cancelForm getUrl('/person/list')
+
         driver.quit()
 
         assert 1 == Person.count()
@@ -487,7 +467,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testDeletePersonAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/person/list'))
         assert 'Person wurde gelöscht.' == flashMessage
@@ -500,7 +480,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testDeletePersonNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/person/list') == driver.currentUrl
         driver.quit()

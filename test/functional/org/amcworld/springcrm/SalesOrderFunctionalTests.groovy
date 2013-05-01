@@ -75,11 +75,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateSalesOrderSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/sales-order/create') == driver.currentUrl
-        assert 'Verkaufsbestellung anlegen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Verkaufsbestellung' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/sales-order/create')
+        checkTitles 'Verkaufsbestellung anlegen', 'Verkaufsbestellungen', 'Neue Verkaufsbestellung'
         setInputValue 'subject', 'Werbekampagne Frühjahr 2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
@@ -185,10 +182,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.'
         setInputValue 'termsAndConditions', ['700', '701']
         setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.'
+        submitForm getUrl('/sales-order/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/show/'))
         assert 'Verkaufsbestellung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -258,13 +253,10 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateSalesOrderErrors() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/sales-order/create') == driver.currentUrl
-        assert 'Verkaufsbestellung anlegen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Verkaufsbestellung' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/save'))
+        clickToolbarButton 0, getUrl('/sales-order/create')
+        checkTitles 'Verkaufsbestellung anlegen', 'Verkaufsbestellungen', 'Neue Verkaufsbestellung'
+        submitForm getUrl('/sales-order/save')
+
         assert checkErrorFields(['subject', 'organization.id'])
         List<WebElement> errorMsgs = driver.findElements(By.xpath(
             '//form[@id="sales-order-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
@@ -272,8 +264,8 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 2 == errorMsgs.size()
         assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
         assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/sales-order/list') == driver.currentUrl
+        cancelForm getUrl('/sales-order/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -288,12 +280,9 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
     @Test
     void testCreateSalesOrderFromQuote() {
         open('/quote/list')
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        driver.findElement(By.xpath('//aside[@id="action-bar"]/ul/li[3]/a')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/create?quote='))
-        assert 'Verkaufsbestellung anlegen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Verkaufsbestellung' == driver.findElement(BY_SUBHEADER).text
+        clickListItem 0, 1
+        clickActionBarButton 2, getUrl('/sales-order/create?quote=')
+        checkTitles 'Verkaufsbestellung anlegen', 'Verkaufsbestellungen', 'Neue Verkaufsbestellung'
 
         def col = driver.findElement(By.xpath('//form[@id="sales-order-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('B-')
@@ -344,10 +333,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".'
         setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.'
         setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.'
+        submitForm getUrl('/sales-order/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/show/'))
         assert 'Verkaufsbestellung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -417,13 +404,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testShowSalesOrder() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/sales-order/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Verkaufsbestellung anzeigen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/sales-order/show'
+        checkTitles 'Verkaufsbestellung anzeigen', 'Verkaufsbestellungen', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -493,7 +475,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/invoice/create?salesOrder=${id}"))
         assert 'Rechnung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(6)
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -546,8 +528,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testListSalesOrders() {
-        assert 'Verkaufsbestellungen' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
+        checkTitles 'Verkaufsbestellungen', 'Verkaufsbestellungen'
         def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
         assert 1 == tbody.findElements(By.tagName('tr')).size()
         def tr = tbody.findElement(By.xpath('tr[1]'))
@@ -602,11 +583,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testEditSalesOrderSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/edit/'))
-        assert 'Verkaufsbestellung bearbeiten' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/sales-order/edit/')
+        checkTitles 'Verkaufsbestellung bearbeiten', 'Verkaufsbestellungen', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="sales-order-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('B-')
         assert '10000' == getInputValue('number')
@@ -771,10 +749,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '586,82' == subtotalGross
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '569,99' == total
+        submitForm getUrl('/sales-order/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/show/'))
         assert 'Verkaufsbestellung Big Sale Spring \'13 wurde geändert.' == flashMessage
         assert 'Big Sale Spring \'13' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -855,23 +831,20 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testEditSalesOrderErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/edit/'))
-        assert 'Verkaufsbestellung bearbeiten' == driver.title
-        assert 'Verkaufsbestellungen' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/sales-order/edit/')
+        checkTitles 'Verkaufsbestellung bearbeiten', 'Verkaufsbestellungen', 'Werbekampagne Frühjahr 2013'
 
-        driver.findElement(By.name('subject')).clear()
+        clearInput 'subject'
         driver.findElement(By.id('organization')).clear()
         for (int i = 0; i < 2; i++) {
             removeRow 0
         }
         assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/update'))
+        submitForm getUrl('/sales-order/update')
+
         assert checkErrorFields(['subject', 'organization.id'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/sales-order/list'))
+        cancelForm getUrl('/sales-order/list')
+
         driver.quit()
 
         assert 1 == SalesOrder.count()
@@ -880,7 +853,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testDeleteSalesOrderAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/sales-order/list'))
         assert 'Verkaufsbestellung wurde gelöscht.' == flashMessage
@@ -894,7 +867,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testDeleteSalesOrderNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/sales-order/list') == driver.currentUrl
         driver.quit()

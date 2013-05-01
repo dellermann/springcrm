@@ -70,11 +70,8 @@ class NoteFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreateNoteSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/note/create') == driver.currentUrl
-        assert 'Notiz anlegen' == driver.title
-        assert 'Notizen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Notiz' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/note/create')
+        checkTitles 'Notiz anlegen', 'Notizen', 'Neue Notiz'
         setInputValue 'title', 'Besprechung vom 21.01.2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
@@ -98,9 +95,8 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
         driver.switchTo().defaultContent()
         driver.findElement(By.id('note-content_formatselect_text')).click()
         driver.findElement(By.cssSelector('#menu_note-content_note-content_formatselect_menu_tbl .mce_h1 a')).click()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/note/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/note/show/'))
         assert 'Notiz Besprechung vom 21.01.2013 wurde angelegt.' == flashMessage
         assert 'Besprechung vom 21.01.2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -126,16 +122,13 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testCreateNoteErrors() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/note/create') == driver.currentUrl
-        assert 'Notiz anlegen' == driver.title
-        assert 'Notizen' == driver.findElement(BY_HEADER).text
-        assert 'Neue Notiz' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/note/save'))
+        clickToolbarButton 0, getUrl('/note/create')
+        checkTitles 'Notiz anlegen', 'Notizen', 'Neue Notiz'
+        submitForm getUrl('/note/save')
+
         assert checkErrorFields(['title'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/note/list') == driver.currentUrl
+        cancelForm getUrl('/note/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -148,13 +141,8 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testShowNote() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/note/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Notiz anzeigen' == driver.title
-        assert 'Notizen' == driver.findElement(BY_HEADER).text
-        assert 'Besprechung vom 21.01.2013' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/note/show'
+        checkTitles 'Notiz anzeigen', 'Notizen', 'Besprechung vom 21.01.2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -206,8 +194,7 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testListNotes() {
-        assert 'Notizen' == driver.title
-        assert 'Notizen' == driver.findElement(BY_HEADER).text
+        checkTitles 'Notizen', 'Notizen'
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
         assert getUrl('/note/list?letter=B') == link.getAttribute('href')
         assert 'B' == link.text
@@ -259,11 +246,8 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testEditNoteSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/note/edit/'))
-        assert 'Notiz bearbeiten' == driver.title
-        assert 'Notizen' == driver.findElement(BY_HEADER).text
-        assert 'Besprechung vom 21.01.2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/note/edit/')
+        checkTitles 'Notiz bearbeiten', 'Notizen', 'Besprechung vom 21.01.2013'
         def col = driver.findElement(By.xpath('//form[@id="note-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('N-')
         assert '10000' == getInputValue('number')
@@ -289,9 +273,8 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
         rte.sendKeys(Keys.DOWN)
         driver.switchTo().defaultContent()
         driver.findElement(By.id('note-content_numlist_action')).click()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/note/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/note/show/'))
         assert 'Notiz Besprechung vom 22.01.2013 wurde geändert.' == flashMessage
         assert 'Besprechung vom 22.01.2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -319,18 +302,15 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testEditNoteErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/note/edit/'))
-        assert 'Notiz bearbeiten' == driver.title
-        assert 'Notizen' == driver.findElement(BY_HEADER).text
-        assert 'Besprechung vom 21.01.2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/note/edit/')
+        checkTitles 'Notiz bearbeiten', 'Notizen', 'Besprechung vom 21.01.2013'
 
-        driver.findElement(By.name('title')).clear()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/note/update'))
+        clearInput 'title'
+        submitForm getUrl('/note/update')
+
         assert checkErrorFields(['title'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/note/list'))
+        cancelForm getUrl('/note/list')
+
         driver.quit()
 
         assert 1 == Note.count()
@@ -338,7 +318,7 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testDeleteNoteAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/note/list'))
         assert 'Notiz wurde gelöscht.' == flashMessage
@@ -351,7 +331,7 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
 
     @Test
     void testDeleteNoteNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/note/list') == driver.currentUrl
         driver.quit()

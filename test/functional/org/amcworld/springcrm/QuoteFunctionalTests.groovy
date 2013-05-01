@@ -72,11 +72,8 @@ class QuoteFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateQuoteSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/quote/create') == driver.currentUrl
-        assert 'Angebot anlegen' == driver.title
-        assert 'Angebote' == driver.findElement(BY_HEADER).text
-        assert 'Neues Angebot' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/quote/create')
+        checkTitles 'Angebot anlegen', 'Angebote', 'Neues Angebot'
         setInputValue 'subject', 'Werbekampagne Frühjahr 2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
@@ -182,10 +179,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         setInputValue 'footerText', 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.'
         setInputValue 'termsAndConditions', ['700', '701']
         setInputValue 'notes', 'Angebot unterliegt möglicherweise weiteren Änderungen.'
+        submitForm getUrl('/quote/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/quote/show/'))
         assert 'Angebot Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -251,13 +246,10 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
 
     @Test
     void testCreateQuoteErrors() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/quote/create') == driver.currentUrl
-        assert 'Angebot anlegen' == driver.title
-        assert 'Angebote' == driver.findElement(BY_HEADER).text
-        assert 'Neues Angebot' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/quote/save'))
+        clickToolbarButton 0, getUrl('/quote/create')
+        checkTitles 'Angebot anlegen', 'Angebote', 'Neues Angebot'
+        submitForm getUrl('/quote/save')
+
         assert checkErrorFields(['subject', 'organization.id'])
         List<WebElement> errorMsgs = driver.findElements(By.xpath(
             '//form[@id="quote-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
@@ -265,8 +257,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert 2 == errorMsgs.size()
         assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
         assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/quote/list') == driver.currentUrl
+        cancelForm getUrl('/quote/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -279,13 +271,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
 
     @Test
     void testShowQuote() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/quote/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Angebot anzeigen' == driver.title
-        assert 'Angebote' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/quote/show'
+        checkTitles 'Angebot anzeigen', 'Angebote', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -352,7 +339,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?quote=${id}"))
         assert 'Verkaufsbestellung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(6)
 
         fieldSet = getFieldset(dataSheet, 7)
         assert fieldSet.getAttribute('class').contains('remote-list')
@@ -362,7 +349,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/invoice/create?quote=${id}"))
         assert 'Rechnung anlegen' == link.text
-        assert 1 == fieldSet.findElements(By.xpath('div[@class="fieldset-content"]/div[@class="empty-list-inline"]')).size()
+        assert waitForEmptyRemoteList(7)
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -418,8 +405,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
 
     @Test
     void testListQuotes() {
-        assert 'Angebote' == driver.title
-        assert 'Angebote' == driver.findElement(BY_HEADER).text
+        checkTitles 'Angebote', 'Angebote'
         def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
         assert 1 == tbody.findElements(By.tagName('tr')).size()
         def tr = tbody.findElement(By.xpath('tr[1]'))
@@ -473,11 +459,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
 
     @Test
     void testEditQuoteSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/quote/edit/'))
-        assert 'Angebot bearbeiten' == driver.title
-        assert 'Angebote' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/quote/edit/')
+        checkTitles 'Angebot bearbeiten', 'Angebote', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="quote-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('A-')
         assert '10000' == getInputValue('number')
@@ -642,10 +625,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '586,82' == subtotalGross
         assert '11,74' == priceTable.findElement(By.id('discount-from-percent')).text
         assert '569,99' == total
+        submitForm getUrl('/quote/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/quote/show/'))
         assert 'Angebot Werbekampagne Frühjahr 2013/03 wurde geändert.' == flashMessage
         assert 'Werbekampagne Frühjahr 2013/03' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -722,23 +703,20 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testEditQuoteErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/quote/edit/'))
-        assert 'Angebot bearbeiten' == driver.title
-        assert 'Angebote' == driver.findElement(BY_HEADER).text
-        assert 'Werbekampagne Frühjahr 2013' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/quote/edit/')
+        checkTitles 'Angebot bearbeiten', 'Angebote', 'Werbekampagne Frühjahr 2013'
 
-        driver.findElement(By.name('subject')).clear()
+        clearInput 'subject'
         driver.findElement(By.id('organization')).clear()
         for (int i = 0; i < 2; i++) {
             removeRow 0
         }
         assert !getPriceTableRow(0).findElement(By.className('remove-btn')).displayed
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/quote/update'))
+        submitForm getUrl('/quote/update')
+
         assert checkErrorFields(['subject', 'organization.id'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/quote/list'))
+        cancelForm getUrl('/quote/list')
+
         driver.quit()
 
         assert 1 == Quote.count()
@@ -746,7 +724,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testDeleteQuoteAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/quote/list'))
         assert 'Angebot wurde gelöscht.' == flashMessage
@@ -759,7 +737,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
 
     @Test
     void testDeleteQuoteNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/quote/list') == driver.currentUrl
         driver.quit()

@@ -70,11 +70,8 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreateCallSuccess() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/call/create') == driver.currentUrl
-        assert 'Anruf anlegen' == driver.title
-        assert 'Anrufe' == driver.findElement(BY_HEADER).text
-        assert 'Neuer Anruf' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/call/create')
+        checkTitles 'Anruf anlegen', 'Anrufe', 'Neuer Anruf'
         setInputValue 'subject', 'Bitte um Angebot'
         setInputValue 'start_date', '13.02.2013'
         setInputValue 'start_time', '09:15'
@@ -83,9 +80,8 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert '04543 31233' == selectAutocompleteEx('phone', '04')
         setInputValue 'status', 'completed'
         setInputValue 'notes', 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/call/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/call/show/'))
         assert 'Anruf Bitte um Angebot wurde angelegt.' == flashMessage
         assert 'Bitte um Angebot' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -112,16 +108,12 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testCreateCallErrors() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li[1]/a')).click()
-        assert getUrl('/call/create') == driver.currentUrl
-        assert 'Anruf anlegen' == driver.title
-        assert 'Anrufe' == driver.findElement(BY_HEADER).text
-        assert 'Neuer Anruf' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/call/save'))
+        clickToolbarButton 0, getUrl('/call/create')
+        checkTitles 'Anruf anlegen', 'Anrufe', 'Neuer Anruf'
+        submitForm getUrl('/call/save')
+
         assert checkErrorFields(['subject'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/call/list') == driver.currentUrl
+        cancelForm getUrl('/call/list')
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -134,13 +126,8 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testShowCall() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/call/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Anruf anzeigen' == driver.title
-        assert 'Anrufe' == driver.findElement(BY_HEADER).text
-        assert 'Bitte um Angebot' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/call/show'
+        checkTitles 'Anruf anzeigen', 'Anrufe', 'Bitte um Angebot'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -193,8 +180,7 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testListCalls() {
-        assert 'Anrufe' == driver.title
-        assert 'Anrufe' == driver.findElement(BY_HEADER).text
+        checkTitles 'Anrufe', 'Anrufe'
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
         assert getUrl('/call/list?letter=B') == link.getAttribute('href')
         assert 'B' == link.text
@@ -250,11 +236,8 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testEditCallSuccess() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/call/edit/'))
-        assert 'Anruf bearbeiten' == driver.title
-        assert 'Anrufe' == driver.findElement(BY_HEADER).text
-        assert 'Bitte um Angebot' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/call/edit/')
+        checkTitles 'Anruf bearbeiten', 'Anrufe', 'Bitte um Angebot'
         def col = driver.findElement(By.xpath('//form[@id="call-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert 'Bitte um Angebot' == getInputValue('subject')
         assert '13.02.2013' == getInputValue('start_date')
@@ -280,9 +263,8 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'type', 'outgoing'
         setInputValue 'status', 'planned'
         setInputValue 'notes', 'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/call/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/call/show/'))
         assert 'Anruf Fragen zur Marketing-Aktion wurde geändert.' == flashMessage
         assert 'Fragen zur Marketing-Aktion' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -309,18 +291,13 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testEditCallErrors() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/call/edit/'))
-        assert 'Anruf bearbeiten' == driver.title
-        assert 'Anrufe' == driver.findElement(BY_HEADER).text
-        assert 'Bitte um Angebot' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/call/edit/')
+        checkTitles 'Anruf bearbeiten', 'Anrufe', 'Bitte um Angebot'
+        clearInput 'subject'
+        submitForm getUrl('/call/update')
 
-        driver.findElement(By.name('subject')).clear()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert driver.currentUrl.startsWith(getUrl('/call/update'))
         assert checkErrorFields(['subject'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert driver.currentUrl.startsWith(getUrl('/call/list'))
+        cancelForm getUrl('/call/list')
         driver.quit()
 
         assert 1 == Call.count()
@@ -328,7 +305,7 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testDeleteCallAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/call/list'))
         assert 'Anruf wurde gelöscht.' == flashMessage
@@ -341,7 +318,7 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testDeleteCallNoAction() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        clickListActionButton 0, 1
         driver.switchTo().alert().dismiss()
         assert getUrl('/call/list') == driver.currentUrl
         driver.quit()
