@@ -372,8 +372,10 @@ SalesItemPricing =
   _getReferrers: (idx) ->
     res = []
     @_getRows().each (i, tr) =>
-      refIdx = @_getFieldVal $(tr), "relative-to-pos"
-      res.push i if refIdx is idx
+      $tr = $(tr)
+      if @_getFieldVal($tr, "type") is "relativeToPos"
+        refIdx = @_getFieldVal $tr, "relative-to-pos"
+        res.push i if refIdx is idx
     res
 
   # Gets the table row of the given item.
@@ -484,6 +486,7 @@ SalesItemPricing =
         $tr.find("> .relative-to-pos > span").fadeIn()
       else
         $tr.find("> .relative-to-pos > span").fadeOut()
+      @_updateReferenceClasses()
       @_updateItems()
 
   # Called if the pricing quantity in step 1 has been changed.
@@ -624,18 +627,35 @@ SalesItemPricing =
     re = @_inputRegExp
 
     # fix row position labels and input names of all successing rows
-    @_getRow(item).nextAll()
+    @_getRow(item)
+      .nextAll()
         .each((i) ->
           idx = index
           prefix = fieldPrefix
           regexp = re
-          $(this).find("td:first-child")
-              .text(String(idx + i + 1) + ".")
-             .end()
-             .find(":input")
-               .each ->
-                parts = @name.match regexp
-                @name = "#{prefix}[#{idx + i}].#{parts[2]}" if parts
+          $(this)
+          .find("td:first-child")
+            .text(String(idx + i + 1) + ".")
+          .end()
+          .find("td.relative-to-pos")
+          .find("input")
+          .each( ->
+            $this = $(this)
+            $this.val $this.val() - 1
+          )
+          .end()
+          .find("strong")
+          .each( ->
+            $this = $(this)
+            $this.text parseInt($this.text(), 10) - 1
+          )
+          .end()
+          .end()
+          .find(":input")
+          .each( ->
+            parts = @name.match regexp
+            @name = "#{prefix}[#{idx + i}].#{parts[2]}" if parts
+          )
         )
       .end()
       .remove()
@@ -832,19 +852,13 @@ SalesItemPricing =
   # @see  #_onClick-mixin _onClick
   #
   _updateReferenceClasses: ->
-    textNotRemovable = $L("salesItem.pricing.button.notRemovable")
-    textRemovable = $L("default.btn.remove")
     @_getRows().each (i, elem) =>
       $elem = $(elem)
       referrers = @_getReferrers(i)
       if referrers.length
-        $elem.addClass("not-removable")
-          .find(".remove-btn img")
-            .attr "title", textNotRemovable
+        $elem.addClass "not-removable"
       else
-        $elem.removeClass("not-removable")
-          .find(".remove-btn img")
-            .attr "title", textRemovable
+        $elem.removeClass "not-removable"
 
   # Updates the computed fields in the sales pricing section.
   #
@@ -861,7 +875,7 @@ SalesItemPricing =
     $("#step3-total-price").text s
 
     qty = $("#step1-pricing-quantity").val().parseNumber()
-    $("#step2-total-unit-price").text (totalPrice / qty).formatCurrencyValue()
+    $("#step2-total-unit-price").text if qty is 0 then "---" else (totalPrice / qty).formatCurrencyValue()
     step3Qty = $("#step3-quantity").val().parseNumber()
     $("#step3-unit-price").text if step3Qty is 0 then "---" else (totalPrice / step3Qty).formatCurrencyValue()
 

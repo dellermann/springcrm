@@ -84,7 +84,6 @@
     'person.addr.fromOrgShippingAddr',
     'person.mailingAddr.copy',
     'person.otherAddr.copy',
-    'salesItem.pricing.button.notRemovable',
     'salesItem.pricing.error.notMovable.refBeforeReferee',
     'salesItem.pricing.error.notRemovable',
     'salesItem.pricing.relativeToPos.finder',

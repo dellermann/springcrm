@@ -265,10 +265,13 @@
         _this = this;
       res = [];
       this._getRows().each(function(i, tr) {
-        var refIdx;
-        refIdx = _this._getFieldVal($(tr), "relative-to-pos");
-        if (refIdx === idx) {
-          return res.push(i);
+        var $tr, refIdx;
+        $tr = $(tr);
+        if (_this._getFieldVal($tr, "type") === "relativeToPos") {
+          refIdx = _this._getFieldVal($tr, "relative-to-pos");
+          if (refIdx === idx) {
+            return res.push(i);
+          }
         }
       });
       return res;
@@ -359,6 +362,7 @@
         } else {
           $tr.find("> .relative-to-pos > span").fadeOut();
         }
+        this._updateReferenceClasses();
         return this._updateItems();
       }
     },
@@ -474,7 +478,15 @@
         idx = index;
         prefix = fieldPrefix;
         regexp = re;
-        return $(this).find("td:first-child").text(String(idx + i + 1) + ".").end().find(":input").each(function() {
+        return $(this).find("td:first-child").text(String(idx + i + 1) + ".").end().find("td.relative-to-pos").find("input").each(function() {
+          var $this;
+          $this = $(this);
+          return $this.val($this.val() - 1);
+        }).end().find("strong").each(function() {
+          var $this;
+          $this = $(this);
+          return $this.text(parseInt($this.text(), 10) - 1);
+        }).end().end().find(":input").each(function() {
           var parts;
           parts = this.name.match(regexp);
           if (parts) {
@@ -612,18 +624,15 @@
       return this._updateSalesPricing();
     },
     _updateReferenceClasses: function() {
-      var textNotRemovable, textRemovable,
-        _this = this;
-      textNotRemovable = $L("salesItem.pricing.button.notRemovable");
-      textRemovable = $L("default.btn.remove");
+      var _this = this;
       return this._getRows().each(function(i, elem) {
         var $elem, referrers;
         $elem = $(elem);
         referrers = _this._getReferrers(i);
         if (referrers.length) {
-          return $elem.addClass("not-removable").find(".remove-btn img").attr("title", textNotRemovable);
+          return $elem.addClass("not-removable");
         } else {
-          return $elem.removeClass("not-removable").find(".remove-btn img").attr("title", textRemovable);
+          return $elem.removeClass("not-removable");
         }
       });
     },
@@ -639,7 +648,7 @@
       $("#step2-total").text(s);
       $("#step3-total-price").text(s);
       qty = $("#step1-pricing-quantity").val().parseNumber();
-      $("#step2-total-unit-price").text((totalPrice / qty).formatCurrencyValue());
+      $("#step2-total-unit-price").text(qty === 0 ? "---" : (totalPrice / qty).formatCurrencyValue());
       step3Qty = $("#step3-quantity").val().parseNumber();
       return $("#step3-unit-price").text(step3Qty === 0 ? "---" : (totalPrice / step3Qty).formatCurrencyValue());
     }
