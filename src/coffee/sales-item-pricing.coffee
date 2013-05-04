@@ -572,8 +572,12 @@ SalesItemPricing =
     if @_initialPricingEnabled
       ok = win.confirm($L("salesItem.pricing.removePricing.confirm"))
       return false unless ok
+
     @_pricingEnabled.value = ""
     @_toggleVisibility()
+    $("#quantity").val $("#step3-quantity").val()
+    $("#unit").val $("#step3-unit").val()
+    $("#unitPrice").val $("#step3-unit-price").text().parseNumber().formatCurrencyValue()
     false
 
   # Called if the button to start pricing has been clicked.
@@ -629,30 +633,30 @@ SalesItemPricing =
     # fix row position labels and input names of all successing rows
     @_getRow(item)
       .nextAll()
-        .each((i) ->
+        .each((i, tr) =>
+          $tr = $(tr)
+
           idx = index
+          $tr.find("td:first-child").text(String(idx + i + 1) + ".")
+
+          type = @_getFieldVal $tr, "type"
+          if type is "relativeToPos"
+            $tr.find("td.relative-to-pos")
+              .find("input")
+                .each( ->
+                  $this = $(this)
+                  $this.val $this.val() - 1
+                )
+              .end()
+              .find("strong")
+                .each( ->
+                  $this = $(this)
+                  $this.text parseInt($this.text(), 10) - 1
+                )
+
           prefix = fieldPrefix
           regexp = re
-          $(this)
-          .find("td:first-child")
-            .text(String(idx + i + 1) + ".")
-          .end()
-          .find("td.relative-to-pos")
-          .find("input")
-          .each( ->
-            $this = $(this)
-            $this.val $this.val() - 1
-          )
-          .end()
-          .find("strong")
-          .each( ->
-            $this = $(this)
-            $this.text parseInt($this.text(), 10) - 1
-          )
-          .end()
-          .end()
-          .find(":input")
-          .each( ->
+          $tr.find(":input").each( ->
             parts = @name.match regexp
             @name = "#{prefix}[#{idx + i}].#{parts[2]}" if parts
           )

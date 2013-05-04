@@ -187,6 +187,9 @@ class ProductController {
         }
 
         try {
+            if (productInstance.pricing) {
+                productInstance.pricing.delete flush: true
+            }
             productInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'product.label', default: 'Product')])
             if (params.returnUrl) {

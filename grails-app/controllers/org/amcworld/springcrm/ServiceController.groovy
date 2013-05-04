@@ -187,6 +187,9 @@ class ServiceController {
         }
 
         try {
+            if (serviceInstance.pricing) {
+                serviceInstance.pricing.delete flush: true
+            }
             serviceInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'service.label', default: 'Service')])
             if (params.returnUrl) {

@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.validation.ObjectError;
-
 
 /**
  * The class {@code SalesItemService} contains service methods which handle

@@ -437,6 +437,9 @@
       }
       this._pricingEnabled.value = "";
       this._toggleVisibility();
+      $("#quantity").val($("#step3-quantity").val());
+      $("#unit").val($("#step3-unit").val());
+      $("#unitPrice").val($("#step3-unit-price").text().parseNumber().formatCurrencyValue());
       return false;
     },
     _onClickStartPricing: function() {
@@ -468,25 +471,32 @@
       }
     },
     _removeItem: function(item) {
-      var fieldPrefix, index, re;
+      var fieldPrefix, index, re,
+        _this = this;
       $ = jQuery;
       fieldPrefix = this.options.fieldNamePrefix;
       index = this._getIndex(item);
       re = this._inputRegExp;
-      this._getRow(item).nextAll().each(function(i) {
-        var idx, prefix, regexp;
+      this._getRow(item).nextAll().each(function(i, tr) {
+        var $tr, idx, prefix, regexp, type;
+        $tr = $(tr);
         idx = index;
+        $tr.find("td:first-child").text(String(idx + i + 1) + ".");
+        type = _this._getFieldVal($tr, "type");
+        if (type === "relativeToPos") {
+          $tr.find("td.relative-to-pos").find("input").each(function() {
+            var $this;
+            $this = $(this);
+            return $this.val($this.val() - 1);
+          }).end().find("strong").each(function() {
+            var $this;
+            $this = $(this);
+            return $this.text(parseInt($this.text(), 10) - 1);
+          });
+        }
         prefix = fieldPrefix;
         regexp = re;
-        return $(this).find("td:first-child").text(String(idx + i + 1) + ".").end().find("td.relative-to-pos").find("input").each(function() {
-          var $this;
-          $this = $(this);
-          return $this.val($this.val() - 1);
-        }).end().find("strong").each(function() {
-          var $this;
-          $this = $(this);
-          return $this.text(parseInt($this.text(), 10) - 1);
-        }).end().end().find(":input").each(function() {
+        return $tr.find(":input").each(function() {
           var parts;
           parts = this.name.match(regexp);
           if (parts) {

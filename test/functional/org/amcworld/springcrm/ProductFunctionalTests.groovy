@@ -20,11 +20,11 @@
 
 package org.amcworld.springcrm
 
-import org.openqa.selenium.Alert;
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.openqa.selenium.Alert
 import org.openqa.selenium.By
 import org.openqa.selenium.Keys
 import org.openqa.selenium.WebElement
@@ -70,11 +70,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testCreateProductSuccessNoPricing() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
-        assert getUrl('/product/create') == driver.currentUrl
-        assert 'Produkt anlegen' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Neues Produkt' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/product/create')
+        checkTitles 'Produkt anlegen', 'Produkte', 'Neues Produkt'
         setInputValue 'name', 'Papier A4 80 g/m²'
         setInputValue 'category.id', '3000'
         setInputValue 'manufacturer', 'Papierwerk Brandenburg'
@@ -90,9 +87,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
         WebElement link = driver.findElement(By.id('start-pricing'))
         assert link.displayed
         assert 'Kalkulation beginnen' == link.text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/product/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/product/show/'))
         assert 'Produkt Papier A4 80 g/m² wurde angelegt.' == flashMessage
         assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -119,11 +115,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testCreateProductSuccessPricing() {
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
-        assert getUrl('/product/create') == driver.currentUrl
-        assert 'Produkt anlegen' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Neues Produkt' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/product/create')
+        checkTitles 'Produkt anlegen', 'Produkte', 'Neues Produkt'
         setInputValue 'name', 'Papier A4 80 g/m²'
         setInputValue 'category.id', '3000'
         setInputValue 'manufacturer', 'Papierwerk Brandenburg'
@@ -244,9 +237,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
         new Select(driver.findElement(By.id('step3-unit'))).selectByValue '302'
         assert '3,49' == getValue('step3-unit-price')
         assert '34,90' == getValue('step3-total-price')
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/product/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/product/show/'))
         assert 'Produkt Papier A4 80 g/m² wurde angelegt.' == flashMessage
         assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -293,18 +285,13 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testCreateProductErrorsNoPricing() {
-        assert 'Produkte' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
-        assert getUrl('/product/create') == driver.currentUrl
-        assert 'Produkt anlegen' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Neues Produkt' == driver.findElement(BY_SUBHEADER).text
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert getUrl('/product/save?returnUrl=') == driver.currentUrl
+        clickToolbarButton 0, getUrl('/product/create')
+        checkTitles 'Produkt anlegen', 'Produkte', 'Neues Produkt'
+        submitForm getUrl('/product/save?returnUrl=')
+
         assert checkErrorFields(['name'])
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/product/list') == driver.currentUrl
+        cancelForm getUrl('/product/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -317,16 +304,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testCreateProductErrorsPricing() {
-        assert 'Produkte' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        driver.findElement(By.xpath('//ul[@id="toolbar"]/li/a')).click()
-        assert getUrl('/product/create') == driver.currentUrl
-        assert 'Produkt anlegen' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Neues Produkt' == driver.findElement(BY_SUBHEADER).text
+        clickToolbarButton 0, getUrl('/product/create')
+        checkTitles 'Produkt anlegen', 'Produkte', 'Neues Produkt'
         driver.findElement(By.id('start-pricing')).click()
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-        assert getUrl('/product/save?returnUrl=') == driver.currentUrl
+        submitForm getUrl('/product/save?returnUrl=')
+
         assert checkErrorFields(['name', 'quantity'])
         WebElement fieldSet = driver.findElement(By.xpath('//fieldset[3]'))
         List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//p//span[@class="error-msg"]'))
@@ -341,8 +323,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Pos. 1, Einheit: Feld darf nicht leer sein.' == errorMsgs[1].text
         WebElement errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::span[@class="error-msg"]'))
         assert 'Feld darf nicht leer sein.' == errorMsg.text
-        driver.findElement(By.linkText('Abbruch')).click()
-        assert getUrl('/product/list') == driver.currentUrl
+        cancelForm getUrl('/product/list')
+
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
         def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
@@ -355,13 +337,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testShowProductNoPricing() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/product/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Produkt anzeigen' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/product/show'
+        checkTitles 'Produkt anzeigen', 'Produkte', 'Papier A4 80 g/m²'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
@@ -418,13 +395,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testShowProductPricing() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr[1]/td[2]/a')).click()
-        def m = (driver.currentUrl =~ '/product/show/(\\d+)')
-        assert !!m
-        int id = m[0][1] as Integer
-        assert 'Produkt anzeigen' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        int id = clickListItem 0, 1, '/product/show'
+        checkTitles 'Produkt anzeigen', 'Produkte', 'Papier A4 80 g/m²'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
@@ -503,8 +475,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testListProductsNoPricing() {
-        assert 'Produkte' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        checkTitles 'Produkte', 'Produkte'
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
         assert getUrl('/product/list?letter=P') == link.getAttribute('href')
         assert 'P' == link.text
@@ -558,8 +529,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testListProductsPricing() {
-        assert 'Produkte' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
+        checkTitles 'Produkte', 'Produkte'
         def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
         assert getUrl('/product/list?letter=P') == link.getAttribute('href')
         assert 'P' == link.text
@@ -613,11 +583,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testEditProductSuccessNoPricing() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/product/edit/'))
-        assert 'Produkt bearbeiten' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
         def col = driver.findElement(By.xpath('//form[@id="product-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('P-')
         assert '10000' == getInputValue('number')
@@ -648,9 +615,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setInputValue 'taxRate.id', '400'
         setInputValue 'purchasePrice', '7,99'
         setInputValue 'description', 'Mit Firmenaufdruck nach Kundenvorgabe.'
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
+        submitForm getUrl('/product/show/')
 
-        assert driver.currentUrl.startsWith(getUrl('/product/show/'))
         assert 'Produkt Stempel wurde geändert.' == flashMessage
         assert 'Stempel' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -677,11 +643,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
     @Test
     void testEditProductSuccessPricing() {
-        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-        assert driver.currentUrl.startsWith(getUrl('/product/edit/'))
-        assert 'Produkt bearbeiten' == driver.title
-        assert 'Produkte' == driver.findElement(BY_HEADER).text
-        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
         def col = driver.findElement(By.xpath('//form[@id="product-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('P-')
         assert '10000' == getInputValue('number')
@@ -836,10 +799,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
         new Select(driver.findElement(By.id('step3-unit'))).selectByValue '300'
         assert '11,50' == getValue('step3-unit-price')
         assert '229,99' == getValue('step3-total-price')
+        submitForm getUrl('/product/show/')
 
-        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-
-        assert driver.currentUrl.startsWith(getUrl('/product/show/'))
         assert 'Produkt Stempel wurde geändert.' == flashMessage
         assert 'Stempel' == driver.findElement(BY_SUBHEADER).text
         def dataSheet = driver.findElement(By.className('data-sheet'))
@@ -888,48 +849,344 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 1 == Product.count()
     }
 
-//    @Test
-//    void testEditProductErrorsNoPricing() {
-//        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[1]')).click()
-//        assert driver.currentUrl.startsWith(getUrl('/organization/edit/'))
-//        assert 'Organisation bearbeiten' == driver.title
-//        assert 'Organisationen' == driver.findElement(BY_HEADER).text
-//        assert 'Landschaftsbau Duvensee GbR' == driver.findElement(BY_SUBHEADER).text
-//
-//        driver.findElement(By.id('rec-type-1')).click()
-//        driver.findElement(By.name('name')).clear()
-//        driver.findElement(By.cssSelector('#toolbar .submit-btn')).click()
-//        assert getUrl('/organization/update') == driver.currentUrl
-//        assert checkErrorFields(['recType', 'name'])
-//        driver.findElement(By.linkText('Abbruch')).click()
-//        assert driver.currentUrl.startsWith(getUrl('/organization/list'))
-//        driver.quit()
-//
-//        assert 1 == Product.count()
-//    }
-//
-//    @Test
-//    void testDeleteOrganizationAction() {
-//        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
-//        driver.switchTo().alert().accept()
-//        assert driver.currentUrl.startsWith(getUrl('/organization/list'))
-//        assert 'Organisation wurde gelöscht.' == flashMessage
-//        def emptyList = driver.findElement(By.className('empty-list'))
-//        assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-//        driver.quit()
-//
-//        assert 0 == Organization.count()
-//    }
-//
-//    @Test
-//    void testDeleteOrganizationNoAction() {
-//        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
-//        driver.switchTo().alert().dismiss()
-//        assert getUrl('/organization/list') == driver.currentUrl
-//        driver.quit()
-//
-//        assert 1 == Organization.count()
-//    }
+    @Test
+    void testEditProductErrorsNoPricing() {
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
+
+        clearInput 'name'
+        submitForm getUrl('/product/update')
+
+        assert checkErrorFields(['name'])
+        cancelForm getUrl('/product/list')
+
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testEditProductErrorsPricing() {
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
+
+        clearInput 'name'
+        clearInput 'pricing.quantity'
+        setInputValue 'pricing.unit.id', 'null'
+        driver.findElement(By.id('step3-quantity')).clear()
+        new Select(driver.findElement(By.id('step3-unit'))).selectByIndex(0)
+        for (int i = 0; i < 4; i++) {
+            removeRow 0
+        }
+        assert !getStep1TableRow(0).findElement(By.className('remove-btn')).displayed
+        setStep1TableInputValue 0, 'unit', ''
+        setStep1TableInputValue 0, 'name', ''
+        submitForm getUrl('/product/update')
+
+        assert checkErrorFields(['name', 'quantity'])
+        WebElement fieldSet = driver.findElement(By.xpath('//fieldset[3]'))
+        List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//p//span[@class="error-msg"]'))
+        assert 2 == errorMsgs.size()
+        assert 'Muss größer als 0 sein.' == errorMsgs[0].text
+        assert 'Feld darf nicht leer sein.' == errorMsgs[1].text
+        errorMsgs = fieldSet.findElements(By.xpath(
+            './/table[@id="step1-pricing-items"]/following-sibling::span[@class="error-msg"]'
+        ))
+        assert 2 == errorMsgs.size()
+        assert 'Pos. 1, Bezeichnung: Feld darf nicht leer sein.' == errorMsgs[0].text
+        assert 'Pos. 1, Einheit: Feld darf nicht leer sein.' == errorMsgs[1].text
+        WebElement errorMsg = driver.findElement(By.xpath('//input[@id="step3-quantity"]/following-sibling::span[@class="error-msg"]'))
+        assert 'Muss größer als 0 sein.' == errorMsg.text
+        errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::span[@class="error-msg"]'))
+        assert 'Feld darf nicht leer sein.' == errorMsg.text
+        cancelForm getUrl('/product/list')
+
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testEditProductTransitionFromNoPricing() {
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
+        driver.findElement(By.id('start-pricing')).click()
+        assert !getInput('quantity').displayed
+        assert !getInput('unitPrice').displayed
+        assert !getInput('unit.id').displayed
+        setInputValue 'pricing.quantity', '10'
+        setInputValue 'pricing.unit.id', '302'
+        assert 1 == numStep1TableRows
+        setStep1TableInputValue 0, 'quantity', '10'
+        setStep1TableInputValue 0, 'unit', 'Packungen'
+        setStep1TableInputValue 0, 'name', 'Materialeinkauf'
+        setStep1TableInputValue 0, 'unitPrice', '2,19'
+        assert '21,90' == getStep1TableRowTotal(0)
+        assert '21,90' == step1Total
+        assert '2,19' == step1UnitPrice
+        WebElement tr = getStep1TableRow(0)
+        assert !tr.findElement(By.className('up-btn')).displayed
+        assert !tr.findElement(By.className('down-btn')).displayed
+        assert !tr.findElement(By.className('remove-btn')).displayed
+        assert 2 == addNewStep1TableRow()
+        setStep1TableInputValue 1, 'quantity', '0,25'
+        setStep1TableInputValue 1, 'unit', 'Stunden'
+        setStep1TableInputValue 1, 'name', 'Materialbeschaffung'
+        setStep1TableInputValue 1, 'unitPrice', '40'
+        assert '10,00' == getStep1TableRowTotal(1)
+        assert '31,90' == step1Total
+        assert '3,19' == step1UnitPrice
+        tr = getStep1TableRow(0)
+        assert !tr.findElement(By.className('up-btn')).displayed
+        assert tr.findElement(By.className('down-btn')).displayed
+        assert tr.findElement(By.className('remove-btn')).displayed
+        tr = getStep1TableRow(1)
+        assert tr.findElement(By.className('up-btn')).displayed
+        assert !tr.findElement(By.className('down-btn')).displayed
+        assert tr.findElement(By.className('remove-btn')).displayed
+        assert 3 == addNewStep1TableRow()
+        setStep1TableInputValue 2, 'type', 'sum'
+        assert !getStep1TableInput(2, 'quantity').enabled
+        assert !getStep1TableInput(2, 'unit').enabled
+        assert !getStep1TableInput(2, 'name').enabled
+        assert !getStep1TableInput(2, 'unitPrice').enabled
+        assert '31,90' == getStep1TableRowTotal(2)
+        assert '31,90' == step1Total
+        assert '3,19' == step1UnitPrice
+        tr = getStep1TableRow(0)
+        assert !tr.findElement(By.className('up-btn')).displayed
+        assert tr.findElement(By.className('down-btn')).displayed
+        assert tr.findElement(By.className('remove-btn')).displayed
+        tr = getStep1TableRow(1)
+        assert tr.findElement(By.className('up-btn')).displayed
+        assert tr.findElement(By.className('down-btn')).displayed
+        assert tr.findElement(By.className('remove-btn')).displayed
+        tr = getStep1TableRow(2)
+        assert tr.findElement(By.className('up-btn')).displayed
+        assert !tr.findElement(By.className('down-btn')).displayed
+        assert tr.findElement(By.className('remove-btn')).displayed
+        assert 4 == addNewStep1TableRow()
+        setStep1TableInputValue 3, 'type', 'relativeToCurrentSum'
+        setStep1TableInputValue 3, 'quantity', '1'
+        setStep1TableInputValue 3, 'unit', 'Einheit'
+        setStep1TableInputValue 3, 'name', 'Gewinn'
+        setStep1TableInputValue 3, 'unitPercent', '5'
+        assert '1,60' == getStep1TableRowTotal(3)
+        assert '33,50' == step1Total
+        assert '3,35' == step1UnitPrice
+        assert 5 == addNewStep1TableRow()
+        setStep1TableInputValue 4, 'type', 'relativeToLastSum'
+        setStep1TableInputValue 4, 'quantity', '1'
+        setStep1TableInputValue 4, 'unit', 'Einheit'
+        setStep1TableInputValue 4, 'name', 'Risiko'
+        setStep1TableInputValue 4, 'unitPercent', '5'
+        assert '1,60' == getStep1TableRowTotal(4)
+        assert '35,10' == step1Total
+        assert '3,51' == step1UnitPrice
+        assert '10' == getValue('step2-quantity')
+        assert 'Packung' == getValue('step2-unit')
+        assert '3,51' == getValue('step2-unit-price')
+        assert '35,10' == getValue('step2-total-price')
+        assert '10' == getValue('step2-total-quantity')
+        assert 'Packung' == getValue('step2-total-unit')
+        assert '3,51' == getValue('step2-total-unit-price')
+        assert '35,10' == getValue('step2-total')
+        setInputValue 'pricing.discountPercent', '1'
+        assert '0,35' == getValue('step2-discount-percent-amount')
+        setInputValue 'pricing.adjustment', '0,15'
+        assert '10' == getValue('step2-total-quantity')
+        assert 'Packung' == getValue('step2-total-unit')
+        assert '3,49' == getValue('step2-total-unit-price')
+        assert '34,90' == getValue('step2-total')
+        assert '34,90' == getValue('step3-unit-price')
+        assert '34,90' == getValue('step3-total-price')
+        WebElement input = driver.findElement(By.id('step3-quantity'))
+        input.clear()
+        input.sendKeys '10'
+        assert '3,49' == getValue('step3-unit-price')
+        assert '34,90' == getValue('step3-total-price')
+        submitForm getUrl('/product/show/')
+
+        assert 'Produkt Papier A4 80 g/m² wurde geändert.' == flashMessage
+        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        def col = fieldSet.findElement(By.className('col-l'))
+        assert 'P-10000' == getShowFieldText(col, 1)
+        assert 'Papier A4 80 g/m²' == getShowFieldText(col, 2)
+        assert 'Materialien' == getShowFieldText(col, 3)
+        assert 'Papierwerk Brandenburg' == getShowFieldText(col, 4)
+        assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
+        assert '10' == getShowFieldText(col, 6)
+        assert 'Packung' == getShowFieldText(col, 7)
+        assert '3,49 €' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '200' == getShowFieldText(col, 1)
+        assert '7 %' == getShowFieldText(col, 2)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
+        fieldSet = getFieldset(dataSheet, 3)
+        assert 'In der folgenden Tabelle berechne ich den Preis für 10 Packung:' == fieldSet.findElement(By.xpath('./p')).text
+        WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,19 €', '21,90 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
+        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,90 €'
+        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,60 €', '1,60 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,60 €', '1,60 €'
+        WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '35,09 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '3,51 €'
+        fieldSet = getFieldset(dataSheet, 4)
+        tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,51 €', '35,09 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,35 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,15 €'
+        tfoot = fieldSet.findElement(By.tagName('tfoot'))
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,49 €', '34,89 €'
+        fieldSet = getFieldset(dataSheet, 5)
+        tbody = fieldSet.findElement(By.tagName('tbody'))
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '10', 'Packung', 'zu je', '3,49 €', '34,89 €'
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testEditProductTransitionFromPricing() {
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
+        driver.findElement(By.id('remove-pricing')).click()
+        driver.switchTo().alert().dismiss()
+        assert !driver.findElement(By.id('start-pricing')).displayed
+        assert !getInput('quantity').displayed
+        assert !getInput('unitPrice').displayed
+        assert !getInput('unit.id').displayed
+        assert step1Table.displayed
+
+        driver.findElement(By.id('remove-pricing')).click()
+        driver.switchTo().alert().accept()
+        assert driver.findElement(By.id('start-pricing')).displayed
+        WebElement input = getInput('quantity')
+        assert input.displayed
+        assert '10' == input.getAttribute('value')
+        input = getInput('unit.id')
+        assert input.displayed
+        assert '302' == new Select(input).firstSelectedOption.getAttribute('value')
+        input = getInput('unitPrice')
+        assert input.displayed
+        assert '3,49' == input.getAttribute('value')
+        submitForm getUrl('/product/show/')
+
+        assert 'Produkt Papier A4 80 g/m² wurde geändert.' == flashMessage
+        assert 'Papier A4 80 g/m²' == driver.findElement(BY_SUBHEADER).text
+        def dataSheet = driver.findElement(By.className('data-sheet'))
+        def fieldSet = getFieldset(dataSheet, 1)
+        def col = fieldSet.findElement(By.className('col-l'))
+        assert 'P-10000' == getShowFieldText(col, 1)
+        assert 'Papier A4 80 g/m²' == getShowFieldText(col, 2)
+        assert 'Materialien' == getShowFieldText(col, 3)
+        assert 'Papierwerk Brandenburg' == getShowFieldText(col, 4)
+        assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
+        assert '10' == getShowFieldText(col, 6)
+        assert 'Packung' == getShowFieldText(col, 7)
+        assert '3,49 €' == getShowFieldText(col, 8)
+        col = fieldSet.findElement(By.className('col-r'))
+        assert '200' == getShowFieldText(col, 1)
+        assert '7 %' == getShowFieldText(col, 2)
+        assert '2,19 €' == getShowFieldText(col, 3)
+        fieldSet = getFieldset(dataSheet, 2)
+        assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
+        driver.quit()
+
+        assert 1 == Product.count()
+    }
+
+    @Test
+    void testEditProductNoActionTransitionFromPricing() {
+        clickListActionButton 0, 0, getUrl('/product/edit/')
+        checkTitles 'Produkt bearbeiten', 'Produkte', 'Papier A4 80 g/m²'
+        driver.findElement(By.id('remove-pricing')).click()
+        driver.switchTo().alert().accept()
+        assert driver.findElement(By.id('start-pricing')).displayed
+        WebElement input = getInput('quantity')
+        assert input.displayed
+        assert '10' == input.getAttribute('value')
+        input = getInput('unit.id')
+        assert input.displayed
+        assert '302' == new Select(input).firstSelectedOption.getAttribute('value')
+        input = getInput('unitPrice')
+        assert input.displayed
+        assert '3,49' == input.getAttribute('value')
+        cancelForm getUrl('/product/list')
+
+        def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
+        assert 1 == tbody.findElements(By.tagName('tr')).size()
+        def tr = tbody.findElement(By.xpath('tr[1]'))
+        assert '3,49 €' == tr.findElement(By.xpath('td[7]')).text
+        tr.findElement(By.xpath('td[8]/a[1]')).click()
+        assert 5 == numStep1TableRows
+        assert driver.findElement(By.id('remove-pricing')).displayed
+        driver.quit()
+
+        assert 1 == Product.count()
+        assert 1 == SalesItemPricing.count()
+        assert 5 == SalesItemPricingItem.count()
+    }
+
+    @Test
+    void testDeleteProductActionNoPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        driver.switchTo().alert().accept()
+        assert driver.currentUrl.startsWith(getUrl('/product/list'))
+        assert 'Produkt wurde gelöscht.' == flashMessage
+        def emptyList = driver.findElement(By.className('empty-list'))
+        assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
+        driver.quit()
+
+        assert 0 == Product.count()
+        assert 0 == SalesItemPricing.count()
+        assert 0 == SalesItemPricingItem.count()
+    }
+
+    @Test
+    void testDeleteProductActionPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        driver.switchTo().alert().accept()
+        assert driver.currentUrl.startsWith(getUrl('/product/list'))
+        assert 'Produkt wurde gelöscht.' == flashMessage
+        def emptyList = driver.findElement(By.className('empty-list'))
+        assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
+        driver.quit()
+
+        assert 0 == Product.count()
+        assert 0 == SalesItemPricing.count()
+        assert 0 == SalesItemPricingItem.count()
+    }
+
+    @Test
+    void testDeleteProductNoActionNoPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl('/product/list') == driver.currentUrl
+        driver.quit()
+
+        assert 1 == Product.count()
+        assert 0 == SalesItemPricing.count()
+        assert 0 == SalesItemPricingItem.count()
+    }
+
+    @Test
+    void testDeleteProductNoActionPricing() {
+        driver.findElement(By.xpath('//table[@class="content-table"]/tbody/tr/td[@class="action-buttons"]/a[2]')).click()
+        driver.switchTo().alert().dismiss()
+        assert getUrl('/product/list') == driver.currentUrl
+        driver.quit()
+
+        assert 1 == Product.count()
+        assert 1 == SalesItemPricing.count()
+        assert 5 == SalesItemPricingItem.count()
+    }
+
 
     //-- Non-public methods ---------------------
 
@@ -947,8 +1204,8 @@ class ProductFunctionalTests extends SalesItemTestCase {
             retailer: 'Druckereibedarf Kiel GmbH',
             weight: 200.0d
         )
-        product.save(flush: true)
-        return product
+        product.save flush: true
+        product
     }
 
     protected Product prepareProductWithPricing() {
@@ -999,7 +1256,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
             retailer: 'Druckereibedarf Kiel GmbH',
             weight: 200.0d
         )
-        product.save(flush: true)
-        return product
+        product.save flush: true
+        product
     }
 }
