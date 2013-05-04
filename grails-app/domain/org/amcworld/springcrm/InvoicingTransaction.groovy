@@ -33,70 +33,70 @@ class InvoicingTransaction {
     //-- Class variables ------------------------
 
     static constraints = {
-		number(unique: 'type', widget: 'autonumber')
-		type(blank: false, maxSize: 1)
-		subject(blank: false)
-		organization()
-		person(nullable: true)
-		docDate()
-		carrier(nullable: true)
-		shippingDate(nullable: true)
-        billingAddrStreet(nullable: true, widget: 'textarea')
-        billingAddrPoBox(nullable: true)
-        billingAddrPostalCode(nullable: true)
-        billingAddrLocation(nullable: true)
-        billingAddrState(nullable: true)
-        billingAddrCountry(nullable: true)
-        shippingAddrStreet(nullable: true, widget: 'textarea')
-        shippingAddrPoBox(nullable: true)
-        shippingAddrPostalCode(nullable: true)
-        shippingAddrLocation(nullable: true)
-        shippingAddrState(nullable: true)
-        shippingAddrCountry(nullable: true)
-		headerText(nullable: true, widget: 'textarea')
-		items(minSize: 1)
-		footerText(nullable: true, widget: 'textarea')
-		discountPercent(scale: 2, min: 0.0d, widget: 'percent')
-		discountAmount(min: 0.0d, widget: 'currency')
-		shippingCosts(min: 0.0d, widget: 'currency')
-        shippingTax(scale: 1, min: 0.0d, widget: 'percent')
-		adjustment(widget: 'currency')
-		total(widget: 'currency')
-        notes(nullable: true, widget: 'textarea')
-		dateCreated()
-		lastUpdated()
+        number unique: 'type', widget: 'autonumber'
+        type blank: false, maxSize: 1
+        subject blank: false
+        organization()
+        person nullable: true
+        docDate()
+        carrier nullable: true
+        shippingDate nullable: true
+        billingAddrStreet nullable: true, widget: 'textarea'
+        billingAddrPoBox nullable: true
+        billingAddrPostalCode nullable: true
+        billingAddrLocation nullable: true
+        billingAddrState nullable: true
+        billingAddrCountry nullable: true
+        shippingAddrStreet nullable: true, widget: 'textarea'
+        shippingAddrPoBox nullable: true
+        shippingAddrPostalCode nullable: true
+        shippingAddrLocation nullable: true
+        shippingAddrState nullable: true
+        shippingAddrCountry nullable: true
+        headerText nullable: true, widget: 'textarea'
+        items minSize: 1
+        footerText nullable: true, widget: 'textarea'
+        discountPercent scale: 2, min: 0.0d, widget: 'percent'
+        discountAmount min: 0.0d, widget: 'currency'
+        shippingCosts min: 0.0d, widget: 'currency'
+        shippingTax scale: 1, min: 0.0d, widget: 'percent'
+        adjustment widget: 'currency'
+        total widget: 'currency'
+        notes nullable: true, widget: 'textarea'
+        dateCreated()
+        lastUpdated()
     }
     static belongsTo = [organization: Organization, person: Person]
-	static hasMany = [
-		items: InvoicingItem,
-		termsAndConditions: TermsAndConditions
-	]
-	static mapping = {
-		items cascade: 'all-delete-orphan'
-		headerText type: 'text'
-		footerText type: 'text'
-		notes type: 'text'
-		sort 'number'
+    static hasMany = [
+        items: InvoicingItem,
+        termsAndConditions: TermsAndConditions
+    ]
+    static mapping = {
+        items cascade: 'all-delete-orphan'
+        headerText type: 'text'
+        footerText type: 'text'
+        notes type: 'text'
+        sort 'number'
         subject index: 'subject'
-		order 'desc'
-	}
-	static searchable = true
-	static transients = [
-		'fullNumber', 'fullName', 'billingAddr', 'shippingAddr', 'subtotalNet',
-		'subtotalGross', 'discountPercentAmount', 'taxRateSums'
-	]
+        order 'desc'
+    }
+    static searchable = true
+    static transients = [
+        'billingAddr', 'discountPercentAmount', 'fullName', 'fullNumber',
+        'shippingAddr', 'subtotalGross', 'subtotalNet', 'taxRateSums'
+    ]
 
 
     //-- Instance variables ---------------------
 
-	def seqNumberService
+    def seqNumberService
 
-	int number
-	String type
-	String subject
-	Date docDate = new Date()
-	Carrier carrier
-	Date shippingDate
+    int number
+    String type
+    String subject
+    Date docDate = new Date()
+    Carrier carrier
+    Date shippingDate
     String billingAddrStreet
     String billingAddrPoBox
     String billingAddrPostalCode
@@ -109,175 +109,109 @@ class InvoicingTransaction {
     String shippingAddrLocation
     String shippingAddrState
     String shippingAddrCountry
-	String headerText
-	List<InvoicingItem> items
-	String footerText
-	double discountPercent
-	double discountAmount
-	double shippingCosts
+    String headerText
+    List<InvoicingItem> items
+    String footerText
+    double discountPercent
+    double discountAmount
+    double shippingCosts
     double shippingTax = 19.0d
-	double adjustment
-	double total
-	String notes
-	Date dateCreated
-	Date lastUpdated
+    double adjustment
+    double total
+    String notes
+    Date dateCreated
+    Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
-	InvoicingTransaction() {}
+    InvoicingTransaction() {}
 
-	InvoicingTransaction(InvoicingTransaction i) {
+    InvoicingTransaction(InvoicingTransaction i) {
         this()
-		subject = i.subject
-		organization = i.organization
-		person = i.person
-		billingAddrStreet = i.billingAddrStreet
-		billingAddrPoBox = i.billingAddrPoBox
-		billingAddrPostalCode = i.billingAddrPostalCode
-		billingAddrLocation = i.billingAddrLocation
-		billingAddrState = i.billingAddrState
-		billingAddrCountry = i.billingAddrCountry
-		shippingAddrStreet = i.shippingAddrStreet
-		shippingAddrPoBox = i.shippingAddrPoBox
-		shippingAddrPostalCode = i.shippingAddrPostalCode
-		shippingAddrLocation = i.shippingAddrLocation
-		shippingAddrState = i.shippingAddrState
-		shippingAddrCountry = i.shippingAddrCountry
-		headerText = i.headerText
-		items = new ArrayList(i.items.size())
-		i.items.each { items << new InvoicingItem(it) }
-		footerText = i.footerText
-		discountPercent = i.discountPercent
-		discountAmount = i.discountAmount
-		shippingCosts = i.shippingCosts
-		shippingTax = i.shippingTax
-		adjustment = i.adjustment
-		total = i.total
-		notes = i.notes
-		termsAndConditions = i.termsAndConditions
-	}
+        subject = i.subject
+        organization = i.organization
+        person = i.person
+        billingAddrStreet = i.billingAddrStreet
+        billingAddrPoBox = i.billingAddrPoBox
+        billingAddrPostalCode = i.billingAddrPostalCode
+        billingAddrLocation = i.billingAddrLocation
+        billingAddrState = i.billingAddrState
+        billingAddrCountry = i.billingAddrCountry
+        shippingAddrStreet = i.shippingAddrStreet
+        shippingAddrPoBox = i.shippingAddrPoBox
+        shippingAddrPostalCode = i.shippingAddrPostalCode
+        shippingAddrLocation = i.shippingAddrLocation
+        shippingAddrState = i.shippingAddrState
+        shippingAddrCountry = i.shippingAddrCountry
+        headerText = i.headerText
+        items = new ArrayList(i.items.size())
+        i.items.each { items << new InvoicingItem(it) }
+        footerText = i.footerText
+        discountPercent = i.discountPercent
+        discountAmount = i.discountAmount
+        shippingCosts = i.shippingCosts
+        shippingTax = i.shippingTax
+        adjustment = i.adjustment
+        total = i.total
+        notes = i.notes
+        termsAndConditions = i.termsAndConditions
+    }
 
 
     //-- Public methods -------------------------
 
-	String getFullNumber() {
-		String s = seqNumberService ? seqNumberService.formatWithPrefix(getClass(), number) : ''
-		if (organization) {
-			s += '-' + organization.number
-		}
-		return s
-	}
+    def beforeValidate() {
+        total = computeTotal()
+    }
 
-	String getFullName() {
-		return "${fullNumber} ${subject}"
-	}
-
-	String getBillingAddr() {
-		StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
-		if (billingAddrLocation) {
-			if (s) {
-				s << ','
-			}
-			if (billingAddrPostalCode) {
-				if (s) {
-					s << ' '
-				}
-				s << billingAddrPostalCode ?: ''
-			}
-			if (s) {
-				s << ' '
-			}
-			s << billingAddrLocation ?: ''
-		}
-		return s.toString()
-	}
-
-	String getShippingAddr() {
-		StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
-		if (shippingAddrLocation) {
-			if (s) {
-				s << ','
-			}
-			if (shippingAddrPostalCode) {
-				if (s) {
-					s << ' '
-				}
-				s << shippingAddrPostalCode ?: ''
-			}
-			if (s) {
-				s << ' '
-			}
-			s << shippingAddrLocation ?: ''
-		}
-		return s.toString()
-	}
-
-	/**
-	 * Gets the subtotal net value. It is computed by accumulating the total
-	 * values of the items plus the shipping costs.
-	 *
-	 * @return	the subtotal net value
-	 * @see		#getSubtotalGross()
-	 */
-	double getSubtotalNet() {
-		return items ? (items.total.sum() + shippingCosts) : 0.0d
-	}
-
-	/**
-	 * Gets the subtotal gross value. It is computed by adding the tax values
-	 * to the subtotal net value.
-	 *
-	 * @return	the subtotal gross value
-	 * @see		#getSubtotalNet()
-	 */
-	double getSubtotalGross() {
-		return subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
-	}
-
-	/**
-	 * Gets the discount amount which is granted when the user specifies a
-	 * discount percentage value. The percentage value is related to the
-	 * subtotal gross value.
-	 *
-	 * @return	the discount amount from the percentage value
-	 * @see		#getSubtotalGross()
-	 */
-	double getDiscountPercentAmount() {
-		return subtotalGross * discountPercent / 100.0d
-	}
-
-	/**
-	 * Computes a map of taxes used in this transaction. The key represents the
-	 * tax rate (a percentage value), the value the sum of tax values of all
-	 * items which belong to this tax rate.
-	 *
-	 * @return	the tax rates and their associated tax value sums
-	 */
-	Map<Double, Double> getTaxRateSums() {
-		Map<Double, Double> res = [: ]
-        if (items) {
-    		for (item in items) {
-    			double tax = item.tax
-    			res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
-    		}
+    def beforeInsert() {
+        if (number == 0) {
+            number = seqNumberService.nextNumber(getClass())
         }
-		if (shippingTax != 0.0d && shippingCosts != 0.0d) {
-		    double tax = shippingTax
-            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
-		}
-		return res.sort { e1, e2 -> e1.key <=> e2.key }
-	}
+        total = computeTotal()
+    }
 
-	/**
-	 * Computes the total (gross) value. It is computed from the subtotal gross
-	 * value minus all discounts plus the adjustment.
-	 *
-	 * @return	the total (gross) value
-	 */
-	double computeTotal() {
-		return subtotalGross - discountPercentAmount - discountAmount + adjustment
-	}
+    def beforeUpdate() {
+        total = computeTotal()
+    }
+
+    /**
+     * Computes the total (gross) value. It is computed from the subtotal gross
+     * value minus all discounts plus the adjustment.
+     *
+     * @return  the total (gross) value
+     */
+    double computeTotal() {
+        subtotalGross - discountPercentAmount - discountAmount + adjustment
+    }
+
+    /**
+     * Copies the billing and shipping address from the given organization to
+     * the corresponding addresses of this invoicing transaction.
+     *
+     * @param org   the given organization; if {@code null} the organization is
+     *              taken from this invoicing transaction
+     */
+    void copyAddressesFromOrganization(Organization org = null) {
+        if (!org) {
+            org = organization
+        }
+        if (org) {
+            billingAddrCountry = org.billingAddrCountry
+            billingAddrLocation = org.billingAddrLocation
+            billingAddrPoBox = org.billingAddrPoBox
+            billingAddrPostalCode = org.billingAddrPostalCode
+            billingAddrState = org.billingAddrState
+            billingAddrStreet = org.billingAddrStreet
+            shippingAddrCountry = org.shippingAddrCountry
+            shippingAddrLocation = org.shippingAddrLocation
+            shippingAddrPoBox = org.shippingAddrPoBox
+            shippingAddrPostalCode = org.shippingAddrPostalCode
+            shippingAddrState = org.shippingAddrState
+            shippingAddrStreet = org.shippingAddrStreet
+        }
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -288,40 +222,136 @@ class InvoicingTransaction {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return (id ?: 0i) as int
+    String getBillingAddr() {
+        StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
+        if (billingAddrLocation) {
+            if (s) {
+                s << ','
+            }
+            if (billingAddrPostalCode) {
+                if (s) {
+                    s << ' '
+                }
+                s << billingAddrPostalCode ?: ''
+            }
+            if (s) {
+                s << ' '
+            }
+            s << billingAddrLocation ?: ''
+        }
+        s.toString()
     }
 
-	String toString() {
-		return subject
-	}
+    /**
+     * Gets the discount amount which is granted when the user specifies a
+     * discount percentage value. The percentage value is related to the
+     * subtotal gross value.
+     *
+     * @return  the discount amount from the percentage value
+     * @see     #getSubtotalGross()
+     */
+    double getDiscountPercentAmount() {
+        subtotalGross * discountPercent / 100.0d
+    }
 
-	int maxNumber(SeqNumber seq) {
-		def c = InvoicingTransaction.createCriteria()
-		return c.get {
-			projections {
-				max('number')
-			}
-			and {
-				eq('type', type)
-				between('number', seq.startValue, seq.endValue)
-			}
-		}
-	}
+    String getFullName() {
+        "${fullNumber} ${subject}"
+    }
 
-	def beforeValidate() {
-		total = computeTotal()
-	}
+    String getFullNumber() {
+        StringBuilder buf = new StringBuilder()
+        if (seqNumberService) {
+            buf << seqNumberService.formatWithPrefix(getClass(), number)
+        }
+        if (organization) {
+            buf << '-' << organization.number
+        }
+        buf.toString()
+    }
 
-	def beforeInsert() {
-		if (number == 0) {
-			number = seqNumberService.nextNumber(getClass())
-		}
-		total = computeTotal()
-	}
+    String getShippingAddr() {
+        StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
+        if (shippingAddrLocation) {
+            if (s) {
+                s << ','
+            }
+            if (shippingAddrPostalCode) {
+                if (s) {
+                    s << ' '
+                }
+                s << shippingAddrPostalCode ?: ''
+            }
+            if (s) {
+                s << ' '
+            }
+            s << shippingAddrLocation ?: ''
+        }
+        s.toString()
+    }
 
-	def beforeUpdate() {
-		total = computeTotal()
-	}
+    /**
+     * Gets the subtotal gross value. It is computed by adding the tax values
+     * to the subtotal net value.
+     *
+     * @return  the subtotal gross value
+     * @see     #getSubtotalNet()
+     */
+    double getSubtotalGross() {
+        subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
+    }
+
+    /**
+     * Gets the subtotal net value. It is computed by accumulating the total
+     * values of the items plus the shipping costs.
+     *
+     * @return	the subtotal net value
+     * @see		#getSubtotalGross()
+     */
+    double getSubtotalNet() {
+        items ? (items.total.sum() + shippingCosts) : 0.0d
+    }
+
+    /**
+     * Computes a map of taxes used in this transaction. The key represents the
+     * tax rate (a percentage value), the value the sum of tax values of all
+     * items which belong to this tax rate.
+     *
+     * @return	the tax rates and their associated tax value sums
+     */
+    Map<Double, Double> getTaxRateSums() {
+        Map<Double, Double> res = [: ]
+        if (items) {
+            for (item in items) {
+                double tax = item.tax
+                res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
+            }
+        }
+        if (shippingTax != 0.0d && shippingCosts != 0.0d) {
+            double tax = shippingTax
+            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
+        }
+        res.sort { e1, e2 -> e1.key <=> e2.key }
+    }
+
+    @Override
+    public int hashCode() {
+        (id ?: 0i) as int
+    }
+
+    int maxNumber(SeqNumber seq) {
+        def c = InvoicingTransaction.createCriteria()
+        c.get {
+            projections {
+                max('number')
+            }
+            and {
+                eq('type', type)
+                between('number', seq.startValue, seq.endValue)
+            }
+        }
+    }
+
+    String toString() {
+        subject
+    }
 }

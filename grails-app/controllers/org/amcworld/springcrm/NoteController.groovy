@@ -36,24 +36,24 @@ class NoteController {
 
     //-- Instance variables ---------------------
 
-	def seqNumberService
+    LruService lruService
 
 
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-		if (params.letter) {
-			int num = Note.countByTitleLessThan(params.letter)
-			params.sort = 'title'
-			params.offset = Math.floor(num / params.max) * params.max
+        if (params.letter) {
+            int num = Note.countByTitleLessThan(params.letter)
+            params.sort = 'title'
+            params.offset = Math.floor(num / params.max) * params.max
             params.search = null
-		}
+        }
 
         def list, count
         if (params.search) {
@@ -65,90 +65,91 @@ class NoteController {
             count = Note.count()
         }
 
-        return [noteInstanceList: list, noteInstanceTotal: count]
+        [noteInstanceList: list, noteInstanceTotal: count]
     }
 
-	def listEmbedded() {
-		def l
-		def count
-		def linkParams
+    def listEmbedded(Long organization, Long person) {
+        def l
+        def count
+        def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.organization) {
-			def organizationInstance = Organization.get(params.organization)
-			l = Note.findAllByOrganization(organizationInstance, params)
-			count = Note.countByOrganization(organizationInstance)
-			linkParams = [organization: organizationInstance.id]
-		} else if (params.person) {
-			def personInstance = Person.get(params.person)
-			l = Note.findAllByPerson(personInstance, params)
-			count = Note.countByPerson(personInstance)
-			linkParams = [person: personInstance.id]
-		}
-		return [noteInstanceList: l, noteInstanceTotal: count, linkParams: linkParams]
-	}
+        if (organization) {
+            def organizationInstance = Organization.get(organization)
+            l = Note.findAllByOrganization(organizationInstance, params)
+            count = Note.countByOrganization(organizationInstance)
+            linkParams = [organization: organizationInstance.id]
+        } else if (person) {
+            def personInstance = Person.get(person)
+            l = Note.findAllByPerson(personInstance, params)
+            count = Note.countByPerson(personInstance)
+            linkParams = [person: personInstance.id]
+        }
+        [noteInstanceList: l, noteInstanceTotal: count, linkParams: linkParams]
+    }
 
     def create() {
         def noteInstance = new Note()
         noteInstance.properties = params
-        return [noteInstance: noteInstance]
+        [noteInstance: noteInstance]
     }
 
-	def copy() {
-        def noteInstance = Note.get(params.id)
+    def copy(Long id) {
+        def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
+            redirect action: 'list'
             return
         }
 
-		noteInstance = new Note(noteInstance)
-		render(view: 'create', model: [noteInstance: noteInstance])
-	}
+        noteInstance = new Note(noteInstance)
+        render view: 'create', model: [noteInstance: noteInstance]
+    }
 
     def save() {
         def noteInstance = new Note(params)
         if (!noteInstance.save(flush: true)) {
-            render(view: 'create', model: [noteInstance: noteInstance])
+            render view: 'create', model: [noteInstance: noteInstance]
             return
         }
-        params.id = noteInstance.ident()
 
-		noteInstance.index()
+        lruService.recordItem controllerName, noteInstance
+        noteInstance.index()
+
         flash.message = message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: noteInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: noteInstance.id
+        }
     }
 
-    def show() {
-        def noteInstance = Note.get(params.id)
+    def show(Long id) {
+        def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
+            redirect action: 'list'
             return
         }
 
-        return [noteInstance: noteInstance]
+        [noteInstance: noteInstance]
     }
 
-    def edit() {
-        def noteInstance = Note.get(params.id)
+    def edit(Long id) {
+        def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
+            redirect action: 'list'
             return
         }
 
-        return [noteInstance: noteInstance]
+        [noteInstance: noteInstance]
     }
 
-    def update() {
-        def noteInstance = Note.get(params.id)
+    def update(Long id) {
+        def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
+            redirect action: 'list'
             return
         }
 
@@ -156,51 +157,53 @@ class NoteController {
             def version = params.version.toLong()
             if (noteInstance.version > version) {
                 noteInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'note.label', default: 'Note')] as Object[], "Another user has updated this Note while you were editing")
-                render(view: 'edit', model: [noteInstance: noteInstance])
+                render view: 'edit', model: [noteInstance: noteInstance]
                 return
             }
         }
-		if (params.autoNumber) {
-			params.number = noteInstance.number
-		}
+        if (params.autoNumber) {
+            params.number = noteInstance.number
+        }
         noteInstance.properties = params
         if (!noteInstance.save(flush: true)) {
-            render(view: 'edit', model: [noteInstance: noteInstance])
+            render view: 'edit', model: [noteInstance: noteInstance]
             return
         }
 
-		noteInstance.reindex()
+        lruService.recordItem controllerName, noteInstance
+        noteInstance.reindex()
+
         flash.message = message(code: 'default.updated.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: noteInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: noteInstance.id
+        }
     }
 
-    def delete() {
-        def noteInstance = Note.get(params.id)
+    def delete(Long id) {
+        def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
 
         try {
-            noteInstance.delete(flush: true)
+            noteInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'note.label', default: 'Note')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect url: params.returnUrl
+            } else {
+                redirect action: 'list'
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'note.label', default: 'Note')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 }

@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import javax.servlet.http.HttpServletResponse
 import net.sf.jmimemagic.Magic
 
 
@@ -44,14 +45,14 @@ class PurchaseInvoiceController {
 
     //-- Instance variables ---------------------
 
-	def fileService
-	def seqNumberService
+    FileService fileService
+    LruService lruService
 
 
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
@@ -67,90 +68,88 @@ class PurchaseInvoiceController {
             count = PurchaseInvoice.count()
         }
 
-        return [purchaseInvoiceInstanceList: list, purchaseInvoiceInstanceTotal: count]
+        [purchaseInvoiceInstanceList: list, purchaseInvoiceInstanceTotal: count]
     }
 
-	def listEmbedded() {
-		def organizationInstance = Organization.get(params.organization)
+    def listEmbedded(Long organization) {
+        def organizationInstance = Organization.get(organization)
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		return [purchaseInvoiceInstanceList: PurchaseInvoice.findAllByVendor(organizationInstance, params), purchaseInvoiceInstanceTotal: PurchaseInvoice.countByVendor(organizationInstance), linkParams: [organization: organizationInstance.id]]
-	}
+        [purchaseInvoiceInstanceList: PurchaseInvoice.findAllByVendor(organizationInstance, params), purchaseInvoiceInstanceTotal: PurchaseInvoice.countByVendor(organizationInstance), linkParams: [organization: organizationInstance.id]]
+    }
 
     def create() {
         def purchaseInvoiceInstance = new PurchaseInvoice()
         purchaseInvoiceInstance.properties = params
-        return [purchaseInvoiceInstance: purchaseInvoiceInstance]
+        [purchaseInvoiceInstance: purchaseInvoiceInstance]
     }
 
-	def copy() {
-		def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
-		if (!purchaseInvoiceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])
-            redirect(action: 'list')
+    def copy(Long id) {
+        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
+        if (!purchaseInvoiceInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), id])
+            redirect action: 'list'
             return
         }
 
-		purchaseInvoiceInstance = new PurchaseInvoice(purchaseInvoiceInstance)
-		render(view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
-	}
+        purchaseInvoiceInstance = new PurchaseInvoice(purchaseInvoiceInstance)
+        render view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
+    }
 
     def save() {
         def purchaseInvoiceInstance = new PurchaseInvoice(params)
-		if (!params.file.isEmpty()) {
-			purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
-		}
+        if (!params.file.isEmpty()) {
+            purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
+        }
         if (!purchaseInvoiceInstance.save(flush: true)) {
-            log.debug(purchaseInvoiceInstance.errors)
-            render(view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
+            render view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
         }
-        params.id = purchaseInvoiceInstance.ident()
 
-		purchaseInvoiceInstance.index()
+        lruService.recordItem controllerName, purchaseInvoiceInstance
+        purchaseInvoiceInstance.index()
         flash.message = message(code: 'default.created.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: purchaseInvoiceInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: purchaseInvoiceInstance.id
+        }
     }
 
-    def show() {
-        def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
+    def show(Long id) {
+        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
         if (!purchaseInvoiceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), id])
+            redirect action: 'list'
             return
         }
 
-        return [purchaseInvoiceInstance: purchaseInvoiceInstance]
+        [purchaseInvoiceInstance: purchaseInvoiceInstance]
     }
 
-    def edit() {
-        def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
+    def edit(Long id) {
+        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
         if (!purchaseInvoiceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), id])
+            redirect action: 'list'
             return
         }
 
-        return [purchaseInvoiceInstance: purchaseInvoiceInstance]
+        [purchaseInvoiceInstance: purchaseInvoiceInstance]
     }
 
-    def update() {
-        def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
+    def update(Long id) {
+        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
         if (!purchaseInvoiceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), id])
+            redirect action: 'list'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (purchaseInvoiceInstance.version > version) {
-
                 purchaseInvoiceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')] as Object[], "Another user has updated this PurchaseInvoice while you were editing")
-                render(view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
+                render view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
                 return
             }
         }
@@ -163,12 +162,12 @@ class PurchaseInvoiceController {
 
         if (params.fileRemove == '1') {
             if (purchaseInvoiceInstance.documentFile) {
-                fileService.removeFile(FILE_TYPE, purchaseInvoiceInstance.documentFile)
+                fileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
             }
             purchaseInvoiceInstance.documentFile = null
         } else if (!params.file?.isEmpty()) {
             if (purchaseInvoiceInstance.documentFile) {
-                fileService.removeFile(purchaseInvoiceInstance.documentFile)
+                fileService.removeFile purchaseInvoiceInstance.documentFile
             }
             purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
         }
@@ -188,68 +187,68 @@ class PurchaseInvoiceController {
         purchaseInvoiceInstance.items?.clear()
         for (int i = 0; params."items[${i}]"; i++) {
             if (params."items[${i}]".id != 'null') {
-                purchaseInvoiceInstance.addToItems(params."items[${i}]")
+                purchaseInvoiceInstance.addToItems params."items[${i}]"
             }
         }
 
         if (!purchaseInvoiceInstance.save(flush: true)) {
-            log.debug(purchaseInvoiceInstance.errors)
-            render(view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance])
+            render view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
         }
 
-		purchaseInvoiceInstance.reindex()
+        lruService.recordItem controllerName, purchaseInvoiceInstance
+        purchaseInvoiceInstance.reindex()
+
         flash.message = message(code: 'default.updated.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: purchaseInvoiceInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: purchaseInvoiceInstance.id
+        }
     }
 
-    def delete() {
-        def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
+    def delete(Long id) {
+        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
         if (!purchaseInvoiceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
 
-		if (purchaseInvoiceInstance.documentFile) {
-			fileService.removeFile(FILE_TYPE, purchaseInvoiceInstance.documentFile)
-		}
+        if (purchaseInvoiceInstance.documentFile) {
+            fileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
+        }
         try {
-            purchaseInvoiceInstance.delete(flush: true)
+            purchaseInvoiceInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect url: params.returnUrl
+            } else {
+                redirect action: 'list'
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 
-	def getDocument() {
-        def purchaseInvoiceInstance = PurchaseInvoice.get(params.id)
+    def getDocument(Long id) {
+        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
         if (purchaseInvoiceInstance) {
-			String doc = purchaseInvoiceInstance.documentFile
-			File f = fileService.retrieveFile(FILE_TYPE, doc)
-			if (f.exists()) {
-				response.contentType = Magic.getMagicMatch(f, true).mimeType
-				response.contentLength = f.length()
-				response.addHeader 'Content-Disposition',
-					"attachment; filename=\"${doc}\""
-				response.outputStream << f.newInputStream()
-				return null
-			}
-		}
-		render(status: 404)
-	}
+            String doc = purchaseInvoiceInstance.documentFile
+            File f = fileService.retrieveFile(FILE_TYPE, doc)
+            if (f.exists()) {
+                response.contentType = Magic.getMagicMatch(f, true).mimeType
+                response.contentLength = f.length()
+                response.addHeader 'Content-Disposition', "attachment; filename=\"${doc}\""
+                response.outputStream << f.newInputStream()
+                return null
+            }
+        }
+        render status: HttpServletResponse.SC_NOT_FOUND
+    }
 }

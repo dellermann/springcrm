@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import com.google.gdata.data.extensions.*
 import grails.converters.JSON
+import javax.servlet.http.HttpServletResponse
 import net.sf.jmimemagic.Magic
 
 
@@ -41,50 +42,50 @@ class PersonController {
 
     //-- Instance variables ---------------------
 
-	def seqNumberService
-	def googleContactSyncService
-	def ldapService
+    GoogleContactSyncService googleContactSyncService
+    LdapService ldapService
+    LruService lruService
 
 
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.letter) {
-			int num = Person.countByLastNameLessThan(params.letter)
-			params.sort = 'lastName'
-			params.offset = Math.floor(num / params.max) * params.max
-		}
-		return [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
+        if (params.letter) {
+            int num = Person.countByLastNameLessThan(params.letter)
+            params.sort = 'lastName'
+            params.offset = Math.floor(num / params.max) * params.max
+        }
+        [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 
-	def listEmbedded() {
-		def organizationInstance = Organization.get(params.organization)
+    def listEmbedded(Long organization) {
+        def organizationInstance = Organization.get(organization)
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		return [personInstanceList: Person.findAllByOrganization(organizationInstance, params), personInstanceTotal: Person.countByOrganization(organizationInstance), linkParams: [organization: organizationInstance.id]]
-	}
+        [personInstanceList: Person.findAllByOrganization(organizationInstance, params), personInstanceTotal: Person.countByOrganization(organizationInstance), linkParams: [organization: organizationInstance.id]]
+    }
 
     def create() {
         def personInstance = new Person()
         personInstance.properties = params
-        return [personInstance: personInstance]
+        [personInstance: personInstance]
     }
 
-	def copy() {
-		def personInstance = Person.get(params.id)
-		if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect(action: 'list')
+    def copy(Long id) {
+        def personInstance = Person.get(id)
+        if (!personInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            redirect action: 'list'
             return
         }
 
-		personInstance = new Person(personInstance)
-		render(view: 'create', model: [personInstance: personInstance])
-	}
+        personInstance = new Person(personInstance)
+        render view: 'create', model: [personInstance: personInstance]
+    }
 
     def save() {
         def personInstance = new Person(params)
@@ -92,50 +93,51 @@ class PersonController {
             personInstance.picture = null
         }
         if (!personInstance.save(flush: true)) {
-            render(view: 'create', model: [personInstance: personInstance])
+            render view: 'create', model: [personInstance: personInstance]
             return
         }
-        params.id = personInstance.ident()
 
-		personInstance.index()
-		if (ldapService) {
-			ldapService.save(personInstance)
-		}
+        lruService.recordItem controllerName, personInstance
+        personInstance.index()
+        if (ldapService) {
+            ldapService.save personInstance
+        }
+
         flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-        	redirect(action: 'show', id: personInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: personInstance.id
+        }
     }
 
-    def show() {
-        def personInstance = Person.get(params.id)
+    def show(Long id) {
+        def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            redirect action: 'list'
             return
         }
 
-        return [personInstance: personInstance]
+        [personInstance: personInstance]
     }
 
-    def edit() {
-        def personInstance = Person.get(params.id)
+    def edit(Long id) {
+        def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            redirect action: 'list'
             return
         }
 
-        return [personInstance: personInstance]
+        [personInstance: personInstance]
     }
 
-    def update() {
-        def personInstance = Person.get(params.id)
+    def update(Long id) {
+        def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            redirect action: 'list'
             return
         }
 
@@ -143,157 +145,160 @@ class PersonController {
             def version = params.version.toLong()
             if (personInstance.version > version) {
                 personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
-                render(view: 'edit', model: [personInstance: personInstance])
+                render view: 'edit', model: [personInstance: personInstance]
                 return
             }
         }
-		byte [] picture = personInstance.picture
-		if (params.autoNumber) {
-			params.number = personInstance.number
-		}
+
+        if (params.autoNumber) {
+            params.number = personInstance.number
+        }
+        byte [] picture = personInstance.picture
         personInstance.properties = params
-		if (params.pictureRemove == '1') {
-			personInstance.picture = null
-		} else if (params.picture?.isEmpty()) {
-			personInstance.picture = picture
-		}
+        if (params.pictureRemove == '1') {
+            personInstance.picture = null
+        } else if (params.picture?.isEmpty()) {
+            personInstance.picture = picture
+        }
         if (!personInstance.save(flush: true)) {
-            render(view: 'edit', model: [personInstance: personInstance])
+            render view: 'edit', model: [personInstance: personInstance]
             return
         }
 
-		personInstance.reindex()
-		if (ldapService) {
-			ldapService.save(personInstance)
-		}
+        lruService.recordItem controllerName, personInstance
+        personInstance.reindex()
+        if (ldapService) {
+            ldapService.save personInstance
+        }
+
         flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: personInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: personInstance.id
+        }
     }
 
-    def delete() {
-        def personInstance = Person.get(params.id)
+    def delete(Long id) {
+        def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
 
         try {
-            personInstance.delete(flush: true)
-			if (ldapService) {
-				ldapService.delete(personInstance)
-			}
+            personInstance.delete flush: true
+            if (ldapService) {
+                ldapService.delete personInstance
+            }
 
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect url: params.returnUrl
+            } else {
+                redirect action: 'list'
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 
-	def getPicture() {
-        def personInstance = Person.get(params.id)
+    def getPicture(Long id) {
+        def personInstance = Person.get(id)
         if (!personInstance) {
-            render(status: 404)
+            render status: HttpServletResponse.SC_NOT_FOUND
             return
         }
 
-		response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
-		response.contentLength = personInstance.picture.length
-		response.outputStream << personInstance.picture
-		return null
-	}
+        response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
+        response.contentLength = personInstance.picture.length
+        response.outputStream << personInstance.picture
+        null
+    }
 
-	def getPhoneNumbers() {
-		def personInstance = Person.get(params.id)
-		if (!personInstance) {
-            render(status: 404)
+    def getPhoneNumbers(Long id) {
+        def personInstance = Person.get(id)
+        if (!personInstance) {
+            render status: HttpServletResponse.SC_NOT_FOUND
             return
         }
 
-		def phoneNumbers = [
-			personInstance.phone,
-			personInstance.phoneHome,
-			personInstance.mobile,
-			personInstance.fax,
-			personInstance.phoneAssistant,
-			personInstance.phoneOther,
-			personInstance.organization.phone,
-			personInstance.organization.phoneOther,
-			personInstance.organization.fax
-		]
-		render phoneNumbers as JSON
-	}
+        def phoneNumbers = [
+            personInstance.phone,
+            personInstance.phoneHome,
+            personInstance.mobile,
+            personInstance.fax,
+            personInstance.phoneAssistant,
+            personInstance.phoneOther,
+            personInstance.organization.phone,
+            personInstance.organization.phoneOther,
+            personInstance.organization.fax
+        ]
+        render phoneNumbers as JSON
+    }
 
-	def find() {
-		def organizationInstance = Organization.get(params.organization)
-		def c = Person.createCriteria()
-		def list = c.list {
-			eq('organization', organizationInstance)
-			and {
-				or {
-					ilike('lastName', "${params.name}%")
-					ilike('firstName', "${params.name}%")
-				}
-			}
-			order('lastName', 'asc')
-		}
-		render(contentType: 'text/json') {
-			array {
-				for (p in list) {
-					person id: p.id, name: p.fullName
-				}
-			}
-		}
-	}
+    def find(Long organization) {
+        def organizationInstance = Organization.get(organization)
+        def c = Person.createCriteria()
+        def list = c.list {
+            eq('organization', organizationInstance)
+            and {
+                or {
+                    ilike('lastName', "${params.name}%")
+                    ilike('firstName', "${params.name}%")
+                }
+            }
+            order('lastName', 'asc')
+        }
+        render(contentType: 'text/json') {
+            array {
+                for (p in list) {
+                    person id: p.id, name: p.fullName
+                }
+            }
+        }
+    }
 
-	def gdatasync() {
-		if (googleContactSyncService) {
+    def gdatasync() {
+        if (googleContactSyncService) {
             googleContactSyncService.sync()
             flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
-		}
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'list')
-		}
-	}
+        }
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'list'
+        }
+    }
 
-	def ldapexport() {
-		if (ldapService) {
-			if (params.id) {
-				def personInstance = Person.get(params.id)
-				if (personInstance) {
-					ldapService.save(personInstance)
-					flash.message = message(code: 'default.ldap.export.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-		        } else {
-					flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-				}
-				redirect(action: 'show', id: params.id)
+    def ldapexport(Long id) {
+        if (ldapService) {
+            if (id) {
+                def personInstance = Person.get(id)
+                if (personInstance) {
+                    ldapService.save personInstance
+                    flash.message = message(code: 'default.ldap.export.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+                } else {
+                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+                }
+                redirect action: 'show', id: id
                 return
-			}
+            }
 
-			def personInstanceList = Person.list()
-			personInstanceList.each { ldapService.save(it) }
-			flash.message = message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])
-		}
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'list')
-		}
-	}
+            def personInstanceList = Person.list()
+            personInstanceList.each { ldapService.save it }
+            flash.message = message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])
+        }
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'list'
+        }
+    }
 }

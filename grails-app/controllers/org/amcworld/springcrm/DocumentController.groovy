@@ -1,7 +1,7 @@
 /*
  * DocumentController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import groovy.io.FileType
+import javax.servlet.http.HttpServletResponse
 import org.amcworld.springcrm.elfinder.Connector
 import org.amcworld.springcrm.elfinder.ConnectorException
 import org.amcworld.springcrm.elfinder.fs.Volume
@@ -32,7 +33,7 @@ import org.apache.commons.logging.LogFactory
  * either in the ElFinder client or as embedded list for an organization.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  * @since   1.2
  */
 class DocumentController {
@@ -44,7 +45,7 @@ class DocumentController {
 
     //-- Instance variables ---------------------
 
-    def fileService
+    FileService fileService
 
 
     //-- Public methods -------------------------
@@ -57,8 +58,8 @@ class DocumentController {
             process()
     }
 
-    def listEmbedded() {
-        def organizationInstance = Organization.get(params.organization)
+    def listEmbedded(Long organization) {
+        def organizationInstance = Organization.get(organization)
         File dir = fileService.getOrgDocumentDir(organizationInstance)
         Volume volume = fileService.localVolume
         def list = []
@@ -95,15 +96,15 @@ class DocumentController {
             list = documents.subList(offset, Math.min(offset + max, total))
         }
 
-        return [documentInstanceList: list, documentInstanceTotal: total]
+        [documentInstanceList: list, documentInstanceTotal: total]
     }
 
-    def download() {
+    def download(String id) {
         Volume volume = fileService.localVolume
         try {
-            Map<String, Object> file = volume.file(params.id)
+            Map<String, Object> file = volume.file(id)
             if (file) {
-                InputStream stream = volume.open(params.id)
+                InputStream stream = volume.open(id)
                 if (stream) {
                     response.contentType = file.mime
                     response.contentLength = file.size
@@ -116,21 +117,21 @@ class DocumentController {
         } catch (ConnectorException e) {
             log.error e
         }
-        render(status: 404)
+        render status: HttpServletResponse.SC_NOT_FOUND
     }
 
-    def delete() {
+    def delete(String id) {
         try {
-            if (fileService.localVolume.rm(params.id)) {
+            if (fileService.localVolume.rm(id)) {
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'document.label', default: 'Document')])
             }
         } catch (ConnectorException e) {
             log.error e
         }
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'list')
+            redirect action: 'list'
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * ReportController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import static java.util.Calendar.*
  * journals.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 1.3
  */
 class ReportController {
 
@@ -92,7 +92,7 @@ class ReportController {
             query = Dunning.where {
                 (docDate >= start.time) && (docDate <= end.time)
             }
-            l.addAll(query.list(sort: 'number'))
+            l.addAll query.list(sort: 'number')
             total = l*.total.sum()
             totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 
@@ -101,13 +101,13 @@ class ReportController {
             }
             def creditMemos = query.list(sort: 'number')
             if (creditMemos) {
-                l.addAll(creditMemos)
+                l.addAll creditMemos
                 total -= creditMemos*.total.sum()
                 totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
             }
         }
 
-        return [
+        [
             invoicingTransactionInstanceList: l, currentDate: cal.time,
             currentMonth: month, currentYear: year,
             yearStart: yearStart, yearEnd: yearEnd, total: total,

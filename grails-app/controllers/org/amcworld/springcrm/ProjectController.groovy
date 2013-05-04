@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import javax.servlet.http.HttpServletResponse
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.codehaus.groovy.grails.commons.GrailsClass
 
@@ -40,77 +41,79 @@ class ProjectController {
 
     //-- Instance variables ---------------------
 
-    def fileService
+    FileService fileService
+    LruService lruService
 
 
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        return [projectInstanceList: Project.list(params), projectInstanceTotal: Project.count()]
+        [projectInstanceList: Project.list(params), projectInstanceTotal: Project.count()]
     }
 
-    def listEmbedded() {
+    def listEmbedded(Long organization, Long person) {
         def l
         def count
         def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        if (params.organization) {
-            def organizationInstance = Organization.get(params.organization)
+        if (organization) {
+            def organizationInstance = Organization.get(organization)
             l = Project.findAllByOrganization(organizationInstance, params)
             count = Project.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
-        } else if (params.person) {
-            def personInstance = Person.get(params.person)
+        } else if (person) {
+            def personInstance = Person.get(person)
             l = Project.findAllByPerson(personInstance, params)
             count = Project.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
-        return [projectInstanceList: l, projectInstanceTotal: count, linkParams: linkParams]
+        [projectInstanceList: l, projectInstanceTotal: count, linkParams: linkParams]
     }
 
     def create() {
-        return [projectInstance: new Project(params)]
+        [projectInstance: new Project(params)]
     }
 
-    def copy() {
-        def projectInstance = Project.get(params.id)
+    def copy(Long id) {
+        def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
+            redirect action: 'list'
             return
         }
 
         projectInstance = new Project(projectInstance)
-        render(view: 'create', model: [projectInstance: projectInstance])
+        render view: 'create', model: [projectInstance: projectInstance]
     }
 
     def save() {
         def projectInstance = new Project(params)
         if (!projectInstance.save(flush: true)) {
-            render(view: 'create', model: [projectInstance: projectInstance])
+            render view: 'create', model: [projectInstance: projectInstance]
             return
         }
-        params.id = projectInstance.ident()
 
+        lruService.recordItem controllerName, projectInstance
         projectInstance.index()
-		flash.message = message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
+
+        flash.message = message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'show', id: projectInstance.id)
+            redirect action: 'show', id: projectInstance.id
         }
     }
 
-    def show() {
-        def projectInstance = Project.get(params.id)
+    def show(Long id) {
+        def projectInstance = Project.get(id)
         if (!projectInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
+            redirect action: 'list'
             return
         }
 
@@ -148,25 +151,25 @@ class ProjectController {
             docs << it
         }
 
-        return [projectInstance: projectInstance, projectItems: projectItems, projectDocuments: projectDocuments]
+        [projectInstance: projectInstance, projectItems: projectItems, projectDocuments: projectDocuments]
     }
 
-    def edit() {
-        def projectInstance = Project.get(params.id)
+    def edit(Long id) {
+        def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
+            redirect action: 'list'
             return
         }
 
-        return [projectInstance: projectInstance]
+        [projectInstance: projectInstance]
     }
 
-    def update() {
-        def projectInstance = Project.get(params.id)
+    def update(Long id) {
+        def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
+            redirect action: 'list'
             return
         }
 
@@ -174,7 +177,7 @@ class ProjectController {
             def version = params.version.toLong()
             if (projectInstance.version > version) {
                 projectInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'project.label', default: 'Project')] as Object[], 'Another user has updated this Project while you were editing')
-                render(view: 'edit', model: [projectInstance: projectInstance])
+                render view: 'edit', model: [projectInstance: projectInstance]
                 return
             }
         }
@@ -183,100 +186,104 @@ class ProjectController {
         }
         projectInstance.properties = params
         if (!projectInstance.save(flush: true)) {
-            render(view: 'edit', model: [projectInstance: projectInstance])
+            render view: 'edit', model: [projectInstance: projectInstance]
             return
         }
 
+        lruService.recordItem controllerName, projectInstance
         projectInstance.reindex()
-		flash.message = message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
+
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'show', id: projectInstance.id)
+            redirect action: 'show', id: projectInstance.id
         }
     }
 
-    def delete() {
-        def projectInstance = Project.get(params.id)
+    def delete(Long id) {
+        def projectInstance = Project.get(id)
         if (!projectInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
 
         try {
-            projectInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project')])
+            projectInstance.delete flush: true
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project')])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project')])
-            redirect(action: 'show', id: params.id)
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project')])
+            redirect action: 'show', id: id
         }
     }
 
-    def setPhase() {
-        def projectInstance = Project.get(params.id)
+    def setPhase(Long id, String phase) {
+        def projectInstance = Project.get(id)
         if (projectInstance) {
-            projectInstance.phase = ProjectPhase.valueOf(params.phase)
-            projectInstance.save(flush: true)
+            projectInstance.phase = ProjectPhase.valueOf(phase)
+            projectInstance.save flush: true
         }
     }
 
-    def setStatus() {
-        def projectInstance = Project.get(params.id)
+    def setStatus(Long id, String status) {
+        def projectInstance = Project.get(id)
         if (projectInstance) {
-            def status = ProjectStatus.get(params.status)
-            if (status) {
-                projectInstance.status = status
-                projectInstance.save(flush: true)
+            def ps = ProjectStatus.get(status)
+            if (ps) {
+                projectInstance.status = ps
+                projectInstance.save flush: true
             }
         }
     }
 
-    def addSelectedItems() {
-        def project = Project.get(params.long('project'))
-        if (project) {
-            ProjectPhase projectPhase = ProjectPhase.valueOf(params.projectPhase)
+    def addSelectedItems(Long project, String projectPhase, String itemIds,
+                         String documents)
+    {
+        def projectInstance = Project.get(project)
+        if (projectInstance) {
+            ProjectPhase pp = ProjectPhase.valueOf(projectPhase)
             String controllerName = params.controllerName
             GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
                 'Domain', controllerName
             )
-            if (params.itemIds) {
-                params.itemIds.split(',').each {
+            if (itemIds) {
+                itemIds.split(',').each {
                     long itemId = it as long
                     def itemInstance = cls.clazz.'get'(itemId)
                     if (itemInstance) {
                         def projectItem = new ProjectItem(
-                            project: project, phase: projectPhase,
+                            project: projectInstance, phase: pp,
                             controller: controllerName, itemId: itemId,
                             title: itemInstance.toString()
                         )
-                        projectItem.save(flush: true)
+                        projectItem.save flush: true
                     }
                 }
             }
-            if (params.documents) {
+            if (documents) {
                 Volume volume = fileService.localVolume
-                params.documents.split(',').each {
+                documents.split(',').each {
                     Map<String, Object> stat = volume.file(it)
                     if (stat) {
                         def projectDoc = new ProjectDocument(
-                            project: project, phase: projectPhase,
+                            project: projectInstance, phase: pp,
                             path: it, title: stat.name
                         )
-                        projectDoc.save(flush: true)
+                        projectDoc.save flush: true
                     }
                 }
             }
         }
-        render(status: 200)
+        render status: HttpServletResponse.SC_OK
     }
 }

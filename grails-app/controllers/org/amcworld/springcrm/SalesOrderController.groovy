@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import javax.servlet.http.HttpServletResponse
+
 
 /**
  * The class {@code SalesOrderController} contains actions which manage sales
@@ -37,14 +39,14 @@ class SalesOrderController {
 
     //-- Instance variables ---------------------
 
-	def fopService
-	def seqNumberService
+    FopService fopService
+    LruService lruService
 
 
     //-- Public methods -------------------------
 
-	def index() {
-        redirect(action: 'list', params: params)
+    def index() {
+        redirect action: 'list', params: params
     }
 
     def list() {
@@ -60,117 +62,105 @@ class SalesOrderController {
             count = SalesOrder.count()
         }
 
-        return [salesOrderInstanceList: list, salesOrderInstanceTotal: count]
+        [salesOrderInstanceList: list, salesOrderInstanceTotal: count]
     }
 
-	def listEmbedded() {
-		def l
-		def count
-		def linkParams
+    def listEmbedded(Long organization, Long person, Long quote) {
+        def l
+        def count
+        def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.organization) {
-			def organizationInstance = Organization.get(params.organization)
-			l = SalesOrder.findAllByOrganization(organizationInstance, params)
-			count = SalesOrder.countByOrganization(organizationInstance)
-			linkParams = [organization: organizationInstance.id]
-		} else if (params.person) {
-			def personInstance = Person.get(params.person)
-			l = SalesOrder.findAllByPerson(personInstance, params)
-			count = SalesOrder.countByPerson(personInstance)
-			linkParams = [person: personInstance.id]
-		} else if (params.quote) {
-			def quoteInstance = Quote.get(params.quote)
-			l = SalesOrder.findAllByQuote(quoteInstance, params)
-			count = SalesOrder.countByQuote(quoteInstance)
-			linkParams = [quote: quoteInstance.id]
-		}
-		return [salesOrderInstanceList: l, salesOrderInstanceTotal: count, linkParams: linkParams]
-	}
+        if (organization) {
+            def organizationInstance = Organization.get(organization)
+            l = SalesOrder.findAllByOrganization(organizationInstance, params)
+            count = SalesOrder.countByOrganization(organizationInstance)
+            linkParams = [organization: organizationInstance.id]
+        } else if (person) {
+            def personInstance = Person.get(person)
+            l = SalesOrder.findAllByPerson(personInstance, params)
+            count = SalesOrder.countByPerson(personInstance)
+            linkParams = [person: personInstance.id]
+        } else if (quote) {
+            def quoteInstance = Quote.get(quote)
+            l = SalesOrder.findAllByQuote(quoteInstance, params)
+            count = SalesOrder.countByQuote(quoteInstance)
+            linkParams = [quote: quoteInstance.id]
+        }
+        [salesOrderInstanceList: l, salesOrderInstanceTotal: count, linkParams: linkParams]
+    }
 
     def create() {
         def salesOrderInstance
-		if (params.quote) {
-			def quoteInstance = Quote.get(params.quote)
-			salesOrderInstance = new SalesOrder(quoteInstance)
-		} else {
-			salesOrderInstance = new SalesOrder()
-			salesOrderInstance.properties = params
-		}
-		Organization org = salesOrderInstance.organization
-		if (org) {
-			salesOrderInstance.billingAddrCountry = org.billingAddrCountry
-			salesOrderInstance.billingAddrLocation = org.billingAddrLocation
-			salesOrderInstance.billingAddrPoBox = org.billingAddrPoBox
-			salesOrderInstance.billingAddrPostalCode = org.billingAddrPostalCode
-			salesOrderInstance.billingAddrState = org.billingAddrState
-			salesOrderInstance.billingAddrStreet = org.billingAddrStreet
-			salesOrderInstance.shippingAddrCountry = org.shippingAddrCountry
-			salesOrderInstance.shippingAddrLocation = org.shippingAddrLocation
-			salesOrderInstance.shippingAddrPoBox = org.shippingAddrPoBox
-			salesOrderInstance.shippingAddrPostalCode = org.shippingAddrPostalCode
-			salesOrderInstance.shippingAddrState = org.shippingAddrState
-			salesOrderInstance.shippingAddrStreet = org.shippingAddrStreet
-		}
-        return [salesOrderInstance: salesOrderInstance]
+        if (params.quote) {
+            def quoteInstance = Quote.get(params.quote)
+            salesOrderInstance = new SalesOrder(quoteInstance)
+        } else {
+            salesOrderInstance = new SalesOrder()
+            salesOrderInstance.properties = params
+        }
+
+        salesOrderInstance.copyAddressesFromOrganization()
+
+        [salesOrderInstance: salesOrderInstance]
     }
 
-	def copy() {
-		def salesOrderInstance = SalesOrder.get(params.id)
-		if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
-            redirect(action: 'list')
+    def copy(Long id) {
+        def salesOrderInstance = SalesOrder.get(id)
+        if (!salesOrderInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
+            redirect action: 'list'
             return
         }
 
-		salesOrderInstance = new SalesOrder(salesOrderInstance)
-		render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
-	}
+        salesOrderInstance = new SalesOrder(salesOrderInstance)
+        render view: 'create', model: [salesOrderInstance: salesOrderInstance]
+    }
 
     def save() {
         def salesOrderInstance = new SalesOrder(params)
         if (!salesOrderInstance.save(flush: true)) {
-            log.debug(salesOrderInstance.errors)
-            render(view: 'create', model: [salesOrderInstance: salesOrderInstance])
+            render view: 'create', model: [salesOrderInstance: salesOrderInstance]
             return
         }
-        params.id = salesOrderInstance.ident()
 
-		salesOrderInstance.index()
+        lruService.recordItem controllerName, salesOrderInstance
+        salesOrderInstance.index()
+
         flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: salesOrderInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: salesOrderInstance.id
+        }
     }
 
-    def show() {
-        def salesOrderInstance = SalesOrder.get(params.id)
+    def show(Long id) {
+        def salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
+            redirect action: 'list'
             return
         }
 
-        return [salesOrderInstance: salesOrderInstance, printTemplates: fopService.templateNames]
+        [salesOrderInstance: salesOrderInstance, printTemplates: fopService.templateNames]
     }
 
-    def edit() {
-        def salesOrderInstance = SalesOrder.get(params.id)
+    def edit(Long id) {
+        def salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
+            redirect action: 'list'
             return
         }
 
-        return [salesOrderInstance: salesOrderInstance]
+        [salesOrderInstance: salesOrderInstance]
     }
 
-    def update() {
-        def salesOrderInstance = SalesOrder.get(params.id)
+    def update(Long id) {
+        def salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
+            redirect action: 'list'
             return
         }
 
@@ -178,13 +168,13 @@ class SalesOrderController {
             def version = params.version.toLong()
             if (salesOrderInstance.version > version) {
                 salesOrderInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'salesOrder.label', default: 'SalesOrder')] as Object[], "Another user has updated this SalesOrder while you were editing")
-                render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
+                render view: 'edit', model: [salesOrderInstance: salesOrderInstance]
                 return
             }
         }
-		if (params.autoNumber) {
-			params.number = salesOrderInstance.number
-		}
+        if (params.autoNumber) {
+            params.number = salesOrderInstance.number
+        }
 
         /*
          * The original implementation which worked in Grails 2.0.0.
@@ -207,99 +197,98 @@ class SalesOrderController {
         salesOrderInstance.items?.clear()
         for (int i = 0; params."items[${i}]"; i++) {
             if (params."items[${i}]".id != 'null') {
-                salesOrderInstance.addToItems(params."items[${i}]")
+                salesOrderInstance.addToItems params."items[${i}]"
             }
         }
 
         if (!salesOrderInstance.save(flush: true)) {
-            log.debug(salesOrderInstance.errors)
-            render(view: 'edit', model: [salesOrderInstance: salesOrderInstance])
+            render view: 'edit', model: [salesOrderInstance: salesOrderInstance]
             return
         }
 
-		salesOrderInstance.reindex()
+        lruService.recordItem controllerName, salesOrderInstance
+        salesOrderInstance.reindex()
+
         flash.message = message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: salesOrderInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: salesOrderInstance.id
+        }
     }
 
-    def delete() {
-        def salesOrderInstance = SalesOrder.get(params.id)
+    def delete(Long id) {
+        def salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
 
         try {
-            salesOrderInstance.delete(flush: true)
+            salesOrderInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect url: params.returnUrl
+            } else {
+                redirect action: 'list'
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 
-	def find() {
-		Integer number = null
-		try {
-			number = params.name as Integer
-		} catch (NumberFormatException ignored) { /* ignored */ }
-		def organization = params.organization ? Organization.get(params.organization) : null
+    def find() {
+        Integer number = null
+        try {
+            number = params.name as Integer
+        } catch (NumberFormatException ignored) { /* ignored */ }
+        def organization = params.organization ? Organization.get(params.organization) : null
 
-		def c = SalesOrder.createCriteria()
-		def list = c.list {
-			or {
-				eq('number', number)
-				ilike('subject', "%${params.name}%")
-			}
-			if (organization) {
-				and {
-					eq('organization', organization)
-				}
-			}
-			order('number', 'desc')
-		}
+        def c = SalesOrder.createCriteria()
+        def list = c.list {
+            or {
+                eq('number', number)
+                ilike('subject', "%${params.name}%")
+            }
+            if (organization) {
+                and {
+                    eq('organization', organization)
+                }
+            }
+            order('number', 'desc')
+        }
 
-		render(contentType: "text/json") {
-			array {
-				for (so in list) {
-					salesOrder id: so.id, name: so.fullName
-				}
-			}
-		}
-	}
+        render(contentType: 'text/json') {
+            array {
+                for (so in list) {
+                    salesOrder id: so.id, name: so.fullName
+                }
+            }
+        }
+    }
 
-	def print() {
-        def salesOrderInstance = SalesOrder.get(params.id)
+    def print(Long id, String template) {
+        def salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            render(status: 404)
+            render status: HttpServletResponse.SC_NOT_FOUND
             return
         }
 
         String xml = fopService.generateXml(
             salesOrderInstance, !!params.duplicate
         )
-		GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
-		if (params.duplicate) {
-			fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-		}
-		fileName += ".pdf"
+        GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
+        if (params.duplicate) {
+            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+        }
+        fileName += ".pdf"
 
-        fopService.outputPdf(
-            xml, 'sales-order', params.template, response, fileName
-        )
-	}
+        fopService.outputPdf xml, 'sales-order', template, response, fileName
+    }
 }

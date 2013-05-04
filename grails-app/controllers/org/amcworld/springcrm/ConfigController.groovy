@@ -58,7 +58,7 @@ class ConfigController {
         Map<String, String> config = [: ]
         configData.each { config[it.name] = it.value }
 
-        render(view: params.page, model: [configData: config])
+        render view: params.page, model: [configData: config]
     }
 
     def currency() {
@@ -73,7 +73,7 @@ class ConfigController {
                 numFractionDigits = 2
             }
         }
-        return [currencies: currencies.sort { a, b -> a.key <=> b.key }, currentCurrency: currentCurrency, numFractionDigits: numFractionDigits]
+        [currencies: currencies.sort { a, b -> a.key <=> b.key }, currentCurrency: currentCurrency, numFractionDigits: numFractionDigits]
     }
 
     def save() {
@@ -81,36 +81,36 @@ class ConfigController {
         params.config.each {
             String key = it.key
             if (key.startsWith('_')) {
-                configHolder.setConfig(key.substring(1), 'false')
+                configHolder.setConfig key.substring(1), 'false'
             }
         }
         params.config.each {
             String key = it.key
             if (!key.startsWith('_')) {
-                configHolder.setConfig(key, it.value)
+                configHolder.setConfig key, it.value
             }
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'config.label', default: 'System setting'), ''])
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'index')
+            redirect action: 'index'
         }
     }
 
     def loadClient() {
-        return [client: Client.load()]
+        [client: Client.load()]
     }
 
     def saveClient(Client client) {
         if (client.hasErrors()) {
-            render(view: 'loadClient', model: [client: client])
+            render view: 'loadClient', model: [client: client]
             return
         }
 
         client.save()
-        redirect(action: 'index')
+        redirect action: 'index'
     }
 
     def loadSelValues() {
@@ -134,23 +134,23 @@ class ConfigController {
                 def selValue = (id < 0L) ? cls.newInstance() : cls.get(id)
                 if (item.remove) {
                     if (!(id in READONLY_IDS)) {
-                        selValue.delete(flush: true)
+                        selValue.delete flush: true
                     }
                 } else {
                     if (!(id in READONLY_IDS)) {
                         selValue.name = item.name
                     }
                     selValue.orderId = orderId
-                    selValue.save(flush: true)
+                    selValue.save flush: true
                     orderId += 10
                 }
             }
         }
 
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'index')
+            redirect action: 'index'
         }
     }
 
@@ -173,27 +173,27 @@ class ConfigController {
             for (def item in list) {
                 def entry = (item.id < 0) ? new TaxRate() : TaxRate.get(item.id)
                 if (item.isNull('name')) {
-                    entry.delete(flush: true)
+                    entry.delete flush: true
                 } else {
                     entry.name = "${item.name} %"
                     entry.orderId = orderId
                     entry.taxValue = (item.name as Double) / 100d
-                    entry.save(flush: true)
+                    entry.save flush: true
                     orderId += 10
                 }
             }
         }
 
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'index')
+            redirect action: 'index'
         }
     }
 
     def loadSeqNumbers() {
         def list = SeqNumber.list()
-        render(view: 'seqNumbers', model: [seqNumberList: list])
+        render view: 'seqNumbers', model: [seqNumberList: list]
     }
 
     def saveSeqNumbers() {
@@ -210,14 +210,14 @@ class ConfigController {
         }
         if (hasErrors) {
             l.sort { it.ident() }
-            render(view: 'seqNumbers', model: [seqNumberList: l])
+            render view: 'seqNumbers', model: [seqNumberList: l]
             return
         }
 
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'index')
+            redirect action: 'index'
         }
     }
 
@@ -241,6 +241,6 @@ class ConfigController {
         if (!SelValue.isAssignableFrom(cls)) {
             throw new IllegalArgumentException("Type ${type} must be of type SelValue.")
         }
-        return cls
+        cls
     }
 }

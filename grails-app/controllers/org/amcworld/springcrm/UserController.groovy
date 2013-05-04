@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import com.google.api.client.auth.oauth2.Credential
+import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.LocaleUtils
 
 
@@ -40,16 +41,17 @@ class UserController {
 
     //-- Instance variables ---------------------
 
-    def googleOAuthService
-    def installService
-    def securityService
-    def userService
+    GoogleOAuthService googleOAuthService
+    InstallService installService
+    LruService lruService
+    SecurityService securityService
+    UserService userService
 
 
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
@@ -59,13 +61,13 @@ class UserController {
             params.sort = 'userName'
             params.offset = Math.floor(num / params.max) * params.max
         }
-        return [userInstanceList: User.list(params), userInstanceTotal: User.count()]
+        [userInstanceList: User.list(params), userInstanceTotal: User.count()]
     }
 
     def create() {
         def userInstance = new User()
         userInstance.properties = params
-        return [userInstance: userInstance]
+        [userInstance: userInstance]
     }
 
     def save() {
@@ -76,46 +78,47 @@ class UserController {
             userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
         }
         if (passwordMismatch || !userInstance.save(flush: true)) {
-            render(view: 'create', model: [userInstance: userInstance])
+            render view: 'create', model: [userInstance: userInstance]
             return
         }
-        params.id = userInstance.ident()
+
+        lruService.recordItem controllerName, userInstance
 
         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'show', id: userInstance.id)
+            redirect action: 'show', id: userInstance.id
         }
     }
 
-    def show() {
-        def userInstance = User.get(params.id)
+    def show(Long id) {
+        def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            redirect action: 'list'
             return
         }
 
-        return [userInstance: userInstance]
+        [userInstance: userInstance]
     }
 
-    def edit() {
-        def userInstance = User.get(params.id)
+    def edit(Long id) {
+        def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            redirect action: 'list'
             return
         }
 
-        return [userInstance: userInstance]
+        [userInstance: userInstance]
     }
 
-    def update() {
-        def userInstance = User.get(params.id)
+    def update(Long id) {
+        def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            redirect action: 'list'
             return
         }
 
@@ -123,7 +126,7 @@ class UserController {
             def version = params.version.toLong()
             if (userInstance.version > version) {
                 userInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'user.label', default: 'User')] as Object[], 'Another user has updated this User while you were editing')
-                render(view: 'edit', model: [userInstance: userInstance])
+                render view: 'edit', model: [userInstance: userInstance]
                 return
             }
         }
@@ -134,47 +137,47 @@ class UserController {
         if (params.password) {
             passwordMismatch = params.password != securityService.encryptPassword(params.passwordRepeat)
             if (passwordMismatch) {
-                userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
+                userInstance.errors.rejectValue 'password', 'user.password.doesNotMatch'
             }
         } else {
             userInstance.password = passwd
         }
         if (passwordMismatch || !userInstance.save(flush: true)) {
-            render(view: 'edit', model: [userInstance: userInstance])
+            render view: 'edit', model: [userInstance: userInstance]
             return
         }
 
         flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
         if (params.returnUrl) {
-            redirect(url: params.returnUrl)
+            redirect url: params.returnUrl
         } else {
-            redirect(action: 'show', id: userInstance.id)
+            redirect action: 'show', id: userInstance.id
         }
     }
 
-    def delete() {
-        def userInstance = User.get(params.id)
+    def delete(Long id) {
+        def userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
 
         try {
-            userInstance.delete(flush: true)
+            userInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User')])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 
@@ -184,25 +187,25 @@ class UserController {
         def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
         if (!userInstance) {
             flash.message = message(code: 'user.authenticate.failed.message', default: 'Invalid user name or password. Please retry.')
-            redirect(action: 'login')
+            redirect action: 'login'
             return
         }
 
         session.user = userInstance
         setUserLocale()
-        redirect(uri: '/')
+        redirect uri: '/'
     }
 
     def logout() {
         flash.message = message(code: 'user.logout.message', default: 'You were logged out.')
         session.user = null
         session.invalidate()
-        redirect(action: 'login')
+        redirect action: 'login'
     }
 
     def storeSetting() {
         session.user.settings[params.key] = params.value
-        render(status: 200)
+        render status: HttpServletResponse.SC_OK
     }
 
     def settingsIndex() {}
@@ -210,17 +213,17 @@ class UserController {
     def settingsLanguage() {
         Map<String, String> locales = userService.availableLocales.collectEntries { [it.toString(), it.displayName] }
         locales = locales.sort { a, b -> a.value <=> b.value }
-        return [locales: locales, currentLocale: userService.currentLocale.toString()]
+        [locales: locales, currentLocale: userService.currentLocale.toString()]
     }
 
-    def settingsLanguageSave() {
-        setUserLocale(params.locale)
-        redirect(action: 'settingsIndex')
+    def settingsLanguageSave(String locale) {
+        setUserLocale locale
+        redirect action: 'settingsIndex'
     }
 
     def settingsGoogleAuth() {
         Credential cred = googleOAuthService.loadCredential()
-        return [authorized: cred != null]
+        [authorized: cred != null]
     }
 
     def settingsGoogleAuthRequest() {
@@ -229,35 +232,35 @@ class UserController {
         )
         if (uri == null) {
             flash.message = message(code: 'user.settings.googleAuth.failed.message')
-            redirect(action: 'settingsIndex')
+            redirect action: 'settingsIndex'
             return
         }
 
-        redirect(uri: uri)
+        redirect uri: uri
     }
 
     def settingsGoogleAuthResponse() {
         if (params.success != '200') {
             flash.message = message(code: 'user.settings.googleAuth.failed.message')
-            redirect(action: 'settingsGoogleAuth')
+            redirect action: 'settingsGoogleAuth'
             return
         }
 
         if (!googleOAuthService.obtainAndStoreCredential(params.clientId)) {
             flash.message = message(code: 'user.settings.googleAuth.failed.message')
-            redirect(action: 'settingsGoogleAuth')
+            redirect action: 'settingsGoogleAuth'
             return
         }
 
         flash.message = message(code: 'user.settings.googleAuth.succeeded.message')
-        redirect(action: 'settingsIndex')
+        redirect action: 'settingsIndex'
     }
 
     def settingsGoogleAuthRevoke() {
         googleOAuthService.revokeAtProxy()
 
         flash.message = message(code: 'user.settings.googleAuth.revoked.message')
-        redirect(action: 'settingsIndex')
+        redirect action: 'settingsIndex'
     }
 
 

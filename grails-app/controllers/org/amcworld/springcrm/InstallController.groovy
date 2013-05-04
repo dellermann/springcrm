@@ -38,8 +38,8 @@ class InstallController {
     //-- Instance variables ---------------------
 
     def sessionFactory
-    def installService
-    def securityService
+    InstallService installService
+    SecurityService securityService
 
 
     //-- Public methods -------------------------
@@ -48,7 +48,7 @@ class InstallController {
 
     def installBaseData() {
         def installStatus = Config.findByName('installStatus')
-        return [packages: installService.getBaseDataPackages(), existingData: installStatus?.value, step: 1]
+        [packages: installService.getBaseDataPackages(), existingData: installStatus?.value, step: 1]
     }
 
     def installBaseDataSave() {
@@ -60,24 +60,24 @@ class InstallController {
                 sql.execute it
             }
         }
-        redirect(action: 'clientData')
+        redirect action: 'clientData'
     }
 
     def clientData() {
-        return [client: Client.load(), step: 2]
+        [client: Client.load(), step: 2]
     }
 
     def clientDataSave(Client client) {
         if (client.hasErrors()) {
-            render(view: 'clientData', model: [client: client, step: 2])
+            render view: 'clientData', model: [client: client, step: 2]
             return
         }
         client.save()
-        redirect(action: 'createAdmin')
+        redirect action: 'createAdmin'
     }
 
     def createAdmin() {
-        return [userInstance: new User(), step: 3]
+        [userInstance: new User(), step: 3]
     }
 
     def createAdminSave() {
@@ -87,24 +87,24 @@ class InstallController {
         boolean passwordMismatch =
             params.password != securityService.encryptPassword(params.passwordRepeat)
         if (passwordMismatch) {
-            userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
+            userInstance.errors.rejectValue 'password', 'user.password.doesNotMatch'
         }
         if (passwordMismatch || !userInstance.save(flush: true)) {
-            render(view: 'createAdmin', model: [userInstance: userInstance, step: 3])
+            render view: 'createAdmin', model: [userInstance: userInstance, step: 3]
             return
         }
 
-        redirect(action: 'finish')
+        redirect action: 'finish'
     }
 
     def finish() {
-        return [step: 4]
+        [step: 4]
     }
 
     def finishSave() {
         installService.disableInstaller()
         Config installStatus = new Config(name: 'installStatus', value: 1)
-        installStatus.save(flush: true)
-        redirect(uri: '/')
+        installStatus.save flush: true
+        redirect uri: '/'
     }
 }

@@ -1,7 +1,7 @@
 /*
  * LruFilters.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClass
 
 
@@ -28,14 +29,14 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * edited content items in the LRU (last recently used) list.
  *
  * @author	Daniel Ellermann
- * @version 0.9
+ * @version 1.3
  */
 class LruFilters {
 
     //-- Instance variables ---------------------
 
-    def grailsApplication
-	def lruService
+    GrailsApplication grailsApplication
+    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -43,39 +44,23 @@ class LruFilters {
     def filters = {
         lruRecord(controller: '*', action: 'show|edit') {
             after = { model ->
-				if (model) {
-	                def instance = model["${controllerName}Instance"]
-					if (instance) {
-						lruService.recordItem(
-							controllerName, params.id as long,
-                            instance.toString()
-						)
-					}
-				}
-            }
-        }
-
-        lruUpdate(controller: '*', action: 'save|update') {
-            after = {
-                if (params.id) {
-                    GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
-                        'Domain', controllerName
-                    )
-                    long id = params.id as long
-                    def instance = cls.clazz.'get'(id)
-                    if (instance) {
-                        lruService.recordItem(
-                            controllerName, id, instance.toString()
-                        )
-                    }
+                if (!model) {
+                    return
                 }
+
+                def instance = model["${controllerName}Instance"]
+                if (!instance) {
+                    return
+                }
+
+                lruService.recordItem controllerName, params.id as long, instance.toString()
             }
         }
 
         lruRemove(controller: '*', action: 'delete', controllerExclude: 'document') {
             before = {
                 if (params.confirmed) {
-                    lruService.removeItem(controllerName, params.id as long)
+                    lruService.removeItem controllerName, params.id as long
                 }
             }
         }

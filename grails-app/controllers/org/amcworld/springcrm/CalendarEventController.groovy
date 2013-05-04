@@ -35,10 +35,15 @@ class CalendarEventController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
+    //-- Instance variables ---------------------
+
+    LruService lruService
+
+
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
@@ -54,44 +59,45 @@ class CalendarEventController {
             count = CalendarEvent.count()
         }
 
-        return [calendarEventInstanceList: list, calendarEventInstanceTotal: count]
+        [calendarEventInstanceList: list, calendarEventInstanceTotal: count]
     }
 
-	def calendar() {}
+    def calendar() {}
 
-	def listEmbedded() {
-		def l
-		def count
-		def linkParams
+    def listEmbedded(Long organization) {
+        def l
+        def count
+        def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.organization) {
-			def organizationInstance = Organization.get(params.organization)
+        if (organization) {
+            def organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-    			l = CalendarEvent.findAllByOrganization(organizationInstance, params)
-    			count = CalendarEvent.countByOrganization(organizationInstance)
-    			linkParams = [organization: organizationInstance.id]
+                l = CalendarEvent.findAllByOrganization(organizationInstance, params)
+                count = CalendarEvent.countByOrganization(organizationInstance)
+                linkParams = [organization: organizationInstance.id]
             }
-		}
-		return [calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
-	}
+        }
+        [calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
+    }
 
-	def listRange() {
-    	Date start = new Date((params.start as Long) * 1000L)
-		Date end = new Date((params.end as Long) * 1000L)
-		def c = CalendarEvent.createCriteria()
-		def list = c.list {
+    def listRange(Long start, Long end) {
+        Date startDate = new Date(start * 1000L)
+        Date endDate = new Date(end * 1000L)
+        def c = CalendarEvent.createCriteria()
+        def list = c.list {
             and {
                 eq('recurrence.type', 0)
                 or {
-                    between('start', start, end)
-                    between('end', start, end)
+                    between('start', startDate, endDate)
+                    between('end', startDate, endDate)
                     and {
-                        le('start', start)
-                        ge('end', end)
+                        le('start', startDate)
+                        ge('end', endDate)
                     }
                 }
             }
-		}
+        }
+
         c = CalendarEvent.createCriteria()
         def l = c.list {
             ne('recurrence.type', 0)
@@ -99,87 +105,89 @@ class CalendarEventController {
         for (CalendarEvent ce in l) {
             def helper = new RecurCalendarEventHelper(ce.recurrence)
             Date s = ce.start
-            Date d = helper.approximate(s, start)
-            while (d <= end) {
+            Date d = helper.approximate(s, startDate)
+            while (d <= endDate) {
                 list << ce.eventAtDate(d)
                 Date dOld = d + 1
                 d = helper.approximate(s, dOld)
                 assert d > dOld
             }
         }
-		render(contentType: 'text/json') {
-			array {
-				for (ce in list) {
-					event id: ce.id, title: ce.subject, allDay: ce.allDay, start: ce.start, end: ce.end, url: createLink(controller: 'calendarEvent', action: 'show', id: ce.id)
-				}
-			}
-		}
-	}
+        render(contentType: 'text/json') {
+            array {
+                for (ce in list) {
+                    event id: ce.id, title: ce.subject, allDay: ce.allDay, start: ce.start, end: ce.end, url: createLink(controller: 'calendarEvent', action: 'show', id: ce.id)
+                }
+            }
+        }
+    }
 
     def create() {
         def calendarEventInstance = new CalendarEvent()
         calendarEventInstance.properties = params
-		if (calendarEventInstance.organization) {
-			calendarEventInstance.location = calendarEventInstance.organization.shippingAddr
-		}
-		if (params.start) {
-			def c = calendarEventInstance.start.toCalendar()
-			c.add(Calendar.HOUR_OF_DAY, 1)
-			calendarEventInstance.end = c.time
-		}
-        return [calendarEventInstance: calendarEventInstance]
+        if (calendarEventInstance.organization) {
+            calendarEventInstance.location = calendarEventInstance.organization.shippingAddr
+        }
+        if (params.start) {
+            def c = calendarEventInstance.start.toCalendar()
+            c.add Calendar.HOUR_OF_DAY, 1
+            calendarEventInstance.end = c.time
+        }
+        [calendarEventInstance: calendarEventInstance]
     }
 
-	def copy() {
-		def calendarEventInstance = CalendarEvent.get(params.id)
-		if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), params.id])
-            redirect(action: 'show', id: params.id)
+    def copy(Long id) {
+        def calendarEventInstance = CalendarEvent.get(id)
+        if (!calendarEventInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), id])
+            redirect action: 'show', id: id
             return
         }
 
-		calendarEventInstance = new CalendarEvent(calendarEventInstance)
-		render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
-	}
+        calendarEventInstance = new CalendarEvent(calendarEventInstance)
+        render view: 'create', model: [calendarEventInstance: calendarEventInstance]
+    }
 
     def save() {
         def calendarEventInstance = new CalendarEvent(params)
         calendarEventInstance.owner = session.user
         if (!calendarEventInstance.validate()) {
-            render(view: 'create', model: [calendarEventInstance: calendarEventInstance])
+            render view: 'create', model: [calendarEventInstance: calendarEventInstance]
             return
         }
-        params.id = calendarEventInstance.ident()
 
-		refineCalendarEvent(calendarEventInstance)
+        refineCalendarEvent(calendarEventInstance)
         calendarEventInstance.owner = session.user
-		calendarEventInstance.save(flush: true)
+        calendarEventInstance.save flush: true
         saveReminders(calendarEventInstance)
-		calendarEventInstance.index()
+
+        lruService.recordItem controllerName, calendarEventInstance
+        calendarEventInstance.index()
+
         flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: calendarEventInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: calendarEventInstance.ident()
+        }
     }
 
-    def show() {
-        def calendarEventInstance = CalendarEvent.get(params.id)
+    def show(Long id) {
+        def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
+            redirect action: 'list'
             return
         }
 
-        return [calendarEventInstance: calendarEventInstance]
+        [calendarEventInstance: calendarEventInstance]
     }
 
-    def edit() {
-        def calendarEventInstance = CalendarEvent.get(params.id)
+    def edit(Long id) {
+        def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
+            redirect action: 'list'
             return
         }
 
@@ -196,52 +204,55 @@ class CalendarEventController {
             }
         }
         def reminderInstanceList = l*.rule
-        return [calendarEventInstance: calendarEventInstance, reminderInstanceList: reminderInstanceList.join(' ')]
+        [calendarEventInstance: calendarEventInstance, reminderInstanceList: reminderInstanceList.join(' ')]
     }
 
-    def update() {
-        def calendarEventInstance = CalendarEvent.get(params.id)
+    def update(Long id) {
+        def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
+            redirect action: 'list'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (calendarEventInstance.version > version) {
-
                 calendarEventInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'calendarEvent.label', default: 'CalendarEvent')] as Object[], "Another user has updated this CalendarEvent while you were editing")
-                render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
+                render view: 'edit', model: [calendarEventInstance: calendarEventInstance]
                 return
             }
         }
+
         calendarEventInstance.properties = params
         if (!calendarEventInstance.validate()) {
-            render(view: 'edit', model: [calendarEventInstance: calendarEventInstance])
+            render view: 'edit', model: [calendarEventInstance: calendarEventInstance]
             return
         }
 
-		refineCalendarEvent(calendarEventInstance)
-		calendarEventInstance.save(flush: true)
+        refineCalendarEvent(calendarEventInstance)
+        calendarEventInstance.save(flush: true)
         saveReminders(calendarEventInstance, session.user)
-		calendarEventInstance.reindex()
+
+        lruService.recordItem controllerName, calendarEventInstance
+        calendarEventInstance.reindex()
         flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: calendarEventInstance.id)
-		}
+
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: calendarEventInstance.id
+        }
     }
 
-    def delete() {
-        def calendarEventInstance = CalendarEvent.get(params.id)
+    def delete(Long id) {
+        def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
@@ -249,14 +260,14 @@ class CalendarEventController {
         try {
             calendarEventInstance.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect url: params.returnUrl
+            } else {
+                redirect action: 'list'
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 
@@ -296,32 +307,32 @@ class CalendarEventController {
 
     //-- Non-public methods ---------------------
 
-	private void refineCalendarEvent(CalendarEvent calendarEventInstance) {
-		def helper = new RecurCalendarEventHelper(
-			calendarEventInstance.recurrence
-		)
+    private void refineCalendarEvent(CalendarEvent calendarEventInstance) {
+        def helper = new RecurCalendarEventHelper(
+            calendarEventInstance.recurrence
+        )
         Calendar dayStart = calendarEventInstance.start.toCalendar()
         dayStart.clearTime()
         int offset = calendarEventInstance.start.time - dayStart.time.time
-		int diff = calendarEventInstance.end.time - calendarEventInstance.start.time
-		def start = helper.calibrateStart(calendarEventInstance.start)
-		calendarEventInstance.start = new Date(start.time + offset)
-		calendarEventInstance.end = new Date(start.time + offset + diff)
+        int diff = calendarEventInstance.end.time - calendarEventInstance.start.time
+        def start = helper.calibrateStart(calendarEventInstance.start)
+        calendarEventInstance.start = new Date(start.time + offset)
+        calendarEventInstance.end = new Date(start.time + offset + diff)
 
-		def until = null
-		switch (params['recurrence.endType']) {
-		case 'until':
-			until = helper.approximate(start, calendarEventInstance.recurrence.until)
-			if (until < start) {
-				until = start
-			}
-			break
-		case 'count':
-			until = helper.computeNthEvent(start, params['recurrence.cnt'] as Integer)
-			break
-		}
-		calendarEventInstance.recurrence.until = until
-	}
+        def until = null
+        switch (params['recurrence.endType']) {
+        case 'until':
+            until = helper.approximate(start, calendarEventInstance.recurrence.until)
+            if (until < start) {
+                until = start
+            }
+            break
+        case 'count':
+            until = helper.computeNthEvent(start, params['recurrence.cnt'] as Integer)
+            break
+        }
+        calendarEventInstance.recurrence.until = until
+    }
 
     private void saveReminders(CalendarEvent calendarEventInstance,
                                User user = null)
@@ -348,7 +359,7 @@ class CalendarEventController {
             }
             reminder.nextReminder =
                 new Date(d.time - reminder.valueAsMilliseconds)
-            reminder.save(flush:true)
+            reminder.save flush: true
         }
     }
 }

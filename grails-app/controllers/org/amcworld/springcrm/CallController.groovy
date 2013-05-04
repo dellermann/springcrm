@@ -35,10 +35,15 @@ class CallController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
+    //-- Instance variables ---------------------
+
+    LruService lruService
+
+
     //-- Public methods -------------------------
 
     def index() {
-        redirect(action: 'list', params: params)
+        redirect action: 'list', params: params
     }
 
     def list() {
@@ -61,100 +66,100 @@ class CallController {
             count = Call.count()
         }
 
-        return [callInstanceList: list, callInstanceTotal: count]
+        [callInstanceList: list, callInstanceTotal: count]
     }
 
-	def listEmbedded() {
-		def l
-		def count
-		def linkParams
+    def listEmbedded(Long organization, Long person) {
+        def l
+        def count
+        def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if (params.organization) {
-			def organizationInstance = Organization.get(params.organization)
+        if (organization) {
+            def organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-    			l = Call.findAllByOrganization(organizationInstance, params)
-    			count = Call.countByOrganization(organizationInstance)
-    			linkParams = [organization: organizationInstance.id]
+                l = Call.findAllByOrganization(organizationInstance, params)
+                count = Call.countByOrganization(organizationInstance)
+                linkParams = [organization: organizationInstance.id]
             }
-		} else if (params.person) {
-			def personInstance = Person.get(params.person)
+        } else if (person) {
+            def personInstance = Person.get(person)
             if (personInstance) {
-    			l = Call.findAllByPerson(personInstance, params)
-    			count = Call.countByPerson(personInstance)
-    			linkParams = [person: personInstance.id]
+                l = Call.findAllByPerson(personInstance, params)
+                count = Call.countByPerson(personInstance)
+                linkParams = [person: personInstance.id]
             }
-		}
-		return [callInstanceList: l, callInstanceTotal: count, linkParams: linkParams]
-	}
+        }
+        [callInstanceList: l, callInstanceTotal: count, linkParams: linkParams]
+    }
 
     def create() {
         def callInstance = new Call()
         callInstance.properties = params
-		if (callInstance.person) {
-			callInstance.phone = callInstance.person.phone
-			callInstance.organization = callInstance.person.organization
-		} else if (callInstance.organization) {
-			callInstance.phone = callInstance.organization.phone
-		}
-        return [callInstance: callInstance]
+        if (callInstance.person) {
+            callInstance.phone = callInstance.person.phone
+            callInstance.organization = callInstance.person.organization
+        } else if (callInstance.organization) {
+            callInstance.phone = callInstance.organization.phone
+        }
+        [callInstance: callInstance]
     }
 
-	def copy() {
-        def callInstance = Call.get(params.id)
+    def copy(Long id) {
+        def callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
-            redirect(action: 'show', id: params.id)
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
+            redirect action: 'show', id: id
             return
         }
 
-		callInstance = new Call(callInstance)
-		render(view: 'create', model: [callInstance: callInstance])
-	}
+        callInstance = new Call(callInstance)
+        render view: 'create', model: [callInstance: callInstance]
+    }
 
     def save() {
         def callInstance = new Call(params)
         if (!callInstance.save(flush: true)) {
-            render(view: 'create', model: [callInstance: callInstance])
+            render view: 'create', model: [callInstance: callInstance]
             return
         }
-        params.id = callInstance.ident()
 
-		callInstance.index()
+        lruService.recordItem controllerName, callInstance
+        callInstance.index()
         flash.message = message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: callInstance.id)
-		}
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: callInstance.id
+        }
     }
 
-    def show() {
-        def callInstance = Call.get(params.id)
+    def show(Long id) {
+        def callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
+            redirect action: 'list'
             return
         }
 
-        return [callInstance: callInstance]
+        [callInstance: callInstance]
     }
 
-    def edit() {
-        def callInstance = Call.get(params.id)
+    def edit(Long id) {
+        def callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
+            redirect action: 'list'
             return
         }
 
-        return [callInstance: callInstance]
+        [callInstance: callInstance]
     }
 
-    def update() {
-        def callInstance = Call.get(params.id)
+    def update(Long id) {
+        def callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
-            redirect(action: 'list')
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
+            redirect action: 'list'
             return
         }
 
@@ -162,33 +167,35 @@ class CallController {
             def version = params.version.toLong()
             if (callInstance.version > version) {
                 callInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'call.label', default: 'Call')] as Object[], 'Another user has updated this Call while you were editing')
-                render(view: 'edit', model: [callInstance: callInstance])
+                render view: 'edit', model: [callInstance: callInstance]
                 return
             }
         }
         callInstance.properties = params
         if (!callInstance.save(flush: true)) {
-            render(view: 'edit', model: [callInstance: callInstance])
+            render view: 'edit', model: [callInstance: callInstance]
             return
         }
 
-		callInstance.reindex()
+        lruService.recordItem controllerName, callInstance
+        callInstance.reindex()
         flash.message = message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
-		if (params.returnUrl) {
-			redirect(url: params.returnUrl)
-		} else {
-			redirect(action: 'show', id: callInstance.id)
-		}
+
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirect action: 'show', id: callInstance.id
+        }
     }
 
-    def delete() {
-        def callInstance = Call.get(params.id)
+    def delete(Long id) {
+        def callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
             if (params.returnUrl) {
-                redirect(url: params.returnUrl)
+                redirect url: params.returnUrl
             } else {
-                redirect(action: 'list')
+                redirect action: 'list'
             }
             return
         }
@@ -196,14 +203,14 @@ class CallController {
         try {
             callInstance.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])
-			if (params.returnUrl) {
-				redirect(url: params.returnUrl)
-			} else {
-				redirect(action: 'list')
-			}
+            if (params.returnUrl) {
+                redirect url: params.returnUrl
+            } else {
+                redirect action: 'list'
+            }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])
-            redirect(action: 'show', id: params.id)
+            redirect action: 'show', id: id
         }
     }
 }
