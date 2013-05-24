@@ -595,6 +595,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getInputValue('retailer')
         assert '1' == getInputValue('quantity')
         assert '302' == getInputValue('unit.id')
+        assert '2,49' == getInputValue('unitPrice')
         assert '200' == getInputValue('weight')
         assert '401' == getInputValue('taxRate.id')
         assert '2,19' == getInputValue('purchasePrice')
