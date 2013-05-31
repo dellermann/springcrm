@@ -254,7 +254,7 @@ InvoicingTransactionWidget =
         newVal = @element.find("#stage").val()
         shippingStageValue = @options.stageValues.shipping
         if (oldVal < shippingStageValue) and (newVal >= shippingStageValue)
-          res = window.confirm $L("invoicingTransaction.changeState.label")
+          res = $.confirm $L("invoicingTransaction.changeState.label")
     res
 
 $.widget "springcrm.invoicingtransaction", InvoicingTransactionWidget

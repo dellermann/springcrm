@@ -32,7 +32,7 @@ body {
   font: 11px/1.231 @font-default;
 }
 button, input, select, textarea {
-  font: 99% @font-default;
+  font: 100% @font-default;
 }
 code, kbd, pre, samp, tt, xmp {
   font-family: @font-monospace;
@@ -205,9 +205,15 @@ body {
     padding-left: 1ex;
   }
 }
-#search-area img {
-  cursor: pointer;
-  padding-left: .5ex;
+#search-area {
+  form {
+    line-height: 16px;
+  }
+  img {
+    cursor: pointer;
+    padding-left: .5ex;
+    vertical-align: middle;
+  }
 }
 
 /* the logo */

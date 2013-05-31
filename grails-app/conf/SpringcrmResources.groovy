@@ -83,7 +83,7 @@ modules = {
         resource '/js/jquery.ui.datepicker-de.js'
         resource '/js/jquery.ba-bbq.min.js'
         resource '/js/app/core.js'
-        resource '/js/scripts.js'
+        resource '/js/app/ui.js'
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
 
@@ -117,29 +117,23 @@ modules = {
         resource url: 'less/install.less', attrs: [rel: 'stylesheet/less', type: 'css']
     }
 
-    invoicingTransactionForm {
+    invoicingTransaction {
         dependsOn 'core'
-        defaultBundle 'invoicing-transaction-form'
 
         resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
+    }
+
+    invoicingTransactionForm {
+        dependsOn 'invoicingTransaction'
+        defaultBundle 'invoicing-transaction-form'
 
         resource '/js/app/invoicing-items.js'
         resource '/js/app/invoicing-transaction-form.js'
     }
 
     invoicingTransactionShow {
-        dependsOn 'core'
+        dependsOn 'invoicingTransaction'
         defaultBundle 'invoicing-transaction-show'
-
-        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
-    }
-
-    'jquery-ui-selectmenu' {
-        dependsOn 'jquery-ui'
-
-        resource '/css/jquery/default/jquery.ui.selectmenu.css'
-
-        resource '/js/jquery.ui.selectmenu.js'
     }
 
     login {
@@ -197,9 +191,9 @@ modules = {
     }
 
     projectShow {
-        dependsOn 'project, jquery-ui-selectmenu, elfinder'
+        dependsOn 'project, selectBoxIt, elfinder'
 
-        resource '/js/project-show.js'
+        resource '/js/app/project-show.js'
     }
 
     purchaseInvoicingForm {
@@ -216,11 +210,11 @@ modules = {
     }
 
     reportSalesJournal {
-        dependsOn 'report, jquery-ui-selectmenu'
+        dependsOn 'report, selectBoxIt'
 
         resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
 
-        resource '/js/report-sales-journal.js'
+        resource '/js/app/report-sales-journal.js'
     }
 
     salesItemForm {
@@ -234,6 +228,13 @@ modules = {
         resource url: 'less/pricing.less', attrs: [rel: 'stylesheet/less', type: 'css']
 
         resource '/js/app/sales-item-pricing.js'
+    }
+
+    selectBoxIt {
+        dependsOn 'jquery-ui'
+
+        resource '/css/jquery/default/jquery.selectBoxIt.css'
+        resource url: '/js/jquery.selectBoxIt.min.js', exclude: 'minify'
     }
 
     tinyMce {

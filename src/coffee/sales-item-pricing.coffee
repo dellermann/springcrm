@@ -439,7 +439,7 @@ SalesItemPricing =
       if dir < 0 and @_getRowType($tr) is "relativeToPos"
         $refTr = @_getReferredRow $tr
         if $refTr isnt null and @_getRowType($refTr) isnt "absolute" and @_getIndex($tr) - 1 <= @_getIndex($refTr)
-          win.alert $L("salesItem.pricing.error.notMovable.refBeforeReferee")
+          $.alert $L("salesItem.pricing.error.notMovable.refBeforeReferee")
           return false
       true
 
@@ -532,7 +532,7 @@ SalesItemPricing =
       return false
     if $img.hasClass "remove-btn"
       if $tr.hasClass "not-removable"
-        win.alert $L("salesItem.pricing.error.notRemovable")
+        $.alert $L("salesItem.pricing.error.notRemovable")
       else
         @_removeItem $tr
       return false
@@ -570,7 +570,7 @@ SalesItemPricing =
   #
   _onClickRemovePricing: ->
     if @_initialPricingEnabled
-      ok = win.confirm($L("salesItem.pricing.removePricing.confirm"))
+      ok = $.confirm $L("salesItem.pricing.removePricing.confirm")
       return false unless ok
 
     @_pricingEnabled.value = ""
@@ -743,7 +743,7 @@ SalesItemPricing =
   _stopFinderMode: ->
     @_$finderRow = null
     @_getRows().removeClass "selectable non-selectable"
-    $doc.unbind "keydown"
+    $doc.off "keydown"
 
   # Swaps the indices of the input controls of both the given table rows.
   #

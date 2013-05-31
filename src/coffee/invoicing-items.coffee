@@ -217,6 +217,7 @@ InvoicingItemsWidget =
   # Initializes this widget.
   #
   _create: ->
+    $ = jQuery
     el = @element
     @form = el.parents("form")
       .get(0)
@@ -231,10 +232,36 @@ InvoicingItemsWidget =
     @taxes = @_prepareTaxes opts.taxes
     @inputRegExp = new RegExp("^#{opts.fieldNamePrefix}\\[(\\d+)\\]\\.(\\w+)$")
 
-    el.click((event) => @_onClick(event))
-      .change((event) => @_onChange(event))
-      .focusin((event) => @_onFocusIn(event))
-      .focusout((event) => @_onFocusOut(event))
+    el.on("click", "img.up-btn", (event) =>
+        @_moveItem $(event.currentTarget), -1
+        false
+      )
+      .on("click", "img.down-btn", (event) =>
+        @_moveItem $(event.currentTarget), 1
+        false
+      )
+      .on("click", "img.remove-btn", (event) =>
+        @_removeItem $(event.currentTarget)
+        false
+      )
+      .on("click", "img.select-btn-products", (event) =>
+        @_showSalesItemSelector $(event.currentTarget), "products"
+        false
+      )
+      .on("click", "img.select-btn-services", (event) =>
+        @_showSalesItemSelector $(event.currentTarget), "services"
+        false
+      )
+      .on("change", (event) => @_onChange(event))
+      .on("focusin", ".currency :input", (event) =>
+        $target = $(event.currentTarget)
+        val = $target.val().parseNumber()
+        $target.val (if val then val.format() else "")
+      )
+      .on("focusout", ".currency :input", (event) =>
+        $target = $(event.currentTarget)
+        $target.val $target.val().parseNumber().formatCurrencyValue()
+      )
     $(".add-invoicing-item-btn").click =>
       @_addItem true
       false
@@ -295,9 +322,7 @@ InvoicingItemsWidget =
   # @returns {Number}   the zero-based position of the given row
   #
   _getRowPosition: ($tr) ->
-    $tr.parent()
-      .children()
-        .index($tr)
+    $tr.index()
 
   # Initialize the autocomplete fields for tax rates.
   #
@@ -376,52 +401,6 @@ InvoicingItemsWidget =
             .text (qty * unitPrice).formatCurrencyValue()
     @_computeFooterValues()
 
-  # Called if an element has been clicked.  The method handles clicks to the
-  # up/down movement symbols, the delete symbol, and the symbols to open the
-  # selector dialog.
-  #
-  # @param {Object} event the event data
-  #
-  _onClick: (event) ->
-    $img = $(event.target).closest("img")
-    if $img.hasClass("up-btn")
-      @_moveItem $img, -1
-      return false
-    if $img.hasClass("down-btn")
-      @_moveItem $img, 1
-      return false
-    if $img.hasClass("remove-btn")
-      @_removeItem $img
-      return false
-    if $img.hasClass("select-btn-products")
-      @_showSalesItemSelector $img, "products"
-      return false
-    if $img.hasClass("select-btn-services")
-      @_showSalesItemSelector $img, "services"
-      return false
-    true
-
-  # Called if an input field receives the focus.  The method replaces the field
-  # content by an empty string if the field is a currency field and its value
-  # is zero.
-  #
-  # @param {Object} event the event data
-  #
-  _onFocusIn: (event) ->
-    $target = $(event.target)
-    if $target.is ".currency :input"
-      val = $target.val().parseNumber()
-      $target.val (if val then val.format() else "")
-
-  # Called if an input field looses the focus.  The method replaces the field
-  # content by a formatted number if the field is a currency field.
-  #
-  # @param {Object} event the event data
-  #
-  _onFocusOut: (event) ->
-    $target = $(event.target)
-    $target.val $target.val().parseNumber().formatCurrencyValue() if $target.is ".currency :input"
-
   # Called if the the content of the sales item selector has been successfully
   # loaded via AJAX.
   #
@@ -436,16 +415,13 @@ InvoicingItemsWidget =
       search = $dialog.find("[name=search]").val()
       if search is "" then null else search: search
 
-    $dialog.unbind("click")
-      .click((event) =>
-        target = event.target
-        return true if target.tagName.toLowerCase() isnt "a"
-
-        $target = $(target)
-        if $target.hasClass "select-link"
-          @_retrieveSalesItem type, $target.attr("href"), pos
-        else
-          @_loadSalesItemSelector type, $target.attr("href"), pos, getData()
+    $dialog.off("click")
+      .on("click", "a.select-link", (event) =>
+        @_retrieveSalesItem type, $(event.currentTarget).attr("href"), pos
+        false
+      )
+      .on("click", "a:not(.select-link)", (event) =>
+        @_loadSalesItemSelector type, $(event.currentTarget).attr("href"), pos, getData()
         false
       )
       .find("form")

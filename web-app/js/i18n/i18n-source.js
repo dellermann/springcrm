@@ -69,7 +69,6 @@
     'default.edit.label',
     'default.format.date',
     'default.format.time',
-    'default.search.label',
     'invoicingTransaction.addr.fromOrgBillingAddr',
     'invoicingTransaction.addr.fromOrgShippingAddr',
     'invoicingTransaction.billingAddr.copy',
