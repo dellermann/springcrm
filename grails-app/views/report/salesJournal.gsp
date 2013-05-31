@@ -27,7 +27,6 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <g:if test="${invoicingTransactionInstanceList}">
     <div id="filter-bar" class="filter-bar" data-load-url="${createLink(action: 'salesJournal')}">
       <g:set var="monthNames" value="${java.text.DateFormatSymbols.instance.months}" />
       <g:set var="shortMonthNames" value="${java.text.DateFormatSymbols.instance.shortMonths}" />
@@ -40,6 +39,7 @@
       <g:select name="year-selector" from="${(yearStart..yearEnd)}" value="${currentYear}" />
     </div>
     <h3><g:if test="${currentMonth}">${monthNames[currentMonth - 1]} ${currentYear}</g:if><g:else><g:message code="report.salesJournal.yearlyOverview.label" default="Overview of year {0}" args="${[currentYear]}" /></g:else></h3>
+    <g:if test="${invoicingTransactionInstanceList}">
     <table class="content-table report">
       <thead>
         <tr>
