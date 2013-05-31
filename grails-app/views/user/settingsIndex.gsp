@@ -3,6 +3,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title><g:message code="user.settings.title" default="User settings" /></title>
+  <r:require modules="config" />
 </head>
 
 <body>

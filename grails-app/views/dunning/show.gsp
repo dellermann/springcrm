@@ -6,7 +6,7 @@
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <r:require modules="invoicingTransactionShow" />
+  <r:require modules="invoicingTransaction" />
   <r:script>//<![CDATA[
   (function ($) {
 
