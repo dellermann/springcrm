@@ -528,7 +528,7 @@ AddrFieldsWidget =
   _getMenu: (side) ->
     $menu = (if side is "left" then @leftMenu else @rightMenu)
     $ul = $menu.find("ul")
-    (if $ul.length then $ul else $("<ul/>").appendTo($menu))
+    (if $ul.length then $ul else $("<div><ul/></div>").appendTo($menu).find("ul"))
 
   # Loads address data from the organization stored on the server.
   #
@@ -652,10 +652,6 @@ SPRINGCRM.page = (->
       doc.forms.searchableForm.submit()
       false
     $("#quick-access").change onChangeQuickAccess
-    $("#main-menu > li").add(".menu").on "hover", ->
-      $(this).find("ul")
-        .stop(true, true)
-        .slideToggle()
     $("#print-btn").on "click", -> win.print()
     $(".submit-btn").click onSubmitForm
     $(".delete-btn").deleteConfirm()

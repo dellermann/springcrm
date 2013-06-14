@@ -257,6 +257,9 @@ body {
       float: right;
       padding: .5em 1.5em;
     }
+    &:hover div {
+      max-height: 40em;
+    }
     > a {
       color: white;
       display: block;
@@ -270,15 +273,19 @@ body {
       @color-gradient-hover-0; @color-gradient-hover-1; #597F12
     );
   }
+  div {
+    .transition(max-height .7s);
+    max-height: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: 2;
+  }
   ul {
     .background-alpha(rgba(238, 238, 238, .9));
     .box-shadow(0; 2px; 3px; rgba(0, 0, 0, .6));
     border: 1px solid @color-default-border-1;
     border-top: none;
-    display: none;
     margin: 0;
-    position: absolute;
-    z-index: 2;
 
     li {
       list-style: none;
@@ -663,34 +670,44 @@ footer {
   position: relative;
   top: 0;
 
+  div {
+    .transition(max-height .8s);
+    max-height: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    z-index: 3;
+  }
   ul {
     .background-alpha(rgba(238, 238, 238, .9));
     .box-shadow(0; 2px; 3px; rgba(0, 0, 0, .6));
     border: 1px solid @color-default-border-1;
-    display: none;
     margin: 0;
-    position: absolute;
-    right: 0;
-    z-index: 3;
+  }
+  &:hover div {
+    max-height: 15em;
   }
   li {
     cursor: pointer;
     font-size: 93%;
     list-style: none;
     margin-bottom: .3em;
-    padding: .2em 1.5em .2em 1em;
+    min-width: 8em;
+    padding: .4em .5em;
     white-space: nowrap;
 
     &:last-child {
-      margin-bottom: 0;
+      margin-bottom: 0 !important;
     }
     &:hover {
       background: @color-default-bg-1;
     }
+    a {
+      display: block;
+    }
   }
   a {
     color: @color-default;
-    text-align: left;
   }
   .with-link {
     padding: 0;

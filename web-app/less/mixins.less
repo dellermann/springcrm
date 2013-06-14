@@ -101,4 +101,10 @@
   background: linear-gradient(~"@{fromSideOrCorner}", @from, @to);
 }
 
+.transition(...) {
+  -moz-transition: @arguments;
+  -webkit-transition: @arguments;
+  transition: @arguments;
+}
+
 /* vim:set ts=2 sw=2 sts=2: */

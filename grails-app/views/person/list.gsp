@@ -15,10 +15,12 @@
       <ul id="toolbar">
         <li class="menu">
           <span class="button menu-button white"><span><g:message code="default.export" default="Export" /></span></span>
-          <ul>
-            <li class="with-link"><g:link action="gdatasync"><g:message code="person.action.gdataExport.label" /></g:link></li>
-            <li class="with-link"><g:link action="ldapexport"><g:message code="person.action.ldapExport.label" /></g:link></li>
-          </ul>
+          <div>
+            <ul>
+              <li class="with-link"><g:link action="gdatasync"><g:message code="person.action.gdataExport.label" /></g:link></li>
+              <li class="with-link"><g:link action="ldapexport"><g:message code="person.action.ldapExport.label" /></g:link></li>
+            </ul>
+          </div>
         </li>
         <li><g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
