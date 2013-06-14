@@ -40,7 +40,6 @@ class SalesOrderController {
     //-- Instance variables ---------------------
 
     FopService fopService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -123,9 +122,7 @@ class SalesOrderController {
             return
         }
 
-        lruService.recordItem controllerName, salesOrderInstance
-        salesOrderInstance.index()
-
+        request.salesOrderInstance = salesOrderInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -206,9 +203,7 @@ class SalesOrderController {
             return
         }
 
-        lruService.recordItem controllerName, salesOrderInstance
-        salesOrderInstance.reindex()
-
+        request.salesOrderInstance = salesOrderInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

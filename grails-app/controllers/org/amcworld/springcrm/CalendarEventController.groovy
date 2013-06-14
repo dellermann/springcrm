@@ -35,11 +35,6 @@ class CalendarEventController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
-
-    LruService lruService
-
-
     //-- Public methods -------------------------
 
     def index() {
@@ -161,9 +156,7 @@ class CalendarEventController {
         calendarEventInstance.save flush: true
         saveReminders(calendarEventInstance)
 
-        lruService.recordItem controllerName, calendarEventInstance
-        calendarEventInstance.index()
-
+        request.calendarEventInstance = calendarEventInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -234,8 +227,7 @@ class CalendarEventController {
         calendarEventInstance.save(flush: true)
         saveReminders(calendarEventInstance, session.user)
 
-        lruService.recordItem controllerName, calendarEventInstance
-        calendarEventInstance.reindex()
+        request.calendarEventInstance = calendarEventInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
 
         if (params.returnUrl) {

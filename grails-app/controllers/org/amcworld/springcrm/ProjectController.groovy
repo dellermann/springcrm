@@ -42,7 +42,6 @@ class ProjectController {
     //-- Instance variables ---------------------
 
     FileService fileService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -98,9 +97,7 @@ class ProjectController {
             return
         }
 
-        lruService.recordItem controllerName, projectInstance
-        projectInstance.index()
-
+        request.projectInstance = projectInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -190,9 +187,7 @@ class ProjectController {
             return
         }
 
-        lruService.recordItem controllerName, projectInstance
-        projectInstance.reindex()
-
+        request.projectInstance = projectInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

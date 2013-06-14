@@ -46,7 +46,6 @@ class PurchaseInvoiceController {
     //-- Instance variables ---------------------
 
     FileService fileService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -105,8 +104,7 @@ class PurchaseInvoiceController {
             return
         }
 
-        lruService.recordItem controllerName, purchaseInvoiceInstance
-        purchaseInvoiceInstance.index()
+        request.purchaseInvoiceInstance = purchaseInvoiceInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -196,9 +194,7 @@ class PurchaseInvoiceController {
             return
         }
 
-        lruService.recordItem controllerName, purchaseInvoiceInstance
-        purchaseInvoiceInstance.reindex()
-
+        request.purchaseInvoiceInstance = purchaseInvoiceInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

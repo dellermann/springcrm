@@ -1,7 +1,7 @@
 /*
  * ProjectFilters.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * related operations for many controllers.
  *
  * @author	Daniel Ellermann
- * @version 1.0
+ * @version 1.3
+ * @since   1.0
  */
 class ProjectFilters {
 
@@ -56,59 +57,50 @@ class ProjectFilters {
 
         createProjectItem(controller: '*', action: 'save') {
             after = { model ->
-                if (params.id && params.project && params.projectPhase) {
-                    GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
-                        'Domain', controllerName
-                    )
-                    long id = params.long('id')
-                    def instance = cls.clazz.'get'(id)
-                    if (instance) {
-                        def project = Project.get(params.long('project'))
-                        if (project) {
-                            def phase = ProjectPhase.valueOf(params.projectPhase)
-                            project.phase = phase
-                            project.save(flush: true)
-                            def projectItem = new ProjectItem(
-                                project: project, phase: phase,
-                                controller: controllerName, itemId: id,
-                                title: instance.toString()
-                            )
-                            projectItem.save(flush: true)
-                        }
-                    }
+                def instance = request["${controllerName}Instance"]
+                if (!instance || !params.project || !params.projectPhase) {
+                    return
                 }
+
+                Project project = Project.get(params.long('project'))
+                if (!project) {
+                    return
+                }
+
+                def phase = ProjectPhase.valueOf(params.projectPhase)
+                project.phase = phase
+                project.save flush: true
+
+                ProjectItem projectItem = new ProjectItem(
+                    project: project, phase: phase,
+                    controller: controllerName, itemId: instance.ident(),
+                    title: instance.toString()
+                )
+                projectItem.save flush: true
             }
         }
 
         updateProjectItem(controller: '*', action: 'update') {
             after = { model ->
-                if (params.id) {
-                    GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
-                        'Domain', controllerName
-                    )
-                    long id = params.long('id')
-                    def instance = cls.clazz.'get'(id)
-                    if (instance) {
-                        def l = ProjectItem.findAllByControllerAndItemId(
-                            controllerName, params.long('id')
-                        )
-                        String title = instance.toString()
-                        l.each {
-                            it.title = title
-                            it.save(flush: true)
-                        }
-                    }
+                def instance = request["${controllerName}Instance"]
+                if (!instance) {
+                    return
                 }
+
+                def query = ProjectItem.where {
+                    controller == controllerName && itemId == instance.ident()
+                }
+                query.updateAll title: instance.toString()
             }
         }
 
         deleteProjectItem(controller: '*', action: 'delete') {
             after = { model ->
                 if (params.id && params.confirmed) {
-                    def l = ProjectItem.findAllByControllerAndItemId(
-                        controllerName, params.long('id')
-                    )
-                    l.each { it.delete(flush: true) }
+                    def query = ProjectItem.where {
+                        controller == controllerName && itemId == params.long('id')
+                    }
+                    query.deleteAll()
                 }
             }
         }

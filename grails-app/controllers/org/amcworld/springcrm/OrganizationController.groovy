@@ -38,11 +38,6 @@ class OrganizationController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
-
-    LruService lruService
-
-
     //-- Public methods -------------------------
 
     def index() {
@@ -93,9 +88,7 @@ class OrganizationController {
             return
         }
 
-        lruService.recordItem controllerName, organizationInstance
-        organizationInstance.index()
-
+        request.organizationInstance = organizationInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -151,9 +144,7 @@ class OrganizationController {
             return
         }
 
-        lruService.recordItem controllerName, organizationInstance
-        organizationInstance.reindex()
-
+        request.organizationInstance = organizationInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'organization.label', default: 'Organization'), organizationInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

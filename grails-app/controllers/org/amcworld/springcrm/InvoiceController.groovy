@@ -40,7 +40,6 @@ class InvoiceController {
     //-- Instance variables ---------------------
 
     FopService fopService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -134,9 +133,7 @@ class InvoiceController {
             return
         }
 
-        lruService.recordItem controllerName, invoiceInstance
-        invoiceInstance.index()
-
+        request.invoiceInstance = invoiceInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -237,9 +234,7 @@ class InvoiceController {
             return
         }
 
-        lruService.recordItem controllerName, invoiceInstance
-        invoiceInstance.reindex()
-
+        request.invoiceInstance = invoiceInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -272,9 +267,7 @@ class InvoiceController {
             return
         }
 
-        lruService.recordItem controllerName, invoiceInstance
-        invoiceInstance.reindex()
-
+        request.invoiceInstance = invoiceInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'invoice.label', default: 'Invoice'), invoiceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

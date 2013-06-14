@@ -40,7 +40,6 @@ class DunningController {
     //-- Instance variables ---------------------
 
     FopService fopService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -145,8 +144,7 @@ class DunningController {
             return
         }
 
-        lruService.recordItem controllerName, dunningInstance
-        dunningInstance.index()
+        request.dunningInstance = dunningInstance
 
         def invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)
@@ -253,8 +251,7 @@ class DunningController {
             return
         }
 
-        lruService.recordItem controllerName, dunningInstance
-        dunningInstance.reindex()
+        request.dunningInstance = dunningInstance
 
         def invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)
@@ -293,9 +290,7 @@ class DunningController {
             return
         }
 
-        lruService.recordItem controllerName, dunningInstance
-        dunningInstance.reindex()
-
+        request.dunningInstance = dunningInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'dunning.label', default: 'Dunning'), dunningInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

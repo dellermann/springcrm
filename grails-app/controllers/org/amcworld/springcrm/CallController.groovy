@@ -35,11 +35,6 @@ class CallController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
-
-    LruService lruService
-
-
     //-- Public methods -------------------------
 
     def index() {
@@ -123,8 +118,7 @@ class CallController {
             return
         }
 
-        lruService.recordItem controllerName, callInstance
-        callInstance.index()
+        request.callInstance = callInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -177,8 +171,7 @@ class CallController {
             return
         }
 
-        lruService.recordItem controllerName, callInstance
-        callInstance.reindex()
+        request.callInstance = callInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
 
         if (params.returnUrl) {

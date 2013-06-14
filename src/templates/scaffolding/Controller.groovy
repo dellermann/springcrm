@@ -67,9 +67,7 @@ class ${className}Controller {
             return
         }
 
-        lruService.recordItem controllerName, ${propertyName}
-        ${propertyName}.index()
-
+        request.${propertyName} = ${propertyName}
         flash.message = message(code: 'default.created.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -124,9 +122,7 @@ class ${className}Controller {
             return
         }
 
-        lruService.recordItem controllerName, ${propertyName}
-        ${propertyName}.reindex()
-
+        request.${propertyName} = ${propertyName}
         flash.message = message(code: 'default.updated.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), ${propertyName}.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

@@ -44,7 +44,6 @@ class PersonController {
 
     GoogleContactSyncService googleContactSyncService
     LdapService ldapService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -97,8 +96,7 @@ class PersonController {
             return
         }
 
-        lruService.recordItem controllerName, personInstance
-        personInstance.index()
+        request.personInstance = personInstance
         if (ldapService) {
             ldapService.save personInstance
         }
@@ -165,8 +163,7 @@ class PersonController {
             return
         }
 
-        lruService.recordItem controllerName, personInstance
-        personInstance.reindex()
+        request.personInstance = personInstance
         if (ldapService) {
             ldapService.save personInstance
         }

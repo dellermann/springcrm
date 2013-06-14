@@ -43,7 +43,6 @@ class UserController {
 
     GoogleOAuthService googleOAuthService
     InstallService installService
-    LruService lruService
     SecurityService securityService
     UserService userService
 
@@ -82,8 +81,7 @@ class UserController {
             return
         }
 
-        lruService.recordItem controllerName, userInstance
-
+        request.userInstance = userInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -147,6 +145,7 @@ class UserController {
             return
         }
 
+        request.userInstance = userInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

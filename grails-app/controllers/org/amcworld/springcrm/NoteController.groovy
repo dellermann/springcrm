@@ -34,11 +34,6 @@ class NoteController {
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
-
-    LruService lruService
-
-
     //-- Public methods -------------------------
 
     def index() {
@@ -112,9 +107,7 @@ class NoteController {
             return
         }
 
-        lruService.recordItem controllerName, noteInstance
-        noteInstance.index()
-
+        request.noteInstance = noteInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -170,9 +163,7 @@ class NoteController {
             return
         }
 
-        lruService.recordItem controllerName, noteInstance
-        noteInstance.reindex()
-
+        request.noteInstance = noteInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

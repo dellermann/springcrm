@@ -40,7 +40,6 @@ class CreditMemoController {
     //-- Instance variables ---------------------
 
     FopService fopService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -140,8 +139,7 @@ class CreditMemoController {
             return
         }
 
-        lruService.recordItem controllerName, creditMemoInstance
-        creditMemoInstance.index()
+        request.creditMemoInstance = creditMemoInstance
 
         def invoiceInstance = creditMemoInstance.invoice
         if (invoiceInstance) {
@@ -256,8 +254,7 @@ class CreditMemoController {
             return
         }
 
-        lruService.recordItem controllerName, creditMemoInstance
-        creditMemoInstance.reindex()
+        request.creditMemoInstance = creditMemoInstance
 
         def invoiceInstance = creditMemoInstance.invoice
         if (invoiceInstance) {
@@ -304,9 +301,7 @@ class CreditMemoController {
             return
         }
 
-        lruService.recordItem controllerName, creditMemoInstance
-        creditMemoInstance.reindex()
-
+        request.creditMemoInstance = creditMemoInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'creditMemo.label', default: 'Credit memo'), creditMemoInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

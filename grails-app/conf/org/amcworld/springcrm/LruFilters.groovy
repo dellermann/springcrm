@@ -42,22 +42,28 @@ class LruFilters {
     //-- Public methods -------------------------
 
     def filters = {
-        lruRecord(controller: '*', action: 'show|edit') {
+        lruRecord(controller: '*',
+                  action: 'show|edit|save|update|updatePayment')
+        {
             after = { model ->
-                if (!model) {
-                    return
+                def instance = null
+                if (model) {
+                    instance = model["${controllerName}Instance"]
                 }
-
-                def instance = model["${controllerName}Instance"]
+                if (!instance) {
+                    instance = request["${controllerName}Instance"]
+                }
                 if (!instance) {
                     return
                 }
 
-                lruService.recordItem controllerName, params.id as long, instance.toString()
+                lruService.recordItem controllerName, instance
             }
         }
 
-        lruRemove(controller: '*', action: 'delete', controllerExclude: 'document') {
+        lruRemove(controller: '*', action: 'delete',
+                  controllerExclude: 'document')
+        {
             before = {
                 if (params.confirmed) {
                     lruService.removeItem controllerName, params.id as long

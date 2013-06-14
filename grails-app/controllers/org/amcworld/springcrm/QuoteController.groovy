@@ -40,7 +40,6 @@ class QuoteController {
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -112,9 +111,7 @@ class QuoteController {
             return
         }
 
-        lruService.recordItem controllerName, quoteInstance
-        quoteInstance.index()
-
+        request.quoteInstance = quoteInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -167,9 +164,7 @@ class QuoteController {
             return
         }
 
-        lruService.recordItem controllerName, quoteInstance
-        quoteInstance.reindex()
-
+        request.quoteInstance = quoteInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

@@ -39,7 +39,6 @@ class ServiceController {
 
     //-- Instance variables ---------------------
 
-    LruService lruService
     SalesItemService salesItemService
 
 
@@ -108,9 +107,7 @@ class ServiceController {
             return
         }
 
-        lruService.recordItem controllerName, serviceInstance
-        serviceInstance.index()
-
+        request.serviceInstance = serviceInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -163,9 +160,7 @@ class ServiceController {
             return
         }
 
-        lruService.recordItem controllerName, serviceInstance
-        serviceInstance.reindex()
-
+        request.serviceInstance = serviceInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl

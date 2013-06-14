@@ -39,7 +39,6 @@ class ProductController {
 
     //-- Instance variables ---------------------
 
-    LruService lruService
     SalesItemService salesItemService
 
 
@@ -109,9 +108,7 @@ class ProductController {
             return
         }
 
-        lruService.recordItem controllerName, productInstance
-        productInstance.index()
-
+        request.productInstance = productInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -164,8 +161,7 @@ class ProductController {
             return
         }
 
-        lruService.recordItem controllerName, productInstance
-        productInstance.reindex()
+        request.productInstance = productInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
         if (params.returnUrl) {
             redirect url: params.returnUrl
