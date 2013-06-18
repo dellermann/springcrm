@@ -301,6 +301,12 @@
       <scope>provided</scope>
       <type>zip</type>
     </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>2.33.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 

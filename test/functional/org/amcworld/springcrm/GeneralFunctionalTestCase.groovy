@@ -257,6 +257,22 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
+     * Gets the selected text of the autocompleteex widget with the given ID or
+     * name.
+     *
+     * @param idOrName  the ID or the name of the autocompleteex input control
+     * @return          the selected text; {@code null} if no input control
+     *                  with the given ID or name was found
+     */
+    protected String getAutocompleteExValue(String idOrName) {
+        List<WebElement> inputs = driver.findElements(By.id(idOrName))
+        if (!inputs) {
+            inputs = driver.findElements(By.name(idOrName))
+        }
+        inputs?.get(0)?.getAttribute('value')
+    }
+
+    /**
      * Gets the given date or the current date formatted with the medium
      * format.
      *
@@ -436,9 +452,198 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
+     * Prepares a phone call and stores it into the database.
+     *
+     * @param org   the organization the phone call belongs to
+     * @param p     the person the phone call belongs to
+     * @return      the prepared phone call
+     */
+    protected Call prepareCall(Organization org, Person p) {
+        def call = new Call(
+            subject: 'Bitte um Angebot',
+            start: new GregorianCalendar(2013, Calendar.FEBRUARY, 13, 9, 15, 0).time,
+            organization: org,
+            person: p,
+            phone: '04543 31233',
+            type: CallType.incoming,
+            status: CallStatus.completed,
+            notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.'
+        )
+        call.save flush: true
+        call
+    }
+
+    /**
+     * Prepares a credit memo and stores it into the database.
+     *
+     * @param org       the organization the credit memo belongs to
+     * @param p         the person the credit memo belongs to
+     * @param invoice   the invoice associated to this credit memo
+     * @return          the created credit memo
+     */
+    protected CreditMemo prepareCreditMemo(Organization org, Person p,
+                                           Invoice invoice)
+    {
+        def creditMemo = new CreditMemo(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.APRIL, 8).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.APRIL, 9).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.',
+            footerText: 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.',
+            notes: 'Gutschrift für nicht lieferbare Artikel.',
+            stage: CreditMemoStage.get(2502),
+            dueDatePayment: new GregorianCalendar(2013, Calendar.APRIL, 16).time,
+            invoice: invoice
+        )
+        creditMemo.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        creditMemo
+    }
+
+    /**
+     * Prepares an invoice and stores it into the database.
+     *
+     * @param org           the organization the invoice belongs to
+     * @param p             the person the invoice belongs to
+     * @param quote         the quote associated to this invoice
+     * @param salesOrder    the sales order associated to the invoice
+     * @return              the created invoice
+     */
+    protected Invoice prepareInvoice(Organization org, Person p, Quote quote,
+                                     SalesOrder salesOrder)
+    {
+        def invoice = new Invoice(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.APRIL, 1).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.APRIL, 2).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''',
+            footerText: 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.',
+            notes: 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!',
+            stage: InvoiceStage.get(902),
+            dueDatePayment: new GregorianCalendar(2013, Calendar.APRIL, 16).time,
+            quote: quote,
+            salesOrder: salesOrder
+        )
+        invoice.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        invoice
+    }
+
+    /**
+     * Prepares a note and stores it into the database.
+     *
+     * @param org   the organization the note belongs to
+     * @param p     the person the note belongs to
+     * @return      the prepared note
+     */
+    protected Note prepareNote(Organization org, Person p) {
+        def note = new Note(
+            title: 'Besprechung vom 21.01.2013',
+            organization: org,
+            person: p,
+            content: '''<h1>Besprechung der PR-Aktion am 21.01.2013</h1>
+<p>Am 21.01.2013 trafen wir uns mit Henry Brackmann und besprachen die
+Vorgehensweise bei der geplanten PR-Aktion. Herr Brackmann will den Schwerpunkt
+auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
+<p>Wir vereinbarten folgende Vorgehensweise:</p>
+<ul>
+  <li>Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee
+  GbR</li>
+  <li>Konzeption des Werbekonzepts</li>
+  <li>Kostenermittlung der einzelnen Werbemöglichkeiten</li>
+</ul>'''
+        )
+        note.save flush: true
+        note
+    }
+
+    /**
      * Prepares an organization fixture and stores it into the database.
      *
-     * @return      the prepared organization
+     * @return  the prepared organization
      */
     protected Organization prepareOrganization() {
         def org = new Organization(
@@ -463,8 +668,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             shippingAddrCountry: 'Deutschland',
             notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         )
-        org.save(flush: true)
-        return org
+        org.save flush: true
+        org
     }
 
     /**
@@ -497,8 +702,141 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             assistant: 'Anna Schmarge',
             birthday: new GregorianCalendar(1962, Calendar.FEBRUARY, 14).time
         )
-        person.save(flush: true)
-        return person
+        person.save flush: true
+        person
+    }
+
+    /**
+     * Prepares a quote and stores it into the database.
+     *
+     * @param org   the organization the quote belongs to
+     * @param p     the person the quote belongs to
+     * @return      the created quote
+     */
+    protected Quote prepareQuote(Organization org, Person p) {
+        def quote = new Quote(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.FEBRUARY, 20).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.FEBRUARY, 21).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
+            footerText: 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.',
+            notes: 'Angebot unterliegt möglicherweise weiteren Änderungen.',
+            stage: QuoteStage.get(602),
+            validUntil: new GregorianCalendar(2013, Calendar.MARCH, 20).time
+        )
+        quote.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        quote
+    }
+
+    /**
+     * Prepares a sales order and stores it into the database.
+     *
+     * @param org   the organization the sales order belongs to
+     * @param p     the person the sales order belongs to
+     * @param quote the quote associated to this sales order
+     * @return      the created sales order
+     */
+    protected SalesOrder prepareSalesOrder(Organization org, Person p,
+                                           Quote quote)
+    {
+        def salesOrder = new SalesOrder(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.MARCH, 4).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.MARCH, 5).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".',
+            footerText: 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.',
+            notes: 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.',
+            stage: SalesOrderStage.get(802),
+            dueDate: new GregorianCalendar(2013, Calendar.MARCH, 28).time,
+            quote: quote
+        )
+        salesOrder.addToItems(new InvoicingItem(
+                number: 'S-10000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption der geplanten Werbekampagne',
+                unitPrice: 440.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-10100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mustervorschau',
+                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                unitPrice: 450.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'P-10000',
+                quantity: 2.0d,
+                unit: 'Packung',
+                name: 'Papier A4 80 g/m²',
+                description: 'Packung zu 100 Blatt. Chlorfrei gebleicht.',
+                unitPrice: 2.49d,
+                tax: 7.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            addToTermsAndConditions(TermsAndConditions.get(701)).
+            save(flush: true)
+        salesOrder
     }
 
     /**

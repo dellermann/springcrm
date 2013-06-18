@@ -93,7 +93,7 @@ class ViewFilters {
         selectorView(controller: '*', action: 'list') {
             after = { model ->
                 String view = (params.view == 'selector') ? 'selectorList' : 'list'
-                render(view: "/${controllerName}/${view}", model: model)
+                render view: "/${controllerName}/${view}", model: model
             }
         }
 

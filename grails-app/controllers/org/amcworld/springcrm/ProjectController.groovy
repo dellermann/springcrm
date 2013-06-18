@@ -281,4 +281,15 @@ class ProjectController {
         }
         render status: HttpServletResponse.SC_OK
     }
+
+    def removeItem(Long id) {
+        def projectItemInstance = ProjectItem.get(id)
+        if (!projectItemInstance) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+            return
+        }
+
+        projectItemInstance.delete flush: true
+        render status: HttpServletResponse.SC_OK
+    }
 }

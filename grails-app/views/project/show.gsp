@@ -15,6 +15,7 @@
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
+        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <li><g:link action="edit" id="${projectInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${projectInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
         <li><g:link action="delete" id="${projectInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
@@ -82,7 +83,13 @@
                 <g:if test="${items || documents}">
                 <ul class="project-phase-items">
                   <g:each in="${items}" var="item">
-                  <li><g:link controller="${item.controller}" action="show" id="${item.itemId}" class="data-type data-type-${item.controller}">${item.title}</g:link></li>
+                  <li>
+                    <g:link controller="${item.controller}" action="show" id="${item.itemId}" class="data-type data-type-${item.controller}">${item.title}</g:link>
+                    <span class="item-actions">
+                      <g:link controller="${item.controller}" action="edit" id="${item.itemId}" params="[returnUrl: url()]"><g:img dir="img" file="edit.png" alt="${message(code: 'project.item.edit.label')}" title="${message(code: 'project.item.edit.label')}" width="16" height="16" /></g:link>
+                      <g:link action="removeItem" id="${item.id}" class="item-delete-btn"><g:img dir="img" file="remove.png" alt="${message(code: 'project.item.remove.label')}" title="${message(code: 'project.item.remove.label')}" width="16" height="16" /></g:link>
+                    </span>
+                  </li>
                   </g:each>
                   <g:each in="${documents}" var="document">
                   <li><g:link controller="document" action="download" id="${document.path}" target="_blank" class="data-type data-type-document">${document.title}</g:link></li>

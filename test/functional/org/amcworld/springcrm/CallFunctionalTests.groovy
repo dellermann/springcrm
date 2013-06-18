@@ -333,19 +333,4 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
     protected Object getDatasets() {
         return ['test-data/install-data.xml']
     }
-
-    protected Call prepareCall(Organization org, Person p) {
-        def call = new Call(
-            subject: 'Bitte um Angebot',
-            start: new GregorianCalendar(2013, Calendar.FEBRUARY, 13, 9, 15, 0).time,
-            organization: org,
-            person: p,
-            phone: '04543 31233',
-            type: CallType.incoming,
-            status: CallStatus.completed,
-            notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.'
-        )
-        call.save(flush: true)
-        return call
-    }
 }

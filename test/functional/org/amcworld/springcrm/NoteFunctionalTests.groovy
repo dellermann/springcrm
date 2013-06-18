@@ -346,25 +346,4 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
     protected Object getDatasets() {
         return ['test-data/install-data.xml']
     }
-
-    protected Note prepareNote(Organization org, Person p) {
-        def note = new Note(
-            title: 'Besprechung vom 21.01.2013',
-            organization: org,
-            person: p,
-            content: '''<h1>Besprechung der PR-Aktion am 21.01.2013</h1>
-<p>Am 21.01.2013 trafen wir uns mit Henry Brackmann und besprachen die
-Vorgehensweise bei der geplanten PR-Aktion. Herr Brackmann will den Schwerpunkt
-auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
-<p>Wir vereinbarten folgende Vorgehensweise:</p>
-<ul>
-  <li>Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee
-  GbR</li>
-  <li>Konzeption des Werbekonzepts</li>
-  <li>Kostenermittlung der einzelnen Werbemöglichkeiten</li>
-</ul>'''
-        )
-        note.save(flush: true)
-        return note
-    }
 }

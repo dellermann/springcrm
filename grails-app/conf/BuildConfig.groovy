@@ -86,7 +86,7 @@ grails.project.dependency.resolution = {
         */
 
         test(
-            'org.seleniumhq.selenium:selenium-java:2.29.0'
+            'org.seleniumhq.selenium:selenium-java:2.33.0'
         )
     }
 

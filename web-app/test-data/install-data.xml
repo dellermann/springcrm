@@ -135,6 +135,12 @@
   <sel_value id="2502" version="0" name="versendet" order_id="30" class="org.amcworld.springcrm.CreditMemoStage"/>
   <sel_value id="2503" version="0" name="bezahlt" order_id="40" class="org.amcworld.springcrm.CreditMemoStage"/>
   <sel_value id="2504" version="0" name="storniert" order_id="50" class="org.amcworld.springcrm.CreditMemoStage"/>
+  <sel_value id="2600" version="0" name="in Bearbeitung" order_id="10" class="org.amcworld.springcrm.ProjectStatus"/>
+  <sel_value id="2601" version="0" name="pausiert" order_id="20" class="org.amcworld.springcrm.ProjectStatus"/>
+  <sel_value id="2602" version="0" name="wartet auf Kunden" order_id="30" class="org.amcworld.springcrm.ProjectStatus"/>
+  <sel_value id="2603" version="0" name="wartet auf Lieferanten" order_id="40" class="org.amcworld.springcrm.ProjectStatus"/>
+  <sel_value id="2604" version="0" name="abgeschlossen" order_id="50" class="org.amcworld.springcrm.ProjectStatus"/>
+  <sel_value id="2605" version="0" name="abgebrochen" order_id="60" class="org.amcworld.springcrm.ProjectStatus"/>
   <sel_value id="3000" version="0" name="Materialien" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
   <sel_value id="3001" version="0" name="Maschinen" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>
   <sel_value id="3002" version="0" name="Technik" order_id="0" class="org.amcworld.springcrm.ProductCategory"/>

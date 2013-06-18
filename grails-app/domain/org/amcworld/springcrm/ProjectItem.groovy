@@ -62,7 +62,7 @@ class ProjectItem {
     }
 
     int hashCode() {
-        return "${project.ident()}-${phase}-${controller}-${itemId}".hashCode()
+        return "${project?.ident()}-${phase}-${controller}-${itemId}".hashCode()
     }
 
     String toString() {
