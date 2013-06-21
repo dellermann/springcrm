@@ -270,6 +270,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         ]
         assert 2 == Call.count()
         assert 0 == CreditMemo.count()
+        assert 0 == Dunning.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 1 == Quote.count()
@@ -323,6 +324,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         ]
         assert 2 == Call.count()
         assert 0 == CreditMemo.count()
+        assert 0 == Dunning.count()
         assert 1 == Invoice.count()
         assert 1 == Note.count()
         assert 2 == Quote.count()
@@ -348,6 +350,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         ]
         assert 2 == Call.count()
         assert 0 == CreditMemo.count()
+        assert 0 == Dunning.count()
         assert 1 == Invoice.count()
         assert 2 == Note.count()
         assert 2 == Quote.count()
@@ -398,6 +401,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         ]
         assert 2 == Call.count()
         assert 0 == CreditMemo.count()
+        assert 0 == Dunning.count()
         assert 1 == Invoice.count()
         assert 2 == Note.count()
         assert 2 == Quote.count()
@@ -454,6 +458,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         ]
         assert 2 == Call.count()
         assert 0 == CreditMemo.count()
+        assert 0 == Dunning.count()
         assert 2 == Invoice.count()
         assert 2 == Note.count()
         assert 2 == Quote.count()
@@ -507,18 +512,63 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         ]
         assert 2 == Call.count()
         assert 1 == CreditMemo.count()
+        assert 0 == Dunning.count()
         assert 2 == Invoice.count()
         assert 2 == Note.count()
         assert 2 == Quote.count()
         assert 2 == SalesOrder.count()
 
         // TODO test creation of purchase invoice in phase 7 (zero-based)
-        // TODO test creation of dunning in phase 8 (zero-based)
+
+        createProjectItem 8, 4, '/dunning/create'
+        checkTitles 'Mahnung anlegen', 'Mahnungen', 'Neue Mahnung'
+        setInputValue 'subject', 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
+        assert 'Landschaftsbau Duvensee GbR' == getAutocompleteExValue('organization')
+        assert 'Henry Brackmann' == getAutocompleteExValue('person')
+        assert 'R-10001-10000 Änderungswünsche zur Werbekampagne Frühjahr 2013' == selectAutocompleteEx('invoice', 'Werbe')
+        setInputValue 'stage.id', '2202'
+        checkDate 'shippingDate_date'
+        setInputValue 'docDate_date', '6.5.2013'
+        setInputValue 'dueDatePayment_date', '13.5.2013'
+        setInputValue 'shippingDate_date', '7.5.2013'
+        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
+        assert '23898' == getInputValue('billingAddrPostalCode')
+        assert 'Duvensee' == getInputValue('billingAddrLocation')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
+        assert 'Deutschland' == getInputValue('billingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
+        assert '23898' == getInputValue('shippingAddrPostalCode')
+        assert 'Duvensee' == getInputValue('shippingAddrLocation')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
+        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        setInputValue 'headerText', 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.'
+        setPriceTableInputValue 0, 'number', 'S-99000'
+        setPriceTableInputValue 0, 'quantity', '1'
+        assert 'Einheiten' == selectAutocompleteEx('items[0].unit', 'Einh')
+        setPriceTableInputValue 0, 'name', 'Mahngebühren'
+        setPriceTableInputValue 0, 'unitPrice', '5'
+        setPriceTableInputValue 0, 'tax', '19'
+        submitForm getUrl('/project/show/')
+
+        checkCurrentProjectPhase 8
+        checkProjectItems 8, [
+            [
+                url: '/dunning/show/', cssClass: 'data-type-dunning',
+                label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
+            ]
+        ]
+        assert 2 == Call.count()
+        assert 1 == CreditMemo.count()
+        assert 1 == Dunning.count()
+        assert 2 == Invoice.count()
+        assert 2 == Note.count()
+        assert 2 == Quote.count()
+        assert 2 == SalesOrder.count()
 
         driver.quit()
 
         assert 1 == Project.count()
-        assert 11 == ProjectItem.count()
+        assert 12 == ProjectItem.count()
     }
 
     @Test
