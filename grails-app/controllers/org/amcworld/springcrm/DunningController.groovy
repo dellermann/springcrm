@@ -110,14 +110,14 @@ class DunningController {
         ConfigHolder config = ConfigHolder.instance
         def serviceId = config['serviceIdDunningCharge']
         if (serviceId) {
-            def service = Service.get(serviceId as Integer)
+            def service = Service.get(serviceId as Long)
             if (service) {
                 dunningInstance.addToItems serviceToItem(service)
             }
         }
         serviceId = config['serviceIdDefaultInterest']
         if (serviceId) {
-            def service = Service.get(serviceId as Integer)
+            def service = Service.get(serviceId as Long)
             if (service) {
                 dunningInstance.addToItems serviceToItem(service)
             }
@@ -391,10 +391,10 @@ class DunningController {
     //-- Non-public methods ---------------------
 
     private InvoicingItem serviceToItem(Service s) {
-        return new InvoicingItem(
-            number: s.fullNumber, quantity: s.quantity, unit: s.unit.toString(),
-            name: s.name, description: s.description, unitPrice: s.unitPrice,
-            tax: s.taxRate.taxValue * 100
+        new InvoicingItem(
+            number: s.fullNumber, quantity: s.quantity,
+            unit: s.unit.toString(), name: s.name, description: s.description,
+            unitPrice: s.unitPrice, tax: s.taxRate.taxValue * 100
         )
     }
 }

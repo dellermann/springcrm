@@ -24,7 +24,7 @@ package org.amcworld.springcrm
 /**
  * The class {@code Invoice} represents an invoice.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class Invoice extends InvoicingTransaction {
@@ -32,20 +32,20 @@ class Invoice extends InvoicingTransaction {
     //-- Class variables ------------------------
 
     static constraints = {
-		stage()
-		dueDatePayment()
-		paymentDate(nullable: true)
-		paymentAmount(min: 0.0d, widget: 'currency')
-		paymentMethod(nullable: true)
-		quote(nullable: true)
-		salesOrder(nullable: true)
+        stage()
+        dueDatePayment()
+        paymentDate nullable: true
+        paymentAmount min: 0.0d, widget: 'currency'
+        paymentMethod nullable: true
+        quote nullable: true
+        salesOrder nullable: true
     }
     static belongsTo = [quote: Quote, salesOrder: SalesOrder]
     static hasMany = [creditMemos: CreditMemo, dunnings: Dunning]
-	static mapping = {
-		stage column: 'invoice_stage_id'
-	}
-	static searchable = true
+    static mapping = {
+        stage column: 'invoice_stage_id'
+    }
+    static searchable = true
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'
@@ -56,37 +56,37 @@ class Invoice extends InvoicingTransaction {
 
     def userService
 
-	InvoiceStage stage
-	Date dueDatePayment
-	Date paymentDate
-	double paymentAmount
-	PaymentMethod paymentMethod
+    InvoiceStage stage
+    Date dueDatePayment
+    Date paymentDate
+    double paymentAmount
+    PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
 
-	Invoice() {
+    Invoice() {
         type = 'I'
     }
 
-	Invoice(Quote q) {
-		super(q)
+    Invoice(Quote q) {
+        super(q)
         type = 'I'
-		quote = q
-	}
+        quote = q
+    }
 
-	Invoice(SalesOrder so) {
-		super(so)
+    Invoice(SalesOrder so) {
+        super(so)
         type = 'I'
-		salesOrder = so
-	}
+        salesOrder = so
+    }
 
-	Invoice(Invoice i) {
-		super(i)
+    Invoice(Invoice i) {
+        super(i)
         type = 'I'
-		quote = i.quote
-		salesOrder = i.salesOrder
-	}
+        quote = i.quote
+        salesOrder = i.salesOrder
+    }
 
 
     //-- Public methods -------------------------
@@ -103,7 +103,7 @@ class Invoice extends InvoicingTransaction {
      * @see     #getClosingBalance()
      */
     double getBalance() {
-        return paymentAmount - total
+        paymentAmount - total
     }
 
     /**
@@ -118,7 +118,7 @@ class Invoice extends InvoicingTransaction {
      * @see     #getBalance()
      */
     double getClosingBalance() {
-        return balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)
+        (balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigits)
     }
 
     /**
@@ -136,7 +136,7 @@ class Invoice extends InvoicingTransaction {
         } else if (closingBalance > 0.0d) {
             color = 'green'
         }
-        return color
+        color
     }
 
     /**
@@ -179,7 +179,7 @@ class Invoice extends InvoicingTransaction {
             color = colorIndicatorByDate()
             break
         }
-        return color
+        color
     }
 
 
@@ -204,6 +204,6 @@ class Invoice extends InvoicingTransaction {
                 color = 'red'
             }
         }
-        return color
+        color
     }
 }

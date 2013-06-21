@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<dataset>
+  <sales_item id="100" version="0" date_created="2013-06-18 18:14:00"
+    description=""
+    last_updated="2013-06-18 18:14:00" name="Mahngebühren" number="99000"
+    quantity="1" tax_rate_id="400" type="S" unit_id="301"
+    unit_price="5.0" class="org.amcworld.springcrm.Service"/>
+  <sales_item id="101" version="0" date_created="2013-06-18 18:14:00"
+    description="Verzugszinsen 5 %" last_updated="2013-06-18 18:14:00"
+    name="Verzugszinsen" number="99001" quantity="1" tax_rate_id="400" type="S"
+    unit_id="301" unit_price="10" class="org.amcworld.springcrm.Service"/>
+  <config version="0" name="serviceIdDunningCharge" value="100"/>
+  <config version="0" name="serviceIdDefaultInterest" value="101"/>
+</dataset>

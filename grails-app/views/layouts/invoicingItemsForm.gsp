@@ -81,16 +81,17 @@
     <tr>
       <td class="pos number">${i + 1}.</td>
       <td class="item-number">
-        <input type="text" name="items[${i}].number" size="10" value="${item.number}" />
+        <input type="text" name="items[${i}].number" size="10" value="${fieldValue(bean: item, field: 'number')}" />
       </td>
       <td class="quantity number">
         <input type="text" name="items[${i}].quantity" size="4" value="${formatNumber(type: 'number', number: item.quantity, maxFractionDigits: 3, groupingUsed: true)}" />
       </td>
       <td class="unit">
-        <input type="text" name="items[${i}].unit" size="8" value="${item.unit}" />
+        <input type="text" name="items[${i}].unit" size="8" value="${fieldValue(bean: item, field: 'unit')}" />
       </td>
       <td class="name">
-        <input type="text" name="items[${i}].name" size="28" value="${item.name}" /><g:ifModuleAllowed modules="product">&nbsp;<img class="select-btn-products" src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingTransaction.selector.products.title')}" title="${message(code: 'invoicingTransaction.selector.products.title')}" width="16" height="16" /></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<img class="select-btn-services" src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingTransaction.selector.services.title')}" title="${message(code: 'invoicingTransaction.selector.services.title')}" width="16" height="16" /></g:ifModuleAllowed><br /><textarea name="items[${i}].description" cols="30" rows="3">${item.description}</textarea>
+        <input type="text" name="items[${i}].name" size="28" value="${fieldValue(bean: item, field: 'name')}" /><g:ifModuleAllowed modules="product">&nbsp;<img class="select-btn-products" src="${resource(dir: 'img', file: 'products.png')}" alt="${message(code: 'invoicingTransaction.selector.products.title')}" title="${message(code: 'invoicingTransaction.selector.products.title')}" width="16" height="16" /></g:ifModuleAllowed><g:ifModuleAllowed modules="service">&nbsp;<img class="select-btn-services" src="${resource(dir: 'img', file: 'services.png')}" alt="${message(code: 'invoicingTransaction.selector.services.title')}" title="${message(code: 'invoicingTransaction.selector.services.title')}" width="16" height="16" /></g:ifModuleAllowed><br />
+        <textarea name="items[${i}].description" cols="30" rows="3">${fieldValue(bean: item, field: 'description')}</textarea>
       </td>
       <td class="unit-price currency number">
         <input type="text" name="items[${i}].unitPrice" size="8" value="${formatNumber(type: 'number', number: item.unitPrice, minFractionDigits: numFractionDigits, groupingUsed: true)}" />&nbsp;<g:currency />

@@ -76,8 +76,12 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == i.
         assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == i.notes
         assert 902L == i.stage.id
         assert new GregorianCalendar(2013, Calendar.APRIL, 16).time == i.dueDatePayment
-        checkQuote i.quote
-        checkSalesOrder i.salesOrder
+        if (i.quote) {
+            checkQuote i.quote
+        }
+        if (i.salesOrder) {
+            checkSalesOrder i.salesOrder
+        }
     }
 
     /**
@@ -201,7 +205,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == q.headerText
         assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == so.notes
         assert 802L == so.stage.id
         assert new GregorianCalendar(2013, Calendar.MARCH, 28).time == so.dueDate
-        checkQuote so.quote
+        if (so.quote) {
+            checkQuote so.quote
+        }
     }
 
     /**

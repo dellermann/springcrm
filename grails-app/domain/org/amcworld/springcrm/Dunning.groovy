@@ -24,7 +24,7 @@ package org.amcworld.springcrm
 /**
  * The class {@code Dunning} represents a dunning which belongs to an invoice.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class Dunning extends InvoicingTransaction {
@@ -32,20 +32,20 @@ class Dunning extends InvoicingTransaction {
     //-- Class variables ------------------------
 
     static constraints = {
-		level()
-		stage()
-		dueDatePayment()
-		paymentDate(nullable: true)
-		paymentAmount(min: 0.0d, widget: 'currency')
-		paymentMethod(nullable: true)
-		invoice()
+        level()
+        stage()
+        dueDatePayment()
+        paymentDate nullable: true
+        paymentAmount min: 0.0d, widget: 'currency'
+        paymentMethod nullable: true
+        invoice()
     }
-	static belongsTo = [invoice: Invoice]
+    static belongsTo = [invoice: Invoice]
     static hasMany = [creditMemos: CreditMemo]
-	static mapping = {
-		stage column: 'dunning_stage_id'
-	}
-	static searchable = true
+    static mapping = {
+        stage column: 'dunning_stage_id'
+    }
+    static searchable = true
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'
@@ -56,39 +56,39 @@ class Dunning extends InvoicingTransaction {
 
     def userService
 
-	DunningLevel level
-	DunningStage stage
-	Date dueDatePayment
-	Date paymentDate
-	double paymentAmount
-	PaymentMethod paymentMethod
+    DunningLevel level
+    DunningStage stage
+    Date dueDatePayment
+    Date paymentDate
+    double paymentAmount
+    PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
 
-	Dunning() {
+    Dunning() {
         type = 'D'
     }
 
-	Dunning(Invoice i) {
-		super(i)
+    Dunning(Invoice i) {
+        super(i)
         type = 'D'
-		invoice = i
+        invoice = i
         headerText = ''
         footerText = ''
-	}
+    }
 
-	Dunning(Dunning d) {
-		super(d)
+    Dunning(Dunning d) {
+        super(d)
         type = 'D'
-		level = d.level
-		stage = d.stage
-		dueDatePayment = d.dueDatePayment
-		paymentDate = d.paymentDate
-		paymentAmount = d.paymentAmount
-		paymentMethod = d.paymentMethod
-		invoice = d.invoice
-	}
+        level = d.level
+        stage = d.stage
+        dueDatePayment = d.dueDatePayment
+        paymentDate = d.paymentDate
+        paymentAmount = d.paymentAmount
+        paymentMethod = d.paymentMethod
+        invoice = d.invoice
+    }
 
 
     //-- Public methods -------------------------
@@ -105,7 +105,7 @@ class Dunning extends InvoicingTransaction {
      * @see     #getClosingBalance()
      */
     double getBalance() {
-        return paymentAmount - total
+        paymentAmount - total
     }
 
     /**
@@ -120,7 +120,7 @@ class Dunning extends InvoicingTransaction {
      * @see     #getBalance()
      */
     double getClosingBalance() {
-        return balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)
+        (balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigits)
     }
 
     /**
@@ -138,7 +138,7 @@ class Dunning extends InvoicingTransaction {
         } else if (closingBalance > 0.0d) {
             color = 'green'
         }
-        return color
+        color
     }
 
     /**
@@ -178,7 +178,7 @@ class Dunning extends InvoicingTransaction {
             color = colorIndicatorByDate()
             break
         }
-        return color
+        color
     }
 
 
@@ -203,6 +203,6 @@ class Dunning extends InvoicingTransaction {
                 color = 'red'
             }
         }
-        return color
+        color
     }
 }

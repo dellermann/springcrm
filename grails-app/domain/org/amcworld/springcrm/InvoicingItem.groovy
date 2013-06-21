@@ -25,78 +25,74 @@ package org.amcworld.springcrm
  * The class {@code InvoicingItem} represents an item in invoicing transactions
  * such as invoices, quotes etc.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class InvoicingItem {
 
     //-- Class variables ------------------------
 
-	static belongsTo = [invoicingTransaction: InvoicingTransaction]
+    static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
-		number(blank: false)
-		quantity(min: 0.0d)
-		unit()
-		name(blank: false)
-		description(nullable: true)
-		unitPrice(widget: 'currency')
-		tax(scale: 1, min: 0.0d, widget: 'percent')
+        number blank: false
+        quantity min: 0.0d
+        unit()
+        name blank: false
+        description nullable: true
+        unitPrice widget: 'currency'
+        tax scale: 1, min: 0.0d, widget: 'percent'
     }
-	static mapping = {
-		description type: 'text'
-	}
-	static searchable = [only: ['number', 'name', 'description']]
-	static transients = ['total']
+    static mapping = {
+        description type: 'text'
+    }
+    static searchable = [only: ['number', 'name', 'description']]
+    static transients = ['total']
 
 
     //-- Instance variables ---------------------
 
-	String number
-	double quantity
-	String unit
-	String name
-	String description
-	double unitPrice
-	double tax
+    String number
+    double quantity
+    String unit
+    String name
+    String description
+    double unitPrice
+    double tax
 
 
     //-- Constructors ---------------------------
 
-	InvoicingItem() {}
+    InvoicingItem() {}
 
-	InvoicingItem(InvoicingItem i) {
-		number = i.number
-		quantity = i.quantity
-		unit = i.unit
-		name = i.name
-		description = i.description
-		unitPrice = i.unitPrice
-		tax = i.tax
-	}
+    InvoicingItem(InvoicingItem i) {
+        number = i.number
+        quantity = i.quantity
+        unit = i.unit
+        name = i.name
+        description = i.description
+        unitPrice = i.unitPrice
+        tax = i.tax
+    }
 
 
     //-- Public methods -------------------------
 
-	double getTotal() {
-		return quantity * unitPrice
-	}
+    double getTotal() {
+        quantity * unitPrice
+    }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof InvoicingItem) {
-            return obj.id == id
-        } else {
-            return false
-        }
+        (obj instanceof InvoicingItem) ? obj.id == id : false
     }
 
     @Override
     public int hashCode() {
-        return id as int
+        (id ?: 0i) as int
     }
 
     @Override
-	String toString() {
-		return name
-	}
+    String toString() {
+        name
+    }
 }

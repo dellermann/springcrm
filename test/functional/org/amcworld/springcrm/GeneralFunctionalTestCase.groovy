@@ -439,6 +439,13 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
+     * Maximizes the browser window.
+     */
+    protected void maximizeWindow() {
+        driver.manage().window().maximize()
+    }
+
+    /**
      * Opens the given relative URL which is converted to an absolute URL in
      * the web browser.
      *
@@ -539,6 +546,64 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             addToTermsAndConditions(TermsAndConditions.get(701)).
             save(flush: true)
         creditMemo
+    }
+
+    /**
+     * Prepares a dunning and stores it into the database.
+     *
+     * @param org       the organization the dunning belongs to
+     * @param p         the person the dunning belongs to
+     * @param invoice   the invoice associated to this dunning
+     * @return          the created dunning
+     */
+    protected Dunning prepareDunning(Organization org, Person p,
+                                     Invoice invoice)
+    {
+        def dunning = new Dunning(
+            subject: 'Werbekampagne Frühjahr 2013',
+            docDate: new GregorianCalendar(2013, Calendar.MAY, 6).time,
+            organization: org,
+            person: p,
+            carrier: Carrier.get(501),
+            shippingDate: new GregorianCalendar(2013, Calendar.MAY, 7).time,
+            billingAddrStreet: org.billingAddrStreet,
+            billingAddrPostalCode: org.billingAddrPostalCode,
+            billingAddrLocation: org.billingAddrLocation,
+            billingAddrState: org.billingAddrState,
+            billingAddrCountry: org.billingAddrCountry,
+            shippingAddrStreet: org.shippingAddrStreet,
+            shippingAddrPostalCode: org.shippingAddrPostalCode,
+            shippingAddrLocation: org.shippingAddrLocation,
+            shippingAddrState: org.shippingAddrState,
+            shippingAddrCountry: org.shippingAddrCountry,
+            headerText: 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.',
+            footerText: 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.',
+            notes: 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.',
+            level: DunningLevel.get(2300),
+            stage: DunningStage.get(2202),
+            dueDatePayment: new GregorianCalendar(2013, Calendar.MAY, 13).time,
+            invoice: invoice
+        )
+        dunning.addToItems(new InvoicingItem(
+                number: 'S-99000',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Mahngebühren',
+                unitPrice: 3.0d,
+                tax: 19.0d
+            )).
+            addToItems(new InvoicingItem(
+                number: 'S-99001',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Verzugszinsen',
+                description: 'Verzugszinsen 5 %',
+                unitPrice: 53.22d,
+                tax: 19.0d
+            )).
+            addToTermsAndConditions(TermsAndConditions.get(700)).
+            save(flush: true)
+        dunning
     }
 
     /**
@@ -912,6 +977,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
         } else if (input.tagName == 'select') {
             def select = new Select(input)
             if (select.multiple && value instanceof Collection) {
+                select.deselectAll()
                 for (val in value) {
                     select.selectByValue val
                 }
