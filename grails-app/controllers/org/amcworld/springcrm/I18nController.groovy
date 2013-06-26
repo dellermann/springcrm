@@ -49,7 +49,7 @@ class I18nController {
         msgs['weekdaysShort'] = '[ "' << dfs.shortWeekdays[1..-1].join('", "') << '" ]'
 
         def cal = Calendar.instance
-        msgs['calendarFirstDay'] = cal.firstDayOfWeek
+        msgs['calendarFirstDay'] = cal.firstDayOfWeek - 1
         String s = message(code: 'default.bidi.test')
         msgs['calendarRTL'] = !(new Bidi(s, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT).isLeftToRight())
 
@@ -103,7 +103,7 @@ class I18nController {
             msg = msg.replace '"', '\\"'
             msg = "\"${msg}\""
         }
-        return msg
+        msg
     }
 
     /**
@@ -133,6 +133,6 @@ class I18nController {
             buf << key << ':' << msgs[key] << ','
         }
         buf << '}'
-        return buf.toString()
+        buf.toString()
     }
 }

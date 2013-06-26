@@ -28,6 +28,7 @@ modules = {
     calendarForm {
         dependsOn 'core'
 
+        resource url: 'less/calendar.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource '/js/calendar-form.js'
     }
 
