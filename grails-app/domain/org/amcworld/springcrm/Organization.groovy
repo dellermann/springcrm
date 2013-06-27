@@ -33,63 +33,64 @@ class Organization {
     //-- Class variables ------------------------
 
     static constraints = {
-        number(unique: 'recType', widget: 'autonumber')
-		recType(range: 1..3)
-        name(blank: false, unique: true)
-        billingAddrStreet(nullable: true, widget: 'textarea')
-        billingAddrPoBox(nullable: true)
-        billingAddrPostalCode(nullable: true)
-        billingAddrLocation(nullable: true)
-        billingAddrState(nullable: true)
-        billingAddrCountry(nullable: true)
-        shippingAddrStreet(nullable: true, widget: 'textarea')
-        shippingAddrPoBox(nullable: true)
-        shippingAddrPostalCode(nullable: true)
-        shippingAddrLocation(nullable: true)
-        shippingAddrState(nullable: true)
-        shippingAddrCountry(nullable: true)
-        phone(nullable: true, maxSize: 40)
-        fax(nullable: true, maxSize: 40)
-        phoneOther(nullable: true, maxSize: 40)
-        email1(nullable: true, email: true)
-        email2(nullable: true, email: true)
-        website(nullable: true, widget: 'url')
-		legalForm(nullable: true)
-        type(nullable: true)
-        industry(nullable: true)
-        owner(nullable: true)
-        numEmployees(nullable: true)
-        rating(nullable: true)
-        notes(nullable: true, widget: 'textarea')
-        docPlaceholderValue(nullable: true)
-		dateCreated()
-		lastUpdated()
+        number unique: 'recType', widget: 'autonumber'
+        recType range: 1..3
+        name blank: false, unique: true
+        billingAddrStreet nullable: true, widget: 'textarea'
+        billingAddrPoBox nullable: true
+        billingAddrPostalCode nullable: true
+        billingAddrLocation nullable: true
+        billingAddrState nullable: true
+        billingAddrCountry nullable: true
+        shippingAddrStreet nullable: true, widget: 'textarea'
+        shippingAddrPoBox nullable: true
+        shippingAddrPostalCode nullable: true
+        shippingAddrLocation nullable: true
+        shippingAddrState nullable: true
+        shippingAddrCountry nullable: true
+        phone nullable: true, maxSize: 40
+        fax nullable: true, maxSize: 40
+        phoneOther nullable: true, maxSize: 40
+        email1 nullable: true, email: true
+        email2 nullable: true, email: true
+        website nullable: true, widget: 'url'
+        legalForm nullable: true
+        type nullable: true
+        industry nullable: true
+        owner nullable: true
+        numEmployees nullable: true
+        rating nullable: true
+        notes nullable: true, widget: 'textarea'
+        docPlaceholderValue nullable: true
+        dateCreated()
+        lastUpdated()
     }
     static hasMany = [
-		persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
-		salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
-        dunnings: Dunning, purchaseInvoices: PurchaseInvoice, projects: Project
-	]
-	static mapping = {
-		calls column: 'Organization'
-		sort 'name'
+        persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
+        salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
+        dunnings: Dunning, purchaseInvoices: PurchaseInvoice,
+        projects: Project, calendarEvents: CalendarEvent
+    ]
+    static mapping = {
+        calls column: 'Organization'
+        sort 'name'
         name index: 'name'
-		notes type: 'text'
+        notes type: 'text'
         recType index: 'rec_type'
-	}
-	static searchable = true
-	static transients = [
-		'fullNumber', 'shortName', 'billingAddr', 'shippingAddr', 'customer',
-		'vendor'
-	]
+    }
+    static searchable = true
+    static transients = [
+        'fullNumber', 'shortName', 'billingAddr', 'shippingAddr', 'customer',
+        'vendor'
+    ]
 
 
     //-- Instance variables ---------------------
 
-	def seqNumberService
+    def seqNumberService
 
     int number
-	byte recType
+    byte recType
     String name
     String billingAddrStreet
     String billingAddrPoBox
@@ -109,7 +110,7 @@ class Organization {
     String email1
     String email2
     String website
-	String legalForm
+    String legalForm
     OrgType type
     Industry industry
     String owner
@@ -117,137 +118,133 @@ class Organization {
     Rating rating
     String notes
     String docPlaceholderValue
-	Date dateCreated
-	Date lastUpdated
+    Date dateCreated
+    Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
-	Organization() {}
+    Organization() {}
 
-	Organization(Organization org) {
-		recType = org.recType
-		name = org.name
-		billingAddrStreet = org.billingAddrStreet
-		billingAddrPoBox = org.billingAddrPoBox
-		billingAddrPostalCode = org.billingAddrPostalCode
-		billingAddrLocation = org.billingAddrLocation
-		billingAddrState = org.billingAddrState
-		billingAddrCountry = org.billingAddrCountry
-		shippingAddrStreet = org.shippingAddrStreet
-		shippingAddrPoBox = org.shippingAddrPoBox
-		shippingAddrPostalCode = org.shippingAddrPostalCode
-		shippingAddrLocation = org.shippingAddrLocation
-		shippingAddrState = org.shippingAddrState
-		shippingAddrCountry = org.shippingAddrCountry
-		phone = org.phone
-		fax = org.fax
-		phoneOther = org.phoneOther
-		email1 = org.email1
-		email2 = org.email2
-		website = org.website
-		legalForm = org.legalForm
-		type = org.type
-		industry = org.industry
-		owner = org.owner
-		numEmployees = org.numEmployees
-		rating = org.rating
-		notes = org.notes
-	}
+    Organization(Organization org) {
+        recType = org.recType
+        name = org.name
+        billingAddrStreet = org.billingAddrStreet
+        billingAddrPoBox = org.billingAddrPoBox
+        billingAddrPostalCode = org.billingAddrPostalCode
+        billingAddrLocation = org.billingAddrLocation
+        billingAddrState = org.billingAddrState
+        billingAddrCountry = org.billingAddrCountry
+        shippingAddrStreet = org.shippingAddrStreet
+        shippingAddrPoBox = org.shippingAddrPoBox
+        shippingAddrPostalCode = org.shippingAddrPostalCode
+        shippingAddrLocation = org.shippingAddrLocation
+        shippingAddrState = org.shippingAddrState
+        shippingAddrCountry = org.shippingAddrCountry
+        phone = org.phone
+        fax = org.fax
+        phoneOther = org.phoneOther
+        email1 = org.email1
+        email2 = org.email2
+        website = org.website
+        legalForm = org.legalForm
+        type = org.type
+        industry = org.industry
+        owner = org.owner
+        numEmployees = org.numEmployees
+        rating = org.rating
+        notes = org.notes
+    }
 
 
     //-- Public methods -------------------------
 
-	String getFullNumber() {
-		return seqNumberService.format(getClass(), number)
-	}
+    def beforeInsert() {
+        if (number == 0) {
+            number = seqNumberService.nextNumber(getClass())
+        }
+    }
 
-	String getShortName() {
-		String res = name ?: ''
-		if (res.length() > 40) {
-			res = name.substring(0, 40) + '...'
-		}
-		return res
-	}
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof Organization) ? obj.id == id : false
+    }
 
-	String getBillingAddr() {
-		StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
-		if (billingAddrLocation) {
-			if (s) {
-				s << ','
-			}
-			if (billingAddrPostalCode) {
-				if (s) {
-					s << ' '
-				}
-				s << billingAddrPostalCode ?: ''
-			}
-			if (s) {
-				s << ' '
-			}
-			s << billingAddrLocation ?: ''
-		}
-		return s.toString()
-	}
+    String getFullNumber() {
+        seqNumberService.format getClass(), number
+    }
 
-	String getShippingAddr() {
-		StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
-		if (shippingAddrLocation) {
-			if (s) {
-				s << ','
-			}
-			if (shippingAddrPostalCode) {
-				if (s) {
-					s << ' '
-				}
-				s << shippingAddrPostalCode ?: ''
-			}
-			if (s) {
-				s << ' '
-			}
-			s << shippingAddrLocation ?: ''
-		}
-		return s.toString()
-	}
+    String getShortName() {
+        String res = name ?: ''
+        if (res.length() > 40) {
+            res = name.substring(0, 40) + '...'
+        }
+        res
+    }
+
+    String getBillingAddr() {
+        StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
+        if (billingAddrLocation) {
+            if (s) {
+                s << ','
+            }
+            if (billingAddrPostalCode) {
+                if (s) {
+                    s << ' '
+                }
+                s << billingAddrPostalCode ?: ''
+            }
+            if (s) {
+                s << ' '
+            }
+            s << billingAddrLocation ?: ''
+        }
+        s.toString()
+    }
+
+    String getShippingAddr() {
+        StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
+        if (shippingAddrLocation) {
+            if (s) {
+                s << ','
+            }
+            if (shippingAddrPostalCode) {
+                if (s) {
+                    s << ' '
+                }
+                s << shippingAddrPostalCode ?: ''
+            }
+            if (s) {
+                s << ' '
+            }
+            s << shippingAddrLocation ?: ''
+        }
+        s.toString()
+    }
+
+    @Override
+    int hashCode() {
+        (id ?: 0i) as int
+    }
+
+    boolean isCustomer() {
+        (recType & 1) != 0
+    }
+
+    boolean isVendor() {
+        (recType & 2) != 0
+    }
 
     void setWebsite(String website) {
-		website = website ?: ''
+        website = website ?: ''
         if ((website.size() > 0) && !(website =~ '^https?://')) {
-			website = "http://${website}"
+            website = "http://${website}"
         }
         this.website = website
     }
 
-	boolean isCustomer() {
-		return (this.recType & 1) != 0
-	}
-
-	boolean isVendor() {
-		return (this.recType & 2) != 0
-	}
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Organization) {
-            return obj.id == id
-        } else {
-            return false
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return id as int
-    }
-
     @Override
     String toString() {
-        return name ?: ''
+        name ?: ''
     }
-
-	def beforeInsert() {
-		if (number == 0) {
-			number = seqNumberService.nextNumber(getClass())
-		}
-	}
 }
