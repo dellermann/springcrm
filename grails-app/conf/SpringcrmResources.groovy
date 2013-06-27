@@ -44,7 +44,7 @@ modules = {
     calendarViewCalendar {
         dependsOn 'calendarView'
 
-        resource '/js/calendar-view.js'
+        resource '/js/app/calendar-view.js'
     }
 
     callForm {
