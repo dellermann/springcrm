@@ -20,12 +20,15 @@
 
 package org.amcworld.springcrm
 
+import javax.servlet.http.HttpServletResponse
+
+
 
 /**
  * The class {@code CalendarEventController} contains actions which manage
  * calendar events and reminders.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class CalendarEventController {
@@ -33,6 +36,11 @@ class CalendarEventController {
     //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Instance variables ---------------------
+
+    CalendarEventService calendarEventService
 
 
     //-- Public methods -------------------------
@@ -54,10 +62,13 @@ class CalendarEventController {
             count = CalendarEvent.count()
         }
 
+        calendarEventService.currentCalendarView = 'list'
         [calendarEventInstanceList: list, calendarEventInstanceTotal: count]
     }
 
-    def calendar() {}
+    def calendar() {
+        calendarEventService.currentCalendarView = 'calendar'
+    }
 
     def listEmbedded(Long organization) {
         def l
@@ -75,11 +86,23 @@ class CalendarEventController {
         [calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
     }
 
+    /**
+     * Returns a JSON array containing the calendar events between the given
+     * start and end time stamp.  The method loads non-recurring events and
+     * all occurrences of recurring events.  Usually, the method is called by
+     * the <em>fullcalendar</em> JavaScript library via AJAX.
+     *
+     * @param start the given start time stamp in seconds since the UNIX epoch
+     * @param end   the given end time stamp in seconds since the UNIX epoch
+     * @return      the rendered JSON response containing the calendar events
+     */
     def listRange(Long start, Long end) {
         Date startDate = new Date(start * 1000L)
         Date endDate = new Date(end * 1000L)
+
+        /* load non-recurring events */
         def c = CalendarEvent.createCriteria()
-        def list = c.list {
+        List<CalendarEvent> list = c.list {
             and {
                 eq('recurrence.type', 0)
                 or {
@@ -93,8 +116,9 @@ class CalendarEventController {
             }
         }
 
+        /* add occurrences of recurring events to list */
         c = CalendarEvent.createCriteria()
-        def l = c.list {
+        List<CalendarEvent> l = c.list {
             ne('recurrence.type', 0)
         }
         for (CalendarEvent ce in l) {
@@ -102,16 +126,24 @@ class CalendarEventController {
             Date s = ce.start
             Date d = helper.approximate(s, startDate)
             while (d <= endDate) {
-                list << ce.eventAtDate(d)
+                def occurrence = ce.eventAtDate(d)
+                occurrence.synthetic = true
+                list << occurrence
                 Date dOld = d + 1
                 d = helper.approximate(s, dOld)
                 assert d > dOld
             }
         }
+
         render(contentType: 'text/json') {
             array {
-                for (ce in list) {
-                    event id: ce.id, title: ce.subject, allDay: ce.allDay, start: ce.start, end: ce.end, url: createLink(controller: 'calendarEvent', action: 'show', id: ce.id)
+                for (CalendarEvent ce in list) {
+                    event(
+                        id: ce.id, title: ce.subject, allDay: ce.allDay,
+                        start: ce.start.time / 1000L, end: ce.end.time / 1000L,
+                        url: createLink(action: 'show', id: ce.id),
+                        editable: !ce.synthetic
+                    )
                 }
             }
         }
@@ -151,10 +183,10 @@ class CalendarEventController {
             return
         }
 
-        refineCalendarEvent(calendarEventInstance)
+        calendarEventService.refineCalendarEvent calendarEventInstance, params['recurrence.endType'], params['recurrence.cnt'] as Integer
         calendarEventInstance.owner = session.user
         calendarEventInstance.save flush: true
-        saveReminders(calendarEventInstance)
+        calendarEventService.saveReminders params.reminders.split(), calendarEventInstance
 
         request.calendarEventInstance = calendarEventInstance
         flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
@@ -173,7 +205,8 @@ class CalendarEventController {
             return
         }
 
-        [calendarEventInstance: calendarEventInstance]
+        List<Reminder> reminderInstanceList = calendarEventService.loadReminders(calendarEventInstance)
+        [calendarEventInstance: calendarEventInstance, reminderInstanceList: reminderInstanceList]
     }
 
     def edit(Long id) {
@@ -184,20 +217,8 @@ class CalendarEventController {
             return
         }
 
-        def c = Reminder.createCriteria()
-        def l = c.list {
-            eq('user', session.user)
-            eq('calendarEvent', calendarEventInstance)
-        }
-        if (l.isEmpty()) {
-            c = Reminder.createCriteria()
-            l = c.list {
-                isNull('user')
-                eq('calendarEvent', calendarEventInstance)
-            }
-        }
-        def reminderInstanceList = l*.rule
-        [calendarEventInstance: calendarEventInstance, reminderInstanceList: reminderInstanceList.join(' ')]
+        List<String> reminderRules = calendarEventService.loadReminderRules(calendarEventInstance)
+        [calendarEventInstance: calendarEventInstance, reminderRules: reminderRules.join(' ')]
     }
 
     def update(Long id) {
@@ -223,9 +244,9 @@ class CalendarEventController {
             return
         }
 
-        refineCalendarEvent(calendarEventInstance)
-        calendarEventInstance.save(flush: true)
-        saveReminders(calendarEventInstance, session.user)
+        calendarEventService.refineCalendarEvent calendarEventInstance, params['recurrence.endType'], params['recurrence.cnt'] as Integer
+        calendarEventInstance.save flush: true
+        calendarEventService.saveReminders params.reminders.split(), calendarEventInstance, session.user
 
         request.calendarEventInstance = calendarEventInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
@@ -237,6 +258,40 @@ class CalendarEventController {
         }
     }
 
+    /**
+     * Updates the start and end time stamp of the calendar events with the
+     * given ID.  The action is called when moving or resizing calendar events
+     * in the calendar view.  Currently, changing the start and end time stamp
+     * or recurring calendar events is not supported.
+     *
+     * @param start the given start time stamp in milliseconds since the UNIX
+     *              epoch
+     * @param end   the given end time stamp in milliseconds since the UNIX
+     *              epoch
+     * @return      the HTTP status code
+     */
+    def updateStartEnd(Long id, Long start, Long end) {
+        Date startDate = new Date(start)
+        Date endDate = new Date(end)
+
+        def calendarEventInstance = CalendarEvent.get(id)
+        if (!calendarEventInstance) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+            return
+        }
+        if (calendarEventInstance.recurrence.type) {
+            render status: HttpServletResponse.SC_NOT_IMPLEMENTED
+            return
+        }
+
+        calendarEventInstance.start = startDate
+        calendarEventInstance.end = endDate
+        calendarEventInstance.save()
+        calendarEventService.updateReminders calendarEventInstance, session.user
+
+        render status: HttpServletResponse.SC_OK
+    }
+
     def delete(Long id) {
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
@@ -244,18 +299,18 @@ class CalendarEventController {
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: calendarEventService.currentCalendarView ?: 'list'
             }
             return
         }
 
         try {
-            calendarEventInstance.delete(flush: true)
+            calendarEventInstance.delete flush: true
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: calendarEventService.currentCalendarView ?: 'list'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
@@ -293,65 +348,6 @@ class CalendarEventController {
                     reminder title: r.calendarEvent.subject, allDay: r.calendarEvent.allDay, start: r.calendarEvent.start, end: r.calendarEvent.end, url: createLink(controller: 'calendarEvent', action: 'show', id: r.calendarEvent.id)
                 }
             }
-        }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    private void refineCalendarEvent(CalendarEvent calendarEventInstance) {
-        def helper = new RecurCalendarEventHelper(
-            calendarEventInstance.recurrence
-        )
-        Calendar dayStart = calendarEventInstance.start.toCalendar()
-        dayStart.clearTime()
-        int offset = calendarEventInstance.start.time - dayStart.time.time
-        int diff = calendarEventInstance.end.time - calendarEventInstance.start.time
-        def start = helper.calibrateStart(calendarEventInstance.start)
-        calendarEventInstance.start = new Date(start.time + offset)
-        calendarEventInstance.end = new Date(start.time + offset + diff)
-
-        def until = null
-        switch (params['recurrence.endType']) {
-        case 'until':
-            until = helper.approximate(start, calendarEventInstance.recurrence.until)
-            if (until < start) {
-                until = start
-            }
-            break
-        case 'count':
-            until = helper.computeNthEvent(start, params['recurrence.cnt'] as Integer)
-            break
-        }
-        calendarEventInstance.recurrence.until = until
-    }
-
-    private void saveReminders(CalendarEvent calendarEventInstance,
-                               User user = null)
-    {
-        if (calendarEventInstance.owner.id == user?.id) {
-            user = null
-        }
-        def l = Reminder.findAllByCalendarEventAndUser(calendarEventInstance, user)
-        for (Reminder r in l) {
-            r.delete()
-        }
-
-        String [] reminderRules = params.reminders.split()
-        for (String rule in reminderRules) {
-            Reminder reminder = Reminder.fromRule(rule)
-            reminder.calendarEvent = calendarEventInstance
-            reminder.user = user
-            Date d = calendarEventInstance.start
-            if (calendarEventInstance.recurrence.type > 0) {
-                def helper = new RecurCalendarEventHelper(
-                    calendarEventInstance.recurrence
-                )
-                d = helper.approximate(d)
-            }
-            reminder.nextReminder =
-                new Date(d.time - reminder.valueAsMilliseconds)
-            reminder.save flush: true
         }
     }
 }

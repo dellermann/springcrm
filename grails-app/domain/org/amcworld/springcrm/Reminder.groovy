@@ -20,31 +20,35 @@
 
 package org.amcworld.springcrm
 
+import org.springframework.context.MessageSourceResolvable
+
 
 /**
  * The class {@code Reminder} represents a reminder of a calendar event.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @see     CalendarEvent
  */
-class Reminder {
+class Reminder implements MessageSourceResolvable {
 
     //-- Class variables ------------------------
 
     static constraints = {
-        value(min: 0)
-        unit(inList: ['m', 'h', 'd', 'w'])
+        value min: 0
+        unit inList: ['m', 'h', 'd', 'w']
         nextReminder()
         calendarEvent()
-        user(nullable: true)
+        user nullable: true
     }
     static belongsTo = [calendarEvent: CalendarEvent, user: User]
     static mapping = {
         nextReminder index: 'next_reminder'
         version false
     }
-    static transients = ['rule', 'valueAsMilliseconds']
+    static transients = [
+        'arguments', 'codes', 'defaultMessage', 'rule', 'valueAsMilliseconds'
+    ]
 
 
     //-- Instance variables ---------------------
@@ -56,8 +60,23 @@ class Reminder {
 
     //-- Public methods -------------------------
 
+    @Override
+    Object [] getArguments() {
+        [value] as Object[]
+    }
+
+    @Override
+    String [] getCodes() {
+        ["calendarEvent.reminder.pattern.${unit}"] as String[]
+    }
+
+    @Override
+    String getDefaultMessage() {
+        toString()
+    }
+
     String getRule() {
-        return "${value}${unit}"
+        value + unit
     }
 
     long getValueAsMilliseconds() {
@@ -79,30 +98,26 @@ class Reminder {
         return v
     }
 
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof Reminder) ? obj.id == id : false
+    }
+
     static Reminder fromRule(String rule) {
         def m = (rule =~ /^(\d+)([mhdw])$/)
         if (!m) {
             throw new IllegalArgumentException("Rule ${rule} is not valid.")
         }
-        return new Reminder([value: m[0][1] as Integer, unit: m[0][2]])
+        new Reminder(value: m[0][1] as Integer, unit: m[0][2])
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Reminder) {
-            return obj.id == id
-        } else {
-            return false
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return id as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-        return value + unit
+        rule
     }
 }

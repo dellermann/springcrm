@@ -180,6 +180,7 @@ String::parseDate = (format = "datetime", baseYear = 35) ->
   return null unless $.trim(s)
 
   if (format is "date") or (format is "time") or (format is "datetime")
+    fmt = ""
     fmt += $L("default.format.date") if (format is "date") or (format is "datetime")
     fmt += " " if format is "datetime"
     fmt += $L("default.format.time") if (format is "time") or (format is "datetime")

@@ -39,7 +39,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * The class {@code GeneralFunctionalTestCase} represents a general base class for all
  * functional test cases using Selenium.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
@@ -168,7 +168,19 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @param name  the name of the input control
      */
     protected void clearInput(String name) {
-        getInput(name).clear()
+        WebElement input = getInput(name)
+        input.clear()
+
+        /*
+         * Some kind of input fields cannot be cleared so I use this way to
+         * remove all characters from this field.
+         */
+        String value = input.getAttribute('value')
+        if (value) {
+            for (int i = 0; i < value.length(); i++) {
+                input.sendKeys Keys.BACK_SPACE
+            }
+        }
     }
 
     /**
@@ -456,6 +468,26 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      */
     protected void open(String url, String language = null) {
         driver.get(getUrl(url, language))
+    }
+
+    /**
+     * Prepares a calendar event and stores it into the database.
+     *
+     * @param org   the organization the calendar event belongs to
+     * @return      the prepared calendar event
+     */
+    protected CalendarEvent prepareCalendarEvent(Organization org) {
+        def calendarEvent = new CalendarEvent(
+            subject: 'Besprechung Werbekonzept',
+            location: 'Büro Landschaftsbau Duvensee GbR',
+            description: 'Besprechung des Konzepts für die geplante Marketing-Aktion.',
+            start: new GregorianCalendar(2013, Calendar.JANUARY, 23, 10, 00, 0).time,
+            end: new GregorianCalendar(2013, Calendar.JANUARY, 23, 12, 00, 0).time,
+            organization: org,
+            owner: User.get(1)
+        )
+        calendarEvent.save flush: true
+        calendarEvent
     }
 
     /**

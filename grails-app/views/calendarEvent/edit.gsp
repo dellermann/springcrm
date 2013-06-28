@@ -16,7 +16,7 @@
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><a href="#" class="green submit-btn" data-form="calendarEvent-form"><g:message code="default.button.save.label" /></a></li>
-        <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
+        <li><g:calendarViewBackLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:calendarViewBackLink></li>
       </ul>
     </nav>
   </div>

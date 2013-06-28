@@ -32,131 +32,127 @@ class User implements Cloneable {
     //-- Class variables ------------------------
 
     static constraints = {
-		userName(blank: false, unique: true)
-		password(blank: false, password: true)
-		firstName(blank: false)
-		lastName(blank: false)
-        phone(nullable: true, maxSize: 40)
-        phoneHome(nullable: true, maxSize: 40)
-        mobile(nullable: true, maxSize: 40)
-        fax(nullable: true, maxSize: 40)
-        email(blank: false, email: true)
-		admin()
-		allowedModules(nullable: true)
-		dateCreated()
-		lastUpdated()
+        userName blank: false, unique: true
+        password blank: false, password: true
+        firstName blank: false
+        lastName blank: false
+        phone nullable: true, maxSize: 40
+        phoneHome nullable: true, maxSize: 40
+        mobile nullable: true, maxSize: 40
+        fax nullable: true, maxSize: 40
+        email blank: false, email: true
+        admin()
+        allowedModules nullable: true
+        dateCreated()
+        lastUpdated()
     }
-    static hasMany = [rawSettings: UserSetting]
-	static mapping = {
-		allowedModules type: 'text'
+    static hasMany = [rawSettings: UserSetting, reminders: Reminder]
+    static mapping = {
+        allowedModules type: 'text'
         table 'user_data'
         userName index: 'user_name'
     }
-	static transients = [
-		'fullName', 'allowedModulesAsList', 'allowedControllers', 'settings'
-	]
+    static transients = [
+        'fullName', 'allowedModulesAsList', 'allowedControllers', 'settings'
+    ]
 
 
     //-- Instance variables ---------------------
 
-	String userName
-	String password
-	String firstName
-	String lastName
-	String phone
-	String phoneHome
-	String mobile
-	String fax
-	String email
-	boolean admin
-	String allowedModules
-	Date dateCreated
-	Date lastUpdated
+    String userName
+    String password
+    String firstName
+    String lastName
+    String phone
+    String phoneHome
+    String mobile
+    String fax
+    String email
+    boolean admin
+    String allowedModules
+    Date dateCreated
+    Date lastUpdated
     UserSettings settings
     Collection<UserSetting> rawSettings
-	private Set<String> allowedControllers
+    Set<String> allowedControllers
 
 
     //-- Properties -----------------------------
 
-	String getFullName() {
-		return "${firstName ?: ''} ${lastName ?: ''}".trim()
-	}
+    /**
+     * Gets a set of controllers the user is permitted to access.
+     *
+     * @return  the names of the controllers the user may access
+     */
+    Set<String> getAllowedControllers() {
+        if (allowedControllers == null) {
+            List<String> moduleNames = allowedModulesAsList
+            allowedControllers =
+                moduleNames ? Modules.resolveModules(moduleNames) : null
+        }
+        allowedControllers
+    }
 
-	List<String> getAllowedModulesAsList() {
-		return allowedModules ? allowedModules.split(',') : []
-	}
+    List<String> getAllowedModulesAsList() {
+        allowedModules ? allowedModules.split(',') : []
+    }
 
-	void setAllowedModulesAsList(List<String> l) {
-		allowedModules = l.join(',')
-	}
+    String getFullName() {
+        "${firstName ?: ''} ${lastName ?: ''}".trim()
+    }
 
-	/**
-	 * Gets a set of controllers the user is permitted to access.
-	 *
-	 * @return	the names of the controllers the user may access
-	 */
-	Set<String> getAllowedControllers() {
-		if (allowedControllers == null) {
-			List<String> moduleNames = allowedModulesAsList
-			allowedControllers =
-				moduleNames ? Modules.resolveModules(moduleNames) : null
-		}
-		return allowedControllers
-	}
+    void setAllowedModulesAsList(List<String> l) {
+        allowedModules = l.join(',')
+    }
 
 
     //-- Public methods -------------------------
 
-	/**
-	 * Checks whether or not the user has permission to access the given
-	 * controllers.
-	 *
-	 * @param controllers	the names of the controllers to check
-	 * @return				<code>true</code> if the user can access all the
-	 * 						given controllers; <code>false</code> otherwise
-	 */
-	boolean checkAllowedControllers(List<String> controllers) {
-		return admin || controllers?.intersect(getAllowedControllers())
-	}
+    def afterLoad() {
+        settings = new UserSettings(this)
+    }
 
-	/**
-	 * Checks whether or not the user has permission to access the given
-	 * modules.
-	 *
-	 * @param modules	the names of the modules to check
-	 * @return			<code>true</code> if the user can access all the given
-	 * 					modules; <code>false</code> otherwise
-	 */
-	boolean checkAllowedModules(List<String> modules) {
-		return admin || modules?.intersect(getAllowedModulesAsList())
-	}
+    /**
+     * Checks whether or not the user has permission to access the given
+     * controllers.
+     *
+     * @param controllers   the names of the controllers to check
+     * @return              {@code true} if the user can access all the given
+     *                      controllers; {@code false} otherwise
+     */
+    boolean checkAllowedControllers(List<String> controllers) {
+        admin || controllers?.intersect(getAllowedControllers())
+    }
+
+    /**
+     * Checks whether or not the user has permission to access the given
+     * modules.
+     *
+     * @param modules   the names of the modules to check
+     * @return          {@code true} if the user can access all the given
+     *                  modules; {@code false} otherwise
+     */
+    boolean checkAllowedModules(List<String> modules) {
+        admin || modules?.intersect(getAllowedModulesAsList())
+    }
 
     @Override
     User clone() {
-        return (User) super.clone()
+        (User) super.clone()
     }
 
     @Override
     boolean equals(Object o) {
-        if (o instanceof User) {
-            return o.ident() == ident()
-        } else {
-            return false
-        }
+        (o instanceof User) ? o.ident() == ident() : false
     }
 
     @Override
-    public int hashCode() {
-        return ident()
+    int hashCode() {
+        ident()
     }
 
     @Override
-	String toString() {
-		return fullName
-	}
-
-    def afterLoad() {
-        settings = new UserSettings(this)
+    String toString() {
+        fullName
     }
 }

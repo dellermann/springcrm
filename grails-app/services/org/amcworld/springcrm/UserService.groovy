@@ -62,7 +62,7 @@ class UserService {
                 }
             }
         }
-        return res
+        res
     }
 
     /**
@@ -106,7 +106,7 @@ class UserService {
                 currency = Currency.getInstance(currencyCode)
             }
         } catch (IllegalArgumentException e) { /* ignored */ }
-        return currency ?: Currency.getInstance('EUR')
+        currency ?: Currency.getInstance('EUR')
     }
 
     /**
@@ -118,7 +118,7 @@ class UserService {
      * @since   1.3
      */
     String getCurrencySymbol() {
-        return currency.getSymbol(currentLocale)
+        currency.getSymbol currentLocale
     }
 
     /**
@@ -140,7 +140,7 @@ class UserService {
      * @since   1.3
      */
     String getDecimalSeparator() {
-        return DecimalFormatSymbols.getInstance(currentLocale).decimalSeparator
+        DecimalFormatSymbols.getInstance(currentLocale).decimalSeparator
     }
 
     /**
@@ -152,7 +152,7 @@ class UserService {
      * @since   1.3
      */
     String getGroupingSeparator() {
-        return DecimalFormatSymbols.getInstance(currentLocale).groupingSeparator
+        DecimalFormatSymbols.getInstance(currentLocale).groupingSeparator
     }
 
     /**
@@ -164,6 +164,6 @@ class UserService {
      */
     int getNumFractionDigits() {
         Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
-        return numFractionDigits ?: currency.defaultFractionDigits
+        numFractionDigits ?: currency.defaultFractionDigits
     }
 }

@@ -13,7 +13,8 @@
     <h2><g:message code="${entitiesName}" /></h2>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
+        <li><g:calendarViewLink action="list" class="white"><g:message code="default.button.list.label" /></g:calendarViewLink></li>
+        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
         <li><g:link action="edit" id="${calendarEventInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
         <li><g:link action="copy" id="${calendarEventInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
         <li><g:link action="delete" id="${calendarEventInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
@@ -81,6 +82,24 @@
             </div>
           </div>
           </g:if>
+        </div>
+      </div>
+      <div class="fieldset">
+        <h4><g:message code="calendarEvent.fieldset.reminder.label" /></h4>
+        <div class="fieldset-content">
+          <div class="row">
+            <div class="label"><g:message code="calendarEvent.reminder.label" /></div>
+            <div class="field">
+              <g:if test="${reminderInstanceList}">
+              <ul>
+                <g:each in="${reminderInstanceList}"><li><g:message message="${it}" /></li></g:each>
+              </ul>
+              </g:if>
+              <g:else>
+              <g:message code="calendarEvent.reminder.none.label" />
+              </g:else>
+            </div>
+          </div>
         </div>
       </div>
       <div class="fieldset">

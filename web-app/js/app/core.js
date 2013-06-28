@@ -134,7 +134,7 @@
   };
 
   String.prototype.parseDate = function(format, baseYear) {
-    var day, hours, minutes, month, part, pos, regexp, s, token, year;
+    var day, fmt, hours, minutes, month, part, pos, regexp, s, token, year;
     if (format == null) {
       format = "datetime";
     }
@@ -146,6 +146,7 @@
       return null;
     }
     if ((format === "date") || (format === "time") || (format === "datetime")) {
+      fmt = "";
       if ((format === "date") || (format === "datetime")) {
         fmt += $L("default.format.date");
       }

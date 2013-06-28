@@ -61,7 +61,11 @@
               <label><g:message code="calendarEvent.recurrence.type.30.at.label" /></label>&nbsp;
               <g:each in="${[*2..7, 1]}" var="i">
               <span><g:checkBox name="recurrence-weekdays-30-${i}" checked="${selectedWeekdays?.contains(i)}" value="${i}" />&nbsp;<label for="recurrence-weekdays-30-${i}">${weekdayNames[i]}</label></span>
-              </g:each>
+              </g:each><br />
+              <span class="info-msg"><g:message code="default.required" default="required" /></span>
+              <g:hasErrors bean="${calendarEventInstance}" field="recurrence.weekdays">
+              <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.weekdays"><g:message error="${it}" /> </g:eachError></span>
+              </g:hasErrors>
             </p>
             <p>
               <label for="recurrence-interval-30"><g:message code="calendarEvent.recurrence.type.30.each.label" /></label>&nbsp;
@@ -75,7 +79,11 @@
               <g:textField name="recurrence-monthDay-40" size="3" />.
               <label for="recurrence-interval-40"><g:message code="calendarEvent.recurrence.type.40.each.label" /></label>&nbsp;
               <g:textField name="recurrence-interval-40" size="3" />
-              &nbsp;<label><g:message code="calendarEvent.recurrence.type.40.months.label" /></label>
+              &nbsp;<label><g:message code="calendarEvent.recurrence.type.40.months.label" /></label><br />
+              <span class="info-msg"><g:message code="default.required" default="required" /></span>
+              <g:hasErrors bean="${calendarEventInstance}" field="recurrence.monthDay">
+              <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.monthDay"><g:message error="${it}" /> </g:eachError></span>
+              </g:hasErrors>
             </p>
           </div>
           <div id="tabs-recurrence-type-50">
@@ -85,14 +93,22 @@
               <g:select name="recurrence-weekdays-50" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}" />&nbsp;
               <label for="recurrence-interval-50"><g:message code="calendarEvent.recurrence.type.50.each.label" /></label>&nbsp;
               <g:textField name="recurrence-interval-50" size="3" />
-              &nbsp;<label><g:message code="calendarEvent.recurrence.type.50.months.label" /></label>
+              &nbsp;<label><g:message code="calendarEvent.recurrence.type.50.months.label" /></label><br />
+              <span class="info-msg"><g:message code="default.required" default="required" /></span>
+              <g:hasErrors bean="${calendarEventInstance}" field="recurrence.weekdayOrd">
+              <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.weekdayOrd"><g:message error="${it}" /> </g:eachError></span>
+              </g:hasErrors>
             </p>
           </div>
           <div id="tabs-recurrence-type-60">
             <p>
               <label for="recurrence-monthDay-60"><g:message code="calendarEvent.recurrence.type.60.yearlyAt.label" /></label>&nbsp;
               <g:textField name="recurrence-monthDay-60" size="3" />.
-              <g:select name="recurrence-month-60" from="${0..11}" optionValue="${{monthNames[it]}}" />
+              <g:select name="recurrence-month-60" from="${0..11}" optionValue="${{monthNames[it]}}" /><br />
+              <span class="info-msg"><g:message code="default.required" default="required" /></span>
+              <g:hasErrors bean="${calendarEventInstance}" field="recurrence.monthDay">
+              <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.monthDay"><g:message error="${it}" /> </g:eachError></span>
+              </g:hasErrors>
             </p>
           </div>
           <div id="tabs-recurrence-type-70">
@@ -101,7 +117,11 @@
               <g:textField name="recurrence-weekdayOrd-70" size="3" />.
               <g:select name="recurrence-weekdays-70" from="${[*2..7, 1]}" optionValue="${{weekdayNames[it]}}" />&nbsp;
               <label for="recurrence-month-70"><g:message code="calendarEvent.recurrence.type.70.inMonth.label" /></label>&nbsp;
-              <g:select name="recurrence-month-70" from="${0..11}" optionValue="${{monthNames[it]}}" />
+              <g:select name="recurrence-month-70" from="${0..11}" optionValue="${{monthNames[it]}}" /><br />
+              <span class="info-msg"><g:message code="default.required" default="required" /></span>
+              <g:hasErrors bean="${calendarEventInstance}" field="recurrence.weekdayOrd">
+              <span class="error-msg"><g:eachError bean="${calendarEventInstance}" field="recurrence.weekdayOrd"><g:message error="${it}" /> </g:eachError></span>
+              </g:hasErrors>
             </p>
           </div>
         </div>
@@ -137,7 +157,7 @@
 <fieldset>
   <h4><g:message code="calendarEvent.fieldset.reminder.label" /></h4>
   <div class="fieldset-content">
-    <input type="hidden" id="reminders" name="reminders" value="${reminderInstanceList}" />
+    <input type="hidden" id="reminders" name="reminders" value="${reminderRules}" />
     <div class="row">
       <div class="label">
         <label for="description"><g:message code="calendarEvent.reminder.label" default="Reminder" /></label>

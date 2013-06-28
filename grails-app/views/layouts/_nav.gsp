@@ -1,7 +1,7 @@
 <nav>
   <ul id="main-menu">
     <li>
-      <g:link uri="/"><g:message code="menu.home" default="Home" /></g:link>
+      <a href="#"><g:message code="menu.home" default="Home" /></a>
       <div>
         <ul>
           <li><g:link uri="/"><g:message code="menu.sub.homepage" default="Home page" /></g:link></li>
