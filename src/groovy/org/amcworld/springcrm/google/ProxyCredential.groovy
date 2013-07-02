@@ -24,6 +24,8 @@ import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.auth.oauth2.CredentialRefreshListener
 import com.google.api.client.auth.oauth2.TokenResponse
 import com.google.api.client.auth.oauth2.Credential.AccessMethod
+import com.google.api.client.http.BasicAuthentication
+import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
 
@@ -33,7 +35,7 @@ import com.google.api.client.json.JsonFactory
  * {@code Credential} which sends refresh requests to the AMC World proxy
  * instead of to the Google server.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.0
  */
@@ -45,8 +47,20 @@ class ProxyCredential extends Credential {
                     JsonFactory jsonFactory,
                     List<CredentialRefreshListener> refreshListeners)
     {
+
+        /*
+         * Implementation notes:
+         *
+         * Parameters 4 and 5 are just dummies which are required by the
+         * underlying Google library code.  They are not used in any way
+         * because all transfer is done via the ProxyRequest class and the
+         * AMC World Technologies server.
+         */
         super(
-            method, transport, jsonFactory, null, null, null, refreshListeners
+            method, transport, jsonFactory,
+            new GenericUrl('https://server.example.com/token'),
+            new BasicAuthentication('s6BhdRkqt3', '7Fjfp0ZBr1KtDRbnfVdmIw'),
+            null, refreshListeners
         )
     }
 
@@ -59,8 +73,8 @@ class ProxyCredential extends Credential {
         }
 
         def req = new ProxyRequest(transport, jsonFactory, 'refresh')
-        req.put('refreshToken', refreshToken)
+        req.put 'refreshToken', refreshToken
         ProxyResponse response = req.execute()
-        return response.tokenResponse
+        response.tokenResponse
     }
 }
