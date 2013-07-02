@@ -25,75 +25,71 @@ package org.amcworld.springcrm
  * The class {@code PurchaseInvoiceItem} represents an item in a purchase
  * invoice.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class PurchaseInvoiceItem {
 
     //-- Class variables ------------------------
 
-	static belongsTo = [invoice: PurchaseInvoice]
+    static belongsTo = [invoice: PurchaseInvoice]
     static constraints = {
-		number()
-		quantity(min: 0.0d)
-		unit()
-		name(blank: false)
-		description(nullable: true)
-		unitPrice(widget: 'currency')
-		tax(scale: 1, min: 0.0d, widget: 'percent')
+        number()
+        quantity min: 0.0d
+        unit()
+        name blank: false
+        description nullable: true
+        unitPrice widget: 'currency'
+        tax scale: 1, min: 0.0d, widget: 'percent'
     }
-	static searchable = [only: ['number', 'name', 'description']]
-	static transients = ['total']
+    static searchable = [only: ['number', 'name', 'description']]
+    static transients = ['total']
 
 
     //-- Instance variables ---------------------
 
-	String number
-	double quantity
-	String unit
-	String name
-	String description
-	double unitPrice
-	double tax
+    String number
+    double quantity
+    String unit
+    String name
+    String description
+    double unitPrice
+    double tax
 
 
     //-- Constructors ---------------------------
 
-	PurchaseInvoiceItem() {}
+    PurchaseInvoiceItem() {}
 
-	PurchaseInvoiceItem(PurchaseInvoiceItem i) {
-		number = i.number
-		quantity = i.quantity
-		unit = i.unit
-		name = i.name
-		description = i.description
-		unitPrice = i.unitPrice
-		tax = i.tax
-	}
+    PurchaseInvoiceItem(PurchaseInvoiceItem i) {
+        number = i.number
+        quantity = i.quantity
+        unit = i.unit
+        name = i.name
+        description = i.description
+        unitPrice = i.unitPrice
+        tax = i.tax
+    }
 
 
     //-- Public methods -------------------------
 
-	double getTotal() {
-		return quantity * unitPrice
-	}
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof PurchaseInvoiceItem) {
-            return obj.id == id
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof PurchaseInvoiceItem) ? obj.id == id : false
+    }
+
+    double getTotal() {
+        quantity * unitPrice
     }
 
     @Override
-    public int hashCode() {
-        return id as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
-	String toString() {
-		return name
-	}
+    String toString() {
+        name
+    }
 }

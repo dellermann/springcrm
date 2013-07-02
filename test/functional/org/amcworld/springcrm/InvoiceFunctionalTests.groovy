@@ -33,9 +33,9 @@ import org.openqa.selenium.support.ui.WebDriverWait
 
 /**
  * The class {@code InvoiceFunctionalTests} represents a functional test case
- * for the quotes section of SpringCRM.
+ * for the invoice section of SpringCRM.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */

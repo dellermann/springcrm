@@ -24,7 +24,7 @@ package org.amcworld.springcrm
 /**
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class PurchaseInvoice {
@@ -32,152 +32,115 @@ class PurchaseInvoice {
     //-- Class variables ------------------------
 
     static constraints = {
-		number(blank: false)
-		subject(blank: false)
-		vendor(nullable: true)
-		vendorName(blank: false)
-		docDate()
-		dueDate()
-		stage()
-		paymentDate(nullable: true)
-		paymentAmount(widget: 'currency')
-		paymentMethod(nullable: true)
-		items(minSize: 1)
-		notes(nullable: true, widget: 'textarea')
-		documentFile(nullable: true)
-		discountPercent(scale: 1, min: 0.0d, widget: 'percent')
-		discountAmount(min: 0.0d, widget: 'currency')
-		shippingCosts(min: 0.0d, widget: 'currency')
-        shippingTax(scale: 1, min: 0.0d, widget: 'percent')
-		adjustment(widget: 'currency')
-		total()
-		dateCreated()
-		lastUpdated()
+        number blank: false
+        subject blank: false
+        vendor nullable: true
+        vendorName blank: false
+        docDate()
+        dueDate()
+        stage()
+        paymentDate nullable: true
+        paymentAmount widget: 'currency'
+        paymentMethod nullable: true
+        items minSize: 1
+        notes nullable: true, widget: 'textarea'
+        documentFile nullable: true
+        discountPercent scale: 1, min: 0.0d, widget: 'percent'
+        discountAmount min: 0.0d, widget: 'currency'
+        shippingCosts min: 0.0d, widget: 'currency'
+        shippingTax scale: 1, min: 0.0d, widget: 'percent'
+        adjustment widget: 'currency'
+        total()
+        dateCreated()
+        lastUpdated()
     }
     static belongsTo = [vendor: Organization]
-	static hasMany = [items: PurchaseInvoiceItem]
-	static mapping = {
-		items cascade: 'all-delete-orphan'
-		notes type: 'text'
+    static hasMany = [items: PurchaseInvoiceItem]
+    static mapping = {
+        items cascade: 'all-delete-orphan'
+        notes type: 'text'
         subject index: 'subject'
-	}
-	static searchable = true
-	static transients = [
-		'balance', 'balanceColor', 'discountPercentAmount',
+    }
+    static searchable = true
+    static transients = [
+        'balance', 'balanceColor', 'discountPercentAmount',
         'paymentStateColor', 'subtotalNet', 'subtotalGross', 'taxRateSums'
-	]
+    ]
 
 
     //-- Instance variables ---------------------
 
-	String number
-	String subject
-	String vendorName
-	Date docDate = new Date()
-	Date dueDate
-	PurchaseInvoiceStage stage
-	Date paymentDate
-	double paymentAmount
-	PaymentMethod paymentMethod
-	List<PurchaseInvoiceItem> items
-	double discountPercent
-	double discountAmount
-	double shippingCosts
-    double shippingTax = 19.0
-	double adjustment
-	String notes
-	String documentFile
-	double total
-	Date dateCreated
-	Date lastUpdated
+    String number
+    String subject
+    String vendorName
+    Date docDate = new Date()
+    Date dueDate
+    PurchaseInvoiceStage stage
+    Date paymentDate
+    double paymentAmount
+    PaymentMethod paymentMethod
+    List<PurchaseInvoiceItem> items
+    double discountPercent
+    double discountAmount
+    double shippingCosts
+    double shippingTax = 19.0d
+    double adjustment
+    String notes
+    String documentFile
+    double total
+    Date dateCreated
+    Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
-	PurchaseInvoice() {}
+    PurchaseInvoice() {}
 
-	PurchaseInvoice(PurchaseInvoice p) {
-		number = p.number
-		subject = p.subject
-		vendor = p.vendor
-		vendorName = p.vendorName
-		items = new ArrayList(p.items.size())
-		p.items.each { items << new PurchaseInvoiceItem(it) }
-		discountPercent = p.discountPercent
-		discountAmount = p.discountAmount
-		shippingCosts = p.shippingCosts
-		shippingTax = p.shippingTax
-		adjustment = p.adjustment
-		notes = p.notes
-		total = p.total
-	}
+    PurchaseInvoice(PurchaseInvoice p) {
+        number = p.number
+        subject = p.subject
+        vendor = p.vendor
+        vendorName = p.vendorName
+        items = new ArrayList(p.items.size())
+        p.items.each { items << new PurchaseInvoiceItem(it) }
+        discountPercent = p.discountPercent
+        discountAmount = p.discountAmount
+        shippingCosts = p.shippingCosts
+        shippingTax = p.shippingTax
+        adjustment = p.adjustment
+        notes = p.notes
+        total = p.total
+    }
 
 
     //-- Public methods -------------------------
 
-	/**
-	 * Gets the subtotal net value. It is computed by accumulating the total
-	 * values of the items plus the shipping costs.
-	 *
-	 * @return	the subtotal net value
-	 * @see		#getSubtotalGross()
-	 */
-	double getSubtotalNet() {
-		return items.total.sum() + shippingCosts
-	}
+    def beforeValidate() {
+        total = computeTotal()
+    }
 
-	/**
-	 * Gets the subtotal gross value. It is computed by adding the tax values
-	 * to the subtotal net value.
-	 *
-	 * @return	the subtotal gross value
-	 * @see		#getSubtotalNet()
-	 */
-	double getSubtotalGross() {
-		return subtotalNet + taxRateSums.values().sum()
-	}
+    def beforeInsert() {
+        total = computeTotal()
+    }
 
-	/**
-	 * Gets the discount amount which is granted when the user specifies a
-	 * discount percentage value. The percentage value is related to the
-	 * subtotal gross value.
-	 *
-	 * @return	the discount amount from the percentage value
-	 * @see		#getSubtotalGross()
-	 */
-	double getDiscountPercentAmount() {
-		return subtotalGross * discountPercent / 100.0d
-	}
+    def beforeUpdate() {
+        total = computeTotal()
+    }
 
-	/**
-	 * Computes a map of taxes used in this transaction. The key represents the
-	 * tax rate (a percentage value), the value the sum of tax values of all
-	 * items which belong to this tax rate.
-	 *
-	 * @return	the tax rates and their associated tax value sums
-	 */
-	Map<Double, Double> getTaxRateSums() {
-		Map<Double, Double> res = [: ]
-		for (item in items) {
-			double tax = item.tax
-			res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
-		}
-		if (getShippingTax() != 0.0d && getShippingCosts() != 0.0d) {
-			double tax = shippingTax
-			res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
-		}
-		return res.sort { e1, e2 -> e1.key <=> e2.key }
-	}
+    /**
+     * Computes the total (gross) value. It is computed from the subtotal gross
+     * value minus all discounts plus the adjustment.
+     *
+     * @return  the total (gross) value
+     */
+    double computeTotal() {
+        subtotalGross - discountPercentAmount - discountAmount + adjustment
+    }
 
-	/**
-	 * Computes the total (gross) value. It is computed from the subtotal gross
-	 * value minus all discounts plus the adjustment.
-	 *
-	 * @return	the total (gross) value
-	 */
-	double computeTotal() {
-		return subtotalGross - discountPercentAmount - discountAmount + adjustment
-	}
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof PurchaseInvoice) ? obj.id == id : false
+    }
 
     /**
      * Gets the balance of this purchase invoice, that is the difference
@@ -187,7 +150,7 @@ class PurchaseInvoice {
      * @since   1.0
      */
     double getBalance() {
-        return paymentAmount - total
+        paymentAmount - total
     }
 
     /**
@@ -205,7 +168,19 @@ class PurchaseInvoice {
         } else if (balance > 0.0d) {
             color = 'green'
         }
-        return color
+        color
+    }
+
+    /**
+     * Gets the discount amount which is granted when the user specifies a
+     * discount percentage value. The percentage value is related to the
+     * subtotal gross value.
+     *
+     * @return  the discount amount from the percentage value
+     * @see     #getSubtotalGross()
+     */
+    double getDiscountPercentAmount() {
+        subtotalGross * discountPercent / 100.0d
     }
 
     /**
@@ -226,39 +201,60 @@ class PurchaseInvoice {
             color = (balance >= 0.0d) ? 'green' : colorIndicatorByDate()
             break
         }
-        return color
+        color
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof PurchaseInvoice) {
-            return obj.id == id
-        } else {
-            return false
+    /**
+     * Gets the subtotal gross value. It is computed by adding the tax values
+     * to the subtotal net value.
+     *
+     * @return  the subtotal gross value
+     * @see     #getSubtotalNet()
+     */
+    double getSubtotalGross() {
+        subtotalNet + taxRateSums.values().sum()
+    }
+
+    /**
+     * Gets the subtotal net value. It is computed by accumulating the total
+     * values of the items plus the shipping costs.
+     *
+     * @return  the subtotal net value
+     * @see     #getSubtotalGross()
+     */
+    double getSubtotalNet() {
+        items.total.sum() + shippingCosts
+    }
+
+    /**
+     * Computes a map of taxes used in this transaction. The key represents the
+     * tax rate (a percentage value), the value the sum of tax values of all
+     * items which belong to this tax rate.
+     *
+     * @return  the tax rates and their associated tax value sums
+     */
+    Map<Double, Double> getTaxRateSums() {
+        Map<Double, Double> res = [: ]
+        for (item in items) {
+            double tax = item.tax
+            res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
         }
+        if (getShippingTax() != 0.0d && getShippingCosts() != 0.0d) {
+            double tax = shippingTax
+            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
+        }
+        res.sort { e1, e2 -> e1.key <=> e2.key }
     }
 
     @Override
-    public int hashCode() {
-        return id as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
-	String toString() {
-		return subject
-	}
-
-	def beforeValidate() {
-		total = computeTotal()
-	}
-
-	def beforeInsert() {
-		total = computeTotal()
-	}
-
-	def beforeUpdate() {
-		total = computeTotal()
-	}
+    String toString() {
+        subject
+    }
 
 
     //-- Non-public methods ---------------------
@@ -282,6 +278,6 @@ class PurchaseInvoice {
                 color = 'red'
             }
         }
-        return color
+        color
     }
 }

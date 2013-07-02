@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tfoot>
-      <tr class="subtotal">
+      <tr class="subtotal subtotal-net">
         <td colspan="5" class="label"><g:message code="${pageProperty(name: 'className')}.subtotalNet.label" default="Subtotal excl. VAT" /></td>
         <td></td>
         <td class="currency number"><g:formatCurrency number="${invoicingTransaction?.subtotalNet}" displayZero="true" /></td>
@@ -28,7 +28,7 @@
       </tr>
       </g:each>
       <g:if test="${invoicingTransaction?.discountPercent != 0 || invoicingTransaction?.discountAmount != 0 || invoicingTransaction?.adjustment != 0}">
-      <tr class="subtotal">
+      <tr class="subtotal subtotal-gross">
         <td colspan="5" class="label"><g:message code="invoicingTransaction.subtotalGross.label" default="Subtotal incl. VAT" /></td>
         <td></td>
         <td class="currency number"><g:formatCurrency number="${invoicingTransaction?.subtotalGross}" displayZero="true" /></td>

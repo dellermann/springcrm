@@ -201,6 +201,8 @@ modules = {
         dependsOn 'invoicingTransactionForm'
         defaultBundle 'invoicing-transaction-form'
 
+        resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
         resource '/js/purchase-invoice-form.js'
     }
 

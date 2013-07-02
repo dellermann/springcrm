@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import ch.gstream.grails.plugins.dbunitoperator.DbUnitTestCase
 import grails.util.Metadata
 import java.text.DateFormat
@@ -31,6 +30,7 @@ import org.openqa.selenium.Keys
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.WebDriverWait
 
@@ -52,6 +52,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     protected static final By BY_PASSWORD = By.name('password')
     protected static final By BY_SUBHEADER = By.xpath('//section[@id="content"]/h3')
     protected static final By BY_USER_NAME = By.name('userName')
+    protected static final String PURCHASE_INVOICE_EXAMPLE_DOCUMENT = 'org/amcworld/springcrm/4049493-4994.pdf'
+    protected static final String PURCHASE_INVOICE_EXAMPLE_DOCUMENT_ALT = 'org/amcworld/springcrm/4049493-4994-neu.pdf'
 
 
     //-- Instance variables ---------------------
@@ -69,6 +71,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         String appName = Metadata.current.getProperty('app.name')
         String portNumber = System.getProperty('server.port') ?: '8080'
         baseUrl = "http://localhost:${portNumber}/${appName}"
+
         driver = new FirefoxDriver()
     }
 
@@ -138,6 +141,18 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             println "Fields ${shouldNotBeErrors.toListString()} marked as error, but shouldn't."
         }
         return shouldBeErrors.empty && shouldNotBeErrors.empty
+    }
+
+    /**
+     * Checks whether both the given files are equal in size and content.
+     *
+     * @param expected  the expected file
+     * @param file      the file to test
+     */
+    protected void checkFile(File expected, File file) {
+        assert file.exists()
+        assert expected.length() == file.length()
+        assert expected.text == file.text
     }
 
     /**
@@ -269,6 +284,33 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
+     * Gets the base folder containing the application data in test cases.
+     *
+     * @return  the application base directory
+     */
+    protected File getAppBaseDir() {
+        File f = new File(System.getProperty('java.io.tmpdir'), 'springcrm')
+        if (!f.exists()) {
+            f.mkdirs()
+        }
+        f
+    }
+
+    /**
+     * Gets the folder containing the application data files such as purchase
+     * invoice documents in test cases.
+     *
+     * @return  the application data directory
+     */
+    protected File getAppDataDir() {
+        File f = new File(appBaseDir, 'data')
+        if (!f.exists()) {
+            f.mkdirs()
+        }
+        f
+    }
+
+    /**
      * Gets the selected text of the autocompleteex widget with the given ID or
      * name.
      *
@@ -384,6 +426,45 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         default:
             return input.getAttribute('value')
         }
+    }
+
+    /**
+     * Gets the local file with the given classpath-relative path.
+     *
+     * @param path  the path to the file relative to the class path base
+     *              directory
+     * @return      the local file
+     */
+    protected File getLocalFile(String path) {
+        URI uri = getClass().getClassLoader().getResource(path)?.toURI()
+        assert uri
+        File file = new File(uri.path)
+        assert file
+
+        file
+    }
+
+    /**
+     * Gets an example document for purchase invoices.
+     *
+     * @return  the purchase invoice example document
+     */
+    protected File getPurchaseInvoiceExampleDocument() {
+        getLocalFile PURCHASE_INVOICE_EXAMPLE_DOCUMENT
+    }
+
+    /**
+     * Gets the directory in test cases where the purchase invoice documents
+     * are located.
+     *
+     * @return  the folder containing the purchase invoice documents
+     */
+    protected File getPurchaseInvoiceFolder() {
+        File f = new File(appDataDir, PurchaseInvoiceController.FILE_TYPE)
+        if (!f.exists()) {
+            f.mkdirs()
+        }
+        f
     }
 
     /**
@@ -804,6 +885,59 @@ auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
     }
 
     /**
+     * Prepares a purchase invoice and stores it into the database.
+     *
+     * @param org   the vendor the purchase invoice belongs to
+     * @return      the created purchase invoice
+     */
+    protected PurchaseInvoice preparePurchaseInvoice(Organization org = null) {
+        File file = purchaseInvoiceExampleDocument
+        new File(purchaseInvoiceFolder, file.name) << file.newInputStream()
+
+        def purchaseInvoice = new PurchaseInvoice(
+            number: '4049493-4994',
+            subject: 'Entwicklung eines Designs',
+            vendor: org,
+            vendorName: 'Katja Schmale Webdesignerin',
+            docDate: new GregorianCalendar(2013, Calendar.MARCH, 15).time,
+            dueDate: new GregorianCalendar(2013, Calendar.APRIL, 15).time,
+            stage: PurchaseInvoiceStage.get(2101),
+            notes: 'Lieferschein zur Rechnung nachfordern.',
+            documentFile: file.name,
+            discountPercent: 2.0d,
+            adjustment: -1.36d
+        )
+        purchaseInvoice.addToItems(new PurchaseInvoiceItem(
+                number: '5100',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Konzeption und Planung',
+                description: 'Konzeption des geplanten Webdesigns',
+                unitPrice: 500.0d,
+                tax: 19.0d
+            )).
+            addToItems(new PurchaseInvoiceItem(
+                number: '1200',
+                quantity: 1.0d,
+                unit: 'Einheiten',
+                name: 'Webdesign',
+                unitPrice: 1300.0d,
+                tax: 19.0d
+            )).
+            addToItems(new PurchaseInvoiceItem(
+                number: '9500',
+                quantity: 10.0d,
+                unit: 'Packung',
+                name: 'Büromaterial',
+                description: 'Papier, Klebeband, Kleinteile',
+                unitPrice: 4.5d,
+                tax: 7.0d
+            )).
+            save(flush: true)
+        purchaseInvoice
+    }
+
+    /**
      * Prepares a quote and stores it into the database.
      *
      * @param org   the organization the quote belongs to
@@ -1044,6 +1178,28 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
         }
     }
 
+    /**
+     * Sets the given file in the upload field with the given name.  The file
+     * must be located in the class path.
+     *
+     * @param name  the given name of the input field
+     * @param path  the path to the file to upload relative to the class path
+     *              base directory
+     * @return      the uploaded file
+     */
+    protected File uploadFile(String name, String path) {
+        File file = getLocalFile(path)
+        getInput(name).sendKeys file.absolutePath
+        file
+    }
+
+    /**
+     * Waits until an empty remote list is loaded.
+     *
+     * @param fieldsetIdx   the one-based index of the fieldset containing the
+     *                      remote list
+     * @return              the web element representing the fieldset
+     */
     protected WebElement waitForEmptyRemoteList(int fieldsetIdx) {
         def wait = new WebDriverWait(driver, 10)
         By by = By.xpath(

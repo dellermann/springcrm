@@ -28,14 +28,14 @@ import net.sf.jmimemagic.Magic
  * The class {@code PurchaseInvoiceController} contains actions which manage
  * purchase invoices.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class PurchaseInvoiceController {
 
     //-- Constants ------------------------------
 
-    protected static final FILE_TYPE = 'purchase-invoice'
+    public static final String FILE_TYPE = 'purchase-invoice'
 
 
     //-- Class variables ------------------------
@@ -165,7 +165,7 @@ class PurchaseInvoiceController {
             purchaseInvoiceInstance.documentFile = null
         } else if (!params.file?.isEmpty()) {
             if (purchaseInvoiceInstance.documentFile) {
-                fileService.removeFile purchaseInvoiceInstance.documentFile
+                fileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
             }
             purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
         }

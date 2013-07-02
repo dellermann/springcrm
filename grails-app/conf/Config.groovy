@@ -148,6 +148,10 @@ environments {
     /* test environment */
     test {
         grails.plugin.databasemigration.dropOnStart = true
+        springcrm.dir.base = System.getProperty('java.io.tmpdir') + '/springcrm'
+        springcrm.dir.data = "${springcrm.dir.base}/data"
+        springcrm.dir.documents = "${springcrm.dir.base}/documents"
+        springcrm.dir.installer = "${springcrm.dir.base}/install"
     }
 
     /* production (deployment) environment */
