@@ -832,7 +832,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         checkStaticRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,99 €', '2,99 €', '7,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        WebElement tr = tfoot.findElement(By.xpath('tr[@class="subtotal"][1]'))
+        WebElement tr = tfoot.findElement(By.className('subtotal-net'))
         assert '493,93 €' == tr.findElement(By.cssSelector('td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '7 % MwSt.' == tr.findElement(By.className('label')).text
@@ -840,7 +840,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         tr = tfoot.findElement(By.xpath('./tr[3]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
         assert '92,33 €' == tr.findElement(By.className('currency')).text
-        tr = tfoot.findElement(By.xpath('tr[@class="subtotal"][2]'))
+        tr = tfoot.findElement(By.className('subtotal-gross'))
         assert '586,82 €' == tr.findElement(By.cssSelector('td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[5]'))
         assert '2,00 %' == tr.findElement(By.className('percentage')).text

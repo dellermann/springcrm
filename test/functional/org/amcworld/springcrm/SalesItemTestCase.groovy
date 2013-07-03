@@ -231,7 +231,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      */
     protected String getStep1TableRowTotal(int rowIdx) {
         getStep1TableInput(rowIdx, 'name').click()
-        return getStep1TableCell(rowIdx, 'total-price').
+        getStep1TableCell(rowIdx, 'total-price').
             findElement(By.tagName('output')).
             text
     }

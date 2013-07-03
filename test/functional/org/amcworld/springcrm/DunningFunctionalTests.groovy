@@ -657,7 +657,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 7 %', '74,51 €', '74,51 €', '19,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        WebElement tr = tfoot.findElement(By.xpath('tr[@class="subtotal"][1]'))
+        WebElement tr = tfoot.findElement(By.className('subtotal-net'))
         assert '79,51 €' == tr.findElement(By.cssSelector('td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text

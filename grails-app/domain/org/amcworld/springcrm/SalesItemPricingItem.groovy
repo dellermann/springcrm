@@ -35,19 +35,19 @@ class SalesItemPricingItem {
 
     static belongsTo = [pricing: SalesItemPricing]
     static constraints = {
-        quantity(min: 0.0d)
-        unit(nullable: true, validator: { unit, pricing ->
+        quantity min: 0.0d
+        unit nullable: true, validator: { unit, pricing ->
             ((unit == null) && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
-        })
-        name(nullable: true, validator: { name, pricing ->
+        }
+        name nullable: true, validator: { name, pricing ->
             ((name == null) && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
-        })
+        }
         type()
-        relToPos(nullable: true, min: 0i, validator: { relToPos, pricing ->
+        relToPos nullable: true, min: 0i, validator: { relToPos, pricing ->
             ((relToPos == null) && (pricing.type == PricingItemType.relativeToPos)) ? 'default.null.message' : null
-        })
-        unitPercent(scale: 2, min: 0.0d, widget: 'percent')
-        unitPrice(widget: 'currency')
+        }
+        unitPercent scale: 2, min: 0.0d, widget: 'percent'
+        unitPrice widget: 'currency'
     }
     static searchable = [only: ['name']]
 
@@ -66,21 +66,17 @@ class SalesItemPricingItem {
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SalesItemPricingItem) {
-            return obj.id == id
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof SalesItemPricingItem) ? obj.id == id : false
     }
 
     @Override
-    public int hashCode() {
-        return (id ?: 0i) as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-        return name ?: ''
+        name ?: ''
     }
 }

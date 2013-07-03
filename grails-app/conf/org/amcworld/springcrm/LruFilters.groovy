@@ -28,7 +28,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * The class {@code LruFilters} contains filters which are store shown and
  * edited content items in the LRU (last recently used) list.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class LruFilters {
@@ -53,7 +53,7 @@ class LruFilters {
                 if (!instance) {
                     instance = request["${controllerName}Instance"]
                 }
-                if (!instance?.ident()) {
+                if (!instance?.ident() || instance.hasErrors()) {
                     return
                 }
 

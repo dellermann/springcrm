@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code LruEntry} stores the data of an entry in the last recently
  * used (LRU) list.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class LruEntry {
@@ -33,45 +33,40 @@ class LruEntry {
     //-- Class variables ------------------------
 
     static constraints = {
-		user()
-		controller(blank: false)
-		itemId(unique: ['user', 'controller'])
-		pos()
-		name(nullable: true, blank: true)
+        user()
+        controller blank: false
+        itemId unique: ['user', 'controller']
+        pos()
+        name nullable: true, blank: true
     }
-	static mapping = {
-		version false
-	}
+    static mapping = {
+        version false
+    }
 
 
     //-- Instance variables ---------------------
 
-	User user
-	String controller
-	long itemId
-	long pos
-	String name
+    User user
+    String controller
+    long itemId
+    long pos
+    String name
 
 
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof LruEntry) {
-            return obj.user == user && obj.controller == controller &&
-                obj.itemId == itemId
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof LruEntry) ? obj.user == user && obj.controller == controller && obj.itemId == itemId : false
     }
 
     @Override
-    public int hashCode() {
-        return toString().hashCode()
+    int hashCode() {
+        toString().hashCode()
     }
 
     @Override
     String toString() {
-        return "${user.userName}/${controller}/${itemId}"
+        "${user.userName}/${controller}/${itemId}"
     }
 }

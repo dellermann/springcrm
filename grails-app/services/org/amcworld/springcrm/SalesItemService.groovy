@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code SalesItemService} contains service methods which handle
  * sales items such as products and services as well as handling for pricing.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
@@ -70,14 +70,14 @@ class SalesItemService {
             for (int i = 0; params.pricing?."items[${i}]"; i++) {
                 pricing.addToItems params.pricing."items[${i}]"
             }
-            if (!salesItem.validate() || !pricing.save()) {
+            if (!salesItem.validate() || !pricing.save(flush: true)) {
                 return false
             }
         } else if (pricing) {
-            pricing.delete(flush: true)
+            pricing.delete flush: true
             salesItem.pricing = null
         }
 
-        return salesItem.save(flush: true)
+        salesItem.save flush: true
     }
 }
