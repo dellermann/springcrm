@@ -195,6 +195,8 @@ log4j = {
         'org.mortbay.log'
     )
 
+    info 'org.grails.plugins.coffee.compiler'
+
     debug(
 //        'grails.app.controllers.org.amcworld.springcrm.InvoiceController',
 //        'grails.app.controllers.org.amcworld.springcrm.PurchaseInvoiceController',
@@ -211,8 +213,6 @@ log4j = {
 //        'org.amcworld.springcrm.elfinder.command',
 //        'org.amcworld.springcrm.elfinder.fs',
     )
-
-    info 'org.grails.plugins.coffee.compiler'
 
     environments {
         test {

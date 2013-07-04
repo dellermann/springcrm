@@ -71,6 +71,8 @@ class SalesItemService {
                 pricing.addToItems params.pricing."items[${i}]"
             }
             if (!salesItem.validate() || !pricing.save(flush: true)) {
+                salesItem.discard()
+                pricing.discard()
                 return false
             }
         } else if (pricing) {

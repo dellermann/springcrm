@@ -53,7 +53,7 @@ class LruFilters {
                 if (!instance) {
                     instance = request["${controllerName}Instance"]
                 }
-                if (!instance?.ident() || instance.hasErrors()) {
+                if (!instance?.ident()) {
                     return
                 }
 
