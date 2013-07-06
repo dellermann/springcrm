@@ -1,7 +1,7 @@
 /*
  * BootStrap.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,29 +27,44 @@ import org.amcworld.springcrm.OverviewPanelRepository
  * The class {@code BootStrap} performs initial operations when booting the
  * application.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.3
  */
 class BootStrap {
 
     //-- Instance variables ---------------------
 
-	def exceptionHandler
+    def exceptionHandler
+    def grailsApplication
+    def springcrmConfig
 
 
     //-- Public methods -------------------------
 
     def init = { servletContext ->
-		exceptionHandler.exceptionMappings = [
-			'java.lang.Exception': '/error'
-		]
+        exceptionHandler.exceptionMappings = [
+            'java.lang.Exception': '/error'
+        ]
 
+        /* load instance specific configuration file */
+        if (springcrmConfig) {
+            def file = new File(springcrmConfig)
+            if (file.exists()) {
+                def properties = new Properties()
+                properties.load file.newReader()
+                def config = new ConfigSlurper().parse(properties)
+                grailsApplication.config.merge config
+            }
+        }
+
+        /* start Quartz jobs */
         Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
         Long interval = config ? (config.value as Long) : 5L
-        GoogleContactSyncJob.schedule(interval * 60000L, -1)
+        GoogleContactSyncJob.schedule interval * 60000L, -1
 
-		OverviewPanelRepository opr = OverviewPanelRepository.instance
-		opr.initialize(servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml'))
+        /* initialize panels on overview page */
+        OverviewPanelRepository opr = OverviewPanelRepository.instance
+        opr.initialize servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml')
     }
 
     def destroy = {}

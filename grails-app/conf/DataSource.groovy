@@ -66,28 +66,14 @@ environments {
     /* production (deployment) environment */
     production {
         dataSource {
-            url = 'jdbc:mysql://localhost/springcrm'
-            username = 'springcrm'
-            password = 'springcrm'
-            properties {
-                validationQuery = 'select 1'
-                testWhileIdle = true
-                timeBetweenEvictionRunsMillis = 60000
-            }
+            jndiName = 'java:comp/env/jdbc/springcrmDataSource'
         }
     }
 
     /* live environment on the AMC World server */
     live {
         dataSource {
-            url = 'jdbc:mysql://db.amc-world.home/springcrm?autoreconnect=true'
-            username = 'projects'
-            password = 'haluni21'
-            properties {
-                validationQuery = 'select 1'
-                testWhileIdle = true
-                timeBetweenEvictionRunsMillis = 60000
-            }
+            jndiName = 'java:comp/env/jdbc/springcrmDataSource'
         }
     }
 
