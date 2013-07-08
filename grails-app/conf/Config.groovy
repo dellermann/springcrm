@@ -119,6 +119,16 @@ grails {
     }
 }
 
+/* Markdown settings */
+markdown {
+  abbreviations = true
+  definitionLists = true
+  hardwraps = true
+  removeHtml = true
+  smartPunctuation = true
+  tables = true
+}
+
 /* SpringCRM settings */
 springcrm.dir.base = "${userHome}/.${appName}"
 if (System.getenv('SPRINGCRM_HOME')) {

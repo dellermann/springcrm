@@ -187,27 +187,52 @@
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="BuildConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy" kind="src" path=".link_to_grails_plugins/quartz-1.0-RC4/grails-app/conf">
+	<classpathentry excluding="BuildConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy" kind="src" path=".link_to_grails_plugins/markdown-1.0.0.RC1/grails-app/conf">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC4/grails-app/i18n">
+	<classpathentry kind="src" path=".link_to_grails_plugins/markdown-1.0.0.RC1/grails-app/services">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC4/grails-app/services">
+	<classpathentry kind="src" path=".link_to_grails_plugins/markdown-1.0.0.RC1/grails-app/taglib">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC4/src/groovy">
+	<classpathentry kind="src" path=".link_to_grails_plugins/markdown-1.0.0.RC1/src/groovy">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC4/src/java">
+	<classpathentry kind="src" path=".link_to_grails_plugins/markdown-1.0.0.RC1/src/java">
+		<attributes>
+			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="BuildConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy" kind="src" path=".link_to_grails_plugins/quartz-1.0-RC9/grails-app/conf">
+		<attributes>
+			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC9/grails-app/i18n">
+		<attributes>
+			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC9/grails-app/services">
+		<attributes>
+			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC9/src/groovy">
+		<attributes>
+			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path=".link_to_grails_plugins/quartz-1.0-RC9/src/java">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>

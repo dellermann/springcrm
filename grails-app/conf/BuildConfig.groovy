@@ -101,9 +101,9 @@ grails.project.dependency.resolution = {
             ':fields:1.3',
             ":hibernate:${grailsVersion}",
             ':less-resources:1.3.3.1',
-//            ':lesscss-resources:1.3.3',
             ':mail:1.0.1',
-            ':quartz:1.0-RC4',
+            ':markdown:1.0.0.RC1',
+            ':quartz:1.0-RC9',
             ':searchable:0.6.4'
         )
         build(

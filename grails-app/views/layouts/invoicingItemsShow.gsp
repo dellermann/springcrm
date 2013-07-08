@@ -73,7 +73,10 @@
         <td class="item-number"><g:fieldValue bean="${item}" field="number" /></td>
         <td class="quantity number"><g:formatNumber number="${item.quantity}" maxFractionDigits="3" displayZero="true" /></td>
         <td class="unit"><g:fieldValue bean="${item}" field="unit" /></td>
-        <td class="name"><g:fieldValue bean="${item}" field="name" /><br /><g:fieldValue bean="${item}" field="description" /></td>
+        <td class="name">
+          <div class="item-name"><g:fieldValue bean="${item}" field="name" /></div>
+          <div class="item-description"><markdown:renderHtml text="${item.description}" /></div>
+        </td>
         <td class="unit-price currency number"><g:formatCurrency number="${item.unitPrice}" displayZero="true" /></td>
         <td class="total-price currency number"><g:formatCurrency number="${item.total}" displayZero="true" /></td>
         <td class="tax percentage number"><g:formatNumber number="${item.tax}" minFractionDigits="1" />&nbsp;%</td>
