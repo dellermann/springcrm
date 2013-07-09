@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="1.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format">
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:fo="http://www.w3.org/1999/XSL/Format">
+
+  <!--===========================================
+
+    NAMED TEMPLATES
+
+  ============================================-->
+
 	<xsl:template name="header">
     <fo:static-content flow-name="xsl-region-before">
-      <fo:table table-layout="fixed" width="158mm"
-                font-family="Helvetica" font-size="7pt"
-                line-height="140%" color="#000">
+      <fo:table table-layout="fixed" width="100%" font-family="{$font.default}"
+        font-size="{$font.size.small}" line-height="{$line-height.default}"
+        color="{$color.fg.default}">
         <fo:table-column column-number="1" column-width="60mm"/>
         <fo:table-column column-number="2" column-width="26mm"/>
         <fo:table-column column-number="3" column-width="5mm"/>
@@ -18,28 +25,32 @@
           <fo:table-row>
             <fo:table-cell number-rows-spanned="2">
               <fo:block>
-                <fo:external-graphic 
-                  src="url('servlet-context:/WEB-INF/data/print/default/img/logo.png')"
-                  content-width="18.3mm" content-height="24.1mm"/>
+                <fo:external-graphic src="url('{$path.img.logo}')"
+                  content-width="{$logo.width}mm"
+                  content-height="{$logo.height}mm"/>
                </fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-top="8mm">
+            <fo:table-cell padding-top="{$header.padding.top}mm">
               <fo:block>
                 <xsl:value-of select="key('client', 'street')"/>
               </fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-top="8mm">
-              <fo:block color="#383" font-weight="bold">tel</fo:block>
+            <fo:table-cell padding-top="{$header.padding.top}mm">
+              <fo:block color="{$color.fg.highlight}"
+                font-weight="bold">tel</fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-top="8mm">
+            <fo:table-cell padding-top="{$header.padding.top}mm">
               <fo:block>
                 <xsl:value-of select="key('client', 'phone')"/>
               </fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-top="8mm" text-align="right">
-              <fo:block color="#383" font-weight="bold">web</fo:block>
+            <fo:table-cell padding-top="{$header.padding.top}mm"
+              text-align="right">
+              <fo:block color="{$color.fg.highlight}"
+                font-weight="bold">web</fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-top="8mm" text-align="right">
+            <fo:table-cell padding-top="{$header.padding.top}mm"
+              text-align="right">
               <fo:block>
                 <xsl:choose>
                   <xsl:when test="starts-with(key('client', 'website'), 'http://')">
@@ -61,7 +72,8 @@
               </fo:block>
             </fo:table-cell>
             <fo:table-cell>
-              <fo:block color="#383" font-weight="bold">fax</fo:block>
+              <fo:block color="{$color.fg.highlight}"
+                font-weight="bold">fax</fo:block>
             </fo:table-cell>
             <fo:table-cell>
               <fo:block>
@@ -69,7 +81,8 @@
               </fo:block>
             </fo:table-cell>
             <fo:table-cell text-align="right">
-              <fo:block color="#383" font-weight="bold">mail</fo:block>
+              <fo:block color="{$color.fg.highlight}"
+                font-weight="bold">mail</fo:block>
             </fo:table-cell>
             <fo:table-cell text-align="right">
               <fo:block>

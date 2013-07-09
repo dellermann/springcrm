@@ -46,7 +46,7 @@ class User implements Cloneable {
         dateCreated()
         lastUpdated()
     }
-    static hasMany = [rawSettings: UserSetting, reminders: Reminder]
+    static hasMany = [rawSettings: UserSetting]
     static mapping = {
         allowedModules type: 'text'
         table 'user_data'

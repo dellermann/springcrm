@@ -66,11 +66,27 @@ class FopService {
     //-- Instance variables ---------------------
 
     def grailsApplication
+    def markdownService
     def messageSource
-	final ServletContext servletContext = SCH.servletContext
+    final ServletContext servletContext = SCH.servletContext
 
 
     //-- Public methods -------------------------
+
+    /**
+     * Generates an XML block for the given invoicing transaction property
+     * which contains Markdown content.
+     *
+     * @param transaction   the given invoicing transaction
+     * @param propertyName  the name of the property
+     * @return              the generated XML block
+     */
+    String generateMarkdownXml(InvoicingTransaction transaction,
+                               String propertyName)
+    {
+        String xml = generateRawMarkdownXml(transaction."${propertyName}")
+        "<${propertyName}Html>${xml}</${propertyName}Html>"
+    }
 
     /**
      * Generates a PDF document from the given template and document type and
@@ -90,15 +106,17 @@ class FopService {
         Map<String, String> pathes = templatePathes
         String templateDir = pathes[template]
 
-        URIResolver uriResolver = new TemplateURIResolver(servletContext, templateDir)
+        URIResolver uriResolver = new TemplateURIResolver(
+            servletContext, templateDir
+        )
         FopFactory fopFactory = FopFactory.newInstance()
         fopFactory.URIResolver = uriResolver
         fopFactory.userConfig = getFopConfiguration(templateDir)
 
-		Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out)
+        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out)
 
-		TransformerFactory tfFactory = TransformerFactory.newInstance()
-		tfFactory.URIResolver = uriResolver
+        TransformerFactory tfFactory = TransformerFactory.newInstance()
+        tfFactory.URIResolver = uriResolver
         tfFactory.errorListener = [
             error: { e ->
                 log.error "XSL-FO error: ${e.messageAndLocation}"
@@ -113,18 +131,31 @@ class FopService {
 
         try {
             InputStream is = getTemplateFile("${templateDir}/${type}-fo.xsl")
-    		Transformer transformer =
+            Transformer transformer =
                 tfFactory.newTransformer(new StreamSource(is))
-    		transformer.URIResolver = uriResolver
-    		transformer.setParameter('versionParam', '2.0')
+            transformer.URIResolver = uriResolver
+            transformer.setParameter('versionParam', '2.0')
 
-    		Source src = new StreamSource(data)
-    		Result res = new SAXResult(fop.getDefaultHandler())
-    		transformer.transform src, res
+            Source src = new StreamSource(data)
+            Result res = new SAXResult(fop.getDefaultHandler())
+            transformer.transform src, res
         } catch (TransformerException e) {
             log.error "XSL-FO transformer error: ${e.messageAndLocation}"
             throw e
         }
+    }
+
+    /**
+     * Generates a raw XML block for the HTML code generated from the given
+     * Markdown text.
+     *
+     * @param text  the given Markdown text; if {@code null} an empty string
+     *              is used
+     * @return      the generated XML block
+     */
+    String generateRawMarkdownXml(String text) {
+        String html = markdownService.markdown(text ?: '')
+        "<html xmlns='http://www.w3.org/1999/xhtml'><head/><body>${html}</body></html>"
     }
 
     /**
@@ -169,10 +200,26 @@ class FopService {
             data << additionalData
         }
         String xml = (data as XML).toString()
+        
+        StringBuilder buf = new StringBuilder()
+        buf << generateMarkdownXml(transaction, 'billingAddrStreet')
+        buf << generateMarkdownXml(transaction, 'shippingAddrStreet')
+        buf << generateMarkdownXml(transaction, 'headerText')
+        buf << generateMarkdownXml(transaction, 'footerText')
+        buf << '<itemsHtml>'
+        for (InvoicingItem item : transaction.items) {
+            buf << '<descriptionHtml id="' << item.id << '">'
+            buf << generateRawMarkdownXml(item.description)
+            buf << '</descriptionHtml>'
+        }
+        buf << '</itemsHtml>'
+        buf << '</map>'
+        xml = xml.replaceAll ~/<\/map>$/, buf.toString()
+
         if (log.debugEnabled) {
             log.debug "XML data structure, type ${transaction.type}: ${xml}"
         }
-        return xml
+        xml
     }
 
     /**
@@ -187,7 +234,9 @@ class FopService {
         for (Map.Entry entry in pathes) {
             Properties props = new Properties()
             try {
-                InputStream is = getTemplateFile("${entry.value}/meta.properties")
+                InputStream is = getTemplateFile(
+                    "${entry.value}/meta.properties"
+                )
                 if (is) props.load(is)
             } catch (IOException ignored) { /* ignored */ }
             String name = props.getProperty('name')
@@ -198,7 +247,7 @@ class FopService {
             }
             res[entry.key] = name
         }
-        return res
+        res
     }
 
     /**
@@ -221,7 +270,7 @@ class FopService {
         if (dir.exists()) {
             dir.eachDir { res[it.name] = it.absolutePath }
         }
-        return res
+        res
     }
 
     /**
@@ -230,7 +279,7 @@ class FopService {
      * @return  the user print template directory
      */
     File getUserTemplateDir() {
-        return new File(grailsApplication.config.springcrm.dir.print)
+        new File(grailsApplication.config.springcrm.dir.print)
     }
 
     /**
@@ -250,7 +299,7 @@ class FopService {
     void outputPdf(String xml, String type, String template,
                    HttpServletResponse response, String fileName) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        generatePdf(new StringReader(xml), type, template ?: 'default', baos)
+        generatePdf new StringReader(xml), type, template ?: 'default', baos
 
         response.contentType = 'application/pdf'
         response.addHeader 'Content-Disposition',
@@ -271,13 +320,15 @@ class FopService {
      *                      the template
      * @return              the FOP configuration data
      */
-	protected Configuration getFopConfiguration(String templateDir) {
+    protected Configuration getFopConfiguration(String templateDir) {
         InputStream is = getTemplateFile("${templateDir}/fop-conf.xml")
         if (!is) {
-            is = getTemplateFile("SYSTEM:${SYSTEM_FOLDER}/default/fop-conf.xml")
+            is = getTemplateFile(
+                "SYSTEM:${SYSTEM_FOLDER}/default/fop-conf.xml"
+            )
         }
-		return new DefaultConfigurationBuilder().build(is)
-	}
+        new DefaultConfigurationBuilder().build(is)
+    }
 
     /**
      * Returns access to the user session.
@@ -285,7 +336,7 @@ class FopService {
      * @return the session instance
      */
     protected HttpSession getSession() {
-        return RequestContextHolder.currentRequestAttributes().session
+        RequestContextHolder.currentRequestAttributes().session
     }
 
     /**
@@ -300,8 +351,8 @@ class FopService {
     protected InputStream getTemplateFile(String path) {
         if (path.startsWith('SYSTEM:')) {
             return servletContext.getResourceAsStream(path.substring(7))
-        } else {
-            return new File(path).newInputStream()
         }
+
+        new File(path).newInputStream()
     }
 }

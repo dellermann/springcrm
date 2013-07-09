@@ -1,103 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="1.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:fo="http://www.w3.org/1999/XSL/Format"
+  xmlns:html="http://www.w3.org/1999/xhtml">
+
+  <!--===========================================
+
+    IMPORTS
+
+  ============================================-->
+
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/config.xsl"/>
   <xsl:import href="servlet-context:/WEB-INF/data/print/default/header.xsl"/>
   <xsl:import href="servlet-context:/WEB-INF/data/print/default/footer.xsl"/>
   <xsl:import href="servlet-context:/WEB-INF/data/print/default/terms-and-conditions.xsl"/>
+  <xsl:import href="servlet-context:/WEB-INF/data/print/default/html.xsl"/>
   <xsl:import href="servlet-context:/WEB-INF/data/print/default/utilities.xsl"/>
+
+
+  <!--===========================================
+
+    DEFINITIONS
+
+  ============================================-->
 
   <xsl:key name="entries" match="/map/entry" use="@key"/>
   <xsl:key name="values" match="/map/entry[@key='values']/entry" use="@key"/>
   <xsl:key name="items" match="/map/entry[@key='items']/invoicingItem"
-           use="@id"/>
+    use="@id"/>
+  <xsl:key name="descriptions-html" match="/map/itemsHtml/descriptionHtml"
+    use="@id"/>
   <xsl:key name="client" match="/map/entry[@key='client']/entry" use="@key"/>
+
   <xsl:decimal-format decimal-separator="," grouping-separator="."/>
   
 
-  <!--== Selector templates ==================-->
+  <!--===========================================
+
+    SELECTOR TEMPLATES
+
+  ============================================-->
 
   <xsl:template match="/">
     <fo:root>
       <xsl:call-template name="page-layout"/>
       
       <fo:page-sequence master-reference="default" language="de"
-                        hyphenate="true">
+        hyphenate="true">
         <xsl:call-template name="header"/>
         <xsl:call-template name="footer">
           <xsl:with-param name="barcode">
             <xsl:value-of select="key('entries', 'fullNumber')"/>
           </xsl:with-param>
         </xsl:call-template>
+
         <fo:static-content flow-name="first-page-margin">
-          <fo:block margin-left="32mm" margin-top="80mm">
-            <fo:external-graphic src="url('servlet-context:/WEB-INF/data/print/default/img/fold-marker.png')"
-                                 content-width="1.5mm" content-height="1.5mm"/>
+          <fo:block margin-left="{$fold-marker.left}mm"
+            margin-top="{$fold-marker.top}mm">
+            <fo:external-graphic src="url('{$path.img.fold-marker}')"
+              content-width="{$fold-marker.width}mm"
+              content-height="{$fold-marker.height}mm"/>
           </fo:block>
         </fo:static-content>
-        <fo:static-content flow-name="rest-page-footer"
-                           font-family="Helvetica" font-size="7pt"
-                           color="#000">
-          <fo:block text-align="center">
-            <xsl:text>— Seite </xsl:text>
-            <fo:page-number/>
-            <xsl:text> —</xsl:text>
-          </fo:block>
-        </fo:static-content>
+
+        <xsl:call-template name="page-number-footer"/>
+
         <fo:flow flow-name="xsl-region-body">
-          <xsl:apply-templates select="key('entries', 'transaction')"/>
+          <fo:block font-family="{$font.default}"
+            font-size="{$font.size.default}" color="{$color.fg.default}">
+            <xsl:apply-templates select="key('entries', 'transaction')"/>
+          </fo:block>
         </fo:flow>
       </fo:page-sequence>
 
       <xsl:call-template name="terms-and-conditions"/>
     </fo:root>
   </xsl:template>
-  
-  <xsl:template match="headerText">
-    <xsl:if test="string() != ''">
-      <fo:block space-after="5mm">Sehr geehrte Damen und Herren,</fo:block>
-      <fo:block space-after="5mm">
-        <xsl:value-of select="."/>
-      </fo:block>
-    </xsl:if>
-  </xsl:template>
 
   <xsl:template match="entry[@key='organization']">
-    <fo:block font-size="9pt" space-after="2mm">
+    <fo:block space-after="{$space.paragraph}mm">
       <xsl:value-of select="name"/>
     </fo:block>
   </xsl:template>
 
   <xsl:template match="entry[@key='person']">
-    <fo:block font-size="9pt" space-after="2mm">
-      <xsl:text>z. Hd. </xsl:text>
-      <xsl:choose>
-        <xsl:when test="salutation/@id = 1">
-          <xsl:text>Herrn </xsl:text>
-        </xsl:when>
-        <xsl:when test="salutation/@id = 2">
-          <xsl:text>Frau </xsl:text>
-        </xsl:when>
-      </xsl:choose>
-      <xsl:value-of select="firstName"/>
-      <xsl:text> </xsl:text>
-      <xsl:value-of select="lastName"/>
-    </fo:block>
-  </xsl:template>
-
-  <xsl:template match="entry[@key='transaction']/billingAddrStreet">
-    <fo:block font-size="9pt" space-after="2mm">
-      <xsl:value-of select="."/>
-    </fo:block>
+    <xsl:if test="lastName">
+      <fo:block space-after="{$space.paragraph}mm">
+        <xsl:text>z. Hd. </xsl:text>
+        <xsl:choose>
+          <xsl:when test="salutation/@id = 1">
+            <xsl:text>Herrn </xsl:text>
+          </xsl:when>
+          <xsl:when test="salutation/@id = 2">
+            <xsl:text>Frau </xsl:text>
+          </xsl:when>
+        </xsl:choose>
+        <xsl:value-of select="firstName"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="lastName"/>
+      </fo:block>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="entry[@key='transaction']/billingAddrLocation">
-    <fo:block font-size="9pt">
+    <fo:block>
       <xsl:value-of select="../billingAddrPostalCode"/>
       <xsl:text> </xsl:text>
       <xsl:value-of select="."/>
     </fo:block>
+  </xsl:template>
+  
+  <xsl:template match="headerText">
+    <xsl:if test="string() != ''">
+      <fo:block space-after="{$space.default}mm">
+        <xsl:text>Sehr geehrte Damen und Herren,</xsl:text>
+      </fo:block>
+      <fo:block>
+        <xsl:apply-templates select="/map/headerTextHtml/html:html"/>
+      </fo:block>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="entry[@key='transaction']/items">
@@ -107,7 +128,8 @@
   <xsl:template match="items/invoicingItem">
     <xsl:variable name="item" select="key('items', @id)"/>
     <fo:table-row>
-      <fo:table-cell padding="0.5mm 1mm" text-align="right">
+      <fo:table-cell padding="{$table.cell.padding.default}"
+        text-align="right">
         <fo:block><xsl:value-of select="position()"/>.</fo:block>
       </fo:table-cell>
       <xsl:apply-templates select="$item/quantity"/>
@@ -117,7 +139,7 @@
   </xsl:template>
 
   <xsl:template match="invoicingItem/quantity">
-    <fo:table-cell padding="0.5mm 1mm" text-align="right">
+    <fo:table-cell padding="{$table.cell.padding.default}" text-align="right">
       <fo:block>
         <xsl:value-of select="format-number(number(), '#.##0,##')"/>
       </fo:block>
@@ -125,7 +147,9 @@
   </xsl:template>
 
   <xsl:template match="invoicingItem/name">
-    <fo:table-cell padding="0.5mm 1mm">
+    <fo:table-cell padding="{$table.cell.padding.default}"
+      padding-before="{$table.cell.padding.before}"
+      padding-before.conditionality="retain">
       <fo:block>
         <xsl:if test="../unit">
           <xsl:text>[</xsl:text>
@@ -134,39 +158,44 @@
         </xsl:if>
         <xsl:value-of select="."/>
       </fo:block>
-      <fo:block><xsl:value-of select="../description"/></fo:block>
+      <fo:block>
+        <xsl:apply-templates
+          select="key('descriptions-html', ../@id)/html:html"/>
+      </fo:block>
     </fo:table-cell>
   </xsl:template>
 
   <xsl:template match="invoicingItem/unitPrice">
-    <fo:table-cell padding="0.5mm 1mm" text-align="right">
+    <fo:table-cell padding="{$table.cell.padding.default}" text-align="right">
       <fo:block>
         <xsl:value-of select="format-number(number(), '#.##0,00')"/>
         <xsl:text> €</xsl:text>
       </fo:block>
     </fo:table-cell>
-    <fo:table-cell padding="0.5mm 1mm" text-align="right">
+    <fo:table-cell padding="{$table.cell.padding.default}" text-align="right">
       <fo:block>
-        <xsl:value-of select="format-number(number(../quantity) * number(), '#.##0,00')"/>
+        <xsl:value-of
+          select="format-number(number(../quantity) * number(), '#.##0,00')"/>
         <xsl:text> €</xsl:text>
       </fo:block>
     </fo:table-cell>
   </xsl:template>
 
   <xsl:template match="entry[@key='subtotalNet']">
-    <fo:table-row border-before-color="#000" border-before-style="solid"
-                  border-before-width="0.5pt">
+    <fo:table-row border-before-width="{$border.width.default}pt"
+      border-before-style="solid" border-before-color="{$color.fg.default}">
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
       </fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm">
+      <fo:table-cell padding="{$table.cell.padding.default}">
         <fo:block font-weight="bold">
           <xsl:value-of select="$sum-label"/>
           <xsl:text> zzgl. MwSt.</xsl:text>
         </fo:block>
       </fo:table-cell>
       <fo:table-cell><fo:block></fo:block></fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm" text-align="right">
+      <fo:table-cell padding="{$table.cell.padding.default}"
+        text-align="right">
         <fo:block font-weight="bold">
           <xsl:value-of select="format-number(number(), '#.##0,00')"/>
           <xsl:text> €</xsl:text>
@@ -176,16 +205,17 @@
   </xsl:template>
 
   <xsl:template match="entry[@key='subtotalGross']">
-    <fo:table-row border-before-color="#000" border-before-style="solid"
-                  border-before-width="0.5pt">
+    <fo:table-row border-before-width="{$border.width.default}pt"
+      border-before-style="solid" border-before-color="{$color.fg.default}">
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
       </fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm">
+      <fo:table-cell padding="{$table.cell.padding.default}">
         <fo:block font-weight="bold">Zwischensumme einschl. MwSt.</fo:block>
       </fo:table-cell>
       <fo:table-cell><fo:block></fo:block></fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm" text-align="right">
+      <fo:table-cell padding="{$table.cell.padding.default}"
+        text-align="right">
         <fo:block font-weight="bold">
           <xsl:value-of select="format-number(number(), '#.##0,00')"/>
           <xsl:text> €</xsl:text>
@@ -200,14 +230,15 @@
         <fo:table-cell number-columns-spanned="2">
           <fo:block></fo:block>
         </fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm">
+        <fo:table-cell padding="{$table.cell.padding.default}">
           <fo:block>
             <xsl:value-of select="format-number(number(), '0,##')"/>
             <xsl:text> % Rabatt</xsl:text>
           </fo:block>
         </fo:table-cell>
         <fo:table-cell><fo:block></fo:block></fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm" text-align="right">
+        <fo:table-cell padding="{$table.cell.padding.default}"
+          text-align="right">
           <fo:block>
             <xsl:text>-</xsl:text>
             <xsl:value-of select="format-number(number(key('values', 'discountPercentAmount')), '#.##0,00')"/>
@@ -224,11 +255,12 @@
         <fo:table-cell number-columns-spanned="2">
           <fo:block></fo:block>
         </fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm">
+        <fo:table-cell padding="{$table.cell.padding.default}">
           <fo:block>Rabatt</fo:block>
         </fo:table-cell>
         <fo:table-cell><fo:block></fo:block></fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm" text-align="right">
+        <fo:table-cell padding="{$table.cell.padding.default}"
+          text-align="right">
           <fo:block>
             <xsl:text>-</xsl:text>
             <xsl:value-of select="format-number(number(), '#.##0,00')"/>
@@ -245,11 +277,12 @@
         <fo:table-cell number-columns-spanned="2">
           <fo:block></fo:block>
         </fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm">
+        <fo:table-cell padding="{$table.cell.padding.default}">
           <fo:block>Versandkosten</fo:block>
         </fo:table-cell>
         <fo:table-cell><fo:block></fo:block></fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm" text-align="right">
+        <fo:table-cell padding="{$table.cell.padding.default}"
+          text-align="right">
           <fo:block>
             <xsl:value-of select="format-number(number(), '#.##0,00')"/>
             <xsl:text> €</xsl:text>
@@ -265,13 +298,15 @@
         <fo:table-cell number-columns-spanned="2">
           <fo:block></fo:block>
         </fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm">
+        <fo:table-cell padding="{$table.cell.padding.default}">
           <fo:block>Preisanpassung</fo:block>
         </fo:table-cell>
         <fo:table-cell><fo:block></fo:block></fo:table-cell>
-        <fo:table-cell padding="0.5mm 1mm" text-align="right">
+        <fo:table-cell padding="{$table.cell.padding.default}"
+          text-align="right">
           <fo:block>
-            <xsl:value-of select="format-number(number(), '#.##0,00;-#.##0,00')"/>
+            <xsl:value-of
+              select="format-number(number(), '#.##0,00;-#.##0,00')"/>
             <xsl:text> €</xsl:text>
           </fo:block>
         </fo:table-cell>
@@ -284,14 +319,15 @@
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
       </fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm">
+      <fo:table-cell padding="{$table.cell.padding.default}">
         <fo:block font-weight="bold">
           <xsl:value-of select="$sum-label"/>
           <xsl:text> einschl. MwSt.</xsl:text>
         </fo:block>
       </fo:table-cell>
       <fo:table-cell><fo:block></fo:block></fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm" text-align="right">
+      <fo:table-cell padding="{$table.cell.padding.default}"
+        text-align="right">
         <fo:block font-weight="bold">
           <xsl:value-of select="format-number(number(), '#.##0,00')"/>
           <xsl:text> €</xsl:text>
@@ -309,14 +345,15 @@
       <fo:table-cell number-columns-spanned="2">
         <fo:block></fo:block>
       </fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm">
+      <fo:table-cell padding="{$table.cell.padding.default}">
         <fo:block>
           <xsl:value-of select="format-number(number(@key), '#.##0,##')"/>
           <xsl:text> % MwSt.</xsl:text>
         </fo:block>
       </fo:table-cell>
       <fo:table-cell><fo:block></fo:block></fo:table-cell>
-      <fo:table-cell padding="0.5mm 1mm" text-align="right">
+      <fo:table-cell padding="{$table.cell.padding.default}"
+        text-align="right">
         <fo:block>
           <xsl:value-of select="format-number(number(), '#.##0,00')"/>
           <xsl:text> €</xsl:text>
@@ -327,51 +364,80 @@
   
   <xsl:template match="footerText">
     <xsl:if test="string() != ''">
-      <fo:block space-after="5mm">
+      <fo:block space-after="{$space.default}mm">
         <xsl:value-of select="."/>
       </fo:block>
     </xsl:if>
   </xsl:template>
 
 
-  <!--== Named templates =====================-->
+  <!--===========================================
+
+    NAMED TEMPLATES
+
+  ============================================-->
 
   <xsl:template name="page-layout">
     <fo:layout-master-set>
-      <fo:simple-page-master margin-top="16mm" margin-right="31mm"
-                             margin-bottom="11mm" margin-left="21mm"
-                             master-name="first-page">
-        <fo:region-body space-before="20mm" space-after="16mm" width="158mm">
+      <fo:simple-page-master master-name="first-page"
+        margin-top="{$page.margin.top}mm"
+        margin-right="{$page.margin.right}mm"
+        margin-bottom="{$page.margin.bottom}mm"
+        margin-left="{$page.margin.left}mm">
+        <fo:region-body
+          space-before="{$header.height.first + $header.gap.first}mm"
+          space-after="{$footer.height.first + $footer.gap.first}mm">
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
-            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/print/default/img/copy-watermark.png')</xsl:attribute>
+            <xsl:attribute name="background-image">
+              <xsl:text>url(</xsl:text>
+              <xsl:value-of select="'{$path.img.copy-watermark}'"/>
+              <xsl:text>)</xsl:text>
+            </xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
             <xsl:attribute name="background-repeat">repeat-y</xsl:attribute>
           </xsl:if>
         </fo:region-body>
-        <fo:region-before extent="15mm"/>
-        <fo:region-after region-name="first-page-footer" extent="11mm"/>
-        <fo:region-end region-name="first-page-margin" extent="17.5mm"/>
+        <fo:region-before extent="{$header.height.first}mm"/>
+        <fo:region-after region-name="first-page-footer"
+          extent="{$footer.height.first}mm"/>
+        <fo:region-end region-name="first-page-margin"
+          extent="{$aside.width}mm"/>
       </fo:simple-page-master>
-      <fo:simple-page-master margin-top="25mm" margin-right="31mm"
-                             margin-bottom="11mm" margin-left="23mm"
-                             master-name="rest-page">
-        <fo:region-body space-after="10mm">
+
+      <fo:simple-page-master master-name="rest-page"
+        margin-top="{$page.margin.top}mm"
+        margin-right="{$page.margin.right}mm"
+        margin-bottom="{$page.margin.bottom}mm"
+        margin-left="{$page.margin.left}mm">
+        <fo:region-body
+          space-after="{$footer.height.rest + $footer.gap.rest}mm">
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
-            <xsl:attribute name="background-image">url('servlet-context:/WEB-INF/data/print/default/img/copy-watermark.png')</xsl:attribute>
+            <xsl:attribute name="background-image">
+              <xsl:text>url(</xsl:text>
+              <xsl:value-of select="'{$path.img.copy-watermark}'"/>
+              <xsl:text>)</xsl:text>
+            </xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
             <xsl:attribute name="background-repeat">repeat-y</xsl:attribute>
           </xsl:if>
         </fo:region-body>
-        <fo:region-after region-name="rest-page-footer" extent="3mm"/>
+        <fo:region-after region-name="rest-page-footer"
+          extent="{$footer.height.rest}mm"/>
       </fo:simple-page-master>
-      <fo:simple-page-master margin-top="25mm" margin-right="31mm"
-                             margin-bottom="11mm" margin-left="23mm"
-                             master-name="terms-and-conditions">
-        <fo:region-body space-before="14mm" space-after="15mm"
-                        column-count="2" column-gap="3mm"/>
-        <fo:region-before extent="10mm"/>
-        <fo:region-after region-name="rest-page-footer" extent="3mm"/>
+
+      <fo:simple-page-master master-name="terms-and-conditions"
+        margin-top="{$page.margin.top}mm"
+        margin-right="{$page.margin.right}mm"
+        margin-bottom="{$page.margin.bottom}mm"
+        margin-left="{$page.margin.left}mm">
+        <fo:region-body space-before="{$header.height.tac + $header.gap.tac}mm"
+          space-after="{$footer.height.rest + $footer.gap.tac}mm"
+          column-count="2" column-gap="{$column.gap}mm"/>
+        <fo:region-before extent="{$header.height.tac}mm"/>
+        <fo:region-after region-name="rest-page-footer"
+          extent="{$footer.height.rest}mm"/>
       </fo:simple-page-master>
+
       <fo:page-sequence-master master-name="default">
         <fo:repeatable-page-master-alternatives>
           <fo:conditional-page-master-reference master-reference="first-page"
@@ -384,14 +450,14 @@
   </xsl:template>
   
   <xsl:template name="address-field">
-    <fo:block-container absolute-position="absolute" top="15mm"
-                        left="0" width="60mm" height="35mm"
-                        font-family="Helvetica"
-                        color="#000">
-      <fo:block font-size="7pt" border-after-color="#000"
-                border-after-style="solid"
-                border-after-width="0.05pt" space-after="5mm"
-                padding-after="0.5mm" text-align="center">
+    <fo:block-container absolute-position="absolute"
+      top="{$address-field.top}mm" left="{$address-field.left}mm"
+      width="{$address-field.width}mm" height="{$address-field.height}mm">
+      <fo:block font-size="{$font.size.small}"
+        border-after-color="{$color.fg.default}" border-after-style="solid"
+        border-after-width="{$border.width.default}pt"
+        space-after="{$space.default}mm" padding-after="0.5mm"
+        text-align="center">
         <xsl:value-of select="key('client', 'name')"/>
         <xsl:text> · </xsl:text>
         <xsl:value-of select="key('client', 'street')"/>
@@ -400,11 +466,10 @@
         <xsl:text> </xsl:text>
         <xsl:value-of select="key('client', 'location')"/>
       </fo:block>
+
       <xsl:apply-templates select="key('entries', 'organization')"/>
-      <xsl:if test="key('entries', 'person')/lastName">
-        <xsl:apply-templates select="key('entries', 'person')"/>
-      </xsl:if>
-      <xsl:apply-templates select="billingAddrStreet"/>
+      <xsl:apply-templates select="key('entries', 'person')"/>
+      <xsl:apply-templates select="/map/billingAddrStreetHtml/html:html"/>
       <xsl:apply-templates select="billingAddrLocation"/>
     </fo:block-container>
   </xsl:template>
@@ -413,22 +478,22 @@
     <xsl:param name="number-label"/>
     <xsl:param name="additional-specifications"/>
 
-    <fo:block-container absolute-position="absolute" top="23.5mm"
-                        right="0" width="60mm" height="26mm"
-                        font-family="Helvetica"
-                        font-size="9pt" color="#000">
-      <fo:table table-layout="fixed" width="100%">
+    <fo:block-container absolute-position="absolute"
+      top="{$tx-spec-field.top}mm" right="{$tx-spec-field.right}mm"
+      width="{$tx-spec-field.width}mm" height="{$tx-spec-field.height}mm">
+      <fo:table table-layout="fixed" inline-progression-dimension="100%">
         <fo:table-column column-number="1" column-width="30mm"/>
         <fo:table-column column-number="2" column-width="30mm"/>
         <fo:table-body>
           <fo:table-row>
-            <fo:table-cell padding-after="2mm">
+            <fo:table-cell padding-after="{$space.paragraph}mm">
               <fo:block>
                 <xsl:value-of select="$number-label"/>
                 <xsl:text>:</xsl:text>
               </fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-after="2mm" text-align="right">
+            <fo:table-cell padding-after="{$space.paragraph}mm"
+              text-align="right">
               <fo:block>
                 <xsl:value-of select="key('entries', 'fullNumber')"/>
               </fo:block>
@@ -438,10 +503,11 @@
             <xsl:copy-of select="$additional-specifications"/>
           </xsl:if>
           <fo:table-row>
-            <fo:table-cell padding-after="2mm">
+            <fo:table-cell padding-after="{$space.paragraph}mm">
               <fo:block>Ansprechpartner:</fo:block>
             </fo:table-cell>
-            <fo:table-cell padding-after="2mm" text-align="right">
+            <fo:table-cell padding-after="{$space.paragraph}mm"
+              text-align="right">
               <fo:block>
                 <xsl:value-of select="key('entries', 'user')/firstName"/>
                 <xsl:text> </xsl:text>
@@ -449,17 +515,26 @@
               </fo:block>
             </fo:table-cell>
           </fo:table-row>
-          <fo:table-row>
-            <fo:table-cell padding-after="2mm">
-              <fo:block>Hotlines:</fo:block>
-            </fo:table-cell>
-            <fo:table-cell padding-after="2mm" text-align="right">
-              <fo:block>
-                <xsl:value-of select="key('entries', 'user')/mobile"/>
-              </fo:block>
-              <fo:block>030 8321475-0</fo:block>
-            </fo:table-cell>
-          </fo:table-row>
+          <xsl:if test="key('entries', 'user')/mobile or key('entries', 'user')/phone">
+            <fo:table-row>
+              <fo:table-cell padding-after="{$space.paragraph}mm">
+                <fo:block>Hotlines:</fo:block>
+              </fo:table-cell>
+              <fo:table-cell padding-after="{$space.paragraph}mm"
+                text-align="right">
+                <xsl:if test="key('entries', 'user')/mobile">
+                  <fo:block>
+                    <xsl:value-of select="key('entries', 'user')/mobile"/>
+                  </fo:block>
+                </xsl:if>
+                <xsl:if test="key('entries', 'user')/phone">
+                  <fo:block>
+                    <xsl:value-of select="key('entries', 'user')/phone"/>
+                  </fo:block>
+                </xsl:if>
+              </fo:table-cell>
+            </fo:table-row>
+          </xsl:if>
         </fo:table-body>
       </fo:table>
     </fo:block-container>
@@ -469,57 +544,58 @@
     <xsl:param name="transaction-type-label"/>
     <xsl:param name="additional-text"/>
 
-    <fo:block-container font-family="Helvetica"
-                        font-size="9pt" space-before="79mm"
-                        padding-start="2mm" color="#000">
-      <fo:block text-align="right">
-        <xsl:value-of select="key('client', 'location')"/>
-        <xsl:text>, den </xsl:text>
-        <xsl:call-template name="format-date-long">
-          <xsl:with-param name="date" select="docDate"/>
-        </xsl:call-template>
-      </fo:block>
-      <fo:block space-before="6mm" space-after="10mm" font-weight="bold">
+    <fo:block space-before="{$main-content.top}mm" text-align="right">
+      <xsl:value-of select="key('client', 'location')"/>
+      <xsl:text>, den </xsl:text>
+      <xsl:call-template name="format-date-long">
+        <xsl:with-param name="date" select="docDate"/>
+      </xsl:call-template>
+    </fo:block>
+
+    <fo:block space-after="{$space.default}mm">
+      <fo:block space-before="{$caption.space.before}mm"
+        space-after="{$caption.space.after}mm" font-weight="bold">
         <xsl:value-of select="$transaction-type-label"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="subject"/>
       </fo:block>
       <xsl:apply-templates select="headerText"/>
       <xsl:if test="$additional-text">
-        <fo:block space-after="5mm">
+        <fo:block>
           <xsl:value-of select="$additional-text"/>
         </fo:block>
       </xsl:if>
-    </fo:block-container>
+    </fo:block>
   </xsl:template>
   
   <xsl:template name="items">
-    <fo:table table-layout="fixed" width="100%" space-after="5mm"
-              font-family="Helvetica" font-size="9pt" color="#000"
-              border-color="#000" border-width="1pt"
-              border-before-style="solid" border-after-style="solid"
-              table-omit-footer-at-break="true">
+    <fo:table table-layout="fixed" inline-progression-dimension="100%"
+      space-after="{$space.default}mm" border-color="{$color.fg.default}"
+      border-width="{$border.width.thick}pt"
+      border-after-width.conditionality="retain" border-before-style="solid"
+      border-after-style="solid" table-omit-footer-at-break="true">
       <fo:table-column column-number="1" column-width="9mm"/>
       <fo:table-column column-number="2" column-width="14mm"/>
       <fo:table-column column-number="3" column-width="91mm"/>
       <fo:table-column column-number="4" column-width="22mm"/>
       <fo:table-column column-number="5" column-width="22mm"/>
       <fo:table-header font-weight="bold" text-align="center">
-        <fo:table-row border-after-color="#000" border-after-style="solid"
-                      border-after-width="0.5pt">
-          <fo:table-cell padding="0.5mm 1mm">
+        <fo:table-row
+          border-after-width="{$border.width.default}pt"
+          border-after-style="solid" border-after-color="{$color.fg.default}">
+          <fo:table-cell padding="{$table.cell.padding.default}">
             <fo:block>Pos.</fo:block>
           </fo:table-cell>
-          <fo:table-cell padding="0.5mm 1mm">
+          <fo:table-cell padding="{$table.cell.padding.default}">
             <fo:block>Menge</fo:block>
           </fo:table-cell>
-          <fo:table-cell padding="0.5mm 1mm">
+          <fo:table-cell padding="{$table.cell.padding.default}">
             <fo:block>Artikel/Leistung</fo:block>
           </fo:table-cell>
-          <fo:table-cell padding="0.5mm 1mm">
+          <fo:table-cell padding="{$table.cell.padding.default}">
             <fo:block>Einzelpreis</fo:block>
           </fo:table-cell>
-          <fo:table-cell padding="0.5mm 1mm">
+          <fo:table-cell padding="{$table.cell.padding.default}">
             <fo:block>Gesamtpreis</fo:block>
           </fo:table-cell>
         </fo:table-row>
@@ -549,5 +625,16 @@
       <xsl:value-of select="key('entries', 'user')/lastName"/>
     </fo:block>
     <fo:block><xsl:value-of select="key('client', 'name')"/></fo:block>
+  </xsl:template>
+
+  <xsl:template name="page-number-footer">
+    <fo:static-content flow-name="rest-page-footer">
+      <fo:block color="{$color.fg.default}" font-family="{$font.default}"
+        font-size="{$font.size.small}" text-align="center">
+        <xsl:text>— Seite </xsl:text>
+        <fo:page-number/>
+        <xsl:text> —</xsl:text>
+      </fo:block>
+    </fo:static-content>
   </xsl:template>
 </xsl:stylesheet>

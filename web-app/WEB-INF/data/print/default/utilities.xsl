@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="1.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:fo="http://www.w3.org/1999/XSL/Format">
+
+  <!--===========================================
+
+    NAMED TEMPLATES
+
+  ============================================-->
+
   <xsl:template name="format-date-long">
     <xsl:param name="date" select="."/>
 
-    <xsl:value-of select="format-number(number(substring($date, 9, 2)), '#0')"/>
+    <xsl:value-of
+      select="format-number(number(substring($date, 9, 2)), '#0')"/>
     <xsl:text>. </xsl:text>
     <xsl:call-template name="month-name">
       <xsl:with-param name="m" select="substring($date, 6, 2)"/>

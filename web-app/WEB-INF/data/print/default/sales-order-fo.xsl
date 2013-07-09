@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet version="1.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:fo="http://www.w3.org/1999/XSL/Format">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:fo="http://www.w3.org/1999/XSL/Format">
+
+  <!--===========================================
+
+    IMPORTS
+
+  ============================================-->
+
   <xsl:import href="servlet-context:/WEB-INF/data/print/default/invoicing-transaction.xsl"/>
 
+
+  <!--===========================================
+
+    DEFINITIONS
+
+  ============================================-->
+
   <xsl:param name="sum-label">Bestellsumme</xsl:param>
+
+
+  <!--===========================================
+
+    SELECTOR TEMPLATES
+
+  ============================================-->
 
   <xsl:template match="entry[@key='transaction']">
 
@@ -19,20 +39,20 @@
 
     <!-- letter caption -->
     <xsl:call-template name="header-text">
-        <xsl:with-param name="transaction-type-label">Bestellung</xsl:with-param>
+      <xsl:with-param name="transaction-type-label">Bestellung</xsl:with-param>
     </xsl:call-template>
 
     <!-- sales order items -->
     <xsl:call-template name="items"/>
 
     <!-- footer text -->
-    <fo:block-container font-family="Helvetica" font-size="9pt"
-                        color="#000" line-height="140%"
-                        keep-together.within-page="always">
+    <fo:block-container line-height="{$line-height.default}"
+      keep-together.within-page="always">
       <xsl:apply-templates select="footerText"/>
-      <fo:block space-after="5mm">
+
+      <fo:block space-after="{$space.default}mm" text-align="justify">
         <xsl:if test="dueDate != ''">
-          <xsl:text>Wir liefern Ihre Bestellung bis </xsl:text>
+          <xsl:text>Wir liefern Ihre Bestellung voraussichtlich bis </xsl:text>
           <xsl:call-template name="format-date-long">
             <xsl:with-param name="date" select="dueDate"/>
           </xsl:call-template>
@@ -42,7 +62,11 @@
         weitere Fragen stehen wir gern zur Verfügung. Sie erreichen uns unter
         den oben angegebenen Hotline-Nummern.</xsl:text>
       </fo:block>
-      <fo:block space-after="5mm">Vielen Dank für Ihre Bestellung.</fo:block>
+
+      <fo:block space-after="{$space.default}mm" text-align="justify">
+        <xsl:text>Vielen Dank für Ihre Bestellung.</xsl:text>
+      </fo:block>
+
       <xsl:call-template name="signature"/>
     </fo:block-container>
   </xsl:template>
