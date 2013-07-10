@@ -1199,6 +1199,45 @@ tbody tr th:first-child {
   }
 }
 
+/* embedded HTML content (from Markdown or RTE) */
+#main-container .html-content {
+  h1 {
+    margin-bottom: 1em;
+  }
+  h2 {
+    float: none;
+    font-size: 116%;
+  }
+  h3 {
+    color: @color-default;
+    font-size: 116%;
+    font-weight: normal;
+  }
+  h4 {
+    .box-sizing(content-box);
+    background: transparent;
+    padding: 0;
+  }
+  h5 {
+    font-weight: normal;
+  }
+  h6 {
+    font-style: italic;
+    margin-bottom: .5em;
+  }
+  table {
+    border-color: @color-default-border-1;
+    border-style: solid none;
+    border-width: .2em;
+  }
+  thead {
+    border-bottom: .1em solid @color-default-border-1;
+  }
+  > *:first-child {
+    margin-top: 0;
+  }
+}
+
 /* type icons */
 .data-type {
   background-repeat: no-repeat;
