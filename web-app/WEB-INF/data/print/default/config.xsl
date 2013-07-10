@@ -28,6 +28,7 @@
 
   <xsl:variable name="font.default" select="'Helvetica'"/>
   <xsl:variable name="font.header" select="$font.default"/>
+  <xsl:variable name="font.monospace" select="'monospace'"/>
 
 
   <!--== Font sizes ==========================-->
@@ -126,6 +127,9 @@
   <xsl:variable name="space.default" select="5"/>
   <xsl:variable name="space.paragraph" select="2"/>
   <xsl:variable name="space.paragraph.tac" select="1"/>
+
+  <!-- Indents in mm -->
+  <xsl:variable name="indent.blockquote" select="10"/>
 
   <!-- List distances in mm -->
   <xsl:variable name="list.distance" select="4"/>
