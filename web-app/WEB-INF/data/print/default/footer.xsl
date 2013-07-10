@@ -14,9 +14,9 @@
     <xsl:param name="barcode"/>
     
     <fo:static-content flow-name="first-page-footer">
-      <fo:table table-layout="fixed" width="100%" font-family="{$font.default}"
-        font-size="{$font.size.small}" line-height="{$line-height.default}"
-        color="{$color.fg.default}">
+      <fo:table table-layout="fixed" inline-progression-dimension="100%"
+        font-family="{$font.default}" font-size="{$font.size.small}"
+        line-height="{$line-height.default}" color="{$color.fg.default}">
         <fo:table-column column-number="1" column-width="80mm"/>
         <fo:table-column column-number="2" column-width="78mm"/>
         <fo:table-body>

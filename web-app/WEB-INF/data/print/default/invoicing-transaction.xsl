@@ -365,7 +365,7 @@
   <xsl:template match="footerText">
     <xsl:if test="string() != ''">
       <fo:block space-after="{$space.default}mm">
-        <xsl:value-of select="."/>
+        <xsl:apply-templates select="/map/footerTextHtml/html:html"/>
       </fo:block>
     </xsl:if>
   </xsl:template>

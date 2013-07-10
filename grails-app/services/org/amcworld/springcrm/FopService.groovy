@@ -267,7 +267,7 @@ class FopService {
             }
         }
         File dir = userTemplateDir
-        if (dir.exists()) {
+        if (dir?.exists()) {
             dir.eachDir { res[it.name] = it.absolutePath }
         }
         res
@@ -276,10 +276,12 @@ class FopService {
     /**
      * Gets the directory containing the print templates defined by the user.
      *
-     * @return  the user print template directory
+     * @return  the user print template directory; {@code null} if no user
+     *          print template directory is defined
      */
     File getUserTemplateDir() {
-        new File(grailsApplication.config.springcrm.dir.print)
+        def dir = grailsApplication.config.springcrm.dir.print
+        dir ? new File(dir) : null
     }
 
     /**

@@ -12,9 +12,9 @@
 
 	<xsl:template name="header">
     <fo:static-content flow-name="xsl-region-before">
-      <fo:table table-layout="fixed" width="100%" font-family="{$font.default}"
-        font-size="{$font.size.small}" line-height="{$line-height.default}"
-        color="{$color.fg.default}">
+      <fo:table table-layout="fixed" inline-progression-dimension="100%"
+        font-family="{$font.default}" font-size="{$font.size.small}"
+        line-height="{$line-height.default}" color="{$color.fg.default}">
         <fo:table-column column-number="1" column-width="60mm"/>
         <fo:table-column column-number="2" column-width="26mm"/>
         <fo:table-column column-number="3" column-width="5mm"/>
