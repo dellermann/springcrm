@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.openqa.selenium.WebElement;
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -33,7 +34,7 @@ import org.openqa.selenium.support.ui.Select
  * The class {@code CallFunctionalTests} represents a functional test case for
  * the phone call section of SpringCRM.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.3
  */
@@ -52,20 +53,15 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         def org = prepareOrganization()
         def p = preparePerson(org)
         if (!name.methodName.startsWith('testCreate')) {
-            prepareCall(org, p)
+            prepareCall org, p
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/call/list')
-    }
-
-    @After
-    void deleteFixture() {
-        Call.executeUpdate 'delete Call c'
+        open '/call/list'
     }
 
     @Test
@@ -79,7 +75,7 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
         assert '04543 31233' == selectAutocompleteEx('phone', '04')
         setInputValue 'status', 'completed'
-        setInputValue 'notes', 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.'
+        setInputValue 'notes', 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
         submitForm getUrl('/call/show/')
 
         assert 'Anruf Bitte um Angebot wurde angelegt.' == flashMessage
@@ -100,7 +96,9 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert 'eingehend' == getShowFieldText(col, 4)
         assert 'durchgeführt' == getShowFieldText(col, 5)
         fieldSet = getFieldset(dataSheet, 2)
-        assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.' == getShowFieldText(fieldSet, 1)
+        WebElement field = getShowField(fieldSet, 1)
+        assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.' == field.text
+        assert 'geplante Marketing-Aktion' == field.findElement(By.tagName('strong')).text
         driver.quit()
 
         assert 1 == Call.count()
@@ -144,7 +142,9 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert 'eingehend' == getShowFieldText(col, 4)
         assert 'durchgeführt' == getShowFieldText(col, 5)
         fieldSet = getFieldset(dataSheet, 2)
-        assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.' == getShowFieldText(fieldSet, 1)
+        WebElement field = getShowField(fieldSet, 1)
+        assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.' == field.text
+        assert 'geplante Marketing-Aktion' == field.findElement(By.tagName('strong')).text
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -253,7 +253,7 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         option = select.firstSelectedOption
         assert 'completed' == option.getAttribute('value')
         assert 'durchgeführt' == option.text
-        assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.' == getInputValue('notes')
+        assert 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.' == getInputValue('notes')
 
         setInputValue 'subject', 'Fragen zur Marketing-Aktion'
         setInputValue 'start_date', '14.02.2013'
@@ -262,7 +262,7 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert '0163 3343267' == selectAutocompleteEx('phone', '016')
         setInputValue 'type', 'outgoing'
         setInputValue 'status', 'planned'
-        setInputValue 'notes', 'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?'
+        setInputValue 'notes', 'Sollen zur *geplanten* Marketing-Aktion auch Flyer gedruckt werden?'
         submitForm getUrl('/call/show/')
 
         assert 'Anruf Fragen zur Marketing-Aktion wurde geändert.' == flashMessage
@@ -283,7 +283,9 @@ class CallFunctionalTests extends GeneralFunctionalTestCase {
         assert 'ausgehend' == getShowFieldText(col, 4)
         assert 'geplant' == getShowFieldText(col, 5)
         fieldSet = getFieldset(dataSheet, 2)
-        assert 'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?' == getShowFieldText(fieldSet, 1)
+        WebElement field = getShowField(fieldSet, 1)
+        assert 'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?' == field.text
+        assert 'geplanten' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == Call.count()

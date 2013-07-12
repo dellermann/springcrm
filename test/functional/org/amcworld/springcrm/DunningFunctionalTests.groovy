@@ -35,8 +35,8 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * The class {@code DunningFunctionalTests} represents a functional test case
  * for the dunning section of SpringCRM.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.3
  */
 class DunningFunctionalTests extends InvoicingTransactionTestCase {
@@ -60,12 +60,12 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
             prepareDunning org, p, invoice
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/dunning/list')
+        open '/dunning/list'
     }
 
     @Test
@@ -93,7 +93,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue 'headerText', 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.'
+        setInputValue 'headerText', 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.'
 
         assert 2 == numPriceTableRows
         checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,00', '5,00', '19,0'
@@ -112,9 +112,9 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert '66,90' == subtotalGross
         assert '66,90' == total
 
-        setInputValue 'footerText', 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.'
+        setInputValue 'footerText', 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.'
         setInputValue 'termsAndConditions', ['700']
-        setInputValue 'notes', 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.'
+        setInputValue 'notes', 'Zahlung auch nach _wiederholter_ telefonischer Mahnung nicht erfolgt.'
 
         checkStillUnpaid '0.0', '66,90', 'still-unpaid-unpaid'
         submitForm getUrl('/dunning/show/')
@@ -163,6 +163,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
+        assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '3,00 €', '3,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '53,22 €', '53,22 €', '19,0 %'
@@ -175,10 +176,14 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert '66,90 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == field.text
+        assert 'Mahngebühren und Verzugszinsen' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == field.text
+        assert 'wiederholter' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == Dunning.count()
@@ -210,7 +215,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateDunningFromInvoice() {
-        open('/invoice/list')
+        open '/invoice/list'
         clickListItem 0, 1
         clickActionBarButton 2, getUrl('/dunning/create?invoice=')
         checkTitles 'Mahnung anlegen', 'Mahnungen', 'Neue Mahnung'
@@ -255,7 +260,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
 
         assert '' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getInputValue('notes')
+        assert '**Wichtig!** Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getInputValue('notes')
 
         setInputValue 'stage.id', '2202'
         checkDate 'shippingDate_date'
@@ -263,10 +268,10 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'dueDatePayment_date', '13.5.2013'
         setInputValue 'shippingDate_date', '7.5.2013'
         setInputValue 'carrier.id', '501'
-        setInputValue 'headerText', 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.'
-        setInputValue 'footerText', 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.'
+        setInputValue 'headerText', 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.'
+        setInputValue 'footerText', 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.'
         setInputValue 'termsAndConditions', ['700']
-        setInputValue 'notes', 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.'
+        setInputValue 'notes', 'Zahlung auch nach _wiederholter_ telefonischer Mahnung nicht erfolgt.'
         checkStillUnpaid '0.0', '17,85', 'still-unpaid-unpaid'
         submitForm getUrl('/dunning/show/')
 
@@ -314,6 +319,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
+        assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '5,00 €', '5,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '10,00 €', '10,00 €', '19,0 %'
@@ -326,10 +332,14 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert '17,85 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == field.text
+        assert 'Mahngebühren und Verzugszinsen' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == field.text
+        assert 'wiederholter' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == Dunning.count()
@@ -382,6 +392,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
+        assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '3,00 €', '3,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '53,22 €', '53,22 €', '19,0 %'
@@ -394,10 +405,14 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert '66,90 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == field.text
+        assert 'Mahngebühren und Verzugszinsen' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == field.text
+        assert 'wiederholter' == field.findElement(By.tagName('em')).text
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -541,7 +556,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == getInputValue('headerText')
+        assert 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.' == getInputValue('headerText')
 
         checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '3,00', '3,00', '19,0'
         checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 5 %', '53,22', '53,22', '19,0'
@@ -550,9 +565,9 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert '66,90' == subtotalGross
         assert '66,90' == total
 
-        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == getInputValue('footerText')
+        assert 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.' == getInputValue('footerText')
         assert ['700'] == getInputValue('termsAndConditions')
-        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == getInputValue('notes')
+        assert 'Zahlung auch nach _wiederholter_ telefonischer Mahnung nicht erfolgt.' == getInputValue('notes')
 
         setInputValue 'subject', 'Werbekampagne Spring \'13'
         setInputValue 'stage.id', '2203'
@@ -652,6 +667,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
+        assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '5,00 €', '5,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 7 %', '74,51 €', '74,51 €', '19,0 %'
@@ -665,10 +681,14 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert '94,62 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.' == field.text
+        assert 'Mahngebühren und Verzugszinsen' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.' == field.text
+        assert 'wiederholter' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == Dunning.count()

@@ -35,8 +35,8 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * The class {@code CreditMemoFunctionalTests} represents a functional test
  * case for the quotes section of SpringCRM.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.3
  */
 class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
@@ -59,20 +59,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         def salesOrder = prepareSalesOrder(org, p, quote)
         invoice = prepareInvoice(org, p, quote, salesOrder)
         if (!name.methodName.startsWith('testCreate')) {
-            prepareCreditMemo(org, p, invoice)
+            prepareCreditMemo org, p, invoice
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/credit-memo/list')
-    }
-
-    @After
-    void deleteFixture() {
-        CreditMemo.executeUpdate 'delete CreditMemo c'
+        open '/credit-memo/list'
     }
 
     @Test
@@ -107,7 +102,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue('headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.')
+        setInputValue 'headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne **"Frühjahr 2013"** gut.'
 
         assert 1 == numPriceTableRows
         setPriceTableInputValue 0, 'number', 'S-10000'
@@ -139,13 +134,13 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
         assert 3 == addNewPriceTableRow()
         openSelectorAndSelect 2, 'services', 'S-10100'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
         moveRowUp 2
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
 
         assert 4 == addNewPriceTableRow()
@@ -165,7 +160,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         moveRowUp 2
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
         checkRowValues 1, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
@@ -173,7 +168,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.067,64' == total
         moveRowDown 1
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
@@ -182,16 +177,16 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.067,64' == total
         assert 3 == removeRow(2)
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        setInputValue 'footerText', 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.'
+        setInputValue 'footerText', 'Erläuterungen zu den einzelnen Posten finden Sie **im Pflichtenheft**.'
         setInputValue 'termsAndConditions', ['700', '701']
-        setInputValue 'notes', 'Gutschrift für nicht lieferbare Artikel.'
+        setInputValue 'notes', 'Gutschrift für _nicht_ lieferbare Artikel.'
 
         /*
          * The modified closing balance is changed by JavaScript to 1064,43 €
@@ -246,10 +241,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -262,10 +262,14 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Gutschrift für nicht lieferbare Artikel.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Gutschrift für nicht lieferbare Artikel.' == field.text
+        assert 'nicht' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == CreditMemo.count()
@@ -300,7 +304,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateCreditMemoFromInvoice() {
-        open('/invoice/list')
+        open '/invoice/list'
         clickListItem 0, 1
         clickActionBarButton 3, getUrl('/credit-memo/create?invoice=')
         checkTitles 'Gutschrift anlegen', 'Gutschriften', 'Neue Gutschrift'
@@ -337,7 +341,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '' == getInputValue('headerText')
 
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
-        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
@@ -346,15 +350,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
 
         assert '' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getInputValue('notes')
+        assert '**Wichtig!** Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == getInputValue('notes')
 
         setInputValue 'stage.id', '2502'
         checkDate 'shippingDate_date'
         setInputValue 'docDate_date', '8.4.2013'
         setInputValue 'carrier.id', '501'
-        setInputValue 'headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.'
-        setInputValue 'footerText', 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.'
-        setInputValue 'notes', 'Gutschrift für nicht lieferbare Artikel.'
+        setInputValue 'headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne **"Frühjahr 2013"** gut.'
+        setInputValue 'footerText', 'Erläuterungen zu den einzelnen Posten finden Sie **im Pflichtenheft**.'
+        setInputValue 'notes', 'Gutschrift für _nicht_ lieferbare Artikel.'
         checkStillUnpaid '1064.43', '0,00', 'still-unpaid-paid'
         submitForm getUrl('/credit-memo/show/')
 
@@ -401,10 +405,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -417,10 +426,14 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Gutschrift für nicht lieferbare Artikel.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Gutschrift für nicht lieferbare Artikel.' == field.text
+        assert 'nicht' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == CreditMemo.count()
@@ -475,10 +488,15 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -491,10 +509,14 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Gutschrift für nicht lieferbare Artikel.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Gutschrift für nicht lieferbare Artikel.' == field.text
+        assert 'nicht' == field.findElement(By.tagName('em')).text
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -631,19 +653,19 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.' == getInputValue('headerText')
+        assert 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne **"Frühjahr 2013"** gut.' == getInputValue('headerText')
 
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
-        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == getInputValue('footerText')
+        assert 'Erläuterungen zu den einzelnen Posten finden Sie **im Pflichtenheft**.' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Gutschrift für nicht lieferbare Artikel.' == getInputValue('notes')
+        assert 'Gutschrift für _nicht_ lieferbare Artikel.' == getInputValue('notes')
 
         setInputValue 'subject', 'Werbekampagne Spring \'13'
         setInputValue 'stage.id', '2503'
@@ -714,18 +736,18 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
         dialog.findElement(By.linkText('P-10700')).click()
 
-        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '8,99', '19,0'
+        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '8,99', '19,0'
         setPriceTableInputValue 2, 'quantity', '4'
-        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         assert '490,94' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
         assert '583,62' == subtotalGross
         assert '583,62' == total
         openSelectorAndAbort 2, 'products'
-        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         moveRowUp 2
         moveRowUp 1
-        checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 1, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '490,94' == subtotalNet
@@ -734,7 +756,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '583,62' == total
         moveRowDown 0
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
-        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '490,94' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
@@ -744,7 +766,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert 4 == addNewPriceTableRow()
         openSelectorAndSelect 3, 'products', 'P-10001'
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
-        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         checkRowValues 3, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
         assert '493,93' == subtotalNet
@@ -825,11 +847,16 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 1, 'P-10700', '4', 'Stück', 'Stempel\nMit Firmenaufdruck nach Kundenvorgabe.', '8,99 €', '35,96 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
         checkStaticRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,99 €', '2,99 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Stempel' == field.findElement(By.className('item-name')).text
+        assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgabe' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         WebElement tr = tfoot.findElement(By.className('subtotal-net'))
@@ -852,10 +879,14 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
         assert '569,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Gutschrift für nicht lieferbare Artikel.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Gutschrift für nicht lieferbare Artikel.' == field.text
+        assert 'nicht' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == CreditMemo.count()

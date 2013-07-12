@@ -36,7 +36,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * the quotes section of SpringCRM.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class QuoteFunctionalTests extends InvoicingTransactionTestCase {
@@ -54,20 +54,15 @@ class QuoteFunctionalTests extends InvoicingTransactionTestCase {
         def org = prepareOrganization()
         def p = preparePerson(org)
         if (!name.methodName.startsWith('testCreate')) {
-            prepareQuote(org, p)
+            prepareQuote org, p
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/quote/list')
-    }
-
-    @After
-    void deleteFixture() {
-        Quote.executeUpdate 'delete Quote q'
+        open '/quote/list'
     }
 
     @Test
@@ -93,8 +88,9 @@ class QuoteFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue('headerText', '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
-Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
+        setInputValue 'headerText', '''für die geplante Werbekampange **"Frühjahr 2013"** möchten wir Ihnen gern folgendes Angebot unterbreiten.
+
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf [unserer Webseite](http://www.example.de/protokoll/).'''
 
         assert 1 == numPriceTableRows
         setPriceTableInputValue 0, 'number', 'S-10000'
@@ -126,13 +122,13 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
 
         assert 3 == addNewPriceTableRow()
         openSelectorAndSelect 2, 'services', 'S-10100'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
         moveRowUp 2
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
 
         assert 4 == addNewPriceTableRow()
@@ -152,7 +148,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         moveRowUp 2
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
         checkRowValues 1, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
@@ -160,7 +156,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert '1.067,64' == total
         moveRowDown 1
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
@@ -169,16 +165,16 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert '1.067,64' == total
         assert 3 == removeRow(2)
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        setInputValue 'footerText', 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.'
+        setInputValue 'footerText', 'Details zu den einzelnen Punkten finden Sie _im Pflichtenheft_.'
         setInputValue 'termsAndConditions', ['700', '701']
-        setInputValue 'notes', 'Angebot unterliegt möglicherweise weiteren Änderungen.'
+        setInputValue 'notes', 'Angebot unterliegt _möglicherweise_ weiteren Änderungen.'
         submitForm getUrl('/quote/show/')
 
         assert 'Angebot Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
@@ -217,12 +213,21 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.\nDie Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.' == field.text
-        assert field.findElement(By.tagName('br'))
+        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.\nDie Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf unserer Webseite.' == field.text
+        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.' == field.findElement(By.xpath('.//p[1]')).text
+        assert 'Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf unserer Webseite.' == field.findElement(By.xpath('.//p[2]')).text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
+        link = field.findElement(By.tagName('a'))
+        assert 'unserer Webseite' == link.text
+        assert 'http://www.example.de/protokoll/' == link.getAttribute('href')
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -235,10 +240,14 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('em')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == field.text
+        assert 'möglicherweise' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == Quote.count()
@@ -307,12 +316,21 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.\nDie Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.' == field.text
-        assert field.findElement(By.tagName('br'))
+        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.\nDie Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf unserer Webseite.' == field.text
+        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.' == field.findElement(By.xpath('.//p[1]')).text
+        assert 'Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf unserer Webseite.' == field.findElement(By.xpath('.//p[2]')).text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
+        link = field.findElement(By.tagName('a'))
+        assert 'unserer Webseite' == link.text
+        assert 'http://www.example.de/protokoll/' == link.getAttribute('href')
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -325,10 +343,14 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('em')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == field.text
+        assert 'möglicherweise' == field.findElement(By.tagName('em')).text
 
         String param = "quote=${id}"
         fieldSet = getFieldset(dataSheet, 6)
@@ -484,20 +506,21 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''')
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
-Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue('headerText')
+        assert '''für die geplante Werbekampange **"Frühjahr 2013"** möchten wir Ihnen gern folgendes Angebot unterbreiten.
+
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf [unserer Webseite](http://www.example.de/protokoll/).''' == getInputValue('headerText')
 
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
-        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == getInputValue('footerText')
+        assert 'Details zu den einzelnen Punkten finden Sie _im Pflichtenheft_.' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getInputValue('notes')
+        assert 'Angebot unterliegt _möglicherweise_ weiteren Änderungen.' == getInputValue('notes')
 
         setInputValue 'subject', 'Werbekampagne Frühjahr 2013/03'
         setInputValue 'validUntil_date', '17.04.2013'
@@ -563,18 +586,18 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
         dialog.findElement(By.linkText('P-10700')).click()
 
-        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '8,99', '19,0'
+        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '8,99', '19,0'
         setPriceTableInputValue 2, 'quantity', '4'
-        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         assert '490,94' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
         assert '583,62' == subtotalGross
         assert '583,62' == total
         openSelectorAndAbort 2, 'products'
-        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         moveRowUp 2
         moveRowUp 1
-        checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 1, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '490,94' == subtotalNet
@@ -583,7 +606,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '583,62' == total
         moveRowDown 0
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
-        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '490,94' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
@@ -593,7 +616,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert 4 == addNewPriceTableRow()
         openSelectorAndSelect 3, 'products', 'P-10001'
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
-        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         checkRowValues 3, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
         assert '493,93' == subtotalNet
@@ -663,13 +686,22 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert 'Auf der Karte zeigen' == getShowField(col, 7).findElement(By.tagName('a')).text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.\nDie Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.' == field.text
-        assert field.findElement(By.tagName('br'))
+        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.\nDie Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf unserer Webseite.' == field.text
+        assert 'für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.' == field.findElement(By.xpath('.//p[1]')).text
+        assert 'Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf unserer Webseite.' == field.findElement(By.xpath('.//p[2]')).text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
+        link = field.findElement(By.tagName('a'))
+        assert 'unserer Webseite' == link.text
+        assert 'http://www.example.de/protokoll/' == link.getAttribute('href')
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 1, 'P-10700', '4', 'Stück', 'Stempel\nMit Firmenaufdruck nach Kundenvorgabe.', '8,99 €', '35,96 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
         checkStaticRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,99 €', '2,99 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Stempel' == field.findElement(By.className('item-name')).text
+        assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgabe' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         WebElement tr = tfoot.findElement(By.className('subtotal-net'))
@@ -692,10 +724,14 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '569,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == field.text
+        assert 'im Pflichtenheft' == field.findElement(By.tagName('em')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == field.text
+        assert 'möglicherweise' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == Quote.count()

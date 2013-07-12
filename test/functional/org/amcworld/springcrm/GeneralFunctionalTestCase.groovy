@@ -40,7 +40,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * functional test cases using Selenium.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
@@ -128,7 +128,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             for (WebElement input : inputs) {
                 String name = input.getAttribute('name')
                 if (name in fieldNames) {
-                    shouldBeErrors.remove(name)
+                    shouldBeErrors.remove name
                 } else if (name) {
                     shouldNotBeErrors << name
                 }
@@ -587,7 +587,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             phone: '04543 31233',
             type: CallType.incoming,
             status: CallStatus.completed,
-            notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die geplante Marketing-Aktion.'
+            notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
         )
         call.save flush: true
         call
@@ -621,9 +621,9 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             shippingAddrLocation: org.shippingAddrLocation,
             shippingAddrState: org.shippingAddrState,
             shippingAddrCountry: org.shippingAddrCountry,
-            headerText: 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne "Frühjahr 2013" gut.',
-            footerText: 'Erläuterungen zu den einzelnen Posten finden Sie im Pflichtenheft.',
-            notes: 'Gutschrift für nicht lieferbare Artikel.',
+            headerText: 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne **"Frühjahr 2013"** gut.',
+            footerText: 'Erläuterungen zu den einzelnen Posten finden Sie **im Pflichtenheft**.',
+            notes: 'Gutschrift für _nicht_ lieferbare Artikel.',
             stage: CreditMemoStage.get(2502),
             dueDatePayment: new GregorianCalendar(2013, Calendar.APRIL, 16).time,
             invoice: invoice
@@ -642,7 +642,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
                 quantity: 1.0d,
                 unit: 'Einheiten',
                 name: 'Mustervorschau',
-                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                description: 'Anfertigung eines Musters _nach Kundenvorgaben_.',
                 unitPrice: 450.0d,
                 tax: 19.0d
             )).
@@ -689,9 +689,9 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             shippingAddrLocation: org.shippingAddrLocation,
             shippingAddrState: org.shippingAddrState,
             shippingAddrCountry: org.shippingAddrCountry,
-            headerText: 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.',
-            footerText: 'Die Mahngebühren und Verzugszinsen ergeben sich aus unseren AGB.',
-            notes: 'Zahlung auch nach wiederholter telefonischer Mahnung nicht erfolgt.',
+            headerText: 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.',
+            footerText: 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.',
+            notes: 'Zahlung auch nach _wiederholter_ telefonischer Mahnung nicht erfolgt.',
             level: DunningLevel.get(2300),
             stage: DunningStage.get(2202),
             dueDatePayment: new GregorianCalendar(2013, Calendar.MAY, 13).time,
@@ -748,10 +748,11 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             shippingAddrLocation: org.shippingAddrLocation,
             shippingAddrState: org.shippingAddrState,
             shippingAddrCountry: org.shippingAddrCountry,
-            headerText: '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
-Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''',
-            footerText: 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.',
-            notes: 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!',
+            headerText: '''für die durchgeführte Werbekampange **"Frühjahr 2013"** erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem [Online-Verzeichnis](http://www.example.de/verzeichnis/).''',
+            footerText: 'Die Ausführung und Abrechnung erfolgte _laut Pflichtenheft_.',
+            notes: '**Wichtig!** Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!',
             stage: InvoiceStage.get(902),
             dueDatePayment: new GregorianCalendar(2013, Calendar.APRIL, 16).time,
             quote: quote,
@@ -771,7 +772,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''',
                 quantity: 1.0d,
                 unit: 'Einheiten',
                 name: 'Mustervorschau',
-                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                description: 'Anfertigung eines Musters _nach Kundenvorgaben_.',
                 unitPrice: 450.0d,
                 tax: 19.0d
             )).
@@ -962,10 +963,11 @@ auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
             shippingAddrLocation: org.shippingAddrLocation,
             shippingAddrState: org.shippingAddrState,
             shippingAddrCountry: org.shippingAddrCountry,
-            headerText: '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
-Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
-            footerText: 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.',
-            notes: 'Angebot unterliegt möglicherweise weiteren Änderungen.',
+            headerText: '''für die geplante Werbekampange **"Frühjahr 2013"** möchten wir Ihnen gern folgendes Angebot unterbreiten.
+
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf [unserer Webseite](http://www.example.de/protokoll/).''',
+            footerText: 'Details zu den einzelnen Punkten finden Sie _im Pflichtenheft_.',
+            notes: 'Angebot unterliegt _möglicherweise_ weiteren Änderungen.',
             stage: QuoteStage.get(602),
             validUntil: new GregorianCalendar(2013, Calendar.MARCH, 20).time
         )
@@ -983,7 +985,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
                 quantity: 1.0d,
                 unit: 'Einheiten',
                 name: 'Mustervorschau',
-                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                description: 'Anfertigung eines Musters _nach Kundenvorgaben_.',
                 unitPrice: 450.0d,
                 tax: 19.0d
             )).
@@ -1030,9 +1032,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
             shippingAddrLocation: org.shippingAddrLocation,
             shippingAddrState: org.shippingAddrState,
             shippingAddrCountry: org.shippingAddrCountry,
-            headerText: 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".',
-            footerText: 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.',
-            notes: 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.',
+            headerText: 'vielen Dank für Ihren Auftrag zur Werbekampange **"Frühjahr 2013"**.',
+            footerText: 'Die Umsetzung des Auftrags erfolgt **nach Pflichtenheft**.',
+            notes: 'Erste Teilergebnisse sollten vor dem *15.03.2013* vorliegen.',
             stage: SalesOrderStage.get(802),
             dueDate: new GregorianCalendar(2013, Calendar.MARCH, 28).time,
             quote: quote
@@ -1051,7 +1053,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
                 quantity: 1.0d,
                 unit: 'Einheiten',
                 name: 'Mustervorschau',
-                description: 'Anfertigung eines Musters nach Kundenvorgaben.',
+                description: 'Anfertigung eines Musters _nach Kundenvorgaben_.',
                 unitPrice: 450.0d,
                 tax: 19.0d
             )).
@@ -1092,12 +1094,12 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''',
         }
 
         def input = inputs[0]
-        input.sendKeys(value)
-        Thread.sleep(1000)
+        input.sendKeys value
+        Thread.sleep 1000
         for (int i = 0; i < idx; i++) {
-            input.sendKeys(Keys.ARROW_DOWN)
+            input.sendKeys Keys.ARROW_DOWN
         }
-        input.sendKeys(Keys.TAB)
+        input.sendKeys Keys.TAB
         return input.getAttribute('value')
     }
 

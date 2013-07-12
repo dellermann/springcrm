@@ -31,8 +31,8 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * class for test cases concerning the invoicing transactions such as quotes,
  * invoices, dunnings etc.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.3
  */
 class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
@@ -70,10 +70,11 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
         assert 'R-10000-10000' == i.fullNumber
         assert new GregorianCalendar(2013, Calendar.APRIL, 1).time == i.docDate
         assert new GregorianCalendar(2013, Calendar.APRIL, 2).time == i.shippingDate
-        assert '''für die durchgeführte Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
-Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == i.headerText
-        assert 'Die Ausführung und Abrechnung erfolgte laut Pflichtenheft.' == i.footerText
-        assert 'Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == i.notes
+        assert '''für die durchgeführte Werbekampange **"Frühjahr 2013"** erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
+
+Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem [Online-Verzeichnis](http://www.example.de/verzeichnis/).''' == i.headerText
+        assert 'Die Ausführung und Abrechnung erfolgte _laut Pflichtenheft_.' == i.footerText
+        assert '**Wichtig!** Beim Versand der Rechnung Leistungsverzeichnis nicht vergessen!' == i.notes
         assert 902L == i.stage.id
         assert new GregorianCalendar(2013, Calendar.APRIL, 16).time == i.dueDatePayment
         if (i.quote) {
@@ -125,7 +126,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == i.
         assert 1.0d == item.quantity
         assert 'Einheiten' == item.unit
         assert 'Mustervorschau' == item.name
-        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == item.description
+        assert 'Anfertigung eines Musters _nach Kundenvorgaben_.' == item.description
         assert 450.0d == item.unitPrice
         assert 19.0d == item.tax
         item = items[2]
@@ -180,10 +181,11 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''' == i.
         assert 'A-10000-10000' == q.fullNumber
         assert new GregorianCalendar(2013, Calendar.FEBRUARY, 20).time == q.docDate
         assert new GregorianCalendar(2013, Calendar.FEBRUARY, 21).time == q.shippingDate
-        assert '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
-Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == q.headerText
-        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == q.footerText
-        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == q.notes
+        assert '''für die geplante Werbekampange **"Frühjahr 2013"** möchten wir Ihnen gern folgendes Angebot unterbreiten.
+
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf [unserer Webseite](http://www.example.de/protokoll/).''' == q.headerText
+        assert 'Details zu den einzelnen Punkten finden Sie _im Pflichtenheft_.' == q.footerText
+        assert 'Angebot unterliegt _möglicherweise_ weiteren Änderungen.' == q.notes
         assert 602L == q.stage.id
         assert new GregorianCalendar(2013, Calendar.MARCH, 20).time == q.validUntil
     }
@@ -200,9 +202,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == q.headerText
         assert 'B-10000-10000' == so.fullNumber
         assert new GregorianCalendar(2013, Calendar.MARCH, 4).time == so.docDate
         assert new GregorianCalendar(2013, Calendar.MARCH, 5).time == so.shippingDate
-        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == so.headerText
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == so.footerText
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == so.notes
+        assert 'vielen Dank für Ihren Auftrag zur Werbekampange **"Frühjahr 2013"**.' == so.headerText
+        assert 'Die Umsetzung des Auftrags erfolgt **nach Pflichtenheft**.' == so.footerText
+        assert 'Erste Teilergebnisse sollten vor dem *15.03.2013* vorliegen.' == so.notes
         assert 802L == so.stage.id
         assert new GregorianCalendar(2013, Calendar.MARCH, 28).time == so.dueDate
         if (so.quote) {

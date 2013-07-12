@@ -36,7 +36,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * case for the sales order section of SpringCRM.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
@@ -57,20 +57,15 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         def p = preparePerson(org)
         quote = prepareQuote(org, p)
         if (!name.methodName.startsWith('testCreate')) {
-            prepareSalesOrder(org, p, quote)
+            prepareSalesOrder org, p, quote
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/sales-order/list')
-    }
-
-    @After
-    void deleteFixture() {
-        SalesOrder.executeUpdate 'delete SalesOrder s'
+        open '/sales-order/list'
     }
 
     @Test
@@ -97,7 +92,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".'
+        setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange **"Frühjahr 2013"**.'
 
         assert 1 == numPriceTableRows
         setPriceTableInputValue 0, 'number', 'S-10000'
@@ -129,13 +124,13 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
 
         assert 3 == addNewPriceTableRow()
         openSelectorAndSelect 2, 'services', 'S-10100'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
         moveRowUp 2
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
 
         assert 4 == addNewPriceTableRow()
@@ -155,7 +150,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         moveRowUp 2
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
         checkRowValues 1, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
@@ -163,7 +158,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.067,64' == total
         moveRowDown 1
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
@@ -172,16 +167,16 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.067,64' == total
         assert 3 == removeRow(2)
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.'
+        setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt **nach Pflichtenheft**.'
         setInputValue 'termsAndConditions', ['700', '701']
-        setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.'
+        setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem *15.03.2013* vorliegen.'
         submitForm getUrl('/sales-order/show/')
 
         assert 'Verkaufsbestellung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
@@ -225,10 +220,15 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -241,10 +241,14 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == field.text
+        assert 'nach Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == field.text
+        assert '15.03.2013' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == SalesOrder.count()
@@ -279,7 +283,7 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testCreateSalesOrderFromQuote() {
-        open('/quote/list')
+        open '/quote/list'
         clickListItem 0, 1
         clickActionBarButton 2, getUrl('/sales-order/create?quote=')
         checkTitles 'Verkaufsbestellung anlegen', 'Verkaufsbestellungen', 'Neue Verkaufsbestellung'
@@ -310,29 +314,30 @@ class SalesOrderFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert '''für die geplante Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.
-Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue('headerText')
+        assert '''für die geplante Werbekampange **"Frühjahr 2013"** möchten wir Ihnen gern folgendes Angebot unterbreiten.
+
+Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf [unserer Webseite](http://www.example.de/protokoll/).''' == getInputValue('headerText')
 
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
-        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        assert 'Details zu den einzelnen Punkten finden Sie im Pflichtenheft.' == getInputValue('footerText')
+        assert 'Details zu den einzelnen Punkten finden Sie _im Pflichtenheft_.' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Angebot unterliegt möglicherweise weiteren Änderungen.' == getInputValue('notes')
+        assert 'Angebot unterliegt _möglicherweise_ weiteren Änderungen.' == getInputValue('notes')
 
         setInputValue 'stage.id', '802'
         checkDate 'shippingDate_date'
         setInputValue 'docDate_date', '4.3.2013'
         setInputValue 'dueDate_date', '28.3.2013'
         setInputValue 'carrier.id', '501'
-        setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".'
-        setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.'
-        setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.'
+        setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zur Werbekampange **"Frühjahr 2013"**.'
+        setInputValue 'footerText', 'Die Umsetzung des Auftrags erfolgt **nach Pflichtenheft**.'
+        setInputValue 'notes', 'Erste Teilergebnisse sollten vor dem *15.03.2013* vorliegen.'
         submitForm getUrl('/sales-order/show/')
 
         assert 'Verkaufsbestellung Werbekampagne Frühjahr 2013 wurde angelegt.' == flashMessage
@@ -376,10 +381,15 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -392,10 +402,14 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == field.text
+        assert 'nach Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == field.text
+        assert '15.03.2013' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == SalesOrder.count()
@@ -445,10 +459,15 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '440,00 €', '440,00 €', '19,0 %'
         checkStaticRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau\nAnfertigung eines Musters nach Kundenvorgaben.', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Mustervorschau' == field.findElement(By.className('item-name')).text
+        assert 'Anfertigung eines Musters nach Kundenvorgaben.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgaben' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         assert '894,98 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
@@ -461,10 +480,14 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '1.064,43 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == field.text
+        assert 'nach Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == field.text
+        assert '15.03.2013' == field.findElement(By.tagName('em')).text
 
         String param = "salesOrder=${id}"
         fieldSet = getFieldset(dataSheet, 6)
@@ -609,19 +632,19 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == getInputValue('headerText')
+        assert 'vielen Dank für Ihren Auftrag zur Werbekampange **"Frühjahr 2013"**.' == getInputValue('headerText')
 
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19,0'
-        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters nach Kundenvorgaben.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
 
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getInputValue('footerText')
+        assert 'Die Umsetzung des Auftrags erfolgt **nach Pflichtenheft**.' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getInputValue('notes')
+        assert 'Erste Teilergebnisse sollten vor dem *15.03.2013* vorliegen.' == getInputValue('notes')
 
         setInputValue 'subject', 'Big Sale Spring \'13'
         setInputValue 'dueDate_date', '19.04.2013'
@@ -687,18 +710,18 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
         dialog.findElement(By.linkText('P-10700')).click()
 
-        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '8,99', '19,0'
+        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '8,99', '19,0'
         setPriceTableInputValue 2, 'quantity', '4'
-        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         assert '490,94' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
         assert '583,62' == subtotalGross
         assert '583,62' == total
         openSelectorAndAbort 2, 'products'
-        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         moveRowUp 2
         moveRowUp 1
-        checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 0, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 1, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '490,94' == subtotalNet
@@ -707,7 +730,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '583,62' == total
         moveRowDown 0
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
-        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '490,94' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '92,33']])
@@ -717,7 +740,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert 4 == addNewPriceTableRow()
         openSelectorAndSelect 3, 'products', 'P-10001'
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
-        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck nach Kundenvorgabe.', '8,99', '35,96', '19,0'
+        checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         checkRowValues 3, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
         assert '493,93' == subtotalNet
@@ -792,11 +815,16 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
         assert 'vielen Dank für Ihren Auftrag zur Werbekampange "Frühjahr 2013".' == field.text
+        assert '"Frühjahr 2013"' == field.findElement(By.tagName('strong')).text
 
         checkStaticRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption der geplanten Werbekampagne', '450,00 €', '450,00 €', '19,0 %'
         checkStaticRowValues 1, 'P-10700', '4', 'Stück', 'Stempel\nMit Firmenaufdruck nach Kundenvorgabe.', '8,99 €', '35,96 €', '19,0 %'
         checkStaticRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,49 €', '4,98 €', '7,0 %'
         checkStaticRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²\nPackung zu 100 Blatt. Chlorfrei gebleicht.', '2,99 €', '2,99 €', '7,0 %'
+        field = getPriceTableRow(1).findElement(By.xpath('./td[5]'))
+        assert 'Stempel' == field.findElement(By.className('item-name')).text
+        assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == field.findElement(By.className('item-description')).text
+        assert 'nach Kundenvorgabe' == field.findElement(By.xpath('./div[@class="item-description"]//em')).text
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         WebElement tr = tfoot.findElement(By.className('subtotal-net'))
@@ -819,10 +847,14 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt.''' == getInputValue
         assert '569,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
-        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Die Umsetzung des Auftrags erfolgt nach Pflichtenheft.' == field.text
+        assert 'nach Pflichtenheft' == field.findElement(By.tagName('strong')).text
         assert 'Dienstleistungen, Waren' == getShowFieldText(fieldSet, 2)
         fieldSet = getFieldset(dataSheet, 5)
-        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == getShowFieldText(fieldSet, 1)
+        field = getShowField(fieldSet, 1)
+        assert 'Erste Teilergebnisse sollten vor dem 15.03.2013 vorliegen.' == field.text
+        assert '15.03.2013' == field.findElement(By.tagName('em')).text
         driver.quit()
 
         assert 1 == SalesOrder.count()

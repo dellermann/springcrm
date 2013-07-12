@@ -16,7 +16,7 @@
     unit_price="2.99" class="org.amcworld.springcrm.Product"
     category_id="3000"/>
   <sales_item id="3" version="0" date_created="2013-03-08 20:56:00"
-    description="Mit Firmenaufdruck nach Kundenvorgabe."
+    description="Mit Firmenaufdruck _nach Kundenvorgabe_."
     last_updated="2013-03-08 20:56:00" name="Stempel" number="10700"
     quantity="1" tax_rate_id="400" type="P" unit_id="300"
     unit_price="8.99" class="org.amcworld.springcrm.Product"
@@ -24,7 +24,7 @@
 
   <!-- Services -->
   <sales_item id="10" version="0" date_created="2013-03-08 20:56:00"
-    description="Anfertigung eines Musters nach Kundenvorgaben."
+    description="Anfertigung eines Musters _nach Kundenvorgaben_."
     last_updated="2013-03-08 20:56:00" name="Mustervorschau" number="10100"
     quantity="1" tax_rate_id="400" type="S" unit_id="301"
     unit_price="450.0" class="org.amcworld.springcrm.Service"
