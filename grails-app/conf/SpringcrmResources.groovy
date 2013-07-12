@@ -83,6 +83,7 @@ modules = {
 
         resource '/js/jquery.ui.datepicker-de.js'
         resource '/js/jquery.ba-bbq.min.js'
+        resource '/js/jquery.autosize-min.js'
         resource '/js/app/core.js'
         resource '/js/app/ui.js'
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'

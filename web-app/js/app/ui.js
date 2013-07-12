@@ -578,6 +578,7 @@
         select: onSelectTimeValue,
         source: timeValues
       });
+      $("textarea").autosize();
       $spinner.click(function() {
         return $(this).css("display", "none");
       });

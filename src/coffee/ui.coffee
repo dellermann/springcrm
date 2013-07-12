@@ -669,6 +669,8 @@ SPRINGCRM.page = (->
         select: onSelectTimeValue
         source: timeValues
 
+    $("textarea").autosize()
+
     $spinner.click ->
       $(this).css "display", "none"
 
