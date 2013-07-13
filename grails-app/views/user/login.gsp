@@ -33,7 +33,7 @@
                 <label for="userName"><g:message code="user.userName.label" default="User Name" /></label>
               </div>
               <div class="field">
-                <g:textField name="userName" value="${userInstance?.userName}" size="20" />
+                <g:textField name="userName" value="${userInstance?.userName}" size="20" autofocus="autofocus" />
               </div>
             </div>
             <div class="row">
