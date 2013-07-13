@@ -1163,6 +1163,9 @@ tbody tr th:first-child {
       border-bottom: none;
     }
   }
+  .indent {
+    margin-left: 1.5em;
+  }
 }
 
 /* frames */
@@ -1269,9 +1272,8 @@ tbody tr th:first-child {
 /* type icons */
 .data-type {
   background-repeat: no-repeat;
-  display: inline-block;
-  height: 16px;
   line-height: 16px;
+  min-height: 16px;
   padding-left: 22px;
 }
 .data-type-calendarEvent {
@@ -1321,6 +1323,16 @@ tbody tr th:first-child {
 }
 .data-type-user {
   background-image: url("../img/type/user.png")
+}
+
+/* inline action buttons for list items */
+.item-actions {
+  opacity: 0;
+  padding-left: .5em;
+  .transition(opacity .8s);
+}
+li:hover .item-actions {
+  opacity: 1;
 }
 
 /* search results */

@@ -96,14 +96,6 @@
     list-style: none;
     margin-bottom: .5em;
   }
-  .item-actions {
-    opacity: 0;
-    padding-left: .5em;
-    .transition(opacity .8s);
-  }
-  li:hover .item-actions {
-    opacity: 1;
-  }
 }
 .project-phase-actions {
   margin: 0 0 1em;
@@ -113,6 +105,11 @@
   li {
     cursor: pointer;
     display: inline;
+  }
+}
+.project-phase-items {
+  a {
+    display: inline-block;
   }
 }
 #create-project-item-dialog {
