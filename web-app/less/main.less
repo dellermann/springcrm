@@ -260,15 +260,16 @@ body {
     &:hover div {
       max-height: 40em;
     }
-    > a {
+    > a, > span {
       color: white;
+      cursor: pointer;
       display: block;
       font-weight: bold;
       padding: .6em 1.5em;
       text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
     }
   }
-  a:hover {
+  a:hover, span:hover {
     .linear-gradient(
       @color-gradient-hover-0; @color-gradient-hover-1; #597F12
     );
