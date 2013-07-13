@@ -76,6 +76,7 @@ modules = {
     core {
         dependsOn 'jquery-ui, jquery-json'
 
+        resource url: '/css/jquery.qtip.min.css', exclude: 'minify'
         resource url: '/less/reset.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/less/main.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/css/print.css', attrs: [media: 'print']
@@ -84,6 +85,7 @@ modules = {
         resource '/js/jquery.ui.datepicker-de.js'
         resource '/js/jquery.ba-bbq.min.js'
         resource '/js/jquery.autosize-min.js'
+        resource '/js/jquery.qtip.min.js'
         resource '/js/app/core.js'
         resource '/js/app/ui.js'
         resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'

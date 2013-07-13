@@ -3,7 +3,8 @@
 <html lang="${locale}" data-currency-symbol="${currencySymbol}"
   data-num-fraction-digits="${numFractionDigits}"
   data-decimal-separator="${decimalSeparator}"
-  data-grouping-separator="${groupingSeparator}">
+  data-grouping-separator="${groupingSeparator}"
+  data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">
 <head>
   <meta charset="utf-8" />
   <title><g:layoutTitle default="SpringCRM" /></title>

@@ -670,6 +670,44 @@ SPRINGCRM.page = (->
         source: timeValues
 
     $("textarea").autosize()
+      .each ->
+        $html = $("html")
+        $(this).qtip
+          content:
+            button: true
+            text: (event, api) ->
+              $.get($html.data("load-markdown-help-url"))
+                .then((content) ->
+                    $help = $("#markdown-help-container")
+                    if $help.length
+                      $content = $help.find("#markdown-help")
+                      content = $help.html()
+                    else
+                      $content = $(content)
+                      $("<div id='markdown-help-container'/>")
+                        .append(content)
+                        .appendTo(document.body)
+                    api.set "content.title", $content.attr("title")
+                    content
+                  ,
+                    ->
+                      api.hide()
+                )
+          hide:
+            delay: 300
+            effect: ->
+              $(this).fadeOut "slow"
+            fixed: true
+          position:
+            at: "right center"
+            my: "left center"
+          show:
+            effect: ->
+              $(this).fadeIn "slow"
+            solo: true
+          style:
+            classes: "qtip-shadow"
+            widget: true
 
     $spinner.click ->
       $(this).css "display", "none"

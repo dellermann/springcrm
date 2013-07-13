@@ -578,7 +578,53 @@
         select: onSelectTimeValue,
         source: timeValues
       });
-      $("textarea").autosize();
+      $("textarea").autosize().each(function() {
+        var $html;
+        $html = $("html");
+        return $(this).qtip({
+          content: {
+            button: true,
+            text: function(event, api) {
+              return $.get($html.data("load-markdown-help-url")).then(function(content) {
+                var $content, $help;
+                $help = $("#markdown-help-container");
+                if ($help.length) {
+                  $content = $help.find("#markdown-help");
+                  content = $help.html();
+                } else {
+                  $content = $(content);
+                  $("<div id='markdown-help-container'/>").append(content).appendTo(document.body);
+                }
+                api.set("content.title", $content.attr("title"));
+                return content;
+              }, function() {
+                return api.hide();
+              });
+            }
+          },
+          hide: {
+            delay: 300,
+            effect: function() {
+              return $(this).fadeOut("slow");
+            },
+            fixed: true
+          },
+          position: {
+            at: "right center",
+            my: "left center"
+          },
+          show: {
+            effect: function() {
+              return $(this).fadeIn("slow");
+            },
+            solo: true
+          },
+          style: {
+            classes: "qtip-shadow",
+            widget: true
+          }
+        });
+      });
       $spinner.click(function() {
         return $(this).css("display", "none");
       });
