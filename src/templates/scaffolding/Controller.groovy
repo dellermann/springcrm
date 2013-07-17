@@ -21,16 +21,17 @@
 <%=packageName ? "package ${packageName}\n\n" : ''%>import org.springframework.dao.DataIntegrityViolationException
 
 
+/**
+ * The class {@code ${className}Controller} contains actions which manage …
+ *
+ * @author  Daniel Ellermann
+ * @version 1.4
+ */
 class ${className}Controller {
 
     //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
-
-    //-- Instance variables ---------------------
-
-    LruService lruService
 
 
     //-- Public methods -------------------------
@@ -99,7 +100,7 @@ class ${className}Controller {
     }
 
     def update(Long id) {
-        def ${propertyName} = ${className}.get(params.id)
+        def ${propertyName} = ${className}.get(id)
         if (!${propertyName}) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: '${domainClass.propertyName}.label', default: '${className}'), id])
             redirect action: 'list'

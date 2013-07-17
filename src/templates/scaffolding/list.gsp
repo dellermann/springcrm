@@ -1,4 +1,5 @@
 <% import grails.persistence.Event %>
+<% import grails.util.GrailsNameUtils %>
 <%=packageName%>
 <html>
 <head>
@@ -26,26 +27,28 @@
     <table class="content-table">
       <thead>
         <tr>
-      <%  cssName = GrailsNameUtils.getScriptName(domainClass) %>
+        <%  cssName = GrailsNameUtils.getScriptName(domainClass.name) %>
           <th scope="col"><input type="checkbox" id="${cssName}-row-selector" /></th>
-        <%  excludedProps = Event.allEvents.toList() << 'version'
+        <%  excludedProps = Event.allEvents.toList() << 'id' << 'version'
             allowedNames = domainClass.persistentProperties*.name << 'dateCreated' << 'lastUpdated'
-            props = domainClass.properties.findAll { allowedNames.contains(it.name) && !excludedProps.contains(it.name) && !Collection.isAssignableFrom(it.type) }
+            props = domainClass.properties.findAll { allowedNames.contains(it.name) && !excludedProps.contains(it.name) && it.type != null && !Collection.isAssignableFrom(it.type) }
             Collections.sort(props, comparator.constructors[0].newInstance([domainClass] as Object[]))
             props.eachWithIndex { p, i ->
                 if (i < 6) {
                     if (p.isAssociation()) { %>
           <th scope="col"><g:message code="${domainClass.propertyName}.${p.name}.label" default="${p.naturalName}" /></th>
-        <%      } else { %>
+        <%          } else { %>
           <g:sortableColumn scope="col" property="${p.name}" title="\${message(code: '${domainClass.propertyName}.${p.name}.label', default: '${p.naturalName}')}" />
-        <%  }   }   } %>
+        <%          }
+                }
+            } %>
           <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
       <g:each in="\${${propertyName}List}" status="i" var="${propertyName}">
         <tr>
-          <td class="row-selector"><input type="checkbox" id="${domainClass.propertyName}-row-selector-\${${propertyName}.id}" data-id="${${propertyName}.id}" /></td>
+          <td class="row-selector"><input type="checkbox" id="${domainClass.propertyName}-row-selector-\${${propertyName}.id}" data-id="\${${propertyName}.id}" /></td>
         <%  props.eachWithIndex { p, i ->
                 if (i == 0) { %>
           <td class="string ${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:link action="show" id="\${${propertyName}.id}">\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</g:link></td>
@@ -55,7 +58,7 @@
         <%          } else if (p.type == Date.class || p.type == java.sql.Date.class || p.type == java.sql.Time.class || p.type == Calendar.class) { %>
           <td class="date ${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:formatDate date="\${${propertyName}.${p.name}}" /></td>
         <%          } else { %>
-          <td class="string ${cssName}-${GrailsNameUtils.getScriptName(p.name)}">\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</td>
+          <td class="string ${cssName}-${GrailsNameUtils.getScriptName(p.name)}"><g:fieldValue bean="\${${propertyName}}" field="${p.name}" /></td>
         <%  }   }   } %>
           <td class="action-buttons">
             <g:link action="edit" id="\${${propertyName}.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
