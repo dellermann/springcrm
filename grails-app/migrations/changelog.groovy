@@ -23,6 +23,6 @@ databaseChangeLog = {
     include file: 'user-settings.xml'
     include file: 'sales-item.xml'
     include file: 'sales-item-pricing.xml'
-	include file: 'number-issues.xml'
+    include file: 'number-issues.xml'
     include file: 'bugfixes-001.xml'
 }

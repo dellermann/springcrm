@@ -27,7 +27,6 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
   <!-- Table definitions -->
-
   <changeSet author="d.ellermann@amc-world.de" id="20120825-1">
     <createTable tableName="calendar_event">
       <column autoIncrement="true" name="id" type="bigint">

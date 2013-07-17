@@ -81,6 +81,7 @@
     <addNotNullConstraint columnDataType="double precision"
       columnName="unit_price" tableName="sales_item_pricing_item" />
   </changeSet>
+
   <changeSet author="d.ellermann@amc-world.de" id="20130105-2">
     <addNotNullConstraint columnDataType="longtext"
       columnName="content" tableName="note" />
@@ -88,5 +89,10 @@
       columnName="prefix" tableName="seq_number" />
     <addNotNullConstraint columnDataType="varchar(5)"
       columnName="suffix" tableName="seq_number" />
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20130716-2">
+    <modifyDataType columnName="tax_value" newDataType="double precision"
+      tableName="sel_value" />
   </changeSet>
 </databaseChangeLog>
