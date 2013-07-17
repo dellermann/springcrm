@@ -20,6 +20,7 @@
 
 import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
+import org.amcworld.springcrm.InstallService
 import org.amcworld.springcrm.OverviewPanelRepository
 
 
@@ -32,10 +33,17 @@ import org.amcworld.springcrm.OverviewPanelRepository
  */
 class BootStrap {
 
+    //-- Constants ------------------------------
+
+    public static final int CURRENT_DB_VERSION = 1i
+
+
     //-- Instance variables ---------------------
 
+    def dataSource
     def exceptionHandler
     def grailsApplication
+    InstallService installService
     def springcrmConfig
 
 
@@ -56,6 +64,9 @@ class BootStrap {
                 grailsApplication.config.merge config
             }
         }
+
+        /* apply difference sets */
+        installService.applyAllDiffSets dataSource.connection, CURRENT_DB_VERSION
 
         /* start Quartz jobs */
         Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')

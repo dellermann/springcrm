@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.sql.Sql
+import java.sql.Connection
 import javax.servlet.ServletContext
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 
@@ -30,7 +32,7 @@ import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
  * reasons or obtaining the available base data packages.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class InstallService {
 
@@ -43,11 +45,6 @@ class InstallService {
     protected static final String BASE_PACKAGE_DIR = '/WEB-INF/data/install'
 
 
-    //-- Class variables ------------------------
-
-    static transactional = false
-
-
     //-- Instance variables ---------------------
 
     def grailsApplication
@@ -57,26 +54,40 @@ class InstallService {
     //-- Public methods -------------------------
 
     /**
-     * Checks whether or not the installer is enabled.  The installer is enable
-     * if there is a file {@code ENABLE_INSTALLER} in the installer directory
-     * as specified in the configuration file in key
-     * {@code springcrm.dir.installer}.
+     * Applies all difference sets from the current version to the given
+     * database version.
      *
-     * @return  {@code true} if the installer is enabled; {@code false}
-     *          otherwise
+     * @param connection    the SQL connection of the database where to apply
+     *                      the difference sets
+     * @param upToVersion   the number of the last difference set to include
+     * @since               1.4
      */
-    boolean isInstallerDisabled() {
-        return !enableFile.exists()
+    void applyAllDiffSets(Connection connection, int upToVersion) {
+        ConfigHolder configHolder = ConfigHolder.instance
+        String lang = (configHolder['baseDataLocale'] as String) ?: 'de-DE'
+        int fromVersion = (configHolder['dbVersion'] as Integer) ?: 0i
+        for (int i = fromVersion + 1; i <= upToVersion; i++) {
+            applyDiffSet connection, i, lang
+        }
+        configHolder.setConfig 'dbVersion', upToVersion.toString()
     }
 
     /**
-     * Enables the installer by creating the installer enable file
-     * {@code ENABLE_INSTALLER} in the installer directory as specified in the
-     * configuration file in key {@code springcrm.dir.installer}.
+     * Applies the difference set with the given version and language.
+     *
+     * @param connection    the SQL connection of the database where to apply
+     *                      the difference set
+     * @param version       the given number of the difference set
+     * @param lang          the given language of the difference set in the
+     *                      form {@code lang-COUNTRY}; if {@code null} the
+     *                      current base data language is used
+     * @since               1.4
      */
-    void enableInstaller() {
-        log.info(enableFile)
-        enableFile.createNewFile()
+    void applyDiffSet(Connection connection, int version, String lang = null) {
+        if (!lang) {
+            lang = (ConfigHolder.instance['baseDataLocale'] as String) ?: 'de-DE'
+        }
+        executeSqlFile connection, loadDiffSet(version, lang)
     }
 
     /**
@@ -86,6 +97,16 @@ class InstallService {
      */
     void disableInstaller() {
         enableFile.delete()
+    }
+
+    /**
+     * Enables the installer by creating the installer enable file
+     * {@code ENABLE_INSTALLER} in the installer directory as specified in the
+     * configuration file in key {@code springcrm.dir.installer}.
+     */
+    void enableInstaller() {
+        log.info enableFile
+        enableFile.createNewFile()
     }
 
     /**
@@ -104,7 +125,34 @@ class InstallService {
                     files.add(m[0][1])
                 }
             }
-        return files
+        files
+    }
+
+    /**
+     * Installs the base data package with the given key in the database with
+     * the stated connection.
+     *
+     * @param connection    the SQL connection where to install the base data
+     *                      package
+     * @param key           the given package key
+     * @see                 #loadPackage(String)
+     * @since               1.4
+     */
+    void installBaseDataPackage(Connection connection, String key) {
+        executeSqlFile connection, loadBaseDataPackage(key)
+    }
+
+    /**
+     * Checks whether or not the installer is enabled.  The installer is enable
+     * if there is a file {@code ENABLE_INSTALLER} in the installer directory
+     * as specified in the configuration file in key
+     * {@code springcrm.dir.installer}.
+     *
+     * @return  {@code true} if the installer is enabled; {@code false}
+     *          otherwise
+     */
+    boolean isInstallerDisabled() {
+        !enableFile.exists()
     }
 
     /**
@@ -114,14 +162,57 @@ class InstallService {
      * @return      an input stream to read the package; {@code null} if no
      *              package with the given key exists
      */
-    InputStream loadPackage(String key) {
-        return servletContext.getResourceAsStream(
-            "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
-        )
+    InputStream loadBaseDataPackage(String key) {
+        servletContext.getResourceAsStream "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
+    }
+
+    /**
+     * Loads the difference set for the given version and language.  The method
+     * first looks for a difference set with the given language.  If not found,
+     * it falls back to a general difference set for the given version.
+     *
+     * @param version   the given version of the difference set
+     * @param lang      the given language of the difference set in the form
+     *                  {@code lang-COUNTRY}
+     * @return          an input stream to the difference set; {@code null} if
+     *                  no such difference set exists
+     * @since           1.4
+     */
+    InputStream loadDiffSet(int version, String lang) {
+        String name1 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}-${lang}.sql"
+        InputStream is = servletContext.getResourceAsStream(name1)
+        if (is == null) {
+            String name2 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}.sql"
+            is = servletContext.getResourceAsStream(name2)
+            if (is == null && log.errorEnabled) {
+                log.error "Can find neither diff set ${name1} nor ${name2}."
+            }
+        }
+        is
     }
 
 
     //-- Non-public methods ---------------------
+
+    /**
+     * Executes all SQL commands in the given input stream.
+     *
+     * @param connection    the SQL connection where the SQL commands should be
+     *                      executed
+     * @param is            an input stream containing the SQL commands to
+     *                      execute
+     * @since               1.4
+     */
+    protected void executeSqlFile(Connection connection, InputStream is) {
+        Sql sql = new Sql(connection)
+        sql.withTransaction {
+            is.newReader('utf-8').eachLine {
+                if (!(it =~ /^\s*$/) && !(it =~ /^\s*--/)) {
+                    sql.execute it
+                }
+            }
+        }
+    }
 
     /**
      * Gets the object representing the installer enable file.  This file is
@@ -135,6 +226,6 @@ class InstallService {
         if (!dir.exists()) {
             dir.mkdirs()
         }
-        return new File(dir, 'ENABLE_INSTALLER')
+        new File(dir, 'ENABLE_INSTALLER')
     }
 }

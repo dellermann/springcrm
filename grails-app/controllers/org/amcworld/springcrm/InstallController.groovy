@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import groovy.sql.Sql
-
 
 /**
  * The class {@code InstallController} handles actions in the installation
@@ -31,7 +29,7 @@ import groovy.sql.Sql
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class InstallController {
 
@@ -52,14 +50,7 @@ class InstallController {
     }
 
     def installBaseDataSave() {
-        InputStream is = installService.loadPackage(params.package)
-        Reader r = is.newReader('utf-8')
-        Sql sql = new Sql(sessionFactory.currentSession.connection())
-        r.eachLine {
-            if (!(it =~ /^\s*$/) && !(it =~ /^\s*--/)) {
-                sql.execute it
-            }
-        }
+        installService.installBaseDataPackage sessionFactory.currentSession.connection(), params.package
         redirect action: 'clientData'
     }
 
