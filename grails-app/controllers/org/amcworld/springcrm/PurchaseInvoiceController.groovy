@@ -20,22 +20,19 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
-import net.sf.jmimemagic.Magic
-
 
 /**
  * The class {@code PurchaseInvoiceController} contains actions which manage
  * purchase invoices.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class PurchaseInvoiceController {
 
     //-- Constants ------------------------------
 
-    public static final String FILE_TYPE = 'purchase-invoice'
+    public static final DataFileType FILE_TYPE = DataFileType.purchaseInvoice
 
 
     //-- Class variables ------------------------
@@ -45,7 +42,7 @@ class PurchaseInvoiceController {
 
     //-- Instance variables ---------------------
 
-    FileService fileService
+    DataFileService dataFileService
 
 
     //-- Public methods -------------------------
@@ -96,9 +93,9 @@ class PurchaseInvoiceController {
 
     def save() {
         def purchaseInvoiceInstance = new PurchaseInvoice(params)
-        if (!params.file.isEmpty()) {
-            purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
-        }
+        purchaseInvoiceInstance.documentFile = dataFileService.storeFile(
+            FILE_TYPE, params.file
+        )
         if (!purchaseInvoiceInstance.save(flush: true)) {
             render view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
@@ -158,16 +155,11 @@ class PurchaseInvoiceController {
         purchaseInvoiceInstance.properties = params
 //        purchaseInvoiceInstance.items?.retainAll { it != null }
 
+        DataFile df = purchaseInvoiceInstance.documentFile
         if (params.fileRemove == '1') {
-            if (purchaseInvoiceInstance.documentFile) {
-                fileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
-            }
             purchaseInvoiceInstance.documentFile = null
-        } else if (!params.file?.isEmpty()) {
-            if (purchaseInvoiceInstance.documentFile) {
-                fileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
-            }
-            purchaseInvoiceInstance.documentFile = fileService.storeFile(FILE_TYPE, params.file)
+        } else if (!params.file?.empty) {
+            df = dataFileService.updateFile FILE_TYPE, df, params.file
         }
 
         /*
@@ -193,6 +185,9 @@ class PurchaseInvoiceController {
             render view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
         }
+        if (params.fileRemove == '1' && df) {
+            dataFileService.removeFile FILE_TYPE, df
+        }
 
         request.purchaseInvoiceInstance = purchaseInvoiceInstance
         flash.message = message(code: 'default.updated.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice'), purchaseInvoiceInstance.toString()])
@@ -215,11 +210,11 @@ class PurchaseInvoiceController {
             return
         }
 
-        if (purchaseInvoiceInstance.documentFile) {
-            fileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
-        }
         try {
             purchaseInvoiceInstance.delete flush: true
+            if (purchaseInvoiceInstance.documentFile) {
+                dataFileService.removeFile FILE_TYPE, purchaseInvoiceInstance.documentFile
+            }
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
             if (params.returnUrl) {
                 redirect url: params.returnUrl
@@ -230,21 +225,5 @@ class PurchaseInvoiceController {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')])
             redirect action: 'show', id: id
         }
-    }
-
-    def getDocument(Long id) {
-        def purchaseInvoiceInstance = PurchaseInvoice.get(id)
-        if (purchaseInvoiceInstance) {
-            String doc = purchaseInvoiceInstance.documentFile
-            File f = fileService.retrieveFile(FILE_TYPE, doc)
-            if (f.exists()) {
-                response.contentType = Magic.getMagicMatch(f, true).mimeType
-                response.contentLength = f.length()
-                response.addHeader 'Content-Disposition', "attachment; filename=\"${doc}\""
-                response.outputStream << f.newInputStream()
-                return null
-            }
-        }
-        render status: HttpServletResponse.SC_NOT_FOUND
     }
 }

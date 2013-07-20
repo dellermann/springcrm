@@ -20,9 +20,11 @@
 
 package org.amcworld.springcrm
 
+import org.junit.internal.runners.statements.FailOnTimeout;
 import groovy.sql.Sql
 import java.sql.Connection
 import javax.servlet.ServletContext
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 
 
@@ -47,7 +49,8 @@ class InstallService {
 
     //-- Instance variables ---------------------
 
-    def grailsApplication
+    DataFileService dataFileService
+    GrailsApplication grailsApplication
     final ServletContext servletContext = SCH.servletContext
 
 
@@ -191,6 +194,17 @@ class InstallService {
         is
     }
 
+    /**
+     * Performs all needed data migrations.
+     *
+     * @param connection    the SQL connection where the SQL commands should be
+     *                      executed
+     * @since               1.4
+     */
+    void migrateData(Connection connection) {
+        migratePurchaseInvoiceDocuments connection
+    }
+
 
     //-- Non-public methods ---------------------
 
@@ -227,5 +241,42 @@ class InstallService {
             dir.mkdirs()
         }
         new File(dir, 'ENABLE_INSTALLER')
+    }
+
+    /**
+     * Migrates all documents stored in purchase invoice records to
+     * {@code DataFile} records.
+     *
+     * @param connection    the SQL connection where the SQL commands should be
+     *                      executed
+     * @since               1.4
+     */
+    protected void migratePurchaseInvoiceDocuments(Connection connection) {
+        ConfigHolder configHolder = ConfigHolder.instance
+        String stage = configHolder['purchaseInvoiceMigrationStage'] as String
+        if (stage == '1') {
+            log.info 'Performing migration of purchase invoice documents…'
+
+            File oldBaseDir = dataFileService.getBaseDir('purchase-invoice')
+            File newBaseDir = dataFileService.getBaseDir(DataFileType.purchaseInvoice)
+            Sql sql = new Sql(connection)
+            sql.withTransaction {
+                sql.eachRow('select id, document_file from purchase_invoice where document_file IS NOT NULL') {
+                    File f = new File(oldBaseDir, it.document_file)
+                    if (f.exists()) {
+                        DataFile df = new DataFile(f)
+                        df.save failOnError: true
+                        PurchaseInvoice p = PurchaseInvoice.get(it.id)
+                        p.documentFile = df
+                        p.save failOnError: true
+                        f.renameTo new File(newBaseDir, df.storageName)
+                    }
+                }
+            }
+            oldBaseDir.delete()
+
+            log.info 'Migration of purchase invoice documents finished.'
+            configHolder.setConfig 'purchaseInvoiceMigrationStage', '2'
+        }
     }
 }

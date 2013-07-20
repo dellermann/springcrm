@@ -20,13 +20,15 @@
 
 package org.amcworld.springcrm
 
+import javax.servlet.http.HttpServletResponse
+
 
 /**
  * The class {@code LoginFilters} contains filters which check login and
  * access permissions.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class LoginFilters {
 
@@ -48,19 +50,19 @@ class LoginFilters {
         }
 
         login(controller: '*', controllerExclude: 'i18n|install',
-              action: '*', actionExclude: 'login|authenticate')
+              action: '*', actionExclude: 'login|authenticate|frontend*')
         {
             before = {
                 def installStatus = Config.findByName('installStatus')
                 if (!installStatus?.value) {
                     installService.enableInstaller()
-                    redirect(controller: 'install', action: 'index')
+                    redirect controller: 'install', action: 'index'
                     return false
                 }
-				if (!session?.user) {
-					redirect(controller: 'user', action: 'login')
-					return false
-				}
+                if (!session?.user) {
+                    redirect controller: 'user', action: 'login'
+                    return false
+                }
             }
         }
 
@@ -68,28 +70,28 @@ class LoginFilters {
             before = {
                 def installStatus = Config.findByName('installStatus')
                 if (installStatus?.value && installService.installerDisabled) {
-                    redirect(uri: '/')
+                    redirect uri: '/'
                     return false
                 }
 
-                return true
+                true
             }
         }
 
         permission(controller: '*',
-                   controllerExclude: 'about|i18n|install|notification|overview|searchable',
+                   controllerExclude: 'about|dataFile|help|i18n|install|notification|overview|searchable',
                    action: '*',
-                   actionExclude: 'login|authenticate|logout|settings*')
+                   actionExclude: 'login|authenticate|logout|settings*|frontend*')
         {
-			before = {
-				User user = session?.user
-				if (user && controllerName) {
-					if (!user.checkAllowedControllers([controllerName])) {
-						render(status: 403)
-						return false
-					}
-				}
-			}
-		}
+            before = {
+                User user = session?.user
+                if (user && controllerName) {
+                    if (!user.checkAllowedControllers([controllerName])) {
+                        render status: HttpServletResponse.SC_FORBIDDEN
+                        return false
+                    }
+                }
+            }
+        }
     }
 }

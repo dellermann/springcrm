@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class PurchaseInvoice {
 
@@ -86,7 +86,7 @@ class PurchaseInvoice {
     double shippingTax = 19.0d
     double adjustment
     String notes
-    String documentFile
+    DataFile documentFile
     double total
     Date dateCreated
     Date lastUpdated

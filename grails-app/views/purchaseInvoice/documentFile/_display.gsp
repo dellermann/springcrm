@@ -1,5 +1,5 @@
 <g:applyLayout name="fieldDisplay">
   <g:if test="${bean?.documentFile}">
-  <g:link action="getDocument" id="${bean?.id}" elementId="document" target="_blank">${value}</g:link>
+  <g:link controller="dataFile" action="loadFile" id="${bean.documentFile.id}" params="[type: 'purchaseInvoice']" elementId="document" target="_blank">${value}</g:link>
   </g:if>
 </g:applyLayout>

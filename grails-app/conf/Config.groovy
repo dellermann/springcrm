@@ -205,7 +205,10 @@ log4j = {
         'org.mortbay.log'
     )
 
-    info 'org.grails.plugins.coffee.compiler'
+    info(
+        'grails.app.services.org.amcworld.springcrm.InstallService',
+        'org.grails.plugins.coffee.compiler'
+    )
 
     debug(
 //        'grails.app.controllers.org.amcworld.springcrm.InvoiceController',

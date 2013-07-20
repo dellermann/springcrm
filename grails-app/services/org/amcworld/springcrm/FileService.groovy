@@ -1,7 +1,7 @@
 /*
  * FileService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.amcworld.springcrm.elfinder.fs.VolumeConfig
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 import org.springframework.web.multipart.MultipartFile
 
@@ -30,8 +31,9 @@ import org.springframework.web.multipart.MultipartFile
 /**
  * The class {@code FileService} handles files in the document and data space.
  *
- * @author	Daniel Ellermann
- * @version 1.2
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.2
  */
 class FileService {
 
@@ -42,11 +44,11 @@ class FileService {
 
     //-- Instance variables ---------------------
 
-    def grailsApplication
+    GrailsApplication grailsApplication
     def messageSource
 
 
-	//-- Public methods -------------------------
+    //-- Public methods -------------------------
 
     /**
      * Gets the local volume to retrieve and store documents.
@@ -61,7 +63,7 @@ class FileService {
             alias: alias,
             useCache: grailsApplication.config.springcrm.cacheDocs
         )
-        return new LocalFileSystemVolume('l', rootDir, config)
+        new LocalFileSystemVolume('l', rootDir, config)
     }
 
     /**
@@ -81,10 +83,11 @@ class FileService {
             File dir = new File(baseDir, pathSpec.replace('%o', s))
             if (dir.exists()) {
                 org.docPlaceholderValue = s
-                org.save(flush: true)
+                org.save flush: true
                 return dir
             }
-            return null
+
+            null
         }
 
         File dir
@@ -114,7 +117,7 @@ class FileService {
                 }
             }
         }
-        return dir
+        dir
     }
 
     /**
@@ -123,76 +126,6 @@ class FileService {
      * @return  the root directory to store documents
      */
     String getRootDir() {
-        return grailsApplication.config.springcrm.dir.documents
+        grailsApplication.config.springcrm.dir.documents
     }
-
-	/**
-	 * Removes the file with the given name from the data space.
-	 *
-	 * @param type     the type of file to remove
-	 * @param fileName the given file name
-	 * @return         {@code true} if the file was removed successfully;
-	 *                 {@code false} otherwise
-	 */
-	boolean removeFile(String type, String fileName) {
-		return retrieveFile(type, fileName).delete()
-	}
-
-	/**
-	 * Retrieves the file with the given name from the data space.
-	 *
-     * @param type     the type of file to retrieve
-	 * @param fileName the given file name
-	 * @return         the file object representing the required file
-	 */
-	File retrieveFile(String type, String fileName) {
-		return new File(getBaseDir(type), fileName)
-	}
-
-	/**
-	 * Stores the given uploaded file to the data space. The file name is
-	 * obtained from the original file name as submitted by the client. If the
-	 * file name already exists the method computes a unique file name by
-	 * appending numbers to the base name.
-	 *
-	 * @param type the type of file to store
-	 * @param f	   the uploaded file
-	 * @return     the name of the stored file in the document space
-	 */
-    String storeFile(String type, MultipartFile f) {
-        String baseDir = getBaseDir(type)
-		String fileName = f.originalFilename
-		StringBuilder fn = new StringBuilder(fileName)
-		File dest = new File(baseDir, fileName)
-		for (int i = 1; dest.exists(); i++) {
-			fn = new StringBuilder(fileName)
-			int pos = fn.lastIndexOf('.')
-			if (pos < 0) {
-				fn << '-' << i
-			} else {
-				fn.insert(pos, "-${i}")
-			}
-			dest = new File(baseDir, fn.toString())
-		}
-		f.transferTo(dest)
-		return fn
-    }
-
-
-	//-- Non-public methods ---------------------
-
-	/**
-	 * Gets the base directory of the data space for the given type of files
-	 * using the configuration value in key {@code springcrm.dir.data}.
-	 *
-     * @param type  the given type of files
-	 * @return	    the base directory
-	 */
-	protected File getBaseDir(String type) {
-		File dir = new File(grailsApplication.config.springcrm.dir.data, type)
-		if (!dir.exists()) {
-			dir.mkdirs()
-		}
-		return dir
-	}
 }
