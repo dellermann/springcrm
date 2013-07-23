@@ -25,12 +25,13 @@ package org.amcworld.springcrm
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class User implements Cloneable {
 
     //-- Class variables ------------------------
 
+    static belongsTo = Helpdesk
     static constraints = {
         userName blank: false, unique: true
         password blank: false, password: true
@@ -46,14 +47,14 @@ class User implements Cloneable {
         dateCreated()
         lastUpdated()
     }
-    static hasMany = [rawSettings: UserSetting]
+    static hasMany = [helpdesks: Helpdesk, rawSettings: UserSetting]
     static mapping = {
         allowedModules type: 'text'
         table 'user_data'
         userName index: 'user_name'
     }
     static transients = [
-        'fullName', 'allowedModulesAsList', 'allowedControllers', 'settings'
+        'allowedControllers', 'allowedModulesAsList', 'fullName', 'settings'
     ]
 
 
@@ -88,7 +89,7 @@ class User implements Cloneable {
         if (allowedControllers == null) {
             List<String> moduleNames = allowedModulesAsList
             allowedControllers =
-                moduleNames ? Modules.resolveModules(moduleNames) : null
+                moduleNames ? Modules.resolveModules(moduleNames) : []
         }
         allowedControllers
     }
@@ -113,27 +114,27 @@ class User implements Cloneable {
     }
 
     /**
-     * Checks whether or not the user has permission to access the given
-     * controllers.
+     * Checks whether or not the user has permission to access at least one of
+     * the given controllers.
      *
      * @param controllers   the names of the controllers to check
-     * @return              {@code true} if the user can access all the given
-     *                      controllers; {@code false} otherwise
+     * @return              {@code true} if the user can access at least one of
+     *                      the given controllers; {@code false} otherwise
      */
     boolean checkAllowedControllers(List<String> controllers) {
         admin || controllers?.intersect(getAllowedControllers())
     }
 
     /**
-     * Checks whether or not the user has permission to access the given
-     * modules.
+     * Checks whether or not the user has permission to access at least one of
+     * the given modules.
      *
      * @param modules   the names of the modules to check
-     * @return          {@code true} if the user can access all the given
-     *                  modules; {@code false} otherwise
+     * @return          {@code true} if the user can access at least one of the
+     *                  given modules; {@code false} otherwise
      */
     boolean checkAllowedModules(List<String> modules) {
-        admin || modules?.intersect(getAllowedModulesAsList())
+        admin || modules?.intersect(allowedModulesAsList)
     }
 
     @Override

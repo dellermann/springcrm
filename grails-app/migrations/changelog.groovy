@@ -26,4 +26,5 @@ databaseChangeLog = {
     include file: 'number-issues.xml'
     include file: 'bugfixes-001.xml'
     include file: 'data-file.xml'
+    include file: 'helpdesk.xml'
 }

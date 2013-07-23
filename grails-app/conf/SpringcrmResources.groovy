@@ -115,6 +115,16 @@ modules = {
         resource '/js/error-page.js'
     }
 
+    frontend {
+        dependsOn 'core'
+    }
+
+    helpdeskForm {
+        dependsOn 'core'
+
+        resource '/js/app/helpdesk-form.js'
+    }
+
     install {
         dependsOn 'core'
 
@@ -241,6 +251,14 @@ modules = {
 
         resource '/css/jquery/default/jquery.selectBoxIt.css'
         resource url: '/js/jquery.selectBoxIt.min.js', exclude: 'minify'
+    }
+
+    ticket {
+        dependsOn 'core'
+
+        resource url: 'less/helpdesk.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
+        resource '/js/app/ticket.js'
     }
 
     tinyMce {

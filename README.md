@@ -26,6 +26,7 @@ Features
   * project management: view the whole progress of a project at a glance
     and add any piece of data (quotes, invoices, documents, notes) to the
     project
+  * helpdesk system: submit tickets and view progress
   * register phone calls
   * connect your SpringCRM user account to a Google account to synchronize
     contacts and calendar events

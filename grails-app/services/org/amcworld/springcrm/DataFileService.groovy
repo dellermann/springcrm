@@ -102,13 +102,13 @@ class DataFileService {
      * instance in the database.
      *
      * @param type  the type of file to store
-     * @param f     the uploaded file
+     * @param f     the uploaded file; may be {@code null} or empty
      * @return      the data file containing information about the stored file;
      *              {@code null} if the given file to store is empty
      */
     DataFile storeFile(DataFileType type, MultipartFile f) {
         DataFile dataFile = null
-        if (!f.empty) {
+        if (f && !f.empty) {
             dataFile = new DataFile(f)
             dataFile.save failOnError: true
             f.transferTo retrieveFile(type, dataFile)

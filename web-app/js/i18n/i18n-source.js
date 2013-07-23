@@ -64,6 +64,7 @@
     'default.btn.up',
     'default.button.cancel.label',
     'default.button.ok.label',
+    'default.button.send.label',
     'default.copyAddressWarning.billingAddr',
     'default.copyAddressWarning.mailingAddr',
     'default.copyAddressWarning.otherAddr',
@@ -95,5 +96,6 @@
     'salesItem.pricing.type.relativeToCurrentSum',
     'salesItem.pricing.type.relativeToLastSum',
     'salesItem.pricing.type.relativeToPos',
-    'salesItem.pricing.type.sum'
+    'salesItem.pricing.type.sum',
+    'ticket.changeStage.closed.confirm'
 ];

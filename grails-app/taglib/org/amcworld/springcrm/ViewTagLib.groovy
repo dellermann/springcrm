@@ -30,7 +30,7 @@ import org.springframework.validation.FieldError
  * views.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class ViewTagLib {
 
@@ -46,8 +46,8 @@ class ViewTagLib {
      * Renders a number input field and an associated auto number checkbox.
      *
      * @attr value  the value of the number field
-     * @attr prefix  the prefix to display in front of the number field
-     * @attr suffix  the suffix to display after the number field
+     * @attr prefix the prefix to display in front of the number field
+     * @attr suffix the suffix to display after the number field
      */
     def autoNumber = { attrs, body ->
         if (attrs.prefix) {
@@ -70,23 +70,15 @@ class ViewTagLib {
      * Creates a link to the former page (back link), if available, or creates
      * a link using the given attributes.
      *
-     * @attr action     the name of the action to use in the link, if not
-     *                  specified the default action will be linked
-     * @attr controller the name of the controller to use in the link, if not
-     *                  specified the current controller will be linked
+     * @attr action     the name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
      * @attr id         the id to use in the link
      * @attr fragment   the link fragment (often called anchor tag) to use
      * @attr mapping    the named URL mapping to use to rewrite the link
      * @attr params     a map containing URL query parameters
      * @attr url        a map containing the action, controller, id etc.
-     * @attr absolute   if set to "true" will prefix the link target address
-     *                  with the value of the grails.serverURL property from
-     *                  Config, or http://localhost:<port> if no value in
-     *                  Config and not running in production.
-     * @attr base       sets the prefix to be added to the link target address,
-     *                  typically an absolute server URL. This overrides the
-     *                  behaviour of the absolute property, if both are
-     *                  specified.
+     * @attr absolute   if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
+     * @attr base       sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
      */
     def backLink = { attrs, body ->
         if (params.returnUrl) {
@@ -104,7 +96,6 @@ class ViewTagLib {
         attrs.controller = 'calendarEvent'
         attrs.action = calendarEventService.currentCalendarView
         out << backLink(attrs, body)
-
     }
 
     /**
@@ -121,23 +112,15 @@ class ViewTagLib {
      * Returns the URL of the former page (back link), if available, or creates
      * the URL using the given attributes.
      *
-     * @attr action     the name of the action to use in the link, if not
-     *                  specified the default action will be linked
-     * @attr controller the name of the controller to use in the link, if not
-     *                  specified the current controller will be linked
+     * @attr action     the name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
      * @attr id         the id to use in the link
      * @attr fragment   the link fragment (often called anchor tag) to use
      * @attr mapping    the named URL mapping to use to rewrite the link
      * @attr params     a map containing URL query parameters
      * @attr url        a map containing the action, controller, id etc.
-     * @attr absolute   if set to "true" will prefix the link target address
-     *                  with the value of the grails.serverURL property from
-     *                  Config, or http://localhost:<port> if no value in
-     *                  Config and not running in production.
-     * @attr base       sets the prefix to be added to the link target address,
-     *                  typically an absolute server URL. This overrides the
-     *                  behaviour of the absolute property, if both are
-     *                  specified.
+     * @attr absolute   if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
+     * @attr base       sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
      */
     def createBackLink = { attrs, body ->
         if (params.returnUrl) {
@@ -161,12 +144,9 @@ class ViewTagLib {
      * values according to the formatting rules of the current locale.
      *
      * @attr name REQUIRED  the name of the input field
-     * @attr value      the value of the input field; this may be either a
-     *             Date or a Calendar object
-     * @attr id        the ID of the input field; defaults to name
-     * @attr precision    the precision of the date/time input fields;
-     *             possible values are "year", "month", "day", "hour",
-     *             or "minute"
+     * @attr value          the value of the input field; this may be either a Date or a Calendar object
+     * @attr id             the ID of the input field; defaults to name
+     * @attr precision      the precision of the date/time input fields; possible values are "year", "month", "day", "hour", or "minute"
      */
     def dateInput = { attrs, body ->
 
@@ -209,11 +189,16 @@ class ViewTagLib {
          * date/time strings we use type "text" here. Maybe in future this will
          * be corrected in the HTML 5 standard.
          */
-        out.println "<input type=\"hidden\" name=\"${name}\" value=\"${c ? formatDate(date: c, formatName: formatName) : ''}\" />"
-        out.println "<input type=\"text\" name=\"${name}_date\" id=\"${id}-date\" value=\"${c ? formatDate(date: c, formatName: 'default.format.date') : ''}\" size=\"10\" class=\"date-input date-input-date\" />"
+        out << """<input type="hidden" name="${name}"
+  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />"""
+        out << """<input type="text" name="${name}_date" id="${id}-date"
+  value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
+  size="10" class="date-input date-input-date" />"""
 
         if (precision >= PRECISION_RANKINGS['hour']) {
-            out.println "<input type=\"text\" name=\"${name}_time\" id=\"${id}-time\" value=\"${c ? formatDate(date: c, formatName: 'default.format.time') : ''}\" size=\"5\" class=\"date-input date-input-time\" />"
+            out << """<input type="text" name="${name}_time" id="${id}-time"
+  value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
+  size="5" class="date-input date-input-time" />"""
         }
     }
 
@@ -221,19 +206,11 @@ class ViewTagLib {
      * Formats the given number as currency using the currency symbol from the
      * application configuration.
      *
-     * @attr number REQUIRED   the number to format
-     * @attr minFractionDigits the minimum number of digits allowed in the
-     *                         fraction portion of a number; defaults to either
-     *                         the default number of fraction digits for the
-     *                         currency of the selected locale or the number of
-     *                         fraction digits defined in the configuration
-     *                         (the latter has precedence)
-     * @attr groupingUsed      whether or not grouping will be used in this
-     *                         format; defaults to true
-     * @attr displayZero       if true zero is displayed as number, otherwise
-     *                         an empty string is generated; defaults to false
-     * @attr numberOnly        if true the formatted value is display without
-     *                         the currency symbol; defaults to false
+     * @attr number REQUIRED    the number to format
+     * @attr minFractionDigits  the minimum number of digits allowed in the fraction portion of a number; defaults to either the default number of fraction digits for the currency of the selected locale or the number of fraction digits defined in the configuration (the latter has precedence)
+     * @attr groupingUsed       whether or not grouping will be used in this format; defaults to true
+     * @attr displayZero        if true zero is displayed as number, otherwise an empty string is generated; defaults to false
+     * @attr numberOnly         if true the formatted value is display without the currency symbol; defaults to false
      */
     def formatCurrency = { attrs, body ->
         def number = attrs.number
@@ -255,8 +232,37 @@ class ViewTagLib {
             map.groupingUsed = attrs.groupingUsed ?: true
             map.minFractionDigits = attrs.minFractionDigits ?: minFractionDigits
             out << formatNumber(map)
-        } else {
-            out << ''
+        }
+    }
+
+    /**
+     * Formats the given number of data size with the units B, K, M, G, or T,
+     * for example, "2.5 K" or "158 M".
+     *
+     * @attr number REQUIRED    the number to format
+     * @attr groupingUsed       whether or not grouping will be used in this format; defaults to true
+     * @since                   1.4
+     */
+    def formatSize = { attrs, body ->
+        def number = attrs.number
+        if (number) {
+            def units = ['B', 'K', 'M', 'G', 'T']
+            String unit = 'B'
+            float value = 0.0f
+            for (int i = units.size() - 1; i >= 0; i--) {
+                def p = 1024i ** i
+                if (number >= p) {
+                    unit = units[i]
+                    value = (number / p) as float
+                    break
+                }
+            }
+
+            out << formatNumber(
+                number: value, minFractionDigits: 0, maxFractionDigits: 2,
+                type: 'number', locale: userService.currentLocale,
+                groupingUsed: attrs.groupingUsed ?: true
+            ) << ' ' << unit
         }
     }
 
@@ -265,23 +271,13 @@ class ViewTagLib {
      * the elements with the property value with the respective initial letter
      * reside.
      *
-     * @attr clazz REQUIRED     the class instance of the domain class that
-     *                          letters are to render
-     * @attr property REQUIRED  the name of the property that values are used
-     *                          to obtain the initial letters
-     * @attr controller         the controller which is called when the user
-     *                          clicks a letter; if not specified the current
-     *                          controller name is used
-     * @attr action             the action which is called when the user clicks
-     *                          a letter; if not specified the current action
-     *                          name is used
-     * @attr where              an optional HSQL WHERE clause which is used in
-     *                          the SQL query for the initial letters
-     * @attr numLetters         the number of letters which are combined to one
-     *                          link; defaults to 1
-     * @attr separator          the separator used to represent ranges of
-     *                          letters like A-C; if not specified the letters
-     *                          are not represented as range
+     * @attr clazz REQUIRED     the class instance of the domain class that letters are to render
+     * @attr property REQUIRED  the name of the property that values are used to obtain the initial letters
+     * @attr controller         the controller which is called when the user clicks a letter; if not specified the current controller name is used
+     * @attr action             the action which is called when the user clicks a letter; if not specified the current action name is used
+     * @attr where              an optional HSQL WHERE clause which is used in the SQL query for the initial letters
+     * @attr numLetters         the number of letters which are combined to one link; defaults to 1
+     * @attr separator          the separator used to represent ranges of letters like A-C; if not specified the letters are not represented as range
      */
     def letterBar = { attrs, body ->
         Class<?> cls = attrs.clazz
@@ -333,8 +329,7 @@ class ViewTagLib {
     /**
      * Converts LF and CR to HTML <br /> tags.
      *
-     * @attr value  the value to convert; if not specified the body of the tag
-     *              is used
+     * @attr value  the value to convert; if not specified the body of the tag is used
      */
     def nl2br = { attrs, body ->
         String s = (attrs.value ?: body()) ?: ''
@@ -348,19 +343,11 @@ class ViewTagLib {
      * the body the error message are rendered one after another with a space
      * between.
      *
-     * @attr bean       REQUIRED the bean where to look for input errors
-     * @attr field      the name of the field which input errors are looked
-     *                  for; if missing <code>items</code> is used
-     * @attr code       the code in the message resources which is used to
-     *                  localize the general error message; argument 0 is the
-     *                  one-based item position, argument 1 the localized name
-     *                  of the input field, and argument 2 the localized error
-     *                  message
-     * @attr prefix     the message prefix to localize the input field names
-     *                  (without trailling dot)
-     * @attr var        the name of the variable which contains the localized
-     *                  error message when rendering the body; if missing, the
-     *                  variable <code>it</code> is used
+     * @attr bean REQUIRED  the bean where to look for input errors
+     * @attr field          the name of the field which input errors are looked for; if missing <code>items</code> is used
+     * @attr code           the code in the message resources which is used to localize the general error message; argument 0 is the one-based item position, argument 1 the localized name of the input field, and argument 2 the localized error message
+     * @attr prefix         the message prefix to localize the input field names (without trailling dot)
+     * @attr var            the name of the variable which contains the localized error message when rendering the body; if missing, the variable <code>it</code> is used
      */
     def renderItemErrors = { attrs, body ->
         def bean = attrs.bean

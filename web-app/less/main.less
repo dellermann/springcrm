@@ -95,7 +95,7 @@ h4 {
 }
 h5 {
   font-weight: bold;
-  margin-bottom: 1em;
+  margin: 1.5em 0 1em;
 }
 
 /* default rulers */
@@ -540,6 +540,7 @@ footer {
   .box-shadow(0; 1px; 2px; rgba(0, 0, 0, .2));
   border: .1em solid;
   color: white;
+  cursor: pointer;
   display: inline-block;
   line-height: normal;
   margin: 0 2px;
@@ -750,18 +751,29 @@ footer {
 }
 .row {
   display: table-row;
+}
+.label {
+  display: table-cell;
+  padding-bottom: .5em;
+  vertical-align: top;
+  width: 13em;
+}
+label {
+  display: block;
+  padding: .2em 1em 0 0;
+}
+.field {
+  display: table-cell;
+  padding-bottom: .5em;
+  vertical-align: top;
 
-  .label, .field {
-    display: table-cell;
-    padding-bottom: .5em;
+  ol, ul {
+    &:first-child {
+      margin-top: 0;
+    }
   }
-  .label {
-    vertical-align: top;
-    width: 13em;
-  }
-  label {
-    display: block;
-    padding: .2em 1em 0 0;
+  output {
+    padding-top: .2em;
   }
 }
 .data-sheet {
@@ -847,7 +859,7 @@ input[type=date], input[type=datetime], input[type=datetime-local],
   border-color: @color-default-border-1 !important;
   color: #EEE;
 }
-.row label, .data-sheet .row .label {
+label, .data-sheet .label {
   font-weight: bold;
 
   &:after {
@@ -1239,6 +1251,9 @@ tbody tr th:first-child {
   }
   > *:first-child {
     margin-top: 0;
+  }
+  > *:last-child {
+    margin-bottom: 0;
   }
 }
 

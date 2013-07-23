@@ -1,6 +1,6 @@
 --
--- base-data-de-DE.sql
--- Base data for installer, German (Germany)
+-- base-data-de-CH.sql
+-- Base data for installer, German (Switzerland)
 --
 -- Copyright (c) 2011-2013, Daniel Ellermann
 --
@@ -144,6 +144,10 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1031, 0, 'Bau
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1032, 0, 'Öffentlicher Dienst', 0, 'org.amcworld.springcrm.Industry')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1033, 0, 'Handwerk', 0, 'org.amcworld.springcrm.Industry')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1034, 0, 'sonstiges', 9000, 'org.amcworld.springcrm.Industry')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1100, 0, 'niedrig', 0, 'org.amcworld.springcrm.TicketPriority')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1101, 0, 'normal', 10, 'org.amcworld.springcrm.TicketPriority')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1102, 0, 'hoch', 20, 'org.amcworld.springcrm.TicketPriority')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (1103, 0, 'Notfall', 30, 'org.amcworld.springcrm.TicketPriority')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2000, 0, 'Unterstützung', 0, 'org.amcworld.springcrm.ServiceCategory')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2001, 0, 'Installation/Konfiguration', 0, 'org.amcworld.springcrm.ServiceCategory')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2002, 0, 'Umstellung', 0, 'org.amcworld.springcrm.ServiceCategory')
@@ -198,9 +202,12 @@ INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_v
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (9, 0, 'note', 99999, 'N', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (10, 0, 'creditMemo', 99999, 'G', 10000, '')
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (11, 0, 'project', 99999, 'J', 10000, '')
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (12, 0, 'ticket', 99999, 'T', 10000, '')
 
 -- insert basic configurations
-INSERT INTO config (version, name, value) VALUES (0, 'currency', 'EUR')
+INSERT INTO config (version, name, value) VALUES (0, 'baseDataLocale', 'de-CH')
+INSERT INTO config (version, name, value) VALUES (0, 'currency', 'CHF')
+INSERT INTO config (version, name, value) VALUES (0, 'dbVersion', '1')
 INSERT INTO config (version, name) VALUES (0, 'ldapBindDn')
 INSERT INTO config (version, name) VALUES (0, 'ldapBindPasswd')
 INSERT INTO config (version, name) VALUES (0, 'ldapContactDn')
