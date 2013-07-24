@@ -41,13 +41,15 @@ class TicketLogEntry implements MessageSourceResolvable {
         creator nullable: true
         recipient nullable: true
         stage nullable: true
-        message nullable: true
+        message nullable: true, widget: 'textarea'
+        attachment nullable: true
         dateCreated()
     }
     static mapping = {
+        message type: 'text'
         version false
     }
-    static transients = ['arguments', 'codes', 'defaultMessage']
+    static transients = ['arguments', 'codes', 'defaultMessage', 'internal']
 
 
     //-- Instance variables ---------------------
@@ -56,8 +58,24 @@ class TicketLogEntry implements MessageSourceResolvable {
     User creator
     User recipient
     TicketStage stage
-    TicketMessage message
+    String message
+    DataFile attachment
     Date dateCreated
+
+
+    //-- Properties -----------------------------
+
+    /**
+     * Returns whether or not this ticket log entry is for internal use only.
+     * This is the case if both creator and recipient are system users (not
+     * customers).
+     *
+     * @return  {@code true} if the ticket log entry is internal; {@code false}
+     *          otherwise
+     */
+    boolean isInternal() {
+        creator && recipient
+    }
 
 
     //-- Public methods -------------------------
@@ -112,5 +130,6 @@ enum TicketLogAction {
     create,                 // creator
     changeStage,            // creator, stage
     assign,                 // creator, recipient
-    sendMessage             // creator, recipient, message
+    sendMessage,            // creator, recipient, message, attachment
+    note                    // creator, message, attachment
 }

@@ -92,8 +92,9 @@ class ViewFilters {
 
         selectorView(controller: '*', action: 'list') {
             after = { model ->
-                String view = (params.view == 'selector') ? 'selectorList' : 'list'
-                render view: "/${controllerName}/${view}", model: model
+                if (params.view == 'selector') {
+                    render view: "/${controllerName}/selectorList", model: model
+                }
             }
         }
 
@@ -115,7 +116,7 @@ class ViewFilters {
         }
 
         searchIndexSave(controller: '*', action: 'save',
-                        controllerExclude: 'user')
+                        controllerExclude: 'helpdesk|user')
         {
             after = { model ->
                 request["${controllerName}Instance"]?.index()
@@ -123,7 +124,7 @@ class ViewFilters {
         }
 
         searchIndexUpdate(controller: '*', action: 'update|updatePayment',
-                          controllerExclude: 'user')
+                          controllerExclude: 'helpdesk|user')
         {
             after = { model ->
                 request["${controllerName}Instance"]?.reindex()

@@ -42,11 +42,31 @@
     </div>
   </div>
 </fieldset>
-<g:set var="ticketMessageInstance" value="${ticketInstance.messages.first()}" />
+<g:unless test="${ticketInstance.id}">
 <fieldset>
   <h4><g:message code="ticket.fieldset.message.label" /></h4>
   <div class="fieldset-content">
-    <f:field bean="${ticketMessageInstance}" property="message" cols="100" rows="10" />
-    <f:field bean="${ticketMessageInstance}" property="attachment" />
+    <div class="row">
+      <div class="label">
+        <label for="messageText"><g:message code="ticket.messageText.label" /></label>
+      </div>
+      <div class="field${hasErrors(bean: ticketInstance, field: 'messageText', ' error')}">
+        <g:textArea name="messageText" cols="100" rows="10" required="required"
+          value="${ticketInstance.messageText}" /><br />
+        <span class="info-msg"><g:message code="default.required" default="required" /></span>
+        <g:hasErrors bean="${ticketInstance}" field="messageText">
+        <span class="error-msg"><g:eachError bean="${ticketInstance}" field="messageText"><g:message error="${it}" /> </g:eachError></span>
+        </g:hasErrors>
+      </div>
+    </div>
+    <div class="row">
+      <div class="label">
+        <label for="attachment"><g:message code="ticket.attachment.label" /></label>
+      </div>
+      <div class="field">
+        <input type="file" id="attachment" name="attachment" />
+      </div>
+    </div>
   </div>
 </fieldset>
+</g:unless>

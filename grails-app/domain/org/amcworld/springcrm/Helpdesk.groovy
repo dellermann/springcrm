@@ -76,7 +76,7 @@ class Helpdesk {
 
     @Override
     int hashCode() {
-        urlName.hashCode()
+        urlName ? urlName.hashCode() : 0i
     }
 
     @Override

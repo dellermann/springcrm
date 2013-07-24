@@ -64,13 +64,13 @@ class Ticket {
         creator nullable: true
         assignedUser nullable: true
         priority nullable: true
-        messages minSize: 1
+        logEntries minSize: 1
         dateCreated()
         lastUpdated()
     }
-    static hasMany = [messages: TicketMessage, logEntries: TicketLogEntry]
+    static hasMany = [logEntries: TicketLogEntry]
     static searchable = true
-    static transients = ['customerName', 'fullNumber']
+    static transients = ['customerName', 'fullNumber', 'messageText']
 
 
     //-- Instance variables ---------------------
@@ -97,10 +97,12 @@ class Ticket {
     User creator
     User assignedUser
     TicketPriority priority
-    List<TicketMessage> messages
     List<TicketLogEntry> logEntries
     Date dateCreated
     Date lastUpdated
+
+    /* temporary value for the first message text; not persisted */
+    String messageText
 
 
     //-- Properties -----------------------------

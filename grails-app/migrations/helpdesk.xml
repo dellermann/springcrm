@@ -56,10 +56,10 @@
       </column>
     </createTable>
     <createTable tableName="helpdesk_users">
-      <column name="helpdesk_id" type="bigint">
+      <column name="user_id" type="bigint">
         <constraints nullable="false" />
       </column>
-      <column name="user_id" type="bigint">
+      <column name="helpdesk_id" type="bigint">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -121,36 +121,18 @@
       <column name="action" type="varchar(255)">
         <constraints nullable="false" />
       </column>
+      <column name="attachment_id" type="bigint" />
       <column name="creator_id" type="bigint" />
       <column name="date_created" type="datetime">
         <constraints nullable="false" />
       </column>
-      <column name="log_entries_idx" type="integer" />
-      <column name="message_id" type="bigint" />
+      <column name="message" type="longtext" />
       <column name="recipient_id" type="bigint" />
       <column name="stage" type="varchar(255)" />
       <column name="ticket_id" type="bigint">
         <constraints nullable="false" />
       </column>
-    </createTable>
-    <createTable tableName="ticket_message">
-      <column autoIncrement="true" name="id" type="bigint">
-        <constraints nullable="false" primaryKey="true"
-          primaryKeyName="ticket_messagPK" />
-      </column>
-      <column name="attachment_id" type="bigint" />
-      <column name="date_created" type="datetime">
-        <constraints nullable="false" />
-      </column>
-      <column name="message" type="longtext">
-        <constraints nullable="false" />
-      </column>
-      <column name="messages_idx" type="integer" />
-      <column name="recipient_id" type="bigint" />
-      <column name="sender_id" type="bigint" />
-      <column name="ticket_id" type="bigint">
-        <constraints nullable="false" />
-      </column>
+      <column name="log_entries_idx" type="integer" />
     </createTable>
   </changeSet>
 
@@ -160,11 +142,11 @@
     <createIndex indexName="FKD0F4455A8466B320" tableName="helpdesk">
       <column name="organization_id" />
     </createIndex>
-    <createIndex indexName="name_uniq_1374251778063"
+    <createIndex indexName="name_uniq_1374668216000"
       tableName="helpdesk" unique="true">
       <column name="name" />
     </createIndex>
-    <createIndex indexName="url_name_uniq_1374251778063"
+    <createIndex indexName="url_name_uniq_1374668216001"
       tableName="helpdesk" unique="true">
       <column name="url_name" />
     </createIndex>
@@ -189,32 +171,20 @@
     <createIndex indexName="FKCBE86B0CDD23A680" tableName="ticket">
       <column name="salutation_id" />
     </createIndex>
-    <createIndex indexName="number_uniq_1374251778124"
+    <createIndex indexName="number_uniq_1374668216067"
       tableName="ticket" unique="true">
       <column name="number" />
     </createIndex>
-    <createIndex indexName="FKCA9A9244A5D99E28" tableName="ticket_log_entry">
-      <column name="message_id" />
-    </createIndex>
     <createIndex indexName="FKCA9A9244C447E112" tableName="ticket_log_entry">
       <column name="recipient_id" />
+    </createIndex>
+    <createIndex indexName="FKCA9A9244C82D1B43" tableName="ticket_log_entry">
+      <column name="attachment_id" />
     </createIndex>
     <createIndex indexName="FKCA9A9244CB20B61F" tableName="ticket_log_entry">
       <column name="creator_id" />
     </createIndex>
     <createIndex indexName="FKCA9A9244DF08E500" tableName="ticket_log_entry">
-      <column name="ticket_id" />
-    </createIndex>
-    <createIndex indexName="FKB6FD45D47AD4F376" tableName="ticket_message">
-      <column name="sender_id" />
-    </createIndex>
-    <createIndex indexName="FKB6FD45D4C447E112" tableName="ticket_message">
-      <column name="recipient_id" />
-    </createIndex>
-    <createIndex indexName="FKB6FD45D4C82D1B43" tableName="ticket_message">
-      <column name="attachment_id" />
-    </createIndex>
-    <createIndex indexName="FKB6FD45D4DF08E500" tableName="ticket_message">
       <column name="ticket_id" />
     </createIndex>
   </changeSet>
@@ -262,15 +232,15 @@
       deferrable="false" initiallyDeferred="false"
       referencedColumnNames="id" referencedTableName="sel_value"
       referencesUniqueColumn="false" />
+    <addForeignKeyConstraint baseColumnNames="attachment_id"
+      baseTableName="ticket_log_entry" constraintName="FKCA9A9244C82D1B43"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="data_file"
+      referencesUniqueColumn="false" />
     <addForeignKeyConstraint baseColumnNames="creator_id"
       baseTableName="ticket_log_entry" constraintName="FKCA9A9244CB20B61F"
       deferrable="false" initiallyDeferred="false"
       referencedColumnNames="id" referencedTableName="user_data"
-      referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="message_id"
-      baseTableName="ticket_log_entry" constraintName="FKCA9A9244A5D99E28"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="ticket_message"
       referencesUniqueColumn="false" />
     <addForeignKeyConstraint baseColumnNames="recipient_id"
       baseTableName="ticket_log_entry" constraintName="FKCA9A9244C447E112"
@@ -279,26 +249,6 @@
       referencesUniqueColumn="false" />
     <addForeignKeyConstraint baseColumnNames="ticket_id"
       baseTableName="ticket_log_entry" constraintName="FKCA9A9244DF08E500"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="ticket"
-      referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="attachment_id"
-      baseTableName="ticket_message" constraintName="FKB6FD45D4C82D1B43"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="data_file"
-      referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="recipient_id"
-      baseTableName="ticket_message" constraintName="FKB6FD45D4C447E112"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="user_data"
-      referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="sender_id"
-      baseTableName="ticket_message" constraintName="FKB6FD45D47AD4F376"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="user_data"
-      referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="ticket_id"
-      baseTableName="ticket_message" constraintName="FKB6FD45D4DF08E500"
       deferrable="false" initiallyDeferred="false"
       referencedColumnNames="id" referencedTableName="ticket"
       referencesUniqueColumn="false" />

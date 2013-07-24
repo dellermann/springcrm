@@ -50,14 +50,19 @@ class TicketController {
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        List<Ticket> ticketInstanceList
-        int ticketInstanceTotal
+        List<Ticket> ticketInstanceList = null
+        int ticketInstanceTotal = 0
         User user = session.user
         if (user.admin) {
             ticketInstanceList = Ticket.list(params)
             ticketInstanceTotal = Ticket.count()
         } else {
             def helpdesks = user.helpdesks
+            if (!helpdesks) {
+                render view: 'noHelpdesks'
+                return
+            }
+
             ticketInstanceList = Ticket.findAllByHelpdeskInList(helpdesks, params)
             ticketInstanceTotal = Ticket.countByHelpdeskInList(helpdesks)
         }
@@ -67,7 +72,6 @@ class TicketController {
 
     def create() {
         def ticketInstance = new Ticket(params)
-        ticketInstance.addToMessages(new TicketMessage())
         [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
     }
 
@@ -80,26 +84,34 @@ class TicketController {
         }
 
         ticketInstance = new Ticket(ticketInstance)
-        render view: 'create', model: [ticketInstance: ticketInstance]
+        render view: 'create', model: [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
     }
 
     def save() {
-        DataFile dataFile =
-            dataFileService.storeFile(FILE_TYPE, params.attachment)
-        def ticketMessageInstance = new TicketMessage(
-            message: params.message,
-            attachment: dataFile
-        )
-
         def ticketInstance = new Ticket(params)
         ticketInstance.stage = TicketStage.created
-        ticketInstance.addToMessages(ticketMessageInstance)
-            .addToLogEntries(new TicketLogEntry(
+        String messageText = ticketInstance.messageText = params.messageText
+
+        if (!ticketInstance.validate() || !messageText) {
+            if (!messageText) {
+                ticketInstance.errors.rejectValue 'messageText', 'default.blank.message'
+            }
+            render view: 'create', model: [
+                ticketInstance: ticketInstance,
+                helpdeskInstanceList: helpdesks
+            ]
+            return
+        }
+
+        DataFile dataFile =
+            dataFileService.storeFile(FILE_TYPE, params.attachment)
+        ticketInstance.addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.create
             ))
             .addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.sendMessage,
-                message: ticketMessageInstance
+                message: messageText,
+                attachment: dataFile
             ))
         if (!ticketInstance.save()) {
             render view: 'create', model: [
@@ -160,7 +172,7 @@ class TicketController {
         ticketInstance.properties = params
 
         if (!ticketInstance.save(flush: true)) {
-            render view: 'edit', model: [ticketInstance: ticketInstance]
+            render view: 'edit', model: [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
             return
         }
 
@@ -227,7 +239,7 @@ class TicketController {
     }
 
     def sendMessage(Long id) {
-        String message = params.message
+        String message = params.messageText
         if (!message) {
             redirect action: 'show', id: id
             return
@@ -250,18 +262,12 @@ class TicketController {
         DataFile dataFile =
             dataFileService.storeFile(FILE_TYPE, params.attachment)
         User recipient = params.recipient ? User.get(params.recipient) : null
-        def ticketMessageInstance = new TicketMessage(
-            message: message,
-            creator: creator,
-            recipient: recipient,
-            attachment: dataFile
-        )
-        ticketInstance.addToMessages(ticketMessageInstance)
-            .addToLogEntries(new TicketLogEntry(
+        ticketInstance.addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.sendMessage,
                 creator: creator,
                 recipient: recipient,
-                message: ticketMessageInstance
+                message: message,
+                attachment: dataFile
             ))
             .save()
 

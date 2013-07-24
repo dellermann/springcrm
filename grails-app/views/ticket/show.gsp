@@ -1,6 +1,5 @@
 <%@ page import="org.amcworld.springcrm.Ticket" %>
 <%@ page import="org.amcworld.springcrm.TicketLogAction" %>
-<%@ page import="org.amcworld.springcrm.TicketMessage" %>
 <%@ page import="org.amcworld.springcrm.TicketStage" %>
 <html>
 <head>
@@ -106,56 +105,8 @@
       <div class="fieldset">
         <h4><g:message code="ticket.fieldset.history.label" /></h4>
         <div class="fieldset-content">
-          <g:each in="${ticketInstance.logEntries.reverse()}" var="l">
-          <section class="ticket-log-entry">
-            <h5><g:formatDate date="${l.dateCreated}" /> – <g:message message="${l}" /></h5>
-            <div class="row">
-              <div class="label"><g:message code="ticket.creator.label" /></div>
-              <div class="field">
-                <output>
-                  <g:if test="${l.creator}"><g:fieldValue bean="${l}" field="creator" /></g:if>
-                  <g:else><g:message code="ticket.creator.customer" /></g:else>
-                </output>
-              </div>
-            </div>
-            <g:if test="${l.action == TicketLogAction.sendMessage}">
-            <div class="row">
-              <div class="label"><g:message code="ticket.recipient.label" /></div>
-              <div class="field">
-                <output>
-                  <g:if test="${l.creator}">
-                  <g:if test="${l.recipient}"><g:fieldValue bean="${l}" field="recipient" /></g:if>
-                  <g:else><g:message code="ticket.recipient.customer" /></g:else>
-                  </g:if>
-                  <g:else>
-                  <g:if test="${l.recipient}"><g:fieldValue bean="${l}" field="recipient" /></g:if>
-                  <g:else><g:message code="ticket.recipient.specialist" /></g:else>
-                  </g:else>
-                </output>
-              </div>
-            </div>
-            <div class="row">
-              <div class="label"><g:message code="ticketMessage.message.label" /></div>
-              <div class="field">
-                <div class="html-content"><markdown:renderHtml text="${l.message.message}" /></div>
-              </div>
-            </div>
-            <g:if test="${l.message.attachment}">
-            <div class="row">
-              <div class="label"><g:message code="ticketMessage.attachment.label" /></div>
-              <div class="field">
-                <g:link controller="dataFile" action="loadFile"
-                  id="${l.message.attachment.id}"
-                  params="[type: 'ticketMessage']" target="_blank">
-                  <g:fieldValue bean="${l.message.attachment}" field="fileName"/>
-                </g:link>
-                (<g:formatSize number="${l.message.attachment.fileSize}" />)
-              </div>
-            </div>
-            </g:if>
-            </g:if>
-          </section>
-          </g:each>
+          <g:render template="logEntries/logEntry"
+            collection="${ticketInstance.logEntries.reverse()}" />
         </div>
       </div>
     </div>
@@ -168,12 +119,25 @@
   <div id="send-message-dialog"
     title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
     style="display: none;">
-    <g:set var="ticketMessageInstance" value="${new TicketMessage()}" />
     <g:form action="sendMessage" id="${ticketInstance.id}" method="post">
       <div class="form">
-        <f:field bean="${ticketMessageInstance}" property="message"
-          cols="40" rows="10" />
-        <f:field bean="${ticketMessageInstance}" property="attachment" />
+        <div class="row">
+          <div class="label">
+            <label for="messageText"><g:message code="ticket.messageText.label" /></label>
+          </div>
+          <div class="field">
+            <g:textArea name="messageText" cols="40" rows="10" required="required" /><br />
+            <span class="info-msg"><g:message code="default.required" default="required" /></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="label">
+            <label for="attachment"><g:message code="ticket.attachment.label" /></label>
+          </div>
+          <div class="field">
+            <input type="file" id="attachment" name="attachment" />
+          </div>
+        </div>
       </div>
     </g:form>
   </div>
