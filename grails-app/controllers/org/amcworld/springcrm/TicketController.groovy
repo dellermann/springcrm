@@ -245,6 +245,7 @@ class TicketController {
             return
         }
 
+        User recipient = params.recipient ? User.get(params.recipient) : null
         def ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
@@ -252,7 +253,8 @@ class TicketController {
             return
         }
         User creator = session.user
-        if (!(creator.admin || (creator == ticketInstance.assignedUser &&
+        if (!(recipient || creator.admin ||
+            (creator == ticketInstance.assignedUser &&
             ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])))
         {
             redirect action: 'show', id: id
@@ -261,11 +263,39 @@ class TicketController {
 
         DataFile dataFile =
             dataFileService.storeFile(FILE_TYPE, params.attachment)
-        User recipient = params.recipient ? User.get(params.recipient) : null
         ticketInstance.addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.sendMessage,
                 creator: creator,
                 recipient: recipient,
+                message: message,
+                attachment: dataFile
+            ))
+            .save()
+
+        // TODO send a message to customer or user
+
+        redirect action: 'show', id: id
+    }
+
+    def createNote(Long id) {
+        String message = params.messageText
+        if (!message) {
+            redirect action: 'show', id: id
+            return
+        }
+
+        def ticketInstance = Ticket.get(id)
+        if (!ticketInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
+            redirect action: 'list'
+            return
+        }
+
+        DataFile dataFile =
+            dataFileService.storeFile(FILE_TYPE, params.attachment)
+        ticketInstance.addToLogEntries(new TicketLogEntry(
+                action: TicketLogAction.note,
+                creator: session.user,
                 message: message,
                 attachment: dataFile
             ))
@@ -295,6 +325,9 @@ class TicketController {
             break
         case TicketStage.inProcess:
             allowedStages = EnumSet.of(TicketStage.closed)
+            break
+        case TicketStage.closed:
+            allowedStages = EnumSet.of(TicketStage.resubmitted)
             break
         }
         TicketStage requiredStage = TicketStage.valueOf(stage)
@@ -342,6 +375,8 @@ class TicketController {
                 recipient: recipient
             ))
             .save()
+
+        // TODO send e-mail to assigned user (recipient)
 
         redirect action: 'show', id: id
     }

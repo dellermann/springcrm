@@ -97,5 +97,7 @@
     'salesItem.pricing.type.relativeToLastSum',
     'salesItem.pricing.type.relativeToPos',
     'salesItem.pricing.type.sum',
-    'ticket.changeStage.closed.confirm'
+    'ticket.changeStage.assign.confirm',
+    'ticket.changeStage.closed.confirm',
+    'ticket.takeOn.confirm'
 ];

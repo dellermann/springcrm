@@ -29,17 +29,40 @@
     <h4><g:message code="default.actions" /></h4>
     <ul>
       <g:if test="${(user.admin || user in ticketInstance.helpdesk.users) && ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]}">
-      <li><g:link action="takeOn" id="${ticketInstance?.id}" class="button medium green"><g:message code="ticket.takeOn.label" /></g:link></li>
+      <li><g:link action="takeOn" id="${ticketInstance?.id}" elementId="take-on-btn" class="button medium green"><g:message code="ticket.takeOn.label" /></g:link></li>
       </g:if>
       <g:if test="${user.admin || (user == ticketInstance.assignedUser && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])}">
-      <li><span id="send-message-btn" class="button medium white"><g:message code="ticket.sendMessage.toCustomer.label" /></span></li>
+      <li>
+        <span id="send-message-to-customer-btn" class="button medium white"
+          data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
+          data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
+          ><g:message code="ticket.sendMessage.toCustomer.label" /></span>
+      </li>
       </g:if>
+      <li id="send-message-to-user-menu" class="menu"
+          data-title="${message(code: 'ticket.sendMessage.toUser.title')}"
+          data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}">
+        <span class="button menu-button medium white"><span><g:message code="ticket.sendMessage.toUser.label" /></span></span>
+        <div>
+          <ul>
+            <g:each in="${ticketInstance.helpdesk.users - user}">
+            <li><a href="#" data-user-id="${it.id}">${it.toString().encodeAsHTML()}</a></li>
+            </g:each>
+          </ul>
+        </div>
+      </li>
+      <li>
+        <span id="create-note-btn" class="button medium white"
+          data-title="${message(code: 'ticket.createNote.title')}"
+          data-submit-url="${createLink(action: 'createNote', id: ticketInstance.id)}"
+          ><g:message code="ticket.createNote.label" /></span>
+      </li>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage == TicketStage.assigned}">
       <li><g:link action="changeStage" id="${ticketInstance?.id}" params="[stage: TicketStage.inProcess]" class="button medium green"><g:message code="ticket.changeStage.inProcess" /></g:link></li>
       </g:if>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]}">
-      <li class="menu">
-        <span class="button menu-button medium blue"><span><g:message code="ticket.assign.label" /></span></span>
+      <li id="assign-user-menu" class="menu">
+        <span class="button menu-button medium blue"><span><g:message code="ticket.changeStage.assign" /></span></span>
         <div>
           <ul>
             <g:each in="${ticketInstance.helpdesk.users - user}">
@@ -51,6 +74,9 @@
       </g:if>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]}">
       <li><g:link action="changeStage" id="${ticketInstance?.id}" params="[stage: TicketStage.closed]" elementId="close-ticket-btn" class="button medium red"><g:message code="ticket.changeStage.closed" /></g:link></li>
+      </g:if>
+      <g:if test="${ticketInstance.stage == TicketStage.closed}">
+      <li><g:link action="changeStage" id="${ticketInstance?.id}" params="[stage: TicketStage.resubmitted]" class="button medium orange"><g:message code="ticket.changeStage.resubmitted" /></g:link></li>
       </g:if>
     </ul>
   </aside>
@@ -116,10 +142,9 @@
     </p>
   </section>
 
-  <div id="send-message-dialog"
-    title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
-    style="display: none;">
-    <g:form action="sendMessage" id="${ticketInstance.id}" method="post">
+  <div id="send-message-dialog" style="display: none;">
+    <g:uploadForm action="sendMessage" id="${ticketInstance.id}" method="post">
+      <g:hiddenField name="recipient" value="" />
       <div class="form">
         <div class="row">
           <div class="label">
@@ -139,7 +164,7 @@
           </div>
         </div>
       </div>
-    </g:form>
+    </g:uploadForm>
   </div>
 </body>
 </html>
