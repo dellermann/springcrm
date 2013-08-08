@@ -1,21 +1,21 @@
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <r:require modules="about" />
   <title><g:message code="about.title" default="About" /></title>
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="about.title" default="About" /></h2>
+  <header>
+    <h1><g:message code="about.title" default="About" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="sysInfo" class="white"><g:message code="about.sysInfo.label" default="System info" /></g:link></li>
+        <li><g:button action="sysInfo" color="white" icon="cog"
+          message="about.sysInfo.label" default="System info" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content" class="about">
+  </header>
+  <div id="content" class="about">
     <p id="app-title"><strong>SpringCRM</strong></p>
     <p><g:message code="about.app.description" /></p>
     <p><g:message code="about.app.version" args="${[meta(name: 'app.version'), meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'), meta(name: 'app.buildProfile')]}" /></p>
@@ -682,6 +682,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</pre>
     <ul>
       <li><a href="mailto:d.ellermann@amc-world.de">Daniel Ellermann</a></li>
     </ul>
-  </section>
+  </div>
 </body>
 </html>

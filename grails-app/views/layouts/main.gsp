@@ -21,18 +21,16 @@
 </head>
 
 <body style="font-size: ${userSetting(key: 'fontSize')}">
-<section>
   <g:render template="/layouts/header" />
   <g:render template="/layouts/nav" />
-  <section id="main-container">
+  <article id="main-container">
     <g:layoutBody />
-  </section>
+  </article>
   <g:render template="/layouts/footer" />
   <div id="spinner" class="spinner" style="display: none;">
     <r:img uri="/img/spinner.gif" alt="${message(code: 'default.spinner.alt', default: 'Loading data…')}" />
   </div>
-</section>
-<script src="${createLink(controller: 'i18n', action: 'index')}"></script>
-<r:layoutResources />
+  <script src="${createLink(controller: 'i18n', action: 'index')}"></script>
+  <r:layoutResources />
 </body>
 </html>

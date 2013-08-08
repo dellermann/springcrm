@@ -1,6 +1,6 @@
 <r:require modules="projectForm" />
 <fieldset>
-  <h4><g:message code="project.fieldset.general.label" /></h4>
+  <header><h3><g:message code="project.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -19,10 +19,8 @@
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="project.fieldset.description.label" /></h4>
-  <div class="fieldset-content">
-    <div class="row">
-      <f:field bean="${projectInstance}" property="description" />
-    </div>
+  <header><h3><g:message code="project.fieldset.description.label" /></h3></header>
+  <div class="form-fragment">
+    <f:field bean="${projectInstance}" property="description" />
   </div>
 </fieldset>

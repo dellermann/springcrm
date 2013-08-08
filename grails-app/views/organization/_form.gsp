@@ -1,6 +1,6 @@
 <r:require modules="organizationForm" />
 <fieldset>
-  <h4><g:message code="organization.fieldset.general.label" /></h4>
+  <header><h3><g:message code="organization.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -30,13 +30,14 @@
 <div class="multicol-content" id="addresses">
   <div class="col col-l left-address">
     <fieldset>
-      <div class="header-with-menu">
-        <h4><g:message code="organization.fieldset.billingAddr.label" /></h4>
-        <div class="menu">
-          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
+      <header>
+        <h3><g:message code="organization.fieldset.billingAddr.label" /></h3>
+        <div class="buttons">
+          <g:menuButton color="white" size="small" icon="location-arrow"
+            message="default.options.label" />
         </div>
-      </div>
-      <div class="fieldset-content form-fragment">
+      </header>
+      <div class="form-fragment">
         <f:field bean="${organizationInstance}" property="billingAddrStreet" cols="35" rows="3" />
         <f:field bean="${organizationInstance}" property="billingAddrPoBox" />
         <f:field bean="${organizationInstance}" property="billingAddrPostalCode" size="10" />
@@ -48,13 +49,14 @@
   </div>
   <div class="col col-r right-address">
     <fieldset>
-      <div class="header-with-menu">
-        <h4><g:message code="organization.fieldset.shippingAddr.label" /></h4>
-        <div class="menu">
-          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
+      <header>
+        <h3><g:message code="organization.fieldset.shippingAddr.label" /></h3>
+        <div class="buttons">
+          <g:menuButton color="white" size="small" icon="location-arrow"
+            message="default.options.label" />
         </div>
-      </div>
-      <div class="fieldset-content form-fragment">
+      </header>
+      <div class="form-fragment">
         <f:field bean="${organizationInstance}" property="shippingAddrStreet" cols="35" rows="3" />
         <f:field bean="${organizationInstance}" property="shippingAddrPoBox" />
         <f:field bean="${organizationInstance}" property="shippingAddrPostalCode" size="10" />
@@ -66,14 +68,15 @@
   </div>
 </div>
 <fieldset>
-  <h4><g:message code="organization.fieldset.notes.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="organization.fieldset.notes.label" /></h3></header>
+  <div class="form-fragment">
     <f:field bean="${organizationInstance}" property="notes" cols="80" rows="5" />
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="organization.fieldset.misc.label" /></h4>
-  <div class="fieldset-content">
-    <f:field bean="${organizationInstance}" property="docPlaceholderValue" />
+  <header><h3><g:message code="organization.fieldset.misc.label" /></h3></header>
+  <div class="form-fragment">
+    <f:field bean="${organizationInstance}" property="docPlaceholderValue"
+      size="50"/>
   </div>
 </fieldset>

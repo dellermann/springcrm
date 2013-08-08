@@ -1,4 +1,4 @@
-<g:applyLayout name="field">
+<g:applyLayout name="field" params="[propertyId: 'rec-type-1']">
   <g:hiddenField name="recType" value="${organizationInstance?.recType}" />
   <ul class="checkbox-area">
     <li><input type="checkbox" id="rec-type-1" class="rec-type" value="1" /><label for="rec-type-1"><g:message code="organization.recType.customer.label" default="Customer" /></label></li>

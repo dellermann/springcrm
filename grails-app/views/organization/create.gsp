@@ -1,5 +1,3 @@
-
-
 <%@ page import="org.amcworld.springcrm.Organization" %>
 <html>
 <head>
@@ -11,26 +9,30 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="#" class="green submit-btn" data-form="organization-form"><g:message code="default.button.save.label" /></a></li>
-        <li><g:link action="list" class="red"><g:message code="default.button.cancel.label" /></g:link></li>
+        <li><g:button color="green" class="submit-btn" icon="save"
+          data-form="organization-form" message="default.button.save.label"
+          /></li> 
+        <li><g:button action="list" params="[type: params.recType]"
+          color="red" icon="remove-circle"
+          message="default.button.cancel.label" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content">
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <g:hasErrors bean="${organizationInstance}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
-    <h3><g:message code="organization.new.label" /></h3>
+    <h2><g:message code="organization.new.label" /></h2>
     <g:form name="organization-form" action="save" >
       <g:render template="/organization/form" />
     </g:form>
-  </section>
+  </div>
 </body>
 </html>

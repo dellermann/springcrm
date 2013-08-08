@@ -40,6 +40,19 @@
         return $(this).removeAttr("disabled").removeClass("disabled");
       });
     },
+    mustache: function(data) {
+      var template;
+      $ = jQuery;
+      template = "";
+      this.each(function() {
+        return template += $.trim($(this).text());
+      });
+      if (data != null) {
+        return Mustache.render(template, data);
+      } else {
+        return Mustache.compile(template);
+      }
+    },
     reverse: [].reverse,
     sortElements: function(comparator, getSortable) {
       var document, placements;
@@ -143,7 +156,7 @@
       valueProp: "id"
     },
     _create: function() {
-      var clsCombobox, el, opts, parentOpts,
+      var el, opts, parentOpts,
         _this = this;
       $ = jQuery;
       parentOpts = {};
@@ -151,21 +164,18 @@
       opts = this.options;
       $.extend(parentOpts, opts);
       el = this.element;
-      el.autocomplete(parentOpts).focus(function() {
+      el.autocomplete(parentOpts).wrap("<span class='" + this.widgetBaseClass + "-combobox'/>").focus(function() {
         return _this._onFocus();
       }).blur(function() {
         return _this._onBlur();
       });
       this.valueInput = this._getValueInput();
       if (opts.combobox) {
-        clsCombobox = "" + this.widgetBaseClass + "-combobox";
-        return el.addClass(clsCombobox).after($("<button/>", {
-          "class": clsCombobox,
+        return el.after($("<a/>", {
           click: function(event) {
             return _this._onClickComboboxBtn(event);
           },
-          text: "...",
-          type: "button"
+          html: '<i class="icon-caret-down"></i>'
         }));
       }
     },
@@ -305,12 +315,12 @@
       confirm: function(msg) {
         return $.confirm(msg);
       },
-      leftMenuSelector: ".left-address .menu",
+      leftMenuSelector: ".left-address .dropdown-menu",
       leftPrefix: "billingAddr",
       loadOrganizationUrl: null,
       menuItems: [],
       organizationId: null,
-      rightMenuSelector: ".right-address .menu",
+      rightMenuSelector: ".right-address .dropdown-menu",
       rightPrefix: "shippingAddr"
     },
     addMenuItemCopy: function(side, text) {
@@ -318,22 +328,23 @@
         _this = this;
       $ = jQuery;
       f = (side === "left" ? this.copyToLeft : this.copyToRight);
-      return $("<li/>", {
-        text: text,
+      return $("<span/>", {
         click: function() {
           return f.call(_this);
-        }
-      }).appendTo(this._getMenu(side));
+        },
+        text: text
+      }).wrap("<li/>").appendTo(this._getMenu(side));
     },
     addMenuItemLoadFromOrganization: function(side, text, propPrefix) {
       var f,
         _this = this;
       f = (side === "left" ? this.loadFromOrganizationToLeft : this.loadFromOrganizationToRight);
-      return $("<li/>", {
+      return $("<span/>", {
+        click: function() {
+          return f.call(_this, propPrefix);
+        },
         text: text
-      }).click(function() {
-        return f.call(_this, propPrefix);
-      }).appendTo(this._getMenu(side));
+      }).wrap("<li/>").appendTo(this._getMenu(side));
     },
     copyToLeft: function() {
       var opts;
@@ -424,13 +435,10 @@
       return $("#" + prefix + name);
     },
     _getMenu: function(side) {
-      var $menu, $ul;
-      $menu = (side === "left" ? this.leftMenu : this.rightMenu);
-      $ul = $menu.find("ul");
-      if ($ul.length) {
-        return $ul;
+      if (side === "left") {
+        return this.leftMenu;
       } else {
-        return $("<div><ul/></div>").appendTo($menu).find("ul");
+        return this.rightMenu;
       }
     },
     _loadFromOrganization: function(prefix, propPrefix) {
@@ -490,7 +498,7 @@
 
   RemoteListWidget = {
     options: {
-      container: ".fieldset-content",
+      container: "> div",
       returnUrl: null
     },
     _computeUrl: function(url) {
@@ -530,7 +538,8 @@
             var $this;
             $this = $(this);
             url = $this.attr("href");
-            url += (url.indexOf("?") < 0 ? "?" : "&") + ("returnUrl=" + returnUrl);
+            url += (url.indexOf("?") < 0 ? "?" : "&");
+            url += "returnUrl=" + returnUrl;
             return $this.attr("href", url);
           });
         }
@@ -556,13 +565,26 @@
       if ($toolbar.length) {
         $document.scroll(onScrollDocument);
       }
-      $("#search img").on("click", function() {
-        doc.forms.searchableForm.submit();
+      $("#search-area span").on("click", function() {
+        $(this).parent().get(0).submit();
         return false;
       });
       $("#quick-access").change(onChangeQuickAccess);
       $("#print-btn").on("click", function() {
         return win.print();
+      });
+      $(".button-group .dropdown").on("click", function() {
+        var $btnGroup;
+        $btnGroup = $(this).parents(".button-group");
+        if (!$btnGroup.is(".open")) {
+          $(".button-group.open").removeClass("open");
+        }
+        $btnGroup.toggleClass("open");
+        $document.one("click", function() {
+          $btnGroup.removeClass("open");
+          return true;
+        });
+        return false;
       });
       $(".submit-btn").click(onSubmitForm);
       $(".delete-btn").deleteConfirm();

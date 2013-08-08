@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.CreditMemo" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'creditMemo.label', default: 'CreditMemo')}" />
   <g:set var="entitiesName" value="${message(code: 'creditMemo.plural', default: 'CreditMemos')}" />
@@ -10,15 +9,16 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+        <li><g:button action="create" color="green" icon="plus"
+          message="default.new.label" args="[entityName]" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content">
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
@@ -52,11 +52,16 @@
           <td class="currency credit-memo-closing-balance balance-state balance-state-${creditMemoInstance?.balanceColor}"><g:formatCurrency number="${creditMemoInstance?.closingBalance}" displayZero="true" /></td>
           <td class="action-buttons">
             <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
-            <g:link action="edit" id="${creditMemoInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="${creditMemoInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+            <g:button action="edit" id="${creditMemoInstance.id}" color="green"
+              size="small" message="default.button.edit.label" />
+            <g:button action="delete" id="${creditMemoInstance?.id}"
+              color="red" size="small" class="delete-btn"
+              message="default.button.delete.label" />
             </g:if>
             <g:else>
-            <g:link action="editPayment" id="${creditMemoInstance.id}" class="button small green"><g:message code="invoicingTransaction.button.editPayment.label" /></g:link>
+            <g:button action="editPayment" id="${creditMemoInstance.id}"
+              color="green" size="small"
+              message="invoicingTransaction.button.editPayment.label" />
             </g:else>
           </td>
         </tr>
@@ -71,10 +76,11 @@
       <div class="empty-list">
         <p><g:message code="default.list.empty" /></p>
         <div class="buttons">
-          <g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link>
+          <g:button action="create" color="green" icon="plus"
+            message="default.new.label" args="[entityName]" />
         </div>
       </div>
     </g:else>
-  </section>
+  </div>
 </body>
 </html>

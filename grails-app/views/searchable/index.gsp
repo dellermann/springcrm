@@ -3,16 +3,15 @@
 <%@ page import="grails.plugin.searchable.internal.util.StringQueryUtils" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title><g:message code="searchable.results.label" default="Search results" /></title>
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="searchable.results.label" default="Search results" /></h2>
-  </div>
-  <section id="content">
+  <header>
+    <h1><g:message code="searchable.results.label" default="Search results" /></h1>
+  </header>
+  <div id="content">
     <g:set var="haveQuery" value="${params.q?.trim()}" />
     <g:set var="haveResults" value="${searchResult?.results}" />
     <g:if test="${haveQuery && haveResults}">
@@ -41,9 +40,10 @@
     </dl>
     
     <div class="paginator">
-      <g:paginate total="${searchResult.total}" action="index" params="[q: params.q]" />
+      <g:paginate total="${searchResult.total}" action="index"
+        params="[q: params.q]" />
     </div>
     </g:if>
-  </section>
+  </div>
 </body>
 </html>

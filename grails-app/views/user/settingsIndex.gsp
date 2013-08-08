@@ -1,16 +1,15 @@
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title><g:message code="user.settings.title" default="User settings" /></title>
   <r:require modules="config" />
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="user.settings.title" default="User settings" /></h2>
-  </div>
-  <section id="content">
+  <header>
+    <h1><g:message code="user.settings.title" default="User settings" /></h1>
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
@@ -28,6 +27,6 @@
         </dl>
       </div>
     </div>
-  </section>
+  </div>
 </body>
 </html>

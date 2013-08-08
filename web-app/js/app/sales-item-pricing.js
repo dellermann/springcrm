@@ -16,22 +16,22 @@
     _inputRegExp: null,
     _pricingEnabled: null,
     options: {
-      currency: "€",
       fieldNamePrefix: "pricing.items",
-      imgPath: null,
       units: null
     },
     _addItem: function(jumpToNewRow) {
-      var $row, currency, imgPath, index, opts, pos, s;
-      opts = this.options;
-      currency = opts.currency;
-      imgPath = opts.imgPath;
-      index = this._getRows().length;
-      s = "<tr>\n  <td class=\"pos number\">" + (String(index + 1)) + ".</td>\n  <td class=\"quantity number\">\n    <input type=\"text\" name=\"" + (this._getInputName(index, "quantity")) + "\" size=\"6\" />\n  </td>\n  <td class=\"unit\">\n    <input type=\"text\" name=\"" + (this._getInputName(index, "unit")) + "\" size=\"8\" />\n  </td>\n  <td class=\"name\">\n    <input type=\"text\" name=\"" + (this._getInputName(index, "name")) + "\" size=\"30\" />\n  </td>\n  <td class=\"type\">\n    <select name=\"" + (this._getInputName(index, "type")) + "\">\n      <option value=\"absolute\">" + ($L("salesItem.pricing.type.absolute")) + "</option>\n      <option value=\"relativeToPos\">" + ($L("salesItem.pricing.type.relativeToPos")) + "</option>\n      <option value=\"relativeToLastSum\">" + ($L("salesItem.pricing.type.relativeToLastSum")) + "</option>\n      <option value=\"relativeToCurrentSum\">" + ($L("salesItem.pricing.type.relativeToCurrentSum")) + "</option>\n      <option value=\"sum\">" + ($L("salesItem.pricing.type.sum")) + "</option>\n    </select>\n  </td>\n  <td class=\"relative-to-pos\">\n    <input type=\"hidden\" name=\"" + (this._getInputName(index, "relToPos")) + "\" />\n    <span style=\"display: none;\"><img src=\"" + imgPath + "/target.png\" alt=\"" + ($L("salesItem.pricing.relativeToPos.finder")) + "\" title=\"" + ($L("salesItem.pricing.relativeToPos.finder")) + "\" width=\"16\" height=\"16\" /><strong></strong></span>\n  </td>\n  <td class=\"unit-percent percentage number\">\n    <input type=\"text\" name=\"" + (this._getInputName(index, "unitPercent")) + "\" size=\"5\" class=\"percent\" />\n  </td>\n  <td class=\"unit-price currency number\">\n    <input type=\"text\" name=\"" + (this._getInputName(index, "unitPrice")) + "\" size=\"8\" />&nbsp;" + currency + "\n  </td>\n  <td class=\"total-price currency number\">\n    <output>" + (0..formatCurrencyValue()) + "</output>&nbsp;" + currency + "\n  </td>\n  <td class=\"action-buttons\">";
-      if (imgPath) {
-        s += "<img class=\"up-btn\" src=\"" + imgPath + "/up.png\"\n  alt=\"" + ($L("default.btn.up")) + "\" title=\"" + ($L("default.btn.up")) + "\"\n  width=\"16\" height=\"16\"\n/><img class=\"down-btn\" src=\"" + imgPath + "/down.png\"\n  alt=\"" + ($L("default.btn.down")) + "\" title=\"" + ($L("default.btn.down")) + "\"\n  width=\"16\" height=\"16\"\n/><img class=\"remove-btn\" src=\"" + imgPath + "/remove.png\"\n  alt=\"" + ($L("default.btn.remove")) + "\" title=\"" + ($L("default.btn.remove")) + "\"\n  width=\"16\" height=\"16\" />";
+      var $row, index, pos, s, template;
+      template = this.addItemTemplate;
+      if (!template) {
+        template = $("#add-pricing-item-template").mustache();
+        this.addItemTemplate = template;
       }
-      s += "  </td>\n</tr>";
+      index = this._getRows().length;
+      s = template({
+        index: index,
+        pos: index + 1,
+        zero: 0..formatCurrencyValue()
+      });
       $row = $(s);
       this._initItemCtrls($row);
       this.element.find("> .items").append($row);
@@ -96,14 +96,13 @@
       $ = jQuery;
       el = this.element;
       opts = this.options;
-      opts.imgPath = opts.imgPath || el.data("img-path");
       opts.units = opts.units || el.data("units").split(",");
       this._inputRegExp = new RegExp("^" + opts.fieldNamePrefix + "\\[(\\d+)\\]\\.(\\w+)$");
-      $("#start-pricing").click(function(event) {
-        return _this._onClickStartPricing(event);
+      $("#start-pricing").on("click", function() {
+        return _this._onClickStartPricing();
       });
-      $("#remove-pricing").click(function(event) {
-        return _this._onClickRemovePricing(event);
+      $("#remove-pricing").on("click", function() {
+        return _this._onClickRemovePricing();
       });
       $form = el.parents("form");
       this._form = form = $form.get(0);
@@ -113,39 +112,59 @@
       if (initialPricingEnabled) {
         this._toggleVisibility();
       }
-      el.change(function(event) {
-        return _this._onChange(event);
-      }).click(function(event) {
-        return _this._onClick(event);
-      });
-      $(win).focusin(function(event) {
-        return _this._onFocusIn(event);
-      }).focusout(function(event) {
-        return _this._onFocusOut(event);
+      this._registerClickEvents().on("change", "td.quantity :input, td.unit-percent :input, td.unit-price :input", function() {
+        return _this._updateItems();
+      }).on("change", "td.type :input", function(event) {
+        var $target, $tr, idx;
+        $target = $(event.currentTarget);
+        $tr = $target.parents("tr");
+        _this._initItemCtrls($tr);
+        if ($target.val() === "relativeToPos") {
+          idx = _this._getFieldVal($tr, "relative-to-pos");
+          idx = (idx < 0 ? "" : String(idx + 1) + ".");
+          $tr.find("> .relative-to-pos > span").fadeIn();
+        } else {
+          $tr.find("> .relative-to-pos > span").fadeOut();
+        }
+        _this._updateReferenceClasses();
+        return _this._updateItems();
+      }).on("focusin", ".number :input", function() {
+        var $this, val;
+        $this = $(this);
+        val = $this.val().parseNumber();
+        return $this.val((val ? val.format() : ""));
+      }).on("focusout", ".currency :input", function() {
+        var $this;
+        $this = $(this);
+        return $this.val($this.val().parseNumber().formatCurrencyValue());
+      }).on("focusout", ".percentage :input", function() {
+        var $this;
+        $this = $(this);
+        return $this.val($this.val().parseNumber().format(2));
       });
       $trs = this._getRows();
       $trs.each(function(index, elem) {
         return _this._initItemCtrls($(elem));
       });
       this._updateReferenceClasses();
-      if ($trs.length !== 0) {
+      if ($trs.length) {
         this._initUnitAutocomplete();
       }
-      $(".add-pricing-item-btn").click(function() {
+      $(".add-pricing-item-btn").on("click", function() {
         _this._addItem(true);
         return false;
       });
-      $("#step1-pricing-quantity").change(function(event) {
-        return _this._onChangeStep1PricingQuantity(event);
+      $("#step1-pricing-quantity").on("change", function() {
+        return _this._updateItems();
       });
-      $("#step1-pricing-unit").change(function(event) {
-        return _this._onChangeStep1PricingUnit(event);
+      $("#step1-pricing-unit").on("change", function() {
+        return _this._updateItems();
       });
-      $("#step2").change(function(event) {
-        return _this._onChangeStep2(event);
+      $("#step2").on("change", function() {
+        return _this._updateSalesPricing();
       });
-      return $("#step3-quantity").change(function(event) {
-        return _this._onChangeStep3Quantity(event);
+      return $("#step3-quantity").on("change", function() {
+        return _this._updateSalesPricing();
       });
     },
     _disableTypeOptions: function(item) {
@@ -195,7 +214,7 @@
     _getField: function(item, name) {
       var sel;
       sel = (name === "total-price" ? "output" : ":input");
-      return this._getRow(item).find("> ." + name + " > " + sel);
+      return this._getRow(item).find("> ." + name + " " + sel);
     },
     _getFieldVal: function(item, name) {
       var $field, val;
@@ -263,6 +282,7 @@
     _getReferrers: function(idx) {
       var res,
         _this = this;
+      $ = jQuery;
       res = [];
       this._getRows().each(function(i, tr) {
         var $tr, refIdx;
@@ -295,30 +315,33 @@
       return this._getFieldVal(item, "type");
     },
     _initItemCtrls: function(item) {
-      var type;
+      var notAbs, notSum, type;
       type = this._getRowType(item);
-      this._getField(item, "quantity").toggleEnable(type !== "sum");
-      this._getField(item, "unit").toggleEnable(type !== "sum");
-      this._getField(item, "name").toggleEnable(type !== "sum");
-      this._getField(item, "unit-percent").toggleEnable((type !== "absolute") && (type !== "sum"));
-      return this._getField(item, "unit-price").toggleEnable(type === "absolute");
+      this._disableTypeOptions(item);
+      notSum = type !== "sum";
+      notAbs = type !== "absolute";
+      this._getField(item, "quantity").toggleEnable(notSum);
+      this._getField(item, "unit").toggleEnable(notSum);
+      this._getField(item, "name").toggleEnable(notSum);
+      this._getField(item, "unit-percent").toggleEnable(notAbs && notSum);
+      return this._getField(item, "unit-price").toggleEnable(!notAbs);
     },
     _initUnitAutocomplete: function($input) {
-      var data, units;
+      var units;
       units = this.options.units;
       if (units) {
-        data = {
-          source: units
-        };
-        if (!$input) {
+        if ($input == null) {
           $input = this.element.find(".unit input");
         }
-        return $input.autocomplete(data);
+        return $input.autocomplete({
+          source: units
+        });
       }
     },
-    _moveItem: function($tr, dir) {
-      var $destTr, checkReferee,
+    _moveItem: function($icon, dir) {
+      var $destTr, $tr, checkReferee,
         _this = this;
+      $tr = $icon.parents("tr");
       checkReferee = function($tr, dir) {
         var $refTr;
         if (dir < 0 && _this._getRowType($tr) === "relativeToPos") {
@@ -346,85 +369,19 @@
       this._disableTypeOptions($destTr);
       return this._updateItems();
     },
-    _onChange: function(event) {
-      var $target, $td, $tr, idx;
-      $target = $(event.target);
-      $td = $target.parents("td");
-      $tr = $td.parent();
-      if ($td.hasClass("quantity") || $td.hasClass("unit-percent") || $td.hasClass("unit-price")) {
-        return this._updateItems();
-      } else if ($td.hasClass("type")) {
-        this._initItemCtrls($tr);
-        if ($target.val() === "relativeToPos") {
-          idx = this._getFieldVal($tr, "relative-to-pos");
-          idx = (idx < 0 ? "" : String(idx + 1) + ".");
-          $tr.find("> .relative-to-pos > span").fadeIn();
-        } else {
-          $tr.find("> .relative-to-pos > span").fadeOut();
-        }
-        this._updateReferenceClasses();
-        return this._updateItems();
-      }
-    },
-    _onChangeStep1PricingQuantity: function() {
-      return this._updateItems();
-    },
-    _onChangeStep1PricingUnit: function() {
-      return this._updateItems();
-    },
-    _onChangeStep2: function() {
-      return this._updateSalesPricing();
-    },
-    _onChangeStep3Quantity: function() {
-      return this._updateSalesPricing();
-    },
-    _onClick: function(event) {
-      var $finderRow, $img, $target, $tr;
+    _onClickReferenceItem: function($tr) {
+      var $finderRow, idx, oldIdx, refIdx;
       $finderRow = this._$finderRow;
-      $target = $(event.target);
-      if ($finderRow) {
-        this._onClickReferenceItem($target);
-        return false;
+      idx = this._getIndex($finderRow);
+      refIdx = this._getIndex($tr);
+      oldIdx = this._getFieldVal($finderRow, "relative-to-pos");
+      if (oldIdx !== -1) {
+        this._enableTypeOptions(oldIdx);
       }
-      $img = $target.closest("img");
-      $tr = $target.closest("td").parent();
-      if ($img.hasClass("up-btn")) {
-        this._moveItem($tr, -1);
-        return false;
-      }
-      if ($img.hasClass("down-btn")) {
-        this._moveItem($tr, 1);
-        return false;
-      }
-      if ($img.hasClass("remove-btn")) {
-        if ($tr.hasClass("not-removable")) {
-          $.alert($L("salesItem.pricing.error.notRemovable"));
-        } else {
-          this._removeItem($tr);
-        }
-        return false;
-      }
-      if ($img.is(".relative-to-pos img")) {
-        this._startFinderMode($tr);
-        return false;
-      }
-    },
-    _onClickReferenceItem: function($target) {
-      var $finderRow, $tr, idx, oldIdx, refIdx;
-      $tr = $target.closest("tr");
-      if ($tr.hasClass("selectable")) {
-        $finderRow = this._$finderRow;
-        idx = this._getIndex($finderRow);
-        refIdx = this._getIndex($tr);
-        oldIdx = this._getFieldVal($finderRow, "relative-to-pos");
-        if (oldIdx !== -1) {
-          this._enableTypeOptions(oldIdx);
-        }
-        this._setItemReference(idx, refIdx);
-        this._disableTypeOptions($tr);
-        this._updateReferenceClasses();
-        this._updateItems();
-      }
+      this._setItemReference(idx, refIdx);
+      this._disableTypeOptions($tr);
+      this._updateReferenceClasses();
+      this._updateItems();
       return this._stopFinderMode();
     },
     _onClickRemovePricing: function() {
@@ -448,40 +405,40 @@
       this._addItem(false);
       return false;
     },
-    _onFocusIn: function(event) {
-      var $target, val;
-      $target = $(event.target);
-      if ($target.is(".number input")) {
-        val = $target.val().parseNumber();
-        return $target.val((val ? val.format() : ""));
-      }
-    },
-    _onFocusOut: function(event) {
-      var $target;
-      $target = $(event.target);
-      if ($target.is(".currency input")) {
-        return $target.val($target.val().parseNumber().formatCurrencyValue());
-      } else if ($target.is(".percentage input")) {
-        return $target.val($target.val().parseNumber().format(2));
-      }
-    },
     _onKeyDown: function(event) {
       if (this._$finderRow && (event.which === 27)) {
         return this._stopFinderMode();
       }
     },
-    _removeItem: function(item) {
-      var fieldPrefix, index, re,
+    _registerClickEvents: function() {
+      var _this = this;
+      return this.element.on("click", ".up-btn", function(event) {
+        _this._moveItem($(event.currentTarget), -1);
+        return false;
+      }).on("click", ".down-btn", function(event) {
+        _this._moveItem($(event.currentTarget), 1);
+        return false;
+      }).on("click", "tr:not(.not-removable) .remove-btn", function(event) {
+        _this._removeItem($(event.currentTarget));
+        return false;
+      }).on("click", ".relative-to-pos i", function(event) {
+        _this._startFinderMode($(event.currentTarget));
+        return false;
+      });
+    },
+    _removeItem: function($icon) {
+      var $tr, fieldPrefix, index, re,
         _this = this;
       $ = jQuery;
+      $tr = $icon.parents("tr");
       fieldPrefix = this.options.fieldNamePrefix;
-      index = this._getIndex(item);
+      index = this._getIndex($tr);
       re = this._inputRegExp;
-      this._getRow(item).nextAll().each(function(i, tr) {
-        var $tr, idx, prefix, regexp, type;
+      $tr.nextAll().each(function(i, tr) {
+        var idx, prefix, regexp, type;
         $tr = $(tr);
         idx = index;
-        $tr.find("td:first-child").text(String(idx + i + 1) + ".");
+        $tr.find("td:first-child").text("" + (idx + i + 1) + ".");
         type = _this._getFieldVal($tr, "type");
         if (type === "relativeToPos") {
           $tr.find("td.relative-to-pos").find("input").each(function() {
@@ -504,7 +461,6 @@
           }
         });
       }).end().remove();
-      this._$trs = this._getRows();
       return this._updateItems();
     },
     _setFieldVal: function(item, name, val) {
@@ -527,10 +483,10 @@
       idx = this._getIndex(refItem);
       return this._getRow(item).find("> .relative-to-pos").find("strong").text(String(idx + 1)).end().find("> input").val(idx);
     },
-    _startFinderMode: function(item) {
+    _startFinderMode: function($icon) {
       var $tr,
         _this = this;
-      $tr = this._getRow(item);
+      $tr = $icon.parents("tr");
       this._$finderRow = $tr;
       $tr.addClass("non-selectable").prevAll().each(function(index, tr) {
         $tr = $(tr);
@@ -539,13 +495,18 @@
         $tr = $(tr);
         return $tr.addClass((_this._getRowType($tr) === "absolute" ? "" : "non-") + "selectable");
       });
-      return $doc.keydown(function(event) {
+      this.element.off("click", "**").on("click", "tr.selectable", function(event) {
+        return _this._onClickReferenceItem($(event.currentTarget));
+      });
+      return $doc.on("keydown", function(event) {
         return _this._onKeyDown(event);
       });
     },
     _stopFinderMode: function() {
       this._$finderRow = null;
       this._getRows().removeClass("selectable non-selectable");
+      this.element.off("click", "**");
+      this._registerClickEvents();
       return $doc.off("keydown");
     },
     _swapInputItemPos: function($tr, $destTr) {
@@ -614,6 +575,7 @@
     _updateItems: function() {
       var quantity, s, sum, sumText,
         _this = this;
+      $ = jQuery;
       sum = this._getCurrentSum();
       sumText = sum.formatCurrencyValue();
       this._getRows().each(function(idx, elem) {
@@ -635,6 +597,7 @@
     },
     _updateReferenceClasses: function() {
       var _this = this;
+      $ = jQuery;
       return this._getRows().each(function(i, elem) {
         var $elem, referrers;
         $elem = $(elem);

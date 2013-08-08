@@ -92,9 +92,8 @@ class ViewFilters {
 
         selectorView(controller: '*', action: 'list') {
             after = { model ->
-                if (params.view == 'selector') {
-                    render view: "/${controllerName}/selectorList", model: model
-                }
+                String view = (params.view == 'selector') ? 'selectorList' : 'list'
+                render view: "/${controllerName}/${view}", model: model
             }
         }
 

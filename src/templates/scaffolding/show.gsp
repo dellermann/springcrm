@@ -2,7 +2,6 @@
 <%=packageName%>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="\${message(code: '${domainClass.propertyName}.label', default: '${className}')}" />
   <g:set var="entitiesName" value="\${message(code: '${domainClass.propertyName}.plural', default: '${className}s')}" />
@@ -10,35 +9,28 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="\${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
-        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
-        <li><g:link action="edit" id="\${${propertyName}?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
-        <li><g:link action="copy" id="\${${propertyName}?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="\${${propertyName}?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
-      </ul>
-    </nav>
-  </div>
+  <header>
+    <h1><g:message code="\${entitiesName}" /></h1>
+    <g:render template="/layouts/toolbarShow"
+      model="[instance: ${propertyName}]" />
+  </header>
   <aside id="action-bar">
-    <h4><g:message code="default.actions" /></h4>
+    <h3><g:message code="default.actions" /></h3>
     <ul>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
+      <li><g:button color="white" size="medium">[Action button]</g:button></li>
+      <li><g:button color="white" size="medium">[Action button]</g:button></li>
+      <li><g:button color="white" size="medium">[Action button]</g:button></li>
+      <li><g:button color="white" size="medium">[Action button]</g:button></li>
     </ul>
   </aside>
-  <section id="content" class="with-action-bar">
+  <div id="content">
     <g:if test="\${flash.message}">
     <div class="flash-message message" role="status">\${flash.message}</div>
     </g:if>
-    <h3>\${${propertyName}?.toString()}</h3>
+    <h2>\${${propertyName}?.toString()}</h2>
     <div class="data-sheet">
-      <div class="fieldset">
-        <h4><g:message code="${domainClass.propertyName}.fieldset.general.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="${domainClass.propertyName}.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <%  excludedProps = Event.allEvents.toList() << 'version'
@@ -75,12 +67,12 @@
             &nbsp;
           </div>
         </div>
-      </div>
+      </section>
     </div>
 
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: ${propertyName}?.dateCreated, style: 'SHORT'), formatDate(date: ${propertyName}?.lastUpdated, style: 'SHORT')]" />
     </p>
-  </section>
+  </div>
 </body>
 </html>

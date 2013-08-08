@@ -3,7 +3,6 @@
 <%@ page import="org.amcworld.springcrm.TicketStage" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <r:require modules="ticket" />
   <g:set var="entityName" value="${message(code: 'ticket.label', default: 'Ticket')}" />
@@ -13,81 +12,80 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
-        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
-        <li><g:link action="edit" id="${ticketInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
-        <li><g:link action="copy" id="${ticketInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="${ticketInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
-      </ul>
-    </nav>
-  </div>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
+    <g:render template="/layouts/toolbarShow"
+      model="[instance: ticketInstance]" />
+  </header>
   <aside id="action-bar">
-    <h4><g:message code="default.actions" /></h4>
+    <h3><g:message code="default.actions" /></h3>
     <ul>
       <g:if test="${(user.admin || user in ticketInstance.helpdesk.users) && ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]}">
-      <li><g:link action="takeOn" id="${ticketInstance?.id}" elementId="take-on-btn" class="button medium green"><g:message code="ticket.takeOn.label" /></g:link></li>
+      <li><g:button action="takeOn" id="${ticketInstance?.id}"
+        elementId="take-on-btn" color="green" size="medium"
+        message="ticket.takeOn.label" /></li>
       </g:if>
       <g:if test="${user.admin || (user == ticketInstance.assignedUser && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])}">
       <li>
-        <span id="send-message-to-customer-btn" class="button medium white"
+        <g:button elementId="send-message-to-customer-btn"
+          color="white" size="medium" icon="envelope"
+          message="ticket.sendMessage.toCustomer.label" 
           data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
-          ><g:message code="ticket.sendMessage.toCustomer.label" /></span>
+          />
       </li>
       </g:if>
-      <li id="send-message-to-user-menu" class="menu"
+      <li id="send-message-to-user-menu">
+        <g:menuButton color="white" size="medium" icon="envelope"
+          message="ticket.sendMessage.toUser.label"
           data-title="${message(code: 'ticket.sendMessage.toUser.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}">
-        <span class="button menu-button medium white"><span><g:message code="ticket.sendMessage.toUser.label" /></span></span>
-        <div>
-          <ul>
-            <g:each in="${ticketInstance.helpdesk.users - user}">
-            <li><a href="#" data-user-id="${it.id}">${it.toString().encodeAsHTML()}</a></li>
-            </g:each>
-          </ul>
-        </div>
+          <g:each in="${ticketInstance.helpdesk.users - user}">
+          <li><a href="#" data-user-id="${it.id}">${it.toString().encodeAsHTML()}</a></li>
+          </g:each>
+        </g:menuButton>
       </li>
       <li>
-        <span id="create-note-btn" class="button medium white"
+        <g:button elementId="create-note-btn" color="white" size="medium"
+          icon="pencil" message="ticket.createNote.label"
           data-title="${message(code: 'ticket.createNote.title')}"
-          data-submit-url="${createLink(action: 'createNote', id: ticketInstance.id)}"
-          ><g:message code="ticket.createNote.label" /></span>
+          data-submit-url="${createLink(action: 'createNote', id: ticketInstance.id)}" />
       </li>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage == TicketStage.assigned}">
-      <li><g:link action="changeStage" id="${ticketInstance?.id}" params="[stage: TicketStage.inProcess]" class="button medium green"><g:message code="ticket.changeStage.inProcess" /></g:link></li>
+      <li><g:button action="changeStage" id="${ticketInstance?.id}"
+        params="[stage: TicketStage.inProcess]" color="green" size="medium"
+        message="ticket.changeStage.inProcess" /></li>
       </g:if>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]}">
-      <li id="assign-user-menu" class="menu">
-        <span class="button menu-button medium blue"><span><g:message code="ticket.changeStage.assign" /></span></span>
-        <div>
-          <ul>
-            <g:each in="${ticketInstance.helpdesk.users - user}">
-            <li><g:link action="assignToUser" id="${ticketInstance.id}" params="[user: it.id]">${it.toString().encodeAsHTML()}</g:link></li>
-            </g:each>
-          </ul>
-        </div>
+      <li>
+        <g:menuButton elementId="assign-user-menu" color="blue"
+          size="medium" message="ticket.changeStage.assign">
+          <g:each in="${ticketInstance.helpdesk.users - user}">
+          <li><g:link action="assignToUser" id="${ticketInstance.id}" params="[user: it.id]">${it.toString().encodeAsHTML()}</g:link></li>
+          </g:each>
+        </g:menuButton>
       </li>
       </g:if>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]}">
-      <li><g:link action="changeStage" id="${ticketInstance?.id}" params="[stage: TicketStage.closed]" elementId="close-ticket-btn" class="button medium red"><g:message code="ticket.changeStage.closed" /></g:link></li>
+      <li><g:button action="changeStage" id="${ticketInstance?.id}"
+        params="[stage: TicketStage.closed]" elementId="close-ticket-btn"
+        color="red" size="medium" message="ticket.changeStage.closed" /></li>
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
-      <li><g:link action="changeStage" id="${ticketInstance?.id}" params="[stage: TicketStage.resubmitted]" class="button medium orange"><g:message code="ticket.changeStage.resubmitted" /></g:link></li>
+      <li><g:button action="changeStage" id="${ticketInstance?.id}"
+        params="[stage: TicketStage.resubmitted]" color="orange" size="medium"
+        message="ticket.changeStage.resubmitted" /></li>
       </g:if>
     </ul>
   </aside>
-  <section id="content" class="with-action-bar">
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <h3>${ticketInstance?.toString()}</h3>
+    <h2>${ticketInstance?.toString()}</h2>
     <div class="data-sheet">
-      <div class="fieldset">
-        <h4><g:message code="ticket.fieldset.general.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="ticket.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <f:display bean="${ticketInstance}" property="number">
@@ -103,9 +101,9 @@
             <f:display bean="${ticketInstance}" property="assignedUser" />
           </div>
         </div>
-      </div>
-      <div class="fieldset">
-        <h4><g:message code="ticket.fieldset.customerData.label" /></h4>
+      </section>
+      <section class="fieldset">
+        <header><h3><g:message code="ticket.fieldset.customerData.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <f:display bean="${ticketInstance}" property="salutation" />
@@ -126,21 +124,21 @@
             <f:display bean="${ticketInstance}" property="country" />
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="ticket.fieldset.history.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="ticket.fieldset.history.label" /></h3></header>
+        <div>
           <g:render template="logEntries/logEntry"
             collection="${ticketInstance.logEntries.reverse()}" />
         </div>
-      </div>
+      </section>
     </div>
 
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: ticketInstance?.dateCreated, style: 'SHORT'), formatDate(date: ticketInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
-  </section>
+  </div>
 
   <div id="send-message-dialog" style="display: none;">
     <g:uploadForm action="sendMessage" id="${ticketInstance.id}" method="post">
@@ -152,7 +150,9 @@
           </div>
           <div class="field">
             <g:textArea name="messageText" cols="40" rows="10" required="required" /><br />
-            <span class="info-msg"><g:message code="default.required" default="required" /></span>
+            <ul class="field-msgs">
+              <li class="info-msg"><g:message code="default.required" default="required" /></li>
+            </ul>
           </div>
         </div>
         <div class="row">

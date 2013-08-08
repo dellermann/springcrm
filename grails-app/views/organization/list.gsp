@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Organization" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'organization.label', default: 'Organization')}" />
   <g:if test="${(params.type ?: 0) as int & 1}">
@@ -17,15 +16,17 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="create" class="green" params="[recType:params.type ?: 0]"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+        <li><g:button action="create" params="[recType:params.type ?: 0]"
+          color="green" icon="plus" message="default.new.label"
+          args="[entityName]" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content">
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
@@ -55,8 +56,12 @@
           <td class="string organization-email1"><a href="mailto:${fieldValue(bean: organizationInstance, field: 'email1')}"><g:fieldValue bean="${organizationInstance}" field="email1" /></a></td>
           <td class="string organization-website"><a href="${organizationInstance?.website}" target="_blank">${fieldValue(bean: organizationInstance, field: "website")?.replace('http://', '')}</a></td>
           <td class="action-buttons">
-            <g:link action="edit" id="${organizationInstance.id}" params="[listType: params.type]" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="${organizationInstance?.id}" params="[type: params.type]" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+            <g:button action="edit" id="${organizationInstance.id}"
+              params="[listType: params.type]" color="green" size="small"
+              message="default.button.edit.label" />
+            <g:button action="delete" id="${organizationInstance?.id}"
+              params="[listType: params.type]" color="red" size="small"
+              class="delete-btn" message="default.button.delete.label" />
           </td>
         </tr>
       </g:each>
@@ -70,10 +75,11 @@
       <div class="empty-list">
         <p><g:message code="default.list.empty" /></p>
         <div class="buttons">
-          <g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link>
+          <g:button action="create" color="green" icon="plus"
+            message="default.new.label" args="[entityName]" />
         </div>
       </div>
     </g:else>
-  </section>
+  </div>
 </body>
 </html>

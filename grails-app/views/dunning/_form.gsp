@@ -20,7 +20,7 @@
 }(jQuery));
 /*]]>*/</r:script>
 <fieldset>
-  <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
+  <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -46,16 +46,18 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content" id="addresses" data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
+<section id="addresses" class="multicol-content"
+  data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
   <div class="col col-l left-address">
     <fieldset>
-      <div class="header-with-menu">
-        <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
-        <div class="menu">
-          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
+      <header>
+        <h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3>
+        <div class="buttons">
+          <g:menuButton color="white" size="small" icon="location-arrow"
+            message="default.options.label" />
         </div>
-      </div>
-      <div class="fieldset-content form-fragment">
+      </header>
+      <div class="form-fragment">
         <f:field bean="${dunningInstance}" property="billingAddrStreet" cols="35" rows="3" />
         <f:field bean="${dunningInstance}" property="billingAddrPoBox" />
         <f:field bean="${dunningInstance}" property="billingAddrPostalCode" size="10" />
@@ -67,13 +69,14 @@
   </div>
   <div class="col col-r right-address">
     <fieldset>
-      <div class="header-with-menu">
-        <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
-        <div class="menu">
-          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
+      <header>
+        <h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3>
+        <div class="buttons">
+          <g:menuButton color="white" size="small" icon="location-arrow"
+            message="default.options.label" />
         </div>
-      </div>
-      <div class="fieldset-content form-fragment">
+      </header>
+      <div class="form-fragment">
         <f:field bean="${dunningInstance}" property="shippingAddrStreet" cols="35" rows="3" />
         <f:field bean="${dunningInstance}" property="shippingAddrPoBox" />
         <f:field bean="${dunningInstance}" property="shippingAddrPostalCode" size="10" />
@@ -83,35 +86,39 @@
       </div>
     </fieldset>
   </div>
-</div>
+</section>
 <fieldset>
-  <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
-  <div class="fieldset-content">
-    <f:field bean="${dunningInstance}" property="headerText" cols="80" rows="3" />
+  <header><h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3></header>
+  <div class="form-fragment">
+    <f:field bean="${dunningInstance}" property="headerText" cols="80"
+      rows="3" />
   </div>
 </fieldset>
 <fieldset>
-  <div class="header-with-menu">
-    <h4><g:message code="dunning.fieldset.items.label" /></h4>
-    <div class="menu">
-      <a href="#" class="add-invoicing-item-btn button small green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
+  <header>
+    <h3><g:message code="dunning.fieldset.items.label" /></h3>
+    <div class="buttons">
+      <g:button color="green" size="small" class="add-invoicing-item-btn"
+        icon="plus" message="invoicingTransaction.button.addRow.label" />
     </div>
-  </div>
-  <div class="fieldset-content">
+  </header>
+  <div>
     <g:set var="invoicingTransaction" value="${dunningInstance}" />
-    <g:applyLayout name="invoicingItemsForm" params="[tableId: 'dunning-items', className: 'dunning']" />
+    <g:applyLayout name="invoicingItemsForm"
+      params="[tableId: 'dunning-items', className: 'dunning']" />
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
-  <div class="fieldset-content">
-    <f:field bean="${dunningInstance}" property="footerText" cols="80" rows="3" />
+  <header><h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3></header>
+  <div class="form-fragment">
+    <f:field bean="${dunningInstance}" property="footerText" cols="80"
+      rows="3" />
     <f:field bean="${dunningInstance}" property="termsAndConditions" />
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3></header>
+  <div class="form-fragment">
     <f:field bean="${dunningInstance}" property="notes" cols="80" rows="5" />
   </div>
 </fieldset>

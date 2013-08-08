@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Quote" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
@@ -18,35 +17,61 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
-        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
-        <li><g:link action="edit" id="${quoteInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
-        <li><g:link action="copy" id="${quoteInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="${quoteInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
-      </ul>
-    </nav>
-  </div>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
+    <g:render template="/layouts/toolbarShow"
+      model="[instance: quoteInstance]" />
+  </header>
   <aside id="action-bar">
-    <h4><g:message code="default.actions" /></h4>
+    <h3><g:message code="default.actions" /></h3>
     <ul>
-      <li class="menu"><g:link action="print" id="${quoteInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><div><ul><g:each in="${printTemplates}"><li><g:link action="print" id="${quoteInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></div></li>
-      <li class="menu"><g:link action="print" id="${quoteInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><div><ul><g:each in="${printTemplates}"><li><g:link action="print" id="${quoteInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></div></li>
-      <g:ifModuleAllowed modules="salesOrder"><li><g:link controller="salesOrder" action="create" params="[quote: quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createSalesOrder" /></g:link></li></g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="invoice"><li><g:link controller="invoice" action="create" params="[quote: quoteInstance?.id]" class="button medium white"><g:message code="quote.button.createInvoice" /></g:link></li></g:ifModuleAllowed>
+      <li>
+        <g:menuButton action="print" id="${quoteInstance?.id}" color="white"
+          size="medium" icon="print" target="_blank"
+          message="default.button.print.label">
+          <g:each in="${printTemplates}">
+          <li><g:link action="print" id="${quoteInstance?.id}"
+            params="[template: it.key]">${it.value}</g:link></li>
+          </g:each>
+        </g:menuButton>
+      </li>
+      <li>
+        <g:menuButton action="print" id="${quoteInstance?.id}"
+          params="[duplicate: 1]" color="white" size="medium" icon="print"
+          target="_blank"
+          message="invoicingTransaction.button.printDuplicate.label">
+          <g:each in="${printTemplates}">
+          <li>
+            <g:link action="print" id="${quoteInstance?.id}"
+              params="[duplicate: 1, template: it.key]">${it.value}</g:link>
+          </li>
+          </g:each>
+        </g:menuButton>
+      </li>
+      <g:ifModuleAllowed modules="salesOrder">
+      <li>
+        <g:button controller="salesOrder" action="create"
+          params="[quote: quoteInstance?.id]" color="white" size="medium"
+          message="quote.button.createSalesOrder" />
+      </li>
+      </g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="invoice">
+      <li>
+        <g:button controller="invoice" action="create"
+          params="[quote: quoteInstance?.id]" color="white" size="medium"
+          message="quote.button.createInvoice" />
+      </li>
+      </g:ifModuleAllowed>
     </ul>
   </aside>
-  <section id="content" class="with-action-bar">
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <h3>${quoteInstance?.toString()}</h3>
+    <h2>${quoteInstance?.toString()}</h2>
     <div class="data-sheet">
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <f:display bean="${quoteInstance}" property="number">
@@ -64,13 +89,13 @@
             <f:display bean="${quoteInstance}" property="carrier" />
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="multicol-content">
+      <section class="multicol-content">
         <div class="col col-l">
           <div class="fieldset">
-            <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
-            <div class="fieldset-content form-fragment">
+            <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
+            <div class="form-fragment">
               <f:display bean="${quoteInstance}" property="billingAddrStreet" />
               <f:display bean="${quoteInstance}" property="billingAddrPoBox" />
               <f:display bean="${quoteInstance}" property="billingAddrPostalCode" />
@@ -80,7 +105,12 @@
               <g:if test="${quoteInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${quoteInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field">
+                  <g:button url="http://maps.google.de/maps?hl=&q=${quoteInstance.billingAddr.encodeAsURL()}"
+                    target="_blank" color="blue" size="medium"
+                    icon="map-marker"
+                    message="default.link.viewInGoogleMaps" />
+                </div>
               </div>
               </g:if>
             </div>
@@ -88,8 +118,8 @@
         </div>
         <div class="col col-r">
           <div class="fieldset">
-            <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
-            <div class="fieldset-content form-fragment">
+            <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
+            <div class="form-fragment">
               <f:display bean="${quoteInstance}" property="shippingAddrStreet" />
               <f:display bean="${quoteInstance}" property="shippingAddrPoBox" />
               <f:display bean="${quoteInstance}" property="shippingAddrPostalCode" />
@@ -99,72 +129,86 @@
               <g:if test="${quoteInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${quoteInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field">
+                  <g:button url="http://maps.google.de/maps?hl=&q=${quoteInstance.shippingAddr.encodeAsURL()}"
+                    target="_blank" color="blue" size="medium"
+                    icon="map-marker"
+                    message="default.link.viewInGoogleMaps" />
+                </div>
               </div>
               </g:if>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3></header>
+        <div>
           <f:display bean="${quoteInstance}" property="headerText" />
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="quote.fieldset.items.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="quote.fieldset.items.label" /></h3></header>
         <g:set var="invoicingTransaction" value="${quoteInstance}" />
-        <g:applyLayout name="invoicingItemsShow" params="[className: 'quote']" />
-      </div>
+        <g:applyLayout name="invoicingItemsShow"
+          params="[className: 'quote']" />
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3></header>
+        <div>
           <f:display bean="${quoteInstance}" property="footerText" />
           <f:display bean="${quoteInstance}" property="termsAndConditions" />
         </div>
-      </div>
+      </section>
 
       <g:if test="${quoteInstance?.notes}">
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3></header>
+        <div>
           <f:display bean="${quoteInstance}" property="notes" />
         </div>
-      </div>
+      </section>
       </g:if>
 
       <g:ifModuleAllowed modules="salesOrder">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded')}" data-load-params="quote=${quoteInstance.id}">
-        <div class="header-with-menu">
-          <h4><g:message code="salesOrder.plural" /></h4>
-          <div class="menu">
-            <g:link controller="salesOrder" action="create" params="[quote: quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'salesOrder.label')]" /></g:link>
+      <section class="fieldset remote-list"
+        data-load-url="${createLink(controller: 'salesOrder', action: 'listEmbedded')}"
+        data-load-params="quote=${quoteInstance.id}">
+        <header>
+          <h3><g:message code="salesOrder.plural" /></h3>
+          <div class="buttons">
+            <g:button controller="salesOrder" action="create"
+              params="[quote: quoteInstance.id]" color="green" size="small"
+              icon="plus" message="default.create.label"
+              args="[message(code: 'salesOrder.label')]" />
           </div>
-        </div>
-        <div class="fieldset-content"></div>
-      </div>
+        </header>
+        <div></div>
+      </section>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="invoice">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded')}" data-load-params="quote=${quoteInstance.id}">
-        <div class="header-with-menu">
-          <h4><g:message code="invoice.plural" /></h4>
-          <div class="menu">
-            <g:link controller="invoice" action="create" params="[quote: quoteInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'invoice.label')]" /></g:link>
+      <section class="fieldset remote-list" data-load-url="${createLink(controller: 'invoice', action: 'listEmbedded')}" data-load-params="quote=${quoteInstance.id}">
+        <header>
+          <h3><g:message code="invoice.plural" /></h3>
+          <div class="buttons">
+            <g:button controller="invoice" action="create"
+              params="[quote: quoteInstance.id]" color="green" size="small"
+              icon="plus" message="default.create.label"
+              args="[message(code: 'invoice.label')]" />
           </div>
-        </div>
-        <div class="fieldset-content"></div>
-      </div>
+        </header>
+        <div></div>
+      </section>
       </g:ifModuleAllowed>
     </div>
 
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: quoteInstance?.dateCreated), formatDate(date: quoteInstance?.lastUpdated)]" />
     </p>
-  </section>
+  </div>
 </body>
 </html>

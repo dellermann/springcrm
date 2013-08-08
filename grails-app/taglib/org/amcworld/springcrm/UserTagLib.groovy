@@ -1,7 +1,7 @@
 /*
  * UserTagLib.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,32 +24,36 @@ package org.amcworld.springcrm
 /**
  * The class {@code UserTagLib} represents tags for login.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class UserTagLib {
 
     //-- Public methods -------------------------
 
-	/**
-	 * Renders an area to display the currently logged in user.
-	 */
-	def loginControl = {
-		if (request.getSession(false) && session.user) {
-			out << "${message(code: 'default.welcome', args: [session.user.fullName])} "
-			out << "${link(controller: 'user', action: 'logout'){message(code: 'default.logout')}}"
-		}
-	}
+    /**
+     * Renders an area to display the currently logged in user.
+     */
+    def loginControl = {
+        if (request.getSession(false) && session.user) {
+            out << message(
+                code: 'default.welcome', args: [session.user.fullName]
+            )
+            out << link(controller: 'user', action: 'logout') {
+                '<i class="icon-off"></i> ' + message(code: 'default.logout')
+            }
+        }
+    }
 
-	/**
-	 * Renders the value of a user setting.
-	 *
-	 * @attr key REQUIRED	the name of the user setting
-	 */
-	def userSetting = { attrs, body ->
+    /**
+     * Renders the value of a user setting.
+     *
+     * @attr key REQUIRED   the name of the user setting
+     */
+    def userSetting = { attrs, body ->
         def settings = session.user?.settings
         if (settings) {
             out << settings[attrs.key]
         }
-	}
+    }
 }

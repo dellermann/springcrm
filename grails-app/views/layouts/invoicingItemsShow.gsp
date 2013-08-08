@@ -75,7 +75,9 @@
         <td class="unit"><g:fieldValue bean="${item}" field="unit" /></td>
         <td class="name">
           <div class="item-name"><g:fieldValue bean="${item}" field="name" /></div>
+          <g:if test="${item.description}">
           <div class="item-description"><markdown:renderHtml text="${item.description}" /></div>
+          </g:if>
         </td>
         <td class="unit-price currency number"><g:formatCurrency number="${item.unitPrice}" displayZero="true" /></td>
         <td class="total-price currency number"><g:formatCurrency number="${item.total}" displayZero="true" /></td>

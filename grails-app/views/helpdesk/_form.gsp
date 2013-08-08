@@ -1,6 +1,6 @@
 <r:require modules="helpdeskForm" />
 <fieldset>
-  <h4><g:message code="helpdesk.fieldset.general.label" /></h4>
+  <header><h3><g:message code="helpdesk.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <f:field bean="${helpdeskInstance}" property="organization" />
@@ -12,18 +12,18 @@
       <div class="row">
         <div class="label"></div>
         <div class="field">
-          <button type="button" id="generate-access-code"
-            class="button green medium"
-            ><g:message code="helpdesk.accessCode.generate" /></button>
+          <g:button elementId="generate-access-code" color="green"
+            size="medium" icon="key" message="helpdesk.accessCode.generate" />
         </div>
       </div>
     </div>
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="helpdesk.fieldset.users.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="helpdesk.fieldset.users.label" /></h3></header>
+  <div>
     <p><g:message code="helpdesk.users.description" /></p>
-    <f:field bean="${helpdeskInstance}" property="users" size="7" style="min-width: 25em;" />
+    <f:field bean="${helpdeskInstance}" property="users" size="7"
+      style="min-width: 25em;" />
   </div>
 </fieldset>

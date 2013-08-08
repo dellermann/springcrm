@@ -241,10 +241,10 @@ class ProjectController {
         }
     }
 
-    def addSelectedItems(Long project, String projectPhase, String itemIds,
+    def addSelectedItems(Long id, String projectPhase, String itemIds,
                          String documents)
     {
-        def projectInstance = Project.get(project)
+        def projectInstance = Project.get(id)
         if (projectInstance) {
             ProjectPhase pp = ProjectPhase.valueOf(projectPhase)
             String controllerName = params.controllerName
@@ -278,6 +278,8 @@ class ProjectController {
                     }
                 }
             }
+            projectInstance.phase = pp
+            projectInstance.save flush: true
         }
         render status: HttpServletResponse.SC_OK
     }

@@ -1,44 +1,51 @@
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title><g:message code="config.taxRates.title" default="Tax rates" /></title>
   <r:require modules="configSelValues" />
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="config.taxRates.title" default="Tax rates" /></h2>
+  <header>
+    <h1><g:message code="config.taxRates.title" default="Tax rates" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a href="#" class="green submit-btn" data-form="config-form"><g:message code="default.button.save.label" /></a></li>
-        <li><g:backLink action="index" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
+        <li><g:button color="green" class="submit-btn" icon="save"
+          data-form="config-form" message="default.button.save.label" /></li> 
+        <li><g:button action="index" back="true" color="red"
+          icon="remove-circle" message="default.button.cancel.label" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content">
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <g:form name="config-form" action="saveTaxRates" params="[returnUrl: params.returnUrl]">
+    <g:form name="config-form" action="saveTaxRates"
+      params="[returnUrl: params.returnUrl]">
       <fieldset>
-        <h4><g:message code="config.fieldset.taxRates.label" default="Available tax rates" /></h4>
-        <div class="fieldset-content">
+        <header><h3><g:message code="config.fieldset.taxRates.label" default="Available tax rates" /></h3></header>
+        <div>
           <div class="row">
             <div class="label">
               <label><g:message code="config.taxRates.label" default="Tax rates" /></label>
             </div>
             <div class="field${hasErrors(bean: configData, field: 'taxRates', ' error')}">
-              <div id="tax-rates-list" class="sel-values-list" data-list-type="taxRates" data-load-sel-values-url="${createLink(action: 'loadTaxRates')}">
+              <div id="tax-rates-list" class="sel-values-list"
+                data-list-type="taxRates"
+                data-load-url="${createLink(action: 'loadTaxRates')}">
               </div>
-              <g:hasErrors bean="${configData}" field="taxRates">
-                <span class="error-msg"><g:eachError bean="${configData}" field="taxRates"><g:message error="${it}" /> </g:eachError></span>
-              </g:hasErrors>
+              <ul class="field-msgs">
+                <g:eachError bean="${configData}" field="taxRates">
+                <li class="error-msg"><g:message error="${it}" /></li>
+                </g:eachError>
+              </ul>
             </div>
           </div>
         </div>
       </fieldset>
     </g:form>
-  </section>
+  </div>
+  <g:render template="configSelValuesTemplate" />
 </body>
 </html>

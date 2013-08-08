@@ -33,17 +33,24 @@
   &.read-only .type {
     text-align: left;
   }
-  .pos, .number, .label, .number input {
+  .pos, .label, .number input {
     text-align: right;
+  }
+  .number .field-text {
+    margin-left: auto;
+  }
+  .button-icon-group {
+    margin-left: 1em;
   }
   .name textarea {
     margin-top: .5em;
   }
   .item-name {
     font-weight: bold;
-    margin-bottom: .5em;
   }
   .item-description {
+    margin-top: .5em;
+
     li {
       margin-bottom: .3em;
     }
@@ -59,6 +66,9 @@
       }
     }
   }
+  .field-text span {
+    padding-right: .7ex;
+  }
   .currency, .percentage {
     line-height: 1.4em;
   }
@@ -66,15 +76,26 @@
     width: 7.5em;
   }
   .action-buttons {
-    width: 70px;
+    width: 4em;
 
-    img {
+    i {
       cursor: pointer;
+      display: inline-block;
+      font-size: 123.1%;
       padding-left: .3em;
 
       &:first-child {
         padding-left: 0;
       }
+    }
+    .up-btn {
+      color: @color-icon-1;
+    }
+    .down-btn {
+      color: @color-icon-2;
+    }
+    .remove-btn {
+      color: @color-warning;
     }
   }
   tr:first-child .up-btn, tr:last-child .down-btn,
@@ -82,11 +103,27 @@
   {
     display: none;
   }
-  output {
-    padding-top: .3em;
+  .items {
+    .pos, .total-price {
+      padding-top: @padding-table-v + @padding-input-v + .1em;
+    }
+  }
+  #discount-from-percent {
+    padding-top: @padding-input-v + .1em;
   }
   .label {
     vertical-align: middle;
+  }
+  label {
+    padding: 0;
+
+    &:after {
+      content: "";
+    }
+  }
+  output:empty {            // bugfix for Chrome
+    content: "\00A0";
+    display: inline-block;
   }
   .total, .subtotal {
     font-weight: bold;
@@ -95,9 +132,6 @@
     cursor: pointer;
     vertical-align: middle;
   }
-}
-form .price-table .pos {
-  padding-top: .7em;
 }
 
 /* balance markers */
@@ -134,8 +168,13 @@ form .price-table .pos {
 }
 
 /* markers for still unpaid text */
-#still-unpaid:hover {
-  text-decoration: underline;
+#still-unpaid {
+  padding-left: 1ex;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
 }
 .still-unpaid-unpaid, .still-unpaid-unpaid:hover {
   color: #800;

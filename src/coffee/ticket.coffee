@@ -21,6 +21,8 @@
 $ = jQuery
 
 
+#-- Functions -----------------------------------
+
 # Called if the user clicks the button to create a note.
 #
 # @return {Boolean} always `false` to prevent event bubbling
@@ -44,7 +46,7 @@ onClickSendMessageToCustomerBtn = ->
 onClickSendMessageToUserMenu = ->
   $ = jQuery
   $this = $(this)
-  $span = $("#send-message-to-user-menu")
+  $span = $("#send-message-to-user-menu .button:first-child")
   showMessageDialog $span.data("title"), $span.data("submit-url"), $this.data("user-id")
 
 # Shows the dialog to send messages or create notes.
@@ -79,8 +81,11 @@ showMessageDialog = (title, url, recipient = "") ->
       width: "40em"
   false
 
+
+#-- Main ----------------------------------------
+
 $("#send-message-to-customer-btn").on "click", onClickSendMessageToCustomerBtn
-$("#send-message-to-user-menu").on "click", "a", onClickSendMessageToUserMenu
+$("#send-message-to-user-menu").on "click", "ul a", onClickSendMessageToUserMenu
 $("#create-note-btn").on "click", onClickCreateNoteBtn
 $("#take-on-btn").on "click", ->
   $.confirm $L("ticket.takeOn.confirm")

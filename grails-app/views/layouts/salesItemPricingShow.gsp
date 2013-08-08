@@ -1,6 +1,6 @@
 <g:if test="${salesItem.pricing}">
-<div class="fieldset">
-  <h4><g:message code="salesItem.fieldset.pricing.step1.label" /></h4>
+<section class="fieldset">
+  <header><h3><g:message code="salesItem.fieldset.pricing.step1.label" /></h3></header>
   <p>
     <g:message code="salesItem.pricing.step1.tableDescription" />
     <g:formatNumber number="${salesItem.pricing.quantity}" maxFractionDigits="3" />
@@ -59,9 +59,9 @@
       </g:each>
     </tbody>
   </table>
-</div>
-<div class="fieldset">
-  <h4><g:message code="salesItem.fieldset.pricing.step2.label" /></h4>
+</section>
+<section class="fieldset">
+  <header><h3><g:message code="salesItem.fieldset.pricing.step2.label" /></h3></header>
   <table class="content-table price-table">
     <thead>
       <tr>
@@ -115,9 +115,9 @@
       </tr>
     </tbody>
   </table>
-</div>
-<div class="fieldset">
-  <h4><g:message code="salesItem.fieldset.pricing.step3.label" /></h4>
+</section>
+<section class="fieldset">
+  <header><h3><g:message code="salesItem.fieldset.pricing.step3.label" /></h3></header>
   <table class="content-table price-table">
     <thead>
       <tr>
@@ -140,5 +140,5 @@
       </tr>
     </tbody>
   </table>
-</div>
+</section>
 </g:if>

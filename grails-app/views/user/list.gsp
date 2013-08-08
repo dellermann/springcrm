@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.User" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
   <g:set var="entitiesName" value="${message(code: 'user.plural', default: 'Users')}" />
@@ -9,15 +8,16 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+        <li><g:button action="create" color="green" icon="plus"
+          message="default.new.label" args="[entityName]" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content">
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
@@ -47,9 +47,12 @@
           <td class="string user-mobile"><a href="tel:${fieldValue(bean: userInstance, field: "mobile")}"><g:fieldValue bean="${userInstance}" field="mobile" /></a></td>
           <td class="string user-email"><a href="mailto:${fieldValue(bean: userInstance, field: "email")}"><g:fieldValue bean="${userInstance}" field="email" /></a></td>
           <td class="action-buttons">
-            <g:link action="edit" id="${userInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
+            <g:button action="edit" id="${userInstance.id}" color="green"
+              size="small" message="default.button.edit.label" />
             <g:if test="${session.user != userInstance}">
-            <g:link action="delete" id="${userInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+            <g:button action="delete" id="${userInstance?.id}"
+              color="red" size="small" class="delete-btn"
+              message="default.button.delete.label" />
             </g:if>
           </td>
         </tr>
@@ -64,10 +67,11 @@
       <div class="empty-list">
         <p><g:message code="default.list.empty" /></p>
         <div class="buttons">
-          <g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link>
+          <g:button action="create" color="green" icon="plus"
+            message="default.new.label" args="[entityName]" />
         </div>
       </div>
     </g:else>
-  </section>
+  </div>
 </body>
 </html>

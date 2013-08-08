@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Project" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
   <g:set var="entitiesName" value="${message(code: 'project.plural', default: 'Projects')}" />
@@ -10,15 +9,16 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+        <li><g:button action="create" color="green" icon="plus"
+          message="default.new.label" args="[entityName]" /></li>
       </ul>
     </nav>
-  </div>
-  <section id="content">
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
@@ -47,8 +47,11 @@
           <td class="string project-phase"><g:message code="project.phase.${projectInstance.phase}" default="${projectInstance.phase.toString()}" /></td>
           <td class="status project-status project-status project-status-${projectInstance.status.id}">${fieldValue(bean: projectInstance, field: "status")}</td>
           <td class="action-buttons">
-            <g:link action="edit" id="${projectInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-            <g:link action="delete" id="${projectInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+            <g:button action="edit" id="${projectInstance.id}" color="green"
+              size="small" message="default.button.edit.label" />
+            <g:button action="delete" id="${projectInstance?.id}"
+              color="red" size="small" class="delete-btn"
+              message="default.button.delete.label" />
           </td>
         </tr>
       </g:each>
@@ -62,10 +65,11 @@
       <div class="empty-list">
         <p><g:message code="default.list.empty" /></p>
         <div class="buttons">
-          <g:link action="create" class="green"><g:message code="default.new.label" args="[entityName]" /></g:link>
+          <g:button action="create" color="green" icon="plus"
+            message="default.new.label" args="[entityName]" />
         </div>
       </div>
     </g:else>
-  </section>
+  </div>
 </body>
 </html>

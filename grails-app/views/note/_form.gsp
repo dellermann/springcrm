@@ -1,6 +1,6 @@
 <r:require modules="noteForm" />
 <fieldset>
-  <h4><g:message code="note.fieldset.general.label" /></h4>
+  <header><h3><g:message code="note.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -17,8 +17,8 @@
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="note.fieldset.content.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="note.fieldset.content.label" /></h3></header>
+  <div class="form-fragment">
     <div class="row">
       <f:field bean="${noteInstance}" property="content" />
     </div>

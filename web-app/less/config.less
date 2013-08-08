@@ -80,41 +80,42 @@
     margin: 0 .5em 0 0;
   }
   li {
-    line-height: 16px;
     list-style-type: none;
     margin-bottom: .3em;
-    min-height: 16px;
     padding: .5em 1em;
   
     &:last-child {
       margin-bottom: 0;
     }
-    a {
-      background-repeat: no-repeat;
-      direction: ltr;
+    i {
+      cursor: pointer;
       float: right;
-      height: 16px;
+      font-size: 123.1%;
       outline: 0;
-      padding-left: 4px;
-      text-indent: -9999px;
-      width: 16px;
+      padding-left: .4em;
+    }
+    .delete-btn {
+      color: @color-warning;
     }
   }
-  .edit-btn {
-    background-image: url("../img/edit.png");
-  }
-  .delete-btn {
-    background-image: url("../img/remove.png");
+  .buttons {
+    border-top: none;
+    line-height: 2.5em;
+    padding-top: 0;
+    text-align: left;
   }
   .button {
-    margin-top: 1em;
-    margin-left: .5em;
+    padding-left: 1em;
+    padding-right: 1em;
   }
-  .add-btn {
-    margin-left: 0;
+  input {
+    .box-sizing(content-box) !important;
+    border: none !important;
+    outline: none;
+    width: auto !important;
   }
 }
-#tax-rates-list span:after {
+#tax-rates-list ul span:after {
   content: " %";
 }
 #seq-numbers-header-name {
@@ -127,7 +128,7 @@
   width: 9em;
 }
 #seq-numbers td {
-  vertical-align: top;
+  vertical-align: middle;
 
   &:first-child, &:last-child {
     padding-top: .8em;

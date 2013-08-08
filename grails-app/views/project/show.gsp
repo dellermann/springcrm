@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Project" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
   <g:set var="entitiesName" value="${message(code: 'project.plural', default: 'Projects')}" />
@@ -10,39 +9,26 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
-        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
-        <li><g:link action="edit" id="${projectInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
-        <li><g:link action="copy" id="${projectInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
-        <li><g:link action="delete" id="${projectInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
-      </ul>
-    </nav>
-  </div>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
+    <g:render template="/layouts/toolbarShow"
+      model="[instance: projectInstance]" />
+  </header>
   <aside id="action-bar">
-    <!--
-    <h4><g:message code="default.actions" /></h4>
-    <ul>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-      <li><a href="#" class="button medium white">[Action button]</a></li>
-    </ul>
-    -->
-    <h4><g:message code="project.status.label" default="Status" /></h4>
-    <div id="project-status-indicator" class="project-status-${projectInstance.status?.id}">${projectInstance.status?.name}</div>
+    <h3><g:message code="project.status.label" default="Status" /></h3>
+    <div id="project-status-indicator"
+      class="project-status-${projectInstance.status?.id}">
+      ${projectInstance.status?.name}
+    </div>
   </aside>
-  <section id="content" class="with-action-bar">
+  <div id="content" class="with-action-bar">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <h3>${projectInstance?.toString()}</h3>
+    <h2>${projectInstance?.toString()}</h2>
     <div class="data-sheet">
-      <div class="fieldset">
-        <h4><g:message code="project.fieldset.general.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="project.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <f:display bean="${projectInstance}" property="number">
@@ -57,42 +43,48 @@
             <f:display bean="${projectInstance}" property="person" />
           </div>
         </div>
-      </div>
+      </section>
       <g:if test="${projectInstance?.description}">
-      <div class="fieldset">
-        <h4><g:message code="project.fieldset.description.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="project.fieldset.description.label" /></h3></header>
+        <div class="form-fragment">
           <f:display bean="${projectInstance}" property="description" />
         </div>
-      </div>
+      </section>
       </g:if>
-      <div class="fieldset">
-        <h4><g:message code="project.fieldset.procedure.label" /></h4>
-        <div class="fieldset-content">
-          <div id="project-phases" data-set-phase-url="${createLink(action: 'setPhase', id: projectInstance.id)}">
-            <g:each var="phase" in="${org.amcworld.springcrm.ProjectPhase.class.enumConstants}">
+      <section class="fieldset">
+        <header><h3><g:message code="project.fieldset.procedure.label" /></h3></header>
+        <div class="form-fragment">
+          <div id="project-phases"
+            data-set-phase-url="${createLink(action: 'setPhase', id: projectInstance.id)}">
+            <g:each var="phase"
+              in="${org.amcworld.springcrm.ProjectPhase.class.enumConstants}">
             <section class="${(phase == projectInstance.phase) ? 'current' : ''}" data-phase="${phase.name()}">
-              <h5 id="project-phase-${phase.name()}"><g:message code="project.phase.${phase}" default="${phase.toString()}" /></h5>
+              <h4 id="project-phase-${phase.name()}"><g:message code="project.phase.${phase}" default="${phase.toString()}" /></h4>
               <div class="project-phase-content">
                 <ul class="project-phase-actions">
-                  <li class="project-phase-actions-create green button small"><g:message code="project.item.create.label" default="Create item" /></li>
-                  <li class="project-phase-actions-select white button small"><g:message code="project.item.select.label" default="Select item" /></li>
+                  <li><g:button color="green" size="small"
+                    class="project-phase-actions-create" icon="plus"
+                    message="project.item.create.label" /></li>
+                  <li><g:button color="white" size="small"
+                    class="project-phase-actions-select" icon="list"
+                    message="project.item.select.label" /></li>
                 </ul>
                 <g:set var="items" value="${projectItems[phase]}" />
                 <g:set var="documents" value="${projectDocuments[phase]}" />
                 <g:if test="${items || documents}">
-                <ul class="project-phase-items">
+                <ul class="project-phase-items data-type-list">
                   <g:each in="${items}" var="item">
                   <li>
-                    <g:link controller="${item.controller}" action="show" id="${item.itemId}" class="data-type data-type-${item.controller}">${item.title}</g:link>
+                    <g:link controller="${item.controller}" action="show" id="${item.itemId}"><g:dataTypeIcon controller="${item.controller}" /> <g:fieldValue bean="${item}" field="title" /></g:link>
                     <span class="item-actions">
-                      <g:link controller="${item.controller}" action="edit" id="${item.itemId}" params="[returnUrl: url()]"><g:img dir="img" file="edit.png" alt="${message(code: 'project.item.edit.label')}" title="${message(code: 'project.item.edit.label')}" width="16" height="16" /></g:link>
-                      <g:link action="removeItem" id="${item.id}" class="item-delete-btn"><g:img dir="img" file="remove.png" alt="${message(code: 'project.item.remove.label')}" title="${message(code: 'project.item.remove.label')}" width="16" height="16" /></g:link>
+                      <g:link controller="${item.controller}" action="edit" id="${item.itemId}" params="[returnUrl: url()]" class="bubbling-icon" title="${message(code: 'project.item.edit.label')}"><i class="icon-edit"></i></g:link>
+                      <g:link action="removeItem" id="${item.id}" class="item-delete-btn bubbling-icon" title="${message(code: 'project.item.remove.label')}"><i class="icon-remove"></i></g:link>
                     </span>
                   </li>
                   </g:each>
                   <g:each in="${documents}" var="document">
-                  <li><g:link controller="document" action="download" id="${document.path}" target="_blank" class="data-type data-type-document">${document.title}</g:link></li>
+                  <li><g:link controller="document" action="download" id="${document.path}" target="_blank"><g:dataTypeIcon controller="document" /> <g:fieldValue bean="${document}" field="title" /></g:link></li>
                   </g:each>
                 </ul>
                 </g:if>
@@ -102,36 +94,52 @@
             <section><div></div></section>
           </div>
         </div>
-      </div>
+      </section>
       <g:set var="controllers" value="['quote', 'salesOrder', 'invoice', 'creditMemo', 'dunning', 'purchaseInvoice', 'calendarEvent', 'call', 'note']" />
-      <div id="create-project-item-dialog" title="${message(code: 'project.item.create.title', default: 'Create project item')}" style="display: none;">
+      <div id="create-project-item-dialog"
+        title="${message(code: 'project.item.create.title', default: 'Create project item')}"
+        style="display: none;">
         <ul>
           <g:each var="controller" in="${controllers}">
-          <li><g:link controller="${controller}" action="create" params="${[project: projectInstance.id, returnUrl: url()]}" class="white button"><g:message code="${controller}.label" default="${controller}" /></g:link></li>
+          <li><g:button controller="${controller}" action="create"
+            params="${[project: projectInstance.id, returnUrl: url()]}"
+            color="white" message="${controller}.label"
+            default="${controller}" /></li>
           </g:each>
         </ul>
       </div>
-      <div id="select-project-item-dialog" title="${message(code: 'project.item.select.title', default: 'Select project item')}" style="display: none;" data-submit-url="${createLink(action: 'addSelectedItems', params: [project: projectInstance.id])}">
-        <div class="dialog-toolbar">
+      <div id="select-project-item-dialog"
+        title="${message(code: 'project.item.select.title', default: 'Select project item')}"
+        style="display: none;"
+        data-submit-url="${createLink(action: 'addSelectedItems', id: projectInstance.id)}">
+        <header class="dialog-toolbar form-fragment">
           <div class="row">
-            <div class="label"><label for="select-project-item-type-selector"><g:message code="project.item.select.type.label" default="Type" /></label></div>
+            <div class="label">
+              <label for="select-project-item-type-selector"><g:message code="project.item.select.type.label" default="Type" /></label>
+            </div>
             <div class="field">
               <select id="select-project-item-type-selector">
                 <g:each in="${controllers}">
-                <option value="${createLink(controller: it, action: 'list')}" data-controller="${it}"><g:message code="${it}.plural" default="${it}" /></option>
+                <option value="${createLink(controller: it, action: 'list')}"
+                  data-controller="${it}"
+                  ><g:message code="${it}.plural" default="${it}" /></option>
                 </g:each>
                 <option value="${createLink(controller: 'document', action: 'command')}" data-controller="document"><g:message code="document.plural" default="Documents" /></option>
               </select>
             </div>
-            <div class="field search-field selector-toolbar-search">
-              <input type="text" id="selector-search" />
-              <button type="button" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
+            <div class="field search-field">
+              <input type="text" id="selector-search"
+                placeholder="${message(code: 'default.search.label')}" />
+              <span class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="icon-search"></i></span>
             </div>
             <div class="field submit-field">
-              <a id="select-project-item-add-btn" href="#" class="green button small"><g:message code="project.item.select.add.btn" default="Add selected" /></a>
+              <g:button elementId="select-project-item-add-btn" color="green"
+                size="medium" icon="plus"
+                message="project.item.select.add.btn" />
             </div>
+            <div class="field filler">&nbsp;</div>
           </div>
-        </div>
+        </header>
         <h2></h2>
         <div id="select-project-content">
           <div id="select-project-item-list"></div>
@@ -143,6 +151,6 @@
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: projectInstance?.dateCreated, style: 'SHORT'), formatDate(date: projectInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
-  </section>
+  </div>
 </body>
 </html>

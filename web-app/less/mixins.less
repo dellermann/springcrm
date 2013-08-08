@@ -101,6 +101,14 @@
   background: linear-gradient(~"@{fromSideOrCorner}", @from, @to);
 }
 
+.transform(...) {
+  -ms-transform: @arguments;
+  -moz-transform: @arguments;
+  -o-tranform: @arguments;
+  -webkit-transform: @arguments;
+  transform: @arguments;
+}
+
 .transition(...) {
   -moz-transition: @arguments;
   -webkit-transition: @arguments;

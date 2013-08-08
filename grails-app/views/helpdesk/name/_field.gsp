@@ -3,10 +3,12 @@
     <label for="name"><g:message code="helpdesk.name.label" default="Name" /></label>
   </div>
   <div class="field${hasErrors(bean: bean, field: 'urlName', ' error')}">
-    <f:input bean="${bean}" property="name" /><br />
-    <span class="info-msg"><g:message code="default.required" default="required" /></span>
-    <g:hasErrors bean="${bean}" field="urlName">
-    <span class="error-msg"><g:eachError bean="${bean}" field="urlName"><g:message error="${it}" /> </g:eachError></span>
-    </g:hasErrors>
+    <f:input bean="${bean}" property="name" />
+    <ul class="field-msgs">
+      <li class="info-msg"><g:message code="default.required" default="required" /></li>
+      <g:eachError bean="${bean}" field="urlName">
+      <li class="error-msg"><g:message error="${it}" /></li>
+      </g:eachError>
+    </ul>
   </div>
 </div>

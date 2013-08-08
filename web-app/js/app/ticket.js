@@ -20,7 +20,7 @@
     var $span, $this;
     $ = jQuery;
     $this = $(this);
-    $span = $("#send-message-to-user-menu");
+    $span = $("#send-message-to-user-menu .button:first-child");
     return showMessageDialog($span.data("title"), $span.data("submit-url"), $this.data("user-id"));
   };
 
@@ -53,7 +53,7 @@
 
   $("#send-message-to-customer-btn").on("click", onClickSendMessageToCustomerBtn);
 
-  $("#send-message-to-user-menu").on("click", "a", onClickSendMessageToUserMenu);
+  $("#send-message-to-user-menu").on("click", "ul a", onClickSendMessageToUserMenu);
 
   $("#create-note-btn").on("click", onClickCreateNoteBtn);
 

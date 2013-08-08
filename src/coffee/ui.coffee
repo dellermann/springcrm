@@ -94,6 +94,24 @@ JQueryUiExt =
       $(this).removeAttr("disabled")
         .removeClass "disabled"
 
+  # Either renders or compiles a Mustache template using the HTML code of the
+  # elements in the jQuery object.
+  #
+  # @param {Object} data      given data for template rendering; if not specified the template is pre-compiled
+  # @return {String|Function} if data are given the method returns a string as result of the rendering process; otherwise it returns a function which contains the pre-compiled Mustache code and can be called to render the template
+  #
+  mustache: (data) ->
+    $ = jQuery
+
+    template = ""
+    @each ->
+      template += $.trim $(this).text()
+
+    if data?
+      Mustache.render template, data
+    else
+      Mustache.compile template
+
   # Reverses the elements in the jQuery object.
   #
   # @return {jQuery}  this jQuery object with reversed content
@@ -250,19 +268,15 @@ AutoCompleteExWidget =
 
     el = @element
     el.autocomplete(parentOpts)
+      .wrap("<span class='#{@widgetBaseClass}-combobox'/>")
       .focus(=> @_onFocus())
-      .blur =>
-        @_onBlur()
+      .blur => @_onBlur()
 
     @valueInput = @_getValueInput()
     if opts.combobox
-      clsCombobox = "#{@widgetBaseClass}-combobox"
-      el.addClass(clsCombobox)
-        .after $("<button/>",
-          class: clsCombobox
-          click: (event) => @_onClickComboboxBtn(event)
-          text: "..."
-          type: "button"
+      el.after $("<a/>",
+          click: (event) => @_onClickComboboxBtn event
+          html: '<i class="icon-caret-down"></i>'
         )
 
   _getValueInput: ->
@@ -379,18 +393,20 @@ $.widget "springcrm.autocompleteex", $.ui.autocomplete, AutoCompleteExWidget
 # @version  1.3
 #
 AddrFieldsWidget =
-  ADDRESS_FIELDS: ["Street", "PoBox", "PostalCode", "Location", "State", "Country"]
+  ADDRESS_FIELDS: [
+    "Street", "PoBox", "PostalCode", "Location", "State", "Country"
+  ]
 
   options:
     confirm: (msg) ->
       $.confirm msg
 
-    leftMenuSelector: ".left-address .menu"
+    leftMenuSelector: ".left-address .dropdown-menu"
     leftPrefix: "billingAddr"
     loadOrganizationUrl: null
     menuItems: []
     organizationId: null
-    rightMenuSelector: ".right-address .menu"
+    rightMenuSelector: ".right-address .dropdown-menu"
     rightPrefix: "shippingAddr"
 
   # Adds a menu item to copy data from the one side to the other.
@@ -401,11 +417,12 @@ AddrFieldsWidget =
   addMenuItemCopy: (side, text) ->
     $ = jQuery
     f = (if (side is "left") then @copyToLeft else @copyToRight)
-    $("<li/>",
-        text: text
+    $("<span/>",
         click: =>
           f.call this
+        text: text
       )
+      .wrap("<li/>")
       .appendTo @_getMenu(side)
 
   # Adds a menu item to load an address from organization.
@@ -416,11 +433,13 @@ AddrFieldsWidget =
   #
   addMenuItemLoadFromOrganization: (side, text, propPrefix) ->
     f = (if (side is "left") then @loadFromOrganizationToLeft else @loadFromOrganizationToRight)
-    $("<li/>",
+    $("<span/>",
+        click: =>
+          f.call this, propPrefix
         text: text
-      ).click( =>
-        f.call this, propPrefix
-      ).appendTo @_getMenu(side)
+      )
+      .wrap("<li/>")
+      .appendTo @_getMenu(side)
 
   # Copies the address from the right side to the left side.
   #
@@ -526,9 +545,7 @@ AddrFieldsWidget =
   # @return {jQuery}      the menu
   #
   _getMenu: (side) ->
-    $menu = (if side is "left" then @leftMenu else @rightMenu)
-    $ul = $menu.find("ul")
-    (if $ul.length then $ul else $("<div><ul/></div>").appendTo($menu).find("ul"))
+    (if side is "left" then @leftMenu else @rightMenu)
 
   # Loads address data from the organization stored on the server.
   #
@@ -584,7 +601,7 @@ $.widget "springcrm.lightbox", LightboxWidget
 
 RemoteListWidget =
   options:
-    container: ".fieldset-content"
+    container: "> div"
     returnUrl: null
 
   _computeUrl: (url) ->
@@ -623,7 +640,8 @@ RemoteListWidget =
           .each ->
             $this = $(this)
             url = $this.attr("href")
-            url += (if url.indexOf("?") < 0 then "?" else "&") + "returnUrl=#{returnUrl}"
+            url += (if url.indexOf("?") < 0 then "?" else "&")
+            url += "returnUrl=#{returnUrl}"
             $this.attr "href", url
 
       element.find(".delete-btn").deleteConfirm()
@@ -648,11 +666,20 @@ SPRINGCRM.page = (->
     $ = jQuery
 
     $document.scroll onScrollDocument if $toolbar.length
-    $("#search img").on "click", ->
-      doc.forms.searchableForm.submit()
+    $("#search-area span").on "click", ->
+      $(this).parent().get(0).submit()
       false
     $("#quick-access").change onChangeQuickAccess
     $("#print-btn").on "click", -> win.print()
+    $(".button-group .dropdown").on "click", ->
+      $btnGroup = $(this).parents(".button-group")
+      unless $btnGroup.is ".open"
+        $(".button-group.open").removeClass "open"
+      $btnGroup.toggleClass "open"
+      $document.one "click", ->
+        $btnGroup.removeClass "open"
+        true
+      false
     $(".submit-btn").click onSubmitForm
     $(".delete-btn").deleteConfirm()
 

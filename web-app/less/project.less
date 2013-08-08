@@ -45,7 +45,7 @@
   min-width: 15em;
 }
 #project-status-indicator {
-  border: .1em solid @color-default;
+  border: 1px solid @color-default;
   font-size: 131%;
   font-weight: bold;
   padding: 3em 1em;
@@ -71,21 +71,21 @@
       }
     }
   }
-  h5 {
+  h4 {
     background: @color-default-border-2;
-    border-bottom: .1em solid white;
+    border-bottom: 1px solid white;
     color: white;
     cursor: pointer;
     display: table-cell;
     padding: 2em;
     width: 10em;
   }
-  .current h5 {
+  .current h4 {
     background: @color-link-hover;
   }
 }
 .project-phase-content {
-  border-bottom: .1em solid @color-default-bg-3;
+  border-bottom: 1px solid @color-default-bg-3;
   display: table-cell;
   padding: 1em 0 1em 2em;
 
@@ -103,7 +103,6 @@
   text-align: right;
 
   li {
-    cursor: pointer;
     display: inline;
   }
 }
@@ -127,42 +126,47 @@
 }
 #select-project-item-dialog {
   .dialog-toolbar {
-    display: table;
     margin-top: .5em;
-    width: 100%;
+    
+    > div {
+      vertical-align: middle;
+    }
   }
   .search-field {
     text-align: center;
+    width: 100%;
+  }
+  .search-btn {
+    color: @color-link;
+    cursor: pointer;
+    padding-left: .5ex;
   }
   .submit-field {
     text-align: right;
   }
   .label {
-    width: 10em;
+    width: auto;
+  }
+  .filler {
+    width: 100%;
   }
   h2 {
     margin-top: 1em;
   }
 }
-#select-project-content {
-  left: 0;
-  margin-top: .5em;
-  position: relative;
-  top: 0;
+#selector-search {
+  width: 15em;
 }
-#select-project-item-list {
-  left: 0;
-  position: absolute;
-  top: 0;
-
-  .content-table a {
-    color: @color-link;
-  }
+#select-project-content {
+  margin-top: .5em;
+}
+#select-project-item-list .content-table a {
+  color: @color-link;
 }
 #select-project-document-list {
-  left: 0;
-  position: absolute;
-  top: 0;
   width: 100%;
+}
+.item-delete-btn i {
+  color: @color-warning;
 }
 

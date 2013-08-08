@@ -22,13 +22,31 @@
 @import "mixins.less";
 
 
-#tabs-recurrence-type label {
-  display: inline;
-  font-weight: normal;
-  padding-right: 0;
+#tabs-recurrence-type {
+  .field-text {
+    span {
+      padding-right: 1.5ex;
 
-  &:after {
-    content: "";
+      &:last-child {
+        padding-right: 0 !important;
+      }
+    }
+    .checkbox {
+      padding-right: .5ex;
+
+      + .label {
+        padding-right: 2ex;
+      }
+    }
+  }
+  label {
+    display: inline;
+    font-weight: normal;
+    padding-right: 0;
+
+    &:after {
+      content: "";
+    }
   }
 }
 #tabs-recurrence-type-30 span {

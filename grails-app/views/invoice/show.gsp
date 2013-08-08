@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Invoice" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
@@ -18,42 +17,83 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
-        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
+        <li><g:button action="list" color="white" icon="list"
+          message="default.button.list.label" /></li>
+        <li><g:button action="create" color="green" icon="plus"
+          message="default.button.create.label" /></li>
         <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
-        <li><g:link action="edit" id="${invoiceInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
+        <li><g:button action="edit" id="${invoiceInstance?.id}" color="green"
+          icon="edit" message="default.button.edit.label" /></li>
         </g:if>
         <g:else>
-        <li><g:link action="editPayment" id="${invoiceInstance.id}" class="green"><g:message code="invoicingTransaction.button.editPayment.label" /></g:link></li>
+        <li><g:button action="editPayment" id="${invoiceInstance?.id}"
+          color="green" icon="edit"
+          message="invoicingTransaction.button.editPayment.label" /></li>
         </g:else>
-        <li><g:link action="copy" id="${invoiceInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
+        <li><g:button action="copy" id="${invoiceInstance?.id}" color="blue"
+          icon="copy" message="default.button.copy.label" /></li>
         <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
-        <li><g:link action="delete" id="${invoiceInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
+        <li><g:button action="delete" id="${invoiceInstance?.id}" color="red"
+          class="delete-btn" icon="trash"
+          message="default.button.delete.label" /></li>
         </g:if>
       </ul>
     </nav>
-  </div>
+  </header>
   <aside id="action-bar">
-    <h4><g:message code="default.actions" /></h4>
+    <h3><g:message code="default.actions" /></h3>
     <ul>
-      <li class="menu"><g:link action="print" id="${invoiceInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><div><ul><g:each in="${printTemplates}"><li><g:link action="print" id="${invoiceInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></div></li>
-      <li class="menu"><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><div><ul><g:each in="${printTemplates}"><li><g:link action="print" id="${invoiceInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></div></li>
-      <g:ifModuleAllowed modules="dunning"><li><g:link controller="dunning" action="create" params="[invoice: invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createDunning" /></g:link></li></g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="creditMemo"><li><g:link controller="creditMemo" action="create" params="[invoice: invoiceInstance?.id]" class="button medium white"><g:message code="invoice.button.createCreditMemo" /></g:link></li></g:ifModuleAllowed>
+      <li>
+        <g:menuButton action="print" id="${invoiceInstance?.id}" color="white"
+          size="medium" icon="print" target="_blank"
+          message="default.button.print.label">
+          <g:each in="${printTemplates}">
+          <li><g:link action="print" id="${invoiceInstance?.id}"
+            params="[template: it.key]">${it.value}</g:link></li>
+          </g:each>
+        </g:menuButton>
+      </li>
+      <li>
+        <g:menuButton action="print" id="${invoiceInstance?.id}"
+          params="[duplicate: 1]" color="white" size="medium" icon="print"
+          target="_blank"
+          message="invoicingTransaction.button.printDuplicate.label">
+          <g:each in="${printTemplates}">
+          <li>
+            <g:link action="print" id="${invoiceInstance?.id}"
+              params="[duplicate: 1, template: it.key]">${it.value}</g:link>
+          </li>
+          </g:each>
+        </g:menuButton>
+      </li>
+      <g:ifModuleAllowed modules="dunning">
+      <li>
+        <g:button controller="dunning" action="create"
+          params="[invoice: invoiceInstance?.id]" color="white" size="medium"
+          message="invoice.button.createDunning" />
+      </li>
+      </g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="creditMemo">
+      <li>
+        <g:button controller="creditMemo" action="create"
+          params="[invoice: invoiceInstance?.id]" color="white" size="medium"
+          message="invoice.button.createCreditMemo" />
+      </li>
+      </g:ifModuleAllowed>
     </ul>
   </aside>
-  <section id="content" class="with-action-bar">
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <h3>${invoiceInstance?.toString()}</h3>
+    <h2>${invoiceInstance?.toString()}</h2>
     <div class="data-sheet">
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <f:display bean="${invoiceInstance}" property="number">
@@ -81,13 +121,13 @@
             <f:display bean="${invoiceInstance}" property="closingBalance" />
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="multicol-content">
+      <section class="multicol-content">
         <div class="col col-l">
           <div class="fieldset">
-            <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
-            <div class="fieldset-content form-fragment">
+            <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
+            <div class="form-fragment">
               <f:display bean="${invoiceInstance}" property="billingAddrStreet" />
               <f:display bean="${invoiceInstance}" property="billingAddrPoBox" />
               <f:display bean="${invoiceInstance}" property="billingAddrPostalCode" />
@@ -97,7 +137,12 @@
               <g:if test="${invoiceInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${invoiceInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field">
+                  <g:button url="http://maps.google.de/maps?hl=&q=${invoiceInstance.billingAddr.encodeAsURL()}"
+                    target="_blank" color="blue" size="medium"
+                    icon="map-marker"
+                    message="default.link.viewInGoogleMaps" />
+                </div>
               </div>
               </g:if>
             </div>
@@ -105,8 +150,8 @@
         </div>
         <div class="col col-r">
           <div class="fieldset">
-            <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
-            <div class="fieldset-content form-fragment">
+            <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
+            <div class="form-fragment">
               <f:display bean="${invoiceInstance}" property="shippingAddrStreet" />
               <f:display bean="${invoiceInstance}" property="shippingAddrPoBox" />
               <f:display bean="${invoiceInstance}" property="shippingAddrPostalCode" />
@@ -116,72 +161,88 @@
               <g:if test="${invoiceInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${invoiceInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field">
+                  <g:button url="http://maps.google.de/maps?hl=&q=${invoiceInstance.shippingAddr.encodeAsURL()}"
+                    target="_blank" color="blue" size="medium"
+                    icon="map-marker"
+                    message="default.link.viewInGoogleMaps" />
+                </div>
               </div>
               </g:if>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3></header>
+        <div>
           <f:display bean="${invoiceInstance}" property="headerText" />
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoice.fieldset.items.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="invoice.fieldset.items.label" /></h3></header>
         <g:set var="invoicingTransaction" value="${invoiceInstance}" />
-        <g:applyLayout name="invoicingItemsShow" params="[className: 'invoice']" />
-      </div>
+        <g:applyLayout name="invoicingItemsShow"
+          params="[className: 'invoice']" />
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3></header>
+        <div>
           <f:display bean="${invoiceInstance}" property="footerText" />
           <f:display bean="${invoiceInstance}" property="termsAndConditions" />
         </div>
-      </div>
+      </section>
 
       <g:if test="${invoiceInstance?.notes}">
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3></header>
+        <div>
           <f:display bean="${invoiceInstance}" property="notes" />
         </div>
-      </div>
+      </section>
       </g:if>
 
       <g:ifModuleAllowed modules="dunning">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded')}" data-load-params="invoice=${invoiceInstance.id}">
-        <div class="header-with-menu">
-          <h4><g:message code="dunning.plural" /></h4>
-          <div class="menu">
-            <g:link controller="dunning" action="create" params="[invoice: invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'dunning.label')]" /></g:link>
+      <section class="fieldset remote-list"
+        data-load-url="${createLink(controller: 'dunning', action: 'listEmbedded')}"
+        data-load-params="invoice=${invoiceInstance.id}">
+        <header>
+          <h3><g:message code="dunning.plural" /></h3>
+          <div class="buttons">
+            <g:button controller="dunning" action="create"
+              params="[quote: invoiceInstance.id]" color="green" size="small"
+              icon="plus" message="default.create.label"
+              args="[message(code: 'dunning.label')]" />
           </div>
-        </div>
-        <div class="fieldset-content"></div>
-      </div>
+        </header>
+        <div></div>
+      </section>
       </g:ifModuleAllowed>
 
       <g:ifModuleAllowed modules="creditMemo">
-      <div class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}" data-load-params="invoice=${invoiceInstance.id}">
-        <div class="header-with-menu">
-          <h4><g:message code="creditMemo.plural" /></h4>
-          <div class="menu">
-            <g:link controller="creditMemo" action="create" params="[invoice: invoiceInstance.id]" class="button small green"><g:message code="default.create.label" args="[message(code: 'creditMemo.label')]" /></g:link>
+      <section class="fieldset remote-list"
+        data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}"
+        data-load-params="invoice=${invoiceInstance.id}">
+        <header>
+          <h3><g:message code="creditMemo.plural" /></h3>
+          <div class="buttons">
+            <g:button controller="creditMemo" action="create"
+              params="[quote: invoiceInstance.id]" color="green" size="small"
+              icon="plus" message="default.create.label"
+              args="[message(code: 'creditMemo.label')]" />
           </div>
-        </div>
-        <div class="fieldset-content"></div>
-      </div>
+        </header>
+        <div></div>
+      </section>
       </g:ifModuleAllowed>
     </div>
 
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: invoiceInstance?.dateCreated), formatDate(date: invoiceInstance?.lastUpdated)]" />
     </p>
-  </section>
+  </div>
 </body>
 </html>

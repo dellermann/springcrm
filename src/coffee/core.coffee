@@ -159,6 +159,15 @@ Number::round = (n = numFractions) ->
 RegExp.escape = (s) ->
   s.replace /[\-\/\\\^$*+?.()|\[\]{}]/g, "\\$&"
 
+# Compares this string to the given one.
+#
+# @param {String} s the string to compare
+# @return {Number}  -1 if this string is less than the given one; 1 if this string is greater than the given one; 0 if both the strings are equal
+# @since            1.4
+#
+String::compare = (s) ->
+  (if s < this then -1 else (if s > this then 1 else 0))
+
 # Parses this string as a date and/or time value in either the given
 # user-defined format or the localized date and time format as specified
 # in the messages `dateFormat` and `timeFormat`.  If using a user-defined

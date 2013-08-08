@@ -133,6 +133,18 @@
     return s.replace(/[\-\/\\\^$*+?.()|\[\]{}]/g, "\\$&");
   };
 
+  String.prototype.compare = function(s) {
+    if (s < this) {
+      return -1;
+    } else {
+      if (s > this) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  };
+
   String.prototype.parseDate = function(format, baseYear) {
     var day, fmt, hours, minutes, month, part, pos, regexp, s, token, year;
     if (format == null) {

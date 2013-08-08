@@ -24,7 +24,7 @@
 }(jQuery));
 /*]]>*/</r:script>
 <fieldset>
-  <h4><g:message code="purchaseInvoice.fieldset.general.label" /></h4>
+  <header><h3><g:message code="purchaseInvoice.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -49,20 +49,23 @@
   </div>
 </fieldset>
 <fieldset>
-  <div class="header-with-menu">
-    <h4><g:message code="purchaseInvoice.fieldset.items.label" /></h4>
-    <div class="menu">
-      <a href="#" class="add-invoicing-item-btn button small green"><g:message code="invoicingTransaction.button.addRow.label" /></a>
+  <header>
+    <h3><g:message code="purchaseInvoice.fieldset.items.label" /></h3>
+    <div class="buttons">
+      <g:button color="green" size="small" class="add-invoicing-item-btn"
+        icon="plus" message="invoicingTransaction.button.addRow.label" />
     </div>
-  </div>
-  <div class="fieldset-content">
+  </header>
+  <div>
     <g:set var="invoicingTransaction" value="${purchaseInvoiceInstance}" />
-    <g:applyLayout name="invoicingItemsForm" params="[tableId: 'purchaseInvoice-items', className: 'purchaseInvoice']" />
+    <g:applyLayout name="invoicingItemsForm"
+      params="[tableId: 'purchaseInvoice-items', className: 'purchaseInvoice']" />
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="purchaseInvoice.fieldset.notes.label" /></h4>
-  <div class="fieldset-content">
-    <f:field bean="${purchaseInvoiceInstance}" property="notes" cols="80" rows="3" />
+  <header><h3><g:message code="purchaseInvoice.fieldset.notes.label" /></h3></header>
+  <div class="form-fragment">
+    <f:field bean="${purchaseInvoiceInstance}" property="notes" cols="80"
+      rows="3" />
   </div>
 </fieldset>

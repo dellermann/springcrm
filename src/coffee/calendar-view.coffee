@@ -162,3 +162,4 @@ $(".fc-header-right").append """
 $(".fc-button-month").removeClass "ui-corner-right"
 $(".fc-button-list").on("click", onClickListViewBtn)
   .on("hover", onHoverBtn)
+

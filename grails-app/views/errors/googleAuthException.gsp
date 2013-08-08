@@ -1,19 +1,23 @@
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title><g:message code="error.googleAuthException.title" default="Google authentication error" /></title>
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="error.googleAuthException.title" default="Google authentication error" /></h2>
-  </div>
-  <section id="content">
+  <header>
+    <h1><g:message code="error.googleAuthException.title" default="Google authentication error" /></h1>
+  </header>
+  <div id="content">
     <p><g:message code="error.googleAuthException.description" /></p>
-    <h3><g:message code="error.googleAuthException.reason" default="Reason" /></h3>
+
+    <h2><g:message code="error.googleAuthException.reason" default="Reason" /></h2>
     <p><g:message code="${exception.message}" default="${exception.message}" /></p>
-    <div class="buttons"><g:link controller="user" action="settingsGoogleAuth" class="button green"><g:message code="user.settings.googleAuth.title" default="Authorize at Google" /></g:link></div>
-  </section>
+    <div class="buttons">
+      <g:button controller="user" action="settingsGoogleAuth" color="green"
+        icon="key" message="user.settings.googleAuth.title"
+        default="Authorize at Google" />
+    </div>
+  </div>
 </body>
 </html>

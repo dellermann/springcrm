@@ -22,16 +22,33 @@
 @import "mixins.less";
 
 
+#step1-calculation-base {
+  display: table;
+  margin-bottom: 1em;
+
+  .field-text, .field-msgs {
+    display: table-row;
+  }
+  .input {
+    padding-left: 1ex;
+  }
+  li {
+    display: table-cell;
+    padding: .2em 1ex;
+  }
+}
 #step1-pricing-items {
+  td {
+    vertical-align: middle;
+  }
   .step1-unit-price {
     font-weight: bold;
   }
   .relative-to-pos {
-    img {
-      vertical-align: middle;
+    i {
+      cursor: pointer;
     }
     strong {
-      line-height: 16px;
       padding-left: 1ex;
     
       &:not(:empty):after {
@@ -40,18 +57,14 @@
     }
   }
   .not-removable .remove-btn {
+    color: @color-fg-gray;
     cursor: default;
-  
-    img {
-      -moz-filter: grayscale(100%);
-      -ms-filter: grayscale(100%);
-      -o-filter: grayscale(100%);
-      -webkit-filter: grayscale(100%);
-      filter: grayscale(100%);
-    }
   }
 }
 #step2, #step3 {
+  td {
+    vertical-align: middle;
+  }
   .quantity, .unit, .percentage {
     width: 7.5em;
   }

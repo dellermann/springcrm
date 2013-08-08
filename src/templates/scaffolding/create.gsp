@@ -1,7 +1,6 @@
 <%=packageName%>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="\${message(code: '${domainClass.propertyName}.label', default: '${className}')}" />
   <g:set var="entitiesName" value="\${message(code: '${domainClass.propertyName}.plural', default: '${className}s')}" />
@@ -9,26 +8,23 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="\${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><a href="#" class="green submit-btn" data-form="${domainClass.propertyName}-form"><g:message code="default.button.save.label" /></a></li>
-        <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
-      </ul>
-    </nav>
-  </div>
-  <section id="content">
+  <header>
+    <h1><g:message code="\${entitiesName}" /></h1>
+    <g:render template="/layouts/toolbarForm"
+      model="[formName: '${domainClass.propertyName}']" />
+  </header>
+  <div id="content">
     <g:if test="\${flash.message}">
     <div class="flash-message message" role="status">\${flash.message}</div>
     </g:if>
     <g:hasErrors bean="\${${propertyName}}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
-    <h3><g:message code="${domainClass.propertyName}.new.label" default="New \${entityName}" /></h3>
-    <g:form name="${domainClass.propertyName}-form" action="save" params="[returnUrl: params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
+    <h2><g:message code="${domainClass.propertyName}.new.label" default="New \${entityName}" /></h2>
+    <g:form name="${domainClass.propertyName}-form" action="save"
+      params="[returnUrl: params.returnUrl]"<%= multiPart ? ' enctype="multipart/form-data"' : '' %>>
       <g:render template="form"/>
     </g:form>
-  </section>
+  </div>
 </body>
 </html>

@@ -29,7 +29,7 @@ import org.springframework.context.MessageSourceResolvable
  * is, an appointment.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @see     Reminder
  */
 class CalendarEvent {
@@ -39,7 +39,7 @@ class CalendarEvent {
     static constraints = {
         subject blank: false
         location nullable: true
-        description nullable: true
+        description nullable: true, widget: 'textarea'
         start validator: { start, calendarEvent ->
             ((calendarEvent.recurrence.type == 0i) && !start.before(calendarEvent.end)) ? ['calendarEvent.start.validator.notBefore'] : null
         }

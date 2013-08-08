@@ -1,5 +1,5 @@
 <fieldset>
-  <h4><g:message code="user.fieldset.general.label" /></h4>
+  <header><h3><g:message code="user.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -10,8 +10,12 @@
             <label for="password-repeat"><g:message code="user.passwordRepeat.label" default="Repeat password" /></label>
           </div>
           <div class="field">
-            <g:passwordField name="passwordRepeat" size="40" /><g:if test="${actionName == 'create'}"><br />
-            <span class="info-msg"><g:message code="default.required" default="required" /></span></g:if>
+            <g:passwordField name="passwordRepeat" size="40" />
+            <g:if test="${actionName == 'create'}">
+            <ul class="field-msgs">
+              <li class="info-msg"><g:message code="default.required" default="required" /></li>
+            </ul>
+            </g:if>
           </div>
         </div>
         <f:field bean="${userInstance}" property="firstName" />
@@ -31,8 +35,8 @@
 </fieldset>
 
 <fieldset>
-  <h4><g:message code="user.fieldset.permissions.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="user.fieldset.permissions.label" /></h3></header>
+  <div class="form-fragment">
     <f:field bean="${userInstance}" property="admin" />
     <f:field bean="${userInstance}" property="allowedModulesAsList" />
   </div>

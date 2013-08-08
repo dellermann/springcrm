@@ -34,6 +34,30 @@ import org.springframework.validation.FieldError
  */
 class ViewTagLib {
 
+    //-- Constants ------------------------------
+
+    static final Map<String, String> CONTROLLER_ICON_MAPPING = [
+        calendarEvent: 'calendar',
+        call: 'phone',
+        creditMemo: 'money',
+        document: 'file-alt',
+        dunning: 'suitcase',
+        helpdesk: 'question-sign',
+        invoice: 'euro',
+        note: 'pencil',
+        organization: 'group',
+        person: 'male',
+        product: 'cog',
+        project: 'lightbulb',
+        purchaseInvoice: 'shopping-cart',
+        quote: 'dollar',
+        salesOrder: 'list',
+        service: 'laptop',
+        ticket: 'ticket',
+        user: 'user'
+    ]
+
+
     //-- Instance variables ---------------------
 
     CalendarEventService calendarEventService
@@ -50,20 +74,28 @@ class ViewTagLib {
      * @attr suffix the suffix to display after the number field
      */
     def autoNumber = { attrs, body ->
+        out << '<span class="auto-number">'
         if (attrs.prefix) {
-            out << attrs.prefix << '-'
+            out << '<span class="prefix">'
+            out << attrs.prefix.encodeAsHTML()
+            out << '-</span>'
         }
+        out << '<span class="input">'
         out << textField(name: 'number', value: attrs.value, size: 10)
+        out << '</span>'
         if (attrs.suffix) {
-            out << '-' << attrs.suffix
+            out << '<span class="suffix">-'
+            out << attrs.suffix.encodeAsHTML()
+            out << '</span>'
         }
         boolean checked = true
         if (params._autoNumber != null) checked = params.autoNumber
-        out << '<span class="auto-number">'
+        out << '<span class="checkbox">'
         out << checkBox(name: 'autoNumber', checked: checked)
-        out << '<label for="autoNumber">'
+        out << '</span><label for="autoNumber">'
         out << message(code: 'default.number.auto.label')
-        out << '</label></span>'
+        out << '</label>'
+        out << '</span>'
     }
 
     /**
@@ -88,24 +120,100 @@ class ViewTagLib {
     }
 
     /**
+     * Creates a button with optional icon either as link or a 
+     * <code>&lt;span></code> element.  If any of the link attributes are
+     * specified, a link is generated.  You may either specify the text of the
+     * button in the body or use the message attribute.
+     *
+     * @attr color      the color of the button, e. g. white, green, blue
+     * @attr size       the size of the button, e. g. small, medium
+     * @attr icon       the icon which should be used, e. g. save, trash
+     * @attr class      further CSS classes to apply
+     * @attr message    a message code which is used to render the buttont text; if specified, the body will not be evaluated
+     * @attr action     the name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr id         the id to use in the link
+     * @attr fragment   the link fragment (often called anchor tag) to use
+     * @attr mapping    the named URL mapping to use to rewrite the link
+     * @attr params     a map containing URL query parameters
+     * @attr url        a map containing the action, controller, id etc.
+     * @attr absolute   if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
+     * @attr base       sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
+     * @attr back       if true and a return URL is set in the parameters a back link is generated
+     */
+    def button = { attrs, body ->
+        StringBuilder buf = new StringBuilder('button')
+        String s = attrs.remove('color')
+        if (s) {
+            buf << ' ' << s
+        }
+        s = attrs.remove('size')
+        if (s) {
+            buf << ' ' << s
+        }
+        s = attrs.remove('class')
+        if (s) {
+            buf << ' ' << s
+        }
+        String cssClass = buf.toString()
+
+        buf = new StringBuilder()
+        s = attrs.remove('icon')
+        if (s) {
+            buf << '<i class="icon-' << s << '"></i>'
+        }
+        s = attrs.remove('message')
+        if (s) {
+            def args = attrs.remove('args')
+            def defValue = attrs.remove('default')
+            buf << message(code: s, args: args, default: defValue)
+        } else {
+            buf << body()
+        }
+        String content = buf.toString()
+
+        if (attrs.remove('back') && params.returnUrl) {
+            attrs.url = params.returnUrl
+        }
+        if (attrs.action || attrs.controller || attrs.id || attrs.mapping ||
+            attrs.params || attrs.uri || attrs.url)
+        {
+            def data = attrs + [class: cssClass]
+            out << link(data) { content }
+        } else {
+            out << '<span class="' << cssClass << '"'
+            def id = attrs.remove('elementId')
+            if (id) {
+                out << ' id="' << id << '"'
+            }
+            def remainingKeys = attrs.keySet()
+            for (key in remainingKeys) {
+                out << ' ' << key << '="' << attrs[key]?.encodeAsHTML() << '"'
+            }
+            out << '>' << content << '</span>'
+        }
+    }
+
+    /**
      * Renders a link which uses the currently active calendar view as action
      * or to the former page (back link).  The tag accepts the same attributes
-     * like {@code <g:backLink>}.
+     * like {@code <g:button>}.
      */
     def calendarViewBackLink = { attrs, body ->
         attrs.controller = 'calendarEvent'
         attrs.action = calendarEventService.currentCalendarView
-        out << backLink(attrs, body)
+        attrs.back = true
+        out << button(attrs, body)
     }
 
     /**
      * Renders a link which uses the currently active calendar view as action.
-     * The tag accepts the same attributes like {@code <g:link>}.
+     * The tag accepts the same attributes like {@code <g:button>}.
      */
     def calendarViewLink = { attrs, body ->
         attrs.controller = 'calendarEvent'
         attrs.action = calendarEventService.currentCalendarView
-        out << link(attrs, body)
+        out << button(attrs, body)
     }
 
     /**
@@ -137,6 +245,20 @@ class ViewTagLib {
         Locale locale = userService.currentLocale
         Currency currency = getCurrency(locale)
         out << ((currency == null) ? '' : currency.getSymbol(locale))
+    }
+
+    /**
+     * Renders a Font Awesome icon for the given controller.
+     *
+     * @attr controller REQUIRED    the given name of the controller
+     * @since                       1.4
+     */
+    def dataTypeIcon = { attrs, body ->
+        String controller = attrs.controller
+        String icon = CONTROLLER_ICON_MAPPING[controller]
+        out << "<i class='icon-fixed-width icon-" << icon << "'"
+        out << " title='" << message(code: "${controller}.label") << "'"
+        out << "></i> "
     }
 
     /**
@@ -182,6 +304,7 @@ class ViewTagLib {
         } else {
             formatName = 'default.format.date'
         }
+        boolean useTime = precision >= PRECISION_RANKINGS['hour']
 
         /*
          * Because the HTML 5 <input /> tag with type "date", "datetime",
@@ -191,14 +314,18 @@ class ViewTagLib {
          */
         out << """<input type="hidden" name="${name}"
   value="${c ? formatDate(date: c, formatName: formatName) : ''}" />"""
+        if (useTime) {
+            out << """<span class="date-time-input">"""
+        }
         out << """<input type="text" name="${name}_date" id="${id}-date"
   value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
   size="10" class="date-input date-input-date" />"""
 
-        if (precision >= PRECISION_RANKINGS['hour']) {
+        if (useTime) {
             out << """<input type="text" name="${name}_time" id="${id}-time"
   value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
   size="5" class="date-input date-input-time" />"""
+            out << "</span>"
         }
     }
 
@@ -324,6 +451,82 @@ class ViewTagLib {
             items << buf.toString()
         }
         out << '<ul class="letter-bar">' << items.join('') << '</ul>'
+    }
+
+    /**
+     * Creates a menu button with optional icon either as link or a 
+     * <code>&lt;span></code> element.  If any of the link attributes are
+     * specified, a link is generated.  The menu items <code>&lt;li></code>
+     * must be specified in the body of the tag.
+     *
+     * @attr message REQUIRED   a message code which is used to render the buttont text
+     * @attr color              the color of the button, e. g. white, green, blue
+     * @attr size               the size of the button, e. g. small, medium
+     * @attr icon               the icon which should be used, e. g. save, trash
+     * @attr class              further CSS classes to apply to the first button
+     * @attr action             the name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller         the name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr id                 the id to use in the link
+     * @attr fragment           the link fragment (often called anchor tag) to use
+     * @attr mapping            the named URL mapping to use to rewrite the link
+     * @attr params             a map containing URL query parameters
+     * @attr url                a map containing the action, controller, id etc.
+     * @attr absolute           if set to "true" will prefix the link target address with the value of the grails.serverURL property from Config, or http://localhost:<port> if no value in Config and not running in production.
+     * @attr base               sets the prefix to be added to the link target address, typically an absolute server URL. This overrides the behavior of the absolute property, if both are specified.
+     */
+    def menuButton = { attrs, body ->
+        StringBuilder buf = new StringBuilder('button')
+        String s = attrs.remove('color')
+        if (s) {
+            buf << ' ' << s
+        }
+        s = attrs.remove('size')
+        if (s) {
+            buf << ' ' << s
+        }
+        String baseCssClass = buf.toString()
+        s = attrs.remove('class')
+        if (s) {
+            buf << ' ' << s
+        }
+        String cssClass = buf.toString()
+
+        buf = new StringBuilder()
+        s = attrs.remove('icon')
+        if (s) {
+            buf << '<i class="icon-' << s << '"></i>'
+        }
+        s = attrs.remove('message')
+        def args = attrs.remove('args')
+        def defValue = attrs.remove('default')
+        buf << message(code: s, args: args, default: defValue)
+        String content = buf.toString()
+
+        out << '<div class="button-group">'
+        if (attrs.remove('back') && params.returnUrl) {
+            attrs.url = params.returnUrl
+        }
+        if (attrs.action || attrs.controller || attrs.id || attrs.mapping ||
+            attrs.params || attrs.uri || attrs.url)
+        {
+            def data = attrs + [class: cssClass]
+            out << link(data) { content }
+        } else {
+            out << '<span class="' << cssClass << '"'
+            def id = attrs.remove('elementId')
+            if (id) {
+                out << ' id="' << id << '"'
+            }
+            def remainingKeys = attrs.keySet()
+            for (key in remainingKeys) {
+                out << ' ' << key << '="' << attrs[key]?.encodeAsHTML() << '"'
+            }
+            out << '>' << content << '</span>'
+        }
+        out << '<span class="' << baseCssClass << ' dropdown">'
+        out << '<i class="icon-caret-down"></i></span>'
+        out << '<ul class="dropdown-menu">' << body() << '</ul>'
+        out << '</div>'
     }
 
     /**

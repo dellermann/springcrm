@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.CreditMemo" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'creditMemo.label', default: 'CreditMemo')}" />
   <g:set var="entitiesName" value="${message(code: 'creditMemo.plural', default: 'CreditMemos')}" />
@@ -10,40 +9,69 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:link action="list" class="white"><g:message code="default.button.list.label" /></g:link></li>
-        <li><g:link action="create" class="green"><g:message code="default.button.create.label" /></g:link></li>
+        <li><g:button action="list" color="white" icon="list"
+          message="default.button.list.label" /></li>
+        <li><g:button action="create" color="green" icon="plus"
+          message="default.button.create.label" /></li>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
-        <li><g:link action="edit" id="${creditMemoInstance?.id}" class="green"><g:message code="default.button.edit.label" /></g:link></li>
+        <li><g:button action="edit" id="${creditMemoInstance?.id}"
+          color="green" icon="edit" message="default.button.edit.label" /></li>
         </g:if>
         <g:else>
-        <li><g:link action="editPayment" id="${creditMemoInstance.id}" class="green"><g:message code="invoicingTransaction.button.editPayment.label" /></g:link></li>
+        <li><g:button action="editPayment" id="${creditMemoInstance?.id}"
+          color="green" icon="edit"
+          message="invoicingTransaction.button.editPayment.label" /></li>
         </g:else>
-        <li><g:link action="copy" id="${creditMemoInstance?.id}" class="blue"><g:message code="default.button.copy.label" /></g:link></li>
+        <li><g:button action="copy" id="${creditMemoInstance?.id}" color="blue"
+          icon="copy" message="default.button.copy.label" /></li>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
-        <li><g:link action="delete" id="${creditMemoInstance?.id}" class="red delete-btn"><g:message code="default.button.delete.label" /></g:link></li>
+        <li><g:button action="delete" id="${creditMemoInstance?.id}" color="red"
+          class="delete-btn" icon="trash"
+          message="default.button.delete.label" /></li>
         </g:if>
       </ul>
     </nav>
-  </div>
+  </header>
   <aside id="action-bar">
-    <h4><g:message code="default.actions" /></h4>
+    <h3><g:message code="default.actions" /></h3>
     <ul>
-      <li class="menu"><g:link action="print" id="${creditMemoInstance?.id}" class="button menu-button medium white" target="_blank"><span><g:message code="default.button.print.label" /></span></g:link><div><ul><g:each in="${printTemplates}"><li><g:link action="print" id="${creditMemoInstance?.id}" params="[template: it.key]">${it.value}</g:link></li></g:each></ul></div></li>
-      <li class="menu"><g:link action="print" id="${creditMemoInstance?.id}" params="[duplicate: 1]" class="button menu-button medium white" target="_blank"><span><g:message code="invoicingTransaction.button.printDuplicate.label" /></span></g:link><div><ul><g:each in="${printTemplates}"><li><g:link action="print" id="${creditMemoInstance?.id}" params="[duplicate: 1, template: it.key]">${it.value}</g:link></li></g:each></ul></div></li>
+      <li>
+        <g:menuButton action="print" id="${creditMemoInstance?.id}"
+          color="white" size="medium" icon="print" target="_blank"
+          message="default.button.print.label">
+          <g:each in="${printTemplates}">
+          <li><g:link action="print" id="${creditMemoInstance?.id}"
+            params="[template: it.key]">${it.value}</g:link></li>
+          </g:each>
+        </g:menuButton>
+      </li>
+      <li>
+        <g:menuButton action="print" id="${creditMemoInstance?.id}"
+          params="[duplicate: 1]" color="white" size="medium" icon="print"
+          target="_blank"
+          message="invoicingTransaction.button.printDuplicate.label">
+          <g:each in="${printTemplates}">
+          <li>
+            <g:link action="print" id="${creditMemoInstance?.id}"
+              params="[duplicate: 1, template: it.key]">${it.value}</g:link>
+          </li>
+          </g:each>
+        </g:menuButton>
+      </li>
     </ul>
   </aside>
-  <section id="content" class="with-action-bar">
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <h3>${creditMemoInstance?.toString()}</h3>
     <div class="data-sheet">
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <f:display bean="${creditMemoInstance}" property="number">
@@ -66,13 +94,13 @@
             <f:display bean="${creditMemoInstance}" property="closingBalance" />
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="multicol-content">
+      <section class="multicol-content">
         <div class="col col-l">
           <div class="fieldset">
-            <h4><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h4>
-            <div class="fieldset-content form-fragment">
+            <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
+            <div class="form-fragment">
               <f:display bean="${creditMemoInstance}" property="billingAddrStreet" />
               <f:display bean="${creditMemoInstance}" property="billingAddrPoBox" />
               <f:display bean="${creditMemoInstance}" property="billingAddrPostalCode" />
@@ -82,7 +110,12 @@
               <g:if test="${creditMemoInstance?.billingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${creditMemoInstance.billingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field">
+                  <g:button url="http://maps.google.de/maps?hl=&q=${creditMemoInstance.billingAddr.encodeAsURL()}"
+                    target="_blank" color="blue" size="medium"
+                    icon="map-marker"
+                    message="default.link.viewInGoogleMaps" />
+                </div>
               </div>
               </g:if>
             </div>
@@ -90,8 +123,8 @@
         </div>
         <div class="col col-r">
           <div class="fieldset">
-            <h4><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h4>
-            <div class="fieldset-content form-fragment">
+            <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
+            <div class="form-fragment">
               <f:display bean="${creditMemoInstance}" property="shippingAddrStreet" />
               <f:display bean="${creditMemoInstance}" property="shippingAddrPoBox" />
               <f:display bean="${creditMemoInstance}" property="shippingAddrPostalCode" />
@@ -101,48 +134,54 @@
               <g:if test="${creditMemoInstance?.shippingAddr}">
               <div class="row">
                 <div class="label empty-label"></div>
-                <div class="field"><a href="http://maps.google.de/maps?hl=&amp;q=${creditMemoInstance.shippingAddr.encodeAsURL()}" target="_blank" class="button small blue"><g:message code="default.link.viewInGoogleMaps" /></a></div>
+                <div class="field">
+                  <g:button url="http://maps.google.de/maps?hl=&q=${creditMemoInstance.shippingAddr.encodeAsURL()}"
+                    target="_blank" color="blue" size="medium"
+                    icon="map-marker"
+                    message="default.link.viewInGoogleMaps" />
+                </div>
               </div>
               </g:if>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.header.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3></header>
+        <div>
           <f:display bean="${creditMemoInstance}" property="headerText" />
         </div>
-      </div>
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="creditMemo.fieldset.items.label" /></h4>
+      <section class="fieldset">
+        <header><h3><g:message code="creditMemo.fieldset.items.label" /></h3></header>
         <g:set var="invoicingTransaction" value="${creditMemoInstance}" />
-        <g:applyLayout name="invoicingItemsShow" params="[className: 'creditMemo']" />
-      </div>
+        <g:applyLayout name="invoicingItemsShow"
+          params="[className: 'creditMemo']" />
+      </section>
 
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.footer.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3></header>
+        <div>
           <f:display bean="${creditMemoInstance}" property="footerText" />
           <f:display bean="${creditMemoInstance}" property="termsAndConditions" />
         </div>
-      </div>
+      </section>
 
       <g:if test="${creditMemoInstance?.notes}">
-      <div class="fieldset">
-        <h4><g:message code="invoicingTransaction.fieldset.notes.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3></header>
+        <div>
           <f:display bean="${creditMemoInstance}" property="notes" />
         </div>
-      </div>
+      </section>
       </g:if>
     </div>
 
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: creditMemoInstance?.dateCreated, style: 'SHORT'), formatDate(date: creditMemoInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
-  </section>
+  </div>
 </body>
 </html>

@@ -33,19 +33,17 @@ changePhase = (phaseName) ->
 
 # Loads the list of items with the given URL into the selector dialog.
 #
-# @param {String} url the given URL
+# @param {String} url the given URL; if undefined the URL of the currently selected data type is used
 #
 loadList = (url) ->
-  $("#select-project-item-list").load url, { view: "selector" }, onLoadedList
+  $ = jQuery
+  url ?= $("#select-project-item-type-selector :selected").val()
 
-# Called if the checkbox to select or unselect all entries in the item table is
-# changed.
-#
-onChangeTopCheckbox = ->
-  $this = $(this)
-  $this.parents(".content-table")
-    .find("tbody td:first-child input:checkbox")
-      .attr "checked", $this.is(":checked")
+  data =
+    view: "selector"
+  search = $("#selector-search").val()
+  data.search = search if search
+  $("#select-project-item-list").load url, data
 
 # Called if the project phase is changed.
 #
@@ -63,24 +61,44 @@ onChangeProjectPhase = ->
   changePhase $section.data("phase")
   false
 
+# Called if the checkbox to select or unselect all entries in the item table is
+# changed.
+#
+onChangeTopCheckbox = ->
+  $this = $(this)
+  $this.parents(".content-table")
+    .find("tbody td:first-child input:checkbox")
+      .attr "checked", $this.is(":checked")
+
 # Called if the type selector is changed.
 #
 onChangeType = ->
+  $ = jQuery
+
+  $dlg = $("#select-project-item-dialog")
   $this = $(this)
   $option = $this.find(":selected")
-  $("#select-project-item-dialog h2").text $option.text()
+  $dlg.find("h2")
+    .text $option.text()
   if $option.data("controller") is "document"
     showFileSelector $this.val()
-    $("#select-project-item-add-btn").fadeOut()
-    $(".selector-toolbar-search").fadeOut()
-    $("#select-project-item-list").fadeOut()
-    $("#select-project-document-list").fadeIn()
+    $dlg.find(".search-field")
+      .add(".submit-field", $dlg)
+      .add("#select-project-item-list")
+        .hide()
+    $dlg.find(".filler")
+      .add("#select-project-document-list")
+        .show()
   else
+    $("#selector-search").val ""
     loadList $this.val()
-    $("#select-project-item-add-btn").show()
-    $(".selector-toolbar-search").show()
-    $("#select-project-item-list").fadeIn()
-    $("#select-project-document-list").fadeOut()
+    $dlg.find(".search-field")
+      .add(".submit-field", $dlg)
+      .add("#select-project-item-list")
+        .show()
+    $dlg.find(".filler")
+      .add("#select-project-document-list")
+        .hide()
 
 # Called if the button to add an item has been clicked.
 #
@@ -110,46 +128,15 @@ onClickLink = ->
 #
 # @return {Boolean} always `false` to prevent event bubbling
 #
-onClickSelectItem = ->
+onClickSelectItem = (event) ->
+  $ = jQuery
+
+  event.stopImmediatePropagation()
   itemId = $(this).parents("tr").data("item-id")
   submitSelectedItems [itemId]
 
-  $dialog = $("#select-project-item-dialog")
-  phase = $dialog.data("phase")
-  $dialog.dialog "close"
-  $("#project-phases section[data-phase=#{phase}] h5").trigger "click"
+  $("#select-project-item-dialog").dialog "close"
   false
-
-# Called if a project item should be deleted.  The function displays a
-# confirmation dialog and sends a deletion request to the server.
-#
-# @return {Boolean} always `false` to prevent event bubbling
-#
-onDeleteProjectItem = ->
-  $ = jQuery
-  $this = $(this)
-
-  if $.confirm $L("default.delete.confirm.msg")
-    $.get $this.attr("href"), null, ->
-      $this.closest("li").remove()
-  false
-
-# Called if the data for the item selector dialog are received from the server
-# and are to display.
-#
-onLoadedList = ->
-  $ = jQuery
-  $("#select-project-item-list")
-    .find(".content-table th input:checkbox")
-      .change(onChangeTopCheckbox)
-    .end()
-    .find("a")
-      .each ->
-        $this = $(this)
-        if $this.is ".content-table tbody a"
-          $this.click onClickSelectItem
-        else
-          $this.click onClickLink
 
 # Called if a project item is to create.  The function displays a dialog where
 # the user can click on buttons to create a project item of a particular type.
@@ -167,11 +154,28 @@ onCreateProjectItem = ->
         false
   false
 
+# Called if a project item should be deleted.  The function displays a
+# confirmation dialog and sends a deletion request to the server.
+#
+# @return {Boolean} always `false` to prevent event bubbling
+#
+onDeleteProjectItem = ->
+  $ = jQuery
+  $this = $(this)
+
+  if $.confirm $L("default.delete.confirm.msg")
+    $.get $this.attr("href"), null, ->
+      $this.closest("li").remove()
+  false
+
 # Called if the item selector dialog is to display.
 #
 onOpenSelectDlg = ->
-  $("#select-project-item-type-selector").change(onChangeType).trigger "change"
-  $("#select-project-item-add-btn").click onClickAddBtn
+  $ = jQuery
+
+  $(this).find(".filler")
+    .hide()
+  $("#select-project-item-type-selector").trigger "change"
 
 # Called if a project item is to select from a list.  The method displays a
 # dialog where the user can select an existing record as project item.
@@ -273,16 +277,23 @@ submitSelectedItems = (ids) ->
   $dialog = $("#select-project-item-dialog")
 
   $.post $dialog.data("submit-url"),
-      projectPhase: $dialog.data("phase")
-      controllerName: $("#select-project-item-type-selector :selected").data("controller")
+      projectPhase: $dialog.data "phase"
+      controllerName: $("#select-project-item-type-selector :selected").data "controller"
       itemIds: ids.join()
     , onSubmittedSelectedItems
 
-$("#project-phases").on("click", "h5", onChangeProjectPhase)
+$("#project-phases").on("click", "h4", onChangeProjectPhase)
   .on("click", ".project-phase-actions-create", onCreateProjectItem)
   .on("click", ".project-phase-actions-select", onSelectProjectItem)
   .on("click", ".item-delete-btn", onDeleteProjectItem)
-$("#project-status").selectBoxIt(
-    theme: "jqueryui"
-  )
+$("#project-status").selectBoxIt(theme: "jqueryui")
   .change(onSelectProjectStatus)
+$("#select-project-item-dialog")
+  .on("click", ".search-btn", -> loadList())
+  .on("click", "#select-project-item-add-btn", onClickAddBtn)
+  .on("change", "#select-project-item-type-selector", onChangeType)
+$("#select-project-item-list")
+  .on("change", ".content-table th input:checkbox", onChangeTopCheckbox)
+  .on("click", ".content-table tbody a", onClickSelectItem)
+  .on("click", "a", onClickLink)
+

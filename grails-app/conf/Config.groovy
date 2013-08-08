@@ -121,12 +121,12 @@ grails {
 
 /* Markdown settings */
 markdown {
-  abbreviations = true
-  definitionLists = true
-  hardwraps = true
-  removeHtml = true
-  smartPunctuation = true
-  tables = true
+    abbreviations = true
+    definitionLists = true
+    hardwraps = true
+    removeHtml = true
+    smartPunctuation = true
+    tables = true
 }
 
 /* SpringCRM settings */

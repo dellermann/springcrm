@@ -1,5 +1,5 @@
 <section class="ticket-log-entry ticket-log-entry-action-${it.action}">
-  <h5><g:formatDate date="${it.dateCreated}" /> – <g:message message="${it}" /></h5>
+  <h4><g:formatDate date="${it.dateCreated}" /> – <g:message message="${it}" /></h4>
   <div class="row">
     <div class="label"><g:message code="ticket.creator.label" /></div>
     <div class="field">

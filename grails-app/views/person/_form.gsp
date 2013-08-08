@@ -1,6 +1,6 @@
 <r:require modules="personForm" />
 <fieldset>
-  <h4><g:message code="person.fieldset.general.label" /></h4>
+  <header><h3><g:message code="person.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -30,16 +30,18 @@
     </div>
   </div>
 </fieldset>
-<div class="multicol-content" id="addresses" data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
+<div id="addresses" class="multicol-content"
+  data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
   <div class="col col-l left-address">
     <fieldset>
-      <div class="header-with-menu">
-        <h4><g:message code="person.fieldset.mailingAddr.label" /></h4>
-        <div class="menu">
-          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
+      <header>
+        <h3><g:message code="person.fieldset.mailingAddr.label" /></h3>
+        <div class="buttons">
+          <g:menuButton color="white" size="small" icon="location-arrow"
+            message="default.options.label" />
         </div>
-      </div>
-      <div class="fieldset-content form-fragment">
+      </header>
+      <div class="form-fragment">
         <f:field bean="${personInstance}" property="mailingAddrStreet" cols="35" rows="3" />
         <f:field bean="${personInstance}" property="mailingAddrPoBox" />
         <f:field bean="${personInstance}" property="mailingAddrPostalCode" size="10" />
@@ -51,13 +53,14 @@
   </div>
   <div class="col col-r right-address">
     <fieldset>
-      <div class="header-with-menu">
-        <h4><g:message code="person.fieldset.otherAddr.label" /></h4>
-        <div class="menu">
-          <span class="button menu-button small white"><span><g:message code="default.options.label" /></span></span>
+      <header>
+        <h3><g:message code="person.fieldset.otherAddr.label" /></h3>
+        <div class="buttons">
+          <g:menuButton color="white" size="small" icon="location-arrow"
+            message="default.options.label" />
         </div>
-      </div>
-      <div class="fieldset-content form-fragment">
+      </header>
+      <div class="form-fragment">
         <f:field bean="${personInstance}" property="otherAddrStreet" cols="35" rows="3" />
         <f:field bean="${personInstance}" property="otherAddrPoBox" />
         <f:field bean="${personInstance}" property="otherAddrPostalCode" size="10" />
@@ -69,8 +72,8 @@
   </div>
 </div>
 <fieldset>
-  <h4><g:message code="person.fieldset.notes.label" /></h4>
-  <div class="fieldset-content">
-    <f:field bean="${personInstance}" property="notes" cols="80" rows="5" />
+  <header><h3><g:message code="person.fieldset.notes.label" /></h3></header>
+  <div class="form-fragment">
+    <f:field bean="${personInstance}" property="notes" cols="80" rows="7" />
   </div>
 </fieldset>

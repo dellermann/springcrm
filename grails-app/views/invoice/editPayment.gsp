@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Invoice" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
@@ -27,28 +26,24 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="${entitiesName}" /></h2>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><a href="#" class="green submit-btn" data-form="invoice-form"><g:message code="default.button.save.label" /></a></li>
-        <li><g:backLink action="list" class="red"><g:message code="default.button.cancel.label" /></g:backLink></li>
-      </ul>
-    </nav>
-  </div>
-  <section id="content">
+  <header>
+    <h1><g:message code="${entitiesName}" /></h1>
+    <g:render template="/layouts/toolbarForm" model="[formName: 'invoice']" />
+  </header>
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
     <g:hasErrors bean="${invoiceInstance}">
     <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
     </g:hasErrors>
-    <h3>${invoiceInstance?.toString()}</h3>
-    <g:form name="invoice-form" action="updatePayment" method="post" params="[returnUrl: params.returnUrl]">
+    <h2>${invoiceInstance?.toString()}</h2>
+    <g:form name="invoice-form" action="updatePayment" method="post"
+      params="[returnUrl: params.returnUrl]">
       <g:hiddenField name="id" value="${invoiceInstance?.id}" />
       <g:hiddenField name="version" value="${invoiceInstance?.version}" />
       <fieldset>
-        <h4><g:message code="invoicingTransaction.fieldset.general.label" /></h4>
+        <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
         <div class="multicol-content">
           <div class="col col-l">
             <div class="row">
@@ -56,10 +51,14 @@
                 <label for="stage.id"><g:message code="invoice.stage.label" default="Stage" /></label>
               </div>
               <div class="field${hasErrors(bean: invoiceInstance, field: 'stage', ' error')}">
-                <g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.InvoiceStage.findAllByIdGreaterThanEquals(902)}" optionKey="id" value="${invoiceInstance?.stage?.id}" /><br />
+                <g:select name="stage.id" id="stage"
+                  from="${org.amcworld.springcrm.InvoiceStage.findAllByIdGreaterThanEquals(902)}"
+                  optionKey="id" value="${invoiceInstance?.stage?.id}" />
+                <div class="field-msgs">
                 <g:hasErrors bean="${invoiceInstance}" field="stage">
                   <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="stage"><g:message error="${it}" /> </g:eachError></span>
                 </g:hasErrors>
+                </div>
               </div>
             </div>
           </div>
@@ -69,11 +68,14 @@
                 <label for="paymentDate-date"><g:message code="invoicingTransaction.paymentDate.label" default="Payment date" /></label>
               </div>
               <div class="field${hasErrors(bean: invoiceInstance, field: 'paymentDate', ' error')}">
-                <g:dateInput name="paymentDate" value="${invoiceInstance?.paymentDate}" precision="day" /><br />
-                <span class="info-msg"><g:message code="default.format.date.label" /></span>
-                <g:hasErrors bean="${invoiceInstance}" field="paymentDate">
-                  <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentDate"><g:message error="${it}" /> </g:eachError></span>
-                </g:hasErrors>
+                <g:dateInput name="paymentDate"
+                  value="${invoiceInstance?.paymentDate}" precision="day" />
+                <div class="field-msgs">
+                  <span class="info-msg"><g:message code="default.format.date.label" /></span>
+                  <g:hasErrors bean="${invoiceInstance}" field="paymentDate">
+                    <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentDate"><g:message error="${it}" /> </g:eachError></span>
+                  </g:hasErrors>
+                </div>
               </div>
             </div>
       
@@ -82,10 +84,18 @@
                 <label for="paymentAmount"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment amount" /></label>
               </div>
               <div class="field${hasErrors(bean: invoiceInstance, field: 'paymentAmount', ' error')}">
-                <g:textField name="paymentAmount" value="${formatNumber(number: invoiceInstance?.paymentAmount, minFractionDigits: 2)}" size="8" class="currency" />&nbsp;<g:currency /><br />
+                <div class="field-text">
+                  <span class="input"><g:textField name="paymentAmount"
+                    value="${formatNumber(number: invoiceInstance?.paymentAmount, minFractionDigits: 2)}"
+                    size="8" class="number" />
+                  </span>
+                  <span class="currency-symbol"><g:currency /></span>
+                </div>
+                <div class="field-msgs">
                 <g:hasErrors bean="${invoiceInstance}" field="paymentAmount">
                   <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentAmount"><g:message error="${it}" /> </g:eachError></span>
                 </g:hasErrors>
+                </div>
               </div>
             </div>
       
@@ -94,19 +104,24 @@
                 <label for="paymentMethod.id"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></label>
               </div>
               <div class="field${hasErrors(bean: invoiceInstance, field: 'paymentMethod', ' error')}">
-                <g:select name="paymentMethod.id" from="${org.amcworld.springcrm.PaymentMethod.list()}" optionKey="id" value="${invoiceInstance?.paymentMethod?.id}" noSelection="['null': '']" /><br />
+                <g:select name="paymentMethod.id"
+                  from="${org.amcworld.springcrm.PaymentMethod.list()}"
+                  optionKey="id" value="${invoiceInstance?.paymentMethod?.id}"
+                  noSelection="['null': '']" />
+                <div class="field-msgs">
                 <g:hasErrors bean="${invoiceInstance}" field="paymentMethod">
                   <span class="error-msg"><g:eachError bean="${invoiceInstance}" field="paymentMethod"><g:message error="${it}" /> </g:eachError></span>
                 </g:hasErrors>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </fieldset>
 
-      <div class="fieldset">
-        <h4><g:message code="invoice.fieldset.items.label" /></h4>
-        <div class="fieldset-content">
+      <section class="fieldset">
+        <header><h3><g:message code="invoice.fieldset.items.label" /></h3></header>
+        <div>
           <table id="invoice-items" class="content-table price-table">
             <thead>
               <tr>
@@ -181,7 +196,10 @@
                 <td class="item-number">${item.number}</td>
                 <td class="quantity number">${formatNumber(number: item.quantity, maxFractionDigits: 3)}</td>
                 <td class="unit">${item.unit}</td>
-                <td class="name">${item.name}<br />${item.description}</td>
+                <td class="name">
+                  <div class="item-name">${item.name}</div>
+                  <div class="item-description"><markdown:renderHtml text="${item.description}" /></div>
+                </td>
                 <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
                 <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
                 <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
@@ -199,8 +217,8 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </g:form>
-  </section>
+  </div>
 </body>
 </html>

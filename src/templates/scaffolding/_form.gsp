@@ -1,7 +1,7 @@
 <% import grails.persistence.Event %>
 <% import org.codehaus.groovy.grails.plugins.PluginManagerHolder %>
 <fieldset>
-  <h4><g:message code="${domainClass.propertyName}.fieldset.general.label" /></h4>
+  <header><h3><g:message code="${domainClass.propertyName}.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <%  excludedProps = Event.allEvents.toList() << 'version' << 'id' << 'dateCreated' << 'lastUpdated'
@@ -23,9 +23,11 @@
         </div>
         <div class="field\${hasErrors(bean: ${propertyName}, field: '${p.name}', ' error')}">
           ${renderEditor(p)}
-          <g:hasErrors bean="\${${propertyName}}" field="${p.name}">
-            <span class="error-msg"><g:eachError bean="\${${propertyName}}" field="${p.name}"><g:message error="\${it}" /> </g:eachError></span>
-          </g:hasErrors>
+          <ul class="field-msgs">
+            <g:eachError bean="\${${propertyName}}" field="${p.name}">
+            <li class="error-msg"><g:message error="\${it}" /></li>
+            </g:eachError>
+          </ul>
         </div>
       </div>
       <%  }   }   } %>

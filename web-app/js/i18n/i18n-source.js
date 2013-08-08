@@ -99,5 +99,6 @@
     'salesItem.pricing.type.sum',
     'ticket.changeStage.assign.confirm',
     'ticket.changeStage.closed.confirm',
-    'ticket.takeOn.confirm'
+    'ticket.takeOn.confirm',
+    'user.settings.googleAuth.revoke.confirm.disconnect'
 ];

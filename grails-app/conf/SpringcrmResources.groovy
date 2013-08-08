@@ -26,10 +26,10 @@ modules = {
     }
 
     calendarForm {
-        dependsOn 'core'
+        dependsOn 'core, mustache'
 
         resource url: 'less/calendar.less', attrs: [rel: 'stylesheet/less', type: 'css']
-        resource '/js/calendar-form.js'
+        resource '/js/app/calendar-form.js'
     }
 
     calendarView {
@@ -60,17 +60,17 @@ modules = {
     }
 
     configSelValues {
-        dependsOn 'config'
+        dependsOn 'config, mustache'
         defaultBundle 'config'
 
-        resource '/js/config-sel-values.js'
+        resource '/js/app/config-sel-values.js'
     }
 
     configSeqNumbers {
         dependsOn 'config'
         defaultBundle 'config'
 
-        resource '/js/config-seq-numbers.js'
+        resource '/js/app/config-seq-numbers.js'
     }
 
     core {
@@ -80,6 +80,7 @@ modules = {
         resource url: '/less/reset.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/less/main.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/css/print.css', attrs: [media: 'print']
+        resource url: '/css/font-awesome.min.css', exclude: 'minify'
         resource url: '/less/jquery-ui-springcrm.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
 
         resource '/js/jquery.ui.datepicker-de.js'
@@ -138,7 +139,7 @@ modules = {
     }
 
     invoicingTransactionForm {
-        dependsOn 'invoicingTransaction'
+        dependsOn 'invoicingTransaction, mustache'
         defaultBundle 'invoicing-transaction-form'
 
         resource '/js/app/invoicing-items.js'
@@ -155,6 +156,10 @@ modules = {
         defaultBundle 'core'
 
         resource url: 'less/login.less', attrs: [rel: 'stylesheet/less', type: 'css'], bundle: 'core'
+    }
+
+    mustache {
+        resource '/js/mustache.js'
     }
 
     noteForm {
@@ -175,13 +180,15 @@ modules = {
 
         resource url: 'less/overview.less', attrs: [rel: 'stylesheet/less', type: 'css'], bundle: 'core'
 
-        resource '/js/overview.js'
+        resource '/js/app/overview.js'
     }
 
     personForm {
         dependsOn 'personShow'
 
-        resource '/js/person-form.js'
+        resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
+        resource '/js/app/person-form.js'
     }
 
     personShow {
@@ -216,7 +223,7 @@ modules = {
 
         resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
 
-        resource '/js/purchase-invoice-form.js'
+        resource '/js/app/purchase-invoice-form.js'
     }
 
     report {
@@ -238,7 +245,7 @@ modules = {
     }
 
     salesItemPricing {
-        dependsOn 'core'
+        dependsOn 'core, mustache'
 
         resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource url: 'less/pricing.less', attrs: [rel: 'stylesheet/less', type: 'css']
@@ -251,6 +258,12 @@ modules = {
 
         resource '/css/jquery/default/jquery.selectBoxIt.css'
         resource url: '/js/jquery.selectBoxIt.min.js', exclude: 'minify'
+    }
+
+    settingsGoogleAuth {
+        dependsOn 'core'
+
+        resource '/js/app/settings-google-auth.js'
     }
 
     ticket {

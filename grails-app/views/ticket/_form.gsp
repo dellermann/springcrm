@@ -1,5 +1,5 @@
 <fieldset>
-  <h4><g:message code="ticket.fieldset.general.label" /></h4>
+  <header><h3><g:message code="ticket.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -16,7 +16,7 @@
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="ticket.fieldset.customerData.label" /></h4>
+  <header><h3><g:message code="ticket.fieldset.customerData.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -44,19 +44,21 @@
 </fieldset>
 <g:unless test="${ticketInstance.id}">
 <fieldset>
-  <h4><g:message code="ticket.fieldset.message.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="ticket.fieldset.message.label" /></h3></header>
+  <div class="form-fragment">
     <div class="row">
       <div class="label">
         <label for="messageText"><g:message code="ticket.messageText.label" /></label>
       </div>
       <div class="field${hasErrors(bean: ticketInstance, field: 'messageText', ' error')}">
         <g:textArea name="messageText" cols="100" rows="10" required="required"
-          value="${ticketInstance.messageText}" /><br />
-        <span class="info-msg"><g:message code="default.required" default="required" /></span>
-        <g:hasErrors bean="${ticketInstance}" field="messageText">
-        <span class="error-msg"><g:eachError bean="${ticketInstance}" field="messageText"><g:message error="${it}" /> </g:eachError></span>
-        </g:hasErrors>
+          value="${ticketInstance.messageText}" />
+        <ul class="field-msgs">
+          <li class="info-msg"><g:message code="default.required" default="required" /></li>
+          <g:eachError bean="${ticketInstance}" field="messageText">
+          <li class="error-msg"><g:message error="${it}" /></li>
+          </g:eachError>
+        </ul>
       </div>
     </div>
     <div class="row">

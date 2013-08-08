@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Quote" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <title><g:message code="report.salesJournal.title" /></title>
   <r:require modules="reportSalesJournal" />
@@ -15,30 +14,39 @@
 </head>
 
 <body>
-  <div id="main-container-header">
-    <h2><g:message code="report.salesJournal.title" /></h2>
+  <header>
+    <h1><g:message code="report.salesJournal.title" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><a id="print-btn" href="#" class="white"><g:message code="default.button.print.label" /></a></li>
+        <li><g:button elementId="print-btn" color="white" icon="print"
+          message="default.button.print.label" /></li>
       </ul>
     </nav>
-  </div>
+  </header>
   <section id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <div id="filter-bar" class="filter-bar" data-load-url="${createLink(action: 'salesJournal')}">
-      <g:set var="monthNames" value="${java.text.DateFormatSymbols.instance.months}" />
-      <g:set var="shortMonthNames" value="${java.text.DateFormatSymbols.instance.shortMonths}" />
+    <div id="filter-bar" class="filter-bar"
+      data-load-url="${createLink(action: 'salesJournal')}">
+      <g:set var="monthNames"
+        value="${java.text.DateFormatSymbols.instance.months}" />
+      <g:set var="shortMonthNames"
+        value="${java.text.DateFormatSymbols.instance.shortMonths}" />
       <ul id="month-selector" class="letter-bar">
-      <g:each var="i" in="${(1..12)}">
-        <li class="available ${(currentMonth == i) ? 'current' : ''}" data-month="${i}"><g:link action="salesJournal">${shortMonthNames[i - 1]}</g:link></li>
-      </g:each>
-        <li class="available ${currentMonth == 0 ? 'current' : ''}" data-month="0"><g:link action="salesJournal"><g:message code="report.salesJournal.wholeYear.label" default="Year {0}" args="${[currentYear]}" /></g:link></li>
+        <g:each var="i" in="${(1..12)}">
+        <li class="available ${(currentMonth == i) ? 'current' : ''}"
+          data-month="${i}"
+          ><g:link action="salesJournal">${shortMonthNames[i - 1]}</g:link></li>
+        </g:each>
+        <li class="available ${currentMonth == 0 ? 'current' : ''}"
+          data-month="0"
+          ><g:link action="salesJournal"><g:message code="report.salesJournal.wholeYear.label" default="Year {0}" args="[currentYear]" /></g:link></li>
       </ul>
-      <g:select name="year-selector" from="${(yearStart..yearEnd)}" value="${currentYear}" />
+      <g:select name="year-selector" from="${(yearStart..yearEnd)}"
+        value="${currentYear}" />
     </div>
-    <h3><g:if test="${currentMonth}">${monthNames[currentMonth - 1]} ${currentYear}</g:if><g:else><g:message code="report.salesJournal.yearlyOverview.label" default="Overview of year {0}" args="${[currentYear]}" /></g:else></h3>
+    <h2><g:if test="${currentMonth}">${monthNames[currentMonth - 1]} ${currentYear}</g:if><g:else><g:message code="report.salesJournal.yearlyOverview.label" default="Overview of year {0}" args="${[currentYear]}" /></g:else></h2>
     <g:if test="${invoicingTransactionInstanceList}">
     <table class="content-table report">
       <thead>

@@ -26,7 +26,7 @@ $ = jQuery
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.3
+# @version  1.4
 #
 InvoicingItemsWidget =
 
@@ -37,7 +37,6 @@ InvoicingItemsWidget =
   options:
     currency: $("html").data("currency-symbol") or "€"
     fieldNamePrefix: "items"
-    imgPath: $(".price-table").data("img-path")
     productListUrl: $(".price-table").data("product-list-url")
     serviceListUrl: $(".price-table").data("service-list-url")
     taxes: $(".price-table").data("tax-items").split(",")
@@ -49,66 +48,27 @@ InvoicingItemsWidget =
   #
   _addItem: (jumpToNewRow) ->
     $ = jQuery
-    opts = @options
-    currency = opts.currency
-    imgPath = opts.imgPath
+
+    # prepare Mustache template
+    template = @addItemTemplate
+    unless template
+      template = $("#add-item-template").mustache()
+      @addItemTemplate = template
 
     index = @_getNumRows()
-    s = """
-      <tr>
-        <td class="pos number">#{index + 1}.</td>
-        <td class="item-number"><input type="text" name="#{@_getInputName(index, "number")}" size="10" /></td>
-        <td class="quantity number"><input type="text" name="#{@_getInputName(index, "quantity")}" size="4" /></td>
-        <td class="unit"><input type="text" name="#{@_getInputName(index, "unit")}" size="8" /></td>
-        <td class="name">
-          <input type="text" name="#{@_getInputName(index, "name")}" size="28" />
-      """
-    if imgPath
-      s += """
-          &nbsp;<img class="select-btn-products" src="#{imgPath}/products.png"
-            alt="#{$L("invoicingTransaction.product.sel")}"
-            title="#{$L("invoicingTransaction.product.sel")}"
-            width="16" height="16" />
-        """ if opts.productListUrl
-      s += """&nbsp;<img class="select-btn-services" src="#{imgPath}/services.png" alt="#{$L("invoicingTransaction.service.sel")}" title="#{$L("invoicingTransaction.service.sel")}" width="16" height="16" />"""  if opts.serviceListUrl
-    s += """
-          <br />
-          <textarea name="#{@_getInputName(index, "description")}" cols="30" rows="3"></textarea>
-        </td>
-        <td class="unit-price currency number">
-          <input type="text" name="#{@_getInputName(index, "unitPrice")}" size="8" value="#{(0).formatCurrencyValue()}" />&nbsp;#{currency}
-        </td>
-        <td class="total-price currency number">
-          <output>#{(0).formatCurrencyValue()}</output>&nbsp;#{currency}
-        </td>
-        <td class="tax percentage number">
-          <input type="text" name="#{@_getInputName(index, "tax")}" size="4" />&nbsp;%
-        </td>
-        <td class="action-buttons">
-      """
-    if imgPath
-      s += """
-          <img class="up-btn" src="#{imgPath}/up.png"
-            alt="#{$L("default.btn.up")}" title="#{$L("default.btn.up")}"
-            width="16" height="16"
-          /><img class="down-btn" src="#{imgPath}/down.png"
-            alt="#{$L("default.btn.down")}" title="#{$L("default.btn.down")}"
-            width="16" height="16"
-          /><img class="remove-btn" src="#{imgPath}/remove.png"
-            alt="#{$L("default.delete.label")}" title="#{$L("default.delete.label")}"
-            width="16" height="16" />
-        """
-    s += """
-        </td>
-      </tr>
-      """
-
+    s = template
+      index: index
+      pos: index + 1
+      zero: (0).formatCurrencyValue()
     $row = $(s)
     @element.find(".items").append $row
 
     @_initUnitAutocomplete $row.find(".unit input")
     @_initTaxAutocomplete $row.find(".tax input")
-    $("html").scrollTop $row.position().top - $("#toolbar").outerHeight() if jumpToNewRow
+    $row.find("textarea")
+      .autosize()
+    if jumpToNewRow
+      $("html").scrollTop $row.position().top - $("#toolbar").outerHeight()
 
   # Adds a new tax rate and the associated tax value to the given array of tax
   # rates.
@@ -166,17 +126,18 @@ InvoicingItemsWidget =
 
     # compute a map of tax rates
     taxRates = []
-    $("input:text[name$='.tax']").each (index, elem) =>
-      els = @form.elements
-      name = elem.name.replace /\.tax$/, ".quantity"
-      qty = els[name].value.parseNumber()
-      name = elem.name.replace /\.tax$/, ".unitPrice"
-      unitPrice = els[name].value.parseNumber()
+    @element.find("input:text[name$='.tax']")
+      .each (index, elem) =>
+        els = @form.elements
+        name = elem.name.replace /\.tax$/, ".quantity"
+        qty = els[name].value.parseNumber()
+        name = elem.name.replace /\.tax$/, ".unitPrice"
+        unitPrice = els[name].value.parseNumber()
 
-      taxRate = elem.value.parseNumber()
-      if taxRate isnt 0
-        tax = qty * unitPrice * taxRate / 100.0
-        @_addTaxRate taxRates, taxRate, tax
+        taxRate = elem.value.parseNumber()
+        if taxRate isnt 0
+          tax = qty * unitPrice * taxRate / 100.0
+          @_addTaxRate taxRates, taxRate, tax
 
     # add the shipping tax to the tax rate map
     shippingCosts = $("#shippingCosts").val().parseNumber()
@@ -186,6 +147,12 @@ InvoicingItemsWidget =
     taxRates.sort (a, b) ->
       a.taxRate - b.taxRate
 
+    # prepare Mustache template
+    template = @taxRateSumTemplate
+    unless template
+      template = $("#tax-rate-sum-template").mustache()
+      @taxRateSumTemplate = template
+
     # display the tax rates
     currency = @options.currency
     taxTotal = 0
@@ -194,17 +161,9 @@ InvoicingItemsWidget =
       t = tr.tax
       taxTotal += t
       label = $L("invoicingTransaction.taxRate.label").replace /\{0\}/, tr.taxRate.format(1)
-      s += """
-        <tr class="tax-rate-sum">
-          <td colspan="5" class="label"><label>#{label}</label></td>
-          <td></td>
-          <td class="total-price currency number">
-            #{t.formatCurrencyValue()}&nbsp;#{currency}
-          </td>
-          <td></td>
-          <td></td>
-        </tr>
-        """
+      s += template
+        label: label
+        value: t.formatCurrencyValue()
     $(".tax-rate-sum").remove()
     $("tfoot tr:first").after s
 
@@ -232,23 +191,23 @@ InvoicingItemsWidget =
     @taxes = @_prepareTaxes opts.taxes
     @inputRegExp = new RegExp("^#{opts.fieldNamePrefix}\\[(\\d+)\\]\\.(\\w+)$")
 
-    el.on("click", "img.up-btn", (event) =>
+    el.on("click", ".up-btn", (event) =>
         @_moveItem $(event.currentTarget), -1
         false
       )
-      .on("click", "img.down-btn", (event) =>
+      .on("click", ".down-btn", (event) =>
         @_moveItem $(event.currentTarget), 1
         false
       )
-      .on("click", "img.remove-btn", (event) =>
+      .on("click", ".remove-btn", (event) =>
         @_removeItem $(event.currentTarget)
         false
       )
-      .on("click", "img.select-btn-products", (event) =>
+      .on("click", ".select-btn-products", (event) =>
         @_showSalesItemSelector $(event.currentTarget), "products"
         false
       )
-      .on("click", "img.select-btn-services", (event) =>
+      .on("click", ".select-btn-services", (event) =>
         @_showSalesItemSelector $(event.currentTarget), "services"
         false
       )
@@ -284,19 +243,6 @@ InvoicingItemsWidget =
   _getInput: (pos, name = "", suffix = "") ->
     @form.elements[@_getInputName pos, name, suffix]
 
-  # Gets the position and name of the given input field.
-  #
-  # @param {Object} input the given input field
-  # @returns {Array}      an array containing the zero-based position as first and the name as second element
-  #
-  _getInputPosAndName: (input) ->
-    parts = input.name.match(@inputRegExp)
-    if parts
-      parts.shift()
-      parts
-    else
-      null
-
   # Gets the name of the input field with the given index, name, and an
   # optional suffix.
   #
@@ -314,6 +260,19 @@ InvoicingItemsWidget =
   #
   _getNumRows: ->
     @element.find(".items tr").length
+
+  # Gets the position and name of the given input field.
+  #
+  # @param {Object} input the given input field
+  # @returns {Array}      an array containing the zero-based position as first and the name as second element
+  #
+  _getInputPosAndName: (input) ->
+    parts = input.name.match(@inputRegExp)
+    if parts
+      parts.shift()
+      parts
+    else
+      null
 
   # Gets the position of the given price table row.  The position is the
   # zero-based sequence number of the row in the table.
@@ -358,10 +317,10 @@ InvoicingItemsWidget =
 
   # Moves a row in the price table up- or downwards.
   #
-  # @param {jQuery} $img  the symbol which was clicked to move the row
+  # @param {jQuery} $icon the symbol which was clicked to move the row
   # @param {Number} dir   a negative value moves the row upwards; otherwise it moves it downwards
-  _moveItem: ($img, dir) ->
-    $tr = $img.parents("tr")
+  _moveItem: ($icon, dir) ->
+    $tr = $icon.parents("tr")
 
     # swap current row with previous or next row
     pos = @_getRowPosition($tr)
@@ -449,11 +408,11 @@ InvoicingItemsWidget =
 
   # Removes the row in the pricing table that remove symbol was clicked.
   #
-  # @param {jQuery} $img  the clicked remove symbol
+  # @param {jQuery} $icon the clicked remove symbol
   #
-  _removeItem: ($img) ->
+  _removeItem: ($icon) ->
     if @_getNumRows() > 1
-      @_removeRow $img.parents("tr")
+      @_removeRow $icon.parents("tr")
       @_computeFooterValues()
 
   # Removes the given row from the pricing table.
@@ -503,10 +462,12 @@ InvoicingItemsWidget =
         els[prefix + "number"].value = data.fullNumber
         item = data.inventoryItem
         qty = item.quantity
-        els[prefix + "quantity"].value = qty.format qty
+        els[prefix + "quantity"].value = qty.format()
         els[prefix + "unit"].value = item.unit.name
         els[prefix + "name"].value = item.name
-        els[prefix + "description"].value = item.description
+        textArea = els[prefix + "description"]
+        textArea.value = item.description
+        $(textArea).trigger 'autosize.resize'
         unitPrice = item.unitPrice
         unitPriceInput = els[prefix + "unitPrice"]
         unitPriceInput.value = unitPrice.formatCurrencyValue()
@@ -520,16 +481,16 @@ InvoicingItemsWidget =
   # Displays the sales item selector of the given type and loads its content
   # via AJAX.
   #
-  # @param {jQuery} $img  the selector symbol which was clicked
+  # @param {jQuery} $icon the selector symbol which was clicked
   # @param {String} type  the type of sales items which are to retrieve; may be either `products` or `services`
   # @param {String} url   the URL called to load the sales items via AJAX; if not specified the URL is obtained from the options
   #
-  _showSalesItemSelector: ($img, type, url) ->
+  _showSalesItemSelector: ($icon, type, url) ->
     opts = @options
     unless url
       url = (if (type is "products") then opts.productListUrl else opts.serviceListUrl)
     if url
-      pos = @_getRowPosition $img.parents("tr")
+      pos = @_getRowPosition $icon.parents("tr")
       @_loadSalesItemSelector type, url, pos
 
   # Swaps the positions in the input field names for both the given rows.

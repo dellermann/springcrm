@@ -9,37 +9,30 @@
     options: {
       currency: $("html").data("currency-symbol") || "€",
       fieldNamePrefix: "items",
-      imgPath: $(".price-table").data("img-path"),
       productListUrl: $(".price-table").data("product-list-url"),
       serviceListUrl: $(".price-table").data("service-list-url"),
       taxes: $(".price-table").data("tax-items").split(","),
       units: $(".price-table").data("units").split(",")
     },
     _addItem: function(jumpToNewRow) {
-      var $row, currency, imgPath, index, opts, s;
+      var $row, index, s, template;
       $ = jQuery;
-      opts = this.options;
-      currency = opts.currency;
-      imgPath = opts.imgPath;
+      template = this.addItemTemplate;
+      if (!template) {
+        template = $("#add-item-template").mustache();
+        this.addItemTemplate = template;
+      }
       index = this._getNumRows();
-      s = "<tr>\n  <td class=\"pos number\">" + (index + 1) + ".</td>\n  <td class=\"item-number\"><input type=\"text\" name=\"" + (this._getInputName(index, "number")) + "\" size=\"10\" /></td>\n  <td class=\"quantity number\"><input type=\"text\" name=\"" + (this._getInputName(index, "quantity")) + "\" size=\"4\" /></td>\n  <td class=\"unit\"><input type=\"text\" name=\"" + (this._getInputName(index, "unit")) + "\" size=\"8\" /></td>\n  <td class=\"name\">\n    <input type=\"text\" name=\"" + (this._getInputName(index, "name")) + "\" size=\"28\" />";
-      if (imgPath) {
-        if (opts.productListUrl) {
-          s += "&nbsp;<img class=\"select-btn-products\" src=\"" + imgPath + "/products.png\"\n  alt=\"" + ($L("invoicingTransaction.product.sel")) + "\"\n  title=\"" + ($L("invoicingTransaction.product.sel")) + "\"\n  width=\"16\" height=\"16\" />";
-        }
-        if (opts.serviceListUrl) {
-          s += "&nbsp;<img class=\"select-btn-services\" src=\"" + imgPath + "/services.png\" alt=\"" + ($L("invoicingTransaction.service.sel")) + "\" title=\"" + ($L("invoicingTransaction.service.sel")) + "\" width=\"16\" height=\"16\" />";
-        }
-      }
-      s += "  <br />\n  <textarea name=\"" + (this._getInputName(index, "description")) + "\" cols=\"30\" rows=\"3\"></textarea>\n</td>\n<td class=\"unit-price currency number\">\n  <input type=\"text\" name=\"" + (this._getInputName(index, "unitPrice")) + "\" size=\"8\" value=\"" + (0..formatCurrencyValue()) + "\" />&nbsp;" + currency + "\n</td>\n<td class=\"total-price currency number\">\n  <output>" + (0..formatCurrencyValue()) + "</output>&nbsp;" + currency + "\n</td>\n<td class=\"tax percentage number\">\n  <input type=\"text\" name=\"" + (this._getInputName(index, "tax")) + "\" size=\"4\" />&nbsp;%\n</td>\n<td class=\"action-buttons\">";
-      if (imgPath) {
-        s += "<img class=\"up-btn\" src=\"" + imgPath + "/up.png\"\n  alt=\"" + ($L("default.btn.up")) + "\" title=\"" + ($L("default.btn.up")) + "\"\n  width=\"16\" height=\"16\"\n/><img class=\"down-btn\" src=\"" + imgPath + "/down.png\"\n  alt=\"" + ($L("default.btn.down")) + "\" title=\"" + ($L("default.btn.down")) + "\"\n  width=\"16\" height=\"16\"\n/><img class=\"remove-btn\" src=\"" + imgPath + "/remove.png\"\n  alt=\"" + ($L("default.delete.label")) + "\" title=\"" + ($L("default.delete.label")) + "\"\n  width=\"16\" height=\"16\" />";
-      }
-      s += "  </td>\n</tr>";
+      s = template({
+        index: index,
+        pos: index + 1,
+        zero: 0..formatCurrencyValue()
+      });
       $row = $(s);
       this.element.find(".items").append($row);
       this._initUnitAutocomplete($row.find(".unit input"));
       this._initTaxAutocomplete($row.find(".tax input"));
+      $row.find("textarea").autosize();
       if (jumpToNewRow) {
         return $("html").scrollTop($row.position().top - $("#toolbar").outerHeight());
       }
@@ -85,11 +78,11 @@
       return $("#paymentAmount").trigger("change");
     },
     _computeTaxValues: function() {
-      var currency, label, s, shippingCosts, shippingTax, subtotalGross, t, taxRates, taxTotal, tr, _i, _len,
+      var currency, label, s, shippingCosts, shippingTax, subtotalGross, t, taxRates, taxTotal, template, tr, _i, _len,
         _this = this;
       $ = jQuery;
       taxRates = [];
-      $("input:text[name$='.tax']").each(function(index, elem) {
+      this.element.find("input:text[name$='.tax']").each(function(index, elem) {
         var els, name, qty, tax, taxRate, unitPrice;
         els = _this.form.elements;
         name = elem.name.replace(/\.tax$/, ".quantity");
@@ -110,6 +103,11 @@
       taxRates.sort(function(a, b) {
         return a.taxRate - b.taxRate;
       });
+      template = this.taxRateSumTemplate;
+      if (!template) {
+        template = $("#tax-rate-sum-template").mustache();
+        this.taxRateSumTemplate = template;
+      }
       currency = this.options.currency;
       taxTotal = 0;
       s = "";
@@ -118,7 +116,10 @@
         t = tr.tax;
         taxTotal += t;
         label = $L("invoicingTransaction.taxRate.label").replace(/\{0\}/, tr.taxRate.format(1));
-        s += "<tr class=\"tax-rate-sum\">\n  <td colspan=\"5\" class=\"label\"><label>" + label + "</label></td>\n  <td></td>\n  <td class=\"total-price currency number\">\n    " + (t.formatCurrencyValue()) + "&nbsp;" + currency + "\n  </td>\n  <td></td>\n  <td></td>\n</tr>";
+        s += template({
+          label: label,
+          value: t.formatCurrencyValue()
+        });
       }
       $(".tax-rate-sum").remove();
       $("tfoot tr:first").after(s);
@@ -141,19 +142,19 @@
       this.units = opts.units;
       this.taxes = this._prepareTaxes(opts.taxes);
       this.inputRegExp = new RegExp("^" + opts.fieldNamePrefix + "\\[(\\d+)\\]\\.(\\w+)$");
-      el.on("click", "img.up-btn", function(event) {
+      el.on("click", ".up-btn", function(event) {
         _this._moveItem($(event.currentTarget), -1);
         return false;
-      }).on("click", "img.down-btn", function(event) {
+      }).on("click", ".down-btn", function(event) {
         _this._moveItem($(event.currentTarget), 1);
         return false;
-      }).on("click", "img.remove-btn", function(event) {
+      }).on("click", ".remove-btn", function(event) {
         _this._removeItem($(event.currentTarget));
         return false;
-      }).on("click", "img.select-btn-products", function(event) {
+      }).on("click", ".select-btn-products", function(event) {
         _this._showSalesItemSelector($(event.currentTarget), "products");
         return false;
-      }).on("click", "img.select-btn-services", function(event) {
+      }).on("click", ".select-btn-services", function(event) {
         _this._showSalesItemSelector($(event.currentTarget), "services");
         return false;
       }).on("change", function(event) {
@@ -190,16 +191,6 @@
       }
       return this.form.elements[this._getInputName(pos, name, suffix)];
     },
-    _getInputPosAndName: function(input) {
-      var parts;
-      parts = input.name.match(this.inputRegExp);
-      if (parts) {
-        parts.shift();
-        return parts;
-      } else {
-        return null;
-      }
-    },
     _getInputName: function(index, name, suffix) {
       if (name == null) {
         name = "";
@@ -211,6 +202,16 @@
     },
     _getNumRows: function() {
       return this.element.find(".items tr").length;
+    },
+    _getInputPosAndName: function(input) {
+      var parts;
+      parts = input.name.match(this.inputRegExp);
+      if (parts) {
+        parts.shift();
+        return parts;
+      } else {
+        return null;
+      }
     },
     _getRowPosition: function($tr) {
       return $tr.index();
@@ -247,9 +248,9 @@
         return _this._onLoadSalesItemSelector($dialog, type, pos);
       });
     },
-    _moveItem: function($img, dir) {
+    _moveItem: function($icon, dir) {
       var $destTr, $tr, pos;
-      $tr = $img.parents("tr");
+      $tr = $icon.parents("tr");
       pos = this._getRowPosition($tr);
       if ((dir < 0) && (pos > 0)) {
         $destTr = $tr.prev();
@@ -329,9 +330,9 @@
         return null;
       }
     },
-    _removeItem: function($img) {
+    _removeItem: function($icon) {
       if (this._getNumRows() > 1) {
-        this._removeRow($img.parents("tr"));
+        this._removeRow($icon.parents("tr"));
         return this._computeFooterValues();
       }
     },
@@ -365,16 +366,18 @@
         url: url,
         dataType: "json",
         success: function(data) {
-          var els, item, prefix, qty, total, unitPrice, unitPriceInput;
+          var els, item, prefix, qty, textArea, total, unitPrice, unitPriceInput;
           prefix = _this._getInputName(pos);
           els = _this.form.elements;
           els[prefix + "number"].value = data.fullNumber;
           item = data.inventoryItem;
           qty = item.quantity;
-          els[prefix + "quantity"].value = qty.format(qty);
+          els[prefix + "quantity"].value = qty.format();
           els[prefix + "unit"].value = item.unit.name;
           els[prefix + "name"].value = item.name;
-          els[prefix + "description"].value = item.description;
+          textArea = els[prefix + "description"];
+          textArea.value = item.description;
+          $(textArea).trigger('autosize.resize');
           unitPrice = item.unitPrice;
           unitPriceInput = els[prefix + "unitPrice"];
           unitPriceInput.value = unitPrice.formatCurrencyValue();
@@ -386,14 +389,14 @@
         }
       });
     },
-    _showSalesItemSelector: function($img, type, url) {
+    _showSalesItemSelector: function($icon, type, url) {
       var opts, pos;
       opts = this.options;
       if (!url) {
         url = (type === "products" ? opts.productListUrl : opts.serviceListUrl);
       }
       if (url) {
-        pos = this._getRowPosition($img.parents("tr"));
+        pos = this._getRowPosition($icon.parents("tr"));
         return this._loadSalesItemSelector(type, url, pos);
       }
     },

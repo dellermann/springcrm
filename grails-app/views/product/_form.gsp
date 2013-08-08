@@ -1,5 +1,5 @@
 <fieldset>
-  <h4><g:message code="salesItem.fieldset.general.label" /></h4>
+  <header><h3><g:message code="salesItem.fieldset.general.label" /></h3></header>
   <div class="multicol-content">
     <div class="col col-l">
       <div class="form">
@@ -27,8 +27,8 @@
   </div>
 </fieldset>
 <fieldset>
-  <h4><g:message code="salesItem.fieldset.description.label" /></h4>
-  <div class="fieldset-content">
+  <header><h3><g:message code="salesItem.fieldset.description.label" /></h3></header>
+  <div class="form-fragment">
     <f:field bean="${productInstance}" property="description" cols="80" rows="5" />
   </div>
 </fieldset>
