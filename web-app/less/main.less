@@ -842,11 +842,15 @@ fieldset, .fieldset {
   .col-l ~ .col-r {
     border-left: 1px dotted @color-default-border-1;
   }
-  input[type=email], input[type=text], input[type=url], textarea {
+  input[type=email], input[type=password], input[type=text], input[type=url],
+    textarea
+  {
     .box-sizing();
     width: 100%;
   }
-  input[type=email][size], input[type=text][size], input[type=url][size] {
+  input[type=email][size], input[type=password][size], input[type=text][size],
+    input[type=url][size]
+  {
     .box-sizing(content-box);
     width: auto;
   }

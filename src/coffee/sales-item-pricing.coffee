@@ -764,20 +764,25 @@ SalesItemPricing =
     @_updateSalesPricing()
 
   # Updates the class names for each row in the pricing table.  If a row is
-  # referenced by another one class "not-removable" is added.
+  # referenced by another one class "not-removable" is added and the title of
+  # the remove button is changed to explain the situation.
   #
   # @see  #_onClick-mixin _onClick
   #
   _updateReferenceClasses: ->
     $ = jQuery
 
-    @_getRows().each (i, elem) =>
-      $elem = $(elem)
+    @_getRows().each (i, tr) =>
+      $tr = $(tr)
       referrers = @_getReferrers i
       if referrers.length
-        $elem.addClass "not-removable"
+        $tr.addClass("not-removable")
+          .find(".remove-btn")
+            .attr "title", $L("salesItem.pricing.error.notRemovable")
       else
-        $elem.removeClass "not-removable"
+        $tr.removeClass("not-removable")
+          .find(".remove-btn")
+            .attr "title", $L("default.btn.remove")
 
   # Updates the computed fields in the sales pricing section.
   #

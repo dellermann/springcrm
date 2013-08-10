@@ -39,25 +39,30 @@
         @color-gradient-hover-0; @color-gradient-hover-1; #597F12
       );
     }
+    &:after {
+      color: #FFF;
+      content: "\F054";
+      display: inline-block;
+      font-family: FontAwesome;
+      margin-right: -.3em;
+      position: relative;
+      z-index: 1;
+    }
+    &:last-child:after {
+      content: "";
+      margin-right: 0;
+    }
   }
   a {
-    background-image: url("../img/arrows-right.png");
-    background-repeat: no-repeat;
-    background-position: right center;
-    color: white;
-    display: block;
+    color: #FFF;
+    display: inline-block;
     font-weight: bold;
-    left: 0;
-    margin-right: -4px;
     padding: .6em 1.9em .6em 1.5em;
-    position: relative;
     text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
-    top: 0;
-    z-index: 1;
   }
-  li:last-child a {
-    background-image: none;
-  }
+}
+#main-container h1 ~ nav {
+  width: 25%;
 }
 .install-description {
   margin-bottom: 2em;
@@ -74,9 +79,5 @@
   margin-top: 2em;
   padding: 1em;
   width: 75%;
-
-  p:last-child {
-    margin-bottom: 0;
-  }
 }
 

@@ -598,14 +598,14 @@
     _updateReferenceClasses: function() {
       var _this = this;
       $ = jQuery;
-      return this._getRows().each(function(i, elem) {
-        var $elem, referrers;
-        $elem = $(elem);
+      return this._getRows().each(function(i, tr) {
+        var $tr, referrers;
+        $tr = $(tr);
         referrers = _this._getReferrers(i);
         if (referrers.length) {
-          return $elem.addClass("not-removable");
+          return $tr.addClass("not-removable").find(".remove-btn").attr("title", $L("salesItem.pricing.error.notRemovable"));
         } else {
-          return $elem.removeClass("not-removable");
+          return $tr.removeClass("not-removable").find(".remove-btn").attr("title", $L("default.btn.remove"));
         }
       });
     },
