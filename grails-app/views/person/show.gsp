@@ -12,7 +12,7 @@
       "use strict";
 
       $("#picture").lightbox({
-              imgDir: "${resource(dir: 'img/lightbox')}"
+              imgDir: "${resource(dir: 'images/lightbox')}"
           });
       $(".remote-list").remotelist({ returnUrl: "${url()}" });
   }(jQuery));

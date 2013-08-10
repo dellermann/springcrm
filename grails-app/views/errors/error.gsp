@@ -3,7 +3,7 @@
   <meta name="layout" content="main" />
   <title>SpringCRM</title>
   <r:require modules="error" />
-  <r:external uri="/img/favicon.ico" />
+  <r:external uri="/images/favicon.ico" />
 </head>
 
 <body>

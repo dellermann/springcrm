@@ -474,7 +474,7 @@
 
   LightboxWidget = {
     options: {
-      imgDir: "img/lightbox",
+      imgDir: "images/lightbox",
       imageBtnClose: "lightbox-btn-close.gif",
       imageBtnNext: "lightbox-btn-next.gif",
       imageBtnPrev: "lightbox-btn-prev.gif",

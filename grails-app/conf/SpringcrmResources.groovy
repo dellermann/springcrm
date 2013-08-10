@@ -89,7 +89,7 @@ modules = {
         resource '/js/jquery.qtip.min.js'
         resource '/js/app/core.js'
         resource '/js/app/ui.js'
-        resource url: '/img/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
+        resource url: '/images/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
     }
 
     document {
