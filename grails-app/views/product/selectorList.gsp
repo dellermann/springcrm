@@ -1,7 +1,8 @@
 <%@ page import="org.amcworld.springcrm.Product" %>
-<div class="selector-toolbar">
+<nav class="selector-toolbar">
   <div class="selector-letter-bar">
-    <g:letterBar clazz="${Product}" property="name" numLetters="3" separator="-" where="name like '%${params.search ?: ''}%'" />
+    <g:letterBar clazz="${Product}" property="name" numLetters="3"
+      separator="-" where="name like '%${params.search ?: ''}%'" />
   </div>
   <div class="selector-toolbar-search">
     <%--
@@ -13,10 +14,10 @@
     </form>
     <g:form action="selectorList">
       <g:textField name="search" value="${params.search}" placeholder="${message(code: 'default.search.label')}" />
-      <button type="submit" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
+      <button type="submit" class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="icon-search"></i></button>
     </g:form>
   </div>
-</div>
+</nav>
 <g:if test="${productInstanceList}">
 <table class="content-table">
   <thead>

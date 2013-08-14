@@ -346,7 +346,7 @@
         var $refTr;
         if (dir < 0 && _this._getRowType($tr) === "relativeToPos") {
           $refTr = _this._getReferredRow($tr);
-          if ($refTr !== null && _this._getRowType($refTr) !== "absolute" && _this._getIndex($tr) - 1 <= _this._getIndex($refTr)) {
+          if (!($refTr === null || _this._getRowType($refTr) === "absolute" || _this._getIndex($tr) - 1 > _this._getIndex($refTr))) {
             $.alert($L("salesItem.pricing.error.notMovable.refBeforeReferee"));
             return false;
           }
@@ -524,7 +524,6 @@
           if (el) {
             el.name = newName + fieldName;
           }
-          console.log("el.name = " + el.name);
         }
         return null;
       };

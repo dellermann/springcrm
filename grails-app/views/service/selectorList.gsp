@@ -1,7 +1,8 @@
 <%@ page import="org.amcworld.springcrm.Service" %>
-<div class="selector-toolbar">
+<nav class="selector-toolbar">
   <div class="selector-letter-bar">
-    <g:letterBar clazz="${Service}" property="name" numLetters="3" separator="-" />
+    <g:letterBar clazz="${Service}" property="name" numLetters="3"
+      separator="-" />
   </div>
   <div class="selector-toolbar-search">
     <%--
@@ -13,10 +14,10 @@
     </form>
     <g:form action="selectorList">
       <g:textField id="selector-search" name="search" value="${params.search}" placeholder="${message(code: 'default.search.label')}" />
-      <button type="submit" class="search-btn"><g:message code="default.search.button.label" default="Search" /></button>
+      <button type="submit" class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="icon-search"></i></button>
     </g:form>
   </div>
-</div>
+</nav>
 <g:if test="${serviceInstanceList}">
 <table class="content-table">
   <thead>
