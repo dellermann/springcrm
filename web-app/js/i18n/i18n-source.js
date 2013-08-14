@@ -65,6 +65,7 @@
     'default.delete.confirm.msg',
     'default.format.date',
     'default.format.time',
+    'help.markdown.title',
     'invoicingTransaction.addr.fromOrgBillingAddr',
     'invoicingTransaction.addr.fromOrgShippingAddr',
     'invoicingTransaction.billingAddr.copy',

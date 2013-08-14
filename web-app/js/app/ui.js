@@ -603,49 +603,23 @@
       $("textarea").autosize().each(function() {
         var $html;
         $html = $("html");
-        return $(this).qtip({
-          content: {
-            button: true,
-            text: function(event, api) {
-              return $.get($html.data("load-markdown-help-url")).then(function(content) {
-                var $content, $help;
-                $help = $("#markdown-help-container");
-                if ($help.length) {
-                  $content = $help.find("#markdown-help");
-                  content = $help.html();
-                } else {
-                  $content = $(content);
-                  $("<div id='markdown-help-container'/>").append(content).appendTo(document.body);
-                }
-                api.set("content.title", $content.attr("title"));
-                return content;
-              }, function() {
-                return api.hide();
-              });
-            }
-          },
-          hide: {
-            delay: 300,
-            effect: function() {
-              return $(this).fadeOut("slow");
-            },
-            fixed: true
-          },
-          position: {
-            at: "right center",
-            my: "left center"
-          },
-          show: {
-            effect: function() {
-              return $(this).fadeIn("slow");
-            },
-            solo: true
-          },
-          style: {
-            classes: "qtip-shadow",
-            widget: true
-          }
-        });
+        return $(this).wrap("<div class=\"textarea-container\"/>").after("<i class=\"icon-question-sign markdown-help-btn\"></i>");
+      });
+      $(document).on("click", ".markdown-help-btn", function() {
+        var $markdownHelp;
+        $ = jQuery;
+        $markdownHelp = $("#markdown-help");
+        if ($markdownHelp.length) {
+          $markdownHelp.dialog("open");
+        } else {
+          $("<div id='markdown-help'/>").appendTo("body").load($("html").data("load-markdown-help-url"), function() {
+            return $(this).dialog({
+              title: $L("help.markdown.title"),
+              width: "35em"
+            });
+          });
+        }
+        return false;
       });
       $spinner.click(function() {
         return $(this).css("display", "none");

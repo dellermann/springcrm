@@ -1429,11 +1429,26 @@ p:last-child {
 }
 
 /* Markdown cheat sheet */
-.qtip {
-  max-width: 35em;
-}
-#markdown-help-container {
-  display: none;
+.textarea-container {
+  position: relative;
+
+  i {
+    .transition(opacity; 1s);
+    cursor: pointer;
+    font-size: 182%;
+    opacity: 0;
+    position: absolute;
+    right: .3em;
+    top: .2em;
+
+    &:hover {
+      color: @color-link;
+      opacity: 1 !important;
+    }
+  }
+  &:hover i {
+    opacity: .6;
+  }
 }
 #markdown-help {
   table {
