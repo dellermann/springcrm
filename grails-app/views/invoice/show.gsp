@@ -213,7 +213,7 @@
           <h3><g:message code="dunning.plural" /></h3>
           <div class="buttons">
             <g:button controller="dunning" action="create"
-              params="[quote: invoiceInstance.id]" color="green" size="small"
+              params="[invoice: invoiceInstance.id]" color="green" size="small"
               icon="plus" message="default.create.label"
               args="[message(code: 'dunning.label')]" />
           </div>
@@ -230,7 +230,7 @@
           <h3><g:message code="creditMemo.plural" /></h3>
           <div class="buttons">
             <g:button controller="creditMemo" action="create"
-              params="[quote: invoiceInstance.id]" color="green" size="small"
+              params="[invoice: invoiceInstance.id]" color="green" size="small"
               icon="plus" message="default.create.label"
               args="[message(code: 'creditMemo.label')]" />
           </div>

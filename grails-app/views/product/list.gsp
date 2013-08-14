@@ -12,8 +12,10 @@
     <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <g:button action="create" color="green" icon="plus"
-          message="default.new.label" args="[entityName]" />
+        <li>
+          <g:button action="create" color="green" icon="plus"
+            message="default.new.label" args="[entityName]" />
+        </li>
       </ul>
     </nav>
   </header>

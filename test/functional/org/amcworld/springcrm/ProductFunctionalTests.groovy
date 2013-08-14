@@ -35,8 +35,8 @@ import org.openqa.selenium.support.ui.Select
  * The class {@code ProductFunctionalTests} represents a functional test
  * case for the product section of SpringCRM.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.3
  */
 class ProductFunctionalTests extends SalesItemTestCase {
@@ -60,12 +60,12 @@ class ProductFunctionalTests extends SalesItemTestCase {
             }
         }
 
-        open('/', 'de')
-        driver.findElement(BY_USER_NAME).sendKeys('mkampe')
-        driver.findElement(BY_PASSWORD).sendKeys('abc1234')
+        open '/', 'de'
+        driver.findElement(BY_USER_NAME).sendKeys 'mkampe'
+        driver.findElement(BY_PASSWORD).sendKeys 'abc1234'
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/product/list')
+        open '/product/list'
     }
 
     @Test
@@ -294,7 +294,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Produkt anlegen' == link.text
         assert getUrl('/product/create') == link.getAttribute('href')
         driver.quit()
@@ -311,23 +311,25 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
         assert checkErrorFields(['name', 'quantity'])
         WebElement fieldSet = driver.findElement(By.xpath('//fieldset[3]'))
-        List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//p//span[@class="error-msg"]'))
+        List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//div[@id="step1-calculation-base"]//li[@class="error-msg"]'))
         assert 2 == errorMsgs.size()
         assert 'Muss größer als 0 sein.' == errorMsgs[0].text
         assert 'Feld darf nicht leer sein.' == errorMsgs[1].text
         errorMsgs = fieldSet.findElements(By.xpath(
-            './/table[@id="step1-pricing-items"]/following-sibling::span[@class="error-msg"]'
+            './div[1]/ul[@class="field-msgs"]/li[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
         assert 'Pos. 1, Bezeichnung: Feld darf nicht leer sein.' == errorMsgs[0].text
         assert 'Pos. 1, Einheit: Feld darf nicht leer sein.' == errorMsgs[1].text
-        WebElement errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::span[@class="error-msg"]'))
+        WebElement errorMsg = driver.findElement(By.xpath('//input[@id="step3-quantity"]/following-sibling::ul[@class="field-msgs"]/li[@class="error-msg"]'))
+        assert 'Muss größer als 0 sein.' == errorMsg.text
+        errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::ul[@class="field-msgs"]/li[@class="error-msg"]'))
         assert 'Feld darf nicht leer sein.' == errorMsg.text
         cancelForm getUrl('/product/list')
 
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Produkt anlegen' == link.text
         assert getUrl('/product/create') == link.getAttribute('href')
         driver.quit()
@@ -341,7 +343,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         checkTitles 'Produkt anzeigen', 'Produkte', 'Papier A4 80 g/m²'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
-        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
+        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h3')).text
         def col = fieldSet.findElement(By.className('col-l'))
         assert 'P-10000' == getShowFieldText(col, 1)
         assert 'Papier A4 80 g/m²' == getShowFieldText(col, 2)
@@ -356,36 +358,12 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert '7 %' == getShowFieldText(col, 2)
         assert '2,19 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
-        assert 'Beschreibung' == fieldSet.findElement(By.tagName('h4')).text
+        assert 'Beschreibung' == fieldSet.findElement(By.tagName('h3')).text
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        WebElement link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/product/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/product/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/product/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/product/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/product/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/product/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'product', id
 
         assert 0 == driver.findElements(By.xpath('//aside[@id="action-bar"]/ul')).size()
         driver.quit()
@@ -399,7 +377,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         checkTitles 'Produkt anzeigen', 'Produkte', 'Papier A4 80 g/m²'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
-        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h4')).text
+        assert 'Allgemeine Informationen' == fieldSet.findElement(By.tagName('h3')).text
         def col = fieldSet.findElement(By.className('col-l'))
         assert 'P-10000' == getShowFieldText(col, 1)
         assert 'Papier A4 80 g/m²' == getShowFieldText(col, 2)
@@ -414,7 +392,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert '7 %' == getShowFieldText(col, 2)
         assert '2,19 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
-        assert 'Beschreibung' == fieldSet.findElement(By.tagName('h4')).text
+        assert 'Beschreibung' == fieldSet.findElement(By.tagName('h3')).text
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
 
         fieldSet = getFieldset(dataSheet, 3)
@@ -441,31 +419,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        WebElement link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/product/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/product/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/product/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/product/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/product/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/product/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'product', id
 
         assert 0 == driver.findElements(By.xpath('//aside[@id="action-bar"]/ul')).size()
         driver.quit()
@@ -717,14 +671,14 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert '10,74' == getStep1TableRowTotal(4)
         WebElement td = getStep1TableCell(5, 'relative-to-pos')
         WebElement span = td.findElement(By.tagName('span'))
-        WebElement img = span.findElement(By.tagName('img'))
+        WebElement icon = span.findElement(By.tagName('i'))
         WebElement strong = span.findElement(By.tagName('strong'))
         assert !span.displayed
 
         setStep1TableInputValue 5, 'type', 'relativeToPos'
         assert span.displayed
         assert '' == strong.text
-        img.click()
+        icon.click()
         checkStep1NonSelectableFinderRows 5
         span.sendKeys Keys.ESCAPE
         for (int i = 0; i <= 5; i++) {
@@ -734,9 +688,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
         setStep1TableReference 5, 1, 5
         getStep1TableRow(1).findElement(By.className('remove-btn')).click()
-        Alert alert = driver.switchTo().alert()
-        assert 'Diese Zeile kann nicht entfernt werden, da auf sie ein Verweis gesetzt wurde.' == alert.text
-        alert.accept()
+        assert 6 == numStep1TableRows
         assert '0,50' == getStep1TableRowTotal(5)
         moveRowDown 1
         assert 'pricing.items[1].type' == getStep1TableCell(1, 'type').findElement(By.tagName('select')).getAttribute('name')
@@ -750,16 +702,12 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert '0,50' == getStep1TableRowTotal(5)
 
         setStep1TableReference 5, 3, 5
-        getStep1TableRow(3).findElement(By.className('remove-btn')).click()
-        alert = driver.switchTo().alert()
-        assert 'Diese Zeile kann nicht entfernt werden, da auf sie ein Verweis gesetzt wurde.' == alert.text
-        alert.accept()
         assert '10,74' == getStep1TableRowTotal(5)
         assert '236,28' == getStep1Total()
         assert '11,81' == getStep1UnitPrice()
         moveRowUp 5
         moveRowUp 4
-        alert = driver.switchTo().alert()
+        Alert alert = driver.switchTo().alert()
         assert 'Zeile kann nicht verschoben werden, da "relativ zu Pos."-Einträge immer hinter der referenzierten Zeile stehen müssen.' == alert.text
         alert.accept()
         moveRowDown 4
@@ -886,19 +834,19 @@ class ProductFunctionalTests extends SalesItemTestCase {
 
         assert checkErrorFields(['name', 'quantity'])
         WebElement fieldSet = driver.findElement(By.xpath('//fieldset[3]'))
-        List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//p//span[@class="error-msg"]'))
+        List<WebElement> errorMsgs = fieldSet.findElements(By.xpath('.//div[@id="step1-calculation-base"]//li[@class="error-msg"]'))
         assert 2 == errorMsgs.size()
         assert 'Muss größer als 0 sein.' == errorMsgs[0].text
         assert 'Feld darf nicht leer sein.' == errorMsgs[1].text
         errorMsgs = fieldSet.findElements(By.xpath(
-            './/table[@id="step1-pricing-items"]/following-sibling::span[@class="error-msg"]'
+            './div[1]/ul[@class="field-msgs"]/li[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
         assert 'Pos. 1, Bezeichnung: Feld darf nicht leer sein.' == errorMsgs[0].text
         assert 'Pos. 1, Einheit: Feld darf nicht leer sein.' == errorMsgs[1].text
-        WebElement errorMsg = driver.findElement(By.xpath('//input[@id="step3-quantity"]/following-sibling::span[@class="error-msg"]'))
+        WebElement errorMsg = driver.findElement(By.xpath('//input[@id="step3-quantity"]/following-sibling::ul[@class="field-msgs"]/li[@class="error-msg"]'))
         assert 'Muss größer als 0 sein.' == errorMsg.text
-        errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::span[@class="error-msg"]'))
+        errorMsg = driver.findElement(By.xpath('//select[@id="step3-unit"]/following-sibling::ul[@class="field-msgs"]/li[@class="error-msg"]'))
         assert 'Feld darf nicht leer sein.' == errorMsg.text
         cancelForm getUrl('/product/list')
 

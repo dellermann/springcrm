@@ -28,7 +28,8 @@ $doc = $(win.document)
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.3
+# @version  1.4
+# @since    1.3
 #
 SalesItemPricing =
 
@@ -423,7 +424,7 @@ SalesItemPricing =
     checkReferee = ($tr, dir) =>
       if dir < 0 and @_getRowType($tr) is "relativeToPos"
         $refTr = @_getReferredRow $tr
-        if $refTr isnt null and @_getRowType($refTr) isnt "absolute" and @_getIndex($tr) - 1 <= @_getIndex($refTr)
+        unless $refTr is null or @_getRowType($refTr) is "absolute" or @_getIndex($tr) - 1 > @_getIndex($refTr)
           $.alert $L("salesItem.pricing.error.notMovable.refBeforeReferee")
           return false
       true

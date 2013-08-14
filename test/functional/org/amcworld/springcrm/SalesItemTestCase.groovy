@@ -22,7 +22,9 @@ package org.amcworld.springcrm
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
+import org.openqa.selenium.support.ui.WebDriverWait
 
 
 /**
@@ -30,7 +32,7 @@ import org.openqa.selenium.support.ui.Select
  * functional tests concerning sales items.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class SalesItemTestCase extends GeneralFunctionalTestCase {
@@ -53,7 +55,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      */
     protected int addNewStep1TableRow() {
         driver.findElement(By.className('add-pricing-item-btn')).click()
-        return numStep1TableRows
+        numStep1TableRows
     }
 
     /**
@@ -157,9 +159,20 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
         }
     }
 
+    /**
+     * Clicks the action button with the given name in the stated row.
+     *
+     * @param rowIdx    the zero-based index of the table row
+     * @param name      the CSS class name of the action button to click
+     * @since           1.4
+     */
+    protected void clickActionButton(int rowIdx, String name) {
+        getStep1TableRow(rowIdx).findElement(By.className(name)).click()
+    }
+
     @Override
     protected Object getDatasets() {
-        return ['test-data/install-data.xml']
+        ['test-data/install-data.xml']
     }
 
     /**
@@ -168,7 +181,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @return  the number of rows
      */
     protected int getNumStep1TableRows() {
-        return step1Table.findElements(By.xpath("./tbody/tr")).size()
+        step1Table.findElements(By.xpath("./tbody/tr")).size()
     }
 
     /**
@@ -177,7 +190,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @return  the step 1 pricing table web element
      */
     protected WebElement getStep1Table() {
-        return driver.findElement(By.id('step1-pricing-items'))
+        driver.findElement By.id('step1-pricing-items')
     }
 
     /**
@@ -188,8 +201,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @return          the web element representing the cell
      */
     protected WebElement getStep1TableCell(int rowIdx, String cellName) {
-        def row = getStep1TableRow(rowIdx)
-        return row.findElement(By.className(cellName))
+        getStep1TableRow(rowIdx).findElement By.className(cellName)
     }
 
     /**
@@ -199,7 +211,8 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @return          the web element representing the finder
      */
     protected WebElement getStep1TableFinder(int rowIdx) {
-        return getStep1TableCell(rowIdx, 'relative-to-pos').findElement(By.xpath('.//img'))
+        getStep1TableCell(rowIdx, 'relative-to-pos').
+            findElement By.xpath('.//i')
     }
 
     /**
@@ -210,7 +223,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @param name      the name of the field such as "quantity", "name" etc.
      */
     protected WebElement getStep1TableInput(int rowIdx, String name) {
-        return getInput("pricing.items[${rowIdx}].${name}")
+        getInput "pricing.items[${rowIdx}].${name}"
     }
 
     /**
@@ -220,7 +233,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @return          the web element representing the row
      */
     protected WebElement getStep1TableRow(int rowIdx) {
-        return step1Table.findElement(By.xpath("./tbody/tr[${rowIdx + 1}]"))
+        step1Table.findElement By.xpath("./tbody/tr[${rowIdx + 1}]")
     }
 
     /**
@@ -237,11 +250,11 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
     }
 
     protected String getStep1UnitPrice() {
-        return step1Table.findElement(By.id('step1-unit-price')).text
+        step1Table.findElement(By.id('step1-unit-price')).text
     }
 
     protected String getStep1Total() {
-        return step1Table.findElement(By.id('step1-total-price')).text
+        step1Table.findElement(By.id('step1-total-price')).text
     }
 
     /**
@@ -252,7 +265,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      */
     protected String getValue(String name) {
         driver.findElement(By.id('step1-pricing-quantity')).click()
-        return driver.findElement(By.id(name)).text
+        driver.findElement(By.id(name)).text
     }
 
     /**
@@ -261,7 +274,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @param rowIdx    the zero-based index of the table row
      */
     protected void moveRowDown(int rowIdx) {
-        getStep1TableRow(rowIdx).findElement(By.className('down-btn')).click()
+        clickActionButton rowIdx, 'down-btn'
     }
 
     /**
@@ -270,7 +283,7 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      * @param rowIdx    the zero-based index of the table row
      */
     protected void moveRowUp(int rowIdx) {
-        getStep1TableRow(rowIdx).findElement(By.className('up-btn')).click()
+        clickActionButton rowIdx, 'up-btn'
     }
 
     /**
@@ -281,8 +294,8 @@ class SalesItemTestCase extends GeneralFunctionalTestCase {
      *                  after removing the row
      */
     protected int removeRow(int rowIdx) {
-        getStep1TableRow(rowIdx).findElement(By.className('remove-btn')).click()
-        return numStep1TableRows
+        clickActionButton rowIdx, 'remove-btn'
+        numStep1TableRows
     }
 
     /**

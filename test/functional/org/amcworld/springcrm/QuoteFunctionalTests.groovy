@@ -108,7 +108,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
 
         assert 2 == addNewPriceTableRow()
         openSelectorAndSelect 1, 'products', 'P-10000'
-        checkRowValues 1, 'P-10000', '1,0', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '2,49', '7,0'
+        checkRowValues 1, 'P-10000', '1', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '2,49', '7,0'
         assert '442,49' == subtotalNet
         checkTaxRates([['7,0', '0,17'], ['19,0', '83,60']])
         assert '526,26' == subtotalGross
@@ -122,24 +122,24 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
 
         assert 3 == addNewPriceTableRow()
         openSelectorAndSelect 2, 'services', 'S-10100'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
         assert '1.064,43' == subtotalGross
         assert '1.064,43' == total
         moveRowUp 2
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
 
         assert 4 == addNewPriceTableRow()
         openSelectorAndSelect 3, 'products', 'P-10001'
-        checkRowValues 3, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
+        checkRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
         assert '897,97' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
         assert '1.067,63' == subtotalGross
         assert '1.067,63' == total
         setPriceTableInputValue 3, 'unitPrice', '3'
-        checkRowValues 3, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
+        checkRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
         assert '897,98' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
         assert '1.067,64' == subtotalGross
@@ -147,8 +147,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         moveRowUp 3
         moveRowUp 2
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
-        checkRowValues 2, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
+        checkRowValues 2, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
@@ -156,8 +156,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert '1.067,64' == total
         moveRowDown 1
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
-        checkRowValues 2, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
+        checkRowValues 2, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '3,00', '3,00', '7,0'
         checkRowValues 3, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '897,98' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '169,10']])
@@ -165,7 +165,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert '1.067,64' == total
         assert 3 == removeRow(2)
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '440,00', '440,00', '19'
-        checkRowValues 1, 'S-10100', '1,0', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
+        checkRowValues 1, 'S-10100', '1', 'Einheiten', 'Mustervorschau', 'Anfertigung eines Musters _nach Kundenvorgaben_.', '450,00', '450,00', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
         assert '894,98' == subtotalNet
         checkTaxRates([['7,0', '0,35'], ['19,0', '169,10']])
@@ -196,7 +196,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert '20.03.2013' == getShowFieldText(col, 2)
         assert '21.02.2013' == getShowFieldText(col, 3)
         assert 'elektronisch' == getShowFieldText(col, 4)
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)
@@ -261,7 +261,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
 
         assert checkErrorFields(['subject', 'organization.id'])
         List<WebElement> errorMsgs = driver.findElements(By.xpath(
-            '//form[@id="quote-form"]/fieldset[3]/div[@class="fieldset-content"]/span[@class="error-msg"]'
+            '//form[@id="quote-form"]/fieldset[3]/div/ul[@class="field-msgs"]/li[@class="error-msg"]'
         ))
         assert 2 == errorMsgs.size()
         assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
@@ -270,7 +270,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
 
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Angebot anlegen' == link.text
         assert getUrl('/quote/create') == link.getAttribute('href')
         driver.quit()
@@ -299,7 +299,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert '20.03.2013' == getShowFieldText(col, 2)
         assert '21.02.2013' == getShowFieldText(col, 3)
         assert 'elektronisch' == getShowFieldText(col, 4)
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)
@@ -357,8 +357,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert fieldSet.getAttribute('class').contains('remote-list')
         assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/sales-order/list-embedded' == fieldSet.getAttribute('data-load-url')
-        assert 'Verkaufsbestellungen' == fieldSet.findElement(By.tagName('h4')).text
-        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
+        assert 'Verkaufsbestellungen' == fieldSet.findElement(By.tagName('h3')).text
+        link = fieldSet.findElement(By.xpath('.//div[@class="buttons"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/sales-order/create?quote=${id}"))
         assert 'Verkaufsbestellung anlegen' == link.text
         assert waitForEmptyRemoteList(6)
@@ -367,49 +367,23 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert fieldSet.getAttribute('class').contains('remote-list')
         assert param == fieldSet.getAttribute('data-load-params')
         assert '/springcrm/invoice/list-embedded' == fieldSet.getAttribute('data-load-url')
-        assert 'Rechnungen' == fieldSet.findElement(By.tagName('h4')).text
-        link = fieldSet.findElement(By.xpath('.//div[@class="menu"]/a'))
+        assert 'Rechnungen' == fieldSet.findElement(By.tagName('h3')).text
+        link = fieldSet.findElement(By.xpath('.//div[@class="buttons"]/a'))
         assert link.getAttribute('href').startsWith(getUrl("/invoice/create?quote=${id}"))
         assert 'Rechnung anlegen' == link.text
         assert waitForEmptyRemoteList(7)
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/quote/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/quote/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/quote/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/quote/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/quote/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/quote/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'quote', id
 
         def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
-        link = actions.findElement(By.xpath('li[1]/a'))
+        link = actions.findElement(By.xpath('li[1]/div[@class="button-group"]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('class').contains('menu-button')
         assert link.getAttribute('href').startsWith(getUrl("/quote/print/${id}"))
         assert 'Drucken' == link.text
-        link = actions.findElement(By.xpath('li[2]/a'))
+        link = actions.findElement(By.xpath('li[2]/div[@class="button-group"]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('class').contains('menu-button')
         assert link.getAttribute('href').startsWith(getUrl("/quote/print/${id}?duplicate=1"))
         assert 'Kopie drucken' == link.text
         link = actions.findElement(By.xpath('li[3]/a'))
@@ -586,7 +560,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert 'Stempel' == tbody.findElement(By.xpath('./tr[3]/td[2]')).text
         dialog.findElement(By.linkText('P-10700')).click()
 
-        checkRowValues 2, 'P-10700', '1,0', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '8,99', '19,0'
+        checkRowValues 2, 'P-10700', '1', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '8,99', '19,0'
         setPriceTableInputValue 2, 'quantity', '4'
         checkRowValues 2, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         assert '490,94' == subtotalNet
@@ -618,7 +592,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         checkRowValues 0, 'S-10000', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption der geplanten Werbekampagne', '450,00', '450,00', '19,0'
         checkRowValues 1, 'P-10700', '4', 'Stück', 'Stempel', 'Mit Firmenaufdruck _nach Kundenvorgabe_.', '8,99', '35,96', '19,0'
         checkRowValues 2, 'P-10000', '2', 'Packung', 'Papier A4 80 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,49', '4,98', '7,0'
-        checkRowValues 3, 'P-10001', '1,0', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
+        checkRowValues 3, 'P-10001', '1', 'Packung', 'Papier A4 90 g/m²', 'Packung zu 100 Blatt. Chlorfrei gebleicht.', '2,99', '2,99', '7,0'
         assert '493,93' == subtotalNet
         checkTaxRates([['7,0', '0,56'], ['19,0', '92,33']])
         assert '586,82' == subtotalGross
@@ -669,7 +643,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         assert '17.04.2013' == getShowFieldText(col, 2)
         assert '06.03.2013' == getShowFieldText(col, 3)
         assert 'elektronisch' == getShowFieldText(col, 4)
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)

@@ -14,7 +14,7 @@
       model="[instance: serviceInstance]" />
   </header>
   <aside id="action-bar"></aside>
-  <section id="content">
+  <div id="content">
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
@@ -55,6 +55,6 @@
     <p class="record-timestamps">
       <g:message code="default.recordTimestamps" args="[formatDate(date: serviceInstance?.dateCreated), formatDate(date: serviceInstance?.lastUpdated)]" />
     </p>
-  </section>
+  </div>
 </body>
 </html>

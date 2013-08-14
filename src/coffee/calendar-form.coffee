@@ -206,7 +206,7 @@ $tabs.tabs()
 $("#recurrence-end").on "change", "dt input:radio", ->
   $input = enableRecurrenceEndCtrls $(this).val()
   $input.focus() if $input
-enableRecurrenceEndCtrls $("#recurrence-end dt input:radio").val()
+enableRecurrenceEndCtrls $("#recurrence-end dt input:radio:checked").val()
 initRecurrenceTypes()
 
 # initialize submit hook 

@@ -145,7 +145,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         WebElement balanceField = getShowField(col, 8)
         assert '-66,90 €' == balanceField.text.trim()
         assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)
@@ -204,7 +204,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
 
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Mahnung anlegen' == link.text
         assert getUrl('/dunning/create') == link.getAttribute('href')
         driver.quit()
@@ -301,7 +301,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         WebElement balanceField = getShowField(col, 8)
         assert '-17,85 €' == balanceField.text.trim()
         assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)
@@ -374,7 +374,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         WebElement balanceField = getShowField(col, 8)
         assert '-66,90 €' == balanceField.text.trim()
         assert 'still-unpaid-unpaid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)
@@ -416,41 +416,15 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/dunning/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/dunning/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/dunning/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/dunning/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/dunning/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/dunning/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'dunning', id
 
         def actions = driver.findElement(By.xpath('//aside[@id="action-bar"]/ul'))
-        link = actions.findElement(By.xpath('li[1]/a'))
+        link = actions.findElement(By.xpath('li[1]/div[@class="button-group"]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('class').contains('menu-button')
         assert link.getAttribute('href').startsWith(getUrl("/dunning/print/${id}"))
         assert 'Drucken' == link.text
-        link = actions.findElement(By.xpath('li[2]/a'))
+        link = actions.findElement(By.xpath('li[2]/div[@class="button-group"]/a'))
         assert link.getAttribute('class').contains('button')
-        assert link.getAttribute('class').contains('menu-button')
         assert link.getAttribute('href').startsWith(getUrl("/dunning/print/${id}?duplicate=1"))
         assert 'Kopie drucken' == link.text
         link = actions.findElement(By.xpath('li[3]/a'))
@@ -649,7 +623,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         WebElement balanceField = getShowField(col, 8)
         assert '0,00 €' == balanceField.text.trim()
         assert 'still-unpaid-paid' == balanceField.findElement(By.tagName('span')).getAttribute('class')
-        fieldSet = dataSheet.findElement(By.xpath('div[@class="multicol-content"][1]'))
+        fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
         assert '23898' == getShowFieldText(col, 3)

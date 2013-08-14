@@ -68,7 +68,7 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${flash.message}</div>
     </g:if>
-    <h3>${creditMemoInstance?.toString()}</h3>
+    <h2>${creditMemoInstance?.toString()}</h2>
     <div class="data-sheet">
       <section class="fieldset">
         <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>

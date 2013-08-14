@@ -524,6 +524,7 @@
           if (el) {
             el.name = newName + fieldName;
           }
+          console.log("el.name = " + el.name);
         }
         return null;
       };

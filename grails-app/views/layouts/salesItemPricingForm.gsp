@@ -99,7 +99,7 @@
               value="${item.name}" />
           </td>
           <td class="type">
-            <g:select name="pricing.items[${i}].type"
+            <g:select id="" name="pricing.items[${i}].type"
               from="${PricingItemType.values()}" value="${item.type}"
               valueMessagePrefix="salesItem.pricing.type" />
           </td>
@@ -319,7 +319,7 @@
       <input type="text" name="pricing.items[{{index}}].name" size="30" />
     </td>
     <td class="type">
-      <g:select name="pricing.items[{{index}}].type"
+      <g:select id="" name="pricing.items[{{index}}].type"
         from="${PricingItemType.values()}" 
         valueMessagePrefix="salesItem.pricing.type" />
     </td>

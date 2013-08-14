@@ -36,7 +36,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * test case for the purchase invoice section of SpringCRM.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
@@ -59,12 +59,12 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
             preparePurchaseInvoice()
         }
 
-        open('/', 'de')
-        driver.findElement(BY_USER_NAME).sendKeys('mkampe')
-        driver.findElement(BY_PASSWORD).sendKeys('abc1234')
+        open '/', 'de'
+        driver.findElement(BY_USER_NAME).sendKeys 'mkampe'
+        driver.findElement(BY_PASSWORD).sendKeys 'abc1234'
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/purchase-invoice/list')
+        open '/purchase-invoice/list'
     }
 
     @Test
@@ -325,10 +325,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '4049493-4994' == getShowFieldText(col, 1)
         assert 'Entwicklung eines Designs' == getShowFieldText(col, 2)
         assert 'Katja Schmale Webdesignerin' == getShowFieldText(col, 3)
-        WebElement a = getShowField(col, 4).findElement(By.tagName('a'))
-        assert purchaseInvoiceExampleDocument.name == a.text
-        assert a.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
-        checkFile testFile, new File(purchaseInvoiceFolder, a.text)
+        checkDocument getShowField(col, 4).findElement(By.tagName('a')), testFile
         assert 'geprüft' == getShowFieldText(col, 5)
         col = fieldSet.findElement(By.className('col-r'))
         assert '15.03.2013' == getShowFieldText(col, 1)
@@ -366,7 +363,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
             'dueDate_date'
         ])
         List<WebElement> errorMsgs = driver.findElements(By.xpath(
-            '//form[@id="purchaseInvoice-form"]/fieldset[2]/div[@class="fieldset-content"]/span[@class="error-msg"]'
+            '//form[@id="purchaseInvoice-form"]/fieldset[2]/div/ul[@class="field-msgs"]/li[@class="error-msg"]'
         ))
         assert 1 == errorMsgs.size()
         assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
@@ -374,7 +371,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
 
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Eingangsrechnung anlegen' == link.text
         assert getUrl('/purchase-invoice/create') == link.getAttribute('href')
         driver.quit()
@@ -392,10 +389,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '4049493-4994' == getShowFieldText(col, 1)
         assert 'Entwicklung eines Designs' == getShowFieldText(col, 2)
         assert 'Katja Schmale Webdesignerin' == getShowFieldText(col, 3)
-        WebElement link = getShowField(col, 4).findElement(By.tagName('a'))
-        assert link.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
-        assert purchaseInvoiceExampleDocument.name == link.text
-        checkFile purchaseInvoiceExampleDocument, new File(purchaseInvoiceFolder, link.text)
+        checkDocument getShowField(col, 4).findElement(By.tagName('a'))
         assert 'geprüft' == getShowFieldText(col, 5)
         col = fieldSet.findElement(By.className('col-r'))
         assert '15.03.2013' == getShowFieldText(col, 1)
@@ -429,31 +423,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/purchase-invoice/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/purchase-invoice/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/purchase-invoice/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/purchase-invoice/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/purchase-invoice/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/purchase-invoice/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'purchase-invoice', id
         driver.quit()
 
         assert 1 == PurchaseInvoice.count()
@@ -526,7 +496,9 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '' == getInputValue('vendor.id')
         WebElement field = getShowField(col, 4)
         WebElement link = field.findElement(By.xpath('.//div[@class="document-preview"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
+        String href = link.getAttribute('href')
+        assert href.startsWith(getUrl('/data-file/load-file/'))
+        assert href.endsWith('?type=purchaseInvoice')
         assert purchaseInvoiceExampleDocument.name == link.text
         List<WebElement> lis = field.findElements(By.xpath('.//ul[@class="document-preview-links"]/li'))
         assert 1 == lis.size()
@@ -647,10 +619,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '4049493-4994' == getShowFieldText(col, 1)
         assert 'Planung eines Webdesigns' == getShowFieldText(col, 2)
         assert 'Katja Schmale Webdesignerin' == getShowFieldText(col, 3)
-        link = getShowField(col, 4).findElement(By.tagName('a'))
-        assert link.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
-        assert purchaseInvoiceExampleDocument.name == link.text
-        checkFile purchaseInvoiceExampleDocument, new File(purchaseInvoiceFolder, link.text)
+        checkDocument getShowField(col, 4).findElement(By.tagName('a'))
         assert 'bezahlt' == getShowFieldText(col, 5)
         col = fieldSet.findElement(By.className('col-r'))
         assert '15.03.2013' == getShowFieldText(col, 1)
@@ -695,13 +664,15 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         def col = driver.findElement(By.xpath('//form[@id="purchaseInvoice-form"]/fieldset[1]')).findElement(By.className('col-l'))
         WebElement field = getShowField(col, 4)
         WebElement link = field.findElement(By.xpath('.//div[@class="document-preview"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
+        String href = link.getAttribute('href')
+        assert href.startsWith(getUrl('/data-file/load-file/'))
+        assert href.endsWith('?type=purchaseInvoice')
         assert purchaseInvoiceExampleDocument.name == link.text
         List<WebElement> lis = field.findElements(By.xpath('.//ul[@class="document-preview-links"]/li'))
         assert 1 == lis.size()
         assert 'document-delete' == lis[0].getAttribute('class')
         assert 'Dokument löschen' == lis[0].text
-        lis[0].findElement(By.tagName('a')).click()
+        lis[0].findElement(By.tagName('span')).click()
         assert '1' == getInputValue('fileRemove')
         assert 0 == field.findElements(By.className('document-preview')).size()
         assert 0 == field.findElements(By.className('document-preview-links')).size()
@@ -726,7 +697,9 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         def col = driver.findElement(By.xpath('//form[@id="purchaseInvoice-form"]/fieldset[1]')).findElement(By.className('col-l'))
         WebElement field = getShowField(col, 4)
         WebElement link = field.findElement(By.xpath('.//div[@class="document-preview"]/a'))
-        assert link.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
+        String href = link.getAttribute('href')
+        assert href.startsWith(getUrl('/data-file/load-file/'))
+        assert href.endsWith('?type=purchaseInvoice')
         assert purchaseInvoiceExampleDocument.name == link.text
         List<WebElement> lis = field.findElements(By.xpath('.//ul[@class="document-preview-links"]/li'))
         assert 1 == lis.size()
@@ -740,11 +713,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         col = fieldSet.findElement(By.className('col-l'))
-        link = getShowField(col, 4).findElement(By.tagName('a'))
-        assert link.getAttribute('href').startsWith(getUrl('/purchase-invoice/get-document/'))
-        assert testFile.name == link.text
-        checkFile testFile, new File(purchaseInvoiceFolder, link.text)
-        assert !new File(purchaseInvoiceFolder, purchaseInvoiceExampleDocument.name).exists()
+        checkDocument getShowField(col, 4).findElement(By.tagName('a')), testFile
         driver.quit()
 
         assert 1 == PurchaseInvoice.count()
@@ -771,8 +740,9 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
             'docDate_date', 'dueDate', 'dueDate_date'
         ])
         cancelForm getUrl('/purchase-invoice/list')
-        File file = purchaseInvoiceExampleDocument
-        checkFile file, new File(purchaseInvoiceFolder, file.name)
+
+        def purchaseInvoice = PurchaseInvoice.list().first()
+        checkFile purchaseInvoiceExampleDocument, new File(purchaseInvoiceFolder, purchaseInvoice.documentFile.storageName)
         driver.quit()
 
         assert 1 == PurchaseInvoice.count()
@@ -780,6 +750,8 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
 
     @Test
     void testDeletePurchaseInvoiceAction() {
+        def purchaseInvoice = PurchaseInvoice.list().first()
+        String fileName = purchaseInvoice.documentFile.storageName
         clickListActionButton 0, 1
         driver.switchTo().alert().accept()
         assert driver.currentUrl.startsWith(getUrl('/purchase-invoice/list'))
@@ -789,7 +761,7 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 0 == PurchaseInvoice.count()
-        assert !new File(purchaseInvoiceFolder, purchaseInvoiceExampleDocument.name).exists()
+        assert !new File(purchaseInvoiceFolder, fileName).exists()
     }
 
     @Test
@@ -800,7 +772,29 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         driver.quit()
 
         assert 1 == PurchaseInvoice.count()
-        File file = purchaseInvoiceExampleDocument
-        checkFile file, new File(purchaseInvoiceFolder, file.name)
+        def purchaseInvoice = PurchaseInvoice.list().first()
+        checkFile purchaseInvoiceExampleDocument, new File(purchaseInvoiceFolder, purchaseInvoice.documentFile.storageName)
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Checks the purchase invoice document behind the given link by comparing
+     * it to the given file.
+     *
+     * @param link      the link to the purchase invoice document
+     * @param document  the expected document to compare to
+     * @since           1.4
+     */
+    protected void checkDocument(WebElement link,
+                                 File document = purchaseInvoiceExampleDocument)
+    {
+        assert document.name == link.text
+        def m = link.getAttribute('href') =~ /\/data-file\/load-file\/(\d+)\?type=purchaseInvoice$/
+        assert m
+        String id = Long.toHexString(m[0][1] as Long).toUpperCase().
+            padLeft(16, '0')
+        checkFile document, new File(purchaseInvoiceFolder, id)
     }
 }

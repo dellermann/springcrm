@@ -54,8 +54,15 @@ class InvoicingTransactionTestCase extends GeneralFunctionalTestCase {
      *          new row
      */
     protected int addNewPriceTableRow() {
+        int numRows = numPriceTableRows
         driver.findElement(By.className('add-invoicing-item-btn')).click()
-        return numPriceTableRows
+
+        def wait = new WebDriverWait(driver, 5)
+        By by = By.xpath(
+            "//table[${getXPathClassExpr('price-table')}]/tbody[1]/tr[${numRows + 1}]"
+        )
+        wait.until ExpectedConditions.visibilityOfElementLocated(by)
+        numPriceTableRows
     }
 
     /**
@@ -278,11 +285,11 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
 
     @Override
     protected Object getDatasets() {
-        return ['test-data/install-data.xml', 'test-data/sales-items.xml']
+        ['test-data/install-data.xml', 'test-data/sales-items.xml']
     }
 
     protected String getDiscountPercentAmount() {
-        return driver.findElement(By.id('discount-from-percent')).text
+        driver.findElement(By.id('discount-from-percent')).text
     }
 
     /**
@@ -291,7 +298,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      * @return  the number of rows
      */
     protected int getNumPriceTableRows() {
-        return priceTable.findElements(By.xpath("./tbody[1]/tr")).size()
+        priceTable.findElements(By.xpath("./tbody[1]/tr")).size()
     }
 
     /**
@@ -300,7 +307,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      * @return  the price table web element
      */
     protected WebElement getPriceTable() {
-        return driver.findElement(By.className('price-table'))
+        driver.findElement By.className('price-table')
     }
 
     /**
@@ -311,8 +318,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      * @return          the web element representing the cell
      */
     protected WebElement getPriceTableCell(int rowIdx, String cellName) {
-        def row = getPriceTableRow(rowIdx)
-        return row.findElement(By.className(cellName))
+        getPriceTableRow(rowIdx).findElement By.className(cellName)
     }
 
     /**
@@ -323,7 +329,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      * @param name      the name of the field such as "quantity", "name" etc.
      */
     protected WebElement getPriceTableInput(int rowIdx, String name) {
-        return getInput("items[${rowIdx}].${name}")
+        getInput "items[${rowIdx}].${name}"
     }
 
     /**
@@ -333,7 +339,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      * @return          the web element representing the row
      */
     protected WebElement getPriceTableRow(int rowIdx) {
-        return priceTable.findElement(By.xpath("./tbody[1]/tr[${rowIdx + 1}]"))
+        priceTable.findElement By.xpath("./tbody[1]/tr[${rowIdx + 1}]")
     }
 
     /**
@@ -344,25 +350,25 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      */
     protected String getPriceTableRowTotal(int rowIdx) {
         getPriceTableInput(rowIdx, 'name').click()
-        return getPriceTableCell(rowIdx, 'total-price').
+        getPriceTableCell(rowIdx, 'total-price').
             findElement(By.tagName('output')).
             text
     }
 
     protected WebElement getStillUnpaid() {
-        return driver.findElement(By.id('still-unpaid'))
+        driver.findElement By.id('still-unpaid')
     }
 
     protected String getSubtotalGross() {
-        return driver.findElement(By.id('subtotal-gross')).text
+        driver.findElement(By.id('subtotal-gross')).text
     }
 
     protected String getSubtotalNet() {
-        return driver.findElement(By.id('subtotal-net')).text
+        driver.findElement(By.id('subtotal-net')).text
     }
 
     protected String getTotal() {
-        return driver.findElement(By.id('total-price')).text
+        driver.findElement(By.id('total-price')).text
     }
 
     /**
@@ -398,7 +404,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
             click()
         def by = By.id("inventory-selector-${type}")
         def wait = new WebDriverWait(driver, 5)
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(by))
+        wait.until ExpectedConditions.visibilityOfElementLocated(by)
     }
 
     /**
@@ -443,8 +449,10 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      *                  removing the row
      */
     protected int removeRow(int rowIdx) {
-        getPriceTableRow(rowIdx).findElement(By.className('remove-btn')).click()
-        return numPriceTableRows
+        getPriceTableRow(rowIdx).findElement(By.className('action-buttons'))
+            .findElement(By.className('remove-btn'))
+            .click()
+        numPriceTableRows
     }
 
     /**
@@ -455,7 +463,9 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      * @param name      the name of the field such as "quantity", "name" etc.
      * @param value     the value to set
      */
-    protected void setPriceTableInputValue(int rowIdx, String name, String value) {
+    protected void setPriceTableInputValue(int rowIdx, String name,
+                                           String value)
+    {
         setInputValue "items[${rowIdx}].${name}", value
     }
 }

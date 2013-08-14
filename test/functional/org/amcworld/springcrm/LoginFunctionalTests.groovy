@@ -30,14 +30,16 @@ import org.openqa.selenium.By
  * the login procedure.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class LoginFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Constants ------------------------------
 
-    protected static final By BY_MESSAGE = By.xpath('//aside/div[@class="message"]')
+    protected static final By BY_MESSAGE = By.xpath(
+        '//aside/div[@class="message"]'
+    )
     protected static final String TITLE = 'Anmeldung'
 
 
@@ -84,7 +86,7 @@ class LoginFunctionalTests extends GeneralFunctionalTestCase {
         driver.findElement(BY_LOGIN_BTN).click()
         assert getUrl('/') == driver.currentUrl
         assert 'SpringCRM' == driver.title
-        driver.findElement(By.xpath('//aside[@id="login-area"]/p/a')).click()
+        driver.findElement(By.xpath('//header/div[@id="top-area"]/p/a')).click()
         assert getUrl('/user/login') == driver.currentUrl
         assert TITLE == driver.title
         driver.quit()
@@ -95,6 +97,6 @@ class LoginFunctionalTests extends GeneralFunctionalTestCase {
 
     @Override
     protected Object getDatasets() {
-        return ['test-data/install-data.xml']
+        ['test-data/install-data.xml']
     }
 }

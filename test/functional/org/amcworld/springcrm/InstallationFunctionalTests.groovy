@@ -36,7 +36,7 @@ import org.openqa.selenium.support.ui.Select
  * case for the installer in SpringCRM.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class InstallationFunctionalTests extends GeneralFunctionalTestCase {
@@ -91,8 +91,8 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
 
     @Test
     void testNavigationBack() {
-        def link1Sel = By.xpath('//ul[@id="toolbar"]/li[1]/a')
-        def link2Sel = By.xpath('//ul[@id="toolbar"]/li[2]/a')
+        def link1Sel = By.cssSelector('ul#toolbar > li:first-child > .button')
+        def link2Sel = By.cssSelector('ul#toolbar > li:last-child > .button')
 
         int n = URL_ACTIONS.size() - 1
         driver.get(getUrl(n) + '?lang=de')
@@ -143,7 +143,7 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         open('/install')
         assert getUrl('/install') == driver.currentUrl
         assert TITLE == driver.title
-        assert 'Willkommen zur Installation von SpringCRM' == driver.findElement(By.cssSelector('#main-container-header > h2')).text
+        assert 'Willkommen zur Installation von SpringCRM' == driver.findElement(By.cssSelector('#main-container > header > h1')).text
         assert 'Willkommen' == driver.findElement(By.cssSelector('#install-progress > .current > a')).text
 
         for (int i = 0; i < URL_ACTIONS.size(); i++) {
@@ -160,7 +160,7 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         prepareOrganization()
 
         driver.get(getUrl('/install/' + URL_ACTIONS[0], 'de'))
-        performInstallation(true)
+        performInstallation true
 
         assert 0 == Organization.count()
     }
@@ -184,17 +184,17 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
     }
 
     protected void performInstallation(boolean existingData = false) {
-        def headerSel = By.cssSelector('#main-container-header > h2')
+        def headerSel = By.cssSelector('#main-container > header > h1')
         def stepSel = By.cssSelector('#install-progress > .current > a')
-        def link1Sel = By.xpath('//ul[@id="toolbar"]/li[1]/a')
-        def link2Sel = By.xpath('//ul[@id="toolbar"]/li[2]/a')
+        def link1Sel = By.cssSelector('ul#toolbar > li:first-child > .button')
+        def link2Sel = By.cssSelector('ul#toolbar > li:last-child > .button')
 
         /* page "welcome" */
         int page = 0
         assert driver.currentUrl.startsWith(getUrl(page))
         assert TITLE == driver.title
-        def h2 = driver.findElement(headerSel)
-        assert 'Willkommen zur Installation von SpringCRM' == h2.text
+        def h1 = driver.findElement(headerSel)
+        assert 'Willkommen zur Installation von SpringCRM' == h1.text
         def step = driver.findElement(stepSel)
         assert 'Willkommen' == step.text
         driver.findElement(link1Sel).click()
@@ -203,8 +203,8 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         page++
         assert getUrl(page) == driver.currentUrl
         assert TITLE == driver.title
-        h2 = driver.findElement(headerSel)
-        assert 'Basisdaten installieren' == h2.text
+        h1 = driver.findElement(headerSel)
+        assert 'Basisdaten installieren' == h1.text
         step = driver.findElement(stepSel)
         assert 'Basisdaten installieren' == step.text
         if (existingData) {
@@ -227,8 +227,8 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         page++
         assert getUrl(page) == driver.currentUrl
         assert TITLE == driver.title
-        h2 = driver.findElement(headerSel)
-        assert 'Mandantendaten' == h2.text
+        h1 = driver.findElement(headerSel)
+        assert 'Mandantendaten' == h1.text
         step = driver.findElement(stepSel)
         assert 'Mandantendaten' == step.text
         driver.findElement(link2Sel).click()
@@ -250,8 +250,8 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         page++
         assert getUrl(page) == driver.currentUrl
         assert TITLE == driver.title
-        h2 = driver.findElement(headerSel)
-        assert 'Administratorkonto anlegen' == h2.text
+        h1 = driver.findElement(headerSel)
+        assert 'Administratorkonto anlegen' == h1.text
         step = driver.findElement(stepSel)
         assert 'Administratorkonto anlegen' == step.text
         driver.findElement(link2Sel).click()
@@ -279,8 +279,8 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         page++
         assert getUrl(page) == driver.currentUrl
         assert TITLE == driver.title
-        h2 = driver.findElement(headerSel)
-        assert 'Installation abgeschlossen' == h2.text
+        h1 = driver.findElement(headerSel)
+        assert 'Installation abgeschlossen' == h1.text
         step = driver.findElement(stepSel)
         assert 'Fertigstellen' == step.text
         driver.findElement(link2Sel).click()
@@ -297,7 +297,7 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         taxRate = TaxRate.get(401)
         assert '7 %' == taxRate.name
         assert 0.07d == taxRate.taxValue
-        assert 11 == SeqNumber.count()
+        assert 12 == SeqNumber.count()
         assert 0 < Config.count()
         assert 0 < OrgType.count()
         assert 0 < Rating.count()
@@ -315,5 +315,6 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         assert 0 < PaymentMethod.count()
         assert 0 < CreditMemoStage.count()
         assert 0 < ProductCategory.count()
+        assert 0 < TicketPriority.count()
     }
 }

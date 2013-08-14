@@ -36,7 +36,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * for the project section of SpringCRM.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class ProjectFunctionalTests extends InvoicingTransactionTestCase {
@@ -67,12 +67,12 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         }
 
         driver.manage().window().maximize()
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/project/list')
+        open '/project/list'
     }
 
     @Test
@@ -121,7 +121,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         cancelForm getUrl('/project/list')
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Projekt anlegen' == link.text
         assert getUrl('/project/create') == link.getAttribute('href')
         driver.quit()
@@ -161,32 +161,32 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
             if (p == ProjectPhase.quote) {
                 assert 'current' == phaseEl.getAttribute('class')
             }
-            assert "project-phase-${p}" == phaseEl.findElement(By.tagName('h5')).getAttribute('id')
+            assert "project-phase-${p}" == phaseEl.findElement(By.tagName('h4')).getAttribute('id')
             assert 2 == phaseEl.findElements(By.xpath('.//ul[@class="project-phase-actions"]/li')).size()
             i++
         }
 
         checkProjectItems 0, [
             [
-                url: '/call/show/', cssClass: 'data-type-call',
+                url: '/call/show/', icon: 'phone',
                 label: 'Bitte um Angebot', editUrl: '/call/edit'
             ],
             [
-                url: '/note/show/', cssClass: 'data-type-note',
+                url: '/note/show/', icon: 'pencil',
                 label: 'Besprechung vom 21.01.2013', editUrl: '/note/edit'
             ]
         ]
         checkProjectItems 1, []
         checkProjectItems 2, [
             [
-                url: '/quote/show/', cssClass: 'data-type-quote',
+                url: '/quote/show/', icon: 'dollar',
                 label: 'Werbekampagne Frühjahr 2013', editUrl: '/quote/edit'
             ]
         ]
         checkProjectItems 3, []
         checkProjectItems 4, [
             [
-                url: '/sales-order/show/', cssClass: 'data-type-salesOrder',
+                url: '/sales-order/show/', icon: 'list',
                 label: 'Werbekampagne Frühjahr 2013',
                 editUrl: '/sales-order/edit'
             ]
@@ -195,7 +195,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         checkProjectItems 6, []
         checkProjectItems 7, [
             [
-                url: '/invoice/show/', cssClass: 'data-type-invoice',
+                url: '/invoice/show/', icon: 'euro',
                 label: 'Werbekampagne Frühjahr 2013', editUrl: '/invoice/edit'
             ]
         ]
@@ -204,31 +204,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/project/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/project/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/project/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/project/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/project/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/project/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'project', id
         driver.quit()
 
         assert 1 == Project.count()
@@ -239,8 +215,8 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
     void testAddProjectItems() {
         clickListItem 0, 1, '/project/show'
         checkTitles 'Projekt anzeigen', 'Projekte', 'Marketing-Aktion Frühjahr'
-        assert 1 == phases.findElements(By.xpath('./section[3]//ul[@class="project-phase-items"]/li')).size()
-        phases.findElement(By.xpath('./section[3]//ul[@class="project-phase-actions"]/li[1]')).click()
+        assert 1 == getProjectItems(2).size()
+        clickPhaseActionButton 2, 0
         WebDriverWait wait = new WebDriverWait(driver, 10)
         By dlgBy = By.id('create-project-item-dialog')
         WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(dlgBy))
@@ -260,11 +236,11 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         checkCurrentProjectPhase 2
         checkProjectItems 2, [
             [
-                url: '/call/show/', cssClass: 'data-type-call',
+                url: '/call/show/', icon: 'phone',
                 label: 'Mitteilung von Änderungswünschen'
             ],
             [
-                url: '/quote/show/', cssClass: 'data-type-quote',
+                url: '/quote/show/', icon: 'dollar',
                 label: 'Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -297,7 +273,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue('headerText', 'für Änderungswünsche zur geplanten Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.')
+        setInputValue 'headerText', 'für Änderungswünsche zur geplanten Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.'
         setPriceTableInputValue 0, 'number', 'S-10000'
         setPriceTableInputValue 0, 'quantity', '1'
         assert 'Einheiten' == selectAutocompleteEx('items[0].unit', 'Einh')
@@ -310,15 +286,15 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         checkCurrentProjectPhase 2
         checkProjectItems 2, [
             [
-                url: '/call/show/', cssClass: 'data-type-call',
+                url: '/call/show/', icon: 'phone',
                 label: 'Mitteilung von Änderungswünschen'
             ],
             [
-                url: '/quote/show/', cssClass: 'data-type-quote',
+                url: '/quote/show/', icon: 'dollar',
                 label: 'Werbekampagne Frühjahr 2013'
             ],
             [
-                url: '/quote/show/', cssClass: 'data-type-quote',
+                url: '/quote/show/', icon: 'dollar',
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -344,7 +320,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         checkCurrentProjectPhase 3
         checkProjectItems 3, [
             [
-                url: '/note/show/', cssClass: 'data-type-note',
+                url: '/note/show/', icon: 'pencil',
                 label: 'Auftragserteilung Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -391,11 +367,11 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         checkCurrentProjectPhase 4
         checkProjectItems 4, [
             [
-                url: '/sales-order/show/', cssClass: 'data-type-salesOrder',
+                url: '/sales-order/show/', icon: 'list',
                 label: 'Werbekampagne Frühjahr 2013'
             ],
             [
-                url: '/sales-order/show/', cssClass: 'data-type-salesOrder',
+                url: '/sales-order/show/', icon: 'list',
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -448,11 +424,11 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 7
         checkProjectItems 7, [
             [
-                url: '/invoice/show/', cssClass: 'data-type-invoice',
+                url: '/invoice/show/', icon: 'euro',
                 label: 'Werbekampagne Frühjahr 2013'
             ],
             [
-                url: '/invoice/show/', cssClass: 'data-type-invoice',
+                url: '/invoice/show/', icon: 'euro',
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -485,7 +461,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         assert 'Duvensee' == getInputValue('shippingAddrLocation')
         assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
         assert 'Deutschland' == getInputValue('shippingAddrCountry')
-        setInputValue('headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zu den Änderungswünschen zur Werbekampagne "Frühjahr 2013" gut.')
+        setInputValue 'headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zu den Änderungswünschen zur Werbekampagne "Frühjahr 2013" gut.'
         setPriceTableInputValue 0, 'number', 'S-10000'
         setPriceTableInputValue 0, 'quantity', '1'
         assert 'Einheiten' == selectAutocompleteEx('items[0].unit', 'Einh')
@@ -498,15 +474,15 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 7
         checkProjectItems 7, [
             [
-                url: '/credit-memo/show/', cssClass: 'data-type-creditMemo',
+                url: '/credit-memo/show/', icon: 'money',
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ],
             [
-                url: '/invoice/show/', cssClass: 'data-type-invoice',
+                url: '/invoice/show/', icon: 'euro',
                 label: 'Werbekampagne Frühjahr 2013'
             ],
             [
-                url: '/invoice/show/', cssClass: 'data-type-invoice',
+                url: '/invoice/show/', icon: 'euro',
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -553,7 +529,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 8
         checkProjectItems 8, [
             [
-                url: '/dunning/show/', cssClass: 'data-type-dunning',
+                url: '/dunning/show/', icon: 'suitcase',
                 label: 'Änderungswünsche zur Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -580,7 +556,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 0
         checkProjectItems 0, [
             [
-                url: '/call/show/', cssClass: 'data-type-call',
+                url: '/call/show/', icon: 'phone',
                 label: 'Bitte um Angebot'
             ]
         ]
@@ -589,11 +565,11 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 0
         checkProjectItems 0, [
             [
-                url: '/call/show/', cssClass: 'data-type-call',
+                url: '/call/show/', icon: 'phone',
                 label: 'Bitte um Angebot'
             ],
             [
-                url: '/note/show/', cssClass: 'data-type-note',
+                url: '/note/show/', icon: 'pencil',
                 label: 'Besprechung vom 21.01.2013'
             ]
         ]
@@ -602,7 +578,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 2
         checkProjectItems 2, [
             [
-                url: '/quote/show/', cssClass: 'data-type-quote',
+                url: '/quote/show/', icon: 'dollar',
                 label: 'Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -611,7 +587,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 4
         checkProjectItems 4, [
             [
-                url: '/sales-order/show/', cssClass: 'data-type-salesOrder',
+                url: '/sales-order/show/', icon: 'list',
                 label: 'Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -620,7 +596,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         checkCurrentProjectPhase 7
         checkProjectItems 7, [
             [
-                url: '/invoice/show/', cssClass: 'data-type-invoice',
+                url: '/invoice/show/', icon: 'euro',
                 label: 'Werbekampagne Frühjahr 2013'
             ]
         ]
@@ -914,7 +890,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
      *                      which should be checked
      */
     protected void checkCurrentProjectPhase(int sectionIdx) {
-        assert 'current' == driver.findElement(By.xpath("//div[@id='project-phases']/section[${sectionIdx + 1}]")).getAttribute('class')
+        assert 'current' == getPhase(sectionIdx).getAttribute('class')
     }
 
     /**
@@ -927,8 +903,8 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
      *                      <ul>
      *                        <li><b>url</b>. The expected URL of the link when
      *                        clicking the project item.</li>
-     *                        <li><b>cssClass</b>. The expected CSS class of
-     *                        the link.</li>
+     *                        <li><b>icon</b>. The expected icon of the
+     *                        link.</li>
      *                        <li><b>label</b>. The label (text) of the link.
      *                        </li>
      *                        <li><b>editUrl</b>. The expected URL of the link
@@ -946,13 +922,34 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
             WebElement link = items[i].findElement(By.tagName('a'))
             Map<String, String> expectedItem = expectedItems[i]
             assert link.getAttribute('href').startsWith(getUrl(expectedItem.url))
-            assert link.getAttribute('class').contains(expectedItem.cssClass)
+            String icon = expectedItem.icon
+            if (icon) {
+                assert link.findElement(By.tagName('i')).getAttribute('class').contains("icon-${icon}")
+            }
             assert expectedItem.label == link.text
             String editUrl = expectedItem.editUrl
             if (editUrl) {
                 assert items[i].findElement(By.xpath('.//span[@class="item-actions"]/a[1]')).getAttribute('href').startsWith(getUrl(editUrl))
             }
         }
+    }
+
+    /**
+     * Clicks the action button with the given index in the project phase with
+     * the stated index.
+     *
+     * @param sectionIdx    the zero-based index of the project section where
+     *                      the button should be clicked
+     * @param btnIdx        the zero-based index of the action button which
+     *                      should be clicked
+     * @since               1.4
+     */
+    protected void clickPhaseActionButton(int sectionIdx, int btnIdx) {
+        getPhase(sectionIdx).
+            findElement(By.xpath(
+                ".//ul[@class='project-phase-actions']/li[${btnIdx + 1}]/span"
+            )).
+            click()
     }
 
     /**
@@ -968,7 +965,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
     protected void createProjectItem(int sectionIdx, int btnIdx,
                                      String expectedUrl)
     {
-        phases.findElement(By.xpath("./section[${sectionIdx + 1}]//ul[@class='project-phase-actions']/li[1]")).click()
+        clickPhaseActionButton sectionIdx, 0
         WebDriverWait wait = new WebDriverWait(driver, 10)
         WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id('create-project-item-dialog')))
         assert 9 == dialog.findElements(By.xpath('./ul/li')).size()
@@ -979,7 +976,18 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
 
     @Override
     protected Object getDatasets() {
-        return ['test-data/install-data.xml']
+        ['test-data/install-data.xml']
+    }
+
+    /**
+     * Gets the web element representing the phase with the given index.
+     *
+     * @param sectionIdx    the zero-based index of the phase
+     * @return              the project phase
+     * @since               1.4
+     */
+    protected WebElement getPhase(int sectionIdx) {
+        phases.findElement By.xpath("./section[${sectionIdx + 1}]")
     }
 
     /**
@@ -1000,8 +1008,8 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
      *                      items
      */
     protected List<WebElement> getProjectItems(int sectionIdx) {
-        phases.findElements(
-            By.xpath("./section[${sectionIdx + 1}]//ul[@class='project-phase-items']/li")
+        getPhase(sectionIdx).findElements(
+            By.cssSelector("ul.project-phase-items > li")
         )
     }
 
@@ -1077,7 +1085,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
     protected String selectProjectItem(int sectionIdx, String type,
                                        int rowIdx = 0)
     {
-        phases.findElement(By.xpath("./section[${sectionIdx + 1}]//ul[@class='project-phase-actions']/li[2]")).click()
+        clickPhaseActionButton sectionIdx, 1
         def wait = new WebDriverWait(driver, 10)
         By byDlg = By.id('select-project-item-dialog')
         WebElement dlg = wait.until(ExpectedConditions.visibilityOfElementLocated(byDlg))
@@ -1091,7 +1099,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         String itemLabel = link.text
         link.click()
         wait.until ExpectedConditions.invisibilityOfElementLocated(byDlg)
-        wait.until ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='project-phases']/section[${sectionIdx + 1}]//ul[@class='project-phase-items']/li"))
+        wait.until ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div#project-phases > section:nth-child(${sectionIdx + 1}) ul.project-phase-items > li"))
         itemLabel
     }
 }

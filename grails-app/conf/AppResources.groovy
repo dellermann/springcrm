@@ -1,5 +1,5 @@
 /*
- * SpringcrmResources.groovy
+ * AppResources.groovy
  *
  * Copyright (c) 2011-2013, Daniel Ellermann
  *
@@ -74,7 +74,7 @@ modules = {
     }
 
     core {
-        dependsOn 'jquery-ui, jquery-json'
+        dependsOn 'jquery-ui, jquery-json, test'
 
         resource url: '/css/jquery.qtip.min.css', exclude: 'minify'
         resource url: '/less/reset.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
@@ -266,6 +266,14 @@ modules = {
         resource '/js/app/settings-google-auth.js'
     }
 
+    test {
+    
+        /*
+         * This resource is for test environment, only.  See
+         * AppTestResources.groovy for more information.
+         */
+    }
+
     ticket {
         dependsOn 'core'
 
@@ -310,3 +318,4 @@ modules = {
         }
     }
 }
+

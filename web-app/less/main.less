@@ -887,8 +887,10 @@ fieldset, .fieldset {
   display: inline-block;
 
   i {
+    cursor: pointer;
     font-size: 123.1%;
     padding-left: 1ex;
+    vertical-align: middle;
 
     &:first-child {
       padding-left: 0;
@@ -1025,13 +1027,13 @@ fieldset, .fieldset {
 .date-time-input {
   .date-input-date {
     .border-radius-right();
-    border-right: none;
+    border-right: none !important;
     outline: none;
     padding-right: .5em;
   }
   .date-input-time {
     .border-radius-left();
-    border-left: none;
+    border-left: none !important;
     outline: none;
     padding-left: .5em;
   }

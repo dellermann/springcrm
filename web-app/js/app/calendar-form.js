@@ -245,7 +245,7 @@
     }
   });
 
-  enableRecurrenceEndCtrls($("#recurrence-end dt input:radio").val());
+  enableRecurrenceEndCtrls($("#recurrence-end dt input:radio:checked").val());
 
   initRecurrenceTypes();
 

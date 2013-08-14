@@ -36,8 +36,8 @@ import org.openqa.selenium.support.ui.WebDriverWait
 
 
 /**
- * The class {@code GeneralFunctionalTestCase} represents a general base class for all
- * functional test cases using Selenium.
+ * The class {@code GeneralFunctionalTestCase} represents a general base class
+ * for all functional test cases using Selenium.
  *
  * @author  Daniel Ellermann
  * @version 1.4
@@ -47,10 +47,10 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
 
     //-- Constants ------------------------------
 
-    protected static final By BY_HEADER = By.xpath('//div[@id="main-container-header"]/h2')
+    protected static final By BY_HEADER = By.xpath('//header/h1')
     protected static final By BY_LOGIN_BTN = By.name('submit')
     protected static final By BY_PASSWORD = By.name('password')
-    protected static final By BY_SUBHEADER = By.xpath('//section[@id="content"]/h3')
+    protected static final By BY_SUBHEADER = By.xpath('//div[@id="content"]/h2')
     protected static final By BY_USER_NAME = By.name('userName')
     protected static final String PURCHASE_INVOICE_EXAMPLE_DOCUMENT = 'org/amcworld/springcrm/4049493-4994.pdf'
     protected static final String PURCHASE_INVOICE_EXAMPLE_DOCUMENT_ALT = 'org/amcworld/springcrm/4049493-4994-neu.pdf'
@@ -111,6 +111,57 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     }
 
     /**
+     * Checks the toolbar of the show view which is usually used.
+     *
+     * @param controller    the name of the controller
+     * @param id            the ID of the item
+     * @since               1.4
+     */
+    protected void checkDefaultShowToolbar(String controller, int id) {
+        checkToolbar controller, [
+            [
+                action: 'list',
+                color: 'white',
+                icon: 'list',
+                label: 'Liste'
+            ],
+            [
+                action: 'create',
+                color: 'green',
+                icon: 'plus',
+                label: 'Anlegen'
+            ],
+            [
+                action: 'edit',
+                color: 'green',
+                icon: 'edit',
+                id: id,
+                label: 'Bearbeiten'
+            ],
+            [
+                action: 'copy',
+                color: 'blue',
+                icon: 'copy',
+                id: id,
+                label: 'Kopieren'
+            ],
+            [
+                action: 'delete',
+                check: {
+                    it.click()
+                    driver.switchTo().alert().dismiss()
+                    assert getUrl("/${controller}/show/${id}") == driver.currentUrl
+                },
+                color: 'red',
+                cssClasses: 'delete-btn',
+                icon: 'trash',
+                id: id,
+                label: 'Löschen'
+            ]
+        ]
+    }
+
+    /**
      * Checks whether exactly the given list of fields are marked as error.
      *
      * @param fieldNames    the names of the field which must be marked as
@@ -140,7 +191,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         if (!shouldNotBeErrors.empty) {
             println "Fields ${shouldNotBeErrors.toListString()} marked as error, but shouldn't."
         }
-        return shouldBeErrors.empty && shouldNotBeErrors.empty
+        shouldBeErrors.empty && shouldNotBeErrors.empty
     }
 
     /**
@@ -174,6 +225,64 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         }
         if (subheader != null) {
             assert subheader == driver.findElement(BY_SUBHEADER).text
+        }
+    }
+
+    /**
+     * Checks the toolbar of the given controller agains the given button
+     * definitions.
+     *
+     * @param controller    the controller to check
+     * @param buttons       a list of button definitions; each definition must
+     *                      be a map containing the following values:
+     *                      <ul>
+     *                        <li>{@code action}. The action to call when
+     *                        clicking the button. The value is mandatory if
+     *                        the {@code url} key is not specified.</li>
+     *                        <li>{@code check}. A closure which is called to
+     *                        perform additional checks.  The only parameter is
+     *                        the {@code WebElement} representing the button.
+     *                        </li>
+     *                        <li>{@code color}. The color of the button.</li>
+     *                        <li>{@code cssClasses}. Any additional CSS
+     *                        classes the button must have.</li>
+     *                        <li>{@code icon}. The icon (without the
+     *                        {@code icon-} prefix) which must be inside the
+     *                        button.</li>
+     *                        <li>{@code id}. The ID to use in the URL which
+     *                        is called when clicking the button.</li>
+     *                        <li>{@code label}. The label of the button.</li>
+     *                        <li>{@code url}. The URL to call when clicking
+     *                        the button.</li>
+     *                      </ul>
+     * @since               1.4
+     */
+    protected void checkToolbar(String controller,
+                                List<Map<String, Object>> buttons)
+    {
+        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
+        for (int i = 0; i < buttons.size(); i++) {
+            Map button = buttons[i]
+            WebElement link = toolbar.findElement(By.xpath("li[${i + 1}]/a"))
+            StringBuilder buf = new StringBuilder('button')
+            if (button.color) buf << ' ' << button.color
+            if (button.cssClasses) buf << ' ' << button.cssClasses
+            assert buf.toString() == link.getAttribute('class')
+            String url = button.url
+            if (!url) {
+                buf = new StringBuilder('/')
+                buf << controller << '/' << button.action
+                if (button.id) buf << '/' << button.id
+                url = buf.toString()
+            }
+            assert getUrl(url) == link.getAttribute('href')
+            assert button.label == link.text
+            if (button.icon) {
+                assert "icon-${button.icon}" in link.findElement(By.tagName('i')).getAttribute('class')
+            }
+            if (button.check) {
+                button.check link
+            }
         }
     }
 
@@ -357,11 +466,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return      the computed XPath expression
      */
     protected String getFieldsetXpath(int index) {
-        StringBuilder buf = new StringBuilder('div[')
-        buf << getXPathClassExpr('fieldset')
-        buf << ']['
-        buf << index
-        buf << ']'
+        StringBuilder buf = new StringBuilder('section[')
+        buf << getXPathClassExpr('fieldset') << '][' << index << ']'
         buf.toString()
     }
 
@@ -371,7 +477,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return  the flash message text
      */
     protected String getFlashMessage() {
-        return driver.findElement(By.className('flash-message')).text
+        driver.findElement(By.className('flash-message')).text
     }
 
     /**
@@ -381,7 +487,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return      the input field
      */
     protected WebElement getInput(String name) {
-        return driver.findElement(By.name(name))
+        driver.findElement By.name(name)
     }
 
     /**
@@ -460,7 +566,9 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return  the folder containing the purchase invoice documents
      */
     protected File getPurchaseInvoiceFolder() {
-        File f = new File(appDataDir, PurchaseInvoiceController.FILE_TYPE)
+        File f = new File(
+            appDataDir, PurchaseInvoiceController.FILE_TYPE.toString()
+        )
         if (!f.exists()) {
             f.mkdirs()
         }
@@ -492,7 +600,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      * @return          the text of the field
      */
     protected String getShowFieldText(WebElement col, int row) {
-        return getShowField(col, row).text.trim()
+        getShowField(col, row).text.trim()
     }
 
     /**
@@ -506,16 +614,13 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
     protected String getUrl(String url, String language = null) {
         StringBuilder buf = new StringBuilder(baseUrl)
         buf << url
-        if (language) {
-            buf << '?lang='
-            buf << language
-        }
-        return buf.toString()
+        if (language) buf << '?lang=' << language
+        buf.toString()
     }
 
     /**
      * Returns an XPath expression e. g. suitable for an XPath predicate which
-     * tests, whether nor not the {@code class} attribute of a particular HTML
+     * tests whether nor not the {@code class} attribute of a particular HTML
      * element contains the given class name.  The method is needed because it
      * is complicated to test against multiple class names of HTML elements.
      *
@@ -526,9 +631,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         StringBuilder buf = new StringBuilder(
             'contains(concat(" ", normalize-space(@class), " "), " '
         )
-        buf << className.trim()
-        buf << ' ")'
-        return buf.toString()
+        buf << className.trim() << ' ")'
+        buf.toString()
     }
 
     /**
@@ -893,7 +997,9 @@ auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
      */
     protected PurchaseInvoice preparePurchaseInvoice(Organization org = null) {
         File file = purchaseInvoiceExampleDocument
-        new File(purchaseInvoiceFolder, file.name) << file.newInputStream()
+        DataFile dataFile = new DataFile(file)
+        dataFile.save()
+        new File(purchaseInvoiceFolder, dataFile.storageName) << file.newInputStream()
 
         def purchaseInvoice = new PurchaseInvoice(
             number: '4049493-4994',
@@ -904,7 +1010,7 @@ auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
             dueDate: new GregorianCalendar(2013, Calendar.APRIL, 15).time,
             stage: PurchaseInvoiceStage.get(2101),
             notes: 'Lieferschein zur Rechnung nachfordern.',
-            documentFile: file.name,
+            documentFile: dataFile,
             discountPercent: 2.0d,
             adjustment: -1.36d
         )
@@ -1100,7 +1206,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
             input.sendKeys Keys.ARROW_DOWN
         }
         input.sendKeys Keys.TAB
-        return input.getAttribute('value')
+        input.getAttribute 'value'
     }
 
     /**
@@ -1204,10 +1310,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
      */
     protected WebElement waitForEmptyRemoteList(int fieldsetIdx) {
         def wait = new WebDriverWait(driver, 10)
-        By by = By.xpath(
-            './/' + getFieldsetXpath(fieldsetIdx) +
-            '//div[@class="fieldset-content"]/div[@class="empty-list-inline"]'
-        )
-        wait.until ExpectedConditions.presenceOfElementLocated(by)
+        wait.until ExpectedConditions.presenceOfElementLocated(By.xpath(
+            ".//${getFieldsetXpath(fieldsetIdx)}/div/div[@class='empty-list-inline']"
+        ))
     }
 }

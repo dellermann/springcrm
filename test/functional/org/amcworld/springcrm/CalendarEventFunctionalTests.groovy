@@ -38,7 +38,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * case for the calendar section of SpringCRM.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
@@ -126,7 +126,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         cancelForm getUrl('/calendar-event/list')
         def emptyList = driver.findElement(By.className('empty-list'))
         assert 'Diese Liste enthält keine Einträge.' == emptyList.findElement(By.tagName('p')).text
-        def link = emptyList.findElement(By.xpath('div[@class="buttons"]/a[@class="green"]'))
+        def link = emptyList.findElement(By.cssSelector('div.buttons > a.button'))
         assert 'Kalendereintrag anlegen' == link.text
         assert getUrl('/calendar-event/create') == link.getAttribute('href')
         driver.quit()
@@ -282,7 +282,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         submitForm getUrl('/calendar-event/save')
 
         assert checkErrorFields(['subject', 'start', 'start_date', 'start_time', 'end', 'end_date', 'end_time'])
-        assert 'Mindestens ein Wochentag muss ausgewählt sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-30"]/p[1]/span[@class="error-msg"]')).text
+        assert 'Mindestens ein Wochentag muss ausgewählt sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-30"]/ul[@class="field-msgs"]/li[@class="error-msg"]')).text
         assert '1' == getInputValue('recurrence-interval-30')
         assert 'none' == getInputValue('recurrence.endType')
         driver.quit()
@@ -359,7 +359,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         submitForm getUrl('/calendar-event/save')
 
         assert checkErrorFields(['subject', 'start', 'start_date', 'start_time', 'end', 'end_date', 'end_time'])
-        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-40"]/p[1]/span[@class="error-msg"]')).text
+        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-40"]/ul[@class="field-msgs"]/li[@class="error-msg"]')).text
         assert '1' == getInputValue('recurrence-interval-40')
         assert 'none' == getInputValue('recurrence.endType')
         driver.quit()
@@ -437,7 +437,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         submitForm getUrl('/calendar-event/save')
 
         assert checkErrorFields(['subject', 'start', 'start_date', 'start_time', 'end', 'end_date', 'end_time'])
-        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-50"]/p[1]/span[@class="error-msg"]')).text
+        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-50"]/ul[@class="field-msgs"]/li[@class="error-msg"]')).text
         assert '1' == getInputValue('recurrence-interval-50')
         assert 'none' == getInputValue('recurrence.endType')
         driver.quit()
@@ -514,7 +514,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         submitForm getUrl('/calendar-event/save')
 
         assert checkErrorFields(['subject', 'start', 'start_date', 'start_time', 'end', 'end_date', 'end_time'])
-        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-60"]/p[1]/span[@class="error-msg"]')).text
+        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-60"]/ul[@class="field-msgs"]/li[@class="error-msg"]')).text
         assert 'none' == getInputValue('recurrence.endType')
         driver.quit()
 
@@ -591,7 +591,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         submitForm getUrl('/calendar-event/save')
 
         assert checkErrorFields(['subject', 'start', 'start_date', 'start_time', 'end', 'end_date', 'end_time'])
-        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-70"]/p[1]/span[@class="error-msg"]')).text
+        assert 'Feld darf nicht leer sein.' == driver.findElement(By.xpath('//div[@id="tabs-recurrence-type-70"]/ul[@class="field-msgs"]/li[@class="error-msg"]')).text
         assert 'none' == getInputValue('recurrence.endType')
         driver.quit()
 
@@ -623,31 +623,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
-        def toolbar = driver.findElement(By.xpath('//ul[@id="toolbar"]'))
-        link = toolbar.findElement(By.xpath('li[1]/a'))
-        assert 'white' == link.getAttribute('class')
-        assert getUrl('/calendar-event/list') == link.getAttribute('href')
-        assert 'Liste' == link.text
-        link = toolbar.findElement(By.xpath('li[2]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl('/calendar-event/create') == link.getAttribute('href')
-        assert 'Anlegen' == link.text
-        link = toolbar.findElement(By.xpath('li[3]/a'))
-        assert 'green' == link.getAttribute('class')
-        assert getUrl("/calendar-event/edit/${id}") == link.getAttribute('href')
-        assert 'Bearbeiten' == link.text
-        link = toolbar.findElement(By.xpath('li[4]/a'))
-        assert 'blue' == link.getAttribute('class')
-        assert getUrl("/calendar-event/copy/${id}") == link.getAttribute('href')
-        assert 'Kopieren' == link.text
-        link = toolbar.findElement(By.xpath('li[5]/a'))
-        assert link.getAttribute('class').contains('red')
-        assert link.getAttribute('class').contains('delete-btn')
-        assert getUrl("/calendar-event/delete/${id}") == link.getAttribute('href')
-        assert 'Löschen' == link.text
-        link.click()
-        driver.switchTo().alert().dismiss()
-        assert getUrl("/calendar-event/show/${id}") == driver.currentUrl
+        checkDefaultShowToolbar 'calendar-event', id
         driver.quit()
 
         assert 1 == CalendarEvent.count()
@@ -706,11 +682,11 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
     @Test
     void testListCalendarEventsDayView() {
         checkTitles 'Kalendereinträge', 'Kalendereinträge'
-        driver.findElement(By.xpath('//section[@id="content"]/div[@class="fc-header"]/span[1]')).click()
+        driver.findElement(By.xpath('//div[@id="content"]/div[@class="fc-header"]/span[1]')).click()
 
         def date = new Date()
         def dateFormat = DateFormat.getDateInstance(DateFormat.FULL, Locale.GERMANY)
-        WebElement header = driver.findElement(By.xpath('//section[@id="content"]//table[@class="fc-header"]'))
+        WebElement header = driver.findElement(By.xpath('//div[@id="content"]//table[@class="fc-header"]'))
         assert dateFormat.format(date) == header.findElement(By.tagName('h2')).text
         header.findElement(By.xpath('.//td[@class="fc-header-left"]/span[2]')).click()
         assert dateFormat.format(date + 1) == header.findElement(By.tagName('h2')).text
@@ -739,7 +715,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
     @Test
     void testListCalendarEventsWeekView() {
         checkTitles 'Kalendereinträge', 'Kalendereinträge'
-        driver.findElement(By.xpath('//section[@id="content"]/div[@class="fc-header"]/span[2]')).click()
+        driver.findElement(By.xpath('//div[@id="content"]/div[@class="fc-header"]/span[2]')).click()
 
         WebElement table = driver.findElement(By.className('fc-agenda-days'))
         List<WebElement> ths = table.findElements(By.xpath('./thead/tr/th'))
@@ -763,7 +739,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
     @Test
     void testListCalendarEventsMonthView() {
         checkTitles 'Kalendereinträge', 'Kalendereinträge'
-        driver.findElement(By.xpath('//section[@id="content"]/div[@class="fc-header"]/span[3]')).click()
+        driver.findElement(By.xpath('//div[@id="content"]/div[@class="fc-header"]/span[3]')).click()
 
         WebElement div = driver.findElement(By.className('fc-view-month'))
         List<WebElement> ths = div.findElements(By.xpath('.//thead/tr/th'))
@@ -949,7 +925,7 @@ class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
         dialog.findElement(By.xpath('..//div[@class="ui-dialog-buttonset"]/button[1]')).click()
         wait.until ExpectedConditions.invisibilityOfElementLocated(byDlg)
         if (expectedHeader) {
-            assert expectedHeader == driver.findElement(By.xpath('//section[@id="content"]//table[@class="fc-header"]//h2')).text
+            assert expectedHeader == driver.findElement(By.xpath('//div[@id="content"]//table[@class="fc-header"]//h2')).text
         }
     }
 

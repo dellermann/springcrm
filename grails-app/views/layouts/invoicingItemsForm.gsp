@@ -124,7 +124,7 @@
     <g:each in="${invoicingTransaction.items}" status="i" var="item">
     <%--
       ATTENTION! When changing this table row also change the template
-          "/views/layouts/mustache/addItem.gsp" at the bottom of this file!
+          "add-item-template" at the bottom of this file!
     --%>
     <tr>
       <td class="pos number">${i + 1}.</td>
