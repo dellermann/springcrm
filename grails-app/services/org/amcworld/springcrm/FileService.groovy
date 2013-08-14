@@ -25,7 +25,6 @@ import org.amcworld.springcrm.elfinder.fs.Volume
 import org.amcworld.springcrm.elfinder.fs.VolumeConfig
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder as LCH
-import org.springframework.web.multipart.MultipartFile
 
 
 /**

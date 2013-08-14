@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.gorm.DetachedCriteria
 import javax.servlet.http.HttpSession
 import org.springframework.web.context.request.RequestContextHolder
 
@@ -30,7 +29,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * calendar events.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class CalendarEventService {

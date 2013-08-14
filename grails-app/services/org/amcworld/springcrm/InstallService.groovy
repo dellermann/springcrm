@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import org.junit.internal.runners.statements.FailOnTimeout;
 import groovy.sql.Sql
 import java.sql.Connection
 import javax.servlet.ServletContext

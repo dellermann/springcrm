@@ -95,7 +95,7 @@ grails.project.dependency.resolution = {
             export = false
         }
         compile(
-            ':codenarc:0.18.1',
+            ':codenarc:0.19',
             ':coffeescript-compiler:0.9.2',
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
