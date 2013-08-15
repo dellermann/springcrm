@@ -49,7 +49,7 @@ class LoginFilters {
             }
         }
 
-        login(controller: '*', controllerExclude: 'i18n|install',
+        login(controller: '*', controllerExclude: 'help|i18n|install',
               action: '*', actionExclude: 'login|authenticate|frontend*')
         {
             before = {

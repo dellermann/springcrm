@@ -11,20 +11,31 @@
   <r:require modules="frontend" />
   <r:layoutResources />
   <r:external uri="/images/favicon.ico" />
-  <r:script disposition="defer">//<![CDATA[
-  $("#font-size-sel").fontsize();
-  //]]></r:script>
   <g:layoutHead />
 </head>
 
 <body>
-<section>
   <header>
-    <h1 id="logo"><strong>SpringCRM</strong></h1>
+    <div id="logo">
+      <div id="logo-content">
+        <strong>SpringCRM</strong>
+        <g:pageProperty name="page.title" />
+      </div>
+    </div>
+    <nav id="toolbar-container">
+      <ul id="toolbar">
+        <g:pageProperty name="page.toolbar" />
+      </ul>
+    </nav>
   </header>
-  <section id="main-container">
+  <article id="main-container">
+    <g:if test="${flash.message}">
+    <div class="flash-message message" role="status">${flash.message}</div>
+    </g:if>
+    <g:if test="${pageProperty(name: 'page.toolbar')}">
+    </g:if>
     <g:layoutBody />
-  </section>
+  </article>
   <footer>
     <div id="app-version">
       SpringCRM v<g:meta name="app.version" /> (<g:message code="default.build.number" args="${[meta(name: 'app.buildNumber')]}"/>)
@@ -35,8 +46,7 @@
   <div id="spinner" class="spinner" style="display: none;">
     <r:img uri="/images/spinner.gif" alt="${message(code: 'default.spinner.alt', default: 'Loading data…')}" />
   </div>
-</section>
-<script src="${createLink(controller: 'i18n', action: 'index')}"></script>
-<r:layoutResources />
+  <script src="${createLink(controller: 'i18n', action: 'index')}"></script>
+  <r:layoutResources />
 </body>
 </html>

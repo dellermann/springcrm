@@ -173,10 +173,12 @@ $.fn.extend JQueryUiExt
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.3
+# @version  1.4
+# @since    1.3
 #
 FontSizeWidget =
   options:
+    change: null
     currentSize: "11px"
     numItems: 5
     url: null
@@ -194,7 +196,9 @@ FontSizeWidget =
       .appendTo(@element)
 
     opts = @options
-    currentSize = parseInt opts.currentSize, 10
+    currentSize = opts.currentSize
+    currentSize = if currentSize then parseInt(opts.currentSize, 10) else DEF_SIZE
+    $("body").css "font-size", "#{currentSize}px"
     n = opts.numItems
     offset = Math.floor(n / 2)
     clsCurrent = "#{baseClass}-current"
@@ -233,6 +237,8 @@ FontSizeWidget =
       $.get url,
         key: "fontSize"
         value: fontSize
+
+    @_trigger "change", event, fontSize
 
 $.widget "springcrm.fontsize", FontSizeWidget
 

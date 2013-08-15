@@ -809,12 +809,12 @@ fieldset, .fieldset {
     display: table;
     margin-bottom: 1em;
     padding: .7em 1em;
-    vertical-align: middle;
     width: 100%;
 
     h3 {
       display: table-cell;
       margin: 0;
+      vertical-align: middle;
     }
     .buttons {
       border: none;
@@ -822,6 +822,7 @@ fieldset, .fieldset {
       margin: 0;
       padding: 0;
       text-align: right;
+      vertical-align: middle;
     }
   }
   > div {
@@ -1101,6 +1102,9 @@ tbody tr th:first-child {
     &:hover {
       background: @color-default-bg-hover;
     }
+  }
+  .active {
+    background: @color-default-bg-active !important;
   }
   .divider {
     border-top: 1px solid white;

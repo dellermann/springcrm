@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -380,6 +381,88 @@ class TicketController {
         redirect action: 'show', id: id
     }
 
+    def frontendSave() {
+        def helpdeskInstance = Helpdesk.get(params.helpdesk)
+        if (!helpdeskInstance) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+            return
+        }
+        params.helpdesk = helpdeskInstance
+
+        def ticketInstance = new Ticket(params)
+        ticketInstance.stage = TicketStage.created
+        String messageText = ticketInstance.messageText = params.messageText
+
+        if (!ticketInstance.validate() || !messageText) {
+            if (!messageText) {
+                ticketInstance.errors.rejectValue 'messageText', 'default.blank.message'
+            }
+            render view: '/helpdesk/frontendIndex', model: [
+                ticketInstance: ticketInstance,
+                helpdeskInstance: helpdeskInstance
+            ]
+            return
+        }
+
+        DataFile dataFile =
+            dataFileService.storeFile(FILE_TYPE, params.attachment)
+        ticketInstance.addToLogEntries(new TicketLogEntry(
+                action: TicketLogAction.create
+            ))
+            .addToLogEntries(new TicketLogEntry(
+                action: TicketLogAction.sendMessage,
+                message: messageText,
+                attachment: dataFile
+            ))
+        if (!ticketInstance.save()) {
+            render view: '/helpdesk/frontendIndex', model: [
+                ticketInstance: ticketInstance,
+                helpdeskInstance: helpdeskInstance
+            ]
+            return
+        }
+
+        flash.message = message(code: 'default.created.message', args: [message(code: 'ticket.label', default: 'Ticket'), ticketInstance.toString()])
+        redirectToHelpdeskFrontend helpdeskInstance
+    }
+
+    def frontendShow(Long id) {
+        Ticket ticketInstance = Ticket.read(id)
+        [ticketInstance: ticketInstance]
+    }
+
+    def frontendSendMessage(Long id) {
+        def ticketInstance = Ticket.get(id)
+        if (!ticketInstance) {
+            redirectToHelpdeskFrontend Helpdesk.read(params.helpdesk)
+            return
+        }
+
+        String message = params.messageText
+        if (!message) {
+            redirectToHelpdeskFrontend ticketInstance.helpdesk
+            return
+        }
+
+        DataFile dataFile =
+            dataFileService.storeFile(FILE_TYPE, params.attachment)
+        ticketInstance.addToLogEntries(new TicketLogEntry(
+                action: TicketLogAction.sendMessage,
+                message: message,
+                attachment: dataFile
+            ))
+            .save()
+
+        // TODO send a message to customer or user
+
+        flash.message = g.message(code: 'ticket.sendMessage.flash')
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirectToHelpdeskFrontend ticketInstance.helpdesk
+        }
+    }
+
 
     //-- Non-public methods ---------------------
 
@@ -388,8 +471,21 @@ class TicketController {
      *
      * @return  the list of helpdesks
      */
-    List<Helpdesk> getHelpdesks() {
+    protected List<Helpdesk> getHelpdesks() {
         User user = session.user
         user.admin ? Helpdesk.list() : user.helpdesks as List
+    }
+
+    /**
+     * Redirects to the frontend index page of the given helpdesk.
+     *
+     * @param helpdeskInstance  the given helpdesk
+     */
+    protected void redirectToHelpdeskFrontend(Helpdesk helpdeskInstance) {
+        def params = [
+            accessCode: helpdeskInstance.accessCode,
+            urlName: helpdeskInstance.urlName
+        ]
+        redirect mapping: 'helpdeskFrontend', params: params
     }
 }

@@ -115,7 +115,11 @@ modules = {
     }
 
     frontend {
-        dependsOn 'core'
+        dependsOn 'core, jquery-storage'
+
+        resource url: 'less/frontend.less', attrs: [rel: 'stylesheet/less', type: 'css']
+
+        resource '/js/app/frontend.js'
     }
 
     helpdeskForm {
@@ -147,6 +151,12 @@ modules = {
     invoicingTransactionShow {
         dependsOn 'invoicingTransaction'
         defaultBundle 'invoicing-transaction-show'
+    }
+
+    'jquery-storage' {
+        dependsOn 'jquery'
+
+        resource 'js/jquery.storageapi.min.js'
     }
 
     login {

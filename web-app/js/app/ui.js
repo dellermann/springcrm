@@ -92,6 +92,7 @@
 
   FontSizeWidget = {
     options: {
+      change: null,
       currentSize: "11px",
       numItems: 5,
       url: null
@@ -106,7 +107,9 @@
         return _this._onChangeFontSize(event);
       }).appendTo(this.element);
       opts = this.options;
-      currentSize = parseInt(opts.currentSize, 10);
+      currentSize = opts.currentSize;
+      currentSize = currentSize ? parseInt(opts.currentSize, 10) : DEF_SIZE;
+      $("body").css("font-size", "" + currentSize + "px");
       n = opts.numItems;
       offset = Math.floor(n / 2);
       clsCurrent = "" + baseClass + "-current";
@@ -134,11 +137,12 @@
       $target.addClass(clsCurrent).siblings("." + clsCurrent).removeClass(clsCurrent);
       url = this.options.url;
       if (url) {
-        return $.get(url, {
+        $.get(url, {
           key: "fontSize",
           value: fontSize
         });
       }
+      return this._trigger("change", event, fontSize);
     }
   };
 
