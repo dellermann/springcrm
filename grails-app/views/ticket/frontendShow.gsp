@@ -29,20 +29,24 @@
       <li>
         <g:button elementId="send-message-btn"
           color="white" size="medium" icon="envelope-alt"
-          message="ticket.sendMessage.toCustomer.label" 
+          message="ticket.sendMessage.label" 
           data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
           />
       </li>
       <g:if test="${ticketInstance.stage != TicketStage.closed}">
-      <li><g:button action="changeStage" id="${ticketInstance?.id}"
-        params="[stage: TicketStage.closed]" elementId="close-ticket-btn"
-        color="red" size="medium" message="ticket.changeStage.closed" /></li>
+      <li><g:button controller="ticket" action="frontendCloseTicket"
+        id="${ticketInstance.id}"
+        params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
+        color="red" size="medium" class="close-btn" icon="ok"
+        message="ticket.close.label" /></li>
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
-      <li><g:button action="changeStage" id="${ticketInstance?.id}"
-        params="[stage: TicketStage.resubmitted]" color="orange" size="medium"
-        message="ticket.changeStage.resubmitted" /></li>
+      <li><g:button controller="ticket" action="frontendResubmitTicket"
+        id="${ticketInstance.id}"
+        params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
+        color="orange" size="medium" icon="share"
+        message="ticket.resubmission.label" /></li>
       </g:if>
     </ul>
   </aside>

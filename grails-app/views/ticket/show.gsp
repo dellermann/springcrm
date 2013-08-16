@@ -73,7 +73,8 @@
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
       <li><g:button action="changeStage" id="${ticketInstance?.id}"
-        params="[stage: TicketStage.resubmitted]" color="orange" size="medium"
+        params="[stage: TicketStage.resubmitted]" color="orange"
+        size="medium" icon="share"
         message="ticket.changeStage.resubmitted" /></li>
       </g:if>
     </ul>

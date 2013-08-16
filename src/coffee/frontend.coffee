@@ -26,15 +26,26 @@ storage = $.localStorage
 
 #-- Functions -----------------------------------
 
+onClickCreateTicketBtn = ->
+  $form = $createTicketForm
+  $form.slideUp() unless $form.css("display") is "none"
+  $form.slideDown()
+  $sendMessageForm.slideUp()
+  $(".content-table tr").removeClass "active"
+  $(".flash-message").remove()
+
 onCloseSendMessageForm = ->
   $createTicketForm.slideDown()
   $sendMessageForm.slideUp()
   $(".content-table tr").removeClass "active"
+  $(".flash-message").remove()
 
 onCloseTicket = ->
   $.confirm $L("ticket.changeStage.closed.confirm")
 
 onOpenSendMessageDlg = ->
+  $ = jQuery
+
   $("#send-message-dialog").dialog
     buttons: [
         click: ->
@@ -52,17 +63,15 @@ onOpenSendMessageDlg = ->
   false
 
 onSendMessage = ->
-  $ = jQuery
-
-  $sendMsgForm = $sendMessageForm
-  $sendMsgForm.slideUp() unless $sendMsgForm.css("display") is "none"
+  $form = $sendMessageForm
+  $form.slideUp() unless $form.css("display") is "none"
   $tr = $(this).parents("tr")
     .addClass("active")
     .siblings()
       .removeClass("active")
     .end()
   $createTicketForm.slideUp()
-  $sendMsgForm.slideDown()
+  $form.slideDown()
     .find("input[name=id]")
       .val $tr.data("ticket-id")
   false
@@ -75,7 +84,8 @@ $("#font-size-sel").fontsize
     storage.set 'fontSize', fontSize
   currentSize: storage.get('fontSize')
 $sendMessageForm.on "click", ".cancel-btn", onCloseSendMessageForm
-$(".content-table").on("click", ".send-btn", onSendMessage)
+$(".create-ticket-btn").on "click", onClickCreateTicketBtn
+$("#main-container").on("click", ".send-btn", onSendMessage)
   .on("click", ".close-btn", onCloseTicket)
 $("#send-message-btn").on "click", onOpenSendMessageDlg
 

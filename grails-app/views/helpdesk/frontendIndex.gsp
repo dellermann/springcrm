@@ -24,7 +24,7 @@
         <g:hiddenField name="accessCode" value="${helpdeskInstance.accessCode}" />
         <fieldset>
           <header>
-            <h3><g:message code="ticket.quickCreate.title" /></h3>
+            <h3><g:message code="ticket.create.title" /></h3>
             <div class="buttons">
               <button type="submit" class="button green small"><i class="icon-save"></i> <g:message code="default.button.save.label" /></button>
             </div>
@@ -132,8 +132,8 @@
       <header>
         <h3><g:message code="ticket.list.open.title" /></h3>
         <div class="buttons">
-          <g:button controller="ticket" action="frontendCreate" color="green"
-            size="small" icon="plus" message="default.new.label"
+          <g:button color="green" size="small" class="create-ticket-btn"
+            icon="plus" message="default.new.label"
             args="[ticketEntityName]" />
         </div>
       </header>
@@ -204,7 +204,8 @@
       <div class="empty-list">
         <p><g:message code="default.list.empty" /></p>
         <div class="buttons">
-          <g:link action="create" class="green"><g:message code="default.new.label" args="[ticketEntityName]" /></g:link>
+          <g:button color="green" class="create-ticket-btn" icon="plus"
+            message="default.new.label" args="[ticketEntityName]" />
         </div>
       </div>
     </g:else>
@@ -257,8 +258,11 @@
             <td class="string ticket-customer-name"><g:fieldValue bean="${ticketInstance}" field="customerName" /></td>
             <td class="date ticket-date-created"><g:formatDate date="${ticketInstance.dateCreated}" formatName="default.format.datetime" /></td>
             <td class="action-buttons">
-              <g:link action="edit" id="${helpdeskInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-              <g:link action="delete" id="${helpdeskInstance?.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
+              <g:button controller="ticket" action="frontendResubmitTicket"
+                id="${ticketInstance.id}"
+                params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
+                color="orange" size="small" icon="share"
+                message="ticket.resubmission.label" />
             </td>
           </tr>
         </g:each>

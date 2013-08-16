@@ -463,8 +463,45 @@ class TicketController {
         }
     }
 
+    def frontendCloseTicket(Long id) {
+        frontendChangeStage id, TicketStage.closed
+    }
+
+    def frontendResubmitTicket(Long id) {
+        frontendChangeStage id, TicketStage.resubmitted
+    }
+
 
     //-- Non-public methods ---------------------
+
+    /**
+     * Changes the stage of the ticket with the given ID as requested from
+     * frontend.
+     *
+     * @param id    the ID of the ticket
+     * @param stage the stage that should be changed to
+     */
+    protected def frontendChangeStage(Long id, TicketStage stage) {
+        def ticketInstance = Ticket.get(id)
+        if (!ticketInstance) {
+            redirectToHelpdeskFrontend Helpdesk.read(params.helpdesk)
+            return
+        }
+
+        ticketInstance.stage = stage
+        ticketInstance.addToLogEntries(new TicketLogEntry(
+                action: TicketLogAction.changeStage,
+                stage: stage
+            ))
+            .save()
+
+        flash.message = g.message(code: "ticket.${stage}.flash")
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirectToHelpdeskFrontend ticketInstance.helpdesk
+        }
+    }
 
     /**
      * Gets the helpdesks the current user may access.
