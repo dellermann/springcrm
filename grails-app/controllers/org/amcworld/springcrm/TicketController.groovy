@@ -24,12 +24,15 @@ import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
 
 
+/**
+ * The class {@code TicketController} handles actions concerning tickets in a
+ * helpdesk.
+ *
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.4
+ */
 class TicketController {
-
-    //-- Constants ------------------------------
-
-    public static final DataFileType FILE_TYPE = DataFileType.ticketMessage
-
 
     //-- Class variables ------------------------
 
@@ -39,6 +42,7 @@ class TicketController {
     //-- Instance variables ---------------------
 
     DataFileService dataFileService
+    TicketService ticketService
 
 
     //-- Public methods -------------------------
@@ -89,7 +93,6 @@ class TicketController {
 
     def save() {
         def ticketInstance = new Ticket(params)
-        ticketInstance.stage = TicketStage.created
         String messageText = ticketInstance.messageText = params.messageText
 
         if (!ticketInstance.validate() || !messageText) {
@@ -103,17 +106,10 @@ class TicketController {
             return
         }
 
-        DataFile dataFile =
-            dataFileService.storeFile(FILE_TYPE, params.attachment)
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.create
-            ))
-            .addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.sendMessage,
-                message: messageText,
-                attachment: dataFile
-            ))
-        if (!ticketInstance.save()) {
+        ticketInstance = ticketService.createTicket(
+            ticketInstance, messageText, params.attachment
+        )
+        if (!ticketInstance) {
             render view: 'create', model: [
                 ticketInstance: ticketInstance,
                 helpdeskInstanceList: helpdesks
@@ -170,7 +166,6 @@ class TicketController {
         }
 
         ticketInstance.properties = params
-
         if (!ticketInstance.save(flush: true)) {
             render view: 'edit', model: [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
             return
@@ -227,13 +222,7 @@ class TicketController {
         }
 
         ticketInstance.stage = TicketStage.assigned
-        ticketInstance.assignedUser = user
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-            action: TicketLogAction.assign,
-            creator: user,
-            recipient: user
-        ))
-        ticketInstance.save()
+        ticketService.assignUser ticketInstance, user, user
 
         redirect action: 'show', id: id
     }
@@ -261,17 +250,7 @@ class TicketController {
             return
         }
 
-        DataFile dataFile =
-            dataFileService.storeFile(FILE_TYPE, params.attachment)
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.sendMessage,
-                creator: creator,
-                recipient: recipient,
-                message: message,
-                attachment: dataFile
-            ))
-            .save()
-
+        ticketService.sendMessage ticketInstance, message, params.attachment, creator, recipient
         // TODO send a message to customer or user
 
         redirect action: 'show', id: id
@@ -291,16 +270,7 @@ class TicketController {
             return
         }
 
-        DataFile dataFile =
-            dataFileService.storeFile(FILE_TYPE, params.attachment)
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.note,
-                creator: session.user,
-                message: message,
-                attachment: dataFile
-            ))
-            .save()
-
+        ticketService.createNote ticketInstance, message, params.attachment, session.user
         redirect action: 'show', id: id
     }
 
@@ -336,14 +306,7 @@ class TicketController {
             return
         }
 
-        ticketInstance.stage = requiredStage
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.changeStage,
-                creator: user,
-                stage: requiredStage
-            ))
-            .save()
-
+        ticketService.changeStage ticketInstance, requiredStage, user
         redirect action: 'show', id: id
     }
 
@@ -368,14 +331,7 @@ class TicketController {
             return
         }
 
-        ticketInstance.assignedUser = recipient
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.assign,
-                creator: creator,
-                recipient: recipient
-            ))
-            .save()
-
+        ticketService.assignUser ticketInstance, creator, recipient
         // TODO send e-mail to assigned user (recipient)
 
         redirect action: 'show', id: id
@@ -390,7 +346,6 @@ class TicketController {
         params.helpdesk = helpdeskInstance
 
         def ticketInstance = new Ticket(params)
-        ticketInstance.stage = TicketStage.created
         String messageText = ticketInstance.messageText = params.messageText
 
         if (!ticketInstance.validate() || !messageText) {
@@ -404,17 +359,10 @@ class TicketController {
             return
         }
 
-        DataFile dataFile =
-            dataFileService.storeFile(FILE_TYPE, params.attachment)
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.create
-            ))
-            .addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.sendMessage,
-                message: messageText,
-                attachment: dataFile
-            ))
-        if (!ticketInstance.save()) {
+        ticketInstance = ticketService.createTicket(
+            ticketInstance, messageText, params.attachment
+        )
+        if (!ticketInstance) {
             render view: '/helpdesk/frontendIndex', model: [
                 ticketInstance: ticketInstance,
                 helpdeskInstance: helpdeskInstance
@@ -440,27 +388,15 @@ class TicketController {
 
         String message = params.messageText
         if (!message) {
-            redirectToHelpdeskFrontend ticketInstance.helpdesk
+            redirectToFrontendPage ticketInstance.helpdesk
             return
         }
 
-        DataFile dataFile =
-            dataFileService.storeFile(FILE_TYPE, params.attachment)
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.sendMessage,
-                message: message,
-                attachment: dataFile
-            ))
-            .save()
-
+        ticketService.sendMessage ticketInstance, message, params.attachment
         // TODO send a message to customer or user
 
         flash.message = g.message(code: 'ticket.sendMessage.flash')
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirectToHelpdeskFrontend ticketInstance.helpdesk
-        }
+        redirectToFrontendPage ticketInstance.helpdesk
     }
 
     def frontendCloseTicket(Long id) {
@@ -488,19 +424,9 @@ class TicketController {
             return
         }
 
-        ticketInstance.stage = stage
-        ticketInstance.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.changeStage,
-                stage: stage
-            ))
-            .save()
-
-        flash.message = g.message(code: "ticket.${stage}.flash")
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirectToHelpdeskFrontend ticketInstance.helpdesk
-        }
+        ticketService.changeStage ticketInstance, stage
+        flash.message = message(code: "ticket.${stage}.flash")
+        redirectToFrontendPage ticketInstance.helpdesk
     }
 
     /**
@@ -514,14 +440,28 @@ class TicketController {
     }
 
     /**
+     * Redirects the to origin helpdesk frontend page, either to the overview
+     * page or the show view of a ticket.
+     *
+     * @param helpdesk  the given helpdesk
+     */
+    protected void redirectToFrontendPage(Helpdesk helpdesk) {
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            redirectToHelpdeskFrontend helpdesk
+        }
+    }
+
+    /**
      * Redirects to the frontend index page of the given helpdesk.
      *
-     * @param helpdeskInstance  the given helpdesk
+     * @param helpdesk  the given helpdesk
      */
-    protected void redirectToHelpdeskFrontend(Helpdesk helpdeskInstance) {
+    protected void redirectToHelpdeskFrontend(Helpdesk helpdesk) {
         def params = [
-            accessCode: helpdeskInstance.accessCode,
-            urlName: helpdeskInstance.urlName
+            accessCode: helpdesk.accessCode,
+            urlName: helpdesk.urlName
         ]
         redirect mapping: 'helpdeskFrontend', params: params
     }

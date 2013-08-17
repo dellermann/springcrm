@@ -49,9 +49,11 @@
           <td class="action-buttons">
             <g:button action="edit" id="${ticketInstance.id}" color="green"
               size="small" message="default.button.edit.label" />
+            <g:if test="${session.user.admin}">
             <g:button action="delete" id="${ticketInstance?.id}"
               color="red" size="small" class="delete-btn"
               message="default.button.delete.label" />
+            </g:if>
           </td>
         </tr>
       </g:each>
