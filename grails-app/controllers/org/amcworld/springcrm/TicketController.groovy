@@ -346,6 +346,7 @@ class TicketController {
         params.helpdesk = helpdeskInstance
 
         def ticketInstance = new Ticket(params)
+        ticketInstance.stage = TicketStage.created
         String messageText = ticketInstance.messageText = params.messageText
 
         if (!ticketInstance.validate() || !messageText) {

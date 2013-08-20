@@ -70,7 +70,10 @@ class Ticket {
     }
     static hasMany = [logEntries: TicketLogEntry]
     static searchable = true
-    static transients = ['customerName', 'fullNumber', 'messageText']
+    static transients = [
+        'address', 'customerName', 'fullName', 'fullNumber', 'initialMessage',
+        'messageText'
+    ]
 
 
     //-- Instance variables ---------------------
@@ -107,12 +110,54 @@ class Ticket {
 
     //-- Properties -----------------------------
 
+    String getAddress() {
+        StringBuilder s = new StringBuilder(street ?: '')
+        if (location) {
+            if (s) s << ','
+            if (postalCode) {
+                if (s) s << ' '
+                s << postalCode ?: ''
+            }
+            if (s) s << ' '
+            s << location ?: ''
+        }
+        s.toString()
+    }
+
     String getCustomerName() {
         "${lastName}, ${firstName}"
     }
 
+    String getFullName() {
+        StringBuilder s = new StringBuilder()
+        if (salutation) {
+            s << salutation.name << ' '
+        }
+        s << firstName << ' ' << lastName
+        s.toString()
+    }
+
     String getFullNumber() {
         seqNumberService.format getClass(), number
+    }
+
+    /**
+     * Gets the initial message text of this ticket, that is, the message text
+     * submitted when the ticket was created.
+     *
+     * @return  the initial message text
+     */
+    String getInitialMessage() {
+        if (!messageText) {
+            Ticket thisTicket = this
+            def query = TicketLogEntry.where {
+                ticket == thisTicket && action == TicketLogAction.sendMessage
+            }
+            def l = query.list(max: 1, sort: 'dateCreated', order: 'desc')
+            assert !l.empty
+            messageText = l.first().message
+        }
+        messageText
     }
 
 

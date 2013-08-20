@@ -24,6 +24,7 @@ import org.amcworld.springcrm.elfinder.fs.LocalFileSystemVolume
 import org.amcworld.springcrm.elfinder.fs.Volume
 import org.amcworld.springcrm.elfinder.fs.VolumeConfig
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
@@ -44,7 +45,7 @@ class FileService {
     //-- Instance variables ---------------------
 
     GrailsApplication grailsApplication
-    def messageSource
+    MessageSource messageSource
 
 
     //-- Public methods -------------------------

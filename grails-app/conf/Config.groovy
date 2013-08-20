@@ -27,7 +27,8 @@
 grails.config.locations = [
     "classpath:${appName}-config.properties",
     "classpath:${appName}-config.groovy",
-    "file:${userHome}/.${appName}/config.properties"
+    "file:${userHome}/.${appName}/config.properties",
+    "file:${userHome}/.${appName}/config.groovy"
 ]
 if (System.properties["${appName}.config.location"]) {
     grails.config.locations << 'file:' + System.properties["${appName}.config.location"]
@@ -139,14 +140,17 @@ if (System.properties["${appName}.dir.base"]) {
 }
 grails.config.locations << "file:${springcrm.dir.base}/config.properties"
 springcrm {
+    cacheDocs = true
     dir {
         data = "${springcrm.dir.base}/data"
         documents = "${springcrm.dir.base}/documents"
         installer = "${springcrm.dir.base}/install"
         print = "${springcrm.dir.base}/print"
     }
-    cacheDocs = true
     lruList.numEntries = 10
+    mail {
+        from = "SpringCRM Service <noreply@springcrm.de>"
+    }
 }
 
 /* environment specific settings */

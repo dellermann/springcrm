@@ -22,11 +22,13 @@
         <g:pageProperty name="page.title" />
       </div>
     </div>
+    <g:if test="${pageProperty(name: 'page.toolbar')}">
     <nav id="toolbar-container">
       <ul id="toolbar">
         <g:pageProperty name="page.toolbar" />
       </ul>
     </nav>
+    </g:if>
   </header>
   <article id="main-container">
     <g:if test="${flash.message}">

@@ -8,6 +8,7 @@
   <g:set var="entityName" value="${message(code: 'ticket.label', default: 'Ticket')}" />
   <g:set var="entitiesName" value="${message(code: 'ticket.plural', default: 'Tickets')}" />
   <g:set var="user" value="${session.user}" />
+  <g:set var="otherUsers" value="${ticketInstance.helpdesk.users - user}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
 </head>
 
@@ -35,16 +36,18 @@
           />
       </li>
       </g:if>
+      <g:if test="${otherUsers}">
       <li id="send-message-to-user-menu">
         <g:menuButton color="white" size="medium" icon="envelope-alt"
           message="ticket.sendMessage.toUser.label"
           data-title="${message(code: 'ticket.sendMessage.toUser.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}">
-          <g:each in="${ticketInstance.helpdesk.users - user}">
+          <g:each in="${otherUsers}">
           <li><a href="#" data-user-id="${it.id}">${it.toString().encodeAsHTML()}</a></li>
           </g:each>
         </g:menuButton>
       </li>
+      </g:if>
       <li>
         <g:button elementId="create-note-btn" color="white" size="medium"
           icon="pencil" message="ticket.createNote.label"
@@ -56,11 +59,11 @@
         params="[stage: TicketStage.inProcess]" color="green" size="medium"
         message="ticket.changeStage.inProcess" /></li>
       </g:if>
-      <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]}">
+      <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess] && otherUsers}">
       <li>
         <g:menuButton elementId="assign-user-menu" color="blue"
           size="medium" message="ticket.changeStage.assign">
-          <g:each in="${ticketInstance.helpdesk.users - user}">
+          <g:each in="${otherUsers}">
           <li><g:link action="assignToUser" id="${ticketInstance.id}" params="[user: it.id]">${it.toString().encodeAsHTML()}</g:link></li>
           </g:each>
         </g:menuButton>
