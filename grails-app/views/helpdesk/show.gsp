@@ -17,9 +17,12 @@
     <h3><g:message code="default.actions" /></h3>
     <ul>
       <li><g:button mapping="helpdeskFrontend"
-        params="${[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]}"
+        params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
         color="white" size="medium" target="_blank"
         message="helpdesk.button.callFrontend" /></li>
+      <li><g:button controller="ticket" action="list"
+        params="[helpdesk: helpdeskInstance.id]" color="white" size="medium"
+        message="helpdesk.button.showTickets" /></li>
     </ul>
   </aside>
   <div id="content">

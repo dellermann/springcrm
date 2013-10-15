@@ -57,7 +57,11 @@ class TicketController {
         List<Ticket> ticketInstanceList = null
         int ticketInstanceTotal = 0
         User user = session.user
-        if (user.admin) {
+        if (params.helpdesk) {
+            def helpdesk = Helpdesk.get(params.helpdesk as Long)
+            ticketInstanceList = Ticket.findAllByHelpdesk(helpdesk)
+            ticketInstanceTotal = Ticket.countByHelpdesk(helpdesk)
+        } else if (user.admin) {
             ticketInstanceList = Ticket.list(params)
             ticketInstanceTotal = Ticket.count()
         } else {
@@ -67,7 +71,8 @@ class TicketController {
                 return
             }
 
-            ticketInstanceList = Ticket.findAllByHelpdeskInList(helpdesks, params)
+            ticketInstanceList =
+                Ticket.findAllByHelpdeskInList(helpdesks, params)
             ticketInstanceTotal = Ticket.countByHelpdeskInList(helpdesks)
         }
 

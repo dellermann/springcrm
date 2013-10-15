@@ -42,7 +42,16 @@
           <td class="row-selector"><input type="checkbox" id="ticket-row-selector-${ticketInstance.id}" data-id="${ticketInstance.id}" /></td>
           <td class="string ticket-number"><g:link action="show" id="${ticketInstance.id}"><g:fieldValue bean="${ticketInstance}" field="fullNumber" /></g:link></td>
           <td class="string ticket-subject"><g:link action="show" id="${ticketInstance.id}"><g:fieldValue bean="${ticketInstance}" field="subject" /></g:link></td>
-          <td class="ref ticket-helpdesk"><g:fieldValue bean="${ticketInstance}" field="helpdesk.name" /></td>
+          <td class="ref ticket-helpdesk">
+            <g:if test="${session.user.checkAllowedControllers(['helpdesk'])}">
+            <g:link controller="helpdesk" action="show"
+              id="${ticketInstance.helpdesk.id}"><g:fieldValue
+              bean="${ticketInstance}" field="helpdesk.name" /></g:link>
+            </g:if>
+            <g:else>
+              <g:fieldValue bean="${ticketInstance}" field="helpdesk.name" />
+            </g:else>
+          </td>
           <td class="status ticket-stage ticket-stage-${ticketInstance.stage}"><g:message code="ticket.stage.${ticketInstance.stage}" default="${ticketInstance.stage.toString()}" /></td>
           <td class="string ticket-customer-name"><g:fieldValue bean="${ticketInstance}" field="customerName" /></td>
           <td class="date ticket-date-created"><g:formatDate date="${ticketInstance.dateCreated}" formatName="default.format.datetime" /></td>
