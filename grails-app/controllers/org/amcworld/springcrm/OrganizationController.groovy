@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
  * The class {@code OrganizationController} contains actions which manage
  * organizations.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class OrganizationController {
@@ -36,6 +36,12 @@ class OrganizationController {
     //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Instance variables ---------------------
+
+    DomainService domainService
+    UserService userService
 
 
     //-- Public methods -------------------------
@@ -51,13 +57,22 @@ class OrganizationController {
             params.sort = 'name'
             params.offset = Math.floor(num / params.max) * params.max
         }
+        println "Sorting by ${params.sort}"
         def list, count
         if (type) {
             List<Byte> types = [type, 3 as byte]
             list = Organization.findAllByRecTypeInList(types, params)
             count = Organization.countByRecTypeInList(types)
         } else {
-            list = Organization.list(params)
+            def criteria = Organization.createCriteria()
+            list = criteria.list {
+                order params.sort, params.order
+                order 'id', params.order
+                firstResult params.offset
+                maxResults params.max
+            }
+            println "List elements: ${list.size()}"
+            //list = Organization.list(params)
             count = Organization.count()
         }
         [organizationInstanceList: list, organizationInstanceTotal: count]
@@ -106,6 +121,27 @@ class OrganizationController {
         }
 
         [organizationInstance: organizationInstance]
+    }
+
+    def showNext(Long id) {
+        def organizationInstance = domainService.nextRecord(Organization, id)
+        if (!organizationInstance) {
+            redirect action: 'list'
+            return
+        }
+
+        render view: 'show', model: [organizationInstance: organizationInstance]
+    }
+
+    def showPrevious(Long id) {
+        def organizationInstance =
+            domainService.previousRecord(Organization, id)
+        if (!organizationInstance) {
+            redirect action: 'list'
+            return
+        }
+
+        render view: 'show', model: [organizationInstance: organizationInstance]
     }
 
     def edit(Long id) {

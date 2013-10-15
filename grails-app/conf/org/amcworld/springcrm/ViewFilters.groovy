@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.text.DecimalFormatSymbols
 import org.codehaus.groovy.grails.commons.GrailsClass
 
 
@@ -32,9 +31,14 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  */
 class ViewFilters {
 
+    //-- Instance variables ---------------------
+
     def dependsOn = [LoginFilters]
 
     UserService userService
+
+
+    //-- Public methods -------------------------
 
     def filters = {
         commonData(controller: '*', action: '*') {

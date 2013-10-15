@@ -21,6 +21,8 @@
     <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
+        <li><g:button action="showPrevious" id="${invoiceInstance?.id}" color="white" class="browse-button" icon="chevron-left" /></li>
+        <li><g:button action="showNext" id="${invoiceInstance?.id}" color="white" class="browse-button" icon="chevron-right" /></li>
         <li><g:button action="list" color="white" icon="list"
           message="default.button.list.label" /></li>
         <li><g:button action="create" color="green" icon="plus"

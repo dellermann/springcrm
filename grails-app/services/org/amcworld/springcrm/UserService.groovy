@@ -21,7 +21,10 @@
 package org.amcworld.springcrm
 
 import java.text.DecimalFormatSymbols
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsHttpSession
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest
 import org.codehaus.groovy.grails.web.util.WebUtils
+import org.springframework.web.context.request.RequestContextHolder as RCH
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
@@ -165,5 +168,37 @@ class UserService {
     int getNumFractionDigits() {
         Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
         numFractionDigits ?: currency.defaultFractionDigits
+    }
+
+    /**
+     * Gets the sort order for the given class from the configuration.  If not
+     * found there, the given default order is used.
+     *
+     * @param clazz         the given class
+     * @param defaultOrder  the default order; either {@code asc} or
+     *                      {@code desc}
+     * @return              the sort order; either {@code asc} or {@code desc}
+     */
+    String getSortOrder(Class<?> clazz, String defaultOrder) {
+        session.user.settings["order${clazz.simpleName}"] ?: defaultOrder
+    }
+
+    /**
+     * Gets the sort property for the given class from the configuration.  If
+     * not found there, the given default property is used.
+     *
+     * @param clazz             the given class
+     * @param defaultProperty   the default property
+     * @return                  the sort property
+     */
+    String getSortProperty(Class<?> clazz, String defaultProperty) {
+        session.user.settings["sort${clazz.simpleName}"] ?: defaultProperty
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    protected GrailsHttpSession getSession() {
+        RCH.currentRequestAttributes().session
     }
 }
