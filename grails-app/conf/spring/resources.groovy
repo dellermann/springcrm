@@ -19,21 +19,30 @@
 
 
 beans = {
+
+    /* configuration handling */
     springcrmConfig(org.springframework.jndi.JndiObjectFactoryBean) {
         defaultObject = ''
         lookupOnStartup = true
         jndiName = 'java:comp/env/springcrmConfig'
     }
 
+    /* property type registrar */
     appEditorRegistrar(org.amcworld.springcrm.util.AppPropertyEditorRegistrar) {
         messageSource = ref('messageSource')
     }
 
+    /* startup difference sets */
+    startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet)
+    {
+        markdownService = ref('markdownService')
+    }
+
+    /* Google synchronization types */
     googleContactSync(org.amcworld.springcrm.google.GoogleContactSync) {
         googleOAuthService = ref('googleOAuthService')
         messageSource = ref('messageSource')
     }
-
     googleCalendarSync(org.amcworld.springcrm.google.GoogleCalendarSync) {
         googleOAuthService = ref('googleOAuthService')
         messageSource = ref('messageSource')

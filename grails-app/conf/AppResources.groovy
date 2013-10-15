@@ -171,9 +171,9 @@ modules = {
     }
 
     noteForm {
-        dependsOn 'core, tinyMce'
+        dependsOn 'core'
 
-        resource '/js/note-form.js'
+        resource '/js/app/note-form.js'
     }
 
     organizationForm {
@@ -275,7 +275,7 @@ modules = {
     }
 
     test {
-    
+
         /*
          * This resource is for test environment, only.  See
          * AppTestResources.groovy for more information.
@@ -288,10 +288,6 @@ modules = {
         resource url: 'less/helpdesk.less', attrs: [rel: 'stylesheet/less', type: 'css']
 
         resource '/js/app/ticket.js'
-    }
-
-    tinyMce {
-        resource url: '/js/tiny_mce/jquery.tinymce.js', exclude: 'minify'
     }
 
 

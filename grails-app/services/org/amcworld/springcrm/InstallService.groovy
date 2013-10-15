@@ -23,8 +23,10 @@ package org.amcworld.springcrm
 import groovy.sql.Sql
 import java.sql.Connection
 import javax.servlet.ServletContext
+import org.amcworld.springcrm.install.diffset.StartupDiffSet
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+import org.springframework.context.ApplicationContext
 
 
 /**
@@ -75,7 +77,10 @@ class InstallService {
     }
 
     /**
-     * Applies the difference set with the given version and language.
+     * Applies the difference set with the given version and language.  The
+     * method first looks for a bean definition of the form "startupDiffSet#",
+     * where # is the given version number.  If found, it is instantiated and
+     * executed.  Otherwise, it looks for a SQL file to execute.
      *
      * @param connection    the SQL connection of the database where to apply
      *                      the difference set
@@ -86,6 +91,14 @@ class InstallService {
      * @since               1.4
      */
     void applyDiffSet(Connection connection, int version, String lang = null) {
+        ApplicationContext ctx = grailsApplication.mainContext
+        String name = "startupDiffSet${version}"
+        if (ctx.containsBean(name)) {
+            StartupDiffSet diffSet = ctx.getBean(name)
+            diffSet.execute()
+            return
+        }
+
         if (!lang) {
             lang = (ConfigHolder.instance['baseDataLocale'] as String) ?: 'de-DE'
         }
