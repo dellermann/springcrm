@@ -98,11 +98,11 @@ grails.project.dependency.resolution = {
         }
         compile(
             ':codenarc:0.19',
-            ':coffeescript-compiler:0.9.2',
+            ':coffeescript-compiler:0.9.4',
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
             ':hibernate:3.6.10.M3',
-            ':less-resources:1.3.3.1',
+            ':less-resources:1.3.3.2',
             ':mail:1.0.1',
             ':markdown:1.1.1',
             ':quartz:1.0-RC13',
@@ -118,7 +118,7 @@ grails.project.dependency.resolution = {
             ':jquery:1.8.3',
             ':jquery-json:2.2.2',
             ':jquery-ui:1.8.24',
-            ':resources:1.2.RC2'
+            ':resources:1.2.1'
         )
     }
 }
