@@ -1,7 +1,7 @@
 /*
  * Searchable.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,8 @@ searchable {
     /**
      * The location of the Compass index
      *
-     * Examples: "/home/app/compassindex", "ram://app-index" or null to use the default
+     * Examples: "/home/app/compassindex", "ram://app-index" or null to use the
+     * default
      *
      * The default is "${user.home}/.grails/projects/${app.name}/searchable-index/${grails.env}"
      */
@@ -59,13 +60,15 @@ searchable {
     /**
      * Any settings you wish to pass to Compass
      *
-     * Use this to configure custom/override default analyzers, query parsers, eg
+     * Use this to configure custom/override default analyzers, query parsers,
+     * e. g.
      *
      *     Map compassSettings = [
      *         'compass.engine.analyzer.german.type': 'German'
      *     ]
      *
-     * gives you an analyzer called "german" you can then use in mappings and queries, like
+     * gives you an analyzer called "german" you can then use in mappings and
+     * queries, like
      *
      *    class Book {
      *        static searchable = { content analyzer: 'german' }
@@ -74,7 +77,8 @@ searchable {
      *
      *    Book.search("unter", analyzer: 'german')
      *
-     * Documentation for Compass settings is here: http://www.compass-project.org/docs/2.1.0M2/reference/html/core-settings.html
+     * Documentation for Compass settings is here:
+     * http://www.compass-project.org/docs/2.1.0M2/reference/html/core-settings.html
      */
     compassSettings = [: ]
 
@@ -84,8 +88,8 @@ searchable {
      * No properties matching the given names will be mapped by default
      * ie, when using "searchable = true"
      *
-     * This does not apply for classes using "searchable = [only/except: [...]]"
-     * or mapping by closure
+     * This does not apply for classes using
+     * "searchable = [only/except: [...]]" or mapping by closure
      */
     defaultExcludedProperties = ['password']
 
@@ -96,37 +100,46 @@ searchable {
      *
      *     [(Date): "yyyy-MM-dd'T'HH:mm:ss"]
      *
-     * Only applies to class properties mapped as "searchable properties", which are typically
-     * simple class types that can be represented as Strings (rather than references
-     * or components) AND only required if overriding the built-in format.
+     * Only applies to class properties mapped as "searchable properties",
+     * which are typically simple class types that can be represented as
+     * Strings (rather than references or components) AND only required if
+     * overriding the built-in format.
      */
     defaultFormats = [: ]
 
     /**
-     * Set default options for each SearchableService/Domain-class method, by method name.
+     * Set default options for each SearchableService/Domain-class method, by
+     * method name.
      *
-     * These can be overriden on a per-query basis by passing the method a Map of options
-     * containing those you want to override.
+     * These can be overriden on a per-query basis by passing the method a Map
+     * of options containing those you want to override.
      *
-     * You may want to customise the options used by the search method, which are:
+     * You may want to customise the options used by the search method, which
+     * are:
      *
-     * @param reload          whether to reload domain class instances from the DB: true|false
-     *                        If true, the search  will be slower but objects will be associated
-     *                        with the current Hibernate session
-     * @param escape          whether to escape special characters in string queries: true|false
-     * @param offset          the 0-based hit offset of the first page of results.
-     *                        Normally you wouldn't change it from 0, it's only here because paging
-     *                        works by using an offset + max combo for a specific page
-     * @param max             the page size, for paged search results
-     * @param defaultOperator if the query does not otherwise indicate, then the default operator
-     *                        applied: "or" or "and".
-     *                        If "and" means all terms are required for a match, if "or" means
-     *                        any term is required for a match
-     * @param suggestQuery    if true and search method is returning a search-result object
-     *                        (rather than a domain class instance, list or count) then a
-     *                        "suggestedQuery" property is also added to the search-result.
-     *                        This can also be a Map of options as supported by the suggestQuery
-     *                        method itself
+     * @param reload            whether to reload domain class instances from
+     *                          the DB: true|false.  If true, the search  will
+     *                          be slower but objects will be associated with
+     *                          the current Hibernate session
+     * @param escape            whether to escape special characters in string
+     *                          queries: true|false
+     * @param offset            the 0-based hit offset of the first page of
+     *                          results.  Normally you wouldn't change it from
+     *                          0, it's only here because paging works by using
+     *                          an offset + max combo for a specific page
+     * @param max               the page size, for paged search results
+     * @param defaultOperator   if the query does not otherwise indicate, then
+     *                          the default operator applied: "or" or "and".
+     *                          If "and" means all terms are required for a
+     *                          match, if "or" means any term is required for a
+     *                          match
+     * @param suggestQuery      if true and search method is returning a
+     *                          search-result object (rather than a domain
+     *                          class instance, list or count) then a
+     *                          "suggestedQuery" property is also added to the
+     *                          search-result.  This can also be a Map of
+     *                          options as supported by the suggestQuery method
+     *                          itself
      *
      * For the options supported by other methods, please see the documentation
      * http://grails.org/Searchable+Plugin
@@ -152,11 +165,11 @@ searchable {
      *
      * Possible values: true|false|"fork"
      *
-     * The value may be a boolean true|false or a string "fork", which means true,
-     * and fork a thread for it
+     * The value may be a boolean true|false or a string "fork", which means
+     * true, and fork a thread for it
      *
-     * If you use BootStrap.groovy to insert your data then you should use "true",
-     * which means do a non-forking, otherwise "fork" is recommended
+     * If you use BootStrap.groovy to insert your data then you should use
+     * "true", which means do a non-forking, otherwise "fork" is recommended
      */
     bulkIndexOnStartup = 'fork'
 

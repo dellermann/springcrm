@@ -104,17 +104,17 @@ grails.project.dependency.resolution = {
             ':hibernate:3.6.10.M3',
             ':less-resources:1.3.3.1',
             ':mail:1.0.1',
-            ':markdown:1.0.0.RC1',
-            ':quartz:1.0-RC9',
+            ':markdown:1.1.1',
+            ':quartz:1.0-RC13',
             ':scaffolding:1.0.0',
-            ':searchable:0.6.4'
+            ':searchable:0.6.5'
         )
         build(
             ':standalone:1.1.1',
             ':tomcat:7.0.40.1'
         )
         runtime(
-            ':database-migration:1.3.2',
+            ':database-migration:1.3.6',
             ':jquery:1.8.3',
             ':jquery-json:2.2.2',
             ':jquery-ui:1.8.24',
