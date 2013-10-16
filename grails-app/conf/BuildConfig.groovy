@@ -25,6 +25,7 @@ grails.project.war.file = "target/${appName}.war"
 grails.war.resources = { stagingDir ->
     delete(dir: "${stagingDir}/test-data")
 }
+grails.project.dependency.resolver = 'maven'
 grails.project.dependency.resolution = {
 
     // inherit Grails' default dependencies
@@ -46,6 +47,7 @@ grails.project.dependency.resolution = {
         //mavenLocal()
         mavenCentral()
         mavenRepo 'http://mavenrepo.google-api-java-client.googlecode.com/hg/'
+        mavenRepo 'http://maven.springframework.org/milestone/'
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -99,16 +101,17 @@ grails.project.dependency.resolution = {
             ':coffeescript-compiler:0.9.2',
             ':dbunit-operator:1.6.2',
             ':fields:1.3',
-            ":hibernate:${grailsVersion}",
+            ':hibernate:3.6.10.M3',
             ':less-resources:1.3.3.1',
             ':mail:1.0.1',
             ':markdown:1.0.0.RC1',
             ':quartz:1.0-RC9',
+            ':scaffolding:1.0.0',
             ':searchable:0.6.4'
         )
         build(
             ':standalone:1.1.1',
-            ":tomcat:${grailsVersion}"
+            ':tomcat:7.0.40.1'
         )
         runtime(
             ':database-migration:1.3.2',
