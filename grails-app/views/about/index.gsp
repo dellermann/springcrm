@@ -647,10 +647,10 @@ copy of the Program in return for a fee.
 
     <h3><g:message code="about.furtherLicenses" /></h3>
     <p><g:message code="about.furtherLicenses.logo" /></p>
-    <p><g:message code="about.furtherLicenses.icons" /></p>
-    <p><g:message code="about.furtherLicenses.searchIcon" /></p>
     <p><g:message code="about.furtherLicenses.configuration" /></p>
     <p><g:message code="about.furtherLicenses.gpl2" /></p>
+    <p><g:message code="about.furtherLicenses.mit" /></p>
+    <p><g:message code="about.furtherLicenses.sil" /></p>
     <p><g:message code="about.furtherLicenses.lightbox" /></p>
     <p><g:message code="about.furtherLicenses.elfinder" /></p>
     <pre class="license-text">Copyright (c) 2009-2012, Studio 42
