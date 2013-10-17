@@ -96,6 +96,7 @@ grails.exceptionresolver.params.exclude = ['password']
 
 /* Settings for database migration */
 grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']
+grails.plugin.databasemigration.forceAutoMigrate = true
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 

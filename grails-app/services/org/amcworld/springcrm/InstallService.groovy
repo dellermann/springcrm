@@ -52,7 +52,6 @@ class InstallService {
 
     DataFileService dataFileService
     GrailsApplication grailsApplication
-    final ServletContext servletContext = SCH.servletContext
 
 
     //-- Public methods -------------------------
@@ -134,7 +133,7 @@ class InstallService {
      */
     List<String> getBaseDataPackages() {
         def files = []
-        servletContext.getResourcePaths(BASE_PACKAGE_DIR).each {
+        SCH.servletContext.getResourcePaths(BASE_PACKAGE_DIR).each {
                 def m = (it =~ /^.*\/base-data-([-\w]+)\.sql$/)
                 if (m.matches()) {
                     files.add(m[0][1])
@@ -178,7 +177,7 @@ class InstallService {
      *              package with the given key exists
      */
     InputStream loadBaseDataPackage(String key) {
-        servletContext.getResourceAsStream "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
+        SCH.servletContext.getResourceAsStream "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
     }
 
     /**
@@ -195,10 +194,10 @@ class InstallService {
      */
     InputStream loadDiffSet(int version, String lang) {
         String name1 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}-${lang}.sql"
-        InputStream is = servletContext.getResourceAsStream(name1)
+        InputStream is = SCH.servletContext.getResourceAsStream(name1)
         if (is == null) {
             String name2 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}.sql"
-            is = servletContext.getResourceAsStream(name2)
+            is = SCH.servletContext.getResourceAsStream(name2)
             if (is == null && log.errorEnabled) {
                 log.error "Can find neither diff set ${name1} nor ${name2}."
             }

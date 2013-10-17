@@ -56,9 +56,7 @@ environments {
             dbunitXmlType = 'flat'
             jndiName = null
             properties {
-                connectionInitSqls = [
-                    'SET REFERENTIAL_INTEGRITY FALSE'
-                ]
+                initSQL = 'SET REFERENTIAL_INTEGRITY FALSE'
             }
         }
     }

@@ -88,7 +88,7 @@ grails.project.dependency.resolution = {
         */
 
         test(
-            'org.seleniumhq.selenium:selenium-java:2.34.0'
+            'org.seleniumhq.selenium:selenium-java:2.35.0'
         )
     }
 
@@ -99,7 +99,7 @@ grails.project.dependency.resolution = {
         compile(
             ':codenarc:0.19',
             ':coffeescript-compiler:0.9.4',
-            ':dbunit-operator:1.6.2',
+            ':dbunit-operator:1.7',
             ':fields:1.3',
             ':hibernate:3.6.10.M3',
             ':less-resources:1.3.3.2',
