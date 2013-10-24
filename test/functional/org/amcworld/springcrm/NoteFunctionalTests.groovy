@@ -25,6 +25,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
 import org.openqa.selenium.Keys
 
@@ -33,10 +35,11 @@ import org.openqa.selenium.Keys
  * The class {@code NoteFunctionalTests} represents a functional test case for
  * the notes section of SpringCRM.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class NoteFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------
@@ -75,26 +78,15 @@ class NoteFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'title', 'Besprechung vom 21.01.2013'
         assert 'Landschaftsbau Duvensee GbR' == selectAutocompleteEx('organization', 'Landschaftsbau')
         assert 'Henry Brackmann' == selectAutocompleteEx('person', 'Brack')
-        def iframeDriver = driver.switchTo().frame('note-content_ifr')
-        def rte = iframeDriver.findElement(By.xpath('//body'))
-        rte.sendKeys(
-'''Besprechung der PR-Aktion am 21.01.2013
+        setInputValue 'content', '''# Besprechung der PR-Aktion am 21.01.2013
+
 Am 21.01.2013 trafen wir uns mit Henry Brackmann und besprachen die Vorgehensweise bei der geplanten PR-Aktion. Herr Brackmann will den Schwerpunkt auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.
+
 Wir vereinbarten folgende Vorgehensweise:
-'''
-        )
-        driver.switchTo().defaultContent()
-        driver.findElement(By.id('note-content_bullist_action')).click()
-        driver.switchTo().frame('note-content_ifr')
-        rte.sendKeys(
-'''Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee GbR
-Konzeption des Werbekonzepts
-Kostenermittlung der einzelnen Werbemöglichkeiten'''
-        )
-        rte.sendKeys(Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP, Keys.UP)
-        driver.switchTo().defaultContent()
-        driver.findElement(By.id('note-content_formatselect_text')).click()
-        driver.findElement(By.cssSelector('#menu_note-content_note-content_formatselect_menu_tbl .mce_h1 a')).click()
+
+* Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee GbR
+* Konzeption des Werbekonzepts
+* Kostenermittlung der einzelnen Werbemöglichkeiten'''
         submitForm getUrl('/note/show/')
 
         assert 'Notiz Besprechung vom 21.01.2013 wurde angelegt.' == flashMessage
@@ -231,24 +223,28 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
         assert 'Besprechung vom 21.01.2013' == getInputValue('title')
         assert 'Landschaftsbau Duvensee GbR' == driver.findElement(By.id('organization')).getAttribute('value')
         assert 'Henry Brackmann' == driver.findElement(By.id('person')).getAttribute('value')
+        assert '''# Besprechung der PR-Aktion am 21.01.2013
+
+Am 21.01.2013 trafen wir uns mit Henry Brackmann und besprachen die
+Vorgehensweise bei der geplanten PR-Aktion. Herr Brackmann will den Schwerpunkt
+auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.
+
+Wir vereinbarten folgende Vorgehensweise:
+
+* Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee GbR
+* Konzeption des Werbekonzepts
+* Kostenermittlung der einzelnen Werbemöglichkeiten''' == getInputValue('content')
 
         setInputValue 'title', 'Besprechung vom 22.01.2013'
-        def iframeDriver = driver.switchTo().frame('note-content_ifr')
-        def rte = iframeDriver.findElement(By.xpath('//body'))
-        assert 'Besprechung der PR-Aktion am 21.01.2013' == rte.findElement(By.tagName('h1')).text
-        assert 3 == rte.findElements(By.tagName('li')).size()
-        rte.sendKeys(Keys.DOWN, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.RIGHT, Keys.BACK_SPACE, '2')
-        rte.sendKeys(Keys.DOWN, Keys.DOWN, Keys.DOWN)
-        driver.switchTo().defaultContent()
-        driver.findElement(By.id('note-content_numlist_action')).click()
-        driver.switchTo().frame('note-content_ifr')
-        rte.sendKeys(Keys.DOWN)
-        driver.switchTo().defaultContent()
-        driver.findElement(By.id('note-content_numlist_action')).click()
-        driver.switchTo().frame('note-content_ifr')
-        rte.sendKeys(Keys.DOWN)
-        driver.switchTo().defaultContent()
-        driver.findElement(By.id('note-content_numlist_action')).click()
+        setInputValue 'content', '''# Besprechung der PR-Aktion am 22.01.2013
+
+Am 22.01.2013 trafen wir uns mit Henry Brackmann und besprachen die Vorgehensweise bei der geplanten PR-Aktion. Herr Brackmann will den Schwerpunkt auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.
+
+Wir vereinbarten folgende Vorgehensweise:
+
+1. Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee GbR
+2. Konzeption des Werbekonzepts
+3. Kostenermittlung der einzelnen Werbemöglichkeiten'''
         submitForm getUrl('/note/show/')
 
         assert 'Notiz Besprechung vom 22.01.2013 wurde geändert.' == flashMessage
@@ -267,7 +263,7 @@ Kostenermittlung der einzelnen Werbemöglichkeiten'''
         assert 'Brackmann, Henry' == link.text
         fieldSet = getFieldset(dataSheet, 2)
         def field = getShowField(fieldSet, 1)
-        assert 'Besprechung der PR-Aktion am 21.01.2013' == field.findElement(By.tagName('h1')).text
+        assert 'Besprechung der PR-Aktion am 22.01.2013' == field.findElement(By.tagName('h1')).text
         assert field.findElement(By.tagName('p')).text.startsWith('Am 22.01.2013 trafen')
         assert 1 == field.findElements(By.tagName('ol')).size()
         assert 3 == field.findElements(By.tagName('li')).size()

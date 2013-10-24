@@ -1,7 +1,7 @@
 /*
  * SalesItemPricing.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ package org.amcworld.springcrm
  * The class {@code SalesItemPricing} represents a pricing for a sales item
  * such as a product or service.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.3
  */
 class SalesItemPricing {
@@ -34,13 +34,13 @@ class SalesItemPricing {
     //-- Class variables ------------------------
 
     static constraints = {
-        quantity(min: 0.0d, validator: {
+        quantity min: 0.0d, validator: {
             it <= 0.0d ? ['default.invalid.notGreater.message', 0] : null
-        })
+        }
         unit()
-        discountPercent(scale: 2, min: 0.0d, widget: 'percent')
-        adjustment(widget: 'currency')
-        items(minSize: 1)
+        discountPercent scale: 2, min: 0.0d, widget: 'percent'
+        adjustment widget: 'currency'
+        items minSize: 1
     }
     static hasMany = [items: SalesItemPricingItem]
     static mapping = {

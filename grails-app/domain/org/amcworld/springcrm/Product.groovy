@@ -24,8 +24,9 @@ package org.amcworld.springcrm
 /**
  * The class {@code Product} represents a product.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.3
  * @see     Service
  */
 class Product extends SalesItem {
@@ -33,35 +34,35 @@ class Product extends SalesItem {
     //-- Class variables ------------------------
 
     static constraints = {
-		category(nullable: true)
-		manufacturer(nullable: true)
-		retailer(nullable: true)
-		weight(nullable: true, min: 0.0d)
+        category nullable: true
+        manufacturer nullable: true
+        retailer nullable: true
+        weight nullable: true, min: 0.0d
     }
     static searchable = true
 
 
     //-- Instance variables ---------------------
 
-	ProductCategory category
-	String manufacturer
-	String retailer
-	Double weight
+    ProductCategory category
+    String manufacturer
+    String retailer
+    Double weight
 
 
     //-- Constructors ---------------------------
 
-	Product() {
+    Product() {
         super()
         type = 'P'
     }
 
-	Product(Product p) {
+    Product(Product p) {
         super(p)
         type = 'P'
-		category = p.category
-		manufacturer = p.manufacturer
-		retailer = p.retailer
-		weight = p.weight
-	}
+        category = p.category
+        manufacturer = p.manufacturer
+        retailer = p.retailer
+        weight = p.weight
+    }
 }

@@ -25,6 +25,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -39,6 +41,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class QuoteFunctionalTests extends InvoicingTransactionTestCase {
 
     //-- Instance variables ---------------------
@@ -263,9 +266,10 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
         List<WebElement> errorMsgs = driver.findElements(By.xpath(
             '//form[@id="quote-form"]/fieldset[3]/div/ul[@class="field-msgs"]/li[@class="error-msg"]'
         ))
-        assert 2 == errorMsgs.size()
+        assert 3 == errorMsgs.size()
         assert 'Pos. 1, Artikel/Leistung: Feld darf nicht leer sein.' == errorMsgs[0].text
         assert 'Pos. 1, Nummer: Feld darf nicht leer sein.' == errorMsgs[1].text
+        assert 'Pos. 1, Einheit: Feld darf nicht leer sein.' == errorMsgs[2].text
         cancelForm getUrl('/quote/list')
 
         def emptyList = driver.findElement(By.className('empty-list'))

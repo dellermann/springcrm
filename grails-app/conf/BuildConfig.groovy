@@ -25,6 +25,7 @@ grails.project.war.file = "target/${appName}.war"
 grails.war.resources = { stagingDir ->
     delete(dir: "${stagingDir}/test-data")
 }
+grails.project.dependency.resolver = 'maven'
 grails.project.dependency.resolution = {
 
     // inherit Grails' default dependencies
@@ -46,6 +47,7 @@ grails.project.dependency.resolution = {
         //mavenLocal()
         mavenCentral()
         mavenRepo 'http://mavenrepo.google-api-java-client.googlecode.com/hg/'
+        mavenRepo 'http://maven.springframework.org/milestone/'
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -86,7 +88,7 @@ grails.project.dependency.resolution = {
         */
 
         test(
-            'org.seleniumhq.selenium:selenium-java:2.34.0'
+            'org.seleniumhq.selenium:selenium-java:2.35.0'
         )
     }
 
@@ -96,26 +98,27 @@ grails.project.dependency.resolution = {
         }
         compile(
             ':codenarc:0.19',
-            ':coffeescript-compiler:0.9.2',
-            ':dbunit-operator:1.6.2',
+            ':coffeescript-compiler:0.9.4',
+            ':dbunit-operator:1.7',
             ':fields:1.3',
-            ":hibernate:${grailsVersion}",
-            ':less-resources:1.3.3.1',
+            ':hibernate:3.6.10.2',
+            ':less-resources:1.3.3.2',
             ':mail:1.0.1',
-            ':markdown:1.0.0.RC1',
-            ':quartz:1.0-RC9',
-            ':searchable:0.6.4'
+            ':markdown:1.1.1',
+            ':quartz:1.0-RC13',
+            ':scaffolding:1.0.0',
+            ':searchable:0.6.5'
         )
         build(
             ':standalone:1.1.1',
-            ":tomcat:${grailsVersion}"
+            ':tomcat:7.0.42'
         )
         runtime(
-            ':database-migration:1.3.2',
+            ':database-migration:1.3.6',
             ':jquery:1.8.3',
             ':jquery-json:2.2.2',
             ':jquery-ui:1.8.24',
-            ':resources:1.2.RC2'
+            ':resources:1.2.1'
         )
     }
 }

@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code InvoicingTransaction} acts as a base class of invoicing
  * transactions such as invoices, quotes etc.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class InvoicingTransaction {

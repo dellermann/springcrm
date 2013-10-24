@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * The class {@code ProductController} contains actions which manage products.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class ProductController {

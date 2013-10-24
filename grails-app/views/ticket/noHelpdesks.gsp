@@ -13,7 +13,7 @@
   </div>
   <section id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <div class="empty-list">
       <p><g:message code="ticket.helpdesk.emptyList" /></p>

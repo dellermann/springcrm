@@ -18,6 +18,8 @@
  */
 
 
+//== Configuration file loading =================
+
 /*
  * Locations to search for configuration files that get merged into the main
  * configuration.  Configuration files can either be Java properties files or
@@ -34,11 +36,23 @@ if (System.properties["${appName}.config.location"]) {
     grails.config.locations << 'file:' + System.properties["${appName}.config.location"]
 }
 
+
+//== Build settings =============================
+
 /*
  * Change this to alter the default package name and Maven publishing
  * destination.
  */
 grails.project.groupId = 'org.amcworld.springcrm'
+
+/* Enabled native2ascii conversion of i18n properties files */
+grails.enable.native2ascii = true
+
+/* Scaffolding templates configuration */
+grails.scaffolding.templates.domainSuffix = 'Instance'
+
+
+//== Content handling ===========================
 
 /*
  * Enables the parsing of file extensions from URLs into the request format.
@@ -60,44 +74,52 @@ grails.mime.types = [
     xml: ['text/xml', 'application/xml']
 ]
 
+
+//== Data binding and validation ================
+
+grails.databinding.convertEmptyStringsToNull = false
+
+
+//== URL handling ===============================
+
 /* URL Mapping Cache Max Size, defaults to 5000 */
 //grails.urlmapping.cache.maxsize = 1000
 
-/* The default codec used to encode data with ${} */
-grails.views.default.codec = 'none' // none, html, base64
-grails.views.gsp.encoding = 'UTF-8'
-grails.converters.encoding = 'UTF-8'
-
 grails.web.url.converter = 'hyphenated'
+
+
+//== Views ======================================
 
 /* Enable Sitemesh preprocessing of GSP pages */
 grails.views.gsp.sitemesh.preprocess = true
 
-/* Scaffolding templates configuration */
-grails.scaffolding.templates.domainSuffix = 'Instance'
+/* GSP settings */
+grails.converters.encoding = 'UTF-8'
+grails.views.default.codec = 'html' // none, html, base64
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
+    }
+}
 
 /* Set to false to use the new Grails 1.2 JSONBuilder in the render method */
 grails.json.legacy.builder = false
 
-/* Enabled native2ascii conversion of i18n properties files */
-grails.enable.native2ascii = true
 
-/*
- * Whether to install the java.util.logging bridge for sl4j. Disable for
- * AppEngine!
- */
-grails.logging.jul.usebridge = false
-
-/* Packages to include in Spring bean scanning */
-grails.spring.bean.packages = []
-
-/* Request parameters to mask when logging exceptions */
-grails.exceptionresolver.params.exclude = ['password']
-
-/* Settings for database migration */
-grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']
-grails.plugin.databasemigration.updateOnStart = true
-grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+//== Plugins ====================================
 
 /* mail configuration */
 grails {
@@ -107,6 +129,12 @@ grails {
         props = ['mail.smtp.auth': 'false']
     }
 }
+
+/* Settings for database migration */
+grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']
+grails.plugin.databasemigration.forceAutoMigrate = true
+grails.plugin.databasemigration.updateOnStart = true
+grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
 /* CoffeeScript compiler settings */
 'coffeescript-compiler' {
@@ -130,6 +158,15 @@ markdown {
     tables = true
 }
 
+
+//== Miscellaneous ==============================
+
+/* Packages to include in Spring bean scanning */
+grails.spring.bean.packages = []
+
+
+//== Application-specific settings ==============
+
 /* SpringCRM settings */
 springcrm.dir.base = "${userHome}/.${appName}"
 if (System.getenv('SPRINGCRM_HOME')) {
@@ -152,6 +189,9 @@ springcrm {
         from = "SpringCRM Service <noreply@springcrm.de>"
     }
 }
+
+
+//== Environment-specific settings ==============
 
 /* environment specific settings */
 environments {
@@ -181,7 +221,19 @@ environments {
     standalone {}
 }
 
-/* logger configuration */
+
+//== Logging ====================================
+
+/* Request parameters to mask when logging exceptions */
+grails.exceptionresolver.params.exclude = ['password']
+
+/*
+ * Whether to install the java.util.logging bridge for sl4j. Disable for
+ * AppEngine!
+ */
+grails.logging.jul.usebridge = false
+
+/* loggers */
 log4j = {
     appenders {
         String logDir = grails.util.Environment.warDeployed ? System.getProperty('catalina.home') + '/logs' : 'target'

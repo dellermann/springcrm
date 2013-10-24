@@ -907,17 +907,17 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem 
             title: 'Besprechung vom 21.01.2013',
             organization: org,
             person: p,
-            content: '''<h1>Besprechung der PR-Aktion am 21.01.2013</h1>
-<p>Am 21.01.2013 trafen wir uns mit Henry Brackmann und besprachen die
+            content: '''# Besprechung der PR-Aktion am 21.01.2013
+
+Am 21.01.2013 trafen wir uns mit Henry Brackmann und besprachen die
 Vorgehensweise bei der geplanten PR-Aktion. Herr Brackmann will den Schwerpunkt
-auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.</p>
-<p>Wir vereinbarten folgende Vorgehensweise:</p>
-<ul>
-  <li>Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee
-  GbR</li>
-  <li>Konzeption des Werbekonzepts</li>
-  <li>Kostenermittlung der einzelnen Werbemöglichkeiten</li>
-</ul>'''
+auf Werbung in lokalen Medien (z. B. regionale Tageszeitungen) legen.
+
+Wir vereinbarten folgende Vorgehensweise:
+
+* Kalkulation des verfügbaren Werbebudgets durch Landschaftsbau Duvensee GbR
+* Konzeption des Werbekonzepts
+* Kostenermittlung der einzelnen Werbemöglichkeiten'''
         )
         note.save flush: true
         note

@@ -27,14 +27,23 @@ beans = {
         jndiName = 'java:comp/env/springcrmConfig'
     }
 
-    /* property type registrar */
-    appEditorRegistrar(org.amcworld.springcrm.util.AppPropertyEditorRegistrar) {
+    /* value converters */
+    defaultDateConverter(org.amcworld.springcrm.converter.DateTimeValueConverter) {
         messageSource = ref('messageSource')
     }
+    [Short.TYPE, Integer.TYPE, Float.TYPE, Long.TYPE, Double.TYPE].each { numberType ->
+        "defaultGrails${numberType.name}Converter"(org.amcworld.springcrm.converter.PrimitiveNumberValueConverter) {
+            targetType = numberType
+        }
+    }
+//    [Short.TYPE, Integer.TYPE, Float.TYPE, Long.TYPE, Double.TYPE].each { numberType ->
+//        "defaultGrails${numberType.name}Converter"(org.amcworld.springcrm.converter.PrimitiveNumberValueConverter) {
+//            targetType = numberType
+//        }
+//    }
 
     /* startup difference sets */
-    startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet)
-    {
+    startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet) {
         markdownService = ref('markdownService')
     }
 

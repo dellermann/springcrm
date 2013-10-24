@@ -1,7 +1,7 @@
 /*
  * ConfigHolder.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,47 +25,46 @@ package org.amcworld.springcrm
  * The class {@code ConfigHolder} holds the system configuration of the
  * application.
  *
- * @author	Daniel Ellermann
- * @version 0.9
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   0.9
  */
 class ConfigHolder {
 
-	//-- Class variables ------------------------
+    //-- Class variables ------------------------
 
-	private static ConfigHolder instance
+    static ConfigHolder instance
 
 
-	//-- Public methods -------------------------
+    //-- Public methods -------------------------
 
     List<Config> getAllConfig() {
-        return Config.list()
+        Config.list()
     }
 
-	Config getAt(String name) {
-		return getConfig(name)
-	}
+    Config getAt(String name) {
+        getConfig name
+    }
 
-	Config getConfig(String name) {
-        return Config.findByName(name)
-	}
+    Config getConfig(String name) {
+        Config.findByName name
+    }
 
-	static synchronized ConfigHolder getInstance() {
-		if (instance == null) {
-			instance = new ConfigHolder()
-		}
-		return instance
-	}
+    static synchronized ConfigHolder getInstance() {
+        if (instance == null) {
+            instance = new ConfigHolder()
+        }
+        instance
+    }
 
-	void putAt(String name, String value) {
-		setConfig(name, value)
-	}
+    void putAt(String name, String value) {
+        setConfig name, value
+    }
 
-	void setConfig(String name, String value) {
-		Config config = getConfig(name)
-		if (config == null) {
-			config = new Config(name: name)
-		}
-		config.value = value
-		config.save(flush: true)
+    void setConfig(String name, String value) {
+        Config config = getConfig(name) ?: new Config(name: name)
+        config.value = value
+        config.save flush: true
     }
 }
+

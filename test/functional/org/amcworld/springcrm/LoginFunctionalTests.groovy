@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
 
 
@@ -29,10 +31,11 @@ import org.openqa.selenium.By
  * The class {@code LoginFunctionalTests} contains functional test cases for
  * the login procedure.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class LoginFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Constants ------------------------------
