@@ -101,7 +101,7 @@ grails.project.dependency.resolution = {
             ':coffeescript-compiler:0.9.4',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-            ':hibernate:3.6.10.M3',
+            ':hibernate:3.6.10.2',
             ':less-resources:1.3.3.2',
             ':mail:1.0.1',
             ':markdown:1.1.1',
@@ -111,7 +111,7 @@ grails.project.dependency.resolution = {
         )
         build(
             ':standalone:1.1.1',
-            ':tomcat:7.0.40.1'
+            ':tomcat:7.0.42'
         )
         runtime(
             ':database-migration:1.3.6',

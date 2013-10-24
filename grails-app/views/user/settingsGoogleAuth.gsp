@@ -11,7 +11,7 @@
   </header>
   <div id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <g:if test="${authorized}">
       <p><g:message code="user.settings.googleAuth.alreadyAuthorized" /></p>

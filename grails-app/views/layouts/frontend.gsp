@@ -32,7 +32,7 @@
   </header>
   <article id="main-container">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <g:if test="${pageProperty(name: 'page.toolbar')}">
     </g:if>

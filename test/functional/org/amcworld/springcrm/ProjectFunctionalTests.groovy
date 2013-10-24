@@ -25,6 +25,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -35,10 +37,11 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * The class {@code ProjectFunctionalTests} represents a functional test case
  * for the project section of SpringCRM.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class ProjectFunctionalTests extends InvoicingTransactionTestCase {
 
     //-- Instance variables ---------------------
@@ -311,9 +314,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'title', 'Auftragserteilung Werbekampagne Frühjahr 2013'
         assert 'Landschaftsbau Duvensee GbR' == getAutocompleteExValue('organization')
         assert 'Henry Brackmann' == getAutocompleteExValue('person')
-        def iframeDriver = driver.switchTo().frame('note-content_ifr')
-        def rte = iframeDriver.findElement(By.xpath('//body'))
-        rte.sendKeys 'Herr Brackmann erteilte uns am 20.03.2013 den Auftrag für die Werbekampange Frühjahr 2013 einschl. der Änderungswünsche.'
+        setInputValue 'content', 'Herr Brackmann erteilte uns am 20.03.2013 den Auftrag für die Werbekampange Frühjahr 2013 einschl. der Änderungswünsche.'
         driver.switchTo().defaultContent()
         submitForm getUrl('/project/show/')
 

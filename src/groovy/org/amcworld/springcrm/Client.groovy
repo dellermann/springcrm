@@ -29,7 +29,8 @@ import grails.util.GrailsNameUtils as GNU
  * command object for the install and configuration controller.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
+ * @since   1.3
  * @see     InstallController#clientData()
  * @see     InstallController#clientDataSave(Client)
  */
@@ -39,17 +40,17 @@ class Client {
     //-- Class variables ------------------------
 
     static constraints = {
-        name(blank: false)
-        street(blank: false)
-        postalCode(blank: false)
-        location(blank: false)
-        phone(blank: false)
-        fax(nullable: true)
-        email(blank: false, email: true)
-        website(nullable: true, widget: 'url')
-        bankName(nullable: true)
-        bankCode(nullable: true)
-        accountNumber(nullable: true)
+        name blank: false
+        street blank: false
+        postalCode blank: false
+        location blank: false
+        phone blank: false
+        fax nullable: true
+        email blank: false, email: true
+        website nullable: true, widget: 'url'
+        bankName nullable: true
+        bankCode nullable: true
+        accountNumber nullable: true
     }
 
 
@@ -77,7 +78,7 @@ class Client {
      * @return  the client object with loaded data
      */
     static Client load() {
-        return new Client(loadAsMap())
+        new Client(loadAsMap())
     }
 
     /**
@@ -91,24 +92,24 @@ class Client {
         def l = Config.findAllByNameLike('client%')
         def data = [: ]
         l.each { data[GNU.getPropertyName(it.name.substring(6))] = it.value }
-        return data
+        data
     }
 
     /**
      * Saves data of this client to the configuration table.
      */
     void save() {
-        saveConfig('name', name)
-        saveConfig('street', street)
-        saveConfig('postalCode', postalCode)
-        saveConfig('location', location)
-        saveConfig('phone', phone)
-        saveConfig('fax', fax)
-        saveConfig('email', email)
-        saveConfig('website', website)
-        saveConfig('bankName', bankName)
-        saveConfig('bankCode', bankCode)
-        saveConfig('accountNumber', accountNumber)
+        saveConfig 'name', name
+        saveConfig 'street', street
+        saveConfig 'postalCode', postalCode
+        saveConfig 'location', location
+        saveConfig 'phone', phone
+        saveConfig 'fax', fax
+        saveConfig 'email', email
+        saveConfig 'website', website
+        saveConfig 'bankName', bankName
+        saveConfig 'bankCode', bankCode
+        saveConfig 'accountNumber', accountNumber
     }
 
 
@@ -123,11 +124,8 @@ class Client {
      */
     protected void saveConfig(String name, String value) {
         name = 'client' + GNU.getClassName(name)
-        def config = Config.findByName(name)
-        if (!config) {
-            config = new Config(name: name)
-        }
+        def config = Config.findByName(name) ?: new Config(name: name)
         config.value = value
-        config.save(flush: true)
+        config.save flush: true
     }
 }

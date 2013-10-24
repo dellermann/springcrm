@@ -28,7 +28,7 @@
   </header>
   <div id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <g:if test="${organizationInstanceList}">
     <g:letterBar clazz="${Organization}" property="name" where='${params.type ? "o.recType in (${params.type}, 3)" : ""}' />

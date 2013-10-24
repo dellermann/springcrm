@@ -20,13 +20,15 @@
 
 package org.amcworld.springcrm
 
-import org.openqa.selenium.WebElement;
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
+import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.Select
 
 
@@ -38,6 +40,7 @@ import org.openqa.selenium.support.ui.Select
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class CallFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------

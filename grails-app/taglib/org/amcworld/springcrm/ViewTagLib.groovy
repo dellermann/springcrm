@@ -120,7 +120,7 @@ class ViewTagLib {
     }
 
     /**
-     * Creates a button with optional icon either as link or a 
+     * Creates a button with optional icon either as link or a
      * <code>&lt;span></code> element.  If any of the link attributes are
      * specified, a link is generated.  You may either specify the text of the
      * button in the body or use the message attribute.
@@ -454,7 +454,25 @@ class ViewTagLib {
     }
 
     /**
-     * Creates a menu button with optional icon either as link or a 
+     * Renders a list item for installation steps using the given step number
+     * and current step.
+     *
+     * @attr step REQUIRED      the zero-based number of this step
+     * @attr current REQUIRED   the zero-based current step that is displayed
+     */
+    def installStep = { attrs, body ->
+        StringBuilder buf = new StringBuilder('<li')
+        int step = attrs.step as int
+        int current = (attrs.current ?: 0i) as int
+        if (step == current) {
+            buf << ' class="current"'
+        }
+        buf << '>' << body() << '</li>'
+        out << buf.toString()
+    }
+
+    /**
+     * Creates a menu button with optional icon either as link or a
      * <code>&lt;span></code> element.  If any of the link attributes are
      * specified, a link is generated.  The menu items <code>&lt;li></code>
      * must be specified in the body of the tag.

@@ -24,18 +24,21 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.Select
 
 
 /**
- * The class {@code PersonFunctionalTests} represents a functional test case for the
- * person section of SpringCRM.
+ * The class {@code PersonFunctionalTests} represents a functional test case
+ * for the person section of SpringCRM.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------

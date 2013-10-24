@@ -20,16 +20,17 @@
 
 package org.amcworld.springcrm
 
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.text.DateFormat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestName
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import org.openqa.selenium.By
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
-import org.openqa.selenium.support.ui.Wait
 import org.openqa.selenium.support.ui.WebDriverWait
 
 
@@ -41,6 +42,7 @@ import org.openqa.selenium.support.ui.WebDriverWait
  * @version 1.4
  * @since   1.3
  */
+@RunWith(JUnit4)
 class CalendarEventFunctionalTests extends GeneralFunctionalTestCase {
 
     //-- Instance variables ---------------------

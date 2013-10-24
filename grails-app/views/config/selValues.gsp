@@ -19,7 +19,7 @@
   </header>
   <div id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <g:form name="config-form" action="saveSelValues"
       params="[returnUrl: params.returnUrl]">

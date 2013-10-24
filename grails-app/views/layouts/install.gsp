@@ -19,11 +19,11 @@
   </header>
   <nav>
     <ol id="install-progress">
-      <li ${step ? '' : 'class="current"'}><g:link action="index"><g:message code="install.steps.welcome" /></g:link></li>
-      <li ${(step == 1) ? 'class="current"' : ''}><g:link action="installBaseData"><g:message code="install.steps.installBaseData" /></g:link></li>
-      <li ${(step == 2) ? 'class="current"' : ''}><g:link action="clientData"><g:message code="install.steps.clientData" /></g:link></li>
-      <li ${(step == 3) ? 'class="current"' : ''}><g:link action="createAdmin"><g:message code="install.steps.createAdmin" /></g:link></li>
-      <li ${(step == 4) ? 'class="current"' : ''}><g:link action="finish"><g:message code="install.steps.finish" /></g:link></li>
+      <g:installStep step="0" current="${step}"><g:link action="index"><g:message code="install.steps.welcome" /></g:link></g:installStep>
+      <g:installStep step="1" current="${step}"><g:link action="installBaseData"><g:message code="install.steps.installBaseData" /></g:link></g:installStep>
+      <g:installStep step="2" current="${step}"><g:link action="clientData"><g:message code="install.steps.clientData" /></g:link></g:installStep>
+      <g:installStep step="3" current="${step}"><g:link action="createAdmin"><g:message code="install.steps.createAdmin" /></g:link></g:installStep>
+      <g:installStep step="4" current="${step}"><g:link action="finish"><g:message code="install.steps.finish" /></g:link></g:installStep>
     </ol>
   </nav>
   <article id="main-container">

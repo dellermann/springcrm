@@ -84,7 +84,7 @@
   </aside>
   <div id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <h2>${ticketInstance?.toString()}</h2>
     <div class="data-sheet">

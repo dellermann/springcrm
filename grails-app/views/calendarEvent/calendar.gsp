@@ -20,7 +20,7 @@
   </header>
   <div id="content">
     <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${flash.message}</div>
+    <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
     <div id="calendar"
       data-create-event-url="${createLink(controller: 'calendarEvent', action: 'create')}"

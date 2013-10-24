@@ -36,7 +36,7 @@ class InvoicingItem {
     static constraints = {
         number blank: false
         quantity min: 0.0d
-        unit()
+        unit blank: false
         name blank: false
         description nullable: true
         unitPrice widget: 'currency'

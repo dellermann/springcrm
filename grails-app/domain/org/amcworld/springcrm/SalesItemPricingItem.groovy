@@ -37,10 +37,10 @@ class SalesItemPricingItem {
     static constraints = {
         quantity min: 0.0d
         unit nullable: true, validator: { unit, pricing ->
-            ((unit == null) && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
+            (!unit && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
         }
         name nullable: true, validator: { name, pricing ->
-            ((name == null) && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
+            (!name && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
         }
         type()
         relToPos nullable: true, min: 0i, validator: { relToPos, pricing ->
