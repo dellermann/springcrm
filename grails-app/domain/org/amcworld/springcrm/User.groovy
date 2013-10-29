@@ -31,7 +31,6 @@ class User implements Cloneable {
 
     //-- Class variables ------------------------
 
-    static belongsTo = Helpdesk
     static constraints = {
         userName blank: false, unique: true
         password blank: false, password: true
@@ -47,7 +46,7 @@ class User implements Cloneable {
         dateCreated()
         lastUpdated()
     }
-    static hasMany = [/*helpdesks: Helpdesk, */rawSettings: UserSetting]
+    static hasMany = [rawSettings: UserSetting]
     static mapping = {
         allowedModules type: 'text'
         table 'user_data'

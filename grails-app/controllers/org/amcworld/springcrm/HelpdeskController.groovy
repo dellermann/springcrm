@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -29,6 +29,11 @@ class HelpdeskController {
     //-- Class variables ------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+
+
+    //-- Instance variables ---------------------
+
+    HelpdeskService helpdeskService
 
 
     //-- Public methods -------------------------
@@ -59,8 +64,8 @@ class HelpdeskController {
     }
 
     def save() {
-        def helpdeskInstance = new Helpdesk(params)
-        if (!helpdeskInstance.save(flush: true)) {
+        def helpdeskInstance = new Helpdesk()
+        if (!helpdeskService.saveHelpdesk(helpdeskInstance, params)) {
             render view: 'create', model: [helpdeskInstance: helpdeskInstance]
             return
         }
@@ -113,9 +118,7 @@ class HelpdeskController {
             }
         }
 
-        helpdeskInstance.properties = params
-
-        if (!helpdeskInstance.save(flush: true)) {
+        if (!helpdeskService.saveHelpdesk(helpdeskInstance, params)) {
             render view: 'edit', model: [helpdeskInstance: helpdeskInstance]
             return
         }

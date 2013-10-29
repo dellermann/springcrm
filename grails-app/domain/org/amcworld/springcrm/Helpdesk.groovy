@@ -42,7 +42,7 @@ class Helpdesk {
         dateCreated()
         lastUpdated()
     }
-    static hasMany = [users: User, tickets: Ticket]
+    static hasMany = [tickets: Ticket]
     static searchable = [only: ['name']]
 
 
@@ -61,13 +61,30 @@ class Helpdesk {
         name
     }
 
+    Set<User> getUsers() {
+        HelpdeskUser.findAllByHelpdesk(this).collect { it.user } as Set
+    }
+
     void setName(String name) {
         this.name = name
         this.urlName = name.encodeAsUrlPart()
     }
 
+    void setUsers(Set<User> users) {
+        HelpdeskUser.removeAll this
+        for (User user in users) {
+            HelpdeskUser.create(this, user)
+        }
+    }
+
 
     //-- Public methods -------------------------
+
+    void addToUsers(User user) {
+        if (!hasUser(user)) {
+            HelpdeskUser.create(this, user)
+        }
+    }
 
     @Override
     boolean equals(Object obj) {
@@ -79,8 +96,17 @@ class Helpdesk {
         urlName ? urlName.hashCode() : 0i
     }
 
+    boolean hasUser(User user) {
+        HelpdeskUser.countByHelpdeskAndUser(this, user) > 0
+    }
+
+    void removeFromUsers(User user) {
+        HelpdeskUser.remove this, user
+    }
+
     @Override
     String toString() {
         name
     }
 }
+
