@@ -266,16 +266,16 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'validUntil_date', '25.03.2013'
         setInputValue 'shippingDate_date', '26.02.2013'
         setInputValue 'carrier.id', '501'
-        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-        assert '23898' == getInputValue('billingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('billingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-        assert 'Deutschland' == getInputValue('billingAddrCountry')
-        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-        assert '23898' == getInputValue('shippingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
+        assert '23898' == getInputValue('billingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('billingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddr.state')
+        assert 'Deutschland' == getInputValue('billingAddr.country')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddr.street')
+        assert '23898' == getInputValue('shippingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('shippingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddr.state')
+        assert 'Deutschland' == getInputValue('shippingAddr.country')
         setInputValue 'headerText', 'für Änderungswünsche zur geplanten Werbekampange "Frühjahr 2013" möchten wir Ihnen gern folgendes Angebot unterbreiten.'
         setPriceTableInputValue 0, 'number', 'S-10000'
         setPriceTableInputValue 0, 'quantity', '1'
@@ -345,16 +345,16 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'dueDate_date', '29.3.2013'
         setInputValue 'shippingDate_date', '6.3.2013'
         setInputValue 'carrier.id', '501'
-        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-        assert '23898' == getInputValue('billingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('billingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-        assert 'Deutschland' == getInputValue('billingAddrCountry')
-        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-        assert '23898' == getInputValue('shippingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
+        assert '23898' == getInputValue('billingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('billingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddr.state')
+        assert 'Deutschland' == getInputValue('billingAddr.country')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddr.street')
+        assert '23898' == getInputValue('shippingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('shippingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddr.state')
+        assert 'Deutschland' == getInputValue('shippingAddr.country')
         setInputValue 'headerText', 'vielen Dank für Ihren Auftrag zu den Änderungswünschen zur Werbekampange "Frühjahr 2013".'
         setPriceTableInputValue 0, 'number', 'S-10000'
         setPriceTableInputValue 0, 'quantity', '1'
@@ -401,16 +401,16 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'carrier.id', '501'
         assert '0,00' == getInputValue('paymentAmount')
         checkStillUnpaid '0.0', '0,00', 'still-unpaid-paid'
-        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-        assert '23898' == getInputValue('billingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('billingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-        assert 'Deutschland' == getInputValue('billingAddrCountry')
-        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-        assert '23898' == getInputValue('shippingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
+        assert '23898' == getInputValue('billingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('billingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddr.state')
+        assert 'Deutschland' == getInputValue('billingAddr.country')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddr.street')
+        assert '23898' == getInputValue('shippingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('shippingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddr.state')
+        assert 'Deutschland' == getInputValue('shippingAddr.country')
         setInputValue('headerText', '''für durchgeführte Änderungen an der  Werbekampange "Frühjahr 2013" erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
 Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         setPriceTableInputValue 0, 'number', 'S-10000'
@@ -452,16 +452,16 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         setInputValue 'docDate_date', '8.4.2013'
         setInputValue 'shippingDate_date', '9.4.2013'
         setInputValue 'carrier.id', '501'
-        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-        assert '23898' == getInputValue('billingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('billingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-        assert 'Deutschland' == getInputValue('billingAddrCountry')
-        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-        assert '23898' == getInputValue('shippingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
+        assert '23898' == getInputValue('billingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('billingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddr.state')
+        assert 'Deutschland' == getInputValue('billingAddr.country')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddr.street')
+        assert '23898' == getInputValue('shippingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('shippingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddr.state')
+        assert 'Deutschland' == getInputValue('shippingAddr.country')
         setInputValue 'headerText', 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zu den Änderungswünschen zur Werbekampagne "Frühjahr 2013" gut.'
         setPriceTableInputValue 0, 'number', 'S-10000'
         setPriceTableInputValue 0, 'quantity', '1'
@@ -508,16 +508,16 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
         setInputValue 'docDate_date', '6.5.2013'
         setInputValue 'dueDatePayment_date', '13.5.2013'
         setInputValue 'shippingDate_date', '7.5.2013'
-        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-        assert '23898' == getInputValue('billingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('billingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-        assert 'Deutschland' == getInputValue('billingAddrCountry')
-        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-        assert '23898' == getInputValue('shippingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
+        assert '23898' == getInputValue('billingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('billingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddr.state')
+        assert 'Deutschland' == getInputValue('billingAddr.country')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddr.street')
+        assert '23898' == getInputValue('shippingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('shippingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddr.state')
+        assert 'Deutschland' == getInputValue('shippingAddr.country')
         setInputValue 'headerText', 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.'
         setPriceTableInputValue 0, 'number', 'S-99000'
         setPriceTableInputValue 0, 'quantity', '1'

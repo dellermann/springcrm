@@ -32,15 +32,9 @@ $(".document-delete").on "click", ->
 $("#addresses").addrfields
   leftPrefix: "mailingAddr"
   menuItems: [
-    action: "loadFromOrganization"
-    propPrefix: "billingAddr"
+    action: "clear"
     side: "left"
-    text: $L("person.addr.fromOrgBillingAddr")
-  ,
-    action: "loadFromOrganization"
-    propPrefix: "shippingAddr"
-    side: "left"
-    text: $L("person.addr.fromOrgShippingAddr")
+    text: $L("person.mailingAddr.clear")
   ,
     action: "copy"
     side: "left"
@@ -48,6 +42,24 @@ $("#addresses").addrfields
   ,
     action: "loadFromOrganization"
     propPrefix: "billingAddr"
+    side: "left"
+    text: $L("person.addr.fromOrgBillingAddr")
+  ,
+    action: "loadFromOrganization"
+    propPrefix: "shippingAddr"
+    side: "left"
+    text: $L("person.addr.fromOrgShippingAddr")
+  ,
+    action: "clear"
+    side: "right"
+    text: $L("person.otherAddr.clear")
+  ,
+    action: "copy"
+    side: "right"
+    text: $L("person.otherAddr.copy")
+  ,
+    action: "loadFromOrganization"
+    propPrefix: "billingAddr"
     side: "right"
     text: $L("person.addr.fromOrgBillingAddr")
   ,
@@ -55,10 +67,6 @@ $("#addresses").addrfields
     propPrefix: "shippingAddr"
     side: "right"
     text: $L("person.addr.fromOrgShippingAddr")
-  ,
-    action: "copy"
-    side: "right"
-    text: $L("person.otherAddr.copy")
   ]
   organizationId: "#organization\\.id"
   rightPrefix: "otherAddr"

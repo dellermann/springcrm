@@ -101,23 +101,7 @@
           <div class="fieldset">
             <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
             <div class="form-fragment">
-              <f:display bean="${creditMemoInstance}" property="billingAddrStreet" />
-              <f:display bean="${creditMemoInstance}" property="billingAddrPoBox" />
-              <f:display bean="${creditMemoInstance}" property="billingAddrPostalCode" />
-              <f:display bean="${creditMemoInstance}" property="billingAddrLocation" />
-              <f:display bean="${creditMemoInstance}" property="billingAddrState" />
-              <f:display bean="${creditMemoInstance}" property="billingAddrCountry" />
-              <g:if test="${creditMemoInstance?.billingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${creditMemoInstance.billingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${creditMemoInstance}" property="billingAddr" />
             </div>
           </div>
         </div>
@@ -125,23 +109,7 @@
           <div class="fieldset">
             <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
             <div class="form-fragment">
-              <f:display bean="${creditMemoInstance}" property="shippingAddrStreet" />
-              <f:display bean="${creditMemoInstance}" property="shippingAddrPoBox" />
-              <f:display bean="${creditMemoInstance}" property="shippingAddrPostalCode" />
-              <f:display bean="${creditMemoInstance}" property="shippingAddrLocation" />
-              <f:display bean="${creditMemoInstance}" property="shippingAddrState" />
-              <f:display bean="${creditMemoInstance}" property="shippingAddrCountry" />
-              <g:if test="${creditMemoInstance?.shippingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${creditMemoInstance.shippingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${creditMemoInstance}" property="shippingAddr" />
             </div>
           </div>
         </div>

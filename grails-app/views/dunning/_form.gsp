@@ -58,12 +58,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${dunningInstance}" property="billingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${dunningInstance}" property="billingAddrPoBox" />
-        <f:field bean="${dunningInstance}" property="billingAddrPostalCode" size="10" />
-        <f:field bean="${dunningInstance}" property="billingAddrLocation" />
-        <f:field bean="${dunningInstance}" property="billingAddrState" />
-        <f:field bean="${dunningInstance}" property="billingAddrCountry" />
+        <f:field bean="${dunningInstance}" property="billingAddr" />
       </div>
     </fieldset>
   </div>
@@ -77,12 +72,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${dunningInstance}" property="shippingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${dunningInstance}" property="shippingAddrPoBox" />
-        <f:field bean="${dunningInstance}" property="shippingAddrPostalCode" size="10" />
-        <f:field bean="${dunningInstance}" property="shippingAddrLocation" />
-        <f:field bean="${dunningInstance}" property="shippingAddrState" />
-        <f:field bean="${dunningInstance}" property="shippingAddrCountry" />
+        <f:field bean="${dunningInstance}" property="shippingAddr" />
       </div>
     </fieldset>
   </div>

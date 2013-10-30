@@ -42,12 +42,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${personInstance}" property="mailingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${personInstance}" property="mailingAddrPoBox" />
-        <f:field bean="${personInstance}" property="mailingAddrPostalCode" size="10" />
-        <f:field bean="${personInstance}" property="mailingAddrLocation" />
-        <f:field bean="${personInstance}" property="mailingAddrState" />
-        <f:field bean="${personInstance}" property="mailingAddrCountry" />
+        <f:field bean="${personInstance}" property="mailingAddr" />
       </div>
     </fieldset>
   </div>
@@ -61,12 +56,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${personInstance}" property="otherAddrStreet" cols="35" rows="3" />
-        <f:field bean="${personInstance}" property="otherAddrPoBox" />
-        <f:field bean="${personInstance}" property="otherAddrPostalCode" size="10" />
-        <f:field bean="${personInstance}" property="otherAddrLocation" />
-        <f:field bean="${personInstance}" property="otherAddrState" />
-        <f:field bean="${personInstance}" property="otherAddrCountry" />
+        <f:field bean="${personInstance}" property="otherAddr" />
       </div>
     </fieldset>
   </div>

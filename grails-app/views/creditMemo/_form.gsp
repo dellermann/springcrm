@@ -86,12 +86,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${creditMemoInstance}" property="billingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${creditMemoInstance}" property="billingAddrPoBox" />
-        <f:field bean="${creditMemoInstance}" property="billingAddrPostalCode" size="10" />
-        <f:field bean="${creditMemoInstance}" property="billingAddrLocation" />
-        <f:field bean="${creditMemoInstance}" property="billingAddrState" />
-        <f:field bean="${creditMemoInstance}" property="billingAddrCountry" />
+        <f:field bean="${creditMemoInstance}" property="billingAddr" />
       </div>
     </fieldset>
   </div>
@@ -105,12 +100,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${creditMemoInstance}" property="shippingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${creditMemoInstance}" property="shippingAddrPoBox" />
-        <f:field bean="${creditMemoInstance}" property="shippingAddrPostalCode" size="10" />
-        <f:field bean="${creditMemoInstance}" property="shippingAddrLocation" />
-        <f:field bean="${creditMemoInstance}" property="shippingAddrState" />
-        <f:field bean="${creditMemoInstance}" property="shippingAddrCountry" />
+        <f:field bean="${creditMemoInstance}" property="shippingAddr" />
       </div>
     </fieldset>
   </div>

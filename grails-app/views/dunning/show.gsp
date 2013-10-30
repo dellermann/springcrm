@@ -117,23 +117,7 @@
           <div class="fieldset">
             <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
             <div class="form-fragment">
-              <f:display bean="${dunningInstance}" property="billingAddrStreet" />
-              <f:display bean="${dunningInstance}" property="billingAddrPoBox" />
-              <f:display bean="${dunningInstance}" property="billingAddrPostalCode" />
-              <f:display bean="${dunningInstance}" property="billingAddrLocation" />
-              <f:display bean="${dunningInstance}" property="billingAddrState" />
-              <f:display bean="${dunningInstance}" property="billingAddrCountry" />
-              <g:if test="${dunningInstance?.billingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${dunningInstance.billingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${dunningInstance}" property="billingAddr" />
             </div>
           </div>
         </div>
@@ -141,23 +125,7 @@
           <div class="fieldset">
             <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
             <div class="form-fragment">
-              <f:display bean="${dunningInstance}" property="shippingAddrStreet" />
-              <f:display bean="${dunningInstance}" property="shippingAddrPoBox" />
-              <f:display bean="${dunningInstance}" property="shippingAddrPostalCode" />
-              <f:display bean="${dunningInstance}" property="shippingAddrLocation" />
-              <f:display bean="${dunningInstance}" property="shippingAddrState" />
-              <f:display bean="${dunningInstance}" property="shippingAddrCountry" />
-              <g:if test="${dunningInstance?.shippingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${dunningInstance.shippingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${dunningInstance}" property="shippingAddr" />
             </div>
           </div>
         </div>

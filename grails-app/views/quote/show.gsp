@@ -96,23 +96,7 @@
           <div class="fieldset">
             <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
             <div class="form-fragment">
-              <f:display bean="${quoteInstance}" property="billingAddrStreet" />
-              <f:display bean="${quoteInstance}" property="billingAddrPoBox" />
-              <f:display bean="${quoteInstance}" property="billingAddrPostalCode" />
-              <f:display bean="${quoteInstance}" property="billingAddrLocation" />
-              <f:display bean="${quoteInstance}" property="billingAddrState" />
-              <f:display bean="${quoteInstance}" property="billingAddrCountry" />
-              <g:if test="${quoteInstance?.billingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${quoteInstance.billingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${quoteInstance}" property="billingAddr" />
             </div>
           </div>
         </div>
@@ -120,23 +104,7 @@
           <div class="fieldset">
             <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
             <div class="form-fragment">
-              <f:display bean="${quoteInstance}" property="shippingAddrStreet" />
-              <f:display bean="${quoteInstance}" property="shippingAddrPoBox" />
-              <f:display bean="${quoteInstance}" property="shippingAddrPostalCode" />
-              <f:display bean="${quoteInstance}" property="shippingAddrLocation" />
-              <f:display bean="${quoteInstance}" property="shippingAddrState" />
-              <f:display bean="${quoteInstance}" property="shippingAddrCountry" />
-              <g:if test="${quoteInstance?.shippingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${quoteInstance.shippingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${quoteInstance}" property="shippingAddr" />
             </div>
           </div>
         </div>

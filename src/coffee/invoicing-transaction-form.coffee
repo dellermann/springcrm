@@ -26,7 +26,7 @@ $ = jQuery
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.3
+# @version  1.4
 #
 InvoicingTransactionWidget =
 
@@ -86,6 +86,10 @@ InvoicingTransactionWidget =
         .addrfields(
           leftPrefix: "billingAddr"
           menuItems: [
+            action: "clear"
+            side: "left"
+            text: $L("invoicingTransaction.billingAddr.clear")
+          ,
             action: "copy"
             side: "left"
             text: $L("invoicingTransaction.billingAddr.copy")
@@ -94,6 +98,10 @@ InvoicingTransactionWidget =
             propPrefix: "billingAddr"
             side: "left"
             text: $L("invoicingTransaction.addr.fromOrgBillingAddr")
+          ,
+            action: "clear"
+            side: "right"
+            text: $L("invoicingTransaction.shippingAddr.clear")
           ,
             action: "copy"
             side: "right"

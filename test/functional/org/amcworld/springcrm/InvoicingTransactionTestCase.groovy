@@ -108,16 +108,16 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem 
         assert 'Brackmann' == i.person.lastName
         assert 'Henry' == i.person.firstName
         assert 501L == i.carrier.id
-        assert 'Dörpstraat 25' == i.billingAddrStreet
-        assert '23898' == i.billingAddrPostalCode
-        assert 'Duvensee' == i.billingAddrLocation
-        assert 'Schleswig-Holstein' == i.billingAddrState
-        assert 'Deutschland' == i.billingAddrCountry
-        assert 'Dörpstraat 25' == i.shippingAddrStreet
-        assert '23898' == i.shippingAddrPostalCode
-        assert 'Duvensee' == i.shippingAddrLocation
-        assert 'Schleswig-Holstein' == i.shippingAddrState
-        assert 'Deutschland' == i.shippingAddrCountry
+        assert 'Dörpstraat 25' == i.billingAddr.street
+        assert '23898' == i.billingAddr.postalCode
+        assert 'Duvensee' == i.billingAddr.location
+        assert 'Schleswig-Holstein' == i.billingAddr.state
+        assert 'Deutschland' == i.billingAddr.country
+        assert 'Dörpstraat 25' == i.shippingAddr.street
+        assert '23898' == i.shippingAddr.postalCode
+        assert 'Duvensee' == i.shippingAddr.location
+        assert 'Schleswig-Holstein' == i.shippingAddr.state
+        assert 'Deutschland' == i.shippingAddr.country
         List<InvoicingItem> items = i.items
         assert 3 == items.size()
         def item = items[0]

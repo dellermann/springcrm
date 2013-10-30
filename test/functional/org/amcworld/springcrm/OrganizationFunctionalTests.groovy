@@ -57,12 +57,12 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
             prepareOrganization()
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/organization/list')
+        open '/organization/list'
     }
 
     @Test
@@ -78,16 +78,16 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'fax', '04543 31235'
         setInputValue 'email1', 'info@landschaftsbau-duvensee.example'
         setInputValue 'website', 'http://www.landschaftsbau-duvensee.example'
-        setInputValue 'billingAddrStreet', 'Dörpstraat 25'
-        setInputValue 'billingAddrPostalCode', '23898'
-        setInputValue 'billingAddrLocation', 'Duvensee'
-        setInputValue 'billingAddrState', 'Schleswig-Holstein'
-        setInputValue 'billingAddrCountry', 'Deutschland'
-        setInputValue 'shippingAddrStreet', 'Dörpstraat 25'
-        setInputValue 'shippingAddrPostalCode', '23898'
-        setInputValue 'shippingAddrLocation', 'Duvensee'
-        setInputValue 'shippingAddrState', 'Schleswig-Holstein'
-        setInputValue 'shippingAddrCountry', 'Deutschland'
+        setInputValue 'billingAddr.street', 'Dörpstraat 25'
+        setInputValue 'billingAddr.postalCode', '23898'
+        setInputValue 'billingAddr.location', 'Duvensee'
+        setInputValue 'billingAddr.state', 'Schleswig-Holstein'
+        setInputValue 'billingAddr.country', 'Deutschland'
+        setInputValue 'shippingAddr.street', 'Dörpstraat 25'
+        setInputValue 'shippingAddr.postalCode', '23898'
+        setInputValue 'shippingAddr.location', 'Duvensee'
+        setInputValue 'shippingAddr.state', 'Schleswig-Holstein'
+        setInputValue 'shippingAddr.country', 'Deutschland'
         setInputValue 'notes', 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         submitForm getUrl('/organization/show/')
 
@@ -447,18 +447,18 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert 'http://www.landschaftsbau-duvensee.example' == getInputValue('website')
         assert '' == getInputValue('owner')
         assert '' == getInputValue('numEmployees')
-        assert 'Dörpstraat 25' == getInputValue('billingAddrStreet')
-        assert '' == getInputValue('billingAddrPoBox')
-        assert '23898' == getInputValue('billingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('billingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('billingAddrState')
-        assert 'Deutschland' == getInputValue('billingAddrCountry')
-        assert 'Dörpstraat 25' == getInputValue('shippingAddrStreet')
-        assert '' == getInputValue('shippingAddrPoBox')
-        assert '23898' == getInputValue('shippingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('shippingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('shippingAddrState')
-        assert 'Deutschland' == getInputValue('shippingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
+        assert '' == getInputValue('billingAddr.poBox')
+        assert '23898' == getInputValue('billingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('billingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('billingAddr.state')
+        assert 'Deutschland' == getInputValue('billingAddr.country')
+        assert 'Dörpstraat 25' == getInputValue('shippingAddr.street')
+        assert '' == getInputValue('shippingAddr.poBox')
+        assert '23898' == getInputValue('shippingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('shippingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('shippingAddr.state')
+        assert 'Deutschland' == getInputValue('shippingAddr.country')
         assert 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.' == getInputValue('notes')
 
         driver.findElement(By.id('rec-type-1')).click()
@@ -472,16 +472,16 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'email1', 'arne@friesing.example'
         setInputValue 'website', 'http://friesing.example'
         setInputValue 'numEmployees', '1'
-        setInputValue 'billingAddrStreet', 'Kirschenallee 17a'
-        setInputValue 'billingAddrPostalCode', '23909'
-        setInputValue 'billingAddrLocation', 'Ratzeburg'
-        setInputValue 'billingAddrState', 'Schleswig-Holstein'
-        setInputValue 'billingAddrCountry', 'Deutschland'
-        setInputValue 'shippingAddrStreet', 'Kirschenallee 17a'
-        setInputValue 'shippingAddrPostalCode', '23909'
-        setInputValue 'shippingAddrLocation', 'Ratzeburg'
-        setInputValue 'shippingAddrState', 'Schleswig-Holstein'
-        setInputValue 'shippingAddrCountry', 'Deutschland'
+        setInputValue 'billingAddr.street', 'Kirschenallee 17a'
+        setInputValue 'billingAddr.postalCode', '23909'
+        setInputValue 'billingAddr.location', 'Ratzeburg'
+        setInputValue 'billingAddr.state', 'Schleswig-Holstein'
+        setInputValue 'billingAddr.country', 'Deutschland'
+        setInputValue 'shippingAddr.street', 'Kirschenallee 17a'
+        setInputValue 'shippingAddr.postalCode', '23909'
+        setInputValue 'shippingAddr.location', 'Ratzeburg'
+        setInputValue 'shippingAddr.state', 'Schleswig-Holstein'
+        setInputValue 'shippingAddr.country', 'Deutschland'
         setInputValue 'notes', 'Guter, zuverlässiger Designer'
         submitForm getUrl('/organization/show/')
 

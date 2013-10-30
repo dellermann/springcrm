@@ -41,6 +41,10 @@
         leftPrefix: "billingAddr",
         menuItems: [
           {
+            action: "clear",
+            side: "left",
+            text: $L("invoicingTransaction.billingAddr.clear")
+          }, {
             action: "copy",
             side: "left",
             text: $L("invoicingTransaction.billingAddr.copy")
@@ -49,6 +53,10 @@
             propPrefix: "billingAddr",
             side: "left",
             text: $L("invoicingTransaction.addr.fromOrgBillingAddr")
+          }, {
+            action: "clear",
+            side: "right",
+            text: $L("invoicingTransaction.shippingAddr.clear")
           }, {
             action: "copy",
             side: "right",

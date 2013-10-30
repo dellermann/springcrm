@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * customer or a vendor.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class Organization {
 
@@ -36,18 +36,6 @@ class Organization {
         number unique: 'recType', widget: 'autonumber'
         recType range: 1..3
         name blank: false, unique: true
-        billingAddrStreet nullable: true, widget: 'textarea'
-        billingAddrPoBox nullable: true
-        billingAddrPostalCode nullable: true
-        billingAddrLocation nullable: true
-        billingAddrState nullable: true
-        billingAddrCountry nullable: true
-        shippingAddrStreet nullable: true, widget: 'textarea'
-        shippingAddrPoBox nullable: true
-        shippingAddrPostalCode nullable: true
-        shippingAddrLocation nullable: true
-        shippingAddrState nullable: true
-        shippingAddrCountry nullable: true
         phone nullable: true, maxSize: 40
         fax nullable: true, maxSize: 40
         phoneOther nullable: true, maxSize: 40
@@ -65,6 +53,7 @@ class Organization {
         dateCreated()
         lastUpdated()
     }
+    static embedded = ['billingAddr', 'shippingAddr']
     static hasMany = [
         persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
         salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
@@ -79,10 +68,7 @@ class Organization {
         recType index: 'rec_type'
     }
     static searchable = true
-    static transients = [
-        'fullNumber', 'shortName', 'billingAddr', 'shippingAddr', 'customer',
-        'vendor'
-    ]
+    static transients = ['fullNumber', 'shortName', 'customer', 'vendor']
 
 
     //-- Instance variables ---------------------
@@ -92,18 +78,8 @@ class Organization {
     int number
     byte recType
     String name
-    String billingAddrStreet
-    String billingAddrPoBox
-    String billingAddrPostalCode
-    String billingAddrLocation
-    String billingAddrState
-    String billingAddrCountry
-    String shippingAddrStreet
-    String shippingAddrPoBox
-    String shippingAddrPostalCode
-    String shippingAddrLocation
-    String shippingAddrState
-    String shippingAddrCountry
+    Address billingAddr
+    Address shippingAddr
     String phone
     String fax
     String phoneOther
@@ -129,18 +105,8 @@ class Organization {
     Organization(Organization org) {
         recType = org.recType
         name = org.name
-        billingAddrStreet = org.billingAddrStreet
-        billingAddrPoBox = org.billingAddrPoBox
-        billingAddrPostalCode = org.billingAddrPostalCode
-        billingAddrLocation = org.billingAddrLocation
-        billingAddrState = org.billingAddrState
-        billingAddrCountry = org.billingAddrCountry
-        shippingAddrStreet = org.shippingAddrStreet
-        shippingAddrPoBox = org.shippingAddrPoBox
-        shippingAddrPostalCode = org.shippingAddrPostalCode
-        shippingAddrLocation = org.shippingAddrLocation
-        shippingAddrState = org.shippingAddrState
-        shippingAddrCountry = org.shippingAddrCountry
+        billingAddr = new Address(org.billingAddr)
+        shippingAddr = new Address(org.shippingAddr)
         phone = org.phone
         fax = org.fax
         phoneOther = org.phoneOther
@@ -180,46 +146,6 @@ class Organization {
             res = name.substring(0, 40) + '...'
         }
         res
-    }
-
-    String getBillingAddr() {
-        StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
-        if (billingAddrLocation) {
-            if (s) {
-                s << ','
-            }
-            if (billingAddrPostalCode) {
-                if (s) {
-                    s << ' '
-                }
-                s << billingAddrPostalCode ?: ''
-            }
-            if (s) {
-                s << ' '
-            }
-            s << billingAddrLocation ?: ''
-        }
-        s.toString()
-    }
-
-    String getShippingAddr() {
-        StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
-        if (shippingAddrLocation) {
-            if (s) {
-                s << ','
-            }
-            if (shippingAddrPostalCode) {
-                if (s) {
-                    s << ' '
-                }
-                s << shippingAddrPostalCode ?: ''
-            }
-            if (s) {
-                s << ' '
-            }
-            s << shippingAddrLocation ?: ''
-        }
-        s.toString()
     }
 
     @Override

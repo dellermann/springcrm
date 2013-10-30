@@ -179,7 +179,7 @@ modules = {
     organizationForm {
         dependsOn 'core'
 
-        resource '/js/organization-form.js'
+        resource '/js/app/organization-form.js'
     }
 
     overview {

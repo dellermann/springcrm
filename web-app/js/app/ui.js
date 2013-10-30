@@ -314,7 +314,7 @@
   $.widget("springcrm.autocompleteex", $.ui.autocomplete, AutoCompleteExWidget);
 
   AddrFieldsWidget = {
-    ADDRESS_FIELDS: ["Street", "PoBox", "PostalCode", "Location", "State", "Country"],
+    ADDRESS_FIELDS: ["street", "poBox", "postalCode", "location", "state", "country"],
     options: {
       confirm: function(msg) {
         return $.confirm(msg);
@@ -327,10 +327,20 @@
       rightMenuSelector: ".right-address .dropdown-menu",
       rightPrefix: "shippingAddr"
     },
+    addMenuItemClear: function(side, text) {
+      var f,
+        _this = this;
+      f = (side === "left" ? this.clearLeft : this.clearRight);
+      return $("<span/>", {
+        click: function() {
+          return f.call(_this);
+        },
+        text: text
+      }).wrap("<li/>").appendTo(this._getMenu(side));
+    },
     addMenuItemCopy: function(side, text) {
       var f,
         _this = this;
-      $ = jQuery;
       f = (side === "left" ? this.copyToLeft : this.copyToRight);
       return $("<span/>", {
         click: function() {
@@ -350,6 +360,12 @@
         text: text
       }).wrap("<li/>").appendTo(this._getMenu(side));
     },
+    clearLeft: function() {
+      return this._clear(this.options.leftPrefix);
+    },
+    clearRight: function() {
+      return this._clear(this.options.rightPrefix);
+    },
     copyToLeft: function() {
       var opts;
       opts = this.options;
@@ -365,6 +381,16 @@
     },
     loadFromOrganizationToRight: function(propPrefix) {
       return this._loadFromOrganization(this.options.rightPrefix, propPrefix);
+    },
+    _clear: function(prefix) {
+      var addrFields, f, gaf, _i, _len;
+      addrFields = this.ADDRESS_FIELDS;
+      gaf = this._getField;
+      for (_i = 0, _len = addrFields.length; _i < _len; _i++) {
+        f = addrFields[_i];
+        gaf(prefix, f).val("");
+      }
+      return this;
     },
     _copyAddress: function(fromPrefix, toPrefix) {
       var addrFields, f, gaf, msg, _i, _len;
@@ -395,6 +421,9 @@
       for (_i = 0, _len = menuItems.length; _i < _len; _i++) {
         menuItem = menuItems[_i];
         switch (menuItem.action) {
+          case "clear":
+            _results.push(this.addMenuItemClear(menuItem.side, menuItem.text));
+            break;
           case "copy":
             _results.push(this.addMenuItemCopy(menuItem.side, menuItem.text));
             break;
@@ -423,20 +452,21 @@
       return res;
     },
     _fillAddress: function(prefix, propPrefix, data) {
-      var addrFields, f, gf, msg, _i, _len;
+      var addr, addrFields, f, gf, msg, _i, _len;
       addrFields = this.ADDRESS_FIELDS;
       msg = $L("default.copyAddressWarning." + prefix);
       gf = this._getField;
+      addr = data[propPrefix];
       if (!this._doesExist(prefix) || this.options.confirm(msg)) {
         for (_i = 0, _len = addrFields.length; _i < _len; _i++) {
           f = addrFields[_i];
-          gf(prefix, f).val(data[propPrefix + f]);
+          gf(prefix, f).val(addr[f]);
         }
       }
       return this;
     },
     _getField: function(prefix, name) {
-      return $("#" + prefix + name);
+      return $("#" + prefix + "\\." + name);
     },
     _getMenu: function(side) {
       if (side === "left") {

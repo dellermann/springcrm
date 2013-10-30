@@ -90,29 +90,7 @@
                 /></h3>
             </header>
             <div class="form-fragment">
-              <f:display bean="${organizationInstance}"
-                property="billingAddrStreet" />
-              <f:display bean="${organizationInstance}"
-                property="billingAddrPoBox" />
-              <f:display bean="${organizationInstance}"
-                property="billingAddrPostalCode" />
-              <f:display bean="${organizationInstance}"
-                property="billingAddrLocation" />
-              <f:display bean="${organizationInstance}"
-                property="billingAddrState" />
-              <f:display bean="${organizationInstance}"
-                property="billingAddrCountry" />
-              <g:if test="${organizationInstance?.billingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${organizationInstance.billingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${organizationInstance}" property="billingAddr" />
             </div>
           </div>
         </div>
@@ -123,29 +101,7 @@
                 /></h3>
             </header>
             <div class="form-fragment">
-              <f:display bean="${organizationInstance}"
-                property="shippingAddrStreet" />
-              <f:display bean="${organizationInstance}"
-                property="shippingAddrPoBox" />
-              <f:display bean="${organizationInstance}"
-                property="shippingAddrPostalCode" />
-              <f:display bean="${organizationInstance}"
-                property="shippingAddrLocation" />
-              <f:display bean="${organizationInstance}"
-                property="shippingAddrState" />
-              <f:display bean="${organizationInstance}"
-                property="shippingAddrCountry" />
-              <g:if test="${organizationInstance?.shippingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${organizationInstance.shippingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${organizationInstance}" property="shippingAddr" />
             </div>
           </div>
         </div>

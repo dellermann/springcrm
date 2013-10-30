@@ -1,7 +1,7 @@
 /*
  * SalesOrder.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,49 +24,51 @@ package org.amcworld.springcrm
 /**
  * The class {@code SalesOrder} represents a sales order.
  *
- * @author	Daniel Ellermann
- * @version 1.2
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class SalesOrder extends InvoicingTransaction {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		stage()
-		dueDate(nullable: true)
-		deliveryDate(nullable: true)
-		quote(nullable: true)
+        stage()
+        dueDate nullable: true
+        deliveryDate nullable: true
+        quote nullable: true
     }
     static belongsTo = [quote: Quote]
     static hasMany = [invoices: Invoice]
-	static mapping = {
-		stage column: 'so_stage_id'
-	}
-	static searchable = true
+    static mapping = {
+        stage column: 'so_stage_id'
+    }
+    static searchable = true
 
 
     //-- Instance variables ---------------------
 
-	SalesOrderStage stage
-	Date dueDate
-	Date deliveryDate; /* leave semicolon here! */
+    SalesOrderStage stage
+    Date dueDate
+    Date deliveryDate
 
 
     //-- Constructors ---------------------------
 
-	SalesOrder() {
+    SalesOrder() {
+        super()
         type = 'O'
     }
 
-	SalesOrder(Quote q) {
-		super(q)
+    SalesOrder(Quote q) {
+        super(q)
         type = 'O'
-		quote = q
-	}
+        quote = q
+    }
 
-	SalesOrder(SalesOrder so) {
-		super(so)
+    SalesOrder(SalesOrder so) {
+        super(so)
         type = 'O'
-		quote = so.quote
-	}
+        quote = so.quote
+    }
 }
+

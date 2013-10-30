@@ -400,7 +400,7 @@ $.widget "springcrm.autocompleteex", $.ui.autocomplete, AutoCompleteExWidget
 #
 AddrFieldsWidget =
   ADDRESS_FIELDS: [
-    "Street", "PoBox", "PostalCode", "Location", "State", "Country"
+    "street", "poBox", "postalCode", "location", "state", "country"
   ]
 
   options:
@@ -415,17 +415,30 @@ AddrFieldsWidget =
     rightMenuSelector: ".right-address .dropdown-menu"
     rightPrefix: "shippingAddr"
 
+  # Adds a menu item to clear data of the given side.
+  #
+  # @param {String} side  the side where the menu item should be added; must be either `left` or `right`
+  # @param {String} text  the menu item text
+  # @since                1.4
+  #
+  addMenuItemClear: (side, text) ->
+    f = (if (side is "left") then @clearLeft else @clearRight)
+    $("<span/>",
+        click: => f.call this
+        text: text
+      )
+      .wrap("<li/>")
+      .appendTo @_getMenu(side)
+
   # Adds a menu item to copy data from the one side to the other.
   #
   # @param {String} side  the side where the menu item should be added; must be either `left` or `right`
   # @param {String} text  the menu item text
   #
   addMenuItemCopy: (side, text) ->
-    $ = jQuery
     f = (if (side is "left") then @copyToLeft else @copyToRight)
     $("<span/>",
-        click: =>
-          f.call this
+        click: => f.call this
         text: text
       )
       .wrap("<li/>")
@@ -440,12 +453,25 @@ AddrFieldsWidget =
   addMenuItemLoadFromOrganization: (side, text, propPrefix) ->
     f = (if (side is "left") then @loadFromOrganizationToLeft else @loadFromOrganizationToRight)
     $("<span/>",
-        click: =>
-          f.call this, propPrefix
+        click: => f.call this, propPrefix
         text: text
       )
       .wrap("<li/>")
       .appendTo @_getMenu(side)
+
+  # Clears the address data on the left side.
+  #
+  # @since 1.4
+  #
+  clearLeft: ->
+    @_clear @options.leftPrefix
+
+  # Clears the address data on the right side.
+  #
+  # @since 1.4
+  #
+  clearRight: ->
+    @_clear @options.rightPrefix
 
   # Copies the address from the right side to the left side.
   #
@@ -472,6 +498,16 @@ AddrFieldsWidget =
   #
   loadFromOrganizationToRight: (propPrefix) ->
     @_loadFromOrganization @options.rightPrefix, propPrefix
+
+  # Clears the address fields with the given prefix.
+  #
+  # @param [String] prefix  the prefix of the fields that should be cleared
+  #
+  _clear: (prefix) ->
+    addrFields = @ADDRESS_FIELDS
+    gaf = @_getField
+    gaf(prefix, f).val "" for f in addrFields
+    this
 
   # Copies the address from one side to the other using the given field name
   # prefixes.
@@ -501,6 +537,8 @@ AddrFieldsWidget =
     menuItems = opts.menuItems
     for menuItem in menuItems
       switch menuItem.action
+        when "clear"
+          @addMenuItemClear menuItem.side, menuItem.text
         when "copy"
           @addMenuItemCopy menuItem.side, menuItem.text
         when "loadFromOrganization"
@@ -532,7 +570,8 @@ AddrFieldsWidget =
 
     msg = $L("default.copyAddressWarning.#{prefix}")
     gf = @_getField
-    gf(prefix, f).val data[propPrefix + f] for f in addrFields if not @_doesExist(prefix) or @options.confirm(msg)
+    addr = data[propPrefix]
+    gf(prefix, f).val addr[f] for f in addrFields if not @_doesExist(prefix) or @options.confirm(msg)
     this
 
   # Gets the input field which name is composed by the given prefix and name.
@@ -542,7 +581,7 @@ AddrFieldsWidget =
   # @return {jQuery}        the input field
   #
   _getField: (prefix, name) ->
-    $ "##{prefix}#{name}"
+    $ "##{prefix}\\.#{name}"
 
   # Gets the menu of the given side of the address fields.  If no such menu
   # exists, it is created.

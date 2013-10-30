@@ -53,15 +53,15 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
     void login() {
         def org = prepareOrganization()
         if (!name.methodName.startsWith('testCreate')) {
-            preparePerson(org)
+            preparePerson org
         }
 
-        open('/', 'de')
+        open '/', 'de'
         driver.findElement(BY_USER_NAME).sendKeys('mkampe')
         driver.findElement(BY_PASSWORD).sendKeys('abc1234')
         driver.findElement(BY_LOGIN_BTN).click()
 
-        open('/person/list')
+        open '/person/list'
     }
 
     @Test
@@ -80,11 +80,11 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'mobile', '0163 3343267'
         setInputValue 'fax', '04543 31235'
         setInputValue 'email1', 'h.brackmann@landschaftsbau-duvensee.example'
-        setInputValue 'mailingAddrStreet', 'Dörpstraat 25'
-        setInputValue 'mailingAddrPostalCode', '23898'
-        setInputValue 'mailingAddrLocation', 'Duvensee'
-        setInputValue 'mailingAddrState', 'Schleswig-Holstein'
-        setInputValue 'mailingAddrCountry', 'Deutschland'
+        setInputValue 'mailingAddr.street', 'Dörpstraat 25'
+        setInputValue 'mailingAddr.postalCode', '23898'
+        setInputValue 'mailingAddr.location', 'Duvensee'
+        setInputValue 'mailingAddr.state', 'Schleswig-Holstein'
+        setInputValue 'mailingAddr.country', 'Deutschland'
         submitForm getUrl('/person/show/')
 
         assert 'Person Brackmann, Henry wurde angelegt.' == flashMessage
@@ -368,12 +368,12 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert '0163 3343267' == getInputValue('mobile')
         assert '04543 31235' == getInputValue('fax')
         assert 'h.brackmann@landschaftsbau-duvensee.example' == getInputValue('email1')
-        assert 'Dörpstraat 25' == getInputValue('mailingAddrStreet')
-        assert '' == getInputValue('mailingAddrPoBox')
-        assert '23898' == getInputValue('mailingAddrPostalCode')
-        assert 'Duvensee' == getInputValue('mailingAddrLocation')
-        assert 'Schleswig-Holstein' == getInputValue('mailingAddrState')
-        assert 'Deutschland' == getInputValue('mailingAddrCountry')
+        assert 'Dörpstraat 25' == getInputValue('mailingAddr.street')
+        assert '' == getInputValue('mailingAddr.poBox')
+        assert '23898' == getInputValue('mailingAddr.postalCode')
+        assert 'Duvensee' == getInputValue('mailingAddr.location')
+        assert 'Schleswig-Holstein' == getInputValue('mailingAddr.state')
+        assert 'Deutschland' == getInputValue('mailingAddr.country')
 
         select.selectByValue('2')
         setInputValue 'firstName', 'Marlen'

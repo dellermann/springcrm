@@ -671,7 +671,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             organization: org,
             owner: User.get(1)
         )
-        calendarEvent.save flush: true
+        calendarEvent.save flush: true, failOnError: true
         calendarEvent
     }
 
@@ -693,7 +693,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             status: CallStatus.completed,
             notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
         )
-        call.save flush: true
+        call.save flush: true, failOnError: true
         call
     }
 
@@ -715,16 +715,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             person: p,
             carrier: Carrier.get(501),
             shippingDate: new GregorianCalendar(2013, Calendar.APRIL, 9).time,
-            billingAddrStreet: org.billingAddrStreet,
-            billingAddrPostalCode: org.billingAddrPostalCode,
-            billingAddrLocation: org.billingAddrLocation,
-            billingAddrState: org.billingAddrState,
-            billingAddrCountry: org.billingAddrCountry,
-            shippingAddrStreet: org.shippingAddrStreet,
-            shippingAddrPostalCode: org.shippingAddrPostalCode,
-            shippingAddrLocation: org.shippingAddrLocation,
-            shippingAddrState: org.shippingAddrState,
-            shippingAddrCountry: org.shippingAddrCountry,
+            billingAddr: new Address(org.billingAddr),
+            shippingAddr: new Address(org.shippingAddr),
             headerText: 'hiermit schreiben wir Ihnen einzelne Posten aus der Rechnung zur Werbekampagne **"Frühjahr 2013"** gut.',
             footerText: 'Erläuterungen zu den einzelnen Posten finden Sie **im Pflichtenheft**.',
             notes: 'Gutschrift für _nicht_ lieferbare Artikel.',
@@ -761,7 +753,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             )).
             addToTermsAndConditions(TermsAndConditions.get(700)).
             addToTermsAndConditions(TermsAndConditions.get(701)).
-            save(flush: true)
+            save(flush: true, failOnError: true)
         creditMemo
     }
 
@@ -783,16 +775,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             person: p,
             carrier: Carrier.get(501),
             shippingDate: new GregorianCalendar(2013, Calendar.MAY, 7).time,
-            billingAddrStreet: org.billingAddrStreet,
-            billingAddrPostalCode: org.billingAddrPostalCode,
-            billingAddrLocation: org.billingAddrLocation,
-            billingAddrState: org.billingAddrState,
-            billingAddrCountry: org.billingAddrCountry,
-            shippingAddrStreet: org.shippingAddrStreet,
-            shippingAddrPostalCode: org.shippingAddrPostalCode,
-            shippingAddrLocation: org.shippingAddrLocation,
-            shippingAddrState: org.shippingAddrState,
-            shippingAddrCountry: org.shippingAddrCountry,
+            billingAddr: new Address(org.billingAddr),
+            shippingAddr: new Address(org.shippingAddr),
             headerText: 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.',
             footerText: 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.',
             notes: 'Zahlung auch nach _wiederholter_ telefonischer Mahnung nicht erfolgt.',
@@ -819,7 +803,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
                 tax: 19.0d
             )).
             addToTermsAndConditions(TermsAndConditions.get(700)).
-            save(flush: true)
+            save(flush: true, failOnError: true)
         dunning
     }
 
@@ -842,16 +826,8 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             person: p,
             carrier: Carrier.get(501),
             shippingDate: new GregorianCalendar(2013, Calendar.APRIL, 2).time,
-            billingAddrStreet: org.billingAddrStreet,
-            billingAddrPostalCode: org.billingAddrPostalCode,
-            billingAddrLocation: org.billingAddrLocation,
-            billingAddrState: org.billingAddrState,
-            billingAddrCountry: org.billingAddrCountry,
-            shippingAddrStreet: org.shippingAddrStreet,
-            shippingAddrPostalCode: org.shippingAddrPostalCode,
-            shippingAddrLocation: org.shippingAddrLocation,
-            shippingAddrState: org.shippingAddrState,
-            shippingAddrCountry: org.shippingAddrCountry,
+            billingAddr: new Address(org.billingAddr),
+            shippingAddr: new Address(org.shippingAddr),
             headerText: '''für die durchgeführte Werbekampange **"Frühjahr 2013"** erlauben wir uns, Ihnen folgendes in Rechnung zu stellen.
 
 Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem [Online-Verzeichnis](http://www.example.de/verzeichnis/).''',
@@ -891,7 +867,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem 
             )).
             addToTermsAndConditions(TermsAndConditions.get(700)).
             addToTermsAndConditions(TermsAndConditions.get(701)).
-            save(flush: true)
+            save(flush: true, failOnError: true)
         invoice
     }
 
@@ -919,7 +895,7 @@ Wir vereinbarten folgende Vorgehensweise:
 * Konzeption des Werbekonzepts
 * Kostenermittlung der einzelnen Werbemöglichkeiten'''
         )
-        note.save flush: true
+        note.save flush: true, failOnError: true
         note
     }
 
@@ -929,6 +905,13 @@ Wir vereinbarten folgende Vorgehensweise:
      * @return  the prepared organization
      */
     protected Organization prepareOrganization() {
+        def addr = new Address(
+            street: 'Dörpstraat 25',
+            postalCode: '23898',
+            location: 'Duvensee',
+            state: 'Schleswig-Holstein',
+            country: 'Deutschland',
+        )
         def org = new Organization(
             recType: (byte) 1,
             name: 'Landschaftsbau Duvensee GbR',
@@ -939,19 +922,11 @@ Wir vereinbarten folgende Vorgehensweise:
             fax: '04543 31235',
             email1: 'info@landschaftsbau-duvensee.example',
             website: 'http://www.landschaftsbau-duvensee.example',
-            billingAddrStreet: 'Dörpstraat 25',
-            billingAddrPostalCode: '23898',
-            billingAddrLocation: 'Duvensee',
-            billingAddrState: 'Schleswig-Holstein',
-            billingAddrCountry: 'Deutschland',
-            shippingAddrStreet: 'Dörpstraat 25',
-            shippingAddrPostalCode: '23898',
-            shippingAddrLocation: 'Duvensee',
-            shippingAddrState: 'Schleswig-Holstein',
-            shippingAddrCountry: 'Deutschland',
+            billingAddr: addr,
+            shippingAddr: addr,
             notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         )
-        org.save flush: true
+        org.save flush: true, failOnError: true
         org
     }
 
@@ -966,16 +941,20 @@ Wir vereinbarten folgende Vorgehensweise:
         if (!org) {
             org = prepareOrganization()
         }
+        def addr = new Address(
+            street: 'Dörpstraat 25',
+            postalCode: '23898',
+            location: 'Duvensee',
+            state: 'Schleswig-Holstein',
+            country: 'Deutschland',
+        )
         def person = new Person(
             organization: org,
             salutation: Salutation.get(1),
             firstName: 'Henry',
             lastName: 'Brackmann',
-            mailingAddrStreet: 'Dörpstraat 25',
-            mailingAddrPostalCode: '23898',
-            mailingAddrLocation: 'Duvensee',
-            mailingAddrState: 'Schleswig-Holstein',
-            mailingAddrCountry: 'Deutschland',
+            mailingAddr: addr,
+            otherAddr: new Address(),
             phone: '04543 31233',
             mobile: '0163 3343267',
             fax: '04543 31235',
@@ -985,7 +964,7 @@ Wir vereinbarten folgende Vorgehensweise:
             assistant: 'Anna Schmarge',
             birthday: new GregorianCalendar(1962, Calendar.FEBRUARY, 14).time
         )
-        person.save flush: true
+        person.save flush: true, failOnError: true
         person
     }
 
@@ -1040,7 +1019,7 @@ Wir vereinbarten folgende Vorgehensweise:
                 unitPrice: 4.5d,
                 tax: 7.0d
             )).
-            save(flush: true)
+            save(flush: true, failOnError: true)
         purchaseInvoice
     }
 
@@ -1059,16 +1038,8 @@ Wir vereinbarten folgende Vorgehensweise:
             person: p,
             carrier: Carrier.get(501),
             shippingDate: new GregorianCalendar(2013, Calendar.FEBRUARY, 21).time,
-            billingAddrStreet: org.billingAddrStreet,
-            billingAddrPostalCode: org.billingAddrPostalCode,
-            billingAddrLocation: org.billingAddrLocation,
-            billingAddrState: org.billingAddrState,
-            billingAddrCountry: org.billingAddrCountry,
-            shippingAddrStreet: org.shippingAddrStreet,
-            shippingAddrPostalCode: org.shippingAddrPostalCode,
-            shippingAddrLocation: org.shippingAddrLocation,
-            shippingAddrState: org.shippingAddrState,
-            shippingAddrCountry: org.shippingAddrCountry,
+            billingAddr: new Address(org.billingAddr),
+            shippingAddr: new Address(org.shippingAddr),
             headerText: '''für die geplante Werbekampange **"Frühjahr 2013"** möchten wir Ihnen gern folgendes Angebot unterbreiten.
 
 Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein vollständiges Protokoll auf [unserer Webseite](http://www.example.de/protokoll/).''',
@@ -1106,7 +1077,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
             )).
             addToTermsAndConditions(TermsAndConditions.get(700)).
             addToTermsAndConditions(TermsAndConditions.get(701)).
-            save(flush: true)
+            save(flush: true, failOnError: true)
         quote
     }
 
@@ -1128,16 +1099,8 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
             person: p,
             carrier: Carrier.get(501),
             shippingDate: new GregorianCalendar(2013, Calendar.MARCH, 5).time,
-            billingAddrStreet: org.billingAddrStreet,
-            billingAddrPostalCode: org.billingAddrPostalCode,
-            billingAddrLocation: org.billingAddrLocation,
-            billingAddrState: org.billingAddrState,
-            billingAddrCountry: org.billingAddrCountry,
-            shippingAddrStreet: org.shippingAddrStreet,
-            shippingAddrPostalCode: org.shippingAddrPostalCode,
-            shippingAddrLocation: org.shippingAddrLocation,
-            shippingAddrState: org.shippingAddrState,
-            shippingAddrCountry: org.shippingAddrCountry,
+            billingAddr: new Address(org.billingAddr),
+            shippingAddr: new Address(org.shippingAddr),
             headerText: 'vielen Dank für Ihren Auftrag zur Werbekampange **"Frühjahr 2013"**.',
             footerText: 'Die Umsetzung des Auftrags erfolgt **nach Pflichtenheft**.',
             notes: 'Erste Teilergebnisse sollten vor dem *15.03.2013* vorliegen.',
@@ -1174,7 +1137,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
             )).
             addToTermsAndConditions(TermsAndConditions.get(700)).
             addToTermsAndConditions(TermsAndConditions.get(701)).
-            save(flush: true)
+            save(flush: true, failOnError: true)
         salesOrder
     }
 

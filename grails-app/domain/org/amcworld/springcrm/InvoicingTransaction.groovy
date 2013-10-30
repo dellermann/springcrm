@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * transactions such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class InvoicingTransaction {
 
@@ -41,18 +41,6 @@ class InvoicingTransaction {
         docDate()
         carrier nullable: true
         shippingDate nullable: true
-        billingAddrStreet nullable: true, widget: 'textarea'
-        billingAddrPoBox nullable: true
-        billingAddrPostalCode nullable: true
-        billingAddrLocation nullable: true
-        billingAddrState nullable: true
-        billingAddrCountry nullable: true
-        shippingAddrStreet nullable: true, widget: 'textarea'
-        shippingAddrPoBox nullable: true
-        shippingAddrPostalCode nullable: true
-        shippingAddrLocation nullable: true
-        shippingAddrState nullable: true
-        shippingAddrCountry nullable: true
         headerText nullable: true, widget: 'textarea'
         items minSize: 1
         footerText nullable: true, widget: 'textarea'
@@ -67,6 +55,7 @@ class InvoicingTransaction {
         lastUpdated()
     }
     static belongsTo = [organization: Organization, person: Person]
+    static embedded = ['billingAddr', 'shippingAddr']
     static hasMany = [
         items: InvoicingItem,
         termsAndConditions: TermsAndConditions
@@ -82,8 +71,8 @@ class InvoicingTransaction {
     }
     static searchable = true
     static transients = [
-        'billingAddr', 'discountPercentAmount', 'fullName', 'fullNumber',
-        'shippingAddr', 'subtotalGross', 'subtotalNet', 'taxRateSums'
+        'discountPercentAmount', 'fullName', 'fullNumber', 'subtotalGross',
+        'subtotalNet', 'taxRateSums'
     ]
 
 
@@ -97,18 +86,8 @@ class InvoicingTransaction {
     Date docDate = new Date()
     Carrier carrier
     Date shippingDate
-    String billingAddrStreet
-    String billingAddrPoBox
-    String billingAddrPostalCode
-    String billingAddrLocation
-    String billingAddrState
-    String billingAddrCountry
-    String shippingAddrStreet
-    String shippingAddrPoBox
-    String shippingAddrPostalCode
-    String shippingAddrLocation
-    String shippingAddrState
-    String shippingAddrCountry
+    Address billingAddr
+    Address shippingAddr
     String headerText
     List<InvoicingItem> items
     String footerText
@@ -132,18 +111,8 @@ class InvoicingTransaction {
         subject = i.subject
         organization = i.organization
         person = i.person
-        billingAddrStreet = i.billingAddrStreet
-        billingAddrPoBox = i.billingAddrPoBox
-        billingAddrPostalCode = i.billingAddrPostalCode
-        billingAddrLocation = i.billingAddrLocation
-        billingAddrState = i.billingAddrState
-        billingAddrCountry = i.billingAddrCountry
-        shippingAddrStreet = i.shippingAddrStreet
-        shippingAddrPoBox = i.shippingAddrPoBox
-        shippingAddrPostalCode = i.shippingAddrPostalCode
-        shippingAddrLocation = i.shippingAddrLocation
-        shippingAddrState = i.shippingAddrState
-        shippingAddrCountry = i.shippingAddrCountry
+        billingAddr = new Address(i.billingAddr)
+        shippingAddr = new Address(i.shippingAddr)
         headerText = i.headerText
         items = new ArrayList(i.items.size())
         i.items.each { items << new InvoicingItem(it) }
@@ -198,48 +167,14 @@ class InvoicingTransaction {
             org = organization
         }
         if (org) {
-            billingAddrCountry = org.billingAddrCountry
-            billingAddrLocation = org.billingAddrLocation
-            billingAddrPoBox = org.billingAddrPoBox
-            billingAddrPostalCode = org.billingAddrPostalCode
-            billingAddrState = org.billingAddrState
-            billingAddrStreet = org.billingAddrStreet
-            shippingAddrCountry = org.shippingAddrCountry
-            shippingAddrLocation = org.shippingAddrLocation
-            shippingAddrPoBox = org.shippingAddrPoBox
-            shippingAddrPostalCode = org.shippingAddrPostalCode
-            shippingAddrState = org.shippingAddrState
-            shippingAddrStreet = org.shippingAddrStreet
+            billingAddr = new Address(org.billingAddr)
+            shippingAddr = new Address(org.shippingAddr)
         }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof InvoicingTransaction) {
-            return obj.id == id
-        } else {
-            return false
-        }
-    }
-
-    String getBillingAddr() {
-        StringBuilder s = new StringBuilder(billingAddrStreet ?: '')
-        if (billingAddrLocation) {
-            if (s) {
-                s << ','
-            }
-            if (billingAddrPostalCode) {
-                if (s) {
-                    s << ' '
-                }
-                s << billingAddrPostalCode ?: ''
-            }
-            if (s) {
-                s << ' '
-            }
-            s << billingAddrLocation ?: ''
-        }
-        s.toString()
+    boolean equals(Object obj) {
+        (obj instanceof InvoicingTransaction) ? obj.id == id : false
     }
 
     /**
@@ -269,26 +204,6 @@ class InvoicingTransaction {
         buf.toString()
     }
 
-    String getShippingAddr() {
-        StringBuilder s = new StringBuilder(shippingAddrStreet ?: '')
-        if (shippingAddrLocation) {
-            if (s) {
-                s << ','
-            }
-            if (shippingAddrPostalCode) {
-                if (s) {
-                    s << ' '
-                }
-                s << shippingAddrPostalCode ?: ''
-            }
-            if (s) {
-                s << ' '
-            }
-            s << shippingAddrLocation ?: ''
-        }
-        s.toString()
-    }
-
     /**
      * Gets the subtotal gross value. It is computed by adding the tax values
      * to the subtotal net value.
@@ -304,8 +219,8 @@ class InvoicingTransaction {
      * Gets the subtotal net value. It is computed by accumulating the total
      * values of the items plus the shipping costs.
      *
-     * @return	the subtotal net value
-     * @see		#getSubtotalGross()
+     * @return  the subtotal net value
+     * @see		  #getSubtotalGross()
      */
     double getSubtotalNet() {
         items ? (items.total.sum() + shippingCosts) : 0.0d
@@ -334,7 +249,7 @@ class InvoicingTransaction {
     }
 
     @Override
-    public int hashCode() {
+    int hashCode() {
         (id ?: 0i) as int
     }
 
@@ -351,6 +266,7 @@ class InvoicingTransaction {
         }
     }
 
+    @Override
     String toString() {
         subject
     }

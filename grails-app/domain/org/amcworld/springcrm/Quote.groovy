@@ -24,39 +24,41 @@ package org.amcworld.springcrm
 /**
  * The class {@code Quote} represents a quote.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class Quote extends InvoicingTransaction {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		stage()
-		validUntil(nullable: true)
+        stage()
+        validUntil nullable: true
     }
     static hasMany = [salesOrders: SalesOrder, invoices: Invoice]
-	static mapping = {
-		stage column: 'quote_stage_id'
-	}
-	static searchable = true
+    static mapping = {
+        stage column: 'quote_stage_id'
+    }
+    static searchable = true
 
 
     //-- Instance variables ---------------------
 
-	QuoteStage stage
-	Date validUntil
+    QuoteStage stage
+    Date validUntil
 
 
     //-- Constructors ---------------------------
 
-	Quote() {
+    Quote() {
+        super()
         type = 'Q'
     }
 
-	Quote(Quote q) {
-		super(q)
+    Quote(Quote q) {
+        super(q)
         type = 'Q'
-		validUntil = q.validUntil
-	}
+        validUntil = q.validUntil
+    }
 }
+

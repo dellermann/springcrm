@@ -85,23 +85,7 @@
           <div class="fieldset">
             <header><h3><g:message code="person.fieldset.mailingAddr.label" /></h3></header>
             <div>
-              <f:display bean="${personInstance}" property="mailingAddrStreet" />
-              <f:display bean="${personInstance}" property="mailingAddrPoBox" />
-              <f:display bean="${personInstance}" property="mailingAddrPostalCode" />
-              <f:display bean="${personInstance}" property="mailingAddrLocation" />
-              <f:display bean="${personInstance}" property="mailingAddrState" />
-              <f:display bean="${personInstance}" property="mailingAddrCountry" />
-              <g:if test="${personInstance?.mailingAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${personInstance.mailingAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${personInstance}" property="mailingAddr" />
             </div>
           </div>
         </div>
@@ -109,23 +93,7 @@
           <div class="fieldset">
             <header><h3><g:message code="person.fieldset.otherAddr.label" /></h3></header>
             <div>
-              <f:display bean="${personInstance}" property="otherAddrStreet" />
-              <f:display bean="${personInstance}" property="otherAddrPoBox" />
-              <f:display bean="${personInstance}" property="otherAddrPostalCode" />
-              <f:display bean="${personInstance}" property="otherAddrLocation" />
-              <f:display bean="${personInstance}" property="otherAddrState" />
-              <f:display bean="${personInstance}" property="otherAddrCountry" />
-              <g:if test="${personInstance?.otherAddr}">
-              <div class="row">
-                <div class="label empty-label"></div>
-                <div class="field">
-                  <g:button url="http://maps.google.de/maps?hl=&q=${personInstance.otherAddr.encodeAsURL()}"
-                    target="_blank" color="blue" size="medium"
-                    icon="map-marker"
-                    message="default.link.viewInGoogleMaps" />
-                </div>
-              </div>
-              </g:if>
+              <f:display bean="${personInstance}" property="otherAddr" />
             </div>
           </div>
         </div>

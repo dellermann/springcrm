@@ -65,12 +65,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${invoiceInstance}" property="billingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${invoiceInstance}" property="billingAddrPoBox" />
-        <f:field bean="${invoiceInstance}" property="billingAddrPostalCode" size="10" />
-        <f:field bean="${invoiceInstance}" property="billingAddrLocation" />
-        <f:field bean="${invoiceInstance}" property="billingAddrState" />
-        <f:field bean="${invoiceInstance}" property="billingAddrCountry" />
+        <f:field bean="${invoiceInstance}" property="billingAddr" />
       </div>
     </fieldset>
   </div>
@@ -84,12 +79,7 @@
         </div>
       </header>
       <div class="form-fragment">
-        <f:field bean="${invoiceInstance}" property="shippingAddrStreet" cols="35" rows="3" />
-        <f:field bean="${invoiceInstance}" property="shippingAddrPoBox" />
-        <f:field bean="${invoiceInstance}" property="shippingAddrPostalCode" size="10" />
-        <f:field bean="${invoiceInstance}" property="shippingAddrLocation" />
-        <f:field bean="${invoiceInstance}" property="shippingAddrState" />
-        <f:field bean="${invoiceInstance}" property="shippingAddrCountry" />
+        <f:field bean="${invoiceInstance}" property="shippingAddr" />
       </div>
     </fieldset>
   </div>
