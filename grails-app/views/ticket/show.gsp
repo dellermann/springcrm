@@ -30,7 +30,7 @@
       <li>
         <g:button elementId="send-message-to-customer-btn"
           color="white" size="medium" icon="envelope-alt"
-          message="ticket.sendMessage.toCustomer.label" 
+          message="ticket.sendMessage.toCustomer.label"
           data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
           />
@@ -121,11 +121,7 @@
             <f:display bean="${ticketInstance}" property="email2" />
           </div>
           <div class="col col-r">
-            <f:display bean="${ticketInstance}" property="street" />
-            <f:display bean="${ticketInstance}" property="postalCode" />
-            <f:display bean="${ticketInstance}" property="location" />
-            <f:display bean="${ticketInstance}" property="state" />
-            <f:display bean="${ticketInstance}" property="country" />
+            <f:display bean="${ticketInstance}" property="address" />
           </div>
         </div>
       </section>

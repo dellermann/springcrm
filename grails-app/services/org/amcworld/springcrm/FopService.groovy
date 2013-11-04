@@ -74,18 +74,20 @@ class FopService {
     //-- Public methods -------------------------
 
     /**
-     * Generates an XML block for the given invoicing transaction property
-     * which contains Markdown content.
+     * Generates an XML block for the given bean property which contains
+     * Markdown content.
      *
-     * @param transaction   the given invoicing transaction
+     * @param bean          the given bean
      * @param propertyName  the name of the property
+     * @param targetName    the target name of the property in XML; if
+     *                      {@code null} the property name is used
      * @return              the generated XML block
      */
-    String generateMarkdownXml(InvoicingTransaction transaction,
-                               String propertyName)
+    String generateMarkdownXml(def bean, String propertyName,
+                               String targetName = propertyName)
     {
-        String xml = generateRawMarkdownXml(transaction."${propertyName}")
-        "<${propertyName}Html>${xml}</${propertyName}Html>"
+        String xml = generateRawMarkdownXml(bean."${propertyName}")
+        "<${targetName}Html>${xml}</${targetName}Html>"
     }
 
     /**
@@ -202,8 +204,12 @@ class FopService {
         String xml = (data as XML).toString()
         
         StringBuilder buf = new StringBuilder()
-        buf << generateMarkdownXml(transaction, 'billingAddrStreet')
-        buf << generateMarkdownXml(transaction, 'shippingAddrStreet')
+        buf << generateMarkdownXml(
+            transaction.billingAddr, 'street', 'billingAddrStreet'
+        )
+        buf << generateMarkdownXml(
+            transaction.shippingAddr, 'street', 'shippingAddrStreet'
+        )
         buf << generateMarkdownXml(transaction, 'headerText')
         buf << generateMarkdownXml(transaction, 'footerText')
         buf << '<itemsHtml>'

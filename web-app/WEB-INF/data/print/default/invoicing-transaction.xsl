@@ -102,9 +102,14 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template match="entry[@key='transaction']/billingAddrLocation">
+  <xsl:template match="entry[@key='transaction']/billingAddr">
+    <xsl:apply-templates select="/map/billingAddrStreetHtml/html:html"/>
+    <xsl:apply-templates select="location"/>
+  </xsl:template>
+
+  <xsl:template match="location">
     <fo:block>
-      <xsl:value-of select="../billingAddrPostalCode"/>
+      <xsl:value-of select="preceding-sibling::postalCode"/>
       <xsl:text> </xsl:text>
       <xsl:value-of select="."/>
     </fo:block>
@@ -469,8 +474,7 @@
 
       <xsl:apply-templates select="key('entries', 'organization')"/>
       <xsl:apply-templates select="key('entries', 'person')"/>
-      <xsl:apply-templates select="/map/billingAddrStreetHtml/html:html"/>
-      <xsl:apply-templates select="billingAddrLocation"/>
+      <xsl:apply-templates select="key('entries', 'transaction')/billingAddr"/>
     </fo:block-container>
   </xsl:template>
   

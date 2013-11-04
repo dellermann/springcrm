@@ -40,11 +40,6 @@ class Ticket {
         salutation nullable: true
         firstName blank: false
         lastName blank: false
-        street nullable: true, widget: 'textarea'
-        postalCode nullable: true
-        location nullable: true
-        state nullable: true
-        country nullable: true
         phone nullable: true, maxSize: 40, validator: { phone, ticket ->
             !ticket.email1 && !ticket.email2 && !phone && !ticket.phoneHome && !ticket.mobile ? ['ticket.contact.validator.required'] : null
         }
@@ -68,10 +63,11 @@ class Ticket {
         dateCreated()
         lastUpdated()
     }
+    static embedded = ['address']
     static hasMany = [logEntries: TicketLogEntry]
     static searchable = true
     static transients = [
-        'address', 'customerName', 'fullName', 'fullNumber', 'initialMessage',
+        'customerName', 'fullName', 'fullNumber', 'initialMessage',
         'messageText'
     ]
 
@@ -86,11 +82,7 @@ class Ticket {
     Salutation salutation
     String firstName
     String lastName
-    String street
-    String postalCode
-    String location
-    String state
-    String country
+    Address address
     String phone
     String phoneHome
     String mobile
@@ -108,21 +100,28 @@ class Ticket {
     String messageText
 
 
-    //-- Properties -----------------------------
+    //-- Constructors ---------------------------
+    
+    Ticket() {}
 
-    String getAddress() {
-        StringBuilder s = new StringBuilder(street ?: '')
-        if (location) {
-            if (s) s << ','
-            if (postalCode) {
-                if (s) s << ' '
-                s << postalCode ?: ''
-            }
-            if (s) s << ' '
-            s << location ?: ''
-        }
-        s.toString()
+    Ticket(Ticket ticket) {
+        subject = ticket.subject
+        stage = ticket.stage
+        salutation = ticket.salutation
+        firstName = ticket.firstName
+        lastName = ticket.lastName
+        address = new Address(ticket.address)
+        phone = ticket.phone
+        phoneHome = ticket.phoneHome
+        mobile = ticket.mobile
+        fax = ticket.fax
+        email1 = ticket.email1
+        email2 = ticket.email2
+        priority = ticket.priority
     }
+
+    
+    //-- Properties -----------------------------
 
     String getCustomerName() {
         "${lastName}, ${firstName}"

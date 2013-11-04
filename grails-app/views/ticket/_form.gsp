@@ -33,11 +33,7 @@
     </div>
     <div class="col col-r">
       <div class="form">
-        <f:field bean="${ticketInstance}" property="street" cols="35" rows="3" />
-        <f:field bean="${ticketInstance}" property="postalCode" />
-        <f:field bean="${ticketInstance}" property="location" />
-        <f:field bean="${ticketInstance}" property="state" />
-        <f:field bean="${ticketInstance}" property="country" />
+        <f:field bean="${ticketInstance}" property="address" />
       </div>
     </div>
   </div>
