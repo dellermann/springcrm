@@ -42,7 +42,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
 /**
  * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  * @since   1.0
  */
@@ -89,34 +89,29 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         ))
         contact.name = new Name(
             givenName: new GivenName(p.firstName, null),
-            familyName: new FamilyName(p.lastName, null)
+            familyName: new FamilyName(p.lastName, null),
+            fullName: new FullName(p.toString(), null)
         )
         contact.getRepeatingExtension(StructuredPostalAddress).clear()
-        if (p.mailingAddrStreet || p.mailingAddrPoBox
-            || p.mailingAddrPostalCode || p.mailingAddrLocation
-            || p.mailingAddrState || p.mailingAddrCountry)
-        {
+        if (!p.mailingAddr.empty) {
             contact.addStructuredPostalAddress(new StructuredPostalAddress(
-                street: p.mailingAddrStreet ? new Street(p.mailingAddrStreet) : null,
-                pobox: p.mailingAddrPoBox ? new PoBox(p.mailingAddrPoBox) : null,
-                postcode: p.mailingAddrPostalCode ? new PostCode(p.mailingAddrPostalCode) : null,
-                city: p.mailingAddrLocation ? new City(p.mailingAddrLocation) : null,
-                region: p.mailingAddrState ? new Region(p.mailingAddrState) : null,
-                country: p.mailingAddrCountry ? new Country(value: p.mailingAddrCountry) : null,
+                street: p.mailingAddr.street ? new Street(p.mailingAddr.street) : null,
+                pobox: p.mailingAddr.poBox ? new PoBox(p.mailingAddr.poBox) : null,
+                postcode: p.mailingAddr.postalCode ? new PostCode(p.mailingAddr.postalCode) : null,
+                city: p.mailingAddr.location ? new City(p.mailingAddr.location) : null,
+                region: p.mailingAddr.state ? new Region(p.mailingAddr.state) : null,
+                country: p.mailingAddr.country ? new Country(value: p.mailingAddr.country) : null,
                 rel: StructuredPostalAddress.Rel.WORK
             ))
         }
-        if (p.otherAddrStreet || p.otherAddrPoBox
-            || p.otherAddrPostalCode || p.otherAddrLocation
-            || p.otherAddrState || p.otherAddrCountry)
-        {
+        if (!p.otherAddr.empty) {
             contact.addStructuredPostalAddress(new StructuredPostalAddress(
-                street: p.otherAddrStreet ? new Street(p.otherAddrStreet) : null,
-                pobox: p.otherAddrPoBox ? new PoBox(p.otherAddrPoBox) : null,
-                postcode: p.otherAddrPostalCode ? new PostCode(p.otherAddrPostalCode) : null,
-                city: p.otherAddrLocation ? new City(p.otherAddrLocation) : null,
-                region: p.otherAddrState ? new Region(p.otherAddrState) : null,
-                country: p.otherAddrCountry ? new Country(value: p.otherAddrCountry) : null,
+                street: p.otherAddr.street ? new Street(p.otherAddr.street) : null,
+                pobox: p.otherAddr.poBox ? new PoBox(p.otherAddr.poBox) : null,
+                postcode: p.otherAddr.postalCode ? new PostCode(p.otherAddr.postalCode) : null,
+                city: p.otherAddr.location ? new City(p.otherAddr.location) : null,
+                region: p.otherAddr.state ? new Region(p.otherAddr.state) : null,
+                country: p.otherAddr.country ? new Country(value: p.otherAddr.country) : null,
                 rel: StructuredPostalAddress.Rel.OTHER
             ))
         }

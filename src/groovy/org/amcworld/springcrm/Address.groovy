@@ -41,6 +41,7 @@ class Address {
         state nullable: true
         country nullable: true
     }
+    static transients = ['empty']
 
 
     //-- Instance variables ---------------------
@@ -64,6 +65,13 @@ class Address {
         location = addr.location
         state = addr.state
         country = addr.country
+    }
+
+
+    //-- Properties -----------------------------
+
+    boolean isEmpty() {
+        !street && !poBox && !postalCode && !location && !state && !country
     }
 
 
