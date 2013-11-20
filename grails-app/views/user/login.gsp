@@ -9,7 +9,9 @@
   <r:layoutResources />
   <r:external uri="/images/favicon.ico" />
   <r:script disposition="defer">
-  $("#userName").trigger("focus");
+  if ($("#password:focus").length == 0) {
+      $("#userName").trigger("focus");
+  }
   </r:script>
 </head>
 

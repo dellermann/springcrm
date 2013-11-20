@@ -70,7 +70,8 @@ grails.project.dependency.resolution = {
             'com.google.apis:google-api-services-calendar:v3-rev7-1.6.0-beta',
             'commons-fileupload:commons-fileupload:1.2.2',
             'commons-io:commons-io:2.1',
-            'jmimemagic:jmimemagic:0.1.2'
+            'jmimemagic:jmimemagic:0.1.2',
+            //'org.apache.xmlgraphics:fop:1.0'
         )
 
         /*
@@ -84,7 +85,7 @@ grails.project.dependency.resolution = {
         }
         */
         runtime(
-            'mysql:mysql-connector-java:5.1.21',
+            'mysql:mysql-connector-java:5.1.27',
             'net.sf.offo:fop-hyph:1.2'
         )
 

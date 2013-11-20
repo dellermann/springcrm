@@ -3,4 +3,5 @@ caldecott.log
 stacktrace.log
 target/
 target-eclipse/
+web-app/js/app
 web-app/WEB-INF/data/install/ENABLE_INSTALLER
