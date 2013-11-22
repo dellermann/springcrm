@@ -47,16 +47,16 @@ grails.project.dependency.resolution = {
     log 'warn' // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
 
     repositories {
+        inherits true
+
         grailsPlugins()
         grailsHome()
+        mavenLocal()
         grailsCentral()
-
-        // uncomment the below to enable remote dependency resolution
-        // from public Maven repositories
-        //mavenLocal()
         mavenCentral()
         mavenRepo 'http://mavenrepo.google-api-java-client.googlecode.com/hg/'
         mavenRepo 'http://maven.springframework.org/milestone/'
+        mavenRepo 'http://repo.grails.org/grails/core'
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -111,17 +111,17 @@ grails.project.dependency.resolution = {
             ':coffeescript-compiler:0.9.4',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-            ':hibernate:3.6.10.2',
+            ':hibernate:3.6.10.4',
             ':less-resources:1.3.3.2',
             ':mail:1.0.1',
             ':markdown:1.1.1',
-            ':quartz:1.0-RC13',
+            ':quartz:1.0.1',
             ':scaffolding:1.0.0',
-            ':searchable:0.6.5'
+            ':searchable:0.6.6'
         )
         build(
             ':standalone:1.2.3',
-            ':tomcat:7.0.42'
+            ':tomcat:7.0.47'
         )
         runtime(
             ':database-migration:1.3.8',
