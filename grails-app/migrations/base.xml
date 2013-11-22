@@ -4,7 +4,7 @@
 
  base.xml
 
- Copyright (c) 2011-2012, Daniel Ellermann
+ Copyright (c) 2011-2013, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1470,5 +1470,14 @@
       tableName="user_data_settings">
       <column name="settings" />
     </createIndex>
+  </changeSet>
+
+  <changeSet author="d.ellermann@amc-world.de" id="20131122-1">
+    <createTable tableName="hibernate_sequence">
+      <column name="next_val" type="bigint"/>
+    </createTable>
+    <insert tableName="hibernate_sequence">
+      <column name="next_val" type="bigint" valueNumeric="50000"/>
+    </insert>
   </changeSet>
 </databaseChangeLog>
