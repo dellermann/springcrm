@@ -12,7 +12,7 @@
 
   <xsl:template name="footer">
     <xsl:param name="barcode"/>
-    
+
     <fo:static-content flow-name="first-page-footer">
       <fo:table table-layout="fixed" inline-progression-dimension="100%"
         font-family="{$font.default}" font-size="{$font.size.small}"
@@ -50,7 +50,7 @@
             <fo:table-cell text-align="right">
               <fo:block>
                 <xsl:if test="key('client', 'bankCode') != ''">
-                  <xsl:text>BLZ: </xsl:text>
+                  <xsl:text>BIC: </xsl:text>
                   <xsl:value-of select="key('client', 'bankCode')"/>
                 </xsl:if>
               </fo:block>
@@ -60,7 +60,7 @@
             <fo:table-cell text-align="right">
               <fo:block>
                 <xsl:if test="key('client', 'accountNumber') != ''">
-                  <xsl:text>Kontonummer: </xsl:text>
+                  <xsl:text>IBAN: </xsl:text>
                   <xsl:value-of select="key('client', 'accountNumber')"/>
                 </xsl:if>
               </fo:block>
@@ -69,5 +69,5 @@
         </fo:table-body>
       </fo:table>
     </fo:static-content>
-	</xsl:template>
+  </xsl:template>
 </xsl:stylesheet>
