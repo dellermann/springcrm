@@ -21,10 +21,29 @@
 package org.amcworld.springcrm
 
 
+/**
+ * The class {@code InvoicingTransactionService} contains methods to work with
+ * invoicing transactions such as quotes, sales order, invoices etc.
+ *
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.2
+ */
 class InvoicingTransactionService {
 
     //-- Instance variables ---------------------
 
+    /**
+     * Populates the given invoicing transaction with the given request
+     * parameters, validates, and saves it.
+     *
+     * @param invoicingTransaction  the invoicing transaction that should be
+     *                              saved
+     * @param params                the request parameters that should be used
+     *                              to populate the invoicing transaction
+     * @return                      {@code true} if validating and saving was
+     *                              successful; {@code false} otherwise
+     */
     boolean saveInvoicingTransaction(InvoicingTransaction invoicingTransaction,
                                      def params)
     {
@@ -42,6 +61,11 @@ class InvoicingTransactionService {
             invoicingTransaction.addToItems params."items[${i}]"
         }
 
-        return invoicingTransaction.save(flush: true)
+        if (!invoicingTransaction.validate()) {
+            invoicingTransaction.discard()
+            return false
+        }
+
+        invoicingTransaction.save flush: true
     }
 }
