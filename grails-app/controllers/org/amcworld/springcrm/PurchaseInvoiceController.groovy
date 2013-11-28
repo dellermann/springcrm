@@ -93,10 +93,15 @@ class PurchaseInvoiceController {
 
     def save() {
         def purchaseInvoiceInstance = new PurchaseInvoice(params)
+        if (!purchaseInvoiceInstance.validate()) {
+            render view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
+            return
+        }
+
         purchaseInvoiceInstance.documentFile = dataFileService.storeFile(
             FILE_TYPE, params.file
         )
-        if (!purchaseInvoiceInstance.save(flush: true)) {
+        if (!purchaseInvoiceInstance.save(failOnError: true, flush: true)) {
             render view: 'create', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
         }
@@ -155,13 +160,6 @@ class PurchaseInvoiceController {
         purchaseInvoiceInstance.properties = params
 //        purchaseInvoiceInstance.items?.retainAll { it != null }
 
-        DataFile df = purchaseInvoiceInstance.documentFile
-        if (params.fileRemove == '1') {
-            purchaseInvoiceInstance.documentFile = null
-        } else if (!params.file?.empty) {
-            df = dataFileService.updateFile FILE_TYPE, df, params.file
-        }
-
         /*
          * XXX  This code is necessary because the default implementation
          *      in Grails does not work.  The above lines worked in Grails
@@ -181,7 +179,19 @@ class PurchaseInvoiceController {
             }
         }
 
-        if (!purchaseInvoiceInstance.save(flush: true)) {
+        if (!purchaseInvoiceInstance.validate()) {
+            render view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
+            return
+        }
+
+        DataFile df = purchaseInvoiceInstance.documentFile
+        if (params.fileRemove == '1') {
+            purchaseInvoiceInstance.documentFile = null
+        } else if (!params.file?.empty) {
+            df = dataFileService.updateFile FILE_TYPE, df, params.file
+        }
+
+        if (!purchaseInvoiceInstance.save(failOnError: true, flush: true)) {
             render view: 'edit', model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
         }
