@@ -110,11 +110,11 @@
           <xsl:value-of select="key('client', 'bankName')"/>
         </fo:block>
         <fo:block>
-          <xsl:text>Kontonummer: </xsl:text>
+          <xsl:text>IBAN: </xsl:text>
           <xsl:value-of select="key('client', 'accountNumber')"/>
         </fo:block>
         <fo:block space-after="{$space.default}mm">
-          <xsl:text>Bankleitzahl: </xsl:text>
+          <xsl:text>BIC: </xsl:text>
           <xsl:value-of select="key('client', 'bankCode')"/>
         </fo:block>
       </xsl:if>
