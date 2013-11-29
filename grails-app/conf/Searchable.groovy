@@ -34,7 +34,7 @@
  *                      {@code System.properties['user.home']}
  * @param appName       the Grails environment (i. e., "development", "test",
  *                      "production"); same as
- *                      {@code System.properties['grails.env']}
+ *                      {@code System.properties['app.name']}
  * @param appVersion    the version of your application
  * @param grailsEnv     the Grails environment (i. e., "development", "test",
  *                      "production"); same as
@@ -47,15 +47,30 @@
  */
 searchable {
 
+    StringBuilder path = new StringBuilder()
+    String s = System.properties[appName + '.dir.base']
+    if (s) {
+        path << s
+    } else {
+        s = System.getenv('SPRINGCRM_HOME')
+        if (s) {
+            path << s
+        } else {
+            path << userHome << '/.' << appName
+        }
+    }
+    path << '/searchable-index/'
+    path << System.properties['grails.env']
+
     /**
      * The location of the Compass index
      *
      * Examples: "/home/app/compassindex", "ram://app-index" or null to use the
      * default
      *
-     * The default is "${user.home}/.grails/projects/${app.name}/searchable-index/${grails.env}"
+     * The default is "${userHome}/.grails/projects/${appName}/searchable-index/${grailsEnv}"
      */
-    compassConnection = new File("${System.properties[appName + '.dir.base'] ? System.properties[appName + '.dir.base'] : (System.getenv('SPRINGCRM_HOME') ? System.getenv('SPRINGCRM_HOME') : (userHome + '/.' + appName))}/searchable-index/${grailsEnv}").absolutePath
+    compassConnection = new File(path.toString()).absolutePath
 
     /**
      * Any settings you wish to pass to Compass
@@ -145,7 +160,10 @@ searchable {
      * http://grails.org/Searchable+Plugin
      */
     defaultMethodOptions = [
-        search: [reload: false, escape: false, offset: 0, max: 10, defaultOperator: 'and'],
+        search: [
+            reload: false, escape: false, offset: 0, max: 10,
+            defaultOperator: 'and'
+        ],
         suggestQuery: [userFriendly: true]
     ]
 
@@ -156,7 +174,7 @@ searchable {
      * If false, you must manage the index manually using index/unindex/reindex
      *
      * XXX This value had to be set to false because the plugin threw an error
-     * 	   when one-to-many relations were saved
+     *      when one-to-many relations were saved
      */
     mirrorChanges = false
 
@@ -185,7 +203,7 @@ environments {
     /* development environment */
     development {
         searchable {
-            bulkIndexOnStartup = false
+//            bulkIndexOnStartup = true
         }
     }
 

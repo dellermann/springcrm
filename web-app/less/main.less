@@ -1511,8 +1511,32 @@ li:hover .item-actions {
 }
 
 /* search results */
-.searchresults-number {
+.search-results-number {
   margin-bottom: 2em;
+}
+.search-results-results {
+  h2 {
+    margin-bottom: 1em;
+  }
+  ul {
+    margin-left: 0;
+  }
+  li {
+    list-style: none;
+    margin-bottom: 1em;
+  }
+  a {
+    color: @color-default;
+    font-size: 108%;
+
+    &:hover {
+      color: @color-link;
+    }
+  }
+  .icon-fixed-width {
+    font-size: 116%;
+    padding-right: .4em !important;
+  }
 }
 
 

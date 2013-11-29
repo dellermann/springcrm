@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class InvoicingItem {
 
@@ -45,7 +45,6 @@ class InvoicingItem {
     static mapping = {
         description type: 'text'
     }
-    static searchable = [only: ['number', 'name', 'description']]
     static transients = ['total']
 
 

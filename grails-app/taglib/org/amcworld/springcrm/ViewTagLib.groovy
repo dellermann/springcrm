@@ -611,6 +611,91 @@ class ViewTagLib {
     }
 
     /**
+     * Renders the given search results.
+     *
+     * @attr searchResult REQUIRED  the search results that should be rendered
+     * @attr query                  the search query string
+     * @attr parseException         an exception that occurred while parsing the query string
+     * @since                       1.4
+     */
+    def searchResults = { attrs, body ->
+        String query = attrs.query?.toString()?.trim()
+        def searchResult = attrs.searchResult
+        if (!searchResult) return
+
+        List results = searchResult.results
+        def parseException = attrs.parseException
+
+        StringBuilder buf = new StringBuilder()
+        if (query) {
+            if (results) {
+                buf << '<p class="search-results-number">'
+                buf << message(
+                    code: 'searchable.results.number',
+                    args: [
+                        query, searchResult.total, searchResult.offset + 1,
+                        results.size() + searchResult.offset
+                    ]
+                )
+                buf << '</p>'
+            } else if (!parseException) {
+                buf << '<p class="search-results-number search-results-not-found">'
+                buf << message(
+                    code: 'searchable.results.notFound', args: [query]
+                )
+                buf << '</p>'
+            }
+        }
+
+        if (parseException) {
+            buf << '<p class="search-results-error">'
+            buf << message(code: 'searchable.results.error', args: [query])
+            buf << '</p>'
+        }
+
+        if (results) {
+            Class<?> currentClass = results.first().class
+            String className = GrailsNameUtils.getPropertyName(currentClass)
+            buf << '<div class="search-results-results">'
+            buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
+            buf << '<ul>'
+            for (def result in results) {
+                Class<?> clazz = result.class
+                className = GrailsNameUtils.getPropertyName(clazz)
+                if (clazz != currentClass) {
+                    currentClass = clazz
+                    buf << '</ul>'
+                    buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
+                    buf << '<ul>'
+                }
+                buf << '<li>'
+                buf << link(
+                    controller: className, action: 'show', id: result.id
+                ) {
+                    dataTypeIcon(controller: className) + ' ' + result
+                }
+                buf << '<span class="item-actions">'
+                buf << link(
+                    controller: className, action: 'edit', id: result.id,
+                    params: [returnUrl: url()], 'class': 'bubbling-icon',
+                    title: message(code: 'default.btn.edit')
+                ) { '<i class="icon-edit"></i>' }
+                buf << '</span>'
+                buf << '</li>'
+            }
+            buf << '</ul></div>'
+            buf << '<div class="paginator">'
+            buf << paginate(
+                total: searchResult.total, action: 'index',
+                params: [q: query]
+            )
+            buf << '</div>'
+        }
+
+        out << buf
+    }
+
+    /**
      * Generates the URL of the current page including all request parameters.
      */
     def url = { attrs, body ->

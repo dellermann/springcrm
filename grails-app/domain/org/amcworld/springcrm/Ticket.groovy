@@ -65,7 +65,7 @@ class Ticket {
     }
     static embedded = ['address']
     static hasMany = [logEntries: TicketLogEntry]
-    static searchable = true
+    static searchable = [except: 'initialMessage']
     static transients = [
         'customerName', 'fullName', 'fullNumber', 'initialMessage',
         'messageText'

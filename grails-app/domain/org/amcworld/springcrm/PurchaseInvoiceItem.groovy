@@ -45,7 +45,6 @@ class PurchaseInvoiceItem {
     static mapping = {
         description type: 'text'
     }
-    static searchable = [only: ['number', 'name', 'description']]
     static transients = ['total']
 
 
