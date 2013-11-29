@@ -3,7 +3,7 @@
   <li>
     <g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /> <g:fieldValue bean="${invoiceInstance}" field="subject" /></g:link>
     <span class="item-actions">
-      <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" params="[returnUrl: createLink(uri: '/')]" class="bubbling-icon"><i class="icon-edit"></i></g:link>
+      <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" params="[returnUrl: createLink(uri: '/')]" class="bubbling-icon"><i class="fa fa-pencil-square-o"></i></g:link>
     </span>
     <div class="indent">
       <g:message code="invoice.for.label" />

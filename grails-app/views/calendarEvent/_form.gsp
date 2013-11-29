@@ -234,7 +234,7 @@
         <option value="{{optionValue}}" {{{selected}}}>{{value}} {{unit}}</option>
       {{/options}}
       </select>
-      <g:button color="red" size="small" icon="trash"
+      <g:button color="red" size="small" icon="trash-o"
         message="calendarEvent.reminder.delete.label" />
     </li>
     {{/reminders}}

@@ -78,8 +78,8 @@
                   <li>
                     <g:link controller="${item.controller}" action="show" id="${item.itemId}"><g:dataTypeIcon controller="${item.controller}" /> <g:fieldValue bean="${item}" field="title" /></g:link>
                     <span class="item-actions">
-                      <g:link controller="${item.controller}" action="edit" id="${item.itemId}" params="[returnUrl: url()]" class="bubbling-icon" title="${message(code: 'project.item.edit.label')}"><i class="icon-edit"></i></g:link>
-                      <g:link action="removeItem" id="${item.id}" class="item-delete-btn bubbling-icon" title="${message(code: 'project.item.remove.label')}"><i class="icon-remove"></i></g:link>
+                      <g:link controller="${item.controller}" action="edit" id="${item.itemId}" params="[returnUrl: url()]" class="bubbling-icon" title="${message(code: 'project.item.edit.label')}"><i class="fa fa-pencil-square-o"></i></g:link>
+                      <g:link action="removeItem" id="${item.id}" class="item-delete-btn bubbling-icon" title="${message(code: 'project.item.remove.label')}"><i class="fa fa-times"></i></g:link>
                     </span>
                   </li>
                   </g:each>
@@ -130,7 +130,7 @@
             <div class="field search-field">
               <input type="text" id="selector-search"
                 placeholder="${message(code: 'default.search.label')}" />
-              <span class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="icon-search"></i></span>
+              <span class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="fa fa-search"></i></span>
             </div>
             <div class="field submit-field">
               <g:button elementId="select-project-item-add-btn" color="green"

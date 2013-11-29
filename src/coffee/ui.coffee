@@ -282,7 +282,7 @@ AutoCompleteExWidget =
     if opts.combobox
       el.after $("<a/>",
           click: (event) => @_onClickComboboxBtn event
-          html: '<i class="icon-caret-down"></i>'
+          html: '<i class="fa fa-caret-down"></i>'
         )
 
   _getValueInput: ->
@@ -745,7 +745,7 @@ SPRINGCRM.page = (->
       .each ->
         $html = $("html")
         $(this).wrap("""<div class="textarea-container"/>""")
-          .after("""<i class="icon-question-sign markdown-help-btn"></i>""")
+          .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
     $(document).on "click", ".markdown-help-btn", ->
       $ = jQuery
 

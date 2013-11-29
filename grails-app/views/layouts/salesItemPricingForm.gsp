@@ -107,7 +107,7 @@
             <input type="hidden" name="pricing.items[${i}].relToPos"
               value="${item.relToPos ?: ''}" />
             <span style="display: ${item.type == PricingItemType.relativeToPos ? 'block' : 'none'};">
-              <i class="icon-anchor bubbling-icon"
+              <i class="fa fa-anchor bubbling-icon"
                 title="${message(code: 'salesItem.pricing.relativeToPos.finder', default: 'Select reference row')}"></i>
               <strong>${item.relToPos ? item.relToPos + 1 : ''}</strong>
             </span>
@@ -132,10 +132,10 @@
             <g:currency />
           </td>
           <td class="action-buttons">
-            <i class="icon-arrow-up bubbling-icon up-btn"
+            <i class="fa fa-arrow-up bubbling-icon up-btn"
               title="${message(code: 'default.btn.up')}"></i>
-            <i class="icon-arrow-down bubbling-icon down-btn" title="${message(code: 'default.btn.down')}"></i>
-            <i class="icon-trash bubbling-icon remove-btn" title="${message(code: 'default.btn.remove')}"></i>
+            <i class="fa fa-arrow-down bubbling-icon down-btn" title="${message(code: 'default.btn.down')}"></i>
+            <i class="fa fa-trash-o bubbling-icon remove-btn" title="${message(code: 'default.btn.remove')}"></i>
           </td>
         </tr>
         </g:each>
@@ -303,7 +303,7 @@
   </table>
 </fieldset>
 <div class="table-actions toggle-visibility hidden">
-  <g:button elementId="remove-pricing" color="red" size="medium" icon="remove"
+  <g:button elementId="remove-pricing" color="red" size="medium" icon="times"
     message="salesItem.pricing.removePricing" />
 </div>
 <script id="add-pricing-item-template" type="text/html">
@@ -320,13 +320,13 @@
     </td>
     <td class="type">
       <g:select id="" name="pricing.items[{{index}}].type"
-        from="${PricingItemType.values()}" 
+        from="${PricingItemType.values()}"
         valueMessagePrefix="salesItem.pricing.type" />
     </td>
     <td class="relative-to-pos">
       <input type="hidden" name="pricing.items[{{index}}].relToPos" />
       <span style="display: none;">
-        <i class="icon-anchor bubbling-icon"
+        <i class="fa fa-anchor bubbling-icon"
           title="${message(code: 'salesItem.pricing.relativeToPos.finder', default: 'Select reference row')}"></i>
         <strong></strong>
       </span>
@@ -348,10 +348,10 @@
       <output>{{zero}}</output> <g:currency />
     </td>
     <td class="action-buttons">
-      <i class="icon-arrow-up bubbling-icon up-btn"
+      <i class="fa fa-arrow-up bubbling-icon up-btn"
         title="${message(code: 'default.btn.up')}"></i>
-      <i class="icon-arrow-down bubbling-icon down-btn" title="${message(code: 'default.btn.down')}"></i>
-      <i class="icon-trash bubbling-icon remove-btn" title="${message(code: 'default.btn.remove')}"></i>
+      <i class="fa fa-arrow-down bubbling-icon down-btn" title="${message(code: 'default.btn.down')}"></i>
+      <i class="fa fa-trash-o bubbling-icon remove-btn" title="${message(code: 'default.btn.remove')}"></i>
     </td>
   </tr>
 </script>

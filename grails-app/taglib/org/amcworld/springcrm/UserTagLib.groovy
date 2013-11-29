@@ -40,7 +40,7 @@ class UserTagLib {
                 code: 'default.welcome', args: [session.user.fullName]
             )
             out << link(controller: 'user', action: 'logout') {
-                '<i class="icon-off"></i> ' + message(code: 'default.logout')
+                '<i class="fa fa-power-off"></i> ' + message(code: 'default.logout')
             }
         }
     }

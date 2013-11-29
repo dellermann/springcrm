@@ -14,7 +14,7 @@
     </form>
     <g:form action="selectorList">
       <g:textField name="search" value="${params.search}" placeholder="${message(code: 'default.search.label')}" />
-      <button type="submit" class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="icon-search"></i></button>
+      <button type="submit" class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="fa fa-search"></i></button>
     </g:form>
   </div>
 </nav>

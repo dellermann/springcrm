@@ -27,18 +27,18 @@
           message="default.button.create.label" /></li>
         <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
         <li><g:button action="edit" id="${dunningInstance?.id}" color="green"
-          icon="edit" message="default.button.edit.label" /></li>
+          icon="pencil-square-o" message="default.button.edit.label" /></li>
         </g:if>
         <g:else>
         <li><g:button action="editPayment" id="${dunningInstance?.id}"
-          color="green" icon="edit"
+          color="green" icon="pencil-square-o"
           message="invoicingTransaction.button.editPayment.label" /></li>
         </g:else>
         <li><g:button action="copy" id="${dunningInstance?.id}" color="blue"
-          icon="copy" message="default.button.copy.label" /></li>
+          icon="files-o" message="default.button.copy.label" /></li>
         <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
         <li><g:button action="delete" id="${dunningInstance?.id}" color="red"
-          class="delete-btn" icon="trash"
+          class="delete-btn" icon="trash-o"
           message="default.button.delete.label" /></li>
         </g:if>
       </ul>

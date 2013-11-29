@@ -40,15 +40,15 @@ class ViewTagLib {
         calendarEvent: 'calendar',
         call: 'phone',
         creditMemo: 'money',
-        document: 'file-alt',
+        document: 'file-o',
         dunning: 'suitcase',
-        helpdesk: 'question-sign',
+        helpdesk: 'question-circle',
         invoice: 'euro',
         note: 'pencil',
-        organization: 'group',
+        organization: 'users',
         person: 'male',
         product: 'cog',
-        project: 'lightbulb',
+        project: 'lightbulb-o',
         purchaseInvoice: 'shopping-cart',
         quote: 'dollar',
         salesOrder: 'list',
@@ -127,7 +127,7 @@ class ViewTagLib {
      *
      * @attr color      the color of the button, e. g. white, green, blue
      * @attr size       the size of the button, e. g. small, medium
-     * @attr icon       the icon which should be used, e. g. save, trash
+     * @attr icon       the icon which should be used, e. g. floppy-o, trash-o
      * @attr class      further CSS classes to apply
      * @attr message    a message code which is used to render the buttont text; if specified, the body will not be evaluated
      * @attr action     the name of the action to use in the link, if not specified the default action will be linked
@@ -160,7 +160,7 @@ class ViewTagLib {
         buf = new StringBuilder()
         s = attrs.remove('icon')
         if (s) {
-            buf << '<i class="icon-' << s << '"></i>'
+            buf << '<i class="fa fa-' << s << '"></i>'
         }
         s = attrs.remove('message')
         if (s) {
@@ -256,7 +256,7 @@ class ViewTagLib {
     def dataTypeIcon = { attrs, body ->
         String controller = attrs.controller
         String icon = CONTROLLER_ICON_MAPPING[controller]
-        out << "<i class='icon-fixed-width icon-" << icon << "'"
+        out << "<i class='fa fa-fw fa-" << icon << "'"
         out << " title='" << message(code: "${controller}.label") << "'"
         out << "></i> "
     }
@@ -512,7 +512,7 @@ class ViewTagLib {
         buf = new StringBuilder()
         s = attrs.remove('icon')
         if (s) {
-            buf << '<i class="icon-' << s << '"></i>'
+            buf << '<i class="fa fa-' << s << '"></i>'
         }
         s = attrs.remove('message')
         def args = attrs.remove('args')
@@ -542,7 +542,7 @@ class ViewTagLib {
             out << '>' << content << '</span>'
         }
         out << '<span class="' << baseCssClass << ' dropdown">'
-        out << '<i class="icon-caret-down"></i></span>'
+        out << '<i class="fa fa-caret-down"></i></span>'
         out << '<ul class="dropdown-menu">' << body() << '</ul>'
         out << '</div>'
     }
@@ -681,7 +681,7 @@ class ViewTagLib {
                         controller: className, action: 'edit', id: result.id,
                         params: [returnUrl: url()], 'class': 'bubbling-icon',
                         title: message(code: 'default.btn.edit')
-                    ) { '<i class="icon-edit"></i>' }
+                    ) { '<i class="fa fa-pencil-square-o"></i>' }
                     buf << '</span>'
                     buf << '</li>'
                 }
@@ -698,13 +698,13 @@ class ViewTagLib {
                     buf << '<span class="search-results-score" title="'
                     buf << score << ' %">'
                     for (int j = 0; j < fulls; j++) {
-                        buf << '<i class="icon-star"></i>'
+                        buf << '<i class="fa fa-star"></i>'
                     }
                     if (fulls * 2 != halfs) {
-                        buf << '<i class="icon-star-half-full"></i>'
+                        buf << '<i class="fa fa-star-half-o"></i>'
                     }
                     for (int j = 0; j < empties; j++) {
-                        buf << '<i class="icon-star-empty"></i>'
+                        buf << '<i class="fa fa-star-o"></i>'
                     }
                     buf << '</span>'
                     buf << link(
@@ -720,7 +720,7 @@ class ViewTagLib {
                         controller: className, action: 'edit', id: result.id,
                         params: [returnUrl: url()], 'class': 'bubbling-icon',
                         title: message(code: 'default.btn.edit')
-                    ) { '<i class="icon-edit"></i>' }
+                    ) { '<i class="fa fa-pencil-square-o"></i>' }
                     buf << '</span>'
                     buf << '</li>'
                     i++

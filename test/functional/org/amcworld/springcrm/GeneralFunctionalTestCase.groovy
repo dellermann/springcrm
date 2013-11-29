@@ -134,14 +134,14 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             [
                 action: 'edit',
                 color: 'green',
-                icon: 'edit',
+                icon: 'pencil-square-o',
                 id: id,
                 label: 'Bearbeiten'
             ],
             [
                 action: 'copy',
                 color: 'blue',
-                icon: 'copy',
+                icon: 'files-o',
                 id: id,
                 label: 'Kopieren'
             ],
@@ -154,7 +154,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
                 },
                 color: 'red',
                 cssClasses: 'delete-btn',
-                icon: 'trash',
+                icon: 'trash-o',
                 id: id,
                 label: 'Löschen'
             ]
@@ -247,7 +247,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
      *                        <li>{@code cssClasses}. Any additional CSS
      *                        classes the button must have.</li>
      *                        <li>{@code icon}. The icon (without the
-     *                        {@code icon-} prefix) which must be inside the
+     *                        {@code fa-} prefix) which must be inside the
      *                        button.</li>
      *                        <li>{@code id}. The ID to use in the URL which
      *                        is called when clicking the button.</li>
@@ -278,7 +278,10 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
             assert getUrl(url) == link.getAttribute('href')
             assert button.label == link.text
             if (button.icon) {
-                assert "icon-${button.icon}" in link.findElement(By.tagName('i')).getAttribute('class')
+                List<String> cssClasses =
+                    link.findElement(By.tagName('i')).getAttribute('class').tokenize()
+                assert 'fa' in cssClasses
+                assert "fa-${button.icon}".toString() in cssClasses
             }
             if (button.check) {
                 button.check link

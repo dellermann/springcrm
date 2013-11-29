@@ -33,7 +33,7 @@
           data-panel-url="${createLink(controller: panelDef.controller, action: panelDef.action)}">
           <header>
             <h3>${panelDef.getTitle(locale)}</h3>
-            <g:link controller="overview" action="removePanel"><i class="icon-remove icon-large"></i></g:link>
+            <g:link controller="overview" action="removePanel"><i class="fa fa-times fa-lg"></i></g:link>
           </header>
           <div style="${panelDef.style}"></div>
         </div>

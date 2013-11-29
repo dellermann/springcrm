@@ -63,13 +63,13 @@ OverviewPanelsWidget =
         hoverClass: "drag-hover"
         out: (event, ui) => @_onDropOut event, ui
         over: (event, ui) => @_onDropOver event, ui
-    
-    @$addPanelLink = $(opts.addPanelLink).on "click", (event) => 
+
+    @$addPanelLink = $(opts.addPanelLink).on "click", (event) =>
       @_onClickAddPanel event
     @$columnParent = $columns.parent()
 
   # Initializes the given overview page panel.
-  # 
+  #
   # @param {jQuery} $panel  the given panel
   #
   _initPanel: ($panel) ->
@@ -177,8 +177,8 @@ OverviewPanelsWidget =
   _onDrop: (event, ui) ->
     $col = $(event.target)
     opts = @options
-    
-    # check whether a new panel has been dropped 
+
+    # check whether a new panel has been dropped
     helper = ui.helper
     panelAdded = helper.attr("id").match /^add-panel-([\w\-]+)$/
     if panelAdded
@@ -193,7 +193,7 @@ OverviewPanelsWidget =
       removePanelUrl = opts.removePanelUrl
       if removePanelUrl
         html += """
-            <a href="#{removePanelUrl}"><i class="icon-remove icon-large"></i></a>
+            <a href="#{removePanelUrl}"><i class="fa fa-times fa-lg"></i></a>
 """
       html += """
           </header>
@@ -211,8 +211,8 @@ OverviewPanelsWidget =
       helper.css
         left: 0
         top: 0
-    
-    # place the moved panel 
+
+    # place the moved panel
     $dropBefore = @$dropBefore
     if $dropBefore
       $dropBefore.before $panel unless $dropBefore.get(0) is $panel.get(0)

@@ -26,7 +26,7 @@
           <header>
             <h3><g:message code="ticket.create.title" /></h3>
             <div class="buttons">
-              <button type="submit" class="button green small"><i class="icon-save"></i> <g:message code="default.button.save.label" /></button>
+              <button type="submit" class="button green small"><i class="fa fa-floppy-o"></i> <g:message code="default.button.save.label" /></button>
             </div>
           </header>
           <div class="form-fragment">
@@ -72,7 +72,7 @@
           </div>
         </fieldset>
         <div class="buttons">
-          <button type="submit" class="button green"><i class="icon-save"></i> <g:message code="default.button.save.label" /></button>
+          <button type="submit" class="button green"><i class="fa fa-floppy-o"></i> <g:message code="default.button.save.label" /></button>
         </div>
       </g:uploadForm>
     </div>
@@ -86,7 +86,7 @@
           <header>
             <h3><g:message code="ticket.sendMessage.title" /></h3>
             <div class="buttons">
-              <button type="submit" class="button green small"><i class="icon-envelope-alt"></i> <g:message code="default.button.send.label" /></button>
+              <button type="submit" class="button green small"><i class="fa fa-envelope-o"></i> <g:message code="default.button.send.label" /></button>
             </div>
           </header>
           <div class="form-fragment">
@@ -117,8 +117,8 @@
           </div>
         </fieldset>
         <div class="buttons">
-          <button type="submit" class="button green"><i class="icon-envelope-alt"></i> <g:message code="default.button.send.label" /></button>
-          <g:button color="red" class="cancel-btn" icon="remove"
+          <button type="submit" class="button green"><i class="fa fa-envelope-o"></i> <g:message code="default.button.send.label" /></button>
+          <g:button color="red" class="cancel-btn" icon="times"
             message="default.button.cancel.label" />
         </div>
       </g:uploadForm>
@@ -187,11 +187,11 @@
             <td class="date ticket-date-created"><g:formatDate date="${ticketInstance.dateCreated}" formatName="default.format.datetime" /></td>
             <td class="action-buttons">
               <g:button color="white" size="small" class="send-btn"
-                icon="envelope-alt" message="ticket.sendMessage.label" />
+                icon="envelope-o" message="ticket.sendMessage.label" />
               <g:button controller="ticket" action="frontendCloseTicket"
                 id="${ticketInstance.id}"
                 params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-                color="red" size="small" class="close-btn" icon="ok"
+                color="red" size="small" class="close-btn" icon="check"
                 message="ticket.close.label" />
             </td>
           </tr>
@@ -261,7 +261,7 @@
               <g:button controller="ticket" action="frontendResubmitTicket"
                 id="${ticketInstance.id}"
                 params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-                color="orange" size="small" icon="share"
+                color="orange" size="small" icon="share-square-o"
                 message="ticket.resubmission.label" />
             </td>
           </tr>

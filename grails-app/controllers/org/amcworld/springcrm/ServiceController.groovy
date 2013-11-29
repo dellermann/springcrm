@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse
 /**
  * The class {@code ServiceController} contains actions which manage services.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class ServiceController {
 
@@ -199,7 +199,7 @@ class ServiceController {
     }
 
     def get(Long id) {
-        def serviceInstance = Service.get(id)
+        def serviceInstance = Service.read(id)
         if (!serviceInstance) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return

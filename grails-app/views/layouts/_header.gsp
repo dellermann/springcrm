@@ -4,7 +4,7 @@
     <p><g:loginControl /></p>
     <form action="${createLink(controller: 'searchable', action: 'index')}"
       id="search-area">
-      <span title="${message(code: 'default.search.button.label', default: 'Search')}"><i class="icon-search"></i></span>
+      <span title="${message(code: 'default.search.button.label', default: 'Search')}"><i class="fa fa-search"></i></span>
       <g:textField id="search" name="q" value="${params.q}"
         placeholder="${message(code: 'default.search.label')}" />
       <g:hiddenField name="defaultOperator" value="${params.defaultOperator ?: 'and'}" />

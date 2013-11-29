@@ -6,9 +6,9 @@
         data-item-disabled="{{disabled}}">
         <span class="value">{{name}}</span>
         {{^disabled}}
-          <i class="icon-trash delete-btn"
+          <i class="fa fa-trash-o delete-btn"
             title="${message(code: 'default.btn.remove')}"></i>
-          <i class="icon-edit edit-btn"
+          <i class="fa fa-pencil-square-o edit-btn"
             title="${message(code: 'default.btn.edit')}"></i>
         {{/disabled}}
       </li>

@@ -29,7 +29,7 @@
       <g:if test="${user.admin || (user == ticketInstance.assignedUser && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])}">
       <li>
         <g:button elementId="send-message-to-customer-btn"
-          color="white" size="medium" icon="envelope-alt"
+          color="white" size="medium" icon="envelope-o"
           message="ticket.sendMessage.toCustomer.label"
           data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
@@ -38,7 +38,7 @@
       </g:if>
       <g:if test="${otherUsers}">
       <li id="send-message-to-user-menu">
-        <g:menuButton color="white" size="medium" icon="envelope-alt"
+        <g:menuButton color="white" size="medium" icon="envelope-o"
           message="ticket.sendMessage.toUser.label"
           data-title="${message(code: 'ticket.sendMessage.toUser.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}">
@@ -77,7 +77,7 @@
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
       <li><g:button action="changeStage" id="${ticketInstance?.id}"
         params="[stage: TicketStage.resubmitted]" color="orange"
-        size="medium" icon="share"
+        size="medium" icon="share-square-o"
         message="ticket.changeStage.resubmitted" /></li>
       </g:if>
     </ul>

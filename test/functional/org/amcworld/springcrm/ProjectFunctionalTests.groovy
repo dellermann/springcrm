@@ -925,7 +925,10 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis.''')
             assert link.getAttribute('href').startsWith(getUrl(expectedItem.url))
             String icon = expectedItem.icon
             if (icon) {
-                assert link.findElement(By.tagName('i')).getAttribute('class').contains("icon-${icon}")
+                List<String> cssClasses =
+                    link.findElement(By.tagName('i')).getAttribute('class').tokenize()
+                assert 'fa' in cssClasses
+                assert "fa-${icon}".toString() in cssClasses
             }
             assert expectedItem.label == link.text
             String editUrl = expectedItem.editUrl

@@ -146,11 +146,11 @@
         <g:if test="${params.controller != 'purchase-invoice'}">
         <span class="button-icon-group">
           <g:ifModuleAllowed modules="product">
-          <i class="icon-cog bubbling-icon select-btn-products"
+          <i class="fa fa-cog bubbling-icon select-btn-products"
             title="${message(code: 'invoicingTransaction.selector.products.title')}"></i>
           </g:ifModuleAllowed>
           <g:ifModuleAllowed modules="service">
-          <i class="icon-laptop bubbling-icon select-btn-services"
+          <i class="fa fa-laptop bubbling-icon select-btn-services"
             title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
           </g:ifModuleAllowed>
         </span>
@@ -181,11 +181,11 @@
         </div>
       </td>
       <td class="action-buttons">
-        <i class="icon-arrow-up up-btn bubbling-icon"
+        <i class="fa fa-arrow-up up-btn bubbling-icon"
           title="${message(code: 'default.btn.up')}"></i>
-        <i class="icon-arrow-down down-btn bubbling-icon"
+        <i class="fa fa-arrow-down down-btn bubbling-icon"
           title="${message(code: 'default.btn.down')}"></i>
-        <i class="icon-trash remove-btn bubbling-icon"
+        <i class="fa fa-trash-o remove-btn bubbling-icon"
           title="${message(code: 'default.btn.remove')}"></i>
       </td>
     </tr>
@@ -264,11 +264,11 @@
       <g:if test="${params.controller != 'purchase-invoice'}">
       <span class="button-icon-group">
         <g:ifModuleAllowed modules="product">
-        <i class="icon-cog bubbling-icon select-btn-products"
+        <i class="fa fa-cog bubbling-icon select-btn-products"
           title="${message(code: 'invoicingTransaction.selector.products.title')}"></i>
         </g:ifModuleAllowed>
         <g:ifModuleAllowed modules="service">
-        <i class="icon-laptop bubbling-icon select-btn-services"
+        <i class="fa fa-laptop bubbling-icon select-btn-services"
           title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
         </g:ifModuleAllowed>
       </span>
@@ -297,11 +297,11 @@
       </div>
     </td>
     <td class="action-buttons">
-      <i class="icon-arrow-up up-btn bubbling-icon"
+      <i class="fa fa-arrow-up up-btn bubbling-icon"
         title="${message(code: 'default.btn.up')}"></i>
-      <i class="icon-arrow-down down-btn bubbling-icon"
+      <i class="fa fa-arrow-down down-btn bubbling-icon"
         title="${message(code: 'default.btn.down')}"></i>
-      <i class="icon-trash remove-btn bubbling-icon"
+      <i class="fa fa-trash-o remove-btn bubbling-icon"
         title="${message(code: 'default.btn.remove')}"></i>
     </td>
   </tr>

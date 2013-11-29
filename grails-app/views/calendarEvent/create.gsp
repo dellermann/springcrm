@@ -12,8 +12,8 @@
     <h1><g:message code="${entitiesName}" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
-        <li><g:button color="green" class="submit-btn" icon="save" data-form="calendarEvent-form" message="default.button.save.label" /></li> 
-        <li><g:calendarViewBackLink color="red" icon="remove-circle"
+        <li><g:button color="green" class="submit-btn" icon="floppy-o" data-form="calendarEvent-form" message="default.button.save.label" /></li>
+        <li><g:calendarViewBackLink color="red" icon="times-circle-o"
           message="default.button.cancel.label" /></li>
       </ul>
     </nav>

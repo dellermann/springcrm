@@ -28,8 +28,8 @@
     <ul>
       <li>
         <g:button elementId="send-message-btn"
-          color="white" size="medium" icon="envelope-alt"
-          message="ticket.sendMessage.label" 
+          color="white" size="medium" icon="envelope-o"
+          message="ticket.sendMessage.label"
           data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
           data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
           />
@@ -38,14 +38,14 @@
       <li><g:button controller="ticket" action="frontendCloseTicket"
         id="${ticketInstance.id}"
         params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-        color="red" size="medium" class="close-btn" icon="ok"
+        color="red" size="medium" class="close-btn" icon="check"
         message="ticket.close.label" /></li>
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
       <li><g:button controller="ticket" action="frontendResubmitTicket"
         id="${ticketInstance.id}"
         params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-        color="orange" size="medium" icon="share"
+        color="orange" size="medium" icon="share-square-o"
         message="ticket.resubmission.label" /></li>
       </g:if>
     </ul>

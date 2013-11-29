@@ -10,7 +10,7 @@
   </div>
   <ul class="document-preview-links">
     <li class="document-delete">
-      <g:button color="red" size="small" icon="trash"
+      <g:button color="red" size="small" icon="trash-o"
         message="purchaseInvoice.documentFile.delete" />
     </li>
   </ul>

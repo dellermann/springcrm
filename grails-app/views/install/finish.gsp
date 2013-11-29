@@ -11,7 +11,7 @@
       <ul id="toolbar">
         <li><g:button action="createAdmin" color="white" icon="arrow-left"
           message="install.btn.previous.label" /></li>
-        <li><g:button action="finishSave" color="green" icon="ok"
+        <li><g:button action="finishSave" color="green" icon="check"
           message="install.btn.finish.label" /></li>
       </ul>
     </nav>

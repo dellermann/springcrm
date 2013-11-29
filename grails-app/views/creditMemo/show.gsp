@@ -19,18 +19,18 @@
           message="default.button.create.label" /></li>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
         <li><g:button action="edit" id="${creditMemoInstance?.id}"
-          color="green" icon="edit" message="default.button.edit.label" /></li>
+          color="green" icon="pencil-square-o" message="default.button.edit.label" /></li>
         </g:if>
         <g:else>
         <li><g:button action="editPayment" id="${creditMemoInstance?.id}"
-          color="green" icon="edit"
+          color="green" icon="pencil-square-o"
           message="invoicingTransaction.button.editPayment.label" /></li>
         </g:else>
         <li><g:button action="copy" id="${creditMemoInstance?.id}" color="blue"
-          icon="copy" message="default.button.copy.label" /></li>
+          icon="files-o" message="default.button.copy.label" /></li>
         <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
         <li><g:button action="delete" id="${creditMemoInstance?.id}" color="red"
-          class="delete-btn" icon="trash"
+          class="delete-btn" icon="trash-o"
           message="default.button.delete.label" /></li>
         </g:if>
       </ul>

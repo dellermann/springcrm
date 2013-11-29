@@ -318,14 +318,14 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
             [
                 action: 'edit',
                 color: 'green',
-                icon: 'edit',
+                icon: 'pencil-square-o',
                 id: id,
                 label: 'Bearbeiten'
             ],
             [
                 action: 'copy',
                 color: 'blue',
-                icon: 'copy',
+                icon: 'files-o',
                 id: id,
                 label: 'Kopieren'
             ],
@@ -338,7 +338,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
                 },
                 color: 'red',
                 cssClasses: 'delete-btn',
-                icon: 'trash',
+                icon: 'trash-o',
                 id: id,
                 label: 'Löschen'
             ]

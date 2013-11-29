@@ -1,7 +1,7 @@
 <nav>
   <ul id="main-menu">
     <li>
-      <g:link uri="/"><i class="icon-home"></i> <g:message code="menu.home" default="Home" /></g:link>
+      <g:link uri="/"><i class="fa fa-home"></i> <g:message code="menu.home" default="Home" /></g:link>
     </li>
     <g:ifControllerAllowed controllers="organization person purchaseInvoice">
     <li>

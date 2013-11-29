@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
  * The class {@code ProductController} contains actions which manage products.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class ProductController {
 
@@ -200,7 +200,7 @@ class ProductController {
     }
 
     def get(Long id) {
-        def productInstance = Product.get(id)
+        def productInstance = Product.read(id)
         if (!productInstance) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return

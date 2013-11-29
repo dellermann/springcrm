@@ -21,19 +21,19 @@
     </g:else>
     <p>
       <g:button action="settingsGoogleAuthRequest" color="green"
-        icon="signin" message="user.settings.googleAuth.authorize" />
+        icon="sign-in" message="user.settings.googleAuth.authorize" />
       <g:if test="${authorized}">
-      <g:button elementId="google-auth-revoke" color="red" icon="signout"
+      <g:button elementId="google-auth-revoke" color="red" icon="sign-out"
         message="user.settings.googleAuth.revoke" />
       </g:if>
-      <g:button action="settingsIndex" color="white" icon="remove-circle"
+      <g:button action="settingsIndex" color="white" icon="times-circle-o"
         message="default.btn.cancel" />
     </p>
     <div id="dialog-confirm" class="dialog"
       title="${message(code: 'user.settings.googleAuth.revoke.confirm.title')}"
       data-submit-url="${createLink(action: 'settingsGoogleAuthRevoke')}">
       <div class="dialog-with-icon">
-        <i class="icon-warning-sign"></i>
+        <i class="fa fa-exclamation-triangle"></i>
         <div>
           <p><g:message code="user.settings.googleAuth.revoke.confirm.message" /></p>
         </div>
