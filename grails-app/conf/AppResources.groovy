@@ -261,6 +261,12 @@ modules = {
         resource '/js/app/sales-item-pricing.js'
     }
 
+    searchResults {
+        dependsOn 'jquery-ui'
+
+        resource url: '/js/app/search.js'
+    }
+
     selectBoxIt {
         dependsOn 'jquery-ui'
 

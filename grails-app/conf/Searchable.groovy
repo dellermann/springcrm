@@ -203,7 +203,7 @@ environments {
     /* development environment */
     development {
         searchable {
-//            bulkIndexOnStartup = true
+            bulkIndexOnStartup = false
         }
     }
 

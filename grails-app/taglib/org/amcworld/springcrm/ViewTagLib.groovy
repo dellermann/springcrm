@@ -625,6 +625,7 @@ class ViewTagLib {
 
         List results = searchResult.results
         def parseException = attrs.parseException
+        String sort = attrs.sort ?: 'alias'
 
         StringBuilder buf = new StringBuilder()
         if (query) {
@@ -654,36 +655,78 @@ class ViewTagLib {
         }
 
         if (results) {
-            Class<?> currentClass = results.first().class
-            String className = GrailsNameUtils.getPropertyName(currentClass)
             buf << '<div class="search-results-results">'
-            buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
-            buf << '<ul>'
-            for (def result in results) {
-                Class<?> clazz = result.class
-                className = GrailsNameUtils.getPropertyName(clazz)
-                if (clazz != currentClass) {
-                    currentClass = clazz
-                    buf << '</ul>'
-                    buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
-                    buf << '<ul>'
+            if (sort == 'alias') {
+                Class<?> currentClass = results.first().class
+                String className = GrailsNameUtils.getPropertyName(currentClass)
+                buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
+                buf << '<ul>'
+                for (def result in results) {
+                    Class<?> clazz = result.class
+                    className = GrailsNameUtils.getPropertyName(clazz)
+                    if (clazz != currentClass) {
+                        currentClass = clazz
+                        buf << '</ul>'
+                        buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
+                        buf << '<ul>'
+                    }
+                    buf << '<li>'
+                    buf << link(
+                        controller: className, action: 'show', id: result.id
+                    ) {
+                        dataTypeIcon(controller: className) + ' ' + result
+                    }
+                    buf << '<span class="item-actions">'
+                    buf << link(
+                        controller: className, action: 'edit', id: result.id,
+                        params: [returnUrl: url()], 'class': 'bubbling-icon',
+                        title: message(code: 'default.btn.edit')
+                    ) { '<i class="icon-edit"></i>' }
+                    buf << '</span>'
+                    buf << '</li>'
                 }
-                buf << '<li>'
-                buf << link(
-                    controller: className, action: 'show', id: result.id
-                ) {
-                    dataTypeIcon(controller: className) + ' ' + result
+                buf << '</ul>'
+            } else {
+                int i = 0
+                for (def result in results) {
+                    String className = GrailsNameUtils.getPropertyName(result.class)
+                    buf << '<li>'
+                    int score = Math.round(searchResult.scores[i] * 100)
+                    int halfs = Math.ceil(score / 10)
+                    int fulls = Math.floor(halfs / 2)
+                    int empties = Math.floor((10 - halfs) / 2)
+                    buf << '<span class="search-results-score" title="'
+                    buf << score << ' %">'
+                    for (int j = 0; j < fulls; j++) {
+                        buf << '<i class="icon-star"></i>'
+                    }
+                    if (fulls * 2 != halfs) {
+                        buf << '<i class="icon-star-half-full"></i>'
+                    }
+                    for (int j = 0; j < empties; j++) {
+                        buf << '<i class="icon-star-empty"></i>'
+                    }
+                    buf << '</span>'
+                    buf << link(
+                        controller: className, action: 'show', id: result.id
+                    ) {
+                        dataTypeIcon(controller: className) + ' ' + result
+                    }
+                    buf << '<span class="search-results-type">('
+                    buf << message(code: "${className}.label")
+                    buf << ')</span>'
+                    buf << '<span class="item-actions">'
+                    buf << link(
+                        controller: className, action: 'edit', id: result.id,
+                        params: [returnUrl: url()], 'class': 'bubbling-icon',
+                        title: message(code: 'default.btn.edit')
+                    ) { '<i class="icon-edit"></i>' }
+                    buf << '</span>'
+                    buf << '</li>'
+                    i++
                 }
-                buf << '<span class="item-actions">'
-                buf << link(
-                    controller: className, action: 'edit', id: result.id,
-                    params: [returnUrl: url()], 'class': 'bubbling-icon',
-                    title: message(code: 'default.btn.edit')
-                ) { '<i class="icon-edit"></i>' }
-                buf << '</span>'
-                buf << '</li>'
             }
-            buf << '</ul></div>'
+            buf << '</div>'
             buf << '<div class="paginator">'
             buf << paginate(
                 total: searchResult.total, action: 'index',
