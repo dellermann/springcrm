@@ -68,13 +68,6 @@ environments {
         }
     }
 
-    /* live environment on the AMC World server */
-    live {
-        dataSource {
-            jndiName = 'java:comp/env/jdbc/springcrmDataSource'
-        }
-    }
-
     /* standalone environment for demonstration purposes */
     standalone {
         dataSource {
@@ -83,12 +76,7 @@ environments {
             username = appName
             password = ''
             properties {
-                connectionInitSqls = [
-                    'SET REFERENTIAL_INTEGRITY FALSE'
-                ]
-                validationQuery = 'select 1'
-                testWhileIdle = true
-                timeBetweenEvictionRunsMillis = 60000
+                initSQL = 'SET REFERENTIAL_INTEGRITY FALSE'
             }
         }
     }

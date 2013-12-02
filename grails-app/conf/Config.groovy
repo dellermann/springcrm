@@ -211,9 +211,6 @@ environments {
     /* production (deployment) environment */
     production {}
 
-    /* live enviroment on the AMC World server */
-    live {}
-
     /* CloudFoundry environment */
     cloud {}
 
@@ -236,11 +233,18 @@ grails.logging.jul.usebridge = false
 /* loggers */
 log4j = {
     appenders {
-        String logDir = grails.util.Environment.warDeployed ? System.getProperty('catalina.home') + '/logs' : 'target'
-        file name: 'stacktrace',
-        file: "${logDir}/stacktrace.log",
-        layout: pattern(conversionPattern: "'%d [%t] %-5p %c{2} %x - %m%n'")
-//        console name: 'stdout', layout: pattern(conversionPattern: '%c{2} %m%n')
+        String logDir = grails.util.Environment.warDeployed \
+            ? System.properties['catalina.home'] + '/logs' \
+            : 'target'
+        rollingFile(
+            name: 'stacktrace', maxBackupIndex: 10,
+            file: "${logDir}/stacktrace.log",
+            layout: pattern(conversionPattern: "'%d [%t] %-5p %c{2} %x - %m%n'")
+        )
+//        console(
+//            name: 'stdout',
+//            layout: pattern(conversionPattern: '%c{2} %m%n')
+//        )
     }
 
     error(
@@ -284,6 +288,18 @@ log4j = {
     )
 
     environments {
+        standalone {
+            appenders {
+                rollingFile(
+                    name: 'stacktrace', maxBackupIndex: 10,
+                    file: "${System.properties['user.home']}/.springcrm/stacktrace.log",
+                    layout: pattern(conversionPattern: "'%d [%t] %-5p %c{2} %x - %m%n'")
+                )
+            }
+            root {
+                warn 'stacktrace'
+            }
+        }
         test {
             debug 'grails.app.controllers.org.amcworld.springcrm'
         }
