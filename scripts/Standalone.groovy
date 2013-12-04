@@ -35,7 +35,10 @@ target(main: 'Builds a standalone version of SpringCRM.') {
         filterSet {
             filter(token: 'VERSION', value: grailsAppVersion)
         }
-        fileset(dir: "${basedir}/resources/standalone", includes: "*")
+        fileset(
+            dir: "${basedir}/resources/standalone", includes: '*',
+            excludes: '*.xcf'
+        )
     }
     ant.copy(
         file: "${grailsSettings.projectTargetDir}/standalone-${grailsAppVersion}.jar",
