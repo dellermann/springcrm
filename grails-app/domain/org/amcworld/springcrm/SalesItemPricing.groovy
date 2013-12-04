@@ -48,7 +48,7 @@ class SalesItemPricing {
     }
     static transients = [
         'discountPercentAmount', 'step1TotalPrice', 'step1UnitPrice',
-        'step2Total', 'step2TotalUnitPrice', 'step3TotalPrice'
+        'step2Total', 'step2TotalUnitPrice'
     ]
 
 
@@ -61,6 +61,60 @@ class SalesItemPricing {
     List<SalesItemPricingItem> items
 
 
+    //-- Properties -----------------------------
+
+    /**
+     * Gets the amount of discount for this sales item in step 2.
+     *
+     * @return  the discount amount
+     */
+    double getDiscountPercentAmount() {
+        step1TotalPrice * discountPercent / 100.0d
+    }
+
+    /**
+     * Gets the total price of this sales item in step 1 as sum of all pricing
+     * items.
+     *
+     * @return  the total price of the sales item in step 1
+     */
+    double getStep1TotalPrice() {
+        computeCurrentSum()
+    }
+
+    /**
+     * Gets the unit price of this sales item in step 1 as ratio between the
+     * sum of all pricing items and the quantity.
+     *
+     * @return  the unit price of the sales item in step 1; {@code null} if
+     *          quantity is zero
+     */
+    Double getStep1UnitPrice() {
+        (quantity == 0.0d) ? null : step1TotalPrice / quantity
+    }
+
+    /**
+     * Gets the total of this sales item in step 2 which is the total price of
+     * step 1 minus discount plus adjustment.
+     *
+     * @return  the total of the sales item in step 2
+     */
+    double getStep2Total() {
+        step1TotalPrice - discountPercentAmount + (adjustment ?: 0.0d)
+    }
+
+    /**
+     * Gets the total unit price of this sales item in step 2 as ratio between
+     * the total of step 2 and the quantity.
+     *
+     * @return  the total unit price of the sales item in step 2; {@code null}
+     *          if quantity is zero
+     */
+    Double getStep2TotalUnitPrice() {
+        (quantity == 0.0d) ? null : step2Total / quantity
+    }
+
+
     //-- Public methods -------------------------
 
     /**
@@ -70,7 +124,7 @@ class SalesItemPricing {
      * @return  the boolean value of this pricing
      */
     boolean asBoolean() {
-        return !!items
+        !!items
     }
 
     /**
@@ -87,7 +141,7 @@ class SalesItemPricing {
                 sum += computeTotalOfItem(i)
             }
         }
-        return sum
+        sum
     }
 
     /**
@@ -104,7 +158,7 @@ class SalesItemPricing {
             }
         }
 
-        return -1
+        -1
     }
 
     /**
@@ -115,11 +169,8 @@ class SalesItemPricing {
      */
     double computeTotalOfItem(int pos) {
         SalesItemPricingItem item = items[pos]
-        if (PricingItemType.sum == item.type) {
-            return computeCurrentSum(pos - 1)
-        } else {
-            return item.quantity * computeUnitPriceOfItem(pos)
-        }
+        (PricingItemType.sum == item.type) ? computeCurrentSum(pos - 1) \
+            : item.quantity * computeUnitPriceOfItem(pos)
     }
 
     /**
@@ -151,83 +202,18 @@ class SalesItemPricing {
         }
     }
 
-    /**
-     * Gets the amount of discount for this sales item in step 2.
-     *
-     * @return  the discount amount
-     */
-    double getDiscountPercentAmount() {
-        return step1TotalPrice * discountPercent / 100.0d
-    }
-
-    /**
-     * Gets the total price of this sales item in step 1 as sum of all pricing
-     * items.
-     *
-     * @return  the total price of the sales item in step 1
-     */
-    double getStep1TotalPrice() {
-        return computeCurrentSum()
-    }
-
-    /**
-     * Gets the unit price of this sales item in step 1 as ratio between the
-     * sum of all pricing items and the quantity.
-     *
-     * @return  the unit price of the sales item in step 1; {@code null} if
-     *          quantity is zero
-     */
-    Double getStep1UnitPrice() {
-        return (quantity == 0.0d) ? null : step1TotalPrice / quantity
-    }
-
-    /**
-     * Gets the total of this sales item in step 2 which is the total price of
-     * step 1 minus discount plus adjustment.
-     *
-     * @return  the total of the sales item in step 2
-     */
-    double getStep2Total() {
-        return step1TotalPrice - discountPercentAmount + (adjustment ?: 0.0d)
-    }
-
-    /**
-     * Gets the total unit price of this sales item in step 2 as ratio between
-     * the total of step 2 and the quantity.
-     *
-     * @return  the total unit price of the sales item in step 2; {@code null}
-     *          if quantity is zero
-     */
-    Double getStep2TotalUnitPrice() {
-        return (quantity == 0.0d) ? null : step2Total / quantity
-    }
-
-    /**
-     * Gets the total price of this sales item in step 3 which is the same as
-     * the total of step 2.
-     *
-     * @return  the total price of the sales item in step 3
-     */
-    double getStep3TotalPrice() {
-        return step2Total
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof SalesItemPricing) ? obj.id == id : false
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SalesItemPricing) {
-            return obj.id == id
-        } else {
-            return false
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return (id ?: 0i) as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-        return "Sales item pricing ${id}"
+        "Sales item pricing ${id}"
     }
 }

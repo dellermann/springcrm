@@ -97,45 +97,45 @@ class SalesItem {
     }
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
 
     String getFullNumber() {
-        return seqNumberService?.format(getClass(), number)
+        seqNumberService?.format getClass(), number
     }
 
     double getUnitPrice() {
         if (pricing) {
-            this.unitPrice = quantity ? pricing.step3TotalPrice / quantity : 0.0d
+            double qty = (unit == pricing.unit) ? pricing.quantity : quantity
+            this.unitPrice = qty ? pricing.step2Total / qty : 0.0d
         }
-        return this.unitPrice
+        this.unitPrice
     }
 
     double getTotal() {
-        return quantity * unitPrice
+        quantity * unitPrice
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SalesItem) {
-            return obj.id == id
-        } else {
-            return false
-        }
-    }
 
-    @Override
-    public int hashCode() {
-        return id as int
-    }
-
-    @Override
-    String toString() {
-        return name ?: ''
-    }
+    //-- Public methods -------------------------
 
     def beforeInsert() {
         if (number == 0) {
             number = seqNumberService.nextNumber(getClass())
         }
+    }
+
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof SalesItem) ? obj.id == id : false
+    }
+
+    @Override
+    int hashCode() {
+        (id ?: 0i) as int
+    }
+
+    @Override
+    String toString() {
+        name ?: ''
     }
 }

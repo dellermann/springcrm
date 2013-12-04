@@ -202,6 +202,7 @@ SalesItemPricing =
     $("#step1-pricing-unit").on "change", => @_updateItems()
     $("#step2").on "change", => @_updateSalesPricing()
     $("#step3-quantity").on "change", => @_updateSalesPricing()
+    $("#step3-unit").on "change", => @_updateSalesPricing()
 
   # Disables all options of the type selector in the given item which are not
   # available in the current state.  The method disables options if the item
@@ -746,22 +747,19 @@ SalesItemPricing =
     $ = jQuery
 
     sum = @_getCurrentSum()
-    sumText = sum.formatCurrencyValue()
     @_getRows().each (idx, elem) =>
       @_updateItem $(elem)
 
-    $("#step1-total-price").text sumText
-    $("#step2-total-price").text sumText
+    $("#step1-total-price, #step2-total-price").text sum.formatCurrencyValue()
     quantity = $("#step1-pricing-quantity").val().parseNumber()
-    s = quantity.format()
-    $("#step2-quantity").text s
-    $("#step2-total-quantity").text s
-    s = $("#step1-pricing-unit option:selected").text()
-    $("#step2-unit").text s
-    $("#step2-total-unit").text s
-    s = (sum / quantity).formatCurrencyValue()
-    $("#step1-unit-price").text s
-    $("#step2-unit-price").text s
+    quantityFmt = quantity.format()
+    $("#step2-quantity, #step2-total-quantity").text quantityFmt
+    unit = $("#step1-pricing-unit option:selected").text()
+    $("#step2-unit, #step2-total-unit").text unit
+    $("#step1-total-price-quantity").text "(#{quantityFmt} #{unit})"
+    $("#step1-unit-price-quantity").text "(1 #{unit})"
+    unitPrice = sum / quantity
+    $("#step1-unit-price, #step2-unit-price").text if isNaN unitPrice then '---' else unitPrice.formatCurrencyValue()
     @_updateSalesPricing()
 
   # Updates the class names for each row in the pricing table.  If a row is
@@ -789,20 +787,27 @@ SalesItemPricing =
   #
   _updateSalesPricing: ->
     discountPercent = $("#step2-discount-percent").val().parseNumber()
-    totalPrice = $("#step2-total-price").text().parseNumber()
-    discountPercentAmount = discountPercent * totalPrice / 100
+    step2TotalPrice = $("#step2-total-price").text().parseNumber()
+    discountPercentAmount = discountPercent * step2TotalPrice / 100
     $("#step2-discount-percent-amount").text discountPercentAmount.formatCurrencyValue()
 
     adjustment = $("#step2-adjustment").val().parseNumber()
-    totalPrice += adjustment - discountPercentAmount
-    s = totalPrice.formatCurrencyValue()
-    $("#step2-total").text s
-    $("#step3-total-price").text s
+    step2TotalPrice += adjustment - discountPercentAmount
+    step2TotalPriceFmt = step2TotalPrice.formatCurrencyValue()
+    $("#step2-total").text step2TotalPriceFmt
 
-    qty = $("#step1-pricing-quantity").val().parseNumber()
-    $("#step2-total-unit-price").text if qty is 0 then "---" else (totalPrice / qty).formatCurrencyValue()
+    step1Qty = $("#step1-pricing-quantity").val().parseNumber()
+    step1Unit = $("#step1-pricing-unit option:selected").val()
     step3Qty = $("#step3-quantity").val().parseNumber()
-    $("#step3-unit-price").text if step3Qty is 0 then "---" else (totalPrice / step3Qty).formatCurrencyValue()
+    step3Unit = $("#step3-unit option:selected").val()
+
+    step2TotalUnitPrice = step2TotalPrice / step1Qty
+    $("#step2-total-unit-price").text step2TotalUnitPrice.formatCurrencyValue()
+    qty = if step1Unit is step3Unit then step1Qty else step3Qty
+    step3UnitPrice = step2TotalPrice / qty
+    $("#step3-unit-price").text step3UnitPrice.formatCurrencyValue()
+    step3TotalPrice = step3UnitPrice * step3Qty
+    $("#step3-total-price").text step3TotalPrice.formatCurrencyValue()
 
 
 $.widget "springcrm.salesitempricing", SalesItemPricing

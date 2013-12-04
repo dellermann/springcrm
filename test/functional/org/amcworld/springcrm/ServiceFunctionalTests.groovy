@@ -143,6 +143,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         assert '100,00' == getStep1TableRowTotal(1)
         assert '400,00' == step1Total
         assert '400,00' == step1UnitPrice
+        assert '(1 Einheiten)' == driver.findElement(By.id('step1-total-price-quantity')).text
+        assert '(1 Einheiten)' == driver.findElement(By.id('step1-unit-price-quantity')).text
         tr = getStep1TableRow(0)
         assert !tr.findElement(By.className('up-btn')).displayed
         assert tr.findElement(By.className('down-btn')).displayed
@@ -221,10 +223,17 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         assert '434,90' == getValue('step2-total-unit-price')
         assert '434,90' == getValue('step2-total')
         assert '---' == getValue('step3-unit-price')
-        assert '434,90' == getValue('step3-total-price')
-        driver.findElement(By.id('step3-quantity')).sendKeys '1'
-        new Select(driver.findElement(By.id('step3-unit'))).selectByValue '301'
+        assert '---' == getValue('step3-total-price')
+        WebElement input = driver.findElement(By.id('step3-quantity'))
+        input.sendKeys '1'
+        def select = new Select(driver.findElement(By.id('step3-unit')))
+        select.selectByValue '301'
         assert '434,90' == getValue('step3-unit-price')
+        assert '434,90' == getValue('step3-total-price')
+        input.clear()
+        input.sendKeys '2'
+        select.selectByValue '300'
+        assert '217,45' == getValue('step3-unit-price')
         assert '434,90' == getValue('step3-total-price')
         submitForm getUrl('/service/show/')
 
@@ -236,9 +245,9 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         assert 'S-10000' == getShowFieldText(col, 1)
         assert 'Mustervorschau' == getShowFieldText(col, 2)
         assert 'Grafik und Design' == getShowFieldText(col, 3)
-        assert '1' == getShowFieldText(col, 4)
-        assert 'Einheiten' == getShowFieldText(col, 5)
-        assert '434,90 €' == getShowFieldText(col, 6)
+        assert '2' == getShowFieldText(col, 4)
+        assert 'Stück' == getShowFieldText(col, 5)
+        assert '217,45 €' == getShowFieldText(col, 6)
         col = fieldSet.findElement(By.className('col-r'))
         assert '19 %' == getShowFieldText(col, 1)
         fieldSet = getFieldset(dataSheet, 2)
@@ -252,8 +261,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '20,00 €', '20,00 €'
         checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '20,00 €', '20,00 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '440,00 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '440,00 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (1 Einheiten)', '', '440,00 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Einheiten)', '', '440,00 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
         checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '1', 'Einheiten', '', 'zu je', '440,00 €', '440,00 €'
@@ -263,7 +272,7 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         checkStaticRowValues tfoot, 0, 'Verkaufspreis', '1', 'Einheiten', '', 'zu je', '434,90 €', '434,90 €'
         fieldSet = getFieldset(dataSheet, 5)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '1', 'Einheiten', 'zu je', '434,90 €', '434,90 €'
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '2', 'Stück', 'zu je', '217,45 €', '434,90 €'
         driver.quit()
 
         assert 1 == Service.count()
@@ -382,8 +391,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '20,00 €', '20,00 €'
         checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '20,00 €', '20,00 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '440,00 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '440,00 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (1 Einheiten)', '', '440,00 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Einheiten)', '', '440,00 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
         checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '1', 'Einheiten', '', 'zu je', '440,00 €', '440,00 €'
@@ -611,6 +620,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         setInputValue 'pricing.unit.id', '304'
         setStep1TableInputValue 1, 'unitPrice', '45'
         assert '90,00' == getStep1TableRowTotal(1)
+        assert '(8 Stunden)' == driver.findElement(By.id('step1-total-price-quantity')).text
+        assert '(1 Stunden)' == driver.findElement(By.id('step1-unit-price-quantity')).text
 
         assert 6 == addNewStep1TableRow()
         moveRowUp 5
@@ -733,8 +744,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Gewinn', 'relativ zur letzt. Zw.-summe', '', '5,00', '20,00 €', '20,00 €'
         checkStaticRowValues tbody, 5, '6.', '1', 'Einheit', 'Risiko', 'relativ zu Pos.', '4', '5,00', '20,00 €', '20,00 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '440,00 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '55,00 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (8 Stunden)', '', '440,00 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Stunden)', '', '55,00 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
         checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '8', 'Stunden', '', 'zu je', '55,00 €', '440,00 €'
@@ -826,6 +837,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         assert '300,00' == getStep1TableRowTotal(0)
         assert '300,00' == step1Total
         assert '300,00' == step1UnitPrice
+        assert '(1 Einheiten)' == driver.findElement(By.id('step1-total-price-quantity')).text
+        assert '(1 Einheiten)' == driver.findElement(By.id('step1-unit-price-quantity')).text
         WebElement tr = getStep1TableRow(0)
         assert !tr.findElement(By.className('up-btn')).displayed
         assert !tr.findElement(By.className('down-btn')).displayed
@@ -902,6 +915,20 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         assert '434,90' == getValue('step2-total')
         assert '434,90' == getValue('step3-unit-price')
         assert '434,90' == getValue('step3-total-price')
+        WebElement input = driver.findElement(By.id('step3-quantity'))
+        input.clear()
+        input.sendKeys '2'
+        assert '434,90' == getValue('step3-unit-price')
+        assert '869,80' == getValue('step3-total-price')
+        def select = new Select(driver.findElement(By.id('step3-unit')))
+        select.selectByValue '300'
+        assert '217,45' == getValue('step3-unit-price')
+        assert '434,90' == getValue('step3-total-price')
+        input.clear()
+        input.sendKeys '1'
+        select.selectByValue '301'
+        assert '434,90' == getValue('step3-unit-price')
+        assert '434,90' == getValue('step3-total-price')
         submitForm getUrl('/service/show/')
 
         assert 'Dienstleistung Mustervorschau wurde geändert.' == flashMessage
@@ -928,8 +955,8 @@ class ServiceFunctionalTests extends SalesItemTestCase {
         checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '20,00 €', '20,00 €'
         checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '20,00 €', '20,00 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis', '', '440,00 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis', '', '440,00 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (1 Einheiten)', '', '440,00 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Einheiten)', '', '440,00 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
         checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '1', 'Einheiten', '', 'zu je', '440,00 €', '440,00 €'

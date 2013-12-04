@@ -138,7 +138,7 @@ Number::format = (n = null) ->
 # @since            1.3
 #
 Number::formatCurrencyValue = ->
-  @format numFractions
+  if isNaN(this) or not isFinite(this) then '---' else @format numFractions
 
 # Rounds this number to the given number of fraction digits.
 #

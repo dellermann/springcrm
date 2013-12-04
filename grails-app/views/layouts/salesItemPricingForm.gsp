@@ -64,7 +64,10 @@
       </thead>
       <tfoot>
         <tr>
-          <td class="label" colspan="7"><g:message code="salesItem.pricing.step1.total.label" default="Total price" /></td>
+          <td class="label" colspan="7">
+            <g:message code="salesItem.pricing.step1.total.label" default="Total price" />
+            <span id="step1-total-price-quantity"></span>
+          </td>
           <td></td>
           <td class="currency number">
             <output id="step1-total-price"><g:formatNumber number="${salesItem.pricing?.step1TotalPrice}" minFractionDigits="2" /></output>
@@ -73,7 +76,10 @@
           <td></td>
         </tr>
         <tr class="step1-unit-price">
-          <td class="label" colspan="7"><g:message code="salesItem.pricing.calculatedUnitPrice.label" default="Calculated unit price" /></td>
+          <td class="label" colspan="7">
+            <g:message code="salesItem.pricing.calculatedUnitPrice.label" default="Calculated unit price" />
+            <span id="step1-unit-price-quantity"></span>
+          </td>
           <td></td>
           <td class="currency number">
             <output id="step1-unit-price"><g:formatNumber number="${salesItem.pricing?.step1UnitPrice}" minFractionDigits="2" /></output>
@@ -295,7 +301,7 @@
           <g:currency />
         </td>
         <td class="total-price currency number">
-          <output id="step3-total-price"><g:formatNumber number="${salesItem.pricing?.step3TotalPrice}" minFractionDigits="2" /></output>
+          <output id="step3-total-price"><g:formatNumber number="${salesItem.total}" minFractionDigits="2" /></output>
           <g:currency />
         </td>
       </tr>

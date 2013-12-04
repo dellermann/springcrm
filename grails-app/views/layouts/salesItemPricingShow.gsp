@@ -3,8 +3,9 @@
   <header><h3><g:message code="salesItem.fieldset.pricing.step1.label" /></h3></header>
   <p>
     <g:message code="salesItem.pricing.step1.tableDescription" />
-    <g:formatNumber number="${salesItem.pricing.quantity}" maxFractionDigits="3" />
-    ${salesItem.pricing.unit?.encodeAsHTML()}:
+    <g:formatNumber number="${salesItem.pricing.quantity}"
+      maxFractionDigits="3" />
+    <g:fieldValue bean="${salesItem.pricing}" field="unit" />:
   </p>
   <table class="content-table price-table read-only">
     <thead>
@@ -22,12 +23,12 @@
     </thead>
     <tfoot>
       <tr>
-        <td class="label" colspan="7"><g:message code="salesItem.pricing.step1.total.label" default="Total price" /></td>
+        <td class="label" colspan="7"><g:message code="salesItem.pricing.step1.total.label" default="Total price" /> (<g:formatNumber number="${salesItem.pricing.quantity}" maxFractionDigits="3" /> <g:fieldValue bean="${salesItem.pricing}" field="unit" />)</td>
         <td></td>
         <td class="currency number"><g:formatCurrency number="${salesItem.pricing.step1TotalPrice}" displayZero="true" /></td>
       </tr>
       <tr class="step1-unit-price">
-        <td class="label" colspan="7"><g:message code="salesItem.pricing.calculatedUnitPrice.label" default="Calculated unit price" /></td>
+        <td class="label" colspan="7"><g:message code="salesItem.pricing.calculatedUnitPrice.label" default="Calculated unit price" /> (1 <g:fieldValue bean="${salesItem.pricing}" field="unit" />)</td>
         <td></td>
         <td class="currency number"><g:formatCurrency number="${salesItem.pricing.step1UnitPrice}" displayZero="true" /></td>
       </tr>
@@ -136,7 +137,7 @@
         <td class="unit"><g:fieldValue bean="${salesItem}" field="unit" /></td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
         <td class="unit-price currency number"><g:formatCurrency number="${salesItem.unitPrice}" displayZero="true" /></td>
-        <td class="total-price currency number"><g:formatCurrency number="${salesItem.pricing.step3TotalPrice}" displayZero="true" /></td>
+        <td class="total-price currency number"><g:formatCurrency number="${salesItem.total}" displayZero="true" /></td>
       </tr>
     </tbody>
   </table>
