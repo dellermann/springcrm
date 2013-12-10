@@ -36,13 +36,28 @@
                     value="${currentCurrency}" />
                 </div>
               </div>
+            </div>
+          </div>
+          <div class="col col-r">
+            <div class="form">
               <div class="row">
-                <div class="label">
+                <div class="label" style="width: 20em;">
                   <label for="numFractionDigits"><g:message code="config.numFractionDigits.label" default="Num. of fraction digits" /></label>
                 </div>
                 <div class="field">
                   <g:select name="config.numFractionDigits" from="${0..10}"
-                    value="${numFractionDigits}" />
+                    value="${numFractionDigits}"
+                    title="${message(code: 'config.numFractionDigits.title')}" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="label" style="width: 20em;">
+                  <label for="numFractionDigitsExt"><g:message code="config.numFractionDigitsExt.label" default="Num. of fraction digits" /></label>
+                </div>
+                <div class="field">
+                  <g:select name="config.numFractionDigitsExt" from="${0..10}"
+                    value="${numFractionDigitsExt}"
+                    title="${message(code: 'config.numFractionDigitsExt.title')}" />
                 </div>
               </div>
             </div>

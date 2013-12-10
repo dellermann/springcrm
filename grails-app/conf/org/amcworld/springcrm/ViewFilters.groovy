@@ -28,7 +28,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * The class {@code ViewFilters} contains various filters concerning the view.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class ViewFilters {
 
@@ -43,6 +43,7 @@ class ViewFilters {
                     model.locale = userService.currentLocale.toString().replace('_', '-')
                     model.currencySymbol = userService.currencySymbol
                     model.numFractionDigits = userService.numFractionDigits
+                    model.numFractionDigitsExt = userService.numFractionDigitsExt
                     model.decimalSeparator = userService.decimalSeparator
                     model.groupingSeparator = userService.groupingSeparator
                 }

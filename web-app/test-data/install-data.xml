@@ -162,6 +162,7 @@
   <config version="0" name="ldapHost"/>
   <config version="0" name="ldapPort"/>
   <config version="0" name="numFractionDigits" value="2"/>
+  <config version="0" name="numFractionDigitsExt" value="2"/>
 
   <!-- Client data -->
   <config version="0" name="configName" value="Agentur Kampe"/>

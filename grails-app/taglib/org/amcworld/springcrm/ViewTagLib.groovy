@@ -338,16 +338,16 @@ class ViewTagLib {
      * @attr groupingUsed       whether or not grouping will be used in this format; defaults to true
      * @attr displayZero        if true zero is displayed as number, otherwise an empty string is generated; defaults to false
      * @attr numberOnly         if true the formatted value is display without the currency symbol; defaults to false
+     * @attr external           if true the value is formatted with the number of fraction digits used in external prices
      */
     def formatCurrency = { attrs, body ->
         def number = attrs.number
         if (number || attrs.displayZero) {
             Locale locale = userService.currentLocale
             Currency currency = getCurrency(locale)
-            Integer minFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
-            if (minFractionDigits == null) {
-                minFractionDigits = currency.defaultFractionDigits
-            }
+            int minFractionDigits = attrs.external \
+                ? userService.numFractionDigitsExt \
+                : userService.numFractionDigits
 
             def map = new HashMap(attrs)
             map.number = number ?: 0

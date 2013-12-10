@@ -2,6 +2,7 @@
 
 <html lang="${locale}" data-currency-symbol="${currencySymbol}"
   data-num-fraction-digits="${numFractionDigits}"
+  data-num-fraction-digits-ext="${numFractionDigitsExt}"
   data-decimal-separator="${decimalSeparator}"
   data-grouping-separator="${groupingSeparator}"
   data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">

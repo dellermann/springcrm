@@ -47,7 +47,7 @@
           <td class="status sales-order-stage"><g:fieldValue bean="${salesOrderInstance}" field="stage" /></td>
           <td class="date sales-order-doc-date"><g:formatDate date="${salesOrderInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="date sales-order-due-date"><g:formatDate date="${salesOrderInstance?.dueDate}" formatName="default.format.date" /></td>
-          <td class="currency sales-order-total"><g:formatCurrency number="${salesOrderInstance?.total}" displayZero="true" /></td>
+          <td class="currency sales-order-total"><g:formatCurrency number="${salesOrderInstance?.total}" displayZero="true" external="true" /></td>
           <td class="action-buttons">
             <g:button action="edit" id="${salesOrderInstance.id}" color="green"
               size="small" message="default.button.edit.label" />

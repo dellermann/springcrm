@@ -48,8 +48,8 @@
           <td class="status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}"><g:fieldValue bean="${dunningInstance}" field="stage" /></td>
           <td class="date dunning-doc-date"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="date dunning-subjectdue-date-payment"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-          <td class="currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" displayZero="true" /></td>
-          <td class="currency dunning-closing-balance balance-state balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" /></td>
+          <td class="currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" displayZero="true" external="true" /></td>
+          <td class="currency dunning-closing-balance balance-state balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" external="true" /></td>
           <td class="action-buttons">
             <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
             <g:button action="edit" id="${dunningInstance.id}" color="green"

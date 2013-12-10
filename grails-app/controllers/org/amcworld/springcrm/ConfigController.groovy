@@ -1,7 +1,7 @@
 /*
  * ConfigController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class ConfigController {
 
@@ -46,7 +46,7 @@ class ConfigController {
 
     //-- Instance variables ---------------------
 
-    def userService
+    UserService userService
 
 
     //-- Public methods -------------------------
@@ -65,15 +65,12 @@ class ConfigController {
         Locale locale = userService.currentLocale
         Map<String, String> currencies = userService.availableCurrencies.collectEntries { [it.currencyCode, it.currencyCode + ((it.currencyCode == it.getSymbol(locale)) ? '' : " (${it.getSymbol(locale)})")] }
         String currentCurrency = ConfigHolder.instance['currency'] as String
-        Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
-        if (numFractionDigits == null) {
-            try {
-                numFractionDigits = Currency.getInstance(currentCurrency).defaultFractionDigits
-            } catch (IllegalArgumentException e) {
-                numFractionDigits = 2
-            }
-        }
-        [currencies: currencies.sort { a, b -> a.key <=> b.key }, currentCurrency: currentCurrency, numFractionDigits: numFractionDigits]
+        [
+            currencies: currencies.sort { a, b -> a.key <=> b.key },
+            currentCurrency: currentCurrency,
+            numFractionDigits: userService.numFractionDigits,
+            numFractionDigitsExt: userService.numFractionDigitsExt
+        ]
     }
 
     def save() {

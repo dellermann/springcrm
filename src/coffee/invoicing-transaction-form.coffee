@@ -62,7 +62,10 @@ InvoicingTransactionWidget =
   # Initializes this widget.
   #
   _create: ->
-    @element.find(".price-table")
+    @element
+      .on("click", "#still-unpaid", (event) => @_onClickStillUnpaid(event))
+      .on("change", "#paymentAmount", => @_onChangePaymentAmount())
+      .find(".price-table")
         .invoicingitems()
       .end()
       .find("#organization")
@@ -75,11 +78,7 @@ InvoicingTransactionWidget =
           loadParameters: => @getOrganizationId()
         )
       .end()
-      .find("#still-unpaid")
-        .click((event) => @_onClickStillUnpaid(event))
-      .end()
       .find("#paymentAmount")
-        .change(=> @_onChangePaymentAmount())
         .trigger("change")
       .end()
       .find("#addresses")
@@ -140,7 +139,8 @@ InvoicingTransactionWidget =
   #
   _getUnpaid: ->
     paymentAmount = @element.find("#paymentAmount").val().parseNumber()
-    (@_getTotal() - paymentAmount - @_getModifiedClosingBalance()).round()
+    unpaid = @_getTotal() - paymentAmount - @_getModifiedClosingBalance()
+    unpaid.round $I.numFractionsExt
 
   # Initializes the input fields according to the stage values defined in the
   # options.
@@ -154,13 +154,18 @@ InvoicingTransactionWidget =
     opts = @options
     stageValues = opts.stageValues
     if stageValues
-      el.find("#stage")
-        .change (event) => @_onChangeStage event
+      el.on("change", "#stage", (event) => @_onChangeStage event)
       if stageValues.shipping
-        $("#shippingDate-date").change (event) => @_onChangeShippingDate event
-        el.submit => @_onSubmitForm() if opts.checkStageTransition
+        el.on(
+            "change", "#shippingDate-date",
+            (event) => @_onChangeShippingDate event
+          )
+        el.on("submit", => @_onSubmitForm()) if opts.checkStageTransition
       if stageValues.payment
-        $("#paymentDate-date").change (event) => @_onChangePaymentDate event
+        el.on(
+            "change", "#paymentDate-date",
+            (event) => @_onChangePaymentDate event
+          )
     this
 
   # Called if the payment amount is changed.  The method sets a CSS class to
@@ -169,18 +174,16 @@ InvoicingTransactionWidget =
   #
   _onChangePaymentAmount: ->
     val = @_getUnpaid()
-    if val > 0
-      cls = "still-unpaid-unpaid"
-    else if val < 0
-      cls = "still-unpaid-too-much"
-    else
-      cls = "still-unpaid-paid"
+    cls = switch
+      when val > 0 then "still-unpaid-unpaid"
+      when val < 0 then "still-unpaid-too-much"
+      else "still-unpaid-paid"
 
     @element.find("#still-unpaid")
       .removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much")
       .addClass(cls)
       .find("output")
-        .text(val.formatCurrencyValue())
+        .text(val.formatCurrencyValueExt())
 
   # Called if the payment date is changed.  The method also changes the stage
   # of the invoicing transaction to "payment" if it is below "payment".
@@ -190,7 +193,7 @@ InvoicingTransactionWidget =
   _onChangePaymentDate: (event) ->
     $stage = @element.find("#stage")
     v = @options.stageValues.payment
-    $stage.val v if $(event.target).val() isnt "" and $stage.val() < v
+    $stage.val v if $(event.currentTarget).val() isnt "" and $stage.val() < v
 
   # Called if the shipping date is changed.  The method also changes the stage
   # of the invoicing transaction to "shipping" if it is below "shipping".
@@ -200,24 +203,23 @@ InvoicingTransactionWidget =
   _onChangeShippingDate: (event) ->
     $stage = @element.find("#stage")
     v = @options.stageValues.shipping
-    $stage.val v if $(event.target).val() isnt "" and $stage.val() < v
+    $stage.val v if $(event.currentTarget).val() isnt "" and $stage.val() < v
 
   # Called if the user changes the stage of the invoicing transaction.  The
   # method populates the shipping date or payment date field according to the
   # selection.
   #
   # @param {Object} event the event data
+  # @return {Boolean}     `true` to allow event bubbling
   #
   _onChangeStage: (event) ->
     $ = jQuery
 
     stageValues = @options.stageValues
     $input = null
-    switch parseInt $(event.target).val(), 10
-      when stageValues.shipping
-        $input = $("#shippingDate-date")
-      when stageValues.payment
-        $input = $("#paymentDate-date")
+    switch parseInt $(event.currentTarget).val(), 10
+      when stageValues.shipping then $input = $("#shippingDate-date")
+      when stageValues.payment then $input = $("#paymentDate-date")
     $input.datepicker("setDate", new Date()).trigger("change") if $input
     true
 
@@ -230,10 +232,13 @@ InvoicingTransactionWidget =
   #
   _onClickStillUnpaid: (event) ->
     if @_getUnpaid() > 0
-      val = @_getTotal() - @_getModifiedClosingBalance($(event.target))
-      $paymentAmount = @element.find("#paymentAmount")
+      d = $I.numFractionsExt
+      total = @_getTotal().round(d)
+      bal = @_getModifiedClosingBalance($(event.currentTarget)).round(d)
+      val = total - bal
       if val
-        $paymentAmount.val(val.formatCurrencyValue())
+        @element.find("#paymentAmount")
+          .val(val.formatCurrencyValueExt())
           .trigger("change")
     false
 

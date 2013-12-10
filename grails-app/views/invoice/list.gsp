@@ -48,8 +48,8 @@
           <td class="status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>
           <td class="date invoice-doc-date"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="date invoice-due-date-payment"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
-          <td class="currency invoice-total"><g:formatCurrency number="${invoiceInstance?.total}" displayZero="true" /></td>
-          <td class="currency invoice-closing-balance balance-state balance-state-${invoiceInstance?.balanceColor}"><g:formatCurrency number="${invoiceInstance?.closingBalance}" displayZero="true" /></td>
+          <td class="currency invoice-total"><g:formatCurrency number="${invoiceInstance?.total}" displayZero="true" external="true" /></td>
+          <td class="currency invoice-closing-balance balance-state balance-state-${invoiceInstance?.balanceColor}"><g:formatCurrency number="${invoiceInstance?.closingBalance}" displayZero="true" external="true" /></td>
           <td class="action-buttons">
             <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
             <g:button action="edit" id="${invoiceInstance.id}" color="green"

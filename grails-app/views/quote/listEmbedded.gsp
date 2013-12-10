@@ -21,7 +21,7 @@
       <td class="status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>
       <td class="date quote-doc-date"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
       <td class="date quote-shipping-date"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
-      <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" displayZero="true" /></td>
+      <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" displayZero="true" external="true" /></td>
       <td class="action-buttons">
         <g:link controller="quote" action="edit" id="${quoteInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
         <g:link controller="quote" action="delete" id="${quoteInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>

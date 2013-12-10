@@ -24,26 +24,26 @@ package org.amcworld.springcrm
 /**
  * The class {@code CreditMemo} represents a credit memo.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class CreditMemo extends InvoicingTransaction {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		stage()
-		paymentDate(nullable: true)
-		paymentAmount(min: 0.0d, widget: 'currency')
-		paymentMethod(nullable: true)
-		invoice(nullable: true)
-		dunning(nullable: true)
+        stage()
+        paymentDate nullable: true
+        paymentAmount min: 0.0d, widget: 'currency'
+        paymentMethod nullable: true
+        invoice nullable: true
+        dunning nullable: true
     }
-	static belongsTo = [invoice: Invoice, dunning: Dunning]
-	static mapping = {
-		stage column: 'credit_memo_stage_id'
-	}
-	static searchable = true
+    static belongsTo = [invoice: Invoice, dunning: Dunning]
+    static mapping = {
+        stage column: 'credit_memo_stage_id'
+    }
+    static searchable = true
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'
@@ -54,45 +54,45 @@ class CreditMemo extends InvoicingTransaction {
 
     def userService
 
-	CreditMemoStage stage
-	Date paymentDate
-	double paymentAmount
-	PaymentMethod paymentMethod
+    CreditMemoStage stage
+    Date paymentDate
+    double paymentAmount
+    PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
 
-	CreditMemo() {
+    CreditMemo() {
         type = 'C'
     }
 
-	CreditMemo(Invoice i) {
-		super(i)
+    CreditMemo(Invoice i) {
+        super(i)
         type = 'C'
         headerText = ''
         footerText = ''
-		invoice = i
+        invoice = i
         i.creditMemos << this
-	}
+    }
 
-	CreditMemo(Dunning d) {
-		super(d)
+    CreditMemo(Dunning d) {
+        super(d)
         type = 'C'
         headerText = ''
         footerText = ''
-		dunning = d
+        dunning = d
         d.creditMemos << this
-	}
+    }
 
-	CreditMemo(CreditMemo cm) {
-		super(cm)
+    CreditMemo(CreditMemo cm) {
+        super(cm)
         type = 'C'
-		invoice = cm.invoice
-		dunning = cm.dunning
-	}
+        invoice = cm.invoice
+        dunning = cm.dunning
+    }
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
 
     /**
      * Gets the balance of this credit memo, that is the difference between the
@@ -103,7 +103,8 @@ class CreditMemo extends InvoicingTransaction {
      * @see     #getClosingBalance()
      */
     double getBalance() {
-        return total - paymentAmount
+        int d = userService.numFractionDigitsExt
+        total.round(d) - paymentAmount.round(d)
     }
 
     /**
@@ -120,7 +121,7 @@ class CreditMemo extends InvoicingTransaction {
      * @see     Dunning#getClosingBalance()
      */
     double getClosingBalance() {
-        return (invoice ? invoice : dunning)?.closingBalance ?: 0.0d
+        ((invoice ? invoice : dunning)?.closingBalance ?: 0.0d).round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -138,7 +139,7 @@ class CreditMemo extends InvoicingTransaction {
         } else if (closingBalance < 0.0d) {
             color = 'green'
         }
-        return color
+        color
     }
 
     /**
@@ -149,7 +150,7 @@ class CreditMemo extends InvoicingTransaction {
      * @since   1.3
      */
     double getModifiedClosingBalance() {
-        (balance - closingBalance).round(userService.numFractionDigits)
+        (balance - closingBalance).round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -164,6 +165,6 @@ class CreditMemo extends InvoicingTransaction {
         if ((id >= 2502) && (id <= 2504)) {     // cancelled, paid, delivered
             color = (closingBalance >= 0.0d) ? 'green' : 'red'
         }
-        return color
+        color
     }
 }

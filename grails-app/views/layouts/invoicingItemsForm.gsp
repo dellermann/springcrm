@@ -113,7 +113,8 @@
       <td colspan="5" class="label"><label><g:message code="${pageProperty(name: 'className')}.total.label" default="Total" /></label></td>
       <td></td>
       <td class="currency number">
-        <output id="total-price"><g:formatNumber type="number" number="0" minFractionDigits="${numFractionDigits}" groupingUsed="true" /></output>
+        <output id="total-price"><g:formatCurrency number="0" numberOnly="true"
+          displayZero="true" external="true" /></output>
         <g:currency />
       </td>
       <td></td>

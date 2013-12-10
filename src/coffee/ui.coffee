@@ -715,58 +715,73 @@ SPRINGCRM.page = (->
       $(this).parent().get(0).submit()
       false
     $("#quick-access").change onChangeQuickAccess
-    $("#print-btn").on "click", -> win.print()
-    $(".button-group .dropdown").on "click", ->
-      $btnGroup = $(this).parents(".button-group")
-      unless $btnGroup.is ".open"
-        $(".button-group.open").removeClass "open"
-      $btnGroup.toggleClass "open"
-      $document.one "click", ->
-        $btnGroup.removeClass "open"
-        true
-      false
-    $(".submit-btn").click onSubmitForm
-    $(".delete-btn").deleteConfirm()
 
-    $(".date-input-date").on("change", onChangeDateInput)
-      .datepicker
+    $("#main-container").on("focusin", ".currency :input, :input.currency", ->
+        $this = $(this)
+        val = $this.val().parseNumber()
+        $this.val (if val then val.format() else "")
+      )
+      .on("focusout", ".currency :input, :input.currency", ->
+        $this = $(this)
+        val = $this.val().parseNumber()
+        $this.val if $this.is ".currency-ext" then val.formatCurrencyValueExt() else val.formatCurrencyValue()
+      )
+      .on("click", ".button-group .dropdown", ->
+        $btnGroup = $(this).parents(".button-group")
+        unless $btnGroup.is ".open"
+          $(".button-group.open").removeClass "open"
+        $btnGroup.toggleClass "open"
+        $document.one "click", ->
+          $btnGroup.removeClass "open"
+          true
+        false
+      )
+      .on("click", ".submit-btn", ->
+        $ = jQuery
+
+        $("##{$(this).data("form")}").submit()
+        false
+      )
+      .on("click", "#print-btn", -> win.print())
+      .on("change", ".date-input-date, .date-input-time", onChangeDateInput)
+      .on("click", ".markdown-help-btn", ->
+        $ = jQuery
+
+        $markdownHelp = $("#markdown-help")
+        if $markdownHelp.length
+          $markdownHelp.dialog "open"
+        else
+          $("<div id='markdown-help'/>").appendTo("body")
+            .load $("html").data("load-markdown-help-url"), ->
+              $(this).dialog
+                title: $L("help.markdown.title")
+                width: "35em"
+        false
+      )
+      .on("change", "#autoNumber", ->
+        $("#number").toggleEnable not @checked
+      )
+      .on("click", "#spinner", ->
+        $(this).css "display", "none"
+      )
+
+    $(".delete-btn").deleteConfirm()
+    $(".date-input-date").datepicker
         changeMonth: true
         changeYear: true
         gotoCurrent: true
         selectOtherMonths: true
         showButtonPanel: true
         showOtherMonths: true
-    $(".date-input-time").on("change", onChangeDateInput)
-      .autocomplete
+    $(".date-input-time").autocomplete
         select: onSelectTimeValue
         source: timeValues
-
     $("textarea").autosize()
       .each ->
         $html = $("html")
         $(this).wrap("""<div class="textarea-container"/>""")
           .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
-    $(document).on "click", ".markdown-help-btn", ->
-      $ = jQuery
-
-      $markdownHelp = $("#markdown-help")
-      if $markdownHelp.length
-        $markdownHelp.dialog "open"
-      else
-        $("<div id='markdown-help'/>").appendTo("body")
-          .load $("html").data("load-markdown-help-url"), ->
-            $(this).dialog
-              title: $L("help.markdown.title")
-              width: "35em"
-      false
-
-    $spinner.click ->
-      $(this).css "display", "none"
-
-    $("#autoNumber").on("change", ->
-        $("#number").toggleEnable not @checked
-      )
-      .triggerHandler "change"
+    $("#autoNumber").triggerHandler "change"
     initAjaxEvents()
 
   # Initializes the handling of AJAX requests. The method cares about display
@@ -774,10 +789,12 @@ SPRINGCRM.page = (->
   #
   initAjaxEvents = ->
     $ = jQuery
+
     $spinner.ajaxSend(->
         $(this).show()
-      ).ajaxComplete ->
+      ).ajaxComplete(->
         $(this).hide()
+      )
 
   # Called if either the date or time part of a date/time input field has
   # changed. The method computes a formatted composed value in a hidden
@@ -834,16 +851,7 @@ SPRINGCRM.page = (->
     $this.val item.value if item
     $this.trigger "change"
 
-  # Called if the form submit button in the toolbar is clicked.
-  #
-  # @returns {Boolean}  always `false` to prevent form submission
-  #
-  onSubmitForm = ->
-    $ = jQuery
-    $("#" + $(this).data("form")).submit()
-    false
-
-  timeValues = (->
+  timeValues = do ->
     res = []
     for h in [0..23]
       hh = h.toString()
@@ -851,7 +859,6 @@ SPRINGCRM.page = (->
       res.push "#{hh}:00"
       res.push "#{hh}:30"
     res
-  )()
 
   init()
 )()

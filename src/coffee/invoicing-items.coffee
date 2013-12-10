@@ -97,7 +97,7 @@ InvoicingItemsWidget =
     $ = jQuery
 
     subtotalNet = 0
-    @.element.find(".items .total-price output").each ->
+    @element.find(".items .total-price output").each ->
       subtotalNet += $(@).text().parseNumber()
 
     shippingCosts = $("#shippingCosts").val().parseNumber()
@@ -212,15 +212,6 @@ InvoicingItemsWidget =
         false
       )
       .on("change", (event) => @_onChange(event))
-      .on("focusin", ".currency :input", (event) =>
-        $target = $(event.currentTarget)
-        val = $target.val().parseNumber()
-        $target.val (if val then val.format() else "")
-      )
-      .on("focusout", ".currency :input", (event) =>
-        $target = $(event.currentTarget)
-        $target.val $target.val().parseNumber().formatCurrencyValue()
-      )
     $(".add-invoicing-item-btn").click =>
       @_addItem true
       false
@@ -346,8 +337,7 @@ InvoicingItemsWidget =
     input = event.target
     parts = @_getInputPosAndName input
     if parts
-      index = parts[0]
-      name = parts[1]
+      [index, name] = parts
       if name is "quantity" or name is "unitPrice"
         if name is "quantity"
           qty = input.value.parseNumber()

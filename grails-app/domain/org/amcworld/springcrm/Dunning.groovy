@@ -91,7 +91,7 @@ class Dunning extends InvoicingTransaction {
     }
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
 
     /**
      * Gets the balance of this dunning, that is the difference between the
@@ -105,7 +105,8 @@ class Dunning extends InvoicingTransaction {
      * @see     #getClosingBalance()
      */
     double getBalance() {
-        paymentAmount - total
+        int d = userService.numFractionDigitsExt
+        paymentAmount.round(d) - total.round(d)
     }
 
     /**
@@ -120,7 +121,7 @@ class Dunning extends InvoicingTransaction {
      * @see     #getBalance()
      */
     double getClosingBalance() {
-        (balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigits)
+        (balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -149,7 +150,7 @@ class Dunning extends InvoicingTransaction {
      * @since   1.3
      */
     double getModifiedClosingBalance() {
-        (closingBalance - balance).round(userService.numFractionDigits)
+        (closingBalance - balance).round(userService.numFractionDigitsExt)
     }
 
     /**

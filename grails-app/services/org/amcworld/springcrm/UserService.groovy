@@ -30,7 +30,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * user settings.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.3
  */
 class UserService {
@@ -156,14 +156,42 @@ class UserService {
     }
 
     /**
-     * Gets the number of fraction digits as defined in the application
-     * configuration.
+     * Gets the number of fraction digits for internal prices as defined in the
+     * application configuration.
      *
      * @return  the number of fraction digits
      * @since   1.3
      */
     int getNumFractionDigits() {
-        Integer numFractionDigits = ConfigHolder.instance['numFractionDigits'] as Integer
-        numFractionDigits ?: currency.defaultFractionDigits
+        Integer numFractionDigits =
+            ConfigHolder.instance['numFractionDigits'] as Integer
+        try {
+            if (numFractionDigits == null) {
+                numFractionDigits = currency.defaultFractionDigits
+            }
+        } catch (IllegalArgumentException e) {
+            numFractionDigits = 2
+        }
+        numFractionDigits
+    }
+
+    /**
+     * Gets the number of fraction digits for external purpose as defined in
+     * the application configuration.
+     *
+     * @return  the number of fraction digits
+     * @since   1.4
+     */
+    int getNumFractionDigitsExt() {
+        Integer numFractionDigits =
+            ConfigHolder.instance['numFractionDigitsExt'] as Integer
+        try {
+            if (numFractionDigits == null) {
+                numFractionDigits = currency.defaultFractionDigits
+            }
+        } catch (IllegalArgumentException e) {
+            numFractionDigits = 2
+        }
+        numFractionDigits
     }
 }

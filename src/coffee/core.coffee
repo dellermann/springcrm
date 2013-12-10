@@ -19,10 +19,23 @@
 
 
 $ = jQuery
-$html = $("html")
-decimalSeparator = $html.data("decimal-separator") or ","
-groupingSeparator = $html.data("grouping-separator") or "."
-numFractions = $html.data("num-fraction-digits") or 2
+
+
+# Contains variables with default values for i18n and computing.  The object
+# contains the following variables:
+#
+# * `decimalSeparator`. the decimal separator used in localized numbers
+# * `groupingSeparator`. the grouping separator used in localized numbers
+# * `numFractions`. the number of fraction digits for numbers and prices that are used internally
+# * `numFractionsExt`. the number of fraction digits for prices that are used externally
+#
+window.$I = do ->
+  $html = $("html")
+
+  decimalSeparator: $html.data("decimal-separator") or ","
+  groupingSeparator: $html.data("grouping-separator") or "."
+  numFractions: $html.data("num-fraction-digits") or 2
+  numFractionsExt: $html.data("num-fraction-digits-ext") or 2
 
 
 # Formats this date with either the given user-defined format or the localized
@@ -108,9 +121,11 @@ Date::format = (format = "datetime") ->
 # @since            1.3
 #
 Number::format = (n = null) ->
-  gs = groupingSeparator
+  gs = $I.groupingSeparator
 
   num = this
+  if isNaN(num) or not isFinite(num)
+    return '---'
   numSgn = (if (n is null) then num else num.round(n))
   sgn = (if numSgn < 0 then "-" else "")
   n = (if (n is null) then undefined else Math.abs(n))
@@ -124,7 +139,7 @@ Number::format = (n = null) ->
     if dotPos >= 0
       frac = Math.abs(num.substring(dotPos))
       frac = (if isNaN(n) then frac.toString() else frac.toFixed(n))
-      frac = decimalSeparator + frac.substring(2)
+      frac = $I.decimalSeparator + frac.substring(2)
   sgn + ((if pos then int.substr(0, pos) + gs else "")) +
     int.substr(pos).replace(/(\d{3})(?=\d)/g, "$1" + gs) + frac
 
@@ -135,17 +150,32 @@ Number::format = (n = null) ->
 #
 # @return {String}  the formatted currency value
 # @see              Number#format
+# @see              Number#formatCurrencyValueExt
 # @since            1.3
 #
 Number::formatCurrencyValue = ->
-  if isNaN(this) or not isFinite(this) then '---' else @format numFractions
+  @format $I.numFractions
+
+# Formats the given number as currency value for external use, that is with the
+# number of fraction digits specified in attribute `num-fraction-digits-ext` of
+# the `<html>` tag.  If the attribute is not specified a number of 2 fraction
+# digits are used.  Furthermore, all formatting used in method `format` is used
+# as well.
+#
+# @return {String}  the formatted currency value
+# @see              Number#format
+# @see              Number#formatCurrencyValue
+# @since            1.4
+#
+Number::formatCurrencyValueExt = ->
+  @format $I.numFractionsExt
 
 # Rounds this number to the given number of fraction digits.
 #
 # @param {Number} n the given number of fraction digits
 # @return {Number}  the rounded number
 #
-Number::round = (n = numFractions) ->
+Number::round = (n = $I.numFractions) ->
   power = Math.pow 10, n
   Math.round(this * power) / power
 
@@ -244,7 +274,7 @@ String::parseDate = (format = "datetime", baseYear = 35) ->
 # @since            1.3
 #
 String::parseNumber = ->
-  reD = new RegExp(RegExp.escape(decimalSeparator), "g")
-  reG = new RegExp(RegExp.escape(groupingSeparator), "g")
+  reD = new RegExp(RegExp.escape($I.decimalSeparator), "g")
+  reG = new RegExp(RegExp.escape($I.groupingSeparator), "g")
   s = this.toString()
   (if (s is "") then 0 else parseFloat(s.replace(reG, "").replace(reD, ".")))

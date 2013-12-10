@@ -47,7 +47,7 @@
           <td class="status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>
           <td class="date quote-doc-date"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="date quote-shipping-date"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>
-          <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" displayZero="true" /></td>
+          <td class="currency quote-total"><g:formatCurrency number="${quoteInstance?.total}" displayZero="true" external="true" /></td>
           <td class="action-buttons">
             <g:button action="edit" id="${quoteInstance.id}" color="green"
               size="small" message="default.button.edit.label" />
