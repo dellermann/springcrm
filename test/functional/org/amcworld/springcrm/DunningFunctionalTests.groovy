@@ -99,21 +99,21 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'headerText', 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.'
 
         assert 2 == numPriceTableRows
-        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,00', '5,00', '19,0'
+        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,000', '5,000', '19,0'
         setPriceTableInputValue 0, 'unitPrice', '3'
-        assert '3,00' == getPriceTableRowTotal(0)
-        assert '13,00' == subtotalNet
-        checkTaxRates([['19,0', '2,47']])
-        assert '15,47' == subtotalGross
-        assert '15,47' == total
+        assert '3,000' == getPriceTableRowTotal(0)
+        assert '13,000' == subtotalNet
+        checkTaxRates([['19,0', '2,470']])
+        assert '15,470' == subtotalGross
+        assert '15,470' == total
 
-        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', null, '10,00', '10,00', '19,0'
+        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', null, '10,000', '10,000', '19,0'
         setPriceTableInputValue 1, 'unitPrice', '53,22'
         getPriceTableInput(1, 'name').click()
-        assert '56,22' == subtotalNet
-        checkTaxRates([['19,0', '10,68']])
-        assert '66,90' == subtotalGross
-        assert '66,90' == total
+        assert '56,220' == subtotalNet
+        checkTaxRates([['19,0', '10,682']])
+        assert '66,902' == subtotalGross
+        assert '66,902' == total
 
         setInputValue 'footerText', 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.'
         setInputValue 'termsAndConditions', ['700']
@@ -168,15 +168,15 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
         assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
-        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '3,00 €', '3,00 €', '19,0 %'
-        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '53,22 €', '53,22 €', '19,0 %'
+        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '3,000 €', '3,000 €', '19,0 %'
+        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '53,220 €', '53,220 €', '19,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        assert '56,22 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
+        assert '56,220 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
         WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '10,68 €' == tr.findElement(By.className('currency')).text
-        assert '66,90 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '10,682 €' == tr.findElement(By.className('currency')).text
+        assert '66,902 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
         field = getShowField(fieldSet, 1)
@@ -254,12 +254,12 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Deutschland' == getInputValue('shippingAddr.country')
         assert '' == getInputValue('headerText')
 
-        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,00', '5,00', '19,0'
-        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', null, '10,00', '10,00', '19,0'
-        assert '15,00' == subtotalNet
-        checkTaxRates([['19,0', '2,85']])
-        assert '17,85' == subtotalGross
-        assert '17,85' == total
+        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,000', '5,000', '19,0'
+        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', null, '10,000', '10,000', '19,0'
+        assert '15,000' == subtotalNet
+        checkTaxRates([['19,0', '2,850']])
+        assert '17,850' == subtotalGross
+        assert '17,850' == total
 
         assert '' == getInputValue('footerText')
         assert ['700', '701'] == getInputValue('termsAndConditions')
@@ -324,15 +324,15 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
         assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
-        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '5,00 €', '5,00 €', '19,0 %'
-        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '10,00 €', '10,00 €', '19,0 %'
+        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '5,000 €', '5,000 €', '19,0 %'
+        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '10,000 €', '10,000 €', '19,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        assert '15,00 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
+        assert '15,000 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
         WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '2,85 €' == tr.findElement(By.className('currency')).text
-        assert '17,85 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '2,850 €' == tr.findElement(By.className('currency')).text
+        assert '17,850 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
         field = getShowField(fieldSet, 1)
@@ -397,15 +397,15 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
         assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
-        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '3,00 €', '3,00 €', '19,0 %'
-        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '53,22 €', '53,22 €', '19,0 %'
+        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '3,000 €', '3,000 €', '19,0 %'
+        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 5 %', '53,220 €', '53,220 €', '19,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        assert '56,22 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
+        assert '56,220 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
         WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '10,68 €' == tr.findElement(By.className('currency')).text
-        assert '66,90 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '10,682 €' == tr.findElement(By.className('currency')).text
+        assert '66,902 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
         field = getShowField(fieldSet, 1)
@@ -535,12 +535,12 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'Deutschland' == getInputValue('shippingAddr.country')
         assert 'zur angegebenen Rechnung konnte **bis heute** kein Zahlungseingang verzeichnet werden.' == getInputValue('headerText')
 
-        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '3,00', '3,00', '19,0'
-        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 5 %', '53,22', '53,22', '19,0'
-        assert '56,22' == subtotalNet
-        checkTaxRates([['19,0', '10,68']])
-        assert '66,90' == subtotalGross
-        assert '66,90' == total
+        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '3,000', '3,000', '19,0'
+        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 5 %', '53,220', '53,220', '19,0'
+        assert '56,220' == subtotalNet
+        checkTaxRates([['19,0', '10,682']])
+        assert '66,902' == subtotalGross
+        assert '66,902' == total
 
         assert 'Die **Mahngebühren und Verzugszinsen** ergeben sich aus unseren AGB.' == getInputValue('footerText')
         assert ['700'] == getInputValue('termsAndConditions')
@@ -557,37 +557,37 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'paymentMethod.id', '2401'
 
         setPriceTableInputValue 0, 'unitPrice', '5'
-        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,00', '5,00', '19,0'
-        assert '58,22' == subtotalNet
-        checkTaxRates([['19,0', '11,06']])
-        assert '69,28' == subtotalGross
-        assert '69,28' == total
+        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,000', '5,000', '19,0'
+        assert '58,220' == subtotalNet
+        checkTaxRates([['19,0', '11,062']])
+        assert '69,282' == subtotalGross
+        assert '69,282' == total
 
         setPriceTableInputValue 1, 'description', 'Verzugszinsen 7 %'
-        setPriceTableInputValue 1, 'unitPrice', '74,51'
-        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 7 %', '74,51', '74,51', '19,0'
-        assert '79,51' == subtotalNet
-        checkTaxRates([['19,0', '15,11']])
-        assert '94,62' == subtotalGross
-        assert '94,62' == total
+        setPriceTableInputValue 1, 'unitPrice', '74,510'
+        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 7 %', '74,510', '74,510', '19,0'
+        assert '79,510' == subtotalNet
+        checkTaxRates([['19,0', '15,107']])
+        assert '94,617' == subtotalGross
+        assert '94,617' == total
 
         moveRowUp 1
-        checkRowValues 0, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 7 %', '74,51', '74,51', '19,0'
-        checkRowValues 1, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,00', '5,00', '19,0'
-        assert '79,51' == subtotalNet
-        checkTaxRates([['19,0', '15,11']])
-        assert '94,62' == subtotalGross
-        assert '94,62' == total
+        checkRowValues 0, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 7 %', '74,510', '74,510', '19,0'
+        checkRowValues 1, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,000', '5,000', '19,0'
+        assert '79,510' == subtotalNet
+        checkTaxRates([['19,0', '15,107']])
+        assert '94,617' == subtotalGross
+        assert '94,617' == total
         assert !getPriceTableRow(0).findElement(By.className('up-btn')).displayed
         assert !getPriceTableRow(1).findElement(By.className('down-btn')).displayed
 
         moveRowDown 0
-        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,00', '5,00', '19,0'
-        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 7 %', '74,51', '74,51', '19,0'
-        assert '79,51' == subtotalNet
-        checkTaxRates([['19,0', '15,11']])
-        assert '94,62' == subtotalGross
-        assert '94,62' == total
+        checkRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', null, '5,000', '5,000', '19,0'
+        checkRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen', 'Verzugszinsen 7 %', '74,510', '74,510', '19,0'
+        assert '79,510' == subtotalNet
+        checkTaxRates([['19,0', '15,107']])
+        assert '94,617' == subtotalGross
+        assert '94,617' == total
         assert !getPriceTableRow(0).findElement(By.className('up-btn')).displayed
         assert !getPriceTableRow(1).findElement(By.className('down-btn')).displayed
 
@@ -646,16 +646,16 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
         assert 'zur angegebenen Rechnung konnte bis heute kein Zahlungseingang verzeichnet werden.' == field.text
         assert 'bis heute' == field.findElement(By.tagName('strong')).text
 
-        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '5,00 €', '5,00 €', '19,0 %'
-        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 7 %', '74,51 €', '74,51 €', '19,0 %'
+        checkStaticRowValues 0, 'S-99000', '1', 'Einheiten', 'Mahngebühren', '5,000 €', '5,000 €', '19,0 %'
+        checkStaticRowValues 1, 'S-99001', '1', 'Einheiten', 'Verzugszinsen\nVerzugszinsen 7 %', '74,510 €', '74,510 €', '19,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         WebElement tr = tfoot.findElement(By.className('subtotal-net'))
-        assert '79,51 €' == tr.findElement(By.cssSelector('td.currency')).text
+        assert '79,510 €' == tr.findElement(By.cssSelector('td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '15,11 €' == tr.findElement(By.className('currency')).text
-        assert '94,62 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '15,107 €' == tr.findElement(By.className('currency')).text
+        assert '94,617 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 4)
         field = getShowField(fieldSet, 1)

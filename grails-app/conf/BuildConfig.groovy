@@ -26,13 +26,15 @@ grails.war.resources = { stagingDir ->
     delete(dir: "${stagingDir}/test-data")
 }
 
-forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 256]
-grails.project.fork = [
-   console: forkConfig,     // settings for the Swing console JVM
-   run: forkConfig,         // settings for the run-app JVM
-   test: false,             // settings for the test-app JVM
-   war: forkConfig          // settings for the run-war JVM
-]
+if (grailsSettings.grailsEnv != 'test') {
+    forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 256]
+    grails.project.fork = [
+       console: forkConfig,     // settings for the Swing console JVM
+       run: forkConfig,         // settings for the run-app JVM
+       test: false,             // settings for the test-app JVM
+       war: forkConfig          // settings for the run-war JVM
+    ]
+}
 
 grails.project.dependency.resolver = 'maven'
 grails.project.dependency.resolution = {

@@ -92,11 +92,11 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 0, 'description', 'Konzeption des geplanten Webdesigns'
         setPriceTableInputValue 0, 'unitPrice', '500'
         setPriceTableInputValue 0, 'tax', '19'
-        assert '500,00' == getPriceTableRowTotal(0)
-        assert '500,00' == subtotalNet
-        checkTaxRates([['19,0', '95,00']])
-        assert '595,00' == subtotalGross
-        assert '595,00' == total
+        assert '500,000' == getPriceTableRowTotal(0)
+        assert '500,000' == subtotalNet
+        checkTaxRates([['19,0', '95,000']])
+        assert '595,000' == subtotalGross
+        assert '595,000' == total
 
         assert 2 == addNewPriceTableRow()
         setPriceTableInputValue 1, 'number', '1200'
@@ -105,11 +105,11 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 1, 'name', 'Webdesign'
         setPriceTableInputValue 1, 'unitPrice', '1300'
         setPriceTableInputValue 1, 'tax', '19'
-        assert '1.300,00' == getPriceTableRowTotal(1)
-        assert '1.800,00' == subtotalNet
-        checkTaxRates([['19,0', '342,00']])
-        assert '2.142,00' == subtotalGross
-        assert '2.142,00' == total
+        assert '1.300,000' == getPriceTableRowTotal(1)
+        assert '1.800,000' == subtotalNet
+        checkTaxRates([['19,0', '342,000']])
+        assert '2.142,000' == subtotalGross
+        assert '2.142,000' == total
 
         assert 3 == addNewPriceTableRow()
         setPriceTableInputValue 2, 'number', '1990'
@@ -118,11 +118,11 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 2, 'name', 'Zusätzlicher Entwurf'
         setPriceTableInputValue 2, 'unitPrice', '250'
         setPriceTableInputValue 2, 'tax', '19'
-        assert '500,00' == getPriceTableRowTotal(2)
-        assert '2.300,00' == subtotalNet
-        checkTaxRates([['19,0', '437,00']])
-        assert '2.737,00' == subtotalGross
-        assert '2.737,00' == total
+        assert '500,000' == getPriceTableRowTotal(2)
+        assert '2.300,000' == subtotalNet
+        checkTaxRates([['19,0', '437,000']])
+        assert '2.737,000' == subtotalGross
+        assert '2.737,000' == total
 
         assert 4 == addNewPriceTableRow()
         setPriceTableInputValue 3, 'number', '9500'
@@ -132,47 +132,47 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 3, 'description', 'Papier, Klebeband, Kleinteile'
         setPriceTableInputValue 3, 'unitPrice', '4,5'
         setPriceTableInputValue 3, 'tax', '7'
-        assert '45,00' == getPriceTableRowTotal(3)
-        assert '2.345,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '437,00']])
-        assert '2.785,15' == subtotalGross
-        assert '2.785,15' == total
+        assert '45,000' == getPriceTableRowTotal(3)
+        assert '2.345,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '437,000']])
+        assert '2.785,150' == subtotalGross
+        assert '2.785,150' == total
 
         moveRowUp 2
         moveRowUp 1
-        checkRowValues 0, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,00', '500,00', '19'
-        checkRowValues 1, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19'
-        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19'
-        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7'
-        assert '2.345,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '437,00']])
-        assert '2.785,15' == subtotalGross
-        assert '2.785,15' == total
+        checkRowValues 0, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,000', '500,000', '19'
+        checkRowValues 1, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19'
+        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19'
+        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7'
+        assert '2.345,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '437,000']])
+        assert '2.785,150' == subtotalGross
+        assert '2.785,150' == total
         moveRowDown 0
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19'
-        checkRowValues 1, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,00', '500,00', '19'
-        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19'
-        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7'
-        assert '2.345,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '437,00']])
-        assert '2.785,15' == subtotalGross
-        assert '2.785,15' == total
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19'
+        checkRowValues 1, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,000', '500,000', '19'
+        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19'
+        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7'
+        assert '2.345,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '437,000']])
+        assert '2.785,150' == subtotalGross
+        assert '2.785,150' == total
         assert 3 == removeRow(1)
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19'
-        checkRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19'
-        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7'
-        assert '1.845,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '342,00']])
-        assert '2.190,15' == subtotalGross
-        assert '2.190,15' == total
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19'
+        checkRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19'
+        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7'
+        assert '1.845,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '342,000']])
+        assert '2.190,150' == subtotalGross
+        assert '2.190,150' == total
 
         setInputValue 'discountPercent', '2'
         getInput('discountAmount').click()
-        assert '43,80' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '2.146,35' == total
+        assert '43,803' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '2.146,347' == total
         setInputValue 'adjustment', '-1,36'
         getInput('discountAmount').click()
-        assert '2.144,99' == total
+        assert '2.144,987' == total
 
         setInputValue 'notes', 'Lieferschein zur Rechnung nachfordern.'
         checkStillUnpaid '0', '2.144,99', 'still-unpaid-unpaid'
@@ -192,25 +192,25 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '15.03.2013' == getShowFieldText(col, 1)
         assert '15.04.2013' == getShowFieldText(col, 2)
 
-        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '500,00 €', '500,00 €', '19,0 %'
-        checkStaticRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '1.300,00 €', '1.300,00 €', '19,0 %'
-        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,50 €', '45,00 €', '7,0 %'
+        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '500,000 €', '500,000 €', '19,0 %'
+        checkStaticRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '1.300,000 €', '1.300,000 €', '19,0 %'
+        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,500 €', '45,000 €', '7,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        assert '1.845,00 €' == tfoot.findElement(By.cssSelector('tr.subtotal-net td.currency')).text
+        assert '1.845,000 €' == tfoot.findElement(By.cssSelector('tr.subtotal-net td.currency')).text
         WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '7 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '3,15 €' == tr.findElement(By.className('currency')).text
+        assert '3,150 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[3]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '342,00 €' == tr.findElement(By.className('currency')).text
-        assert '2.190,15 €' == tfoot.findElement(By.cssSelector('tr.subtotal-gross td.currency')).text
+        assert '342,000 €' == tr.findElement(By.className('currency')).text
+        assert '2.190,150 €' == tfoot.findElement(By.cssSelector('tr.subtotal-gross td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[5]'))
         assert '2,00 %' == tr.findElement(By.className('percentage')).text
-        assert '43,80 €' == tr.findElement(By.className('currency')).text
+        assert '43,803 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[6]'))
-        assert '-1,36 €' == tr.findElement(By.className('currency')).text
-        assert '2.144,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '-1,360 €' == tr.findElement(By.className('currency')).text
+        assert '2.144,987 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 3)
         assert 'Lieferschein zur Rechnung nachfordern.' == getShowFieldText(fieldSet, 1)
@@ -242,11 +242,11 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 0, 'description', 'Konzeption des geplanten Webdesigns'
         setPriceTableInputValue 0, 'unitPrice', '500'
         setPriceTableInputValue 0, 'tax', '19'
-        assert '500,00' == getPriceTableRowTotal(0)
-        assert '500,00' == subtotalNet
-        checkTaxRates([['19,0', '95,00']])
-        assert '595,00' == subtotalGross
-        assert '595,00' == total
+        assert '500,000' == getPriceTableRowTotal(0)
+        assert '500,000' == subtotalNet
+        checkTaxRates([['19,0', '95,000']])
+        assert '595,000' == subtotalGross
+        assert '595,000' == total
 
         assert 2 == addNewPriceTableRow()
         setPriceTableInputValue 1, 'number', '1200'
@@ -255,11 +255,11 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 1, 'name', 'Webdesign'
         setPriceTableInputValue 1, 'unitPrice', '1300'
         setPriceTableInputValue 1, 'tax', '19'
-        assert '1.300,00' == getPriceTableRowTotal(1)
-        assert '1.800,00' == subtotalNet
-        checkTaxRates([['19,0', '342,00']])
-        assert '2.142,00' == subtotalGross
-        assert '2.142,00' == total
+        assert '1.300,000' == getPriceTableRowTotal(1)
+        assert '1.800,000' == subtotalNet
+        checkTaxRates([['19,0', '342,000']])
+        assert '2.142,000' == subtotalGross
+        assert '2.142,000' == total
 
         assert 3 == addNewPriceTableRow()
         setPriceTableInputValue 2, 'number', '1990'
@@ -268,11 +268,11 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 2, 'name', 'Zusätzlicher Entwurf'
         setPriceTableInputValue 2, 'unitPrice', '250'
         setPriceTableInputValue 2, 'tax', '19'
-        assert '500,00' == getPriceTableRowTotal(2)
-        assert '2.300,00' == subtotalNet
-        checkTaxRates([['19,0', '437,00']])
-        assert '2.737,00' == subtotalGross
-        assert '2.737,00' == total
+        assert '500,000' == getPriceTableRowTotal(2)
+        assert '2.300,000' == subtotalNet
+        checkTaxRates([['19,0', '437,000']])
+        assert '2.737,000' == subtotalGross
+        assert '2.737,000' == total
 
         assert 4 == addNewPriceTableRow()
         setPriceTableInputValue 3, 'number', '9500'
@@ -282,39 +282,39 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 3, 'description', 'Papier, Klebeband, Kleinteile'
         setPriceTableInputValue 3, 'unitPrice', '4,5'
         setPriceTableInputValue 3, 'tax', '7'
-        assert '45,00' == getPriceTableRowTotal(3)
-        assert '2.345,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '437,00']])
-        assert '2.785,15' == subtotalGross
-        assert '2.785,15' == total
+        assert '45,000' == getPriceTableRowTotal(3)
+        assert '2.345,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '437,000']])
+        assert '2.785,150' == subtotalGross
+        assert '2.785,150' == total
 
         moveRowUp 2
         moveRowUp 1
-        checkRowValues 0, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,00', '500,00', '19'
-        checkRowValues 1, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19'
-        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19'
-        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7'
-        assert '2.345,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '437,00']])
-        assert '2.785,15' == subtotalGross
-        assert '2.785,15' == total
+        checkRowValues 0, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,000', '500,000', '19'
+        checkRowValues 1, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19'
+        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19'
+        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7'
+        assert '2.345,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '437,000']])
+        assert '2.785,150' == subtotalGross
+        assert '2.785,150' == total
         moveRowDown 0
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19'
-        checkRowValues 1, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,00', '500,00', '19'
-        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19'
-        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7'
-        assert '2.345,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '437,00']])
-        assert '2.785,15' == subtotalGross
-        assert '2.785,15' == total
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19'
+        checkRowValues 1, '1990', '2', 'Einheiten', 'Zusätzlicher Entwurf', '', '250,000', '500,000', '19'
+        checkRowValues 2, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19'
+        checkRowValues 3, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7'
+        assert '2.345,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '437,000']])
+        assert '2.785,150' == subtotalGross
+        assert '2.785,150' == total
         assert 3 == removeRow(1)
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19'
-        checkRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19'
-        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7'
-        assert '1.845,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '342,00']])
-        assert '2.190,15' == subtotalGross
-        assert '2.190,15' == total
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19'
+        checkRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19'
+        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7'
+        assert '1.845,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '342,000']])
+        assert '2.190,150' == subtotalGross
+        assert '2.190,150' == total
 
         setInputValue 'notes', 'Lieferschein zur Rechnung nachfordern.'
         checkStillUnpaid '0', '2.190,15', 'still-unpaid-unpaid'
@@ -334,19 +334,19 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '15.03.2013' == getShowFieldText(col, 1)
         assert '15.04.2013' == getShowFieldText(col, 2)
 
-        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '500,00 €', '500,00 €', '19,0 %'
-        checkStaticRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '1.300,00 €', '1.300,00 €', '19,0 %'
-        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,50 €', '45,00 €', '7,0 %'
+        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '500,000 €', '500,000 €', '19,0 %'
+        checkStaticRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '1.300,000 €', '1.300,000 €', '19,0 %'
+        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,500 €', '45,000 €', '7,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        assert '1.845,00 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
+        assert '1.845,000 €' == tfoot.findElement(By.cssSelector('tr.subtotal td.currency')).text
         WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '7 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '3,15 €' == tr.findElement(By.className('currency')).text
+        assert '3,150 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[3]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '342,00 €' == tr.findElement(By.className('currency')).text
-        assert '2.190,15 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '342,000 €' == tr.findElement(By.className('currency')).text
+        assert '2.190,150 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 3)
         assert 'Lieferschein zur Rechnung nachfordern.' == getShowFieldText(fieldSet, 1)
@@ -398,28 +398,28 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '15.03.2013' == getShowFieldText(col, 1)
         assert '15.04.2013' == getShowFieldText(col, 2)
         assert '' == getShowFieldText(col, 3)
-        assert '' == getShowFieldText(col, 4)
+        assert '0,00 €' == getShowFieldText(col, 4)
         assert '' == getShowFieldText(col, 5)
 
-        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '500,00 €', '500,00 €', '19,0 %'
-        checkStaticRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '1.300,00 €', '1.300,00 €', '19,0 %'
-        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,50 €', '45,00 €', '7,0 %'
+        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '500,000 €', '500,000 €', '19,0 %'
+        checkStaticRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '1.300,000 €', '1.300,000 €', '19,0 %'
+        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,500 €', '45,000 €', '7,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
-        assert '1.845,00 €' == tfoot.findElement(By.cssSelector('tr.subtotal-net td.currency')).text
+        assert '1.845,000 €' == tfoot.findElement(By.cssSelector('tr.subtotal-net td.currency')).text
         WebElement tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '7 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '3,15 €' == tr.findElement(By.className('currency')).text
+        assert '3,150 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[3]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '342,00 €' == tr.findElement(By.className('currency')).text
-        assert '2.190,15 €' == tfoot.findElement(By.cssSelector('tr.subtotal-gross td.currency')).text
+        assert '342,000 €' == tr.findElement(By.className('currency')).text
+        assert '2.190,150 €' == tfoot.findElement(By.cssSelector('tr.subtotal-gross td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[5]'))
         assert '2,00 %' == tr.findElement(By.className('percentage')).text
-        assert '43,80 €' == tr.findElement(By.className('currency')).text
+        assert '43,803 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[6]'))
-        assert '-1,36 €' == tr.findElement(By.className('currency')).text
-        assert '2.144,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '-1,360 €' == tr.findElement(By.className('currency')).text
+        assert '2.144,987 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 3)
         assert 'Lieferschein zur Rechnung nachfordern.' == getShowFieldText(fieldSet, 1)
@@ -513,16 +513,16 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '0,00' == getInputValue('paymentAmount')
         checkStillUnpaid '0', '2.144,99', 'still-unpaid-unpaid'
 
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,00', '500,00', '19,0'
-        checkRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,00', '1.300,00', '19,0'
-        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7,0'
-        assert '1.845,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '342,00']])
-        assert '2.190,15' == subtotalGross
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '500,000', '500,000', '19,0'
+        checkRowValues 1, '1200', '1', 'Einheiten', 'Webdesign', '', '1.300,000', '1.300,000', '19,0'
+        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7,0'
+        assert '1.845,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '342,000']])
+        assert '2.190,150' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '43,80' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,36' == getInputValue('adjustment')
-        assert '2.144,99' == total
+        assert '43,803' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,360' == getInputValue('adjustment')
+        assert '2.144,987' == total
 
         assert 'Lieferschein zur Rechnung nachfordern.' == getInputValue('notes')
 
@@ -536,25 +536,25 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setInputValue 'paymentMethod.id', '2401'
 
         setPriceTableInputValue 0, 'unitPrice', '450'
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,00', '450,00', '19,0'
-        assert '1.795,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '332,50']])
-        assert '2.130,65' == subtotalGross
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,000', '450,000', '19,0'
+        assert '1.795,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '332,500']])
+        assert '2.130,650' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '42,61' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,36' == getInputValue('adjustment')
-        assert '2.086,68' == total
+        assert '42,613' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,360' == getInputValue('adjustment')
+        assert '2.086,677' == total
 
         assert 2 == removeRow(1)
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,00', '450,00', '19,0'
-        checkRowValues 1, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7,0'
-        assert '495,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '85,50']])
-        assert '583,65' == subtotalGross
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,000', '450,000', '19,0'
+        checkRowValues 1, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7,0'
+        assert '495,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '85,500']])
+        assert '583,650' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '11,67' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,36' == getInputValue('adjustment')
-        assert '570,62' == total
+        assert '11,673' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,360' == getInputValue('adjustment')
+        assert '570,617' == total
 
         assert 3 == addNewPriceTableRow()
         setPriceTableInputValue 2, 'number', '7000'
@@ -564,53 +564,53 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         setPriceTableInputValue 2, 'description', 'Beratungsleistung vor Ort'
         setPriceTableInputValue 2, 'unitPrice', '75'
         setPriceTableInputValue 2, 'tax', '19'
-        assert '300,00' == getPriceTableRowTotal(2)
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,00', '450,00', '19,0'
-        checkRowValues 1, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7,0'
-        checkRowValues 2, '7000', '4', 'Stunden', 'Beratung', 'Beratungsleistung vor Ort', '75,00', '300,00', '19'
-        assert '795,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '142,50']])
-        assert '940,65' == subtotalGross
+        assert '300,000' == getPriceTableRowTotal(2)
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,000', '450,000', '19,0'
+        checkRowValues 1, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7,0'
+        checkRowValues 2, '7000', '4', 'Stunden', 'Beratung', 'Beratungsleistung vor Ort', '75,000', '300,000', '19'
+        assert '795,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '142,500']])
+        assert '940,650' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '18,81' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,36' == getInputValue('adjustment')
-        assert '920,48' == total
+        assert '18,813' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,360' == getInputValue('adjustment')
+        assert '920,477' == total
         moveRowUp 2
         moveRowUp 1
-        checkRowValues 0, '7000', '4', 'Stunden', 'Beratung', 'Beratungsleistung vor Ort', '75,00', '300,00', '19'
-        checkRowValues 1, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,00', '450,00', '19,0'
-        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7,0'
-        assert '795,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '142,50']])
-        assert '940,65' == subtotalGross
+        checkRowValues 0, '7000', '4', 'Stunden', 'Beratung', 'Beratungsleistung vor Ort', '75,000', '300,000', '19'
+        checkRowValues 1, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,000', '450,000', '19,0'
+        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7,0'
+        assert '795,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '142,500']])
+        assert '940,650' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '18,81' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,36' == getInputValue('adjustment')
-        assert '920,48' == total
+        assert '18,813' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,360' == getInputValue('adjustment')
+        assert '920,477' == total
         moveRowDown 0
-        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,00', '450,00', '19,0'
-        checkRowValues 1, '7000', '4', 'Stunden', 'Beratung', 'Beratungsleistung vor Ort', '75,00', '300,00', '19'
-        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,50', '45,00', '7,0'
-        assert '795,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '142,50']])
-        assert '940,65' == subtotalGross
+        checkRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung', 'Konzeption des geplanten Webdesigns', '450,000', '450,000', '19,0'
+        checkRowValues 1, '7000', '4', 'Stunden', 'Beratung', 'Beratungsleistung vor Ort', '75,000', '300,000', '19'
+        checkRowValues 2, '9500', '10', 'Packung', 'Büromaterial', 'Papier, Klebeband, Kleinteile', '4,500', '45,000', '7,0'
+        assert '795,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '142,500']])
+        assert '940,650' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '18,81' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,36' == getInputValue('adjustment')
-        assert '920,48' == total
+        assert '18,813' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,360' == getInputValue('adjustment')
+        assert '920,477' == total
 
         assert !getPriceTableRow(0).findElement(By.className('up-btn')).displayed
         assert !getPriceTableRow(2).findElement(By.className('down-btn')).displayed
 
         setInputValue 'adjustment', '-1,85'
         getInput('discountAmount').click()
-        assert '795,00' == subtotalNet
-        checkTaxRates([['7,0', '3,15'], ['19,0', '142,50']])
-        assert '940,65' == subtotalGross
+        assert '795,000' == subtotalNet
+        checkTaxRates([['7,0', '3,150'], ['19,0', '142,500']])
+        assert '940,650' == subtotalGross
         assert '2' == getInputValue('discountPercent')
-        assert '18,81' == priceTable.findElement(By.id('discount-from-percent')).text
-        assert '-1,85' == getInputValue('adjustment')
-        assert '919,99' == total
+        assert '18,813' == priceTable.findElement(By.id('discount-from-percent')).text
+        assert '-1,850' == getInputValue('adjustment')
+        assert '919,987' == total
         checkStillUnpaid '0', '-1.225,00', 'still-unpaid-too-much'
         submitForm getUrl('/purchase-invoice/show/')
 
@@ -631,27 +631,27 @@ class PurchaseInvoiceFunctionalTests extends InvoicingTransactionTestCase {
         assert '2.144,99 €' == getShowFieldText(col, 4)
         assert 'Überweisung' == getShowFieldText(col, 5)
 
-        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '450,00 €', '450,00 €', '19,0 %'
-        checkStaticRowValues 1, '7000', '4', 'Stunden', 'Beratung\nBeratungsleistung vor Ort', '75,00 €', '300,00 €', '19,0 %'
-        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,50 €', '45,00 €', '7,0 %'
+        checkStaticRowValues 0, '5100', '1', 'Einheiten', 'Konzeption und Planung\nKonzeption des geplanten Webdesigns', '450,000 €', '450,000 €', '19,0 %'
+        checkStaticRowValues 1, '7000', '4', 'Stunden', 'Beratung\nBeratungsleistung vor Ort', '75,000 €', '300,000 €', '19,0 %'
+        checkStaticRowValues 2, '9500', '10', 'Packung', 'Büromaterial\nPapier, Klebeband, Kleinteile', '4,500 €', '45,000 €', '7,0 %'
 
         WebElement tfoot = priceTable.findElement(By.tagName('tfoot'))
         WebElement tr = tfoot.findElement(By.className('subtotal-net'))
-        assert '795,00 €' == tr.findElement(By.cssSelector('td.currency')).text
+        assert '795,000 €' == tr.findElement(By.cssSelector('td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[2]'))
         assert '7 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '3,15 €' == tr.findElement(By.className('currency')).text
+        assert '3,150 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[3]'))
         assert '19 % MwSt.' == tr.findElement(By.className('label')).text
-        assert '142,50 €' == tr.findElement(By.className('currency')).text
+        assert '142,500 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.className('subtotal-gross'))
-        assert '940,65 €' == tr.findElement(By.cssSelector('td.currency')).text
+        assert '940,650 €' == tr.findElement(By.cssSelector('td.currency')).text
         tr = tfoot.findElement(By.xpath('./tr[5]'))
         assert '2,00 %' == tr.findElement(By.className('percentage')).text
-        assert '18,81 €' == tr.findElement(By.className('currency')).text
+        assert '18,813 €' == tr.findElement(By.className('currency')).text
         tr = tfoot.findElement(By.xpath('./tr[6]'))
-        assert '-1,85 €' == tr.findElement(By.className('currency')).text
-        assert '919,99 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
+        assert '-1,850 €' == tr.findElement(By.className('currency')).text
+        assert '919,987 €' == tfoot.findElement(By.cssSelector('tr.total td.currency')).text
 
         fieldSet = getFieldset(dataSheet, 3)
         assert 'Lieferschein zur Rechnung nachfordern.' == getShowFieldText(fieldSet, 1)

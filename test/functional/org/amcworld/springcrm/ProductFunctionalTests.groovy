@@ -104,11 +104,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
         assert '1' == getShowFieldText(col, 6)
         assert 'Packung' == getShowFieldText(col, 7)
-        assert '2,49 €' == getShowFieldText(col, 8)
+        assert '2,490 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '200' == getShowFieldText(col, 1)
         assert '7 %' == getShowFieldText(col, 2)
-        assert '2,19 €' == getShowFieldText(col, 3)
+        assert '2,190 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
         driver.quit()
@@ -142,9 +142,9 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 0, 'unit', 'Packungen'
         setStep1TableInputValue 0, 'name', 'Materialeinkauf'
         setStep1TableInputValue 0, 'unitPrice', '2,19'
-        assert '21,90' == getStep1TableRowTotal(0)
-        assert '21,90' == step1Total
-        assert '2,19' == step1UnitPrice
+        assert '21,900' == getStep1TableRowTotal(0)
+        assert '21,900' == step1Total
+        assert '2,190' == step1UnitPrice
         assert '(10 Packung)' == driver.findElement(By.id('step1-total-price-quantity')).text
         assert '(1 Packung)' == driver.findElement(By.id('step1-unit-price-quantity')).text
         WebElement tr = getStep1TableRow(0)
@@ -156,9 +156,9 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 1, 'unit', 'Stunden'
         setStep1TableInputValue 1, 'name', 'Materialbeschaffung'
         setStep1TableInputValue 1, 'unitPrice', '40'
-        assert '10,00' == getStep1TableRowTotal(1)
-        assert '31,90' == step1Total
-        assert '3,19' == step1UnitPrice
+        assert '10,000' == getStep1TableRowTotal(1)
+        assert '31,900' == step1Total
+        assert '3,190' == step1UnitPrice
         tr = getStep1TableRow(0)
         assert !tr.findElement(By.className('up-btn')).displayed
         assert tr.findElement(By.className('down-btn')).displayed
@@ -173,9 +173,9 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert !getStep1TableInput(2, 'unit').enabled
         assert !getStep1TableInput(2, 'name').enabled
         assert !getStep1TableInput(2, 'unitPrice').enabled
-        assert '31,90' == getStep1TableRowTotal(2)
-        assert '31,90' == step1Total
-        assert '3,19' == step1UnitPrice
+        assert '31,900' == getStep1TableRowTotal(2)
+        assert '31,900' == step1Total
+        assert '3,190' == step1UnitPrice
         tr = getStep1TableRow(0)
         assert !tr.findElement(By.className('up-btn')).displayed
         assert tr.findElement(By.className('down-btn')).displayed
@@ -194,61 +194,61 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 3, 'unit', 'Einheit'
         setStep1TableInputValue 3, 'name', 'Gewinn'
         setStep1TableInputValue 3, 'unitPercent', '5'
-        assert '1,60' == getStep1TableRowTotal(3)
-        assert '33,50' == step1Total
-        assert '3,35' == step1UnitPrice
+        assert '1,600' == getStep1TableRowTotal(3)
+        assert '33,500' == step1Total
+        assert '3,350' == step1UnitPrice
         assert 5 == addNewStep1TableRow()
         setStep1TableInputValue 4, 'type', 'relativeToLastSum'
         setStep1TableInputValue 4, 'quantity', '1'
         setStep1TableInputValue 4, 'unit', 'Einheit'
         setStep1TableInputValue 4, 'name', 'Risiko'
         setStep1TableInputValue 4, 'unitPercent', '5'
-        assert '1,60' == getStep1TableRowTotal(4)
-        assert '35,10' == step1Total
-        assert '3,51' == step1UnitPrice
+        assert '1,600' == getStep1TableRowTotal(4)
+        assert '35,100' == step1Total
+        assert '3,510' == step1UnitPrice
         moveRowDown 0
-        assert '35,10' == step1Total
-        assert '3,51' == step1UnitPrice
+        assert '35,100' == step1Total
+        assert '3,510' == step1UnitPrice
         moveRowUp 1
-        assert '35,10' == step1Total
-        assert '3,51' == step1UnitPrice
+        assert '35,100' == step1Total
+        assert '3,510' == step1UnitPrice
         moveRowUp 2
-        assert '21,90' == getStep1TableRowTotal(1)
-        assert '1,60' == getStep1TableRowTotal(3)
-        assert '1,10' == getStep1TableRowTotal(4)
-        assert '34,60' == step1Total
-        assert '3,46' == step1UnitPrice
+        assert '21,900' == getStep1TableRowTotal(1)
+        assert '1,600' == getStep1TableRowTotal(3)
+        assert '1,100' == getStep1TableRowTotal(4)
+        assert '34,600' == step1Total
+        assert '3,460' == step1UnitPrice
         moveRowDown 1
-        assert '35,10' == step1Total
-        assert '3,51' == step1UnitPrice
+        assert '35,100' == step1Total
+        assert '3,510' == step1UnitPrice
         assert '10' == getValue('step2-quantity')
         assert 'Packung' == getValue('step2-unit')
-        assert '3,51' == getValue('step2-unit-price')
-        assert '35,10' == getValue('step2-total-price')
+        assert '3,510' == getValue('step2-unit-price')
+        assert '35,100' == getValue('step2-total-price')
         assert '10' == getValue('step2-total-quantity')
         assert 'Packung' == getValue('step2-total-unit')
-        assert '3,51' == getValue('step2-total-unit-price')
-        assert '35,10' == getValue('step2-total')
+        assert '3,510' == getValue('step2-total-unit-price')
+        assert '35,100' == getValue('step2-total')
         setInputValue 'pricing.discountPercent', '1'
-        assert '0,35' == getValue('step2-discount-percent-amount')
+        assert '0,351' == getValue('step2-discount-percent-amount')
         setInputValue 'pricing.adjustment', '0,15'
         assert '10' == getValue('step2-total-quantity')
         assert 'Packung' == getValue('step2-total-unit')
-        assert '3,49' == getValue('step2-total-unit-price')
-        assert '34,90' == getValue('step2-total')
+        assert '3,490' == getValue('step2-total-unit-price')
+        assert '34,899' == getValue('step2-total')
         assert '---' == getValue('step3-unit-price')
         assert '---' == getValue('step3-total-price')
         WebElement input = driver.findElement(By.id('step3-quantity'))
         input.sendKeys '10'
         def select = new Select(driver.findElement(By.id('step3-unit')))
         select.selectByValue '302'
-        assert '3,49' == getValue('step3-unit-price')
-        assert '34,90' == getValue('step3-total-price')
+        assert '3,490' == getValue('step3-unit-price')
+        assert '34,899' == getValue('step3-total-price')
         input.clear()
         input.sendKeys '2'
         select.selectByValue '301'
-        assert '17,45' == getValue('step3-unit-price')
-        assert '34,90' == getValue('step3-total-price')
+        assert '17,450' == getValue('step3-unit-price')
+        assert '34,899' == getValue('step3-total-price')
         submitForm getUrl('/product/show/')
 
         assert 'Produkt Papier A4 80 g/m² wurde angelegt.' == flashMessage
@@ -263,7 +263,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
         assert '2' == getShowFieldText(col, 6)
         assert 'Einheiten' == getShowFieldText(col, 7)
-        assert '17,44 €' == getShowFieldText(col, 8)
+        assert '17,445 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '200' == getShowFieldText(col, 1)
         assert '7 %' == getShowFieldText(col, 2)
@@ -272,24 +272,24 @@ class ProductFunctionalTests extends SalesItemTestCase {
         fieldSet = getFieldset(dataSheet, 3)
         assert 'In der folgenden Tabelle berechne ich den Preis für 10 Packung:' == fieldSet.findElement(By.xpath('./p')).text
         WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,19 €', '21,90 €'
-        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
-        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,90 €'
-        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,60 €', '1,60 €'
-        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,60 €', '1,60 €'
+        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,190 €', '21,900 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,000 €', '10,000 €'
+        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,900 €'
+        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,595 €', '1,595 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,595 €', '1,595 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis (10 Packung)', '', '35,09 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Packung)', '', '3,51 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (10 Packung)', '', '35,090 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Packung)', '', '3,509 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,51 €', '35,09 €'
-        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,35 €'
-        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,15 €'
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,509 €', '35,090 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,351 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,150 €'
         tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,49 €', '34,89 €'
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,489 €', '34,889 €'
         fieldSet = getFieldset(dataSheet, 5)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '2', 'Einheiten', 'zu je', '17,44 €', '34,89 €'
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '2', 'Einheiten', 'zu je', '17,445 €', '34,889 €'
         driver.quit()
 
         assert 1 == Product.count()
@@ -364,11 +364,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
         assert '1' == getShowFieldText(col, 6)
         assert 'Packung' == getShowFieldText(col, 7)
-        assert '2,49 €' == getShowFieldText(col, 8)
+        assert '2,490 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '200' == getShowFieldText(col, 1)
         assert '7 %' == getShowFieldText(col, 2)
-        assert '2,19 €' == getShowFieldText(col, 3)
+        assert '2,190 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Beschreibung' == fieldSet.findElement(By.tagName('h3')).text
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
@@ -398,11 +398,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
         assert '10' == getShowFieldText(col, 6)
         assert 'Packung' == getShowFieldText(col, 7)
-        assert '3,49 €' == getShowFieldText(col, 8)
+        assert '3,489 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '200' == getShowFieldText(col, 1)
         assert '7 %' == getShowFieldText(col, 2)
-        assert '2,19 €' == getShowFieldText(col, 3)
+        assert '2,190 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Beschreibung' == fieldSet.findElement(By.tagName('h3')).text
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
@@ -410,24 +410,24 @@ class ProductFunctionalTests extends SalesItemTestCase {
         fieldSet = getFieldset(dataSheet, 3)
         assert 'In der folgenden Tabelle berechne ich den Preis für 10 Packung:' == fieldSet.findElement(By.xpath('./p')).text
         WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,19 €', '21,90 €'
-        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
-        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,90 €'
-        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,60 €', '1,60 €'
-        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,60 €', '1,60 €'
+        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,190 €', '21,900 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,000 €', '10,000 €'
+        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,900 €'
+        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,595 €', '1,595 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,595 €', '1,595 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis (10 Packung)', '', '35,09 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Packung)', '', '3,51 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (10 Packung)', '', '35,090 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Packung)', '', '3,509 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,51 €', '35,09 €'
-        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,35 €'
-        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,15 €'
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,509 €', '35,090 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,351 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,150 €'
         tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,49 €', '34,89 €'
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,489 €', '34,889 €'
         fieldSet = getFieldset(dataSheet, 5)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '10', 'Packung', 'zu je', '3,49 €', '34,89 €'
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '10', 'Packung', 'zu je', '3,489 €', '34,889 €'
 
         assert driver.findElement(By.className('record-timestamps')).text.startsWith('Erstellt am ')
 
@@ -471,7 +471,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Packung' == td.text
         td = tr.findElement(By.xpath('td[7]'))
         assert td.getAttribute('class').contains('currency')
-        assert '2,49 €' == td.text
+        assert '2,490 €' == td.text
         td = tr.findElement(By.xpath('td[8]'))
         assert td.getAttribute('class').contains('action-buttons')
         link = td.findElement(By.xpath('a[1]'))
@@ -525,7 +525,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Packung' == td.text
         td = tr.findElement(By.xpath('td[7]'))
         assert td.getAttribute('class').contains('currency')
-        assert '3,49 €' == td.text
+        assert '3,489 €' == td.text
         td = tr.findElement(By.xpath('td[8]'))
         assert td.getAttribute('class').contains('action-buttons')
         link = td.findElement(By.xpath('a[1]'))
@@ -561,10 +561,10 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getInputValue('retailer')
         assert '1' == getInputValue('quantity')
         assert '302' == getInputValue('unit.id')
-        assert '2,49' == getInputValue('unitPrice')
+        assert '2,490' == getInputValue('unitPrice')
         assert '200' == getInputValue('weight')
         assert '401' == getInputValue('taxRate.id')
-        assert '2,19' == getInputValue('purchasePrice')
+        assert '2,190' == getInputValue('purchasePrice')
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getInputValue('description')
         assert 'Für diesen Artikel wurde noch keine Kalkulation durchgeführt.' == driver.findElement(By.cssSelector('.empty-list > p')).text
         WebElement link = driver.findElement(By.id('start-pricing'))
@@ -596,11 +596,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Büro und mehr - Schneider' == getShowFieldText(col, 5)
         assert '1' == getShowFieldText(col, 6)
         assert 'Stück' == getShowFieldText(col, 7)
-        assert '8,99 €' == getShowFieldText(col, 8)
+        assert '8,990 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '100' == getShowFieldText(col, 1)
         assert '19 %' == getShowFieldText(col, 2)
-        assert '7,99 €' == getShowFieldText(col, 3)
+        assert '7,990 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == getShowFieldText(fieldSet, 1)
         driver.quit()
@@ -622,33 +622,33 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getInputValue('retailer')
         assert '200' == getInputValue('weight')
         assert '401' == getInputValue('taxRate.id')
-        assert '2,19' == getInputValue('purchasePrice')
+        assert '2,190' == getInputValue('purchasePrice')
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getInputValue('description')
         assert '10' == getInputValue('pricing.quantity')
         assert '302' == getInputValue('pricing.unit.id')
 
-        checkStep1RowValues 0, '10', 'Packungen', 'Materialeinkauf', 'absolute', null, null, '2,19', '21,90'
-        checkStep1RowValues 1, '0,25', 'Stunden', 'Materialbeschaffung', 'absolute', null, null, '40,00', '10,00'
-        checkStep1RowValues 2, null, null, null, 'sum', null, null, null, '31,90'
-        checkStep1RowValues 3, '1', 'Einheit', 'Gewinn', 'relativeToCurrentSum', null, '5,00', '1,60', '1,60'
-        checkStep1RowValues 4, '1', 'Einheit', 'Risiko', 'relativeToLastSum', null, '5,00', '1,60', '1,60'
-        assert '35,09' == step1Total
-        assert '3,51' == step1UnitPrice
+        checkStep1RowValues 0, '10', 'Packungen', 'Materialeinkauf', 'absolute', null, null, '2,190', '21,900'
+        checkStep1RowValues 1, '0,25', 'Stunden', 'Materialbeschaffung', 'absolute', null, null, '40,000', '10,000'
+        checkStep1RowValues 2, null, null, null, 'sum', null, null, null, '31,900'
+        checkStep1RowValues 3, '1', 'Einheit', 'Gewinn', 'relativeToCurrentSum', null, '5,00', '1,595', '1,595'
+        checkStep1RowValues 4, '1', 'Einheit', 'Risiko', 'relativeToLastSum', null, '5,00', '1,595', '1,595'
+        assert '35,090' == step1Total
+        assert '3,509' == step1UnitPrice
         assert '10' == getValue('step2-quantity')
         assert 'Packung' == getValue('step2-unit')
-        assert '3,51' == getValue('step2-unit-price')
-        assert '35,09' == getValue('step2-total-price')
+        assert '3,509' == getValue('step2-unit-price')
+        assert '35,090' == getValue('step2-total-price')
         assert '1,00' == getInputValue('pricing.discountPercent')
-        assert '0,35' == getValue('step2-discount-percent-amount')
-        assert '0,15' == getInputValue('pricing.adjustment')
+        assert '0,351' == getValue('step2-discount-percent-amount')
+        assert '0,150' == getInputValue('pricing.adjustment')
         assert '10' == getValue('step2-total-quantity')
         assert 'Packung' == getValue('step2-total-unit')
-        assert '3,49' == getValue('step2-total-unit-price')
-        assert '34,89' == getValue('step2-total')
+        assert '3,489' == getValue('step2-total-unit-price')
+        assert '34,889' == getValue('step2-total')
         assert '10' == driver.findElement(By.id('step3-quantity')).getAttribute('value')
         assert '302' == new Select(driver.findElement(By.id('step3-unit'))).firstSelectedOption.getAttribute('value')
-        assert '3,49' == getValue('step3-unit-price')
-        assert '34,89' == getValue('step3-total-price')
+        assert '3,489' == getValue('step3-unit-price')
+        assert '34,889' == getValue('step3-total-price')
 
         setInputValue 'autoNumber', false
         setInputValue 'number', '10700'
@@ -665,7 +665,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 0, 'quantity', '20'
         setStep1TableInputValue 0, 'unit', 'Stück'
         setStep1TableInputValue 0, 'unitPrice', '7,99'
-        assert '159,80' == getStep1TableRowTotal(0)
+        assert '159,800' == getStep1TableRowTotal(0)
         assert '(20 Stück)' == driver.findElement(By.id('step1-total-price-quantity')).text
         assert '(1 Stück)' == driver.findElement(By.id('step1-unit-price-quantity')).text
 
@@ -678,11 +678,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 2, 'unit', 'Stunde'
         setStep1TableInputValue 2, 'name', 'Anpassungen'
         setStep1TableInputValue 2, 'unitPrice', '45,00'
-        assert '45,00' == getStep1TableRowTotal(2)
-        assert '214,80' == getStep1TableRowTotal(3)
+        assert '45,000' == getStep1TableRowTotal(2)
+        assert '214,800' == getStep1TableRowTotal(3)
 
         setStep1TableInputValue 4, 'type', 'relativeToLastSum'
-        assert '10,74' == getStep1TableRowTotal(4)
+        assert '10,740' == getStep1TableRowTotal(4)
         WebElement td = getStep1TableCell(5, 'relative-to-pos')
         WebElement span = td.findElement(By.tagName('span'))
         WebElement icon = span.findElement(By.tagName('i'))
@@ -703,22 +703,22 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableReference 5, 1, 5
         getStep1TableRow(1).findElement(By.className('remove-btn')).click()
         assert 6 == numStep1TableRows
-        assert '0,50' == getStep1TableRowTotal(5)
+        assert '0,500' == getStep1TableRowTotal(5)
         moveRowDown 1
         assert 'pricing.items[1].type' == getStep1TableCell(1, 'type').findElement(By.tagName('select')).getAttribute('name')
         assert '3' == strong.text
         assert '2' == getStep1TableInput(5, 'relToPos').getAttribute('value')
-        assert '0,50' == getStep1TableRowTotal(5)
+        assert '0,500' == getStep1TableRowTotal(5)
         moveRowUp 2
         assert 'pricing.items[2].type' == getStep1TableCell(2, 'type').findElement(By.tagName('select')).getAttribute('name')
         assert '2' == strong.text
         assert '1' == getStep1TableInput(5, 'relToPos').getAttribute('value')
-        assert '0,50' == getStep1TableRowTotal(5)
+        assert '0,500' == getStep1TableRowTotal(5)
 
         setStep1TableReference 5, 3, 5
-        assert '10,74' == getStep1TableRowTotal(5)
-        assert '236,28' == getStep1Total()
-        assert '11,81' == getStep1UnitPrice()
+        assert '10,740' == getStep1TableRowTotal(5)
+        assert '236,280' == getStep1Total()
+        assert '11,814' == getStep1UnitPrice()
         moveRowUp 5
         moveRowUp 4
         Alert alert = driver.switchTo().alert()
@@ -737,7 +737,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 6, 'quantity', '1'
         setStep1TableInputValue 6, 'unit', 'Einheit'
         setStep1TableInputValue 6, 'name', 'Test'
-        setStep1TableInputValue 6, 'unitPrice', '40,00'
+        setStep1TableInputValue 6, 'unitPrice', '40,000'
         checkDisabledTypes 6
         setStep1TableReference 5, 6, 5
         checkDisabledTypes 6, 'relativeToPos', 'relativeToLastSum', 'relativeToCurrentSum', 'sum'
@@ -750,18 +750,18 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 6 == removeRow(6)
 
         setInputValue 'pricing.discountPercent', '2'
-        assert '4,73' == getValue('step2-discount-percent-amount')
-        setInputValue 'pricing.adjustment', '-1,56'
+        assert '4,726' == getValue('step2-discount-percent-amount')
+        setInputValue 'pricing.adjustment', '-1,564'
         assert '20' == getValue('step2-total-quantity')
         assert 'Stück' == getValue('step2-total-unit')
-        assert '11,50' == getValue('step2-total-unit-price')
-        assert '229,99' == getValue('step2-total')
+        assert '11,500' == getValue('step2-total-unit-price')
+        assert '229,990' == getValue('step2-total')
         WebElement input = driver.findElement(By.id('step3-quantity'))
         input.clear()
         input.sendKeys '20'
         new Select(driver.findElement(By.id('step3-unit'))).selectByValue '300'
-        assert '11,50' == getValue('step3-unit-price')
-        assert '229,99' == getValue('step3-total-price')
+        assert '11,500' == getValue('step3-unit-price')
+        assert '229,990' == getValue('step3-total-price')
         submitForm getUrl('/product/show/')
 
         assert 'Produkt Stempel wurde geändert.' == flashMessage
@@ -776,36 +776,36 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Büro und mehr - Schneider' == getShowFieldText(col, 5)
         assert '20' == getShowFieldText(col, 6)
         assert 'Stück' == getShowFieldText(col, 7)
-        assert '11,50 €' == getShowFieldText(col, 8)
+        assert '11,500 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '100' == getShowFieldText(col, 1)
         assert '19 %' == getShowFieldText(col, 2)
-        assert '7,99 €' == getShowFieldText(col, 3)
+        assert '7,990 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Mit Firmenaufdruck nach Kundenvorgabe.' == getShowFieldText(fieldSet, 1)
 
         fieldSet = getFieldset(dataSheet, 3)
         assert 'In der folgenden Tabelle berechne ich den Preis für 20 Stück:' == fieldSet.findElement(By.xpath('./p')).text
         WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, '1.', '20', 'Stück', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '7,99 €', '159,80 €'
-        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
-        checkStaticRowValues tbody, 2, '3.', '1', 'Stunde', 'Anpassungen', 'absoluter Betrag', '', '0,00', '45,00 €', '45,00 €'
-        checkStaticRowValues tbody, 3, '4.', '', 'Zwischensumme', '', '214,80 €'
-        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Gewinn', 'relativ zur letzt. Zw.-summe', '', '5,00', '10,74 €', '10,74 €'
-        checkStaticRowValues tbody, 5, '6.', '1', 'Einheit', 'Risiko', 'relativ zu Pos.', '4', '5,00', '10,74 €', '10,74 €'
+        checkStaticRowValues tbody, 0, '1.', '20', 'Stück', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '7,990 €', '159,800 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,000 €', '10,000 €'
+        checkStaticRowValues tbody, 2, '3.', '1', 'Stunde', 'Anpassungen', 'absoluter Betrag', '', '0,00', '45,000 €', '45,000 €'
+        checkStaticRowValues tbody, 3, '4.', '', 'Zwischensumme', '', '214,800 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Gewinn', 'relativ zur letzt. Zw.-summe', '', '5,00', '10,740 €', '10,740 €'
+        checkStaticRowValues tbody, 5, '6.', '1', 'Einheit', 'Risiko', 'relativ zu Pos.', '4', '5,00', '10,740 €', '10,740 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis (20 Stück)', '', '236,28 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Stück)', '', '11,81 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (20 Stück)', '', '236,280 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Stück)', '', '11,814 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '20', 'Stück', '', 'zu je', '11,81 €', '236,28 €'
-        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '2,00', '', '', '4,73 €'
-        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '-1,56 €'
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '20', 'Stück', '', 'zu je', '11,814 €', '236,280 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '2,00', '', '', '4,726 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '-1,564 €'
         tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '20', 'Stück', '', 'zu je', '11,50 €', '229,99 €'
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '20', 'Stück', '', 'zu je', '11,500 €', '229,990 €'
         fieldSet = getFieldset(dataSheet, 5)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '20', 'Stück', 'zu je', '11,50 €', '229,99 €'
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '20', 'Stück', 'zu je', '11,500 €', '229,990 €'
 
         driver.quit()
 
@@ -883,10 +883,10 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 0, 'quantity', '10'
         setStep1TableInputValue 0, 'unit', 'Packungen'
         setStep1TableInputValue 0, 'name', 'Materialeinkauf'
-        setStep1TableInputValue 0, 'unitPrice', '2,19'
-        assert '21,90' == getStep1TableRowTotal(0)
-        assert '21,90' == step1Total
-        assert '2,19' == step1UnitPrice
+        setStep1TableInputValue 0, 'unitPrice', '2,190'
+        assert '21,900' == getStep1TableRowTotal(0)
+        assert '21,900' == step1Total
+        assert '2,190' == step1UnitPrice
         assert '(10 Packung)' == driver.findElement(By.id('step1-total-price-quantity')).text
         assert '(1 Packung)' == driver.findElement(By.id('step1-unit-price-quantity')).text
         WebElement tr = getStep1TableRow(0)
@@ -898,9 +898,9 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 1, 'unit', 'Stunden'
         setStep1TableInputValue 1, 'name', 'Materialbeschaffung'
         setStep1TableInputValue 1, 'unitPrice', '40'
-        assert '10,00' == getStep1TableRowTotal(1)
-        assert '31,90' == step1Total
-        assert '3,19' == step1UnitPrice
+        assert '10,000' == getStep1TableRowTotal(1)
+        assert '31,900' == step1Total
+        assert '3,190' == step1UnitPrice
         tr = getStep1TableRow(0)
         assert !tr.findElement(By.className('up-btn')).displayed
         assert tr.findElement(By.className('down-btn')).displayed
@@ -915,9 +915,9 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert !getStep1TableInput(2, 'unit').enabled
         assert !getStep1TableInput(2, 'name').enabled
         assert !getStep1TableInput(2, 'unitPrice').enabled
-        assert '31,90' == getStep1TableRowTotal(2)
-        assert '31,90' == step1Total
-        assert '3,19' == step1UnitPrice
+        assert '31,900' == getStep1TableRowTotal(2)
+        assert '31,900' == step1Total
+        assert '3,190' == step1UnitPrice
         tr = getStep1TableRow(0)
         assert !tr.findElement(By.className('up-btn')).displayed
         assert tr.findElement(By.className('down-btn')).displayed
@@ -936,55 +936,55 @@ class ProductFunctionalTests extends SalesItemTestCase {
         setStep1TableInputValue 3, 'unit', 'Einheit'
         setStep1TableInputValue 3, 'name', 'Gewinn'
         setStep1TableInputValue 3, 'unitPercent', '5'
-        assert '1,60' == getStep1TableRowTotal(3)
-        assert '33,50' == step1Total
-        assert '3,35' == step1UnitPrice
+        assert '1,600' == getStep1TableRowTotal(3)
+        assert '33,500' == step1Total
+        assert '3,350' == step1UnitPrice
         assert 5 == addNewStep1TableRow()
         setStep1TableInputValue 4, 'type', 'relativeToLastSum'
         setStep1TableInputValue 4, 'quantity', '1'
         setStep1TableInputValue 4, 'unit', 'Einheit'
         setStep1TableInputValue 4, 'name', 'Risiko'
         setStep1TableInputValue 4, 'unitPercent', '5'
-        assert '1,60' == getStep1TableRowTotal(4)
-        assert '35,10' == step1Total
-        assert '3,51' == step1UnitPrice
+        assert '1,600' == getStep1TableRowTotal(4)
+        assert '35,100' == step1Total
+        assert '3,510' == step1UnitPrice
         assert '10' == getValue('step2-quantity')
         assert 'Packung' == getValue('step2-unit')
-        assert '3,51' == getValue('step2-unit-price')
-        assert '35,10' == getValue('step2-total-price')
+        assert '3,510' == getValue('step2-unit-price')
+        assert '35,100' == getValue('step2-total-price')
         assert '10' == getValue('step2-total-quantity')
         assert 'Packung' == getValue('step2-total-unit')
-        assert '3,51' == getValue('step2-total-unit-price')
-        assert '35,10' == getValue('step2-total')
+        assert '3,510' == getValue('step2-total-unit-price')
+        assert '35,100' == getValue('step2-total')
         setInputValue 'pricing.discountPercent', '1'
-        assert '0,35' == getValue('step2-discount-percent-amount')
-        setInputValue 'pricing.adjustment', '0,15'
+        assert '0,351' == getValue('step2-discount-percent-amount')
+        setInputValue 'pricing.adjustment', '0,150'
         assert '10' == getValue('step2-total-quantity')
         assert 'Packung' == getValue('step2-total-unit')
-        assert '3,49' == getValue('step2-total-unit-price')
-        assert '34,90' == getValue('step2-total')
-        assert '3,49' == getValue('step3-unit-price')
-        assert '3,49' == getValue('step3-total-price')
+        assert '3,490' == getValue('step2-total-unit-price')
+        assert '34,899' == getValue('step2-total')
+        assert '3,490' == getValue('step3-unit-price')
+        assert '3,490' == getValue('step3-total-price')
         WebElement input = driver.findElement(By.id('step3-quantity'))
         input.clear()
         input.sendKeys '10'
-        assert '3,49' == getValue('step3-unit-price')
-        assert '34,90' == getValue('step3-total-price')
+        assert '3,490' == getValue('step3-unit-price')
+        assert '34,899' == getValue('step3-total-price')
         input.clear()
         input.sendKeys '1'
         def select = new Select(driver.findElement(By.id('step3-unit')))
         select.selectByValue '301'
-        assert '34,90' == getValue('step3-unit-price')
-        assert '34,90' == getValue('step3-total-price')
+        assert '34,899' == getValue('step3-unit-price')
+        assert '34,899' == getValue('step3-total-price')
         input.clear()
         input.sendKeys '2'
-        assert '17,45' == getValue('step3-unit-price')
-        assert '34,90' == getValue('step3-total-price')
+        assert '17,450' == getValue('step3-unit-price')
+        assert '34,899' == getValue('step3-total-price')
         input.clear()
         input.sendKeys '10'
         select.selectByValue '302'
-        assert '3,49' == getValue('step3-unit-price')
-        assert '34,90' == getValue('step3-total-price')
+        assert '3,490' == getValue('step3-unit-price')
+        assert '34,899' == getValue('step3-total-price')
         submitForm getUrl('/product/show/')
 
         assert 'Produkt Papier A4 80 g/m² wurde geändert.' == flashMessage
@@ -999,7 +999,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
         assert '10' == getShowFieldText(col, 6)
         assert 'Packung' == getShowFieldText(col, 7)
-        assert '3,49 €' == getShowFieldText(col, 8)
+        assert '3,489 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '200' == getShowFieldText(col, 1)
         assert '7 %' == getShowFieldText(col, 2)
@@ -1008,24 +1008,24 @@ class ProductFunctionalTests extends SalesItemTestCase {
         fieldSet = getFieldset(dataSheet, 3)
         assert 'In der folgenden Tabelle berechne ich den Preis für 10 Packung:' == fieldSet.findElement(By.xpath('./p')).text
         WebElement tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,19 €', '21,90 €'
-        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,00 €', '10,00 €'
-        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,90 €'
-        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,60 €', '1,60 €'
-        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,60 €', '1,60 €'
+        checkStaticRowValues tbody, 0, '1.', '10', 'Packungen', 'Materialeinkauf', 'absoluter Betrag', '', '0,00', '2,190 €', '21,900 €'
+        checkStaticRowValues tbody, 1, '2.', '0,25', 'Stunden', 'Materialbeschaffung', 'absoluter Betrag', '', '0,00', '40,000 €', '10,000 €'
+        checkStaticRowValues tbody, 2, '3.', '', 'Zwischensumme', '', '31,900 €'
+        checkStaticRowValues tbody, 3, '4.', '1', 'Einheit', 'Gewinn', 'relativ zur akt. Summe', '', '5,00', '1,595 €', '1,595 €'
+        checkStaticRowValues tbody, 4, '5.', '1', 'Einheit', 'Risiko', 'relativ zur letzt. Zw.-summe', '', '5,00', '1,595 €', '1,595 €'
         WebElement tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Gesamtpreis (10 Packung)', '', '35,09 €'
-        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Packung)', '', '3,51 €'
+        checkStaticRowValues tfoot, 0, 'Gesamtpreis (10 Packung)', '', '35,090 €'
+        checkStaticRowValues tfoot, 1, 'Kalkulierter Einzelpreis (1 Packung)', '', '3,509 €'
         fieldSet = getFieldset(dataSheet, 4)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,51 €', '35,09 €'
-        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,35 €'
-        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,15 €'
+        checkStaticRowValues tbody, 0, 'Kalkulierter Gesamtwert', '10', 'Packung', '', 'zu je', '3,509 €', '35,090 €'
+        checkStaticRowValues tbody, 1, 'Rabatt %', '', '', '1,00', '', '', '0,351 €'
+        checkStaticRowValues tbody, 2, 'Preisanpassung +/-', '', '', '', '', '', '0,150 €'
         tfoot = fieldSet.findElement(By.tagName('tfoot'))
-        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,49 €', '34,89 €'
+        checkStaticRowValues tfoot, 0, 'Verkaufspreis', '10', 'Packung', '', 'zu je', '3,489 €', '34,889 €'
         fieldSet = getFieldset(dataSheet, 5)
         tbody = fieldSet.findElement(By.tagName('tbody'))
-        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '10', 'Packung', 'zu je', '3,49 €', '34,89 €'
+        checkStaticRowValues tbody, 0, 'Der Artikel wird verkauft als', '10', 'Packung', 'zu je', '3,489 €', '34,889 €'
         driver.quit()
 
         assert 1 == Product.count()
@@ -1054,7 +1054,7 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert '302' == new Select(input).firstSelectedOption.getAttribute('value')
         input = getInput('unitPrice')
         assert input.displayed
-        assert '3,49' == input.getAttribute('value')
+        assert '3,489' == input.getAttribute('value')
         submitForm getUrl('/product/show/')
 
         assert 'Produkt Papier A4 80 g/m² wurde geändert.' == flashMessage
@@ -1069,11 +1069,11 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert 'Druckereibedarf Kiel GmbH' == getShowFieldText(col, 5)
         assert '10' == getShowFieldText(col, 6)
         assert 'Packung' == getShowFieldText(col, 7)
-        assert '3,49 €' == getShowFieldText(col, 8)
+        assert '3,489 €' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '200' == getShowFieldText(col, 1)
         assert '7 %' == getShowFieldText(col, 2)
-        assert '2,19 €' == getShowFieldText(col, 3)
+        assert '2,190 €' == getShowFieldText(col, 3)
         fieldSet = getFieldset(dataSheet, 2)
         assert 'Packung zu 100 Blatt. Chlorfrei gebleicht.' == getShowFieldText(fieldSet, 1)
         driver.quit()
@@ -1096,13 +1096,13 @@ class ProductFunctionalTests extends SalesItemTestCase {
         assert '302' == new Select(input).firstSelectedOption.getAttribute('value')
         input = getInput('unitPrice')
         assert input.displayed
-        assert '3,49' == input.getAttribute('value')
+        assert '3,489' == input.getAttribute('value')
         cancelForm getUrl('/product/list')
 
         def tbody = driver.findElement(By.xpath('//table[@class="content-table"]/tbody'))
         assert 1 == tbody.findElements(By.tagName('tr')).size()
         def tr = tbody.findElement(By.xpath('tr[1]'))
-        assert '3,49 €' == tr.findElement(By.xpath('td[7]')).text
+        assert '3,489 €' == tr.findElement(By.xpath('td[7]')).text
         tr.findElement(By.xpath('td[8]/a[1]')).click()
         assert 5 == numStep1TableRows
         assert driver.findElement(By.id('remove-pricing')).displayed

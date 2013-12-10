@@ -13,7 +13,7 @@
         type="date" /></strong><br />
       <g:message code="invoice.amount.label" />:
       <strong><g:formatCurrency number="${invoiceInstance.total}"
-        displayZero="true"
+        displayZero="true" external="true"
         /><g:if test="${invoiceInstance.paymentAmount}">,
         <g:message code="invoice.stillUnpaid.label" default="still unpaid" />:
         <g:formatCurrency number="${invoiceInstance.total - invoiceInstance.paymentAmount}" /></g:if></strong>

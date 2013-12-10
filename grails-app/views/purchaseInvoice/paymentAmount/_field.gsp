@@ -2,12 +2,11 @@
   <div class="field-text">
     <span class="input">
       <f:input bean="${bean}" property="${property}"
-        value="${formatNumber(number: value, minFractionDigits: 2)}"
-        size="${size ?: 10}" class="number" />
+        cssClass="number currency currency-ext" displayZero="true"
+        external="true" />
     </span>
     <span class="currency-symbol"><g:currency />,</span>
-    <span id="still-unpaid"
-      data-modified-closing-balance="${bean.modifiedClosingBalance}">
+    <span id="still-unpaid" data-modified-closing-balance="0">
       <g:message code="invoice.stillUnpaid.label" default="still unpaid" />:
       <output></output>
       <g:currency />

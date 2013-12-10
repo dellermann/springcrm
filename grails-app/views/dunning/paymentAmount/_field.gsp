@@ -2,8 +2,8 @@
   <div class="field-text">
     <span class="input">
       <f:input bean="${bean}" property="${property}"
-        value="${formatCurrency(number: value, numberOnly: true, displayZero: true, external: true)}"
-        cssClass="number currency currency-ext" />
+        cssClass="number currency currency-ext" displayZero="true"
+        external="true" />
     </span>
     <span class="currency-symbol"><g:currency />,</span>
     <span id="still-unpaid"

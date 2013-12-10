@@ -70,6 +70,8 @@ class PurchaseInvoice {
 
     //-- Instance variables ---------------------
 
+    def userService
+
     String number
     String subject
     String vendorName
@@ -113,34 +115,7 @@ class PurchaseInvoice {
     }
 
 
-    //-- Public methods -------------------------
-
-    def beforeValidate() {
-        total = computeTotal()
-    }
-
-    def beforeInsert() {
-        total = computeTotal()
-    }
-
-    def beforeUpdate() {
-        total = computeTotal()
-    }
-
-    /**
-     * Computes the total (gross) value. It is computed from the subtotal gross
-     * value minus all discounts plus the adjustment.
-     *
-     * @return  the total (gross) value
-     */
-    double computeTotal() {
-        subtotalGross - discountPercentAmount - discountAmount + adjustment
-    }
-
-    @Override
-    boolean equals(Object obj) {
-        (obj instanceof PurchaseInvoice) ? obj.id == id : false
-    }
+    //-- Properties -----------------------------
 
     /**
      * Gets the balance of this purchase invoice, that is the difference
@@ -150,7 +125,8 @@ class PurchaseInvoice {
      * @since   1.0
      */
     double getBalance() {
-        paymentAmount - total
+        int d = userService.numFractionDigitsExt
+        paymentAmount.round(d) - total.round(d)
     }
 
     /**
@@ -244,6 +220,36 @@ class PurchaseInvoice {
             res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
         }
         res.sort { e1, e2 -> e1.key <=> e2.key }
+    }
+
+
+    //-- Public methods -------------------------
+
+    def beforeValidate() {
+        total = computeTotal()
+    }
+
+    def beforeInsert() {
+        total = computeTotal()
+    }
+
+    def beforeUpdate() {
+        total = computeTotal()
+    }
+
+    /**
+     * Computes the total (gross) value. It is computed from the subtotal gross
+     * value minus all discounts plus the adjustment.
+     *
+     * @return  the total (gross) value
+     */
+    double computeTotal() {
+        subtotalGross - discountPercentAmount - discountAmount + adjustment
+    }
+
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof PurchaseInvoice) ? obj.id == id : false
     }
 
     @Override

@@ -70,7 +70,9 @@
           </td>
           <td></td>
           <td class="currency number">
-            <output id="step1-total-price"><g:formatNumber number="${salesItem.pricing?.step1TotalPrice}" minFractionDigits="2" /></output>
+            <output id="step1-total-price"><g:formatCurrency
+              number="${salesItem.pricing?.step1TotalPrice}"
+              numberOnly="true" displayZero="true" /></output>
             <g:currency />
           </td>
           <td></td>
@@ -82,7 +84,9 @@
           </td>
           <td></td>
           <td class="currency number">
-            <output id="step1-unit-price"><g:formatNumber number="${salesItem.pricing?.step1UnitPrice}" minFractionDigits="2" /></output>
+            <output id="step1-unit-price"><g:formatCurrency
+              number="${salesItem.pricing?.step1UnitPrice}"
+              numberOnly="true" displayZero="true" /></output>
             <g:currency />
           </td>
           <td></td>
@@ -128,13 +132,15 @@
               <span class="input">
                 <input type="text" name="pricing.items[${i}].unitPrice"
                   size="8"
-                  value="${formatNumber(number: salesItem.pricing?.computeUnitPriceOfItem(i), minFractionDigits: 2)}" />
+                  value="${formatCurrency(number: salesItem.pricing?.computeUnitPriceOfItem(i), numberOnly: true, displayZero: true)}" />
               </span>
               <span class="currency-symbol"><g:currency /></span>
             </div>
           </td>
           <td class="total-price currency number">
-            <output><g:formatNumber number="${salesItem.pricing?.computeTotalOfItem(i)}" minFractionDigits="2" /></output>
+            <output><g:formatCurrency
+              number="${salesItem.pricing?.computeTotalOfItem(i)}"
+              numberOnly="true" displayZero="true" /></output>
             <g:currency />
           </td>
           <td class="action-buttons">
@@ -183,11 +189,15 @@
         <td></td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
         <td class="unit-price currency number">
-          <output id="step2-total-unit-price"><g:formatNumber number="${salesItem.pricing?.step2TotalUnitPrice}" minFractionDigits="2" /></output>
+          <output id="step2-total-unit-price"><g:formatCurrency
+            number="${salesItem.pricing?.step2TotalUnitPrice}"
+            numberOnly="true" displayZero="true" /></output>
           <g:currency />
         </td>
         <td class="total-price currency number">
-          <output id="step2-total"><g:formatNumber number="${salesItem.pricing?.step2Total}" minFractionDigits="2" /></output>
+          <output id="step2-total"><g:formatCurrency
+            number="${salesItem.pricing?.step2Total}"
+            numberOnly="true" displayZero="true" /></output>
           <g:currency />
         </td>
       </tr>
@@ -206,11 +216,15 @@
           <g:message code="salesItem.pricing.per.label" />
         </td>
         <td class="unit-price currency number">
-          <output id="step2-unit-price"><g:formatNumber number="${salesItem.pricing?.step1UnitPrice}" minFractionDigits="2" /></output>
+          <output id="step2-unit-price"><g:formatCurrency
+            number="${salesItem.pricing?.step1UnitPrice}"
+            numberOnly="true" displayZero="true" /></output>
           <g:currency />
         </td>
         <td class="total-price currency number">
-          <output id="step2-total-price"><g:formatNumber number="${salesItem.pricing?.step1TotalPrice}" minFractionDigits="2" /></output>
+          <output id="step2-total-price"><g:formatCurrency
+            number="${salesItem.pricing?.step1TotalPrice}"
+            numberOnly="true" displayZero="true" /></output>
           <g:currency />
         </td>
       </tr>
@@ -232,7 +246,9 @@
         <td></td>
         <td></td>
         <td class="total-price currency number">
-          <output id="step2-discount-percent-amount"><g:formatNumber number="${salesItem.pricing?.discountPercentAmount}" minFractionDigits="2" /></output>
+          <output id="step2-discount-percent-amount"><g:formatCurrency
+            number="${salesItem.pricing?.discountPercentAmount}"
+            numberOnly="true" displayZero="true" /></output>
           <g:currency />
         </td>
       </tr>
@@ -248,7 +264,7 @@
             <span class="input">
               <input id="step2-adjustment" type="text"
                 name="pricing.adjustment" size="8"
-                value="${formatNumber(number: salesItem.pricing?.adjustment, minFractionDigits: 2)}" />
+                value="${formatCurrency(number: salesItem.pricing?.adjustment, numberOnly: true, displayZero: true)}" />
             </span>
             <span class="currency-symbol"><g:currency /></span>
           </div>
@@ -297,11 +313,15 @@
         </td>
         <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
         <td class="unit-price currency number">
-          <output id="step3-unit-price"><g:formatNumber number="${salesItem.unitPrice}" minFractionDigits="2" /></output>
+          <output id="step3-unit-price"><g:formatCurrency
+            number="${salesItem.unitPrice}" numberOnly="true"
+            displayZero="true" /></output>
           <g:currency />
         </td>
         <td class="total-price currency number">
-          <output id="step3-total-price"><g:formatNumber number="${salesItem.total}" minFractionDigits="2" /></output>
+          <output id="step3-total-price"><g:formatCurrency
+            number="${salesItem.total}" numberOnly="true"
+            displayZero="true" /></output>
           <g:currency />
         </td>
       </tr>

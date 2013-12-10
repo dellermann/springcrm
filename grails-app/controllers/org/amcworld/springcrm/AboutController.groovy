@@ -1,7 +1,7 @@
 /*
  * AboutController.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ package org.amcworld.springcrm
  * The class {@code AboutController} contains actions which display pages in
  * the "about" section, such as legal notices and system information.
  *
- * @author	Daniel Ellermann
- * @version 0.9
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class AboutController {
 
