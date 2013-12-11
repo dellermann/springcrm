@@ -45,7 +45,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class FopService {
 
@@ -181,46 +181,66 @@ class FopService {
     {
         User user = session.user.clone()
         user.password = null    // unset password for security reasons
-        def data = [
+        user.rawSettings = null // unset unneeded data
+        Map data = [
             transaction: transaction,
-            items: transaction.items,
-            organization: transaction.organization,
-            person: transaction.person,
             user: user,
-            fullNumber: transaction.fullNumber,
-            taxRates: transaction.taxRateSums,
-            values: [
-                subtotalNet: transaction.subtotalNet,
-                subtotalGross: transaction.subtotalGross,
-                discountPercentAmount: transaction.discountPercentAmount,
-                total: transaction.total
-            ],
             watermark: duplicate ? 'duplicate' : '',
             client: Client.loadAsMap()
         ]
         if (additionalData) {
             data << additionalData
         }
-        String xml = (data as XML).toString()
-        
-        StringBuilder buf = new StringBuilder()
-        buf << generateMarkdownXml(
-            transaction.billingAddr, 'street', 'billingAddrStreet'
-        )
-        buf << generateMarkdownXml(
-            transaction.shippingAddr, 'street', 'shippingAddrStreet'
-        )
-        buf << generateMarkdownXml(transaction, 'headerText')
-        buf << generateMarkdownXml(transaction, 'footerText')
-        buf << '<itemsHtml>'
-        for (InvoicingItem item : transaction.items) {
-            buf << '<descriptionHtml id="' << item.id << '">'
-            buf << generateRawMarkdownXml(item.description)
-            buf << '</descriptionHtml>'
+
+        String xml
+        XML.use('fullDeep') {
+            XML converter = data as XML
+            xml = converter.toString()
         }
-        buf << '</itemsHtml>'
-        buf << '</map>'
-        xml = xml.replaceAll ~/<\/map>$/, buf.toString()
+
+        //-----------------------------------------------
+//        User user = session.user.clone()
+//        user.password = null    // unset password for security reasons
+//        def data = [
+//            transaction: transaction,
+//            items: transaction.items,
+//            organization: transaction.organization,
+//            person: transaction.person,
+//            user: user,
+//            fullNumber: transaction.fullNumber,
+//            taxRates: transaction.taxRateSums,
+//            values: [
+//                subtotalNet: transaction.subtotalNet,
+//                subtotalGross: transaction.subtotalGross,
+//                discountPercentAmount: transaction.discountPercentAmount,
+//                total: transaction.total
+//            ],
+//            watermark: duplicate ? 'duplicate' : '',
+//            client: Client.loadAsMap()
+//        ]
+//        if (additionalData) {
+//            data << additionalData
+//        }
+//        String xml = (data as XML).toString()
+//
+//        StringBuilder buf = new StringBuilder()
+//        buf << generateMarkdownXml(
+//            transaction.billingAddr, 'street', 'billingAddrStreet'
+//        )
+//        buf << generateMarkdownXml(
+//            transaction.shippingAddr, 'street', 'shippingAddrStreet'
+//        )
+//        buf << generateMarkdownXml(transaction, 'headerText')
+//        buf << generateMarkdownXml(transaction, 'footerText')
+//        buf << '<itemsHtml>'
+//        for (InvoicingItem item : transaction.items) {
+//            buf << '<descriptionHtml id="' << item.id << '">'
+//            buf << generateRawMarkdownXml(item.description)
+//            buf << '</descriptionHtml>'
+//        }
+//        buf << '</itemsHtml>'
+//        buf << '</map>'
+//        xml = xml.replaceAll ~/<\/map>$/, buf.toString()
 
         if (log.debugEnabled) {
             log.debug "XML data structure, type ${transaction.type}: ${xml}"

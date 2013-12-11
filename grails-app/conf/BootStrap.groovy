@@ -18,11 +18,19 @@
  */
 
 
+import grails.converters.XML
+import javax.servlet.ServletContext
 import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.InstallService
 import org.amcworld.springcrm.OverviewPanelRepository
+import org.amcworld.springcrm.util.xml.FullDeepDomainClassMarshaller
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.support.proxy.DefaultProxyHandler
+import org.codehaus.groovy.grails.support.proxy.ProxyHandler
+import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
+import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
+import org.springframework.context.ApplicationContext
 
 
 /**
@@ -50,7 +58,7 @@ class BootStrap {
 
     //-- Public methods -------------------------
 
-    def init = { servletContext ->
+    def init = { ServletContext ctx ->
         exceptionHandler.exceptionMappings = [
             'java.lang.Exception': '/error'
         ]
@@ -66,6 +74,24 @@ class BootStrap {
             }
         }
 
+        /* register full deep XML domain class converter */
+        ApplicationContext appCtx = grailsApplication.mainContext
+        ProxyHandler proxyHandler = appCtx ? appCtx.getBean(ProxyHandler) \
+            : new DefaultProxyHandler()
+        def convConfig = new DefaultConverterConfiguration<XML>(
+            ConvertersConfigurationHolder.getConverterConfiguration(XML),
+            proxyHandler
+        )
+//        convConfig.setPrettyPrint true
+        convConfig.registerObjectMarshaller(
+            new FullDeepDomainClassMarshaller(
+                false, proxyHandler, grailsApplication
+            ), 10
+        )
+        ConvertersConfigurationHolder.setNamedConverterConfiguration(
+            XML, 'fullDeep', convConfig
+        )
+
         /* apply difference sets */
         installService.applyAllDiffSets dataSource.connection, CURRENT_DB_VERSION
 
@@ -79,7 +105,7 @@ class BootStrap {
 
         /* initialize panels on overview page */
         OverviewPanelRepository opr = OverviewPanelRepository.instance
-        opr.initialize servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml')
+        opr.initialize ctx.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml')
     }
 
     def destroy = {}

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class InvoiceController {
@@ -345,14 +345,14 @@ class InvoiceController {
         }
 
         String xml = fopService.generateXml(invoiceInstance, !!params.duplicate)
-        GString fileName =
-            "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
-        if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-        }
-        fileName += ".pdf"
-
-        fopService.outputPdf xml, 'invoice', template, response, fileName
+//        GString fileName =
+//            "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
+//        if (params.duplicate) {
+//            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+//        }
+//        fileName += ".pdf"
+//
+//        fopService.outputPdf xml, 'invoice', template, response, fileName
     }
 
     def listUnpaidBills() {
