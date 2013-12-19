@@ -211,7 +211,7 @@ environments {
     cloud {
         searchable {
             bulkIndexOnStartup = false
-            compassConnection = "ram://test-index"
+            compassConnection = 'ram://test-index'
         }
     }
 
@@ -219,7 +219,7 @@ environments {
     test {
         searchable {
             bulkIndexOnStartup = false
-            compassConnection = "ram://test-index"
+            compassConnection = 'ram://test-index'
         }
     }
 }

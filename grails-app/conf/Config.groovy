@@ -143,7 +143,7 @@ grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
         jsOutputPath = 'web-app/js/app'
     }
     pluginConfig {
-        minifyInEnvironment = ['production', 'live', 'cloud', 'standalone']
+        minifyInEnvironment = ['production', 'cloud', 'standalone']
         purgeJS = true
     }
 }

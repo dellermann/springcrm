@@ -105,9 +105,9 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        compile(':cloud-foundry:1.2.3') {
-            export = false
-        }
+//        compile(':cloud-foundry:1.2.3') {
+//            export = false
+//        }
         compile(
             ':codenarc:0.19',
             ':coffeescript-compiler:0.9.4',
