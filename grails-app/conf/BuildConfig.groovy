@@ -122,7 +122,6 @@ grails.project.dependency.resolution = {
             ':searchable:0.6.6'
         )
         build(
-            ':standalone:1.2.3',
             ':tomcat:7.0.47'
         )
         runtime(

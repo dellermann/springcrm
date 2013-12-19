@@ -68,7 +68,7 @@ environments {
         }
     }
 
-    /* standalone environment for demonstration purposes */
+    /* standalone environment quick installation */
     standalone {
         dataSource {
             driverClassName = 'org.h2.Driver'
