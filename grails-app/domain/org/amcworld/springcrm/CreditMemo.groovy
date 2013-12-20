@@ -43,7 +43,11 @@ class CreditMemo extends InvoicingTransaction {
     static mapping = {
         stage column: 'credit_memo_stage_id'
     }
-    static searchable = true
+    static searchable = [
+        except: [
+            'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+        ]
+    ]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'

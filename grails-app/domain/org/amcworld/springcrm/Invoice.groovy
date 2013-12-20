@@ -45,7 +45,11 @@ class Invoice extends InvoicingTransaction {
     static mapping = {
         stage column: 'invoice_stage_id'
     }
-    static searchable = true
+    static searchable = [
+        except: [
+            'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+        ]
+    ]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'

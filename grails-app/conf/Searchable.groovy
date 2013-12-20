@@ -59,8 +59,7 @@ searchable {
             path << userHome << '/.' << appName
         }
     }
-    path << '/searchable-index/'
-    path << System.properties['grails.env']
+    path << '/searchable-index'
 
     /**
      * The location of the Compass index

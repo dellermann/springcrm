@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Dunning} represents a dunning which belongs to an invoice.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class Dunning extends InvoicingTransaction {
 
@@ -45,7 +45,11 @@ class Dunning extends InvoicingTransaction {
     static mapping = {
         stage column: 'dunning_stage_id'
     }
-    static searchable = true
+    static searchable = [
+        except: [
+            'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
+        ]
+    ]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'

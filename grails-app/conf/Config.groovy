@@ -182,6 +182,7 @@ springcrm {
         data = "${springcrm.dir.base}/data"
         documents = "${springcrm.dir.base}/documents"
         installer = "${springcrm.dir.base}/install"
+        log = "${springcrm.dir.base}/log"
         print = "${springcrm.dir.base}/print"
     }
     lruList.numEntries = 10
@@ -233,18 +234,9 @@ grails.logging.jul.usebridge = false
 /* loggers */
 log4j = {
     appenders {
-        String logDir = grails.util.Environment.warDeployed \
-            ? System.properties['catalina.home'] + '/logs' \
-            : 'target'
-        rollingFile(
-            name: 'stacktrace', maxBackupIndex: 10,
-            file: "${logDir}/stacktrace.log",
-            layout: pattern(conversionPattern: "'%d [%t] %-5p %c{2} %x - %m%n'")
+        console(
+            name: 'stdout', layout: pattern(conversionPattern: '%c{2} %m%n')
         )
-//        console(
-//            name: 'stdout',
-//            layout: pattern(conversionPattern: '%c{2} %m%n')
-//        )
     }
 
     error(
@@ -288,12 +280,24 @@ log4j = {
     )
 
     environments {
+        production {
+            appenders {
+                rollingFile(
+                    name: 'stacktrace', maxBackupIndex: 10,
+                    file: "${springcrm.dir.log}/stacktrace.log",
+                    layout: pattern(conversionPattern: '%d [%t] %-5p %c{2} %x - %m%n')
+                )
+            }
+            root {
+                warn 'stacktrace'
+            }
+        }
         standalone {
             appenders {
                 rollingFile(
                     name: 'stacktrace', maxBackupIndex: 10,
                     file: "${System.properties['user.home']}/.springcrm/stacktrace.log",
-                    layout: pattern(conversionPattern: "'%d [%t] %-5p %c{2} %x - %m%n'")
+                    layout: pattern(conversionPattern: '%d [%t] %-5p %c{2} %x - %m%n')
                 )
             }
             root {

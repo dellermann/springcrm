@@ -61,7 +61,9 @@ class PurchaseInvoice {
         notes type: 'text'
         subject index: 'subject'
     }
-    static searchable = true
+    static searchable = [
+        except: ['balance', 'balanceColor', 'paymentStateColor']
+    ]
     static transients = [
         'balance', 'balanceColor', 'discountPercentAmount',
         'paymentStateColor', 'subtotalNet', 'subtotalGross', 'taxRateSums'
