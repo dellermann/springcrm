@@ -57,6 +57,13 @@ class ConfigHolder {
         instance
     }
 
+    void removeConfig(String name) {
+        Config config = getConfig(name)
+        if (config) {
+            config.delete flush: true
+        }
+    }
+
     void putAt(String name, String value) {
         setConfig name, value
     }

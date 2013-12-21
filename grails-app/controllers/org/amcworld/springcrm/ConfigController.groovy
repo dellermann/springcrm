@@ -190,7 +190,23 @@ class ConfigController {
 
     def loadSeqNumbers() {
         def list = SeqNumber.list()
-        render view: 'seqNumbers', model: [seqNumberList: list]
+
+        Long serviceIdDunningCharge =
+            ConfigHolder.instance['serviceIdDunningCharge'] as Long
+        Service s = Service.read(serviceIdDunningCharge)
+        String serviceDunningCharge = s ? s.name : ''
+        Long serviceIdDefaultInterest =
+            ConfigHolder.instance['serviceIdDefaultInterest'] as Long
+        s = Service.read(serviceIdDefaultInterest)
+        String serviceDefaultInterest = s ? s.name : ''
+
+        render view: 'seqNumbers', model: [
+            seqNumberList: list,
+            serviceIdDunningCharge: serviceIdDunningCharge,
+            serviceDunningCharge: serviceDunningCharge,
+            serviceIdDefaultInterest: serviceIdDefaultInterest,
+            serviceDefaultInterest: serviceDefaultInterest
+        ]
     }
 
     def saveSeqNumbers() {
@@ -205,6 +221,19 @@ class ConfigController {
                 hasErrors |= (seqNumber.save(flush: true) == null)
             } catch (NumberFormatException ignored) { /* ignored */ }
         }
+
+        def configHolder = ConfigHolder.instance
+        if (params.serviceIdDunningCharge) {
+            configHolder.setConfig 'serviceIdDunningCharge', params.serviceIdDunningCharge
+        } else {
+            configHolder.removeConfig 'serviceIdDunningCharge'
+        }
+        if (params.serviceIdDefaultInterest) {
+            configHolder.setConfig 'serviceIdDefaultInterest', params.serviceIdDefaultInterest
+        } else {
+            configHolder.removeConfig 'serviceIdDefaultInterest'
+        }
+
         if (hasErrors) {
             l.sort { it.ident() }
             render view: 'seqNumbers', model: [seqNumberList: l]

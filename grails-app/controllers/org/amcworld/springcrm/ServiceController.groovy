@@ -212,4 +212,28 @@ class ServiceController {
             }
         }
     }
+
+    def find(String name) {
+        Integer number = null
+        try {
+            number = name as Integer
+        } catch (NumberFormatException ignored) { /* ignored */ }
+
+        def c = Service.createCriteria()
+        List<Service> list = c.list {
+            or {
+                eq 'number', number
+                ilike 'name', "%${name}%"
+            }
+            order 'number', 'asc'
+        }
+
+        render(contentType: 'text/json') {
+            array {
+                for (Service s in list) {
+                    service id: s.id, name: s.name
+                }
+            }
+        }
+    }
 }

@@ -31,7 +31,7 @@
           <table id="seq-numbers">
             <thead>
               <tr>
-                <th scope="col"></th>
+                <th scope="col" style="width: 11.5em;"></th>
                 <th scope="col"><g:message code="config.seqNumbers.prefix.label" default="Prefix" /></th>
                 <th scope="col"><g:message code="config.seqNumbers.startValue.label" default="Start value" /></th>
                 <th scope="col"><g:message code="config.seqNumbers.endValue.label" default="End value" /></th>
@@ -67,6 +67,39 @@
             </g:each>
             </tbody>
           </table>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <header><h3><g:message code="config.fieldset.specialServices.label" /></h3></header>
+        <div>
+          <p><g:message code="config.fieldset.specialServices.description" /></p>
+          <div class="row">
+            <div class="label">
+              <label for="serviceDunningCharge"><g:message code="config.serviceIdDunningCharge.label" /></label>
+            </div>
+            <div class="field">
+              <g:textField name="serviceDunningCharge"
+                value="${serviceDunningCharge}" id="serviceDunningCharge"
+                class="service-selector" size="60"
+                data-find-url="${createLink(controller: 'service', action: 'find')}" />
+              <g:hiddenField name="serviceIdDunningCharge"
+                value="${serviceIdDunningCharge}"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">
+              <label for="serviceDefaultInterest"><g:message code="config.serviceIdDefaultInterest.label" /></label>
+            </div>
+            <div class="field">
+              <g:textField name="serviceDefaultInterest"
+                value="${serviceDefaultInterest}" id="serviceDefaultInterest"
+                class="service-selector" size="60"
+                data-find-url="${createLink(controller: 'service', action: 'find')}" />
+              <g:hiddenField name="serviceIdDefaultInterest"
+                value="${serviceIdDefaultInterest}"/>
+            </div>
+          </div>
         </div>
       </fieldset>
     </g:form>

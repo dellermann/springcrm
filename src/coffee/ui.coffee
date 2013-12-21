@@ -291,7 +291,9 @@ AutoCompleteExWidget =
     valueInput = null
     v = @options.valueInput
     if v
-      valueInput = $(v) if $.type(v) is "string"
+      switch $.type(v)
+        when "string" then valueInput = $(v)
+        when "function" then valueInput = v.call(this)
     else
       el = @element
       name = el.attr("name")

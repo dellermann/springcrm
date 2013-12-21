@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# 
+#
 
 
 $ = jQuery
@@ -77,3 +77,12 @@ $.widget "springcrm.configSeqNumber", ConfigSeqNumberWidget
 
 $("#seq-numbers").configSeqNumber()
 
+$serviceSelector = $(".service-selector")
+loadServiceUrl = $serviceSelector.parents("fieldset")
+  .data("load-service-url")
+$serviceSelector.autocompleteex
+  noSelectValue: ''
+  valueInput: ->
+    this.element
+      .parents(".field")
+        .find("input:hidden")
