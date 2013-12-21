@@ -3,7 +3,7 @@
   <div id="top-area">
     <p><g:loginControl /></p>
     <form action="${createLink(controller: 'searchable', action: 'index')}"
-      id="search-area">
+      id="search-area" method="post">
       <span title="${message(code: 'default.search.button.label', default: 'Search')}"><i class="fa fa-search"></i></span>
       <g:textField id="search" name="q" value="${params.q}"
         placeholder="${message(code: 'default.search.label')}" />
