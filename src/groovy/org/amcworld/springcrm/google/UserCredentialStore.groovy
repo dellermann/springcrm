@@ -1,7 +1,7 @@
 /*
  * UserCredentialStore.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@
 
 package org.amcworld.springcrm.google
 
-import org.amcworld.springcrm.User;
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.auth.oauth2.CredentialStore
+import org.amcworld.springcrm.User
 
 
 /**
@@ -30,8 +30,8 @@ import com.google.api.client.auth.oauth2.CredentialStore
  * the OAuth2 credentials which are used to synchronize data with Google.  It
  * uses the underlying database and GORM access to manage data.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 class UserCredentialStore implements CredentialStore {
@@ -39,49 +39,51 @@ class UserCredentialStore implements CredentialStore {
     //-- Public methods -------------------------
 
     @Override
-    public boolean load(String userId, Credential credential) {
+    void delete(String userId, Credential credential) {
+        User user = getUser(userId)
+        if (user) {
+            user.settings.remove 'googleAccessToken'
+            user.settings.remove 'googleRefreshToken'
+            user.settings.remove 'googleExpirationTime'
+        }
+    }
+
+    @Override
+    boolean load(String userId, Credential credential) {
         User user = getUser(userId)
         if (!user) {
             return false
         }
 
-        String s = user.settings.googleAccessToken
+        String s = user.settings['googleAccessToken']
         if (!s) {
             return false
         }
         credential.accessToken = s
 
-        s = user.settings.googleRefreshToken
+        s = user.settings['googleRefreshToken']
         if (!s) {
             return false
         }
         credential.refreshToken = s
 
-        s = user.settings.googleExpirationTime
+        s = user.settings['googleExpirationTime']
         if (!s) {
             return false
         }
+
         credential.expirationTimeMilliseconds = (s as Long)
-        return true
+        true
     }
 
     @Override
-    public void store(String userId, Credential credential) {
+    void store(String userId, Credential credential) {
         User user = getUser(userId)
         if (user) {
             user.settings['googleAccessToken'] = credential.accessToken
             user.settings['googleRefreshToken'] = credential.refreshToken
-            user.settings['googleExpirationTime'] = credential.expirationTimeMilliseconds.toString()
-        }
-    }
-
-    @Override
-    public void delete(String userId, Credential credential) {
-        User user = getUser(userId)
-        if (user) {
-            user.settings.remove('googleAccessToken')
-            user.settings.remove('googleRefreshToken')
-            user.settings.remove('googleExpirationTime')
+            user.settings['googleExpirationTime'] =
+                credential.expirationTimeMilliseconds.toString()
         }
     }
 
@@ -89,6 +91,6 @@ class UserCredentialStore implements CredentialStore {
     //-- Non-public methods ---------------------
 
     protected User getUser(String userName) {
-        return User.findByUserName(userName)
+        User.findByUserName userName
     }
 }

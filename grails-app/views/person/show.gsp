@@ -60,6 +60,7 @@
             </f:display>
             <f:display bean="${personInstance}" property="organization" />
             <f:display bean="${personInstance}" property="salutation" />
+            <f:display bean="${personInstance}" property="title" />
             <f:display bean="${personInstance}" property="firstName" />
             <f:display bean="${personInstance}" property="lastName" />
             <f:display bean="${personInstance}" property="jobTitle" />

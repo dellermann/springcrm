@@ -25,24 +25,26 @@ import com.google.api.client.util.GenericData
 
 
 /**
- * The class {@code ProxyResponse} represents ...
+ * The class {@code ProxyResponse} represents a proxy for a HTTP response that
+ * allows access to particular properties.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.2
  */
 class ProxyResponse extends GenericData {
 
     //-- Properties -----------------------------
 
     short getCode() {
-        return get('code')
+        get 'code'
     }
 
     String getMessage() {
-        return get('message')
+        get 'message'
     }
 
     TokenResponse getTokenResponse() {
-        return get('tokenResponse')
+        get 'tokenResponse'
     }
 }

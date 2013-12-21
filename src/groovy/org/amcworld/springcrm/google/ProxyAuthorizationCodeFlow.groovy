@@ -1,7 +1,7 @@
 /*
  * ProxyAuthorizationCodeFlow.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,13 @@
 package org.amcworld.springcrm.google
 
 import com.google.api.client.auth.oauth2.BearerToken
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.Credential.AccessMethod;
-import com.google.api.client.auth.oauth2.CredentialStore;
-import com.google.api.client.auth.oauth2.CredentialStoreRefreshListener;
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
+import com.google.api.client.auth.oauth2.Credential
+import com.google.api.client.auth.oauth2.CredentialStore
+import com.google.api.client.auth.oauth2.CredentialStoreRefreshListener
+import com.google.api.client.auth.oauth2.TokenResponse
+import com.google.api.client.auth.oauth2.Credential.AccessMethod
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.json.JsonFactory
 
 
 /**
@@ -35,8 +35,8 @@ import com.google.api.client.json.JsonFactory;
  * obtaining the access and refresh token for access to Google using the AMC
  * World OAuth2 proxy.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 class ProxyAuthorizationCodeFlow {
@@ -58,7 +58,8 @@ class ProxyAuthorizationCodeFlow {
      * @param transport     the HTTP transport instance
      * @param jsonFactory   the JSON factory used to create JSON parsers
      */
-    ProxyAuthorizationCodeFlow(HttpTransport transport, JsonFactory jsonFactory)
+    ProxyAuthorizationCodeFlow(HttpTransport transport,
+                               JsonFactory jsonFactory)
     {
         this.transport = transport
         this.jsonFactory = jsonFactory
@@ -78,11 +79,11 @@ class ProxyAuthorizationCodeFlow {
      */
     Credential createAndStoreCredential(TokenResponse response, String userId) {
         Credential credential = newCredential(userId)
-            .setFromTokenResponse(response)
+        credential.fromTokenResponse = response
         if (credentialStore != null) {
-            credentialStore.store(userId, credential)
+            credentialStore.store userId, credential
         }
-        return credential
+        credential
     }
 
     /**
@@ -96,11 +97,9 @@ class ProxyAuthorizationCodeFlow {
         if (credentialStore == null) {
             return null
         }
+
         Credential credential = newCredential(userId)
-        if (!credentialStore.load(userId, credential)) {
-            return null
-        }
-        return credential
+        credentialStore.load(userId, credential) ? credential : null
     }
 
     /**
@@ -113,9 +112,9 @@ class ProxyAuthorizationCodeFlow {
      */
     Credential obtainAndStoreCredential(String userId, String clientId) {
         def req = new ProxyRequest(transport, jsonFactory, 'getToken')
-        req.put('clientId', clientId)
+        req.put 'clientId', clientId
         ProxyResponse response = req.execute()
-        return createAndStoreCredential(response.tokenResponse, userId)
+        createAndStoreCredential response.tokenResponse, userId
     }
 
     /**
@@ -128,9 +127,9 @@ class ProxyAuthorizationCodeFlow {
      */
     String register(String redirectUrl) {
         def req = new ProxyRequest(transport, jsonFactory, 'register')
-        req.put('redirectUrl', redirectUrl)
+        req.put 'redirectUrl', redirectUrl
         ProxyResponse response = req.execute()
-        return response.get('url')
+        response.get 'url'
     }
 
     /**
@@ -143,10 +142,10 @@ class ProxyAuthorizationCodeFlow {
         def credential = loadCredential(userId)
         if (credential != null) {
             def req = new ProxyRequest(transport, jsonFactory, 'revoke')
-            req.put('token', credential.accessToken)
+            req.put 'token', credential.accessToken
             req.execute()
             if (credentialStore != null) {
-                credentialStore.delete(userId, credential)
+                credentialStore.delete userId, credential
             }
         }
     }
@@ -163,9 +162,11 @@ class ProxyAuthorizationCodeFlow {
     private Credential newCredential(String userId) {
         def refreshListeners = []
         if (credentialStore != null) {
-            refreshListeners << new CredentialStoreRefreshListener(userId, credentialStore)
+            refreshListeners << new CredentialStoreRefreshListener(
+                userId, credentialStore
+            )
         }
-        return new ProxyCredential(
+        new ProxyCredential(
             accessMethod, transport, jsonFactory, refreshListeners
         )
     }

@@ -6,6 +6,7 @@
       <div class="form">
         <f:field bean="${personInstance}" property="number" />
         <f:field bean="${personInstance}" property="salutation" />
+        <f:field bean="${personInstance}" property="title" />
         <f:field bean="${personInstance}" property="firstName" />
         <f:field bean="${personInstance}" property="lastName" />
         <f:field bean="${personInstance}" property="organization" />

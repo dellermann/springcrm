@@ -19,8 +19,12 @@
 
 
 import com.google.api.client.auth.oauth2.Credential
+import org.amcworld.springcrm.GoogleOAuthService
 import org.amcworld.springcrm.User
-import org.amcworld.springcrm.google.GoogleSyncException;
+import org.amcworld.springcrm.google.GoogleContactSync
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
 /**
@@ -30,8 +34,8 @@ import org.amcworld.springcrm.google.GoogleSyncException;
  * administrator.  The job checks each user which has a connection to its
  * Google account and synchronizes the person entries.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 class GoogleContactSyncJob {
@@ -39,12 +43,13 @@ class GoogleContactSyncJob {
     //-- Class variables ------------------------
 
     static triggers = {}
+    private static final Log log = LogFactory.getLog(this)
 
 
     //-- Instance variables ---------------------
 
-    def googleOAuthService
-    def grailsApplication
+    GoogleOAuthService googleOAuthService
+    GrailsApplication grailsApplication
 
 
     //-- Public methods -------------------------
@@ -52,20 +57,28 @@ class GoogleContactSyncJob {
     def execute() {
         List<User> users = User.list()
         for (User user : users) {
-            log.debug "Looking for Google account connection for user ${user} (${user.userName})…"
-            Credential credential = googleOAuthService.loadCredential(user.userName)
-            if (credential) {
-                log.debug '    → found'
-                def googleSync = grailsApplication.mainContext.getBean('googleContactSync')
-                googleSync.userName = user.userName
-                try {
-                    googleSync.sync()
-                } catch (GoogleSyncException e) {
-                    log.warn "Could not synchronize contacts: ${e}"
-                }
-            } else if (log.debugEnabled) {
-                log.debug '    → not found'
+            try {
+                sync user
+            } catch (e) {
+                log.warn "Cannot synchronize Google account for user ${user}.", e
             }
+        }
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    protected void sync(User user) {
+        log.debug "Looking for Google account connection for user ${user} (${user.userName})…"
+        Credential credential = googleOAuthService.loadCredential(user.userName)
+        if (credential) {
+            log.debug '    → found'
+            GoogleContactSync googleSync =
+                grailsApplication.mainContext.getBean('googleContactSync')
+            googleSync.userName = user.userName
+            googleSync.sync()
+        } else if (log.debugEnabled) {
+            log.debug '    → not found'
         }
     }
 }

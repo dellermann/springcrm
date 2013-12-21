@@ -26,8 +26,8 @@ package org.amcworld.springcrm
  * and associated project items such as quotes, sales orders, invoices,
  * documents etc.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 class Project {
@@ -35,11 +35,11 @@ class Project {
     //-- Class variables ------------------------
 
     static constraints = {
-        number(unique: true, widget: 'autonumber')
-        title(blank: false)
-        description(nullable: true, blank: true, widget: 'textarea')
+        number unique: true, widget: 'autonumber'
+        title blank: false
+        description nullable: true, blank: true, widget: 'textarea'
         organization()
-        person(nullable: true)
+        person nullable: true
         phase()
         status()
         dateCreated()
@@ -82,6 +82,13 @@ class Project {
     }
 
 
+    //-- Properties -----------------------------
+
+    String getFullNumber() {
+        seqNumberService.format getClass(), number
+    }
+
+
     //-- Public methods -------------------------
 
     def beforeInsert() {
@@ -90,27 +97,19 @@ class Project {
         }
     }
 
-    String getFullNumber() {
-        return seqNumberService.format(getClass(), number)
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof Project) ? obj.id == id : false
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Project) {
-            return obj.id == id
-        } else {
-            return false
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        return id as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-        return title ?: ''
+        title ?: ''
     }
 }
 

@@ -35,6 +35,7 @@ class Person {
         number unique: true, widget: 'autonumber'
         organization()
         salutation nullable: true
+        title nullable: true
         firstName blank: false
         lastName blank: false
         phone nullable: true, maxSize: 40
@@ -79,6 +80,7 @@ class Person {
     int number
     Organization organization
     Salutation salutation
+    String title
     String firstName
     String lastName
     Address mailingAddr
@@ -108,6 +110,7 @@ class Person {
     Person(Person p) {
         organization = p.organization
         salutation = p.salutation
+        title = p.title
         firstName = p.firstName
         lastName = p.lastName
         mailingAddr = new Address(p.mailingAddr)
@@ -129,14 +132,23 @@ class Person {
     }
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
+
+    String getFullName() {
+        "${firstName} ${lastName}"
+    }
 
     String getFullNumber() {
         seqNumberService.format getClass(), number
     }
 
-    String getFullName() {
-        "${firstName} ${lastName}"
+
+    //-- Public methods -------------------------
+
+    def beforeInsert() {
+        if (number == 0) {
+            number = seqNumberService.nextNumber(getClass())
+        }
     }
 
     @Override
@@ -156,11 +168,5 @@ class Person {
         if (lastName && firstName) s << ', '
         if (firstName) s << firstName ?: ''
         s.toString()
-    }
-
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
     }
 }

@@ -97,12 +97,13 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert link.getAttribute('href').startsWith(getUrl('/organization/show/'))
         assert 'Landschaftsbau Duvensee GbR' == link.text
         assert 'Herr' == getShowFieldText(col, 3)
-        assert 'Henry' == getShowFieldText(col, 4)
-        assert 'Brackmann' == getShowFieldText(col, 5)
-        assert 'Geschäftsführer' == getShowFieldText(col, 6)
-        assert 'Geschäftsleitung' == getShowFieldText(col, 7)
-        assert 'Anna Schmarge' == getShowFieldText(col, 8)
-        assert '14.02.1962' == getShowFieldText(col, 9)
+        assert '' == getShowFieldText(col, 4)
+        assert 'Henry' == getShowFieldText(col, 5)
+        assert 'Brackmann' == getShowFieldText(col, 6)
+        assert 'Geschäftsführer' == getShowFieldText(col, 7)
+        assert 'Geschäftsleitung' == getShowFieldText(col, 8)
+        assert 'Anna Schmarge' == getShowFieldText(col, 9)
+        assert '14.02.1962' == getShowFieldText(col, 10)
         col = fieldSet.findElement(By.className('col-r'))
         assert '04543 31233' == getShowFieldText(col, 1)
         assert '0163 3343267' == getShowFieldText(col, 3)
@@ -156,12 +157,13 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         int organizationId = m[0][1] as Integer
         assert 'Landschaftsbau Duvensee GbR' == link.text
         assert 'Herr' == getShowFieldText(col, 3)
-        assert 'Henry' == getShowFieldText(col, 4)
-        assert 'Brackmann' == getShowFieldText(col, 5)
-        assert 'Geschäftsführer' == getShowFieldText(col, 6)
-        assert 'Geschäftsleitung' == getShowFieldText(col, 7)
-        assert 'Anna Schmarge' == getShowFieldText(col, 8)
-        assert '14.02.1962' == getShowFieldText(col, 9)
+        assert '' == getShowFieldText(col, 4)
+        assert 'Henry' == getShowFieldText(col, 5)
+        assert 'Brackmann' == getShowFieldText(col, 6)
+        assert 'Geschäftsführer' == getShowFieldText(col, 7)
+        assert 'Geschäftsleitung' == getShowFieldText(col, 8)
+        assert 'Anna Schmarge' == getShowFieldText(col, 9)
+        assert '14.02.1962' == getShowFieldText(col, 10)
         col = fieldSet.findElement(By.className('col-r'))
         assert '04543 31233' == getShowFieldText(col, 1)
         assert '0163 3343267' == getShowFieldText(col, 3)
@@ -400,10 +402,11 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         int organizationId = m[0][1] as Integer
         assert 'Landschaftsbau Duvensee GbR' == link.text
         assert 'Frau' == getShowFieldText(col, 3)
-        assert 'Marlen' == getShowFieldText(col, 4)
-        assert 'Thoss' == getShowFieldText(col, 5)
-        assert 'Landschaftsarchitektin' == getShowFieldText(col, 6)
-        assert '26.05.1970' == getShowFieldText(col, 9)
+        assert '' == getShowFieldText(col, 4)
+        assert 'Marlen' == getShowFieldText(col, 5)
+        assert 'Thoss' == getShowFieldText(col, 6)
+        assert 'Landschaftsarchitektin' == getShowFieldText(col, 7)
+        assert '26.05.1970' == getShowFieldText(col, 10)
         col = fieldSet.findElement(By.className('col-r'))
         assert '04543 31234' == getShowFieldText(col, 1)
         assert '0170 1896043' == getShowFieldText(col, 3)
@@ -472,6 +475,6 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
 
     @Override
     protected Object getDatasets() {
-        return ['test-data/install-data.xml']
+        ['test-data/install-data.xml']
     }
 }

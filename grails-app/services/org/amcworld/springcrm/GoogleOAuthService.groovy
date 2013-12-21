@@ -33,8 +33,8 @@ import org.amcworld.springcrm.google.UserCredentialStore
  * different installations the services uses a proxy at AMC World for OAuth2
  * authentication.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 class GoogleOAuthService extends GoogleService {
@@ -50,7 +50,7 @@ class GoogleOAuthService extends GoogleService {
     ProxyAuthorizationCodeFlow getAuthorizationCodeFlow() {
         def flow = new ProxyAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY)
         flow.credentialStore = new UserCredentialStore()
-        return flow
+        flow
     }
 
     /**
@@ -68,7 +68,7 @@ class GoogleOAuthService extends GoogleService {
         if (credential && credential.expiresInSeconds <= 0) {
             credential.refreshToken()
         }
-        return credential
+        credential
     }
 
     /**
@@ -89,9 +89,9 @@ class GoogleOAuthService extends GoogleService {
             authorizationCodeFlow.obtainAndStoreCredential(
                 fixUserName(userName), clientId.toString()
             )
-            return true
+            true
         } catch (HttpResponseException e) {
-            return false
+            false
         }
     }
 
@@ -107,9 +107,9 @@ class GoogleOAuthService extends GoogleService {
      */
     String registerAtProxy(CharSequence redirectUrl) {
         try {
-            return authorizationCodeFlow.register(redirectUrl.toString())
+            authorizationCodeFlow.register redirectUrl.toString()
         } catch (HttpResponseException e) {
-            return null
+            null
         }
     }
 
@@ -121,7 +121,7 @@ class GoogleOAuthService extends GoogleService {
      *                  name from the current session
      */
     void revokeAtProxy(CharSequence userName = null) {
-        authorizationCodeFlow.revoke(fixUserName(userName))
+        authorizationCodeFlow.revoke fixUserName(userName)
     }
 
 
@@ -135,6 +135,6 @@ class GoogleOAuthService extends GoogleService {
      * @return          the user name
      */
     protected String fixUserName(CharSequence userName) {
-        return (userName == null) ? session.user.userName : userName.toString()
+        (userName == null) ? session.user.userName : userName.toString()
     }
 }

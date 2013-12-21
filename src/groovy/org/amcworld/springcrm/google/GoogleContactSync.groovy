@@ -43,7 +43,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  * @since   1.0
  */
 class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
@@ -92,6 +92,9 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             familyName: new FamilyName(p.lastName, null),
             fullName: new FullName(p.toString(), null)
         )
+        if (p.title) {
+            contact.name.namePrefix = new NamePrefix(p.title)
+        }
         contact.getRepeatingExtension(StructuredPostalAddress).clear()
         if (!p.mailingAddr.empty) {
             contact.addStructuredPostalAddress(new StructuredPostalAddress(
@@ -222,7 +225,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 rel: Website.Rel.WORK
             ))
         }
-        return contact
+        contact
     }
 
     @Override
@@ -254,6 +257,9 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             )
         }
         localEntry.lastName = name.familyName.value
+        if (name.hasNamePrefix()) {
+            localEntry.title = name.namePrefix.toString()
+        }
 
         localEntry.mailingAddrStreet = null
         localEntry.mailingAddrPoBox = null
@@ -362,7 +368,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             }
         }
 
-        return localEntry
+        localEntry
     }
 
     @Override
@@ -372,33 +378,33 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
 
     @Override
     protected boolean getAllowLocalCreate() {
-        return getBooleanSystemConfig('syncContactsOptionsAllowCreate')
+        getBooleanSystemConfig 'syncContactsOptionsAllowCreate'
     }
 
     @Override
     protected boolean getAllowLocalDelete() {
-        return getBooleanSystemConfig('syncContactsOptionsAllowDelete')
+        getBooleanSystemConfig 'syncContactsOptionsAllowDelete'
     }
 
     @Override
     protected boolean getAllowLocalModify() {
-        return getBooleanSystemConfig('syncContactsOptionsAllowModify')
+        getBooleanSystemConfig 'syncContactsOptionsAllowModify'
     }
 
     @Override
     protected String getEtag(ContactEntry entry) {
-        return entry.etag
+        entry.etag
     }
 
     private String getOrgOtherRelLabel() {
-        return messageSource.getMessage(
+        messageSource.getMessage(
             'default.google.rel.orgOther', null, 'Company (other)',
             LCH.getLocale()
         )
     }
 
     private String getOrgRelLabel() {
-        return messageSource.getMessage(
+        messageSource.getMessage(
             'default.google.rel.org', null, 'Company', LCH.getLocale()
         )
     }
@@ -415,11 +421,11 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             svc.protocolVersion = ContactsService.Versions.V3
         }
         svc.OAuth2Credentials = loadCredential()
-        return svc
+        svc
     }
 
     protected String getUrl(ContactEntry entry) {
-        return entry.selfLink.href
+        entry.selfLink.href
     }
 
     @Override
@@ -435,12 +441,12 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 res << name.givenName.value
             }
         }
-        return res.toString()
+        res.toString()
     }
 
     @Override
     protected ContactEntry insertGoogleEntry(ContactEntry entry) {
-        return service.insert(FEED_URL, entry)
+        service.insert FEED_URL, entry
     }
 
     @Override
@@ -466,7 +472,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         } catch (ResourceNotFoundException ignored) {
             /* already handled -> res = null */
         }
-        return res
+        res
     }
 
     /*
@@ -478,14 +484,14 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
 //    @Override
 //    protected ContactEntry syncInsertGoogle(Person localEntry) {
 //        ContactEntry googleEntry = super.syncInsertGoogle(localEntry)
-//        updatePhoto(localEntry, googleEntry)
-//        return googleEntry
+//        updatePhoto localEntry, googleEntry
+//        googleEntry
 //    }
 
     @Override
     protected Person syncInsertLocal(ContactEntry googleEntry) {
-        updateOrganization(googleEntry)
-        return super.syncInsertLocal(googleEntry);
+        updateOrganization googleEntry
+        super.syncInsertLocal googleEntry
     }
 
     @Override
@@ -498,13 +504,13 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
     @Override
     protected void syncUpdateLocal(Person localEntry, ContactEntry googleEntry)
     {
-        updateOrganization(googleEntry)
-        super.syncUpdateLocal(localEntry, googleEntry)
+        updateOrganization googleEntry
+        super.syncUpdateLocal localEntry, googleEntry
     }
 
     @Override
     protected void updateGoogleEntry(ContactEntry entry) {
-        service.update(new URL(entry.editLink.href), entry)
+        service.update new URL(entry.editLink.href), entry
     }
 
     /**
@@ -577,7 +583,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 org.website = website.href
             }
         }
-        org.save(flush: true)
+        org.save flush: true
     }
 
     /**
@@ -598,7 +604,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 new ContentType(Magic.getMagicMatch(picture).mimeType)
             )
             request.etag = photoLink.etag
-            request.requestStream.write(picture)
+            request.requestStream.write picture
             try {
                 request.execute()
             } catch (PreconditionFailedException e) {   // etag outdated
@@ -612,7 +618,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             if (log.debugEnabled) {
                 log.debug "Deleting photo of ${localEntry}…"
             }
-            service.delete(new URL(photoLink.href), photoLink.etag)
+            service.delete new URL(photoLink.href), photoLink.etag
         }
     }
 }

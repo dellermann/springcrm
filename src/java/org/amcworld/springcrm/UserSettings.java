@@ -22,9 +22,9 @@ package org.amcworld.springcrm;
 
 import java.util.AbstractMap;
 import java.util.AbstractSet;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -37,7 +37,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  * storage (usually a database).
  *
  * @author  Daniel Ellermann
- * @version 1.2
+ * @version 1.4
  * @since   1.2
  */
 public class UserSettings extends AbstractMap<String, String> {
@@ -66,7 +66,7 @@ public class UserSettings extends AbstractMap<String, String> {
      */
     public UserSettings(User user) {
         this.user = user;
-        Collection<UserSetting> rawSettings = user.getRawSettings();
+        List<UserSetting> rawSettings = user.getRawSettings();
         this.settings =
             new HashMap<String, UserSetting>(rawSettings.size() + 16);
 

@@ -23,11 +23,11 @@ grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir = 'target/test-reports'
 grails.project.war.file = "target/${appName}.war"
 grails.war.resources = { stagingDir ->
-    delete(dir: "${stagingDir}/test-data")
+    delete dir: "${stagingDir}/test-data"
 }
 
 if (grailsSettings.grailsEnv != 'test') {
-    forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 256]
+    def forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 256]
     grails.project.fork = [
        console: forkConfig,     // settings for the Swing console JVM
        run: forkConfig,         // settings for the run-app JVM
@@ -100,7 +100,7 @@ grails.project.dependency.resolution = {
         */
 
         test(
-            'org.seleniumhq.selenium:selenium-java:2.35.0'
+            'org.seleniumhq.selenium:selenium-java:2.39.0'
         )
     }
 

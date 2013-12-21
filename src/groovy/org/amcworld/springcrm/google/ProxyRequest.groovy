@@ -28,14 +28,16 @@ import com.google.api.client.http.HttpResponseException
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.util.GenericData
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
 
 /**
  * The class {@code ProxyRequest} encapsulates a requests which is sent to the
  * AMC World proxy in order to perform OAuth2 communication.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 class ProxyRequest extends GenericData {
@@ -43,6 +45,7 @@ class ProxyRequest extends GenericData {
     //-- Constants ------------------------------
 
     protected static final String PROXY_URL = 'http://www.amc-world.de/oauth-proxy/index.php'
+    private static final Log log = LogFactory.getLog(this)
 
 
     //-- Instance variables ---------------------
@@ -84,9 +87,10 @@ class ProxyRequest extends GenericData {
         HttpResponse response = executeUnparsed()
         ProxyResponse res = response.parseAs(ProxyResponse)
         if (res.code != 200) {
+            log.error "Response error after parsing. Code: ${res.code}, message: ${res.message}"
             throw new HttpResponseException(response)
         }
-        return res
+        res
     }
 
     /**
@@ -99,14 +103,16 @@ class ProxyRequest extends GenericData {
     HttpResponse executeUnparsed() throws IOException {
         HttpRequestFactory requestFactory = transport.createRequestFactory()
         GenericUrl url = new GenericUrl(PROXY_URL)
-        url.put('action', action)
-        url.putAll(this)
+        url.put 'action', action
+        url.putAll this
+
         HttpRequest request = requestFactory.buildGetRequest(url)
-        request.addParser(new ProxyHttpParser(jsonFactory));
+        request.addParser new ProxyHttpParser(jsonFactory)
         HttpResponse response = request.execute()
-        if (response.isSuccessStatusCode()) {
-            return response
+        if (!response.successStatusCode) {
+            throw new HttpResponseException(response)
         }
-        throw new HttpResponseException(response)
+
+        response
     }
 }

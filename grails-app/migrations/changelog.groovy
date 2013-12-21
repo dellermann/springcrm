@@ -28,4 +28,5 @@ databaseChangeLog = {
     include file: 'data-file.xml'
     include file: 'helpdesk.xml'
     include file: 'helpdesk-address.xml'
+    include file: 'person-title.xml'
 }

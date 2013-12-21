@@ -119,6 +119,9 @@ class LdapService {
             objectclass: ['top', 'inetOrgPerson'],
             sn: p.lastName
         ]
+        if (p.title) {
+            attrs.title = p.title
+        }
         if (p.organization.industry) {
             attrs.businesscategory = p.organization.industry.name
         }

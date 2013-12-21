@@ -37,7 +37,7 @@ import org.apache.commons.logging.LogFactory
  *              service
  * @param <G>   the type of Google entries which are handled by this service
  * @author      Daniel Ellermann
- * @version     1.3
+ * @version     1.4
  * @since       1.0
  */
 abstract class GoogleSync<E, G> implements GoogleService {
@@ -100,67 +100,67 @@ abstract class GoogleSync<E, G> implements GoogleService {
                             if (primarySyncSource != LOCAL) {
                                 log.debug "L modified, G deleted, S = remote → delete L: L = ${localEntry}"
                                 if (allowLocalDelete) {
-                                    syncDeleteLocal(localEntry)
-                                    status.delete(flush: true)
+                                    syncDeleteLocal localEntry
+                                    status.delete flush: true
                                 } else if (log.debugEnabled) {
                                     log.debug '    Deleting local entries denied by administrator.'
                                 }
-                                localEntries.remove(id)
+                                localEntries.remove id
                             } else if (log.debugEnabled) {
                                 log.debug "L modified, G deleted, S = local → leave in L1 for later recreation at Google: L = ${localEntry}"
-                                status.delete(flush: true)
+                                status.delete flush: true
                             }
                         } else if (hasChanged(googleEntry, status.etag)) {
                             if (primarySyncSource == LOCAL) {
                                 log.debug "L modified, G modified, S = local → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
                                 syncUpdateGoogle(localEntry, googleEntry)
-                                status.updateToCurrent(getEtag(googleEntry))
-                                status.save(flush: true)
+                                status.updateToCurrent getEtag(googleEntry)
+                                status.save flush: true
                             } else {
                                 log.debug "L modified, G modified, S = remote → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
                                 if (allowLocalModify) {
-                                    syncUpdateLocal(localEntry, googleEntry)
-                                    status.updateToCurrent(getEtag(googleEntry))
-                                    status.save(flush: true)
+                                    syncUpdateLocal localEntry, googleEntry
+                                    status.updateToCurrent getEtag(googleEntry)
+                                    status.save flush: true
                                 } else if (log.debugEnabled) {
                                     log.debug '    Modifying local entries denied by administrator.'
                                 }
                             }
-                            localEntries.remove(id)
-                            googleEntries.remove(url)
+                            localEntries.remove id
+                            googleEntries.remove url
                         } else {
                             log.debug "L modified, G unmodified → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
-                            syncUpdateGoogle(localEntry, googleEntry)
-                            status.updateToCurrent(getEtag(googleEntry))
-                            status.save(flush: true)
-                            localEntries.remove(id)
-                            googleEntries.remove(url)
+                            syncUpdateGoogle localEntry, googleEntry
+                            status.updateToCurrent getEtag(googleEntry)
+                            status.save flush: true
+                            localEntries.remove id
+                            googleEntries.remove url
                         }
                     } else {
                         if (!googleEntry) {
                             log.debug "L unmodified, G deleted → delete L: L = ${localEntry}"
                             if (allowLocalDelete) {
-                                syncDeleteLocal(localEntry)
-                                status.delete(flush: true)
+                                syncDeleteLocal localEntry
+                                status.delete flush: true
                             } else if (log.debugEnabled) {
                                 log.debug '    Deleting local entries denied by administrator.'
                             }
-                            localEntries.remove(id)
+                            localEntries.remove id
                         } else if (hasChanged(googleEntry, status.etag)) {
                             log.debug "L unmodified, G modified → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
                             if (allowLocalModify) {
-                                syncUpdateLocal(localEntry, googleEntry)
-                                status.updateToCurrent(getEtag(googleEntry))
-                                status.save(flush: true)
+                                syncUpdateLocal localEntry, googleEntry
+                                status.updateToCurrent getEtag(googleEntry)
+                                status.save flush: true
                             } else if (log.debugEnabled) {
                                 log.debug '    Modifying local entries denied by administrator.'
                             }
-                            localEntries.remove(id)
-                            googleEntries.remove(url)
+                            localEntries.remove id
+                            googleEntries.remove url
                         } else {
                             log.debug "L unmodified, G unmodified → nothing to do: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
-                            localEntries.remove(id)
-                            googleEntries.remove(url)
+                            localEntries.remove id
+                            googleEntries.remove url
                         }
                     }
                 } else {
@@ -168,8 +168,8 @@ abstract class GoogleSync<E, G> implements GoogleService {
                         || (primarySyncSource == LOCAL))
                     {
                         log.debug "L deleted, G unmodified or S = local → delete G: G = ${googleEntryToString(googleEntry)}"
-                        syncDeleteGoogle(googleEntry)
-                        googleEntries.remove(url)
+                        syncDeleteGoogle googleEntry
+                        googleEntries.remove url
                     } else if (log.debugEnabled) {
                         if (!googleEntry) {
                             log.debug 'L deleted, G deleted → nothing to do'
@@ -177,7 +177,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
                             log.debug "L deleted, G modified, S = remote → leave in L2 for later local recreation: G = ${googleEntryToString(googleEntry)}"
                         }
                     }
-                    status.delete(flush: true)
+                    status.delete flush: true
                 }
             } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
         }
@@ -256,7 +256,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      */
     protected GoogleDataSyncStatus findSyncStatus(E item) {
         def c = GoogleDataSyncStatus.createCriteria()
-        return c.get {
+        c.get {
             eq('user', user)
             eq('type', item.class.name)
             eq('itemId', item.id)
@@ -302,7 +302,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
                                              boolean defaultValue = false)
     {
         Config config = getSystemConfig(key)
-        return (config == null) ? defaultValue : (config as Boolean)
+        (config == null) ? defaultValue : (config as Boolean)
     }
 
     /**
@@ -320,7 +320,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      */
     protected SyncSource getPrimarySyncSource() {
         String s = user.settings['primarySyncSource' + localEntryClass.name]
-        return (s == null) ? LOCAL : SyncSource.valueOf(SyncSource, s)
+        (s == null) ? LOCAL : SyncSource.valueOf(SyncSource, s)
     }
 
     /**
@@ -331,7 +331,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      *              for the given key exists
      */
     protected Config getSystemConfig(String key) {
-        return ConfigHolder.instance.getConfig(key)
+        ConfigHolder.instance.getConfig(key)
     }
 
     /**
@@ -350,7 +350,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      *          exists
      */
     protected User getUser() {
-        return User.findByUserName(userName.toString())
+        User.findByUserName userName.toString()
     }
 
     /**
@@ -363,7 +363,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      *              otherwise
      */
     protected boolean hasChanged(G entry, String etag) {
-        return getEtag(entry) != etag
+        getEtag(entry) != etag
     }
 
     /**
@@ -396,7 +396,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
             user: user, type: localEntryClass.name, itemId: localEntry.ident(),
             url: getUrl(googleEntry), etag: getEtag(googleEntry)
         )
-        status.save(flush: true)
+        status.save flush: true
     }
 
     /**
@@ -411,7 +411,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
         if (!credential) {
             throw new GoogleAuthException('error.googleAuthException.message.noCredentials')
         }
-        return credential
+        credential
     }
 
     /**
@@ -428,7 +428,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      * @param googleEntry   the Google entry to delete
      */
     protected void syncDeleteGoogle(G googleEntry) {
-        deleteGoogleEntry(googleEntry)
+        deleteGoogleEntry googleEntry
     }
 
     /**
@@ -437,7 +437,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      * @param localEntry    the local entry to delete
      */
     protected void syncDeleteLocal(E localEntry) {
-        localEntry.delete(flush: true)
+        localEntry.delete flush: true
     }
 
     /**
@@ -447,7 +447,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      * @return              a reference to the created Google entry
      */
     protected G syncInsertGoogle(E localEntry) {
-        return insertGoogleEntry(convertToGoogle(localEntry))
+        insertGoogleEntry(convertToGoogle(localEntry))
     }
 
     /**
@@ -458,9 +458,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
      */
     protected E syncInsertLocal(G googleEntry) {
         E localEntry = localEntryClass.newInstance()
-        convertToLocal(localEntry, googleEntry)
-        localEntry.save(flush: true)
-        return localEntry
+        convertToLocal localEntry, googleEntry
+        localEntry.save flush: true
+        localEntry
     }
 
     /**
@@ -469,8 +469,8 @@ abstract class GoogleSync<E, G> implements GoogleService {
      * @param googleEntry   the Google entry to update
      */
     protected void syncUpdateGoogle(E localEntry, G googleEntry) {
-        convertToGoogle(localEntry, googleEntry)
-        updateGoogleEntry(googleEntry)
+        convertToGoogle localEntry, googleEntry
+        updateGoogleEntry googleEntry
     }
 
     /**
@@ -479,8 +479,8 @@ abstract class GoogleSync<E, G> implements GoogleService {
      * @param localEntry    the local entry to update
      */
     protected void syncUpdateLocal(E localEntry, G googleEntry) {
-        convertToLocal(localEntry, googleEntry)
-        localEntry.save(flush: true)
+        convertToLocal localEntry, googleEntry
+        localEntry.save flush: true
     }
 
     /**

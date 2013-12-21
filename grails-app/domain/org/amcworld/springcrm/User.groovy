@@ -46,14 +46,14 @@ class User implements Cloneable {
         dateCreated()
         lastUpdated()
     }
-    static hasMany = [rawSettings: UserSetting]
     static mapping = {
         allowedModules type: 'text'
         table 'user_data'
         userName index: 'user_name'
     }
     static transients = [
-        'allowedControllers', 'allowedModulesAsList', 'fullName', 'settings'
+        'allowedControllers', 'allowedModulesAsList', 'fullName',
+        'rawSettings', 'settings'
     ]
 
 
@@ -73,7 +73,6 @@ class User implements Cloneable {
     Date dateCreated
     Date lastUpdated
     UserSettings settings
-    Collection<UserSetting> rawSettings
     Set<String> allowedControllers
 
 
@@ -99,6 +98,10 @@ class User implements Cloneable {
 
     String getFullName() {
         "${firstName ?: ''} ${lastName ?: ''}".trim()
+    }
+
+    List<UserSetting> getRawSettings() {
+        UserSetting.findAllByUser this
     }
 
     void setAllowedModulesAsList(List<String> l) {

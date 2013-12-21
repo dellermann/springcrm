@@ -1,7 +1,7 @@
 /*
  * UserSetting.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2013, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,18 +26,17 @@ package org.amcworld.springcrm
  * class was necessary because the default implementation with a map in class
  * {@code User} is buggy.
  *
- * @author	Daniel Ellermann
- * @version 1.2
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.2
  */
 class UserSetting {
 
     //-- Class variables ------------------------
 
-    static belongsTo = [user: User]
     static constraints = {
-        name(blank: false, unique: 'user')
-        value(nullable: true)
+        name blank: false, unique: 'user'
+        value nullable: true
     }
 
 
@@ -51,21 +50,17 @@ class UserSetting {
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof UserSetting) {
-            return name == obj.name
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof UserSetting) ? name == obj.name : false
     }
 
     @Override
-    public int hashCode() {
-        return name.hashCode();
+    int hashCode() {
+        name.hashCode()
     }
 
     @Override
     String toString() {
-        return "${name}: ${value}"
+        "${name}: ${value}"
     }
 }
