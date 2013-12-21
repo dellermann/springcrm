@@ -73,9 +73,9 @@
       <tfoot>
         <tr>
           <td colspan="4" class="align-right"><g:message code="report.salesJournal.total.label" default="Total" /></td>
-          <td colspan="2" class="currency"><g:formatCurrency number="${total}" displayZero="true" /></td>
-          <td colspan="2" class="currency"><g:formatCurrency number="${totalPaymentAmount}" displayZero="true" /></td>
-          <td class="currency"><g:formatCurrency number="${totalPaymentAmount - total}" displayZero="true" /></td>
+          <td colspan="2" class="currency"><g:formatCurrency number="${total}" displayZero="true" external="true" /></td>
+          <td colspan="2" class="currency"><g:formatCurrency number="${totalPaymentAmount}" displayZero="true" external="true" /></td>
+          <td class="currency"><g:formatCurrency number="${totalPaymentAmount - total}" displayZero="true" external="true" /></td>
           <td></td>
         </tr>
       </tfoot>
@@ -87,12 +87,12 @@
           <td class="date sales-journal-doc-date" style="text-align: center;"><g:formatDate date="${invoicingTransactionInstance?.docDate}" formatName="default.format.date" /></td>
           <td class="id sales-journal-number"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="fullNumber" /></g:link></td>
           <td class="ref sales-journal-organization"><g:link controller="organization" action="show" id="${invoicingTransactionInstance.organization?.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="organization" /></g:link></td>
-          <td class="string sales-journal-subject"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="subject" /></g:link></td>
+          <td class="string sales-journal-subject"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}">${invoicingTransactionInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>
           <td class="date sales-journal-due-date-payment"><g:if test="${invoicingTransactionInstance.type == 'C'}">—</g:if><g:else><g:formatDate date="${invoicingTransactionInstance?.dueDatePayment}" formatName="default.format.date" /></g:else></td>
-          <td class="currency sales-journal-total"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-invoicingTransactionInstance?.total}" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.total}" displayZero="true" /></g:else></td>
+          <td class="currency sales-journal-total"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-invoicingTransactionInstance?.total}" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.total}" displayZero="true" external="true" /></g:else></td>
           <td class="date sales-journal-payment-date"><g:formatDate date="${invoicingTransactionInstance?.paymentDate}" formatName="default.format.date" /></td>
-          <td class="currency sales-journal-payment-amount"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-(invoicingTransactionInstance?.paymentAmount ?: 0)}" displayZero="true" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.paymentAmount}" displayZero="true" /></g:else></td>
-          <td class="currency sales-journal-sum balance-state balance-state-${invoicingTransactionInstance?.balanceColor}"><g:formatCurrency number="${invoicingTransactionInstance?.balance}" displayZero="true" /></td>
+          <td class="currency sales-journal-payment-amount"><g:if test="${invoicingTransactionInstance.type == 'C'}"><g:formatCurrency number="${-(invoicingTransactionInstance?.paymentAmount ?: 0)}" displayZero="true" external="true" /></g:if><g:else><g:formatCurrency number="${invoicingTransactionInstance?.paymentAmount}" displayZero="true" external="true" /></g:else></td>
+          <td class="currency sales-journal-sum balance-state balance-state-${invoicingTransactionInstance?.balanceColor}"><g:formatCurrency number="${invoicingTransactionInstance?.balance}" displayZero="true" external="true" /></td>
           <td class="status sales-journal-stage payment-state payment-state-${invoicingTransactionInstance?.paymentStateColor}"><g:fieldValue bean="${invoicingTransactionInstance}" field="stage" /></td>
         </tr>
       </g:each>

@@ -43,7 +43,7 @@
         <tr>
           <td class="row-selector"><input type="checkbox" id="invoice-row-selector-${invoiceInstance.id}" data-id="${invoiceInstance.id}" /></td>
           <td class="id invoice-number"><g:link action="show" id="${invoiceInstance.id}"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /></g:link></td>
-          <td class="string invoice-subject"><g:link action="show" id="${invoiceInstance.id}"><g:fieldValue bean="${invoiceInstance}" field="subject" /></g:link></td>
+          <td class="string invoice-subject"><g:link action="show" id="${invoiceInstance.id}">${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>
           <td class="ref invoice-organization"><g:link controller="organization" action="show" id="${invoiceInstance.organization?.id}"><g:fieldValue bean="${invoiceInstance}" field="organization" /></g:link></td>
           <td class="status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>
           <td class="date invoice-doc-date"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
