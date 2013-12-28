@@ -43,7 +43,7 @@
         <tr>
           <td class="row-selector"><input type="checkbox" id="dunning-row-selector-${dunningInstance.id}" data-id="${dunningInstance.id}" /></td>
           <td class="id dunning-number"><g:link action="show" id="${dunningInstance.id}"><g:fieldValue bean="${dunningInstance}" field="fullNumber" /></g:link></td>
-          <td class="string dunning-subject"><g:link action="show" id="${dunningInstance.id}"><g:fieldValue bean="${dunningInstance}" field="subject" /></g:link></td>
+          <td class="string dunning-subject"><g:link action="show" id="${dunningInstance.id}"><g:nl2br value="${dunningInstance.subject}" /></g:link></td>
           <td class="ref dunning-organization"><g:link controller="organization" action="show" id="${dunningInstance.organization?.id}"><g:fieldValue bean="${dunningInstance}" field="organization" /></g:link></td>
           <td class="status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}"><g:fieldValue bean="${dunningInstance}" field="stage" /></td>
           <td class="date dunning-doc-date"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>

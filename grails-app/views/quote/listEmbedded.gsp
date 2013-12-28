@@ -17,7 +17,7 @@
     <tr>
       <td class="row-selector"><input type="checkbox" id="quote-row-selector-${quoteInstance.id}" data-id="${quoteInstance.id}" /></td>
       <td class="id quote-number"><g:link controller="quote" action="show" id="${quoteInstance.id}"><g:fieldValue bean="${quoteInstance}" field="fullNumber" /></g:link></td>
-      <td class="string quote-subject"><g:link controller="quote" action="show" id="${quoteInstance.id}"><g:fieldValue bean="${quoteInstance}" field="subject" /></g:link></td>
+      <td class="string quote-subject"><g:link controller="quote" action="show" id="${quoteInstance.id}"><g:nl2br value="${quoteInstance.subject}" /></g:link></td>
       <td class="status quote-stage"><g:fieldValue bean="${quoteInstance}" field="stage" /></td>
       <td class="date quote-doc-date"><g:formatDate date="${quoteInstance?.docDate}" formatName="default.format.date" /></td>
       <td class="date quote-shipping-date"><g:formatDate date="${quoteInstance?.shippingDate}" formatName="default.format.date" /></td>

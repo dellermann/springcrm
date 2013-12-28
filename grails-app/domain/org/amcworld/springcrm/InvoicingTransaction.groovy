@@ -35,7 +35,7 @@ class InvoicingTransaction {
     static constraints = {
         number unique: 'type', widget: 'autonumber'
         type blank: false, maxSize: 1
-        subject blank: false
+        subject blank: false, widget: 'textarea', attributes: [nl2br: true]
         organization()
         person nullable: true
         docDate()
@@ -128,11 +128,95 @@ class InvoicingTransaction {
     }
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
 
-    def beforeValidate() {
-        total = computeTotal()
+    /**
+     * Gets the discount amount which is granted when the user specifies a
+     * discount percentage value. The percentage value is related to the
+     * subtotal gross value.
+     *
+     * @return  the discount amount from the percentage value
+     * @see     #getSubtotalGross()
+     */
+    double getDiscountPercentAmount() {
+        subtotalGross * discountPercent / 100.0d
     }
+
+    /**
+     * Gets the full name of this invoicing transaction, that is, the full
+     * number from property {@code fullNumber} and the subject.
+     *
+     * @return  the full name
+     * @see     #getFullNumber()
+     */
+    String getFullName() {
+        "${fullNumber} ${subject}"
+    }
+
+    /**
+     * Gets the full number of this invoicing transaction, that is, the type
+     * prefix, the sequence number, the type suffix, and the organization
+     * number.
+     *
+     * @return  the full number
+     */
+    String getFullNumber() {
+        StringBuilder buf = new StringBuilder()
+        if (seqNumberService) {
+            buf << seqNumberService.formatWithPrefix(getClass(), number)
+        }
+        if (organization) {
+            buf << '-' << organization.number
+        }
+        buf.toString()
+    }
+
+    /**
+     * Gets the subtotal gross value. It is computed by adding the tax values
+     * to the subtotal net value.
+     *
+     * @return  the subtotal gross value
+     * @see     #getSubtotalNet()
+     */
+    double getSubtotalGross() {
+        subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
+    }
+
+    /**
+     * Gets the subtotal net value. It is computed by accumulating the total
+     * values of the items plus the shipping costs.
+     *
+     * @return  the subtotal net value
+     * @see     #getSubtotalGross()
+     */
+    double getSubtotalNet() {
+        items ? (items.total.sum() + shippingCosts) : 0.0d
+    }
+
+    /**
+     * Computes a map of taxes used in this transaction. The key represents the
+     * tax rate (a percentage value), the value the sum of tax values of all
+     * items which belong to this tax rate.
+     *
+     * @return  the tax rates and their associated tax value sums
+     */
+    Map<Double, Double> getTaxRateSums() {
+        Map<Double, Double> res = [: ]
+        if (items) {
+            for (item in items) {
+                double tax = item.tax
+                res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
+            }
+        }
+        if (shippingTax != 0.0d && shippingCosts != 0.0d) {
+            double tax = shippingTax
+            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
+        }
+        res.sort { e1, e2 -> e1.key <=> e2.key }
+    }
+
+
+    //-- Public methods -------------------------
 
     def beforeInsert() {
         if (number == 0) {
@@ -142,6 +226,10 @@ class InvoicingTransaction {
     }
 
     def beforeUpdate() {
+        total = computeTotal()
+    }
+
+    def beforeValidate() {
         total = computeTotal()
     }
 
@@ -177,77 +265,6 @@ class InvoicingTransaction {
         (obj instanceof InvoicingTransaction) ? obj.id == id : false
     }
 
-    /**
-     * Gets the discount amount which is granted when the user specifies a
-     * discount percentage value. The percentage value is related to the
-     * subtotal gross value.
-     *
-     * @return  the discount amount from the percentage value
-     * @see     #getSubtotalGross()
-     */
-    double getDiscountPercentAmount() {
-        subtotalGross * discountPercent / 100.0d
-    }
-
-    String getFullName() {
-        "${fullNumber} ${subject}"
-    }
-
-    String getFullNumber() {
-        StringBuilder buf = new StringBuilder()
-        if (seqNumberService) {
-            buf << seqNumberService.formatWithPrefix(getClass(), number)
-        }
-        if (organization) {
-            buf << '-' << organization.number
-        }
-        buf.toString()
-    }
-
-    /**
-     * Gets the subtotal gross value. It is computed by adding the tax values
-     * to the subtotal net value.
-     *
-     * @return  the subtotal gross value
-     * @see     #getSubtotalNet()
-     */
-    double getSubtotalGross() {
-        subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
-    }
-
-    /**
-     * Gets the subtotal net value. It is computed by accumulating the total
-     * values of the items plus the shipping costs.
-     *
-     * @return  the subtotal net value
-     * @see		  #getSubtotalGross()
-     */
-    double getSubtotalNet() {
-        items ? (items.total.sum() + shippingCosts) : 0.0d
-    }
-
-    /**
-     * Computes a map of taxes used in this transaction. The key represents the
-     * tax rate (a percentage value), the value the sum of tax values of all
-     * items which belong to this tax rate.
-     *
-     * @return	the tax rates and their associated tax value sums
-     */
-    Map<Double, Double> getTaxRateSums() {
-        Map<Double, Double> res = [: ]
-        if (items) {
-            for (item in items) {
-                double tax = item.tax
-                res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
-            }
-        }
-        if (shippingTax != 0.0d && shippingCosts != 0.0d) {
-            double tax = shippingTax
-            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
-        }
-        res.sort { e1, e2 -> e1.key <=> e2.key }
-    }
-
     @Override
     int hashCode() {
         (id ?: 0i) as int
@@ -257,11 +274,11 @@ class InvoicingTransaction {
         def c = InvoicingTransaction.createCriteria()
         c.get {
             projections {
-                max('number')
+                max 'number'
             }
             and {
-                eq('type', type)
-                between('number', seq.startValue, seq.endValue)
+                eq 'type', type
+                between 'number', seq.startValue, seq.endValue
             }
         }
     }

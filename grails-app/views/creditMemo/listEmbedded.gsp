@@ -18,7 +18,7 @@
     <tr>
       <td class="row-selector"><input type="checkbox" id="credit-memo-row-selector-${creditMemoInstance.id}" data-id="${creditMemoInstance.id}" /></td>
       <td class="id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="fullNumber" /></g:link></td>
-      <td class="string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="subject" /></g:link></td>
+      <td class="string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:nl2br value="${creditMemoInstance.subject}" /></g:link></td>
       <td class="status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}"><g:fieldValue bean="${creditMemoInstance}" field="stage" /></td>
       <td class="date credit-memo-doc-date"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
       <td class="date credit-memo-payment-date"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>

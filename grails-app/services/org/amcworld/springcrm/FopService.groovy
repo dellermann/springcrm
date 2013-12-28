@@ -73,6 +73,16 @@ class FopService {
 
     //-- Public methods -------------------------
 
+    String generateNl2BrXml(def bean, String propertyName,
+                            String targetName = propertyName)
+    {
+        String br = '<br xmlns="http://www.w3.org/1999/xhtml" />'
+        String s = bean."${propertyName}"
+        s = s.replaceAll(~/&/, '&amp;').replaceAll(~/</, '&lt;')
+        s = s.replaceAll(~/\r\n/, br).replaceAll(~/[\r\n]/, br)
+        "<${targetName}Html>${s}</${targetName}Html>"
+    }
+
     /**
      * Generates an XML block for the given bean property which contains
      * Markdown content.
@@ -202,7 +212,7 @@ class FopService {
             data << additionalData
         }
         String xml = (data as XML).toString()
-        
+
         StringBuilder buf = new StringBuilder()
         buf << generateMarkdownXml(
             transaction.billingAddr, 'street', 'billingAddrStreet'
@@ -210,6 +220,7 @@ class FopService {
         buf << generateMarkdownXml(
             transaction.shippingAddr, 'street', 'shippingAddrStreet'
         )
+        buf << generateNl2BrXml(transaction, 'subject')
         buf << generateMarkdownXml(transaction, 'headerText')
         buf << generateMarkdownXml(transaction, 'footerText')
         buf << '<itemsHtml>'

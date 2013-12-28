@@ -33,7 +33,7 @@
   <xsl:key name="client" match="/map/entry[@key='client']/entry" use="@key"/>
 
   <xsl:decimal-format decimal-separator="," grouping-separator="."/>
-  
+
 
   <!--===========================================
 
@@ -44,7 +44,7 @@
   <xsl:template match="/">
     <fo:root>
       <xsl:call-template name="page-layout"/>
-      
+
       <fo:page-sequence master-reference="default" language="de"
         hyphenate="true">
         <xsl:call-template name="header"/>
@@ -105,6 +105,7 @@
   <xsl:template match="entry[@key='transaction']/billingAddr">
     <xsl:apply-templates select="/map/billingAddrStreetHtml/html:html"/>
     <xsl:apply-templates select="location"/>
+    <xsl:apply-templates select="country"/>
   </xsl:template>
 
   <xsl:template match="location">
@@ -114,7 +115,15 @@
       <xsl:value-of select="."/>
     </fo:block>
   </xsl:template>
-  
+
+  <xsl:template match="country">
+    <xsl:if test="string() != 'Deutschland' or string() != 'D'">
+      <fo:block space-before="{$space.paragraph}mm">
+        <xsl:value-of select="."/>
+      </fo:block>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="headerText">
     <xsl:if test="string() != ''">
       <fo:block space-after="{$space.default}mm">
@@ -366,7 +375,7 @@
       </fo:table-cell>
     </fo:table-row>
   </xsl:template>
-  
+
   <xsl:template match="footerText">
     <xsl:if test="string() != ''">
       <fo:block space-after="{$space.default}mm">
@@ -453,7 +462,7 @@
       </fo:page-sequence-master>
     </fo:layout-master-set>
   </xsl:template>
-  
+
   <xsl:template name="address-field">
     <fo:block-container absolute-position="absolute"
       top="{$address-field.top}mm" left="{$address-field.left}mm"
@@ -477,7 +486,7 @@
       <xsl:apply-templates select="key('entries', 'transaction')/billingAddr"/>
     </fo:block-container>
   </xsl:template>
-  
+
   <xsl:template name="transaction-specification">
     <xsl:param name="number-label"/>
     <xsl:param name="additional-specifications"/>
@@ -543,7 +552,7 @@
       </fo:table>
     </fo:block-container>
   </xsl:template>
-  
+
   <xsl:template name="header-text">
     <xsl:param name="transaction-type-label"/>
     <xsl:param name="additional-text"/>
@@ -561,7 +570,7 @@
         space-after="{$caption.space.after}mm" font-weight="bold">
         <xsl:value-of select="$transaction-type-label"/>
         <xsl:text> </xsl:text>
-        <xsl:value-of select="subject"/>
+        <xsl:apply-templates select="/map/subjectHtml"/>
       </fo:block>
       <xsl:apply-templates select="headerText"/>
       <xsl:if test="$additional-text">
@@ -571,7 +580,7 @@
       </xsl:if>
     </fo:block>
   </xsl:template>
-  
+
   <xsl:template name="items">
     <fo:table table-layout="fixed" inline-progression-dimension="100%"
       space-after="{$space.default}mm" border-color="{$color.fg.default}"
@@ -621,7 +630,7 @@
       </fo:table-body>
     </fo:table>
   </xsl:template>
-  
+
   <xsl:template name="signature">
     <fo:block>
       <xsl:value-of select="key('entries', 'user')/firstName"/>

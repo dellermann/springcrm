@@ -16,7 +16,7 @@
     <tr data-item-id="${dunningInstance.id}">
       <td class="row-selector"><input type="checkbox" id="dunning-row-selector-${dunningInstance.id}" data-id="${dunningInstance.id}" /></td>
       <td class="id dunning-number"><a href="#">${fieldValue(bean: dunningInstance, field: "fullNumber")}</a></td>
-      <td class="string dunning-subject"><a href="#">${fieldValue(bean: dunningInstance, field: "subject")}</a></td>
+      <td class="string dunning-subject"><a href="#"><g:nl2br value="${dunningInstance.subject}" /></a></td>
       <td class="ref dunning-organization">${fieldValue(bean: dunningInstance, field: "organization")}</td>
       <td class="status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}">${fieldValue(bean: dunningInstance, field: "stage")}</td>
       <td class="date dunning-doc-date"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>

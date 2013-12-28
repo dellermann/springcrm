@@ -176,6 +176,7 @@ abstract class GeneralFunctionalTestCase extends DbUnitTestCase {
         List<WebElement> elements = driver.findElements(By.cssSelector('.field.error'))
         for (WebElement element : elements) {
             List<WebElement> inputs = element.findElements(By.tagName('input'))
+            inputs.addAll element.findElements(By.tagName('textarea'))
             for (WebElement input : inputs) {
                 String name = input.getAttribute('name')
                 if (name in fieldNames) {
