@@ -352,9 +352,11 @@ class TicketController {
 
         def ticketInstance = new Ticket(params)
         ticketInstance.stage = TicketStage.created
+        ticketInstance.address = new Address()
         String messageText = ticketInstance.messageText = params.messageText
 
         if (!ticketInstance.validate() || !messageText) {
+            log.debug "Ticket validation failed: ${ticketInstance.errors}"
             if (!messageText) {
                 ticketInstance.errors.rejectValue 'messageText', 'default.blank.message'
             }
@@ -369,6 +371,7 @@ class TicketController {
             ticketInstance, messageText, params.attachment
         )
         if (!ticketInstance) {
+            log.debug 'No ticket created.'
             render view: '/helpdesk/frontendIndex', model: [
                 ticketInstance: ticketInstance,
                 helpdeskInstance: helpdeskInstance

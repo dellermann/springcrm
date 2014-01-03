@@ -104,8 +104,15 @@
 
   <xsl:template match="entry[@key='transaction']/billingAddr">
     <xsl:apply-templates select="/map/billingAddrStreetHtml/html:html"/>
+    <xsl:apply-templates select="poBox"/>
     <xsl:apply-templates select="location"/>
     <xsl:apply-templates select="country"/>
+  </xsl:template>
+
+  <xsl:template match="poBox">
+    <fo:block space-after="{$space.paragraph}mm">
+      <xsl:value-of select="."/>
+    </fo:block>
   </xsl:template>
 
   <xsl:template match="location">

@@ -17,7 +17,7 @@
     <g:fieldValue bean="${helpdeskInstance}" field="name" /></h1>
   </content>
   <aside id="ticket-forms">
-    <g:set var="ticketInstance" value="${new Ticket()}" />
+    <%--<g:set var="ticketInstance" value="${new Ticket()}" />--%>
     <div id="create-ticket-form">
       <g:uploadForm controller="ticket" action="frontendSave">
         <g:hiddenField name="helpdesk" value="${helpdeskInstance.id}" />

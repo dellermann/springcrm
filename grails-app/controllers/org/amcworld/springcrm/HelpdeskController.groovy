@@ -165,6 +165,6 @@ class HelpdeskController {
             return
         }
 
-        [helpdeskInstance: helpdeskInstance]
+        [helpdeskInstance: helpdeskInstance, ticketInstance: new Ticket()]
     }
 }

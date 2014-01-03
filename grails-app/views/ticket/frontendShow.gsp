@@ -87,11 +87,7 @@
             <f:display bean="${ticketInstance}" property="email2" />
           </div>
           <div class="col col-r">
-            <f:display bean="${ticketInstance}" property="street" />
-            <f:display bean="${ticketInstance}" property="postalCode" />
-            <f:display bean="${ticketInstance}" property="location" />
-            <f:display bean="${ticketInstance}" property="state" />
-            <f:display bean="${ticketInstance}" property="country" />
+            <f:display bean="${ticketInstance}" property="address" />
           </div>
         </div>
       </section>
