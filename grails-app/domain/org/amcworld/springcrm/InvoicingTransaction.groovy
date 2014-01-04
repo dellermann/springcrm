@@ -124,7 +124,7 @@ class InvoicingTransaction {
         adjustment = i.adjustment
         total = i.total
         notes = i.notes
-        termsAndConditions = i.termsAndConditions
+        termsAndConditions = new HashSet(i.termsAndConditions)
     }
 
 

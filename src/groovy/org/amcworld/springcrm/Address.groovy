@@ -78,6 +78,20 @@ class Address {
     //-- Public methods -------------------------
 
     @Override
+    boolean equals(Object obj) {
+        if (obj instanceof Address) {
+            obj.street == street &&
+                obj.poBox == poBox &&
+                obj.postalCode == postalCode &&
+                obj.location == location &&
+                obj.state == state &&
+                obj.country == country
+        } else {
+            false
+        }
+    }
+
+    @Override
     String toString() {
         StringBuilder s = new StringBuilder(street ?: '')
         if (location) {
