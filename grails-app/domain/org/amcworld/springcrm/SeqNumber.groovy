@@ -1,7 +1,7 @@
 /*
  * SeqNumber.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,19 +25,19 @@ package org.amcworld.springcrm
  * The class {@code SeqNumber} represents a sequence number which is used to
  * number various content items.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class SeqNumber {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		controllerName(blank: false)
-		prefix(maxSize: 5)
-		suffix(maxSize: 5)
-		startValue(min: 0)
-		endValue(min: 0)
+        controllerName blank: false
+        prefix maxSize: 5
+        suffix maxSize: 5
+        startValue min: 0
+        endValue min: 0
     }
     static mapping = {
         controllerName index: 'controller_name'
@@ -46,31 +46,27 @@ class SeqNumber {
 
     //-- Instance variables ---------------------
 
-	String controllerName
-	String prefix = ''
-	String suffix = ''
-	int startValue = 10000i
-	int endValue = 99999i
+    String controllerName
+    String prefix = ''
+    String suffix = ''
+    int startValue = 10000i
+    int endValue = 99999i
 
 
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SeqNumber) {
-            return obj.controllerName == controllerName
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof SeqNumber) ? obj.controllerName == controllerName : false
     }
 
     @Override
-    public int hashCode() {
-        return controllerName.hashCode()
+    int hashCode() {
+        controllerName.hashCode()
     }
 
     @Override
     String toString() {
-        return controllerName
+        controllerName
     }
 }
