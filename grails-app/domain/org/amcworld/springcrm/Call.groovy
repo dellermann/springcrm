@@ -1,7 +1,7 @@
 /*
  * Call.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,83 +24,79 @@ package org.amcworld.springcrm
 /**
  * The class {@code Call} represents a phone call.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class Call {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		subject(blank: false)
-		notes(nullable: true, widget: 'textarea')
-		organization(nullable: true)
-		person(nullable: true)
-		phone(nullable: true, maxSize: 40)
-		start()
-		type()
-		status()
-		dateCreated()
-		lastUpdated()
+        subject blank: false
+        notes nullable: true, widget: 'textarea'
+        organization nullable: true
+        person nullable: true
+        phone nullable: true, maxSize: 40
+        start()
+        type()
+        status()
+        dateCreated()
+        lastUpdated()
     }
-    static belongsTo = [ organization: Organization, person: Person ]
-	static mapping = {
-		sort start: 'desc'
-		table 'phone_call'
-		notes type: 'text'
+    static belongsTo = [organization: Organization, person: Person]
+    static mapping = {
+        sort start: 'desc'
+        table 'phone_call'
+        notes type: 'text'
         subject index: 'subject'
     }
-	static searchable = true
+    static searchable = true
 
 
     //-- Instance variables ---------------------
 
-	String subject
-	String notes
-	String phone
-	Date start = new Date()
-	CallType type
-	CallStatus status
-	Date dateCreated
-	Date lastUpdated
+    String subject
+    String notes
+    String phone
+    Date start = new Date()
+    CallType type
+    CallStatus status
+    Date dateCreated
+    Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
-	Call() {}
+    Call() {}
 
-	Call(Call call) {
-		subject = call.subject
-		notes = call.notes
-		organization = call.organization
-		person = call.person
-		phone = call.phone
-		start = call.start
-		type = call.type
-		status = call.status
-	}
+    Call(Call call) {
+        subject = call.subject
+        notes = call.notes
+        organization = call.organization
+        person = call.person
+        phone = call.phone
+        start = call.start
+        type = call.type
+        status = call.status
+    }
 
 
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Call) {
-            return obj.id == id
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof Call) ? obj.id == id : false
     }
 
-	@Override
-    public int hashCode() {
-        return id as int
+    @Override
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-		return subject
-	}
+        subject ?: ''
+    }
 }
 
 
@@ -108,7 +104,7 @@ class Call {
  * The enumeration {@code CallType} represents the types of phone calls, that
  * is, the direction of them.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 0.9
  */
 enum CallType {
@@ -118,7 +114,7 @@ enum CallType {
 /**
  * The enumeration {@code CallStatus} represents the status of a phone call.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 0.9
  */
 enum CallStatus {

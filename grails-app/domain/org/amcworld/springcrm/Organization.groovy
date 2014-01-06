@@ -1,7 +1,7 @@
 /*
  * Organization.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,18 +123,7 @@ class Organization {
     }
 
 
-    //-- Public methods -------------------------
-
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
-    }
-
-    @Override
-    boolean equals(Object obj) {
-        (obj instanceof Organization) ? obj.id == id : false
-    }
+    //-- Properties -----------------------------
 
     String getFullNumber() {
         seqNumberService.format getClass(), number
@@ -148,11 +137,6 @@ class Organization {
         res
     }
 
-    @Override
-    int hashCode() {
-        (id ?: 0i) as int
-    }
-
     boolean isCustomer() {
         (recType & 1) != 0
     }
@@ -163,10 +147,29 @@ class Organization {
 
     void setWebsite(String website) {
         website = website ?: ''
-        if ((website.size() > 0) && !(website =~ '^https?://')) {
+        if (website && !(website ==~ '^https?://.*')) {
             website = "http://${website}"
         }
         this.website = website
+    }
+
+
+    //-- Public methods -------------------------
+
+    def beforeInsert() {
+        if (number == 0) {
+            number = seqNumberService.nextNumber(getClass())
+        }
+    }
+
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof Organization) ? obj.id == id : false
+    }
+
+    @Override
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override

@@ -42,7 +42,7 @@ class InvoicingTransaction {
         carrier nullable: true
         shippingDate nullable: true
         headerText nullable: true, widget: 'textarea'
-        items minSize: 1
+        items nullable: false, minSize: 1
         footerText nullable: true, widget: 'textarea'
         discountPercent scale: 2, min: 0.0d, widget: 'percent'
         discountAmount min: 0.0d, widget: 'currency'
@@ -285,6 +285,6 @@ class InvoicingTransaction {
 
     @Override
     String toString() {
-        subject
+        subject ?: ''
     }
 }

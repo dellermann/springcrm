@@ -77,7 +77,7 @@ class InvoicingTransactionSpec extends Specification {
         i.beforeUpdate()
 
         and: 'I copy the given invoice using the constructor'
-        Invoice i2 = new Invoice(i)
+        def i2 = new Invoice(i)
 
         then: 'I have some properties of the first invoice in the second one'
         i.subject == i2.subject
@@ -103,6 +103,7 @@ class InvoicingTransactionSpec extends Specification {
 
         and: 'some properties are unset'
         !i2.id
+        !i2.number
     }
 
     def 'Compute subtotal net'() {
@@ -281,17 +282,17 @@ class InvoicingTransactionSpec extends Specification {
 
     def 'Copy the addresses from a given organization'() {
         given: 'two addresses'
-        Address addr1 = new Address(
+        def addr1 = new Address(
             street: '45, Nelson Rd.', postalCode: '03037',
             location: 'Springfield', state: 'CA', country: 'USA'
         )
-        Address addr2 = new Address(
+        def addr2 = new Address(
             street: '122, Granberry Ave.', postalCode: '12939',
             location: 'Mt. Elber', state: 'NY', country: 'USA'
         )
 
         and: 'an organization using these addresses'
-        Organization org = new Organization(
+        def org = new Organization(
             recType: 1, name: 'YourOrganization Ltd.', billingAddr: addr1,
             shippingAddr: addr2
         )
@@ -306,11 +307,11 @@ class InvoicingTransactionSpec extends Specification {
 
     def 'Copy the addresses from the associated organization'() {
         given: 'two addresses'
-        Address addr1 = new Address(
+        def addr1 = new Address(
             street: '45, Nelson Rd.', postalCode: '03037',
             location: 'Springfield', state: 'CA', country: 'USA'
         )
-        Address addr2 = new Address(
+        def addr2 = new Address(
             street: '122, Granberry Ave.', postalCode: '12939',
             location: 'Mt. Elber', state: 'NY', country: 'USA'
         )
@@ -329,7 +330,7 @@ class InvoicingTransactionSpec extends Specification {
 
     def 'Check for equality'() {
         given: 'a second invoice'
-        Invoice i2 = new Invoice(
+        def i2 = new Invoice(
             adjustment: 0.27,
             discountAmount: 1.5,
             discountPercent: 3,
@@ -368,7 +369,7 @@ class InvoicingTransactionSpec extends Specification {
 
     def 'Check for inequality'() {
         given: 'a second invoice'
-        Invoice i2 = new Invoice(
+        def i2 = new Invoice(
             adjustment: 0.54,
             discountAmount: 5,
             discountPercent: 2,
@@ -396,7 +397,7 @@ class InvoicingTransactionSpec extends Specification {
             subject: 'Test invoice'
         )
 
-        and: 'set both the IDs to different values'
+        and: 'both the IDs set to different values'
         i2.id = 504
         i.id = 503
 
@@ -423,16 +424,16 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Compute hash code'() {
-        when: 'an invoice with no ID'
+        when: 'I create an invoice with no ID'
         i.id = null
 
-        then: 'a valid hash code'
+        then: 'I get a valid hash code'
         0 == i.hashCode()
 
-        when: 'an invoice with discrete IDs'
+        when: 'I create an invoice with discrete IDs'
         i.id = id
 
-        then: 'a hash code using this ID'
+        then: 'I get a hash code using this ID'
         e == i.hashCode()
 
         where:
@@ -446,7 +447,342 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Convert to string'() {
-        expect:
+        when: 'I set the subject'
+        i.subject = 'Test invoice'
+
+        then: 'I get a useful string representation'
         'Test invoice' == i.toString()
+
+        when: 'I empty the subject'
+        i.subject = ''
+
+        then: 'I get an empty string representation'
+        '' == i.toString()
+
+        when: 'I unset the subject'
+        i.subject = null
+
+        then: 'I get an empty string representation'
+        '' == i.toString()
+    }
+
+    def 'Type constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+
+        when:
+        def i = new InvoicingTransaction(
+            type: type, subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.')
+        )
+        i.validate()
+
+        then:
+        !valid == i.hasErrors()
+
+        where:
+        type            | valid
+        null            | false
+        ''              | false
+        ' '             | false
+        '      '        | false
+        '  \t \n '      | false
+        'I'             | true
+        'xx'            | false
+        'any name'      | false
+    }
+
+    def 'Subject constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+
+        when:
+        def i = new InvoicingTransaction(
+            type: 'I', subject: subject, billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.')
+        )
+        i.validate()
+
+        then:
+        !valid == i.hasErrors()
+
+        where:
+        subject         | valid
+        null            | false
+        ''              | false
+        ' '             | false
+        '      '        | false
+        '  \t \n '      | false
+        'foo'           | true
+        'any name'      | true
+    }
+
+    def 'Organization constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ]
+        )
+
+        when: 'I set an organization and validate it'
+        i.organization = new Organization(recType: 1, name: 'YourOrg Ltd.')
+        i.validate()
+
+        then: 'it is valid'
+        !i.hasErrors()
+
+        when: 'I unset the organization and validate it'
+        i.organization = null
+        i.validate()
+
+        then: 'it is not valid'
+        i.hasErrors()
+    }
+
+    def 'DocDate constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.')
+        )
+
+        when: 'I set a document date and validate it'
+        i.docDate = new Date()
+        i.validate()
+
+        then: 'it is valid'
+        !i.hasErrors()
+
+        when: 'I unset the document date and validate it'
+        i.docDate = null
+        i.validate()
+
+        then: 'it is not valid'
+        i.hasErrors()
+    }
+
+    def 'Items constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.')
+        )
+
+        when: 'I set one item and validate it'
+        i.items = [
+            new InvoicingItem(
+                number: 'P-20000', quantity: 4, unit: 'pcs.',
+                name: 'books', unitPrice: 44.99, tax: 19
+            )
+        ]
+        i.validate()
+
+        then: 'it is valid'
+        !i.hasErrors()
+
+        when: 'I set two items and validate it'
+        i.items = [
+            new InvoicingItem(
+                number: 'P-20000', quantity: 4, unit: 'pcs.',
+                name: 'books', unitPrice: 44.99, tax: 19
+            ),
+            new InvoicingItem(
+                number: 'P-30000', quantity: 1, unit: 'h',
+                name: 'service', unitPrice: 300.00, tax: 19
+            )
+        ]
+        i.validate()
+
+        then: 'it is valid'
+        !i.hasErrors()
+
+        when: 'I set no items and validate it'
+        i.items = []
+        i.validate()
+
+        then: 'it is not valid'
+        i.hasErrors()
+
+        when: 'I unset the items and validate it'
+        i.items = null
+        i.validate()
+
+        then: 'it is not valid'
+        i.hasErrors()
+    }
+
+    def 'DiscountPercent constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+
+        when:
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.'),
+            discountPercent: dp
+        )
+        i.validate()
+
+        then:
+        !valid == i.hasErrors()
+
+        where:
+          dp        | valid
+        -100        | false
+          -5        | false
+          -1        | false
+          -0.005    | false
+           0        | true
+           0.005    | true
+           1        | true
+           5        | true
+         100        | true
+         200        | true
+    }
+
+    def 'DiscountAmount constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+
+        when:
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.'),
+            discountAmount: da
+        )
+        i.validate()
+
+        then:
+        !valid == i.hasErrors()
+
+        where:
+          da        | valid
+        -108.56     | false
+          -5.44     | false
+          -1.00     | false
+          -0.01     | false
+           0.00     | true
+           0.01     | true
+           1.00     | true
+           5.44     | true
+         108.56     | true
+         229.45     | true
+    }
+
+    def 'ShippingCosts constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+
+        when:
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.'),
+            shippingCosts: sc
+        )
+        i.validate()
+
+        then:
+        !valid == i.hasErrors()
+
+        where:
+          sc        | valid
+        -108.56     | false
+          -5.44     | false
+          -1.00     | false
+          -0.01     | false
+           0.00     | true
+           0.01     | true
+           1.00     | true
+           5.44     | true
+         108.56     | true
+         229.45     | true
+    }
+
+    def 'ShippingTax constraints'() {
+        setup:
+        mockForConstraintsTests(Invoice)
+
+        when:
+        def i = new InvoicingTransaction(
+            type: 'I', subject: 'foo', billingAddr: new Address(),
+            shippingAddr: new Address(), docDate: new Date(),
+            items: [
+                new InvoicingItem(
+                    number: 'P-20000', quantity: 4, unit: 'pcs.',
+                    name: 'books', unitPrice: 44.99, tax: 19
+                )
+            ],
+            organization: new Organization(recType: 1, name: 'YourOrg Ltd.'),
+            shippingTax: st
+        )
+        i.validate()
+
+        then:
+        !valid == i.hasErrors()
+
+        where:
+          st        | valid
+        -100        | false
+          -5        | false
+          -1        | false
+          -0.005    | false
+           0        | true
+           0.005    | true
+           1        | true
+           5        | true
+         100        | true
+         200        | true
     }
 }

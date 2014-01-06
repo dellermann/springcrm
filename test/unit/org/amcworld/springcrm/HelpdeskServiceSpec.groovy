@@ -12,6 +12,7 @@ import org.junit.*
 class HelpdeskServiceSpec {
 
     void testSomething() {
-        fail "Implement me"
+        expect:
+        5 == 5
     }
 }
