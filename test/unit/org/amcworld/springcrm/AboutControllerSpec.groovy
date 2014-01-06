@@ -1,7 +1,7 @@
 /*
- * AboutControllerTests.groovy
+ * AboutControllerSpec.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,25 +21,27 @@
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
+import spock.lang.Specification
 
 
-/**
- * The class {@code AboutControllerTests} contains the unit test cases for
- * {@code AboutController}.
- *
- * @author	Daniel Ellermann
- * @version 0.9
- */
 @TestFor(AboutController)
-class AboutControllerTests {
+class AboutControllerSpec extends Specification {
 
-    //-- Public methods -------------------------
+    //-- Feature methods ------------------------
 
-    void testIndex() {
+    def 'Index action'() {
+        when:
         controller.index()
+
+        then:
+        !view
     }
 
-    void testSysInfo() {
+    def 'SysInfo action'() {
+        when:
         controller.sysInfo()
+
+        then:
+        !view
     }
 }
