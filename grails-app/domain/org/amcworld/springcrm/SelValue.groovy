@@ -1,7 +1,7 @@
 /*
  * SelValue.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,20 +25,23 @@ package org.amcworld.springcrm
  * The class {@code SelValue} represents a base class for selector values
  * which may be defined by the user.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class SelValue {
 
     //-- Class variables ------------------------
 
     static constraints = {
-        name(blank: false)
+        name blank: false
         orderId()
     }
-	static mapping = {
-		sort 'orderId'
-        id(generator: 'org.hibernate.id.enhanced.SequenceStyleGenerator', params: [initial_value: 50000])
+    static mapping = {
+        sort 'orderId'
+        id(
+            generator: 'org.hibernate.id.enhanced.SequenceStyleGenerator',
+            params: [initial_value: 50000]
+        )
     }
 
 
@@ -51,21 +54,17 @@ class SelValue {
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof SelValue) {
-            return obj.id == id
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof SelValue) ? obj.id == id : false
     }
 
     @Override
-    public int hashCode() {
-        return id as int
+    int hashCode() {
+        (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-        return name ?: ''
+        name ?: ''
     }
 }

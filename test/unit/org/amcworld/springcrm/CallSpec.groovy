@@ -33,7 +33,7 @@ class CallSpec extends Specification {
 
     def 'Preset values'() {
         when: 'I create an empty phone call'
-        Call c = new Call()
+        def c = new Call()
 
         then: 'some values are preset'
         null != c.start
@@ -215,7 +215,7 @@ class CallSpec extends Specification {
         setup:
         mockForConstraintsTests(Call)
 
-        when: 'I create a phone call without start time'
+        when: 'I create a phone call without start time and validate it'
         def c = new Call(
             subject: 'My phone call', type: CallType.incoming,
             status: CallStatus.completed
@@ -244,7 +244,7 @@ class CallSpec extends Specification {
         setup:
         mockForConstraintsTests(Call)
 
-        when: 'I create a phone call with a discrete type value'
+        when: 'I create a phone call with a discrete type value and validate it'
         def c = new Call(
             subject: 'My phone call', type: CallType.incoming,
             status: CallStatus.completed
@@ -266,7 +266,7 @@ class CallSpec extends Specification {
         setup:
         mockForConstraintsTests(Call)
 
-        when: 'I create a phone call with a discrete status value'
+        when: 'I create a phone call with a discrete status value and validate it'
         def c = new Call(
             subject: 'My phone call', type: CallType.incoming,
             status: CallStatus.completed

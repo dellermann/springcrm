@@ -306,6 +306,50 @@ class OrganizationSpec extends Specification {
         'any name'      | true
     }
 
+    def 'BillingAddr constraints'() {
+        setup:
+        mockForConstraintsTests(Call)
+
+        when: 'I create an organization with a billing address and validate it'
+        def org = new Organization(
+            recType: 1, name: 'YourOrganization Ltd.',
+            billingAddr: new Address(), shippingAddr: new Address()
+        )
+        org.validate()
+
+        then: 'it is valid'
+        !org.hasErrors()
+
+        when: 'I unset the billing address and validate it'
+        org.billingAddr = null
+        org.validate()
+
+        then: 'it is not valid'
+        org.hasErrors()
+    }
+
+    def 'ShippingAddr constraints'() {
+        setup:
+        mockForConstraintsTests(Call)
+
+        when: 'I create an organization with a shipping address and validate it'
+        def org = new Organization(
+            recType: 1, name: 'YourOrganization Ltd.',
+            billingAddr: new Address(), shippingAddr: new Address()
+        )
+        org.validate()
+
+        then: 'it is valid'
+        !org.hasErrors()
+
+        when: 'I unset the shipping address and validate it'
+        org.shippingAddr = null
+        org.validate()
+
+        then: 'it is not valid'
+        org.hasErrors()
+    }
+
     def 'Phone constraints'() {
         setup:
         mockForConstraintsTests(Organization)
@@ -356,7 +400,7 @@ class OrganizationSpec extends Specification {
         'x' * 50        | false
     }
 
-    def 'Phone other constraints'() {
+    def 'PhoneOther constraints'() {
         setup:
         mockForConstraintsTests(Organization)
 

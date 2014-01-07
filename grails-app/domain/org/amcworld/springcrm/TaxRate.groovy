@@ -1,7 +1,7 @@
 /*
  * TaxRate.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,19 +24,19 @@ package org.amcworld.springcrm
 /**
  * The class {@code TaxRate} represents tax rates.
  *
- * @author	Daniel Ellermann
- * @version 0.9
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class TaxRate extends SelValue {
 
     //-- Class variables ------------------------
 
-	static constraints = {
-		taxValue(scale: 2, min: 0.0d)
-	}
+    static constraints = {
+        taxValue min: 0.0d, scale: 2
+    }
 
 
     //-- Instance variables ---------------------
 
-	double taxValue
+    double taxValue
 }

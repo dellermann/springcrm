@@ -1,7 +1,7 @@
 /*
- * TaxRateTests.groovy
+ * TaxRateSpec.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,29 +22,37 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import spock.lang.Specification
 
 
-/**
- * The class {@code TaxRateTests} contains the unit test cases for
- * {@code TaxRate}.
- *
- * @author  Daniel Ellermann
- * @version 0.9
- */
 @TestFor(TaxRate)
 @Mock(TaxRate)
-class TaxRateTests {
+class TaxRateSpec extends Specification {
 
-    //-- Public methods -------------------------
+    //-- Feature methods ------------------------
 
-	void testMinConstraints() {
-		mockForConstraintsTests(TaxRate)
-		def validationFields = ['taxValue']
-		def taxRate = new TaxRate(taxValue:-0.5)
-		assert !taxRate.validate(validationFields)
-        assert 'min' == taxRate.errors['taxValue']
+    def 'TaxValue constraints'() {
+        setup:
+        mockForConstraintsTests(TaxRate)
 
-		taxRate = new TaxRate(taxValue:0)
-		assert taxRate.validate(validationFields)
-	}
+        when:
+        def t = new TaxRate(name: 'foo', orderId: 10, taxValue: tv)
+        t.validate()
+
+        then:
+        !valid == t.hasErrors()
+
+        where:
+        tv          | valid
+        -259.34     | false
+         -33.47     | false
+          -3.14     | false
+          -0.01     | false
+           0        | true
+           0.01     | true
+           3.14     | true
+          33.47     | true
+         100.00     | true
+         259.34     | true
+    }
 }
