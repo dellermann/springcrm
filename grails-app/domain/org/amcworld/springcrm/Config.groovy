@@ -51,9 +51,9 @@ class Config {
     Object asType(Class type) {
         switch (type) {
         case Date:
-            return Date.parseToStringDate(value)
+            return value ? Date.parseToStringDate(value) : null
         case Calendar:
-            return Date.parseToStringDate(value).toCalendar()
+            return value ? Date.parseToStringDate(value).toCalendar() : null
         case Boolean:
             return (value == null) ? null : Boolean.valueOf(value)
         default:
@@ -68,7 +68,7 @@ class Config {
 
     @Override
     int hashCode() {
-        name.hashCode()
+        (name ?: '').hashCode()
     }
 
     @Override

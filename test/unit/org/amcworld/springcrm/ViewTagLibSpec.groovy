@@ -20,10 +20,10 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.*
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
 import org.apache.commons.lang.time.FastDateFormat
 import org.springframework.context.MessageSource
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 
