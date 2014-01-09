@@ -39,7 +39,7 @@ class DataFile {
     static constraints = {
         fileName blank: false
         mimeType nullable: true
-        fileSize range: 0L..104857600L          // 0..100M
+        fileSize range: 0L..104_857_600L        // 0..100M
         dateCreated()
         lastUpdated()
     }
@@ -136,13 +136,13 @@ class DataFile {
         }
 
         this.fileName = file.originalFilename
-        this.mimeType = file.contentType ?: Magic.getMagicMatch(file.bytes).mimeType
+        this.mimeType = Magic.getMagicMatch(file.bytes).mimeType
         this.fileSize = file.size
     }
 
     @Override
     String toString() {
-        fileName
+        fileName ?: ''
     }
 }
 
