@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,16 +24,16 @@ package org.amcworld.springcrm
 /**
  * The class {@code Config} represents a system configuration information.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class Config {
 
     //-- Class variables ------------------------
 
     static constraints = {
-		name(blank: false)
-		value(nullable: true)
+        name blank: false
+        value nullable: true
     }
     static mapping = {
         name index: 'name'
@@ -42,8 +42,8 @@ class Config {
 
     //-- Instance variables ---------------------
 
-	String name
-	String value
+    String name
+    String value
 
 
     //-- Public methods -------------------------
@@ -61,20 +61,18 @@ class Config {
         }
     }
 
-    boolean equals(Object o) {
-        if (o instanceof Config) {
-            Config c = (Config) o
-            return name == c.name
-        } else {
-            return false
-        }
+    @Override
+    boolean equals(Object obj) {
+        (obj instanceof Config) ? name == obj.name : false
     }
 
+    @Override
     int hashCode() {
-        return name.hashCode()
+        name.hashCode()
     }
 
+    @Override
     String toString() {
-        return name
+        value
     }
 }

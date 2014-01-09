@@ -234,7 +234,7 @@ class ViewTagLib {
         if (params.returnUrl) {
             out << params.returnUrl
         } else {
-            createLink attrs, body
+            out << createLink(attrs, body)
         }
     }
 
@@ -345,9 +345,12 @@ class ViewTagLib {
         if (number || attrs.displayZero) {
             Locale locale = userService.currentLocale
             Currency currency = getCurrency(locale)
-            int minFractionDigits = attrs.external \
+            int fractionDigits = attrs.external \
                 ? userService.numFractionDigitsExt \
                 : userService.numFractionDigits
+            if (attrs.minFractionDigits != null) {
+                fractionDigits = attrs.minFractionDigits
+            }
 
             def map = new HashMap(attrs)
             map.number = number ?: 0
@@ -357,7 +360,8 @@ class ViewTagLib {
                 map.currencyCode = currency.currencyCode
             }
             map.groupingUsed = attrs.groupingUsed ?: true
-            map.minFractionDigits = attrs.minFractionDigits ?: minFractionDigits
+            map.maxFractionDigits = fractionDigits
+            map.minFractionDigits = fractionDigits
             out << formatNumber(map)
         }
     }
@@ -435,10 +439,16 @@ class ViewTagLib {
             StringBuilder buf = new StringBuilder('<li')
             buf << (inList ? ' class="available"' : '') << '>'
             if (inList) {
-                buf << "<a href=\"${createLink(controller: controller, action: action, params: [letter: availableLetters[i]])}\">"
+                buf << '<a href="'
+                buf << createLink(
+                    controller: controller, action: action,
+                    params: [letter: availableLetters[i]]
+                )
+                buf << '">'
             }
             if (separator && numLetters > 2) {
-                buf << availableLetters[i] << separator << availableLetters[Math.min(n, i + numLetters) - 1]
+                buf << availableLetters[i] << separator
+                buf << availableLetters[Math.min(n, i + numLetters) - 1]
             } else {
                 for (int j = 0; j < numLetters && i + j < n; j++) {
                     buf << availableLetters[i + j]
@@ -477,7 +487,7 @@ class ViewTagLib {
      * specified, a link is generated.  The menu items <code>&lt;li></code>
      * must be specified in the body of the tag.
      *
-     * @attr message REQUIRED   a message code which is used to render the buttont text
+     * @attr message REQUIRED   a message code which is used to render the button text
      * @attr color              the color of the button, e. g. white, green, blue
      * @attr size               the size of the button, e. g. small, medium
      * @attr icon               the icon which should be used, e. g. save, trash
@@ -759,7 +769,7 @@ class ViewTagLib {
         String currencyId = ConfigHolder.instance['currency'] as String
 
         /* fix for old currency symbols in table config */
-        if (currencyId != null && currencyId.length() != 3) {
+        if (!currencyId || currencyId.length() != 3) {
             currencyId = 'EUR'
         }
 
