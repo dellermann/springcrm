@@ -16,9 +16,8 @@
         displayZero="true" external="true"
         /><g:if test="${invoiceInstance.paymentAmount}">,
         <g:message code="invoice.stillUnpaid.label" default="still unpaid" />:
-        <g:formatCurrency
-          number="${invoiceInstance.total - invoiceInstance.paymentAmount}"
-          external="true"
+        <g:formatCurrency number="${-invoiceInstance.balance}"
+          external="true" displayZero="true"
         /></g:if></strong>
     </div>
   </li>

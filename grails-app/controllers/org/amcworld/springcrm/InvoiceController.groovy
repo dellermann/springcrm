@@ -1,7 +1,7 @@
 /*
  * InvoiceController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse
 /**
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class InvoiceController {
 
@@ -357,21 +357,27 @@ class InvoiceController {
 
     def listUnpaidBills() {
         def c = Invoice.createCriteria()
-        def invoiceInstanceList = c.list {
+        def l = c.list {
             and {
                 or {
-                    eq('stage', InvoiceStage.get(902))
+                    eq 'stage', InvoiceStage.get(902)           // sent
                     and {
-                        eq('stage', InvoiceStage.get(903))
-                        ltProperty('paymentAmount', 'total')
+                        eq 'stage', InvoiceStage.get(903)       // paid
+                        ltProperty 'paymentAmount', 'total'
                     }
-                    eq('stage', InvoiceStage.get(904))
-                    eq('stage', InvoiceStage.get(905))
+                    eq 'stage', InvoiceStage.get(904)           // reminded
+                    eq 'stage', InvoiceStage.get(905)           // collection
                 }
-                le('dueDatePayment', new Date())
+                le 'dueDatePayment', new Date()
             }
-            order('docDate', 'desc')
+            order 'docDate', 'desc'
         }
+
+        /* fix for issue #31 */
+        def invoiceInstanceList = l.findAll {
+            it.stage.id != 903 || it.balance < 0.0
+        }
+
         [invoiceInstanceList: invoiceInstanceList]
     }
 
