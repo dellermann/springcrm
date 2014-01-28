@@ -1,7 +1,7 @@
 /*
- * FopServiceTests.groovy
+ * FopServiceSpec.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,57 +23,67 @@ package org.amcworld.springcrm
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import javax.servlet.ServletContext
+import spock.lang.Specification
 
 
-/**
- * The class {@code FopServiceTests} contains the unit test cases for
- * {@code FopService}.
- *
- * @author  Daniel Ellermann
- * @version 0.9
- */
 @TestFor(FopService)
 @Mock(FopService)
-class FopServiceTests {
+class FopServiceSpec extends Specification {
 
-    //-- Public methods -------------------------
-
-    void setUp() {
+    def setup() {
         def control = mockFor(ServletContext)
         control.demand.getResourcePaths(1) { String path ->
             def f = new File(System.getProperty('user.dir'), "web-app/${path}")
             def l = f.list()
             def res = new HashSet<String>(l.length)
-            l.each { res.add("${f}/${it}/") }
-            return res
+            l.each { res << "${f}/${it}/" }
+            res
         }
-        control.demand.getResourceAsStream(1) { String path ->
+        control.demand.getResourceAsStream(2) { String path ->
             try {
-                return new File(path).newInputStream()
+                new File(path).newInputStream()
             } catch (IOException e) {
-                return null
+                null
             }
         }
         service.servletContext = control.createMock()
     }
 
-    void testGetTemplateNames() {
+
+    //-- Feature methods ------------------------
+
+    def 'Get template names'() {
+        when: 'I call the method'
         def names = service.templateNames
-        assert 1 <= names.size()
-        assert 'default' == names['default']
+
+        then: 'I get at least the default template'
+        1 <= names.size()
+        'default' == names['default']
     }
 
-    void testGetTemplatePathes() {
+    def 'Get template pathes'() {
+        when: 'I call the method'
         def pathes = service.templatePathes
-        assert 1 <= pathes.size()
-        assert null != pathes['default']
-        assert pathes['default'].startsWith('SYSTEM:')
-        assert pathes['default'].endsWith('/default/')
+
+        then: 'I get at least the path of the default template'
+        1 <= pathes.size()
+        def p = pathes['default']
+        null != p
+        p.startsWith 'SYSTEM:'
+        p.endsWith '/default/'
     }
 
-    void testGetUserTemplateDir() {
+    def 'Get user template directory'() {
+        given: 'the name of this application'
+        String appName = grailsApplication.metadata['app.name']
+
+        when: 'I call the method'
         File f = service.userTemplateDir
-        assert null != f
-        assert f.absolutePath.endsWith('/.springcrm/print')
+
+        then: 'I get a valid path to the user template directory'
+        null != f
+        f.absolutePath.endsWith "/.${appName}/print"
     }
+
+    // TODO write test for the other methods
 }

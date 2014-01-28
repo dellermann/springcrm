@@ -1,7 +1,7 @@
 /*
  * FopService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,11 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.XML
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.http.HttpSession
 import javax.xml.transform.*
 import javax.xml.transform.sax.SAXResult
+import javax.xml.transform.sax.SAXSource
 import javax.xml.transform.stream.StreamSource
 import org.amcworld.springcrm.util.TemplateURIResolver
 import org.apache.avalon.framework.configuration.Configuration
@@ -33,9 +32,14 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder
 import org.apache.fop.apps.Fop
 import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
+import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
-import org.springframework.web.context.request.RequestContextHolder
+import org.xml.sax.EntityResolver
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
+import org.xml.sax.helpers.XMLReaderFactory
 
 
 /**
@@ -45,7 +49,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class FopService {
 
@@ -65,40 +69,12 @@ class FopService {
 
     //-- Instance variables ---------------------
 
-    def grailsApplication
-    def markdownService
-    def messageSource
-    final ServletContext servletContext = SCH.servletContext
+    GrailsApplication grailsApplication
+    MessageSource messageSource
+    ServletContext servletContext = SCH.servletContext
 
 
     //-- Public methods -------------------------
-
-    String generateNl2BrXml(def bean, String propertyName,
-                            String targetName = propertyName)
-    {
-        String br = '<br xmlns="http://www.w3.org/1999/xhtml" />'
-        String s = bean."${propertyName}"
-        s = s.replaceAll(~/&/, '&amp;').replaceAll(~/</, '&lt;')
-        s = s.replaceAll(~/\r\n/, br).replaceAll(~/[\r\n]/, br)
-        "<${targetName}Html>${s}</${targetName}Html>"
-    }
-
-    /**
-     * Generates an XML block for the given bean property which contains
-     * Markdown content.
-     *
-     * @param bean          the given bean
-     * @param propertyName  the name of the property
-     * @param targetName    the target name of the property in XML; if
-     *                      {@code null} the property name is used
-     * @return              the generated XML block
-     */
-    String generateMarkdownXml(def bean, String propertyName,
-                               String targetName = propertyName)
-    {
-        String xml = generateRawMarkdownXml(bean."${propertyName}")
-        "<${targetName}Html>${xml}</${targetName}Html>"
-    }
 
     /**
      * Generates a PDF document from the given template and document type and
@@ -148,95 +124,16 @@ class FopService {
             transformer.URIResolver = uriResolver
             transformer.setParameter('versionParam', '2.0')
 
-            Source src = new StreamSource(data)
+            def xmlReader = XMLReaderFactory.createXMLReader()
+            xmlReader.entityResolver = new XHTMLEntityResolver(servletContext)
+
+            Source src = new SAXSource(xmlReader, new InputSource(data))
             Result res = new SAXResult(fop.getDefaultHandler())
             transformer.transform src, res
         } catch (TransformerException e) {
             log.error "XSL-FO transformer error: ${e.messageAndLocation}"
             throw e
         }
-    }
-
-    /**
-     * Generates a raw XML block for the HTML code generated from the given
-     * Markdown text.
-     *
-     * @param text  the given Markdown text; if {@code null} an empty string
-     *              is used
-     * @return      the generated XML block
-     */
-    String generateRawMarkdownXml(String text) {
-        String html = markdownService.markdown(text ?: '')
-        "<html xmlns='http://www.w3.org/1999/xhtml'><head/><body>${html}</body></html>"
-    }
-
-    /**
-     * Generates the XML data structure which is used in XSL transformation
-     * using the given invoicing transaction.
-     *
-     * @param transaction       the given invoicing transaction
-     * @param duplicate         whether or not the data structure of a
-     *                          duplicate document is to create; if
-     *                          {@code true} the XSL transformation renders a
-     *                          watermark
-     * @param additionalData    any additional data which are added to the
-     *                          generated data structure; all entries in this
-     *                          table overwrite possible existing entries in
-     *                          the generated data structure
-     * @return                  the generated XML data structure as string
-     * @since                   1.2
-     */
-    String generateXml(InvoicingTransaction transaction,
-                       boolean duplicate = false, Map additionalData = null)
-    {
-        User user = session.user.clone()
-        user.password = null    // unset password for security reasons
-        def data = [
-            transaction: transaction,
-            items: transaction.items,
-            organization: transaction.organization,
-            person: transaction.person,
-            user: user,
-            fullNumber: transaction.fullNumber,
-            taxRates: transaction.taxRateSums,
-            values: [
-                subtotalNet: transaction.subtotalNet,
-                subtotalGross: transaction.subtotalGross,
-                discountPercentAmount: transaction.discountPercentAmount,
-                total: transaction.total
-            ],
-            watermark: duplicate ? 'duplicate' : '',
-            client: Client.loadAsMap()
-        ]
-        if (additionalData) {
-            data << additionalData
-        }
-        String xml = (data as XML).toString()
-
-        StringBuilder buf = new StringBuilder()
-        buf << generateMarkdownXml(
-            transaction.billingAddr, 'street', 'billingAddrStreet'
-        )
-        buf << generateMarkdownXml(
-            transaction.shippingAddr, 'street', 'shippingAddrStreet'
-        )
-        buf << generateNl2BrXml(transaction, 'subject')
-        buf << generateMarkdownXml(transaction, 'headerText')
-        buf << generateMarkdownXml(transaction, 'footerText')
-        buf << '<itemsHtml>'
-        for (InvoicingItem item : transaction.items) {
-            buf << '<descriptionHtml id="' << item.id << '">'
-            buf << generateRawMarkdownXml(item.description)
-            buf << '</descriptionHtml>'
-        }
-        buf << '</itemsHtml>'
-        buf << '</map>'
-        xml = xml.replaceAll ~/<\/map>$/, buf.toString()
-
-        if (log.debugEnabled) {
-            log.debug "XML data structure, type ${transaction.type}: ${xml}"
-        }
-        xml
     }
 
     /**
@@ -273,14 +170,15 @@ class FopService {
      * directory of the same name in the system template directory.
      *
      * @return  a map containing the directory names as key and the absolute
-     *          pathes to the template directory as value
+     *          paths to the template directory as value
      */
     Map<String, String> getTemplatePathes() {
         Map<String, String> res = [: ]
         servletContext.getResourcePaths(SYSTEM_FOLDER).each {
             def m = (it =~ /^.*\/([-\w]+)\/$/)
-            if (m.matches()) {
-                res[m[0][1]] = "SYSTEM:${it}"
+            String id = m[0][1]
+            if (m.matches() && id != 'dtd') {
+                res[id] = "SYSTEM:${it}"
             }
         }
         File dir = userTemplateDir
@@ -350,15 +248,6 @@ class FopService {
     }
 
     /**
-     * Returns access to the user session.
-     *
-     * @return the session instance
-     */
-    protected HttpSession getSession() {
-        RequestContextHolder.currentRequestAttributes().session
-    }
-
-    /**
      * Gets the input stream to the file with the given path.  The method
      * handles files from the system folder which must be prefixed by
      * {@code SYSTEM:}.
@@ -373,5 +262,38 @@ class FopService {
         }
 
         new File(path).newInputStream()
+    }
+}
+
+
+class XHTMLEntityResolver implements EntityResolver {
+
+    //-- Instance variables ---------------------
+
+    ServletContext servletContext
+
+
+    //-- Constructors ---------------------------
+
+    XHTMLEntityResolver(ServletContext servletContext) {
+        this.servletContext = servletContext
+    }
+
+
+    //-- Public methods -------------------------
+
+    @Override
+    InputSource resolveEntity(String publicId, String systemId)
+        throws SAXException, IOException
+    {
+        String path = InvoicingTransactionXML.ENTITY_CATALOG[publicId]
+        if (!path) {
+            return null
+        }
+
+        InputStream input = servletContext.getResourceAsStream(
+            "${FopService.SYSTEM_FOLDER}/dtd/${path}"
+        )
+        new InputSource(input)
     }
 }

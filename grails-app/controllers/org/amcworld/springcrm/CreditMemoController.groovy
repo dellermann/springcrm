@@ -1,7 +1,7 @@
 /*
  * CreditMemoController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse
  * The class {@code CreditMemoController} contains actions which manage credit
  * memos.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class CreditMemoController {
 
@@ -40,6 +40,7 @@ class CreditMemoController {
     //-- Instance variables ---------------------
 
     FopService fopService
+    InvoicingTransactionService invoicingTransactionService
 
 
     //-- Public methods -------------------------
@@ -348,8 +349,8 @@ class CreditMemoController {
             return
         }
 
-        String xml = fopService.generateXml(
-            creditMemoInstance, !!params.duplicate, [
+        String xml = invoicingTransactionService.generateXML(
+            creditMemoInstance, session.user, !!params.duplicate, [
                 invoice: creditMemoInstance.invoice,
                 invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
                 dunning: creditMemoInstance.dunning,

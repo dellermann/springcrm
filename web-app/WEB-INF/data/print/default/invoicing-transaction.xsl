@@ -411,7 +411,7 @@
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
             <xsl:attribute name="background-image">
               <xsl:text>url(</xsl:text>
-              <xsl:value-of select="'{$path.img.copy-watermark}'"/>
+              <xsl:value-of select="$path.img.copy-watermark"/>
               <xsl:text>)</xsl:text>
             </xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>
@@ -435,7 +435,7 @@
           <xsl:if test="key('entries', 'watermark') = 'duplicate'">
             <xsl:attribute name="background-image">
               <xsl:text>url(</xsl:text>
-              <xsl:value-of select="'{$path.img.copy-watermark}'"/>
+              <xsl:value-of select="$path.img.copy-watermark"/>
               <xsl:text>)</xsl:text>
             </xsl:attribute>
             <xsl:attribute name="background-position-horizontal">center</xsl:attribute>

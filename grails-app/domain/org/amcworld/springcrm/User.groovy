@@ -151,7 +151,7 @@ class User implements Cloneable {
 
     @Override
     int hashCode() {
-        ident()
+        (id ?: 0i) as int
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * SalesOrderController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse
  * The class {@code SalesOrderController} contains actions which manage sales
  * orders.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class SalesOrderController {
 
@@ -40,6 +40,7 @@ class SalesOrderController {
     //-- Instance variables ---------------------
 
     FopService fopService
+    InvoicingTransactionService invoicingTransactionService
 
 
     //-- Public methods -------------------------
@@ -275,8 +276,8 @@ class SalesOrderController {
             return
         }
 
-        String xml = fopService.generateXml(
-            salesOrderInstance, !!params.duplicate
+        String xml = invoicingTransactionService.generateXML(
+            salesOrderInstance, session.user, !!params.duplicate
         )
         GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
         if (params.duplicate) {

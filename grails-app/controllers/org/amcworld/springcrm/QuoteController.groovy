@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletResponse
 /**
  * The class {@code QuoteController} contains actions which manage quotes.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class QuoteController {
 
@@ -236,7 +236,9 @@ class QuoteController {
             return
         }
 
-        String xml = fopService.generateXml(quoteInstance, !!params.duplicate)
+        String xml = invoicingTransactionService.generateXML(
+            quoteInstance, session.user, !!params.duplicate
+        )
         GString fileName = "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
         if (params.duplicate) {
             fileName += " (${message(code: 'invoicingTransaction.duplicate')})"

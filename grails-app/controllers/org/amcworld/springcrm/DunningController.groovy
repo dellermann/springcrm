@@ -1,7 +1,7 @@
 /*
  * DunningController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse
 /**
  * The class {@code DunningController} contains actions which manage dunnings.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class DunningController {
 
@@ -40,6 +40,7 @@ class DunningController {
     //-- Instance variables ---------------------
 
     FopService fopService
+    InvoicingTransactionService invoicingTransactionService
 
 
     //-- Public methods -------------------------
@@ -367,8 +368,8 @@ class DunningController {
             return
         }
 
-        String xml = fopService.generateXml(
-            dunningInstance, !!params.duplicate, [
+        String xml = invoicingTransactionService.generateXML(
+            dunningInstance, session.user, !!params.duplicate, [
                 invoice: dunningInstance.invoice,
                 invoiceFullNumber: dunningInstance.invoice.fullNumber,
             ]

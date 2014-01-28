@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 
 /**
  * The class {@code InvoicingTransactionService} contains methods to work with
@@ -32,6 +34,41 @@ package org.amcworld.springcrm
 class InvoicingTransactionService {
 
     //-- Instance variables ---------------------
+
+    GrailsApplication grailsApplication
+    InvoicingTransactionXMLFactory invoicingTransactionXMLFactory
+
+
+    //-- Public methods -------------------------
+
+    /**
+     * Generates the XML data structure which is used in XSL transformation
+     * using the given invoicing transaction.
+     *
+     * @param transaction       the given invoicing transaction
+     * @param user              the currently logged in user
+     * @param duplicate         whether or not the data structure of a
+     *                          duplicate document is to create; if
+     *                          {@code true} the XSL transformation renders a
+     *                          watermark
+     * @param additionalData    any additional data which are added to the
+     *                          generated data structure; all entries in this
+     *                          table overwrite possible existing entries in
+     *                          the generated data structure
+     * @return                  the generated XML data structure as string
+     * @since                   1.4
+     */
+    String generateXML(InvoicingTransaction transaction, User user,
+                       boolean duplicate = false, Map additionalData = null)
+    {
+        InvoicingTransactionXML xml =
+            invoicingTransactionXMLFactory.createConverter(transaction, user)
+        xml.duplicate = duplicate
+        if (additionalData) {
+            xml << additionalData
+        }
+        xml.toString()
+    }
 
     /**
      * Populates the given invoicing transaction with the given request

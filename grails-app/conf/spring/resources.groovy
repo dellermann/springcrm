@@ -1,7 +1,7 @@
 /*
  * resources.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
  */
 
 
+import org.amcworld.springcrm.*
+import org.amcworld.springcrm.converter.*
+
+
 beans = {
 
     /* configuration handling */
@@ -28,19 +32,22 @@ beans = {
     }
 
     /* value converters */
-    defaultDateConverter(org.amcworld.springcrm.converter.DateTimeValueConverter) {
+    defaultDateConverter(DateTimeValueConverter) {
         messageSource = ref('messageSource')
     }
     [Short.TYPE, Integer.TYPE, Float.TYPE, Long.TYPE, Double.TYPE].each { numberType ->
-        "defaultGrails${numberType.name}Converter"(org.amcworld.springcrm.converter.PrimitiveNumberValueConverter) {
+        "defaultGrails${numberType.name}Converter"(PrimitiveNumberValueConverter) {
             targetType = numberType
         }
     }
 //    [Short.TYPE, Integer.TYPE, Float.TYPE, Long.TYPE, Double.TYPE].each { numberType ->
-//        "defaultGrails${numberType.name}Converter"(org.amcworld.springcrm.converter.PrimitiveNumberValueConverter) {
+//        "defaultGrails${numberType.name}Converter"(PrimitiveNumberValueConverter) {
 //            targetType = numberType
 //        }
 //    }
+    invoicingTransactionXMLFactory(InvoicingTransactionXMLFactory) {
+        markdownService = ref('markdownService')
+    }
 
     /* startup difference sets */
     startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet) {

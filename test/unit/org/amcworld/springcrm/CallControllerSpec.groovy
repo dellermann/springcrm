@@ -586,7 +586,7 @@ class CallControllerSpec extends Specification {
         ]
     }
 
-    protected Organization makeOrganizationFixture() {
+    protected void makeOrganizationFixture() {
         mockDomain Organization, [
             [
                 id: 1, number: 10000, recType: 1,

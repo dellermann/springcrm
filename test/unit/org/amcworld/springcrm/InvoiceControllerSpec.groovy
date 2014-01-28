@@ -89,6 +89,7 @@ class InvoiceControllerSpec extends Specification {
                 billingAddr: new Address(),
                 discountAmount: 5,
                 discountPercent: 2,
+                dueDatePayment: new Date(),
                 footerText: 'my footer text',
                 headerText: 'my header text',
                 items: [

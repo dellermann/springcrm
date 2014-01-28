@@ -40,6 +40,7 @@ class InvoiceController {
     //-- Instance variables ---------------------
 
     FopService fopService
+    InvoicingTransactionService invoicingTransactionService
 
 
     //-- Public methods -------------------------
@@ -344,7 +345,9 @@ class InvoiceController {
             return
         }
 
-        String xml = fopService.generateXml(invoiceInstance, !!params.duplicate)
+        String xml = invoicingTransactionService.generateXML(
+            invoiceInstance, session.user, !!params.duplicate
+        )
         GString fileName =
             "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
         if (params.duplicate) {
