@@ -23,12 +23,14 @@ package org.amcworld.springcrm
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import javax.servlet.ServletContext
-import spock.lang.Specification
 
 
 @TestFor(FopService)
-@Mock(FopService)
-class FopServiceSpec extends Specification {
+@Mock([
+    Config, FopService, Invoice, InvoiceStage, InvoicingItem, Organization,
+    Person, TermsAndConditions, User
+])
+class FopServiceSpec extends InvoicingTransactionXMLBase {
 
     def setup() {
         def control = mockFor(ServletContext)
@@ -59,18 +61,20 @@ class FopServiceSpec extends Specification {
         then: 'I get at least the default template'
         1 <= names.size()
         'default' == names['default']
+        !('dtd' in names)
     }
 
-    def 'Get template pathes'() {
+    def 'Get template paths'() {
         when: 'I call the method'
-        def pathes = service.templatePathes
+        def paths = service.templatePaths
 
         then: 'I get at least the path of the default template'
-        1 <= pathes.size()
-        def p = pathes['default']
+        1 <= paths.size()
+        String p = paths['default']
         null != p
         p.startsWith 'SYSTEM:'
         p.endsWith '/default/'
+        !('dtd' in paths)
     }
 
     def 'Get user template directory'() {
@@ -84,6 +88,33 @@ class FopServiceSpec extends Specification {
         null != f
         f.absolutePath.endsWith "/.${appName}/print"
     }
+
+//    def 'Generate PDF of an invoice'() {
+//        given: 'an invoicing transaction XML converter factory'
+//        InvoicingTransactionXMLFactory invoicingTransactionXMLFactory =
+//            initInvoicingTransactionXMLFactory()
+//
+//        and: 'an invoice'
+//        def invoice = makeInvoiceFixture()
+//
+//        and: 'some client data'
+//        makeClientFixture()
+//
+//        and: 'a user in the session'
+//        def user = makeUserFixture()
+//
+//        and: 'XML created from this invoice'
+//        def conv = invoicingTransactionXMLFactory.createConverter(invoice, user)
+//        String xml = conv.toXML()
+//
+//        when: 'I generate PDF from this XML'
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+//        service.generatePdf new StringReader(xml), 'invoice', 'default', baos
+//
+//        then: 'I get valid PDF data'
+//        println baos.toString()
+//        0 > baos.size()
+//    }
 
     // TODO write test for the other methods
 }

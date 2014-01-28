@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamSource
 import org.amcworld.springcrm.util.TemplateURIResolver
 import org.apache.avalon.framework.configuration.Configuration
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder
+import org.apache.fop.apps.FOUserAgent
 import org.apache.fop.apps.Fop
 import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
@@ -86,13 +87,21 @@ class FopService {
      * @param type      the type of document to process; this value determines
      *                  the name of the template file
      * @param template  the key of the template as obtained by
-     *                  {@code getTemplatePathes()} or {@code getTemplateNames}
+     *                  {@code getTemplatePaths} or {@code getTemplateNames}
      * @param out       the output stream to write the generated PDF data to
      */
     void generatePdf(Reader data, String type, String template,
                      OutputStream out) {
-        Map<String, String> pathes = templatePathes
-        String templateDir = pathes[template]
+
+        /*
+         * Implementation notes: normally, the FopFactory instance should be
+         * re-used.  In our configuration we have to configure that instance
+         * depending on the template directory.  Thus, we cannot re-used it
+         * because each thread may have its own template and therefore,
+         * template directory.
+         */
+        Map<String, String> paths = templatePaths
+        String templateDir = paths[template]
 
         URIResolver uriResolver = new TemplateURIResolver(
             servletContext, templateDir
@@ -100,8 +109,9 @@ class FopService {
         FopFactory fopFactory = FopFactory.newInstance()
         fopFactory.URIResolver = uriResolver
         fopFactory.userConfig = getFopConfiguration(templateDir)
+        def ua = getUserAgent(fopFactory)
 
-        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, out)
+        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, ua, out)
 
         TransformerFactory tfFactory = TransformerFactory.newInstance()
         tfFactory.URIResolver = uriResolver
@@ -128,7 +138,7 @@ class FopService {
             xmlReader.entityResolver = new XHTMLEntityResolver(servletContext)
 
             Source src = new SAXSource(xmlReader, new InputSource(data))
-            Result res = new SAXResult(fop.getDefaultHandler())
+            Result res = new SAXResult(fop.defaultHandler)
             transformer.transform src, res
         } catch (TransformerException e) {
             log.error "XSL-FO transformer error: ${e.messageAndLocation}"
@@ -143,9 +153,9 @@ class FopService {
      *          name as value
      */
     Map<String, String> getTemplateNames() {
-        Map<String, String> pathes = templatePathes
+        Map<String, String> paths = templatePaths
         Map<String, String> res = [: ]
-        for (Map.Entry entry in pathes) {
+        for (Map.Entry entry in paths) {
             Properties props = new Properties()
             try {
                 InputStream is = getTemplateFile(
@@ -165,17 +175,17 @@ class FopService {
     }
 
     /**
-     * Gets all the pathes containing print templates.  Any template
+     * Gets all the paths containing print templates.  Any template
      * directories defined in the user template directory overwrites the
      * directory of the same name in the system template directory.
      *
      * @return  a map containing the directory names as key and the absolute
      *          paths to the template directory as value
      */
-    Map<String, String> getTemplatePathes() {
+    Map<String, String> getTemplatePaths() {
         Map<String, String> res = [: ]
         servletContext.getResourcePaths(SYSTEM_FOLDER).each {
-            def m = (it =~ /^.*\/([-\w]+)\/$/)
+            def m = (it =~ '^.*/([-\\w]+)/$')
             String id = m[0][1]
             if (m.matches() && id != 'dtd') {
                 res[id] = "SYSTEM:${it}"
@@ -209,7 +219,7 @@ class FopService {
      * @param type      the type of document to process; this value determines
      *                  the name of the template file
      * @param template  the key of the template as obtained by
-     *                  {@code getTemplatePathes()} or {@code getTemplateNames}
+     *                  {@code getTemplatePaths} or {@code getTemplateNames}
      * @param response  the response object to write the PDF data to
      * @param fileName  the file name to use when writing to the output
      */
@@ -222,7 +232,7 @@ class FopService {
         response.addHeader 'Content-Disposition',
             "attachment; filename=\"${fileName}\""
         response.contentLength = baos.size()
-        response.outputStream.write(baos.toByteArray())
+        response.outputStream.write baos.toByteArray()
         response.outputStream.flush()
     }
 
@@ -262,6 +272,23 @@ class FopService {
         }
 
         new File(path).newInputStream()
+    }
+
+    /**
+     * Creates a new FOP user agent instance and fills it with particular data.
+     *
+     * @param fopFactory    the FOP factory used to create the user agent
+     * @return              the user agent
+     * @since               1.4
+     */
+    protected FOUserAgent getUserAgent(FopFactory fopFactory) {
+        FOUserAgent ua = fopFactory.newFOUserAgent()
+        StringBuilder buf =
+            new StringBuilder(grailsApplication.metadata['app.name'])
+        buf << ' v' << grailsApplication.metadata['app.version']
+        ua.producer = buf.toString()
+        ua.creationDate = new Date()
+        ua
     }
 }
 
