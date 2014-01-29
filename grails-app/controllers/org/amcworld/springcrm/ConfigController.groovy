@@ -63,8 +63,14 @@ class ConfigController {
 
     def currency() {
         Locale locale = userService.currentLocale
-        Map<String, String> currencies = userService.availableCurrencies.collectEntries { [it.currencyCode, it.currencyCode + ((it.currencyCode == it.getSymbol(locale)) ? '' : " (${it.getSymbol(locale)})")] }
+        Map<String, String> currencies =
+            userService.availableCurrencies.collectEntries {
+                String cc = it.currencyCode
+                String sym = it.getSymbol(locale)
+                [cc, cc + ((cc == sym) ? '' : " (${sym})")]
+            }
         String currentCurrency = ConfigHolder.instance['currency'] as String
+
         [
             currencies: currencies.sort { a, b -> a.key <=> b.key },
             currentCurrency: currentCurrency,
@@ -77,18 +83,21 @@ class ConfigController {
         def configHolder = ConfigHolder.instance
         params.config.each {
             String key = it.key
+            String value = it.value
             if (key.startsWith('_')) {
                 configHolder.setConfig key.substring(1), 'false'
-            }
-        }
-        params.config.each {
-            String key = it.key
-            if (!key.startsWith('_')) {
-                configHolder.setConfig key, it.value
+            } else if (key != 'ldapBindPasswd' || value) {      // issue #35
+                if (key == 'ldapPort') {
+                    value = value ?: '389'                      // issue #35
+                }
+                configHolder.setConfig key, value
             }
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'config.label', default: 'System setting'), ''])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'config.label', default: 'System setting'), '']
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -191,12 +200,13 @@ class ConfigController {
     def loadSeqNumbers() {
         def list = SeqNumber.list()
 
+        def ch = ConfigHolder.instance
         Long serviceIdDunningCharge =
-            ConfigHolder.instance['serviceIdDunningCharge'] as Long
+            ch['serviceIdDunningCharge']?.toType(Long)
         Service s = Service.read(serviceIdDunningCharge)
         String serviceDunningCharge = s ? s.name : ''
         Long serviceIdDefaultInterest =
-            ConfigHolder.instance['serviceIdDefaultInterest'] as Long
+            ch['serviceIdDefaultInterest']?.toType(Long)
         s = Service.read(serviceIdDefaultInterest)
         String serviceDefaultInterest = s ? s.name : ''
 
@@ -216,9 +226,22 @@ class ConfigController {
             try {
                 Long id = Long.valueOf(entry.key)
                 SeqNumber seqNumber = SeqNumber.get(id)
-                seqNumber.properties['prefix', 'suffix', 'startValue', 'endValue'] = entry.value
-                l.add(seqNumber)
-                hasErrors |= (seqNumber.save(flush: true) == null)
+
+                /*
+                 * Implementation notes: Using
+                 * seqNumber.properties['prefix', 'suffix', 'startValue', 'endValue'] = entry.value
+                 * doesn't work because it sets an empty suffix to a null value
+                 * which infringes the suffix nullable: false constraint.  The
+                 * same is valid for prefix.
+                 */
+                Map props = entry.value
+                seqNumber.prefix = props.prefix
+                seqNumber.suffix = props.suffix
+                seqNumber.startValue = props.startValue
+                seqNumber.endValue = props.endValue
+
+                l << seqNumber
+                hasErrors |= !seqNumber.save(flush: true)
             } catch (NumberFormatException ignored) { /* ignored */ }
         }
 

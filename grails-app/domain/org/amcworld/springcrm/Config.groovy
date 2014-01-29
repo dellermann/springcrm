@@ -48,17 +48,15 @@ class Config {
 
     //-- Public methods -------------------------
 
+    /**
+     * Converts this configuration object to the specified type.
+     *
+     * @param type  the given type
+     * @return      the converted object
+     * @see         #toType(Class)
+     */
     Object asType(Class type) {
-        switch (type) {
-        case Date:
-            return value ? Date.parseToStringDate(value) : null
-        case Calendar:
-            return value ? Date.parseToStringDate(value).toCalendar() : null
-        case Boolean:
-            return (value == null) ? null : Boolean.valueOf(value)
-        default:
-            return value?.asType(type)
-        }
+        toType type
     }
 
     @Override
@@ -74,5 +72,28 @@ class Config {
     @Override
     String toString() {
         value
+    }
+
+    /**
+     * Helper method to convert this configuration object to the specified
+     * type.  The method exists because some implementations do not call
+     * {@code asType} when using the {@code as} keyword or even when directly
+     * calling {@code asType}.
+     *
+     * @param type  the given type
+     * @return      the converted object
+     * @see         #asType(Class)
+     */
+    Object toType(Class type) {
+        switch (type) {
+        case Date:
+            return value ? Date.parseToStringDate(value) : null
+        case Calendar:
+            return value ? Date.parseToStringDate(value).toCalendar() : null
+        case Boolean:
+            return (value == null) ? null : Boolean.valueOf(value)
+        default:
+            return value?.asType(type)
+        }
     }
 }
