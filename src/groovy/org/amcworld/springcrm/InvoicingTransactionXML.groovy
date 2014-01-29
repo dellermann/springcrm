@@ -59,7 +59,7 @@ class InvoicingTransactionXML extends XML {
 
     //-- Instance variables ---------------------
 
-    Map data
+    final Map data
     MarkdownService markdownService
 
 
@@ -73,12 +73,23 @@ class InvoicingTransactionXML extends XML {
      * @param transaction   the given invoicing transaction
      * @param user          the currently logged in user
      */
-    protected InvoicingTransactionXML(InvoicingTransaction transaction, User user) {
+    protected InvoicingTransactionXML(InvoicingTransaction transaction,
+                                      User user)
+    {
         data = collectData(transaction, user)
     }
 
 
     //-- Properties -----------------------------
+
+    /**
+     * Gets a copy of the internal data structure.
+     *
+     * @return  the data
+     */
+    Map getData() {
+        new HashMap(data)
+    }
 
     /**
      * Checks whether or not a duplicate document should be created.
