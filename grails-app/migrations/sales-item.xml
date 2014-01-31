@@ -4,7 +4,7 @@
 
  sales-item.xml
 
- Copyright (c) 2011-2013, Daniel Ellermann
+ Copyright (c) 2011-2014, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -72,20 +72,7 @@
       <column name="retailer" type="varchar(255)" />
       <column name="weight" type="double precision" />
     </createTable>
-    <addForeignKeyConstraint baseColumnNames="category_id"
-      baseTableName="sales_item" constraintName="FK6669B266E9949B03"
-      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
-      referencedTableName="sel_value" referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="tax_rate_id"
-      baseTableName="sales_item" constraintName="FK6669B266C7AFB16B"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="sel_value"
-      referencesUniqueColumn="false" />
-    <addForeignKeyConstraint baseColumnNames="unit_id"
-      baseTableName="sales_item" constraintName="FK6669B26667D5AB80"
-      deferrable="false" initiallyDeferred="false"
-      referencedColumnNames="id" referencedTableName="sel_value"
-      referencesUniqueColumn="false" />
+
     <createIndex indexName="sales_item_name" tableName="sales_item">
       <column name="name" />
     </createIndex>
@@ -106,6 +93,21 @@
       <column name="type" />
       <column name="number" />
     </createIndex>
+
+    <addForeignKeyConstraint baseColumnNames="category_id"
+      baseTableName="sales_item" constraintName="FK6669B266E9949B03"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value" referencesUniqueColumn="false" />
+    <addForeignKeyConstraint baseColumnNames="tax_rate_id"
+      baseTableName="sales_item" constraintName="FK6669B266C7AFB16B"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sel_value"
+      referencesUniqueColumn="false" />
+    <addForeignKeyConstraint baseColumnNames="unit_id"
+      baseTableName="sales_item" constraintName="FK6669B26667D5AB80"
+      deferrable="false" initiallyDeferred="false"
+      referencedColumnNames="id" referencedTableName="sel_value"
+      referencesUniqueColumn="false" />
   </changeSet>
 
 

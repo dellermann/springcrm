@@ -4,7 +4,7 @@
 
  sales-item-pricing.xml
 
- Copyright (c) 2011-2013, Daniel Ellermann
+ Copyright (c) 2011-2014, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -83,6 +83,18 @@
         <constraints nullable="true" />
       </column>
     </addColumn>
+
+    <createIndex indexName="FK6669B266DCF64401" tableName="sales_item">
+      <column name="pricing_id" />
+    </createIndex>
+    <createIndex indexName="FKFA432ED67D5AB80" tableName="sales_item_pricing">
+      <column name="unit_id"/>
+    </createIndex>
+    <createIndex indexName="FK303CD25DCF64401"
+      tableName="sales_item_pricing_item">
+      <column name="pricing_id" />
+    </createIndex>
+
     <addForeignKeyConstraint baseColumnNames="pricing_id"
       baseTableName="sales_item" constraintName="FK6669B266DCF64401"
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
@@ -98,15 +110,5 @@
       initiallyDeferred="false" referencedColumnNames="id"
       referencedTableName="sales_item_pricing"
       referencesUniqueColumn="false" />
-    <createIndex indexName="FK6669B266DCF64401" tableName="sales_item">
-      <column name="pricing_id" />
-    </createIndex>
-    <createIndex indexName="FKFA432ED67D5AB80" tableName="sales_item_pricing">
-      <column name="unit_id"/>
-    </createIndex>
-    <createIndex indexName="FK303CD25DCF64401"
-      tableName="sales_item_pricing_item">
-      <column name="pricing_id" />
-    </createIndex>
   </changeSet>
 </databaseChangeLog>

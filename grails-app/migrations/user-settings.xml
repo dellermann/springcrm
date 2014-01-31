@@ -4,7 +4,7 @@
 
  user-settings.xml
 
- Copyright (c) 2011-2013, Daniel Ellermann
+ Copyright (c) 2011-2014, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -42,10 +42,7 @@
       </column>
       <column name="value" type="varchar(255)" />
     </createTable>
-    <addForeignKeyConstraint baseTableName="user_setting"
-      baseColumnNames="user_id" constraintName="FKD14EA5DC8D1F27AF"
-      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
-      referencedTableName="user_data" referencesUniqueColumn="false" />
+
     <createIndex indexName="FKD14EA5DC8D1F27AF" tableName="user_setting">
       <column name="user_id" />
     </createIndex>
@@ -53,6 +50,12 @@
       <column name="user_id" />
       <column name="name" />
     </createIndex>
+
+    <addForeignKeyConstraint baseTableName="user_setting"
+      baseColumnNames="user_id" constraintName="FKD14EA5DC8D1F27AF"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data" referencesUniqueColumn="false" />
+
     <sql>
       INSERT INTO user_setting (version, user_id, name, value)
         SELECT 0 AS version, settings AS user_id, settings_idx AS name,
