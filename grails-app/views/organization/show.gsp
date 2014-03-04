@@ -68,8 +68,6 @@
             <f:display bean="${organizationInstance}" property="legalForm" />
             <f:display bean="${organizationInstance}" property="type" />
             <f:display bean="${organizationInstance}" property="industry" />
-            <f:display bean="${organizationInstance}" property="owner" />
-            <f:display bean="${organizationInstance}" property="numEmployees" />
             <f:display bean="${organizationInstance}" property="rating" />
           </div>
           <div class="col col-r">
@@ -79,6 +77,8 @@
             <f:display bean="${organizationInstance}" property="email1" />
             <f:display bean="${organizationInstance}" property="email2" />
             <f:display bean="${organizationInstance}" property="website" />
+            <f:display bean="${organizationInstance}" property="owner" />
+            <f:display bean="${organizationInstance}" property="numEmployees" />
           </div>
         </div>
       </section>
