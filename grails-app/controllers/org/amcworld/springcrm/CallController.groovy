@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code CallController} contains actions which manage phone calls
  * associated to an organization or person.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class CallController {

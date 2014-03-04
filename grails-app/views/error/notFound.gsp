@@ -11,8 +11,7 @@
   <div id="content">
     <p><g:message code="error.notFound.description" /></p>
     <div class="buttons">
-      <g:button uri="/" color="white" icon="home" message="module.menu.home"
-        default="Home" />
+      <g:button uri="/" color="white" icon="home" message="module.menu.home" />
     </div>
   </div>
 </body>

@@ -1,7 +1,7 @@
 /*
  * LdapService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class LdapService {
     /**
      * Deletes the given person from the LDAP directory.
      *
-     * @param p    the person to delete
+     * @param p the person to delete
      */
     void delete(Person p) {
         def ldap = getLdap()
@@ -60,10 +60,10 @@ class LdapService {
     }
 
     /**
-     * Saves the given person to the LDAP directory. The method either creates
+     * Saves the given person to the LDAP directory.  The method either creates
      * or updates an entry in the directory.
      *
-     * @param p    the person to save
+     * @param p the person to save
      */
     void save(Person p) {
         def ldap = getLdap()
@@ -72,25 +72,25 @@ class LdapService {
             LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
             if (status) {
                 if (ldap.exists(status.dn)) {
-                    log.debug "DN ${status.dn} already exists -> deleting it."
+                    log.debug "DN ${status.dn} already exists -> delete it."
                     ldap.delete status.dn
                 }
             } else {
                 status = new LdapSyncStatus(itemId: p.id)
             }
             def attrs = convertPersonToAttrs(p)
-            StringBuilder cn
+            StringBuilder dn
             for (int i = 1; i < 10000; i++) {    // 10000 => emergency abort
-                cn = new StringBuilder('cn=')
-                cn << attrs.cn
+                dn = new StringBuilder('cn=')
+                dn << attrs.cn
                 if (i > 1) {
-                    cn << ' ' << i
+                    dn << ' ' << i
                 }
-                cn << ',' << (config['ldapContactDn'] as String)
+                dn << ',' << (config['ldapContactDn'] as String)
                 try {
-                    log.debug "Trying to save DN ${cn} to LDAP..."
-                    ldap.add cn.toString(), attrs
-                    status.dn = cn.toString()
+                    log.debug "Trying to save DN ${dn} to LDAP..."
+                    ldap.add dn.toString(), attrs
+                    status.dn = dn.toString()
                     status.save flush: true
                     break
                 } catch (NameAlreadyBoundException ignored) { /* ignored */ }
@@ -106,9 +106,9 @@ class LdapService {
      * Converts the given person to an attribute map which can be transferred
      * to the LDAP directory.
      *
-     * @param p    the person to convert
-     * @return    the attribute map containing the person property values
-     *             suitable for LDAP
+     * @param p the person to convert
+     * @return  the attribute map containing the person property values
+     *          suitable for LDAP
      */
     protected Map convertPersonToAttrs(Person p) {
         def attrs = [
@@ -211,19 +211,19 @@ class LdapService {
      * Gets the configuration data from the application wide configuration
      * holder.
      *
-     * @return    the configuration holder
+     * @return  the configuration holder
      */
     protected ConfigHolder getConfig() {
         ConfigHolder.instance
     }
 
     /**
-     * Gets the connection handle to the LDAP server. The attributes such as
+     * Gets the connection handle to the LDAP server.  The attributes such as
      * host name, port, bind name, and password are obtained from the
      * configuration holder.
      *
-     * @return    the LDAP server connection; <code>null</code> if no LDAP server
-     *             is configured
+     * @return  the LDAP server connection; {@code null} if no LDAP server is
+     *          configured
      */
     protected LDAP getLdap() {
         LDAP ldap = null

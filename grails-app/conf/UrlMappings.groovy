@@ -1,7 +1,7 @@
 /*
  * UrlMappings.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,12 +47,12 @@ class UrlMappings {
         }
 
         /* error handling */
-        '403'(view: '/errors/forbidden')
-        '404'(view: '/errors/notFound')
+        '403'(controller: 'error', action: 'forbidden')
+        '404'(controller: 'error', action: 'notFound')
         '500'(
-            view: '/errors/googleAuthException',
+            controller: 'error', action: 'googleAuthException',
             exception: org.amcworld.springcrm.google.GoogleAuthException
         )
-        '500'(view: '/errors/error')
+        '500'(controller: 'error', action: 'error')
     }
 }

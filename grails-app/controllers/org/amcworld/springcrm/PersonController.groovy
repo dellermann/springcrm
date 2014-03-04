@@ -1,7 +1,7 @@
 /*
  * PersonController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@ package org.amcworld.springcrm
 
 import com.google.gdata.data.extensions.*
 import grails.converters.JSON
+import javax.naming.AuthenticationException
+import javax.naming.CommunicationException
+import javax.naming.NameNotFoundException
 import javax.servlet.http.HttpServletResponse
 import net.sf.jmimemagic.Magic
 
@@ -30,8 +33,8 @@ import net.sf.jmimemagic.Magic
  * The class {@code PersonController} contains actions which manage persons
  * that belong to an organization.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  */
 class PersonController {
 
@@ -59,13 +62,31 @@ class PersonController {
             params.sort = 'lastName'
             params.offset = Math.floor(num / params.max) * params.max
         }
-        [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
+
+        [
+            personInstanceList: Person.list(params),
+            personInstanceTotal: Person.count()
+        ]
     }
 
     def listEmbedded(Long organization) {
-        def organizationInstance = Organization.get(organization)
+        def l
+        def count
+        def linkParams
+        if (organization) {
+            def organizationInstance = Organization.get(organization)
+            if (organizationInstance) {
+                l = Person.findAllByOrganization(organizationInstance, params)
+                count = Person.countByOrganization(organizationInstance)
+                linkParams = [organization: organizationInstance.id]
+            }
+        }
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [personInstanceList: Person.findAllByOrganization(organizationInstance, params), personInstanceTotal: Person.countByOrganization(organizationInstance), linkParams: [organization: organizationInstance.id]]
+
+        [
+            personInstanceList: l, personInstanceTotal: count,
+            linkParams: linkParams
+        ]
     }
 
     def create() {
@@ -297,5 +318,45 @@ class PersonController {
         } else {
             redirect action: 'list'
         }
+    }
+
+    def ldapdelete(Long id) {
+        if (ldapService && id) {
+            def personInstance = Person.get(id)
+            if (personInstance) {
+                ldapService.delete personInstance
+            }
+        }
+        redirect action: 'list'
+    }
+
+    def handleAuthenticationException(AuthenticationException e) {
+        handleLdapException 'authentication'
+    }
+
+    def handleConnectException(CommunicationException e) {
+        handleLdapException 'communication'
+    }
+
+    def handleNameNotFoundException(NameNotFoundException e) {
+        handleLdapException 'nameNotFound'
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Handles the given type of exception that occurred while accessing the
+     * LDAP service.  The method collects all necessary information and
+     * redirects to an error page.
+     *
+     * @param type  the type of exception that has been occurred
+     */
+    protected def handleLdapException(String type) {
+        def origId = (actionName == 'save') ? request.personInstance.id \
+            : params.id
+        redirect controller: 'error', action: 'ldapPerson', params: [
+                type: type, origAction: actionName, personId: origId
+            ]
     }
 }

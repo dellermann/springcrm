@@ -70,8 +70,6 @@ class CallControllerSpec extends Specification {
 
         then: 'I get a list of phone calls with one correct entry'
         matchCallInList model, d
-
-        and: 'the organization and person is set'
     }
 
     def 'List action with a letter'() {
@@ -628,7 +626,6 @@ class CallControllerSpec extends Specification {
     protected void matchCallInList(Map model, Date d = null) {
         assert null != model.callInstanceList
         assert 1 == model.callInstanceList.size()
-        assert 'Test' == model.callInstanceList[0].subject
         assert 1 == model.callInstanceTotal
 
         matchCall model.callInstanceList[0], d
