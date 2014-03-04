@@ -27,7 +27,7 @@ import static java.util.Calendar.*
  * The class {@code ReportController} produces several reports such as sales
  * journals.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 1.3
  */
 class ReportController {
@@ -38,7 +38,8 @@ class ReportController {
 
     def salesJournal() {
         def cal = Calendar.instance
-        int year = (params.year as Integer) ?: cal[YEAR]
+        def currentYear = cal[YEAR]
+        int year = (params.year as Integer) ?: currentYear
         cal[YEAR] = year
         int month = cal[MONTH] + 1
         if (params.month) {
@@ -79,6 +80,7 @@ class ReportController {
         if (!l.empty) yearStart = Math.min(yearStart, l[0].docDate[YEAR])
         l = CreditMemo.list(sort: 'docDate', order: 'desc', max: 1)
         if (!l.empty) yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
+        yearEnd = Math.max(yearEnd, currentYear)
 
         def total = 0.0
         def totalPaymentAmount = 0.0

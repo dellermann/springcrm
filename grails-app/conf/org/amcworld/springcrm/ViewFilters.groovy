@@ -1,7 +1,7 @@
 /*
  * ViewFilters.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,16 @@ class ViewFilters {
     UserService userService
 
     def filters = {
+
+        def exchangeSetting =
+            { def params, String paramName, def settings, String settingsKey ->
+                if (params[paramName] == null) {
+                    params[paramName] = settings[settingsKey]
+                } else {
+                    settings[settingsKey] = params[paramName]
+                }
+            }
+
         commonData(controller: '*', action: '*') {
             after = { model ->
                 if (model) {
@@ -54,18 +64,14 @@ class ViewFilters {
             def sessionKey = { String name ->
                 String key = name + controllerName.capitalize()
                 if (params.type) key += params.type
-                return key
+                key
             }
 
             before = {
-                def f = { pk, s, sk ->
-                    if (params[pk] == null) params[pk] = s[sk]
-                    else s[sk] = params[pk]
-                }
 
                 /* store or restore offset */
                 String key = sessionKey('offset')
-                f('offset', session, key)
+                exchangeSetting params, 'offset', session, key
 
                 /* compute number of entries of the associated domain */
                 GrailsClass cls =
@@ -82,12 +88,21 @@ class ViewFilters {
                 String name = controllerName.capitalize()
                 User user = session.user
                 if (!user.attached) user.attach()
-                f('sort', user.settings, "sort${name}")
-                f('order', user.settings, "order${name}")
+                exchangeSetting params, 'sort', user.settings, "sort${name}"
+                exchangeSetting params, 'order', user.settings, "order${name}"
             }
 
             after = {
                 session[sessionKey('offset')] = params.offset
+            }
+        }
+
+        salesJournalView(controller: 'report', action: 'sales-journal') {
+            before = {
+                User user = session.user
+                if (!user.attached) user.attach()
+                exchangeSetting params, 'year', session, 'salesJournalYear'
+                exchangeSetting params, 'month', session, 'salesJournalMonth'
             }
         }
 
@@ -110,7 +125,7 @@ class ViewFilters {
                  * view.
                  */
                 if (!params.confirmed) {
-                    redirect(controller: controllerName, action: 'list')
+                    redirect controller: controllerName, action: 'list'
                 }
             }
         }
