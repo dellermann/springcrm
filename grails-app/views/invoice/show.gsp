@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
-  <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.show.label" args="[entityName, invoiceInstance.fullNumber]" /></title>
   <r:require modules="invoicingTransactionShow" />
   <r:script>/*<![CDATA[*/
   (function ($) {

@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
-  <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.show.label" args="[entityName, quoteInstance.fullNumber]" /></title>
   <r:require modules="invoicingTransactionShow" />
   <r:script>//<![CDATA[
   (function ($) {

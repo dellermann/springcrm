@@ -4,15 +4,15 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
-  <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.edit.label" args="[entityName, invoiceInstance.fullNumber]" /></title>
   <r:require modules="invoicingTransactionForm" />
   <r:script>//<![CDATA[
   (function (SPRINGCRM, $) {
-  
+
       "use strict";
-  
+
       var it = SPRINGCRM.invoicingTransaction;
-  
+
       it.initStageValues({
               checkStageTransition: false,
               form: $("#invoice-form"),
@@ -78,7 +78,7 @@
                 </div>
               </div>
             </div>
-      
+
             <div class="row">
               <div class="label">
                 <label for="paymentAmount"><g:message code="invoicingTransaction.paymentAmount.label" default="Payment amount" /></label>
@@ -98,7 +98,7 @@
                 </div>
               </div>
             </div>
-      
+
             <div class="row">
               <div class="label">
                 <label for="paymentMethod.id"><g:message code="invoicingTransaction.paymentMethod.label" default="Payment Method" /></label>
@@ -200,7 +200,7 @@
                   <div class="item-name">${item.name}</div>
                   <div class="item-description"><markdown:renderHtml text="${item.description}" /></div>
                 </td>
-                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td> 
+                <td class="unit-price currency number">${formatCurrency(number: item.unitPrice)}</td>
                 <td class="total-price currency number">${formatCurrency(number: item.total)}</td>
                 <td class="tax percentage number">${formatNumber(number: item.tax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>
@@ -210,7 +210,7 @@
               <tr>
                 <td colspan="4"></td>
                 <td class="name"><g:message code="invoicingTransaction.shippingCosts.label" default="Shipping Costs" /></td>
-                <td></td> 
+                <td></td>
                 <td class="currency number">${formatCurrency(number: invoiceInstance?.shippingCosts)}</td>
                 <td class="percentage number">${formatNumber(number: invoiceInstance?.shippingTax, minFractionDigits: 1)}&nbsp;%</td>
               </tr>

@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
-  <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.show.label" args="[entityName, dunningInstance.fullNumber]" /></title>
   <r:require modules="invoicingTransactionShow" />
   <r:script>//<![CDATA[
   (function ($) {

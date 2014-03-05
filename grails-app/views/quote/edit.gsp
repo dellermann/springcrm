@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
-  <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.edit.label" args="[entityName, quoteInstance.fullNumber]" /></title>
 </head>
 
 <body>

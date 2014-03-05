@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
-  <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.edit.label" args="[entityName, dunningInstance.fullNumber]" /></title>
 </head>
 
 <body>

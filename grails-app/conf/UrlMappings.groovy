@@ -53,6 +53,6 @@ class UrlMappings {
             controller: 'error', action: 'googleAuthException',
             exception: org.amcworld.springcrm.google.GoogleAuthException
         )
-        '500'(controller: 'error', action: 'error')
+        '500'(view: '/error/error')
     }
 }

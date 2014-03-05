@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
-  <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.edit.label" args="[entityName, invoiceInstance.fullNumber]" /></title>
 </head>
 
 <body>

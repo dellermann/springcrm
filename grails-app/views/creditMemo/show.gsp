@@ -4,7 +4,7 @@
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'creditMemo.label', default: 'CreditMemo')}" />
   <g:set var="entitiesName" value="${message(code: 'creditMemo.plural', default: 'CreditMemos')}" />
-  <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <title><g:message code="invoicingTransaction.show.label" args="[entityName, creditMemoInstance.fullNumber]" /></title>
   <r:require modules="invoicingTransactionShow" />
 </head>
 
