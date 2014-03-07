@@ -19,7 +19,7 @@
     <p id="app-title"><strong>SpringCRM</strong></p>
     <p><g:message code="about.app.description" /></p>
     <p><g:message code="about.app.version" args="${[meta(name: 'app.version'), meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'), meta(name: 'app.buildProfile')]}" /></p>
-    <p><g:message code="about.app.copyright" /></p>
+    <p><g:message code="about.app.copyright" args="[new Date()]" /></p>
 
     <h3><g:message code="about.license" default="License" /></h3>
     <p><g:message code="about.license.name" /></p>
