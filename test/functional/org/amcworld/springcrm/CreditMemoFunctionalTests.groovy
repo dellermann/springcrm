@@ -1,7 +1,7 @@
 /*
  * CreditMemoFunctionalTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -447,7 +447,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
     @Test
     void testShowCreditMemo() {
         int id = clickListItem 0, 1, '/credit-memo/show'
-        checkTitles 'Gutschrift anzeigen', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Gutschrift G-10000-10000 anzeigen', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -603,7 +603,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
     @Test
     void testEditCreditMemoSuccess() {
         clickListActionButton 0, 0, getUrl('/credit-memo/edit/')
-        checkTitles 'Gutschrift bearbeiten', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Gutschrift G-10000-10000 bearbeiten', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="credit-memo-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('G-')
         assert '10000' == getInputValue('number')
@@ -874,7 +874,7 @@ class CreditMemoFunctionalTests extends InvoicingTransactionTestCase {
     @Test
     void testEditCreditMemoErrors() {
         clickListActionButton 0, 0, getUrl('/credit-memo/edit/')
-        checkTitles 'Gutschrift bearbeiten', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Gutschrift G-10000-10000 bearbeiten', 'Gutschriften', 'Werbekampagne Frühjahr 2013'
 
         clearInput 'subject'
         driver.findElement(By.id('organization')).clear()

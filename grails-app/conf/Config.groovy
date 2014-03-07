@@ -164,6 +164,8 @@ markdown {
 /* Packages to include in Spring bean scanning */
 grails.spring.bean.packages = []
 
+grails.resources.adhoc.excludes = ['**/WEB-INF/**','**/META-INF/**']
+
 
 //== Application-specific settings ==============
 

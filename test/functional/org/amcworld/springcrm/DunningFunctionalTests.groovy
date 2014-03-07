@@ -1,7 +1,7 @@
 /*
  * DunningFunctionalTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -352,7 +352,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
     @Test
     void testShowDunning() {
         int id = clickListItem 0, 1, '/dunning/show'
-        checkTitles 'Mahnung anzeigen', 'Mahnungen', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Mahnung M-10000-10000 anzeigen', 'Mahnungen', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -504,7 +504,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
     void testEditDunningSuccess() {
         maximizeWindow()
         clickListActionButton 0, 0, getUrl('/dunning/edit/')
-        checkTitles 'Mahnung bearbeiten', 'Mahnungen', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Mahnung M-10000-10000 bearbeiten', 'Mahnungen', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="dunning-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('M-')
         assert '10000' == getInputValue('number')
@@ -676,7 +676,7 @@ class DunningFunctionalTests extends InvoicingTransactionTestCase {
     void testEditDunningErrors() {
         maximizeWindow()
         clickListActionButton 0, 0, getUrl('/dunning/edit/')
-        checkTitles 'Mahnung bearbeiten', 'Mahnungen', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Mahnung M-10000-10000 bearbeiten', 'Mahnungen', 'Werbekampagne Frühjahr 2013'
 
         clearInput 'subject'
         clearInput 'dueDatePayment_date'

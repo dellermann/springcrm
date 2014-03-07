@@ -1,7 +1,7 @@
 /*
  * AppResources.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,12 +74,11 @@ modules = {
     }
 
     core {
-        dependsOn 'jquery-ui, jquery-json, test'
+        dependsOn 'jquery-ui, jquery-json, font-awesome-css, test'
 
         resource url: '/less/reset.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/less/main.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/css/print.css', attrs: [media: 'print']
-        resource url: '/css/font-awesome.min.css', exclude: 'minify'
         resource url: '/less/jquery-ui-springcrm.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
 
         resource '/js/jquery.ui.datepicker-de.js'

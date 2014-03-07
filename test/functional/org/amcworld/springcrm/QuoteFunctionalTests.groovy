@@ -1,7 +1,7 @@
 /*
  * QuoteFunctionalTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -285,7 +285,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
     @Test
     void testShowQuote() {
         int id = clickListItem 0, 1, '/quote/show'
-        checkTitles 'Angebot anzeigen', 'Angebote', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Angebot A-10000-10000 anzeigen', 'Angebote', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -460,7 +460,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
     @Test
     void testEditQuoteSuccess() {
         clickListActionButton 0, 0, getUrl('/quote/edit/')
-        checkTitles 'Angebot bearbeiten', 'Angebote', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Angebot A-10000-10000 bearbeiten', 'Angebote', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="quote-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('A-')
         assert '10000' == getInputValue('number')
@@ -718,7 +718,7 @@ Die Einzelheiten wurden im Meeting am 21.01.2013 festgelegt. Sie finden ein voll
     @Test
     void testEditQuoteErrors() {
         clickListActionButton 0, 0, getUrl('/quote/edit/')
-        checkTitles 'Angebot bearbeiten', 'Angebote', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Angebot A-10000-10000 bearbeiten', 'Angebote', 'Werbekampagne Frühjahr 2013'
 
         clearInput 'subject'
         driver.findElement(By.id('organization')).clear()

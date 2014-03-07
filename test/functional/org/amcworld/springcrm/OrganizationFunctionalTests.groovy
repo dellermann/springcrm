@@ -496,7 +496,6 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert 'Einzelunternehmen' == getShowFieldText(col, 4)
         assert 'Verkäufer' == getShowFieldText(col, 5)
         assert 'Medien' == getShowFieldText(col, 6)
-        assert '1' == getShowFieldText(col, 8)
         col = fieldSet.findElement(By.className('col-r'))
         assert '04541 428717' == getShowFieldText(col, 1)
         assert '04541 428719' == getShowFieldText(col, 2)
@@ -507,6 +506,7 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert 'http://friesing.example/' == link.getAttribute('href')
         assert '_blank' == link.getAttribute('target')
         assert 'http://friesing.example' == link.text
+        assert '1' == getShowFieldText(col, 8)
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Kirschenallee 17a' == getShowFieldText(col, 1)

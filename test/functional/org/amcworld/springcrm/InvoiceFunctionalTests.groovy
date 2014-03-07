@@ -1,7 +1,7 @@
 /*
  * InvoiceFunctionalTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -616,7 +616,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem 
     @Test
     void testShowInvoice() {
         int id = clickListItem 0, 1, '/invoice/show'
-        checkTitles 'Rechnung anzeigen', 'Rechnungen', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Rechnung R-10000-10000 anzeigen', 'Rechnungen', 'Werbekampagne Frühjahr 2013'
         def dataSheet = driver.findElement(By.className('data-sheet'))
         def fieldSet = getFieldset(dataSheet, 1)
         def col = fieldSet.findElement(By.className('col-l'))
@@ -809,7 +809,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem 
     @Test
     void testEditInvoiceSuccess() {
         clickListActionButton 0, 0, getUrl('/invoice/edit/')
-        checkTitles 'Rechnung bearbeiten', 'Rechnungen', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Rechnung R-10000-10000 bearbeiten', 'Rechnungen', 'Werbekampagne Frühjahr 2013'
         def col = driver.findElement(By.xpath('//form[@id="invoice-form"]/fieldset[1]')).findElement(By.className('col-l'))
         assert getShowField(col, 1).text.startsWith('R-')
         assert '10000' == getInputValue('number')
@@ -1091,7 +1091,7 @@ Einzelheiten entnehmen Sie bitte dem beiliegenden Leistungsverzeichnis bzw. dem 
     @Test
     void testEditInvoiceErrors() {
         clickListActionButton 0, 0, getUrl('/invoice/edit/')
-        checkTitles 'Rechnung bearbeiten', 'Rechnungen', 'Werbekampagne Frühjahr 2013'
+        checkTitles 'Rechnung R-10000-10000 bearbeiten', 'Rechnungen', 'Werbekampagne Frühjahr 2013'
 
         clearInput 'subject'
         driver.findElement(By.id('organization')).clear()

@@ -1,7 +1,7 @@
 /*
  * BuildConfig.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,27 +109,30 @@ grails.project.dependency.resolution = {
 //            export = false
 //        }
         compile(
-            ':codenarc:0.19',
             ':coffeescript-compiler:0.9.4',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-            ':hibernate:3.6.10.4',
+            ':font-awesome-resources:4.0.3.0',
             ':less-resources:1.3.3.2',
-            ':mail:1.0.1',
+            ':mail:1.0.3',
             ':markdown:1.1.1',
             ':quartz:1.0.1',
             ':scaffolding:1.0.0',
             ':searchable:0.6.6'
         )
         build(
-            ':tomcat:7.0.47'
+            ':tomcat:7.0.52.1'
         )
         runtime(
             ':database-migration:1.3.8',
-            ':jquery:1.8.3',
+            ':hibernate:3.6.10.9',
+            ':jquery:1.8.3',            // 1.11.0.2
             ':jquery-json:2.2.2',
-            ':jquery-ui:1.8.24',
-            ':resources:1.2.1'
+            ':jquery-ui:1.8.24',        // 1.10.3
+            ':resources:1.2.7'
+        )
+        provided(
+            ':codenarc:0.20'
         )
     }
 }
