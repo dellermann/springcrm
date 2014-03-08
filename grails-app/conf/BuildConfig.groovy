@@ -18,6 +18,8 @@
  */
 
 
+def gebVersion = '0.9.2'
+
 grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir = 'target/test-reports'
@@ -100,7 +102,8 @@ grails.project.dependency.resolution = {
         */
 
         test(
-            'org.seleniumhq.selenium:selenium-java:2.39.0'
+            "org.gebish:geb-spock:${gebVersion}",
+            'org.seleniumhq.selenium:selenium-java:2.40.0'
         )
     }
 
@@ -133,6 +136,9 @@ grails.project.dependency.resolution = {
         )
         provided(
             ':codenarc:0.20'
+        )
+        test(
+            ":geb:${gebVersion}"
         )
     }
 }
