@@ -32,13 +32,8 @@ class LinkModule extends geb.Module {
 
     //-- Public methods -------------------------
 
-    void checkLinkToPage(Class<Page> pageClass, Object... args) {
-        Page page = browser.createPage(pageClass)
-        StringBuilder buf = new StringBuilder(browser.baseUrl)
-        buf << page.pageUrl
-        if (args) buf << page.convertToPath(args)
-        String url = buf.toString()
-
+    void checkLinkToPage(Class<Page> page, Object... args) {
+        String url = page.getAbsUrl(args)
         if (args) {
             assert url == this.@href
         } else {

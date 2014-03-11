@@ -21,6 +21,7 @@
 package org.amcworld.springcrm.page
 
 import org.amcworld.springcrm.module.EmptyListModule
+import org.amcworld.springcrm.module.LetterBarModule
 
 
 class DefaultListPage extends DefaultPage {
@@ -30,6 +31,7 @@ class DefaultListPage extends DefaultPage {
     static content = {
         createBtn { toolbarButtons[0] }
         emptyList { module EmptyListModule }
+        letterBar { module LetterBarModule }
         table { $('table.content-table') }
     }
 }

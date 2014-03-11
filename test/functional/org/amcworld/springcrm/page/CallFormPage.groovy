@@ -22,6 +22,7 @@ package org.amcworld.springcrm.page
 
 import org.amcworld.springcrm.module.AutocompleteExModule
 import org.amcworld.springcrm.module.AutocompleteModule
+import org.amcworld.springcrm.module.SelectModule
 
 
 class CallFormPage extends DefaultFormPage {
@@ -32,5 +33,7 @@ class CallFormPage extends DefaultFormPage {
         organization { module AutocompleteExModule, $('#organization').parents('div.field') }
         person { module AutocompleteExModule, $('#person').parents('div.field') }
         phone { module AutocompleteModule, $('#phone').parents('div.field') }
+        status { module SelectModule, form.status() }
+        type { module SelectModule, form.type() }
     }
 }

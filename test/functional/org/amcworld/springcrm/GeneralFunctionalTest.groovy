@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import geb.Browser
+import geb.Page
 import org.amcworld.springcrm.page.LoginPage
 import org.amcworld.springcrm.page.OverviewPage
 
@@ -35,18 +36,41 @@ import org.amcworld.springcrm.page.OverviewPage
  */
 class GeneralFunctionalTest extends DbUnitSpecBase {
 
+    //-- Fixture methods ------------------------
+
+    def setupSpec() {
+        def f = { String controller, String action, Long id = null ->
+            StringBuilder buf = new StringBuilder(controller)
+            buf << '/' << action
+            if (id != null) buf << '/' << id
+            makeAbsUrl buf.toString()
+        }
+        Browser.metaClass.static.makeUrl = f
+        Page.metaClass.static.makeUrl = f
+        GeneralFunctionalTest.metaClass.static.makeUrl = f
+
+        f = { String url, Object... args ->
+            StringBuilder buf = new StringBuilder()
+            Browser.drive { buf << baseUrl }
+            buf << url
+            if (args) buf << '/' << args*.toString().join('/')
+            buf.toString()
+        }
+        Browser.metaClass.static.makeAbsUrl = f
+        Page.metaClass.static.makeAbsUrl = f
+        GeneralFunctionalTest.metaClass.static.makeAbsUrl = f
+
+        Page.metaClass.static.getAbsUrl = { Object... args ->
+            makeAbsUrl(delegate.url, *args)
+        }
+    }
+
+
     //-- Non-public methods ---------------------
 
     @Override
     protected List<String> getDatasets() {
         ['test-data/install-data.xml']
-    }
-
-    protected String getUrl(String controller, String action, Long id = null) {
-        StringBuilder buf = new StringBuilder(browser.baseUrl)
-        buf << controller << '/' << action
-        if (id != null) buf << '/' << id
-        buf.toString()
     }
 
     /**

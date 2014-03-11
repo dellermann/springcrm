@@ -20,18 +20,60 @@
 
 package org.amcworld.springcrm.module
 
+import geb.Page
+import org.amcworld.springcrm.page.DefaultFormPage
+
 
 class ListTableRowModule extends geb.Module {
 
     //-- Class variables ------------------------
 
+    static base = { $('tr') }
     static content = {
-        actionButtons { moduleList ButtonModule, $('td.action-buttons') }
+
+        /*
+         * XXX this doesn't work although it is valid code: it only returns
+         * on button, the edit button
+         */
+//        actionButtons { moduleList ButtonModule, $('td.action-buttons') }
+        editButton { $('td.action-buttons > a', 0) }
+        deleteButton { $('td.action-buttons > a', 1) }
         td { $('td', it) }
     }
 
 
     //-- Public methods -------------------------
+
+    void checkActionButtons(Class<DefaultFormPage> editPage, String controller,
+                            long id)
+    {
+
+        /*
+         * XXX the following code depends on a working content "actionButtons"
+         */
+//        2 == row.actionButtons.size()
+//        def editBtn = row.actionButtons[0]
+//        editBtn.checkLinkToPage editPage, id
+//        editBtn.checkColor 'green'
+//        assert 'Bearbeiten' == editBtn.text()
+//        def deleteBtn = row.actionButtons[1]
+//        assert Page.makeUrl('call', 'delete', call.id) == deleteBtn.@href
+//        deleteBtn.checkColor 'red'
+//        deleteBtn.checkCssClasses 'delete-btn'
+//        assert 'Löschen' == deleteBtn.text()
+//        assert 'Sind Sie sicher?' == withConfirm(false) { deleteBtn.click() }
+
+        assert editPage.getAbsUrl(id) == editButton.@href
+        assert 'green' in editButton.classes()
+        assert 'Bearbeiten' == editButton.text()
+
+        assert Page.makeUrl(controller, 'delete', id) == deleteButton.@href
+        assert 'red' in deleteButton.classes()
+        assert 'delete-btn' in deleteButton.classes()
+        assert 'Löschen' == deleteButton.text()
+        assert 'Sind Sie sicher?' == withConfirm(false) { deleteButton.click() }
+        assert browser.isAt(page.class)
+    }
 
     void checkTdClasses(String... classes) {
         for (int i = 0; i < classes.length; i++) {

@@ -27,7 +27,7 @@ class ButtonModule extends LinkModule {
 
     static base = { $('.button') }
     static content = {
-        icon { $('i').classes() }
+        icon(required: false) { $('i').classes() }
     }
 
 

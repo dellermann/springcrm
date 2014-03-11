@@ -29,7 +29,7 @@ class CallListPage extends DefaultListPage {
 
     static at = { title == 'Anrufe' }
     static content = {
-        tr { moduleList CallTableRowModule, table.find('tbody > tr') }
+        tr { moduleList CallTableRowModule, table.find('tbody') }
     }
     static url = 'call/list'
 }

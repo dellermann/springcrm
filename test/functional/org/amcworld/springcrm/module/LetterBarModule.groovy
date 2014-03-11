@@ -1,5 +1,5 @@
 /*
- * AutocompleteExModule.groovy
+ * LetterBarModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,35 +20,15 @@
 
 package org.amcworld.springcrm.module
 
-import org.openqa.selenium.Keys
 
-
-class AutocompleteExModule extends geb.Module {
+class LetterBarModule extends geb.Module {
 
     //-- Class variables ------------------------
 
-    static base = { $('span.springcrm-autocompleteex-combobox') }
+    static base = { $('ul.letter-bar') }
     static content = {
-        body { $('#content') }
-        dropdownBtn { $('a') }
-        input { $('input[type=text]') }
-        value { input.value() }
-    }
-
-
-    //-- Public methods -------------------------
-
-    /**
-     * Set the value and selects the item with the given index.
-     *
-     * @param value the value to enter into the input control
-     * @param idx   the zero-based position of the item which is to select
-     * @return      the selected text
-     */
-    String select(String value, int idx = 0) {
-        input << value
-        Thread.sleep 1000
-        input << Keys.ARROW_DOWN * (idx + 1) << Keys.TAB
-        input.value()
+        availableLetters { moduleList LinkModule, $('li.available') }
+        letter { $('li', text: it) }
+        li { $('li') }
     }
 }

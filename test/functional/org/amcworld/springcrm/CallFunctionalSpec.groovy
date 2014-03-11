@@ -20,13 +20,12 @@
 
 package org.amcworld.springcrm
 
-import org.amcworld.springcrm.page.CallEditPage;
 import org.amcworld.springcrm.page.CallCreatePage
+import org.amcworld.springcrm.page.CallEditPage
 import org.amcworld.springcrm.page.CallListPage
 import org.amcworld.springcrm.page.CallShowPage
 import org.amcworld.springcrm.page.OrganizationShowPage
 import org.amcworld.springcrm.page.PersonShowPage
-import spock.lang.IgnoreRest
 
 
 class CallFunctionalSpec extends GeneralFunctionalTest {
@@ -70,6 +69,8 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         'Anruf Bitte um Angebot wurde angelegt.' == flashMessage
         'Anrufe' == header
         'Bitte um Angebot' == subheader
+
+        and: 'the fields are set correctly'
         def fs0 = fieldset[0]
         'Allgemeine Informationen' == fs0.title
         def colL = fs0.colLeft
@@ -163,7 +164,6 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         1 == Call.count()
     }
 
-    @IgnoreRest
     def 'List phone calls'() {
         given: 'a phone call'
         def org = Organization.first()
@@ -177,10 +177,11 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         waitFor { at CallListPage }
         'Anrufe' == header
 
-//        def link = driver.findElement(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]/a'))
-//        assert getUrl('/call/list?letter=B') == link.getAttribute('href')
-//        assert 'B' == link.text
-//        assert 1 == driver.findElements(By.xpath('//ul[@class="letter-bar"]/li[@class="available"]')).size()
+        and: 'the letter bar has one clickable letter'
+        1 == letterBar.availableLetters.size()
+        def letter = letterBar.availableLetters[0]
+        makeAbsUrl('call/list?letter=B') == letter.@href
+        'B' == letter.text()
 
         and: 'the table contains one entry'
         1 == tr.size()
@@ -195,18 +196,152 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         '13.02.2013 09:15' == row.start
         'eingehend' == row.type
         'durchgeführt' == row.status
-//        2 == row.actionButtons.size()
-        def editBtn = row.actionButtons[0]
-        editBtn.checkLinkToPage CallEditPage, call.id
-        editBtn.checkColor 'green'
-        'Bearbeiten' == editBtn.text()
-//        def deleteBtn = row.actionButtons[1]
-//        getUrl('call', 'delete', call.id) == deleteBtn.@href
-//        deleteBtn.checkColor 'red'
-//        deleteBtn.checkCssClasses 'delete-btn'
-//        'Löschen' == deleteBtn.text()
-//        'Sind Sie sicher?' == withConfirm(false) { deleteBtn.click() }
-//        isAt CallListPage
+        row.checkActionButtons CallEditPage, 'call', call.id
+
+        and: 'there is still one Call object'
+        1 == Call.count()
+    }
+
+    def 'Edit phone call successfully'() {
+        given: 'a phone call'
+        def org = Organization.first()
+        def p = Person.first()
+        def call = prepareCall org, p
+
+        and: 'I go to the list view'
+        to CallListPage
+
+        when: 'I click on the edit button'
+        tr[0].editButton.click()
+
+        then: 'I get to the edit form'
+        waitFor { at CallEditPage }
+        'Anrufe' == header
+        'Bitte um Angebot' == subheader
+
+        and: 'the form is pre-filled correctly'
+        'Bitte um Angebot' == form.subject
+        '13.02.2013' == form.start_date
+        '09:15' == form.start_time
+        'Landschaftsbau Duvensee GbR' == organization.value
+        'Henry Brackmann' == person.value
+        '04543 31233' == form.phone
+        'incoming' == form.type
+        'eingehend' == type.selectedText
+        'completed' == form.status
+        'durchgeführt' == status.selectedText
+        'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.' == form.notes
+
+        when: 'I set new values and submit the form'
+        form.subject = 'Fragen zur Marketing-Aktion'
+        form.start_date = '14.02.2013'
+        form.start_time = '13:45'
+        form.phone = ''
+        assert '0163 3343267' == phone.select('016')
+        form.type = 'outgoing'
+        form.status = 'planned'
+        form.notes = 'Sollen zur *geplanten* Marketing-Aktion auch Flyer gedruckt werden?'
+        submitBtn.click()
+
+        then: 'the phone call is updated and I get to the show view'
+        waitFor { at CallShowPage }
+        'Anruf Fragen zur Marketing-Aktion wurde geändert.' == flashMessage
+        'Anrufe' == header
+        'Fragen zur Marketing-Aktion' == subheader
+
+        and: 'the fields are set correctly'
+        def fs0 = fieldset[0]
+        'Allgemeine Informationen' == fs0.title
+        def colL = fs0.colLeft
+        'Fragen zur Marketing-Aktion' == colL.row[0].fieldText
+        '14.02.2013 13:45' == colL.row[1].fieldText
+        def colR = fs0.colRight
+        colR.row[0].link.checkLinkToPage OrganizationShowPage
+        'Landschaftsbau Duvensee GbR' == colR.row[0].link.text()
+        colR.row[1].link.checkLinkToPage PersonShowPage
+        'Brackmann, Henry' == colR.row[1].link.text()
+        '0163 3343267' == colR.row[2].fieldText
+        'ausgehend' == colR.row[3].fieldText
+        'geplant' == colR.row[4].fieldText
+        def fs1 = fieldset[1]
+        'Bemerkungen' == fs1.title
+        'Sollen zur geplanten Marketing-Aktion auch Flyer gedruckt werden?' == fs1.row[0].htmlContent.text()
+        'geplanten' == fs1.row[0].htmlContent.find('em').text()
+
+        and: 'there is still one Call object'
+        1 == Call.count()
+    }
+
+    def 'Edit phone call with errors'() {
+        given: 'a phone call'
+        def org = Organization.first()
+        def p = Person.first()
+        def call = prepareCall org, p
+
+        and: 'I go to the list view'
+        to CallListPage
+
+        when: 'I click on the edit button'
+        tr[0].editButton.click()
+
+        then: 'I get to the edit form'
+        waitFor { at CallEditPage }
+        'Anrufe' == header
+        'Bitte um Angebot' == subheader
+
+        when: 'I clear mandatory fields and submit the form'
+        form.subject = ''
+        submitBtn.click()
+
+        then: 'I get to the edit form anew and there are user errors'
+        page.checkErrorFields 'subject'
+
+        when: 'I click the cancel button'
+        cancelBtn.click()
+
+        then: 'I get to the list view and the list has one entry'
+        waitFor { at CallListPage }
+        1 == tr.size()
+
+        and: 'there is one Call object'
+        1 == Call.count()
+    }
+
+    def 'Delete phone call really'() {
+        given: 'a phone call'
+        def org = Organization.first()
+        def p = Person.first()
+        def call = prepareCall org, p
+
+        and: 'I go to the list view'
+        to CallListPage
+
+        when: 'I click on the delete button'
+        withConfirm { tr[0].deleteButton.click() }
+
+        then: 'I get to the list view'
+        waitFor { at CallListPage }
+        'Anruf wurde gelöscht.' == flashMessage
+        page.emptyList.check CallCreatePage, 'Anruf anlegen'
+
+        and: 'there is no Call object'
+        0 == Call.count()
+    }
+
+    def 'Delete phone call but cancel'() {
+        given: 'a phone call'
+        def org = Organization.first()
+        def p = Person.first()
+        def call = prepareCall org, p
+
+        and: 'I go to the list view'
+        to CallListPage
+
+        when: 'I click on the delete button'
+        withConfirm(false) { tr[0].deleteButton.click() }
+
+        then: 'I am still on the list view'
+        browser.isAt CallListPage
 
         and: 'there is still one Call object'
         1 == Call.count()
