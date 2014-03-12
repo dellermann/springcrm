@@ -58,7 +58,7 @@ class Organization {
         persons: Person, calls: Call, noteEntries: Note, quotes: Quote,
         salesOrders: SalesOrder, invoices: Invoice, creditMemos: CreditMemo,
         dunnings: Dunning, purchaseInvoices: PurchaseInvoice,
-        projects: Project, calendarEvents: CalendarEvent
+        projects: Project, calendarEvents: CalendarEvent, helpdesks: Helpdesk
     ]
     static mapping = {
         calls column: 'Organization'

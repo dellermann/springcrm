@@ -55,4 +55,8 @@ class ButtonModule extends LinkModule {
         def classes = this.icon
         assert classes.contains('fa') && classes.contains('fa-' + icon)
     }
+
+    void checkSize(String size) {
+        assert this.classes().contains(size)
+    }
 }

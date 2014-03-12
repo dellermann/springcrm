@@ -1,5 +1,5 @@
 /*
- * CallCreatePage.groovy
+ * HelpdeskEditPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -21,10 +21,10 @@
 package org.amcworld.springcrm.page
 
 
-class CallCreatePage extends CallFormPage {
+class HelpdeskEditPage extends HelpdeskFormPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static at = { title == 'Helpdesk bearbeiten' }
+    static url = 'helpdesk/edit'
 }

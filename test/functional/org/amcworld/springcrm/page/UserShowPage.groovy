@@ -1,5 +1,5 @@
 /*
- * CallCreatePage.groovy
+ * UserShowPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -21,10 +21,10 @@
 package org.amcworld.springcrm.page
 
 
-class CallCreatePage extends CallFormPage {
+class UserShowPage extends DefaultShowPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static at = { title == 'Benutzer anzeigen' }
+    static url = 'user/show'
 }

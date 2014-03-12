@@ -53,9 +53,13 @@ class DefaultFormPage extends DefaultContentPage {
         List<String> shouldNotBeErrors = []
 
         for (Navigator errorField in errorFields) {
-            Navigator inputs = errorField.find('input') + errorField.find('textarea')
+            Navigator inputs = errorField.find('input, select, textarea')
             for (Navigator input in inputs) {
-                String name = input.@name
+                if (input.tag() == 'input' && input.@type == 'hidden') {
+                    continue
+                }
+
+                String name = input.@name ?: input.@id
                 if (name in fieldNames) {
                     shouldBeErrors.remove name
                 } else if (name) {

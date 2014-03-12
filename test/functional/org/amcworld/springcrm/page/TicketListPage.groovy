@@ -1,5 +1,5 @@
 /*
- * CallCreatePage.groovy
+ * TicketListPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -21,10 +21,13 @@
 package org.amcworld.springcrm.page
 
 
-class CallCreatePage extends CallFormPage {
+class TicketListPage extends DefaultListPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static at = { title == 'Tickets' }
+    static content = {
+//        tr { moduleList CallTableRowModule, table.find('tbody') }
+    }
+    static url = 'ticket/list'
 }

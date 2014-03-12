@@ -1,5 +1,5 @@
 /*
- * CallCreatePage.groovy
+ * HelpdeskFormPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,11 +20,16 @@
 
 package org.amcworld.springcrm.page
 
+import org.amcworld.springcrm.module.AutocompleteExModule
+import org.amcworld.springcrm.module.ButtonModule
 
-class CallCreatePage extends CallFormPage {
+
+class HelpdeskFormPage extends DefaultFormPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static content = {
+        generateAccessCodeBtn { module ButtonModule, $('#generate-access-code').parent() }
+        organization { module AutocompleteExModule, $('#organization').parents('div.field') }
+    }
 }

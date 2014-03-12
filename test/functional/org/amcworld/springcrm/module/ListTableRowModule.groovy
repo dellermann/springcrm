@@ -36,8 +36,8 @@ class ListTableRowModule extends geb.Module {
          * on button, the edit button
          */
 //        actionButtons { moduleList ButtonModule, $('td.action-buttons') }
-        editButton { $('td.action-buttons > a', 0) }
         deleteButton { $('td.action-buttons > a', 1) }
+        editButton { $('td.action-buttons > a', 0) }
         td { $('td', it) }
     }
 
@@ -64,12 +64,11 @@ class ListTableRowModule extends geb.Module {
 //        assert 'Sind Sie sicher?' == withConfirm(false) { deleteBtn.click() }
 
         assert editPage.getAbsUrl(id) == editButton.@href
-        assert 'green' in editButton.classes()
+        assert ['button', 'green', 'small'] == editButton.classes()
         assert 'Bearbeiten' == editButton.text()
 
         assert Page.makeUrl(controller, 'delete', id) == deleteButton.@href
-        assert 'red' in deleteButton.classes()
-        assert 'delete-btn' in deleteButton.classes()
+        assert ['button', 'delete-btn', 'red', 'small'] == deleteButton.classes()
         assert 'Löschen' == deleteButton.text()
         assert 'Sind Sie sicher?' == withConfirm(false) { deleteButton.click() }
         assert browser.isAt(page.class)

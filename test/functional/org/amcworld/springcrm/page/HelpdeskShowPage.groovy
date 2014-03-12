@@ -1,5 +1,5 @@
 /*
- * CallCreatePage.groovy
+ * CallShowPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,11 +20,17 @@
 
 package org.amcworld.springcrm.page
 
+import org.amcworld.springcrm.module.LinkModule
 
-class CallCreatePage extends CallFormPage {
+
+class HelpdeskShowPage extends DefaultShowPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static at = { title == 'Helpdesk anzeigen' }
+    static content = {
+        feLink { module LinkModule, fieldset[0].colRight.row[2].field }
+        users { module LinkModule, fieldset[1].row[0].field.find('ul > li', it) }
+    }
+    static url = 'helpdesk/show'
 }

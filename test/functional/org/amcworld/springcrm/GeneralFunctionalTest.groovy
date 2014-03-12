@@ -53,7 +53,13 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             StringBuilder buf = new StringBuilder()
             Browser.drive { buf << baseUrl }
             buf << url
-            if (args) buf << '/' << args*.toString().join('/')
+            if (args) {
+                if (args[0].toString().startsWith('?')) {
+                    buf << args*.toString().join('&')
+                } else {
+                    buf << '/' << args*.toString().join('/')
+                }
+            }
             buf.toString()
         }
         Browser.metaClass.static.makeAbsUrl = f
@@ -105,7 +111,22 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
         )
         call.save flush: true, failOnError: true
-        call
+    }
+
+    /**
+     * Prepares a helpdesk and stores it into the database.
+     *
+     * @param org   the organization the helpdesk belongs to
+     * @return      the prepared helpdesk
+     */
+    protected Helpdesk prepareHelpdesk(Organization org) {
+        def helpdesk = new Helpdesk(
+            organization: org,
+            name: 'LB Duvensee',
+            accessCode: '4A51VZ',
+            users: User.list() as Set
+        )
+        helpdesk.save flush: true, failOnError: true
     }
 
     /**
@@ -136,7 +157,6 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
         )
         org.save flush: true, failOnError: true
-        org
     }
 
     /**
@@ -171,6 +191,25 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             birthday: new GregorianCalendar(1962, Calendar.FEBRUARY, 14).time
         )
         person.save flush: true, failOnError: true
-        person
+    }
+
+    /**
+     * Prepares an additional user fixture and stores it into the database.
+     *
+     * @return  the prepared user
+     */
+    protected User prepareUser() {
+        def user = new User(
+            userName: 'rwendt',
+            password: 'secret123',
+            firstName: 'Regina',
+            lastName: 'Wendt',
+            phone: '04536 45301-21',
+            fax: '04536 45301-90',
+            mobile: '0162 37493393',
+            phoneHome: '04536 37471',
+            email: 'r.wendt@kampe.example'
+        )
+        user.save flush: true, failOnError: true
     }
 }

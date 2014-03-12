@@ -1,7 +1,7 @@
 /*
  * Helpdesk.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ class Helpdesk {
     String name
     String urlName
     String accessCode
+    Set<User> users
     Date dateCreated
     Date lastUpdated
 
@@ -62,7 +63,10 @@ class Helpdesk {
     }
 
     Set<User> getUsers() {
-        HelpdeskUser.findAllByHelpdesk(this).collect { it.user } as Set
+        if (users == null) {
+            users = (Helpdesk.exists(id) ? HelpdeskUser.findAllByHelpdesk(this).collect { it.user } : []) as Set
+        }
+        users
     }
 
     void setName(String name) {
@@ -71,19 +75,23 @@ class Helpdesk {
     }
 
     void setUsers(Set<User> users) {
-        HelpdeskUser.removeAll this
-        for (User user in users) {
-            HelpdeskUser.create(this, user)
-        }
+        this.users = users
     }
 
 
     //-- Public methods -------------------------
 
-    void addToUsers(User user) {
-        if (!hasUser(user)) {
-            HelpdeskUser.create(this, user)
-        }
+    def afterInsert() {
+        saveUsers()
+    }
+
+    def afterUpdate() {
+        removeAllUsers()
+        saveUsers()
+    }
+
+    def beforeDelete() {
+        removeAllUsers()
     }
 
     @Override
@@ -100,13 +108,26 @@ class Helpdesk {
         HelpdeskUser.countByHelpdeskAndUser(this, user) > 0
     }
 
-    void removeFromUsers(User user) {
-        HelpdeskUser.remove this, user
-    }
-
     @Override
     String toString() {
         name
     }
-}
 
+
+    //-- Non-public methods ---------------------
+
+    protected void removeAllUsers() {
+        executeUpdate(
+            'delete from HelpdeskUser where helpdesk=:helpdesk',
+            [helpdesk: this]
+        )
+    }
+
+    protected void saveUsers() {
+        for (User user in users) {
+            HelpdeskUser helpdeskUser =
+                new HelpdeskUser(helpdesk: this, user: user)
+            helpdeskUser.save flush: false, insert: true, failOnError: true
+        }
+    }
+}

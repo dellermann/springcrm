@@ -42,7 +42,11 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
     //-- Feature methods ------------------------
 
     def 'Create phone call successfully'() {
-        given:
+        given: 'an organization and person'
+        def org = Organization.first()
+        def p = Person.first()
+
+        and: 'I go to the phone call list view'
         to CallListPage
 
         when: 'I click the create button'
@@ -77,9 +81,9 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         'Bitte um Angebot' == colL.row[0].fieldText
         '13.02.2013 09:15' == colL.row[1].fieldText
         def colR = fs0.colRight
-        colR.row[0].link.checkLinkToPage OrganizationShowPage
+        colR.row[0].link.checkLinkToPage OrganizationShowPage, org.id
         'Landschaftsbau Duvensee GbR' == colR.row[0].link.text()
-        colR.row[1].link.checkLinkToPage PersonShowPage
+        colR.row[1].link.checkLinkToPage PersonShowPage, p.id
         'Brackmann, Henry' == colR.row[1].link.text()
         '04543 31233' == colR.row[2].fieldText
         'eingehend' == colR.row[3].fieldText
@@ -316,7 +320,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         and: 'I go to the list view'
         to CallListPage
 
-        when: 'I click on the delete button'
+        when: 'I click on the delete button and confirm'
         withConfirm { tr[0].deleteButton.click() }
 
         then: 'I get to the list view'
@@ -337,7 +341,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         and: 'I go to the list view'
         to CallListPage
 
-        when: 'I click on the delete button'
+        when: 'I click on the delete button but cancel'
         withConfirm(false) { tr[0].deleteButton.click() }
 
         then: 'I am still on the list view'

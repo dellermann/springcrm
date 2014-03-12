@@ -1,7 +1,7 @@
 /*
  * HelpdeskService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,28 +20,24 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
-
 
 class HelpdeskService {
 
     //-- Public methods -------------------------
 
-    boolean saveHelpdesk(Helpdesk helpdesk, Map params, boolean flush = true) {
-        BindDynamicMethod bind = new BindDynamicMethod()
-        bind.invoke helpdesk, 'bind', [
-            helpdesk, params, [exclude: 'users']
-        ] as Object[]
+    def saveHelpdesk(Helpdesk helpdesk, Map params, boolean flush = true) {
+        Map props = params
 
+        String [] userIds = props.remove('users')
         Set<User> users = [] as Set
-        String [] userIds = params.users
         if (userIds) {
             for (String userId in userIds) {
-                User user = User.get(userId as Long)
-                if (user) users << user
+                users << User.get(userId as Long)
             }
         }
         helpdesk.users = users
+
+        helpdesk.properties = props
         helpdesk.save flush: flush
     }
 }

@@ -1,5 +1,5 @@
 /*
- * CallCreatePage.groovy
+ * HelpdeskListPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,11 +20,16 @@
 
 package org.amcworld.springcrm.page
 
+import org.amcworld.springcrm.module.HelpdeskTableRowModule
 
-class CallCreatePage extends CallFormPage {
+
+class HelpdeskListPage extends DefaultListPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anruf anlegen' }
-    static url = 'call/create'
+    static at = { title == 'Helpdesks' }
+    static content = {
+        tr { moduleList HelpdeskTableRowModule, table.find('tbody') }
+    }
+    static url = 'helpdesk/list'
 }

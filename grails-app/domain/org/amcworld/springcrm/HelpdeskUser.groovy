@@ -21,6 +21,16 @@
 package org.amcworld.springcrm
 
 
+/**
+ * The class {@code HelpdeskUser} represents a third-party relation class
+ * between {@code Helpdesk} and {@code User}.  You must not save or delete
+ * instances of this class directly.  Use the methods in {@code Helpdesk}
+ * instead.
+ *
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.4
+ */
 class HelpdeskUser implements Serializable {
 
     //-- Class variables ------------------------
@@ -42,35 +52,13 @@ class HelpdeskUser implements Serializable {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof HelpdeskUser) ? helpdesk == obj.helpdesk && user == obj.user : false
+        (obj instanceof HelpdeskUser) \
+            ? helpdesk == obj.helpdesk && user == obj.user \
+            : false
     }
 
     @Override
     int hashCode() {
         "${helpdesk?.id}/${user?.id}".hashCode()
-    }
-
-    static HelpdeskUser create(Helpdesk helpdesk, User user,
-                               boolean flush = false)
-    {
-        HelpdeskUser helpdeskUser = new HelpdeskUser(
-            helpdesk: helpdesk, user: user
-        )
-        helpdeskUser.save flush: flush, insert: true
-    }
-
-    static boolean remove(Helpdesk helpdesk, User user, boolean flush = false)
-    {
-        HelpdeskUser helpdeskUser = HelpdeskUser.findByHelpdeskAndUser(
-            helpdesk, user
-        )
-        helpdeskUser ? helpdeskUser.delete(flush: flush) : false
-    }
-
-    static void removeAll(Helpdesk helpdesk) {
-        executeUpdate(
-            'delete from HelpdeskUser where helpdesk=:helpdesk',
-            [helpdesk: helpdesk]
-        )
     }
 }
