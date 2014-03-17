@@ -28,47 +28,28 @@ class ListTableRowModule extends geb.Module {
 
     //-- Class variables ------------------------
 
-    static base = { $('tr') }
     static content = {
-
-        /*
-         * XXX this doesn't work although it is valid code: it only returns
-         * on button, the edit button
-         */
-//        actionButtons { moduleList ButtonModule, $('td.action-buttons') }
-        deleteButton { $('td.action-buttons > a', 1) }
-        editButton { $('td.action-buttons > a', 0) }
+        actionButtons { moduleList ButtonModule, $('td.action-buttons .button') }
+        deleteButton { actionButtons[1] }
+        editButton { actionButtons[0] }
         td { $('td', it) }
     }
 
 
     //-- Public methods -------------------------
 
-    void checkActionButtons(Class<DefaultFormPage> editPage, String controller,
-                            long id)
-    {
+    void checkActionButtons(String controller, long id) {
+        2 == actionButtons.size()
 
-        /*
-         * XXX the following code depends on a working content "actionButtons"
-         */
-//        2 == row.actionButtons.size()
-//        def editBtn = row.actionButtons[0]
-//        editBtn.checkLinkToPage editPage, id
-//        editBtn.checkColor 'green'
-//        assert 'Bearbeiten' == editBtn.text()
-//        def deleteBtn = row.actionButtons[1]
-//        assert Page.makeUrl('call', 'delete', call.id) == deleteBtn.@href
-//        deleteBtn.checkColor 'red'
-//        deleteBtn.checkCssClasses 'delete-btn'
-//        assert 'Löschen' == deleteBtn.text()
-//        assert 'Sind Sie sicher?' == withConfirm(false) { deleteBtn.click() }
-
-        assert editPage.getAbsUrl(id) == editButton.@href
-        assert ['button', 'green', 'small'] == editButton.classes()
+        assert Page.makeUrl(controller, 'edit', id) == editButton.@href
+        editButton.checkColor 'green'
+        editButton.checkSize 'small'
         assert 'Bearbeiten' == editButton.text()
 
         assert Page.makeUrl(controller, 'delete', id) == deleteButton.@href
-        assert ['button', 'delete-btn', 'red', 'small'] == deleteButton.classes()
+        deleteButton.checkColor 'red'
+        deleteButton.checkSize 'small'
+        deleteButton.checkCssClasses 'delete-btn'
         assert 'Löschen' == deleteButton.text()
         assert 'Sind Sie sicher?' == withConfirm(false) { deleteButton.click() }
         assert browser.isAt(page.class)

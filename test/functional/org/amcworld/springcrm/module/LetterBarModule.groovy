@@ -25,9 +25,8 @@ class LetterBarModule extends geb.Module {
 
     //-- Class variables ------------------------
 
-    static base = { $('ul.letter-bar') }
     static content = {
-        availableLetters { moduleList LinkModule, $('li.available') }
+        availableLetters { moduleList LinkModule, $('li.available > a') }
         letter { $('li', text: it) }
         li { $('li') }
     }

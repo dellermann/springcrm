@@ -1,5 +1,5 @@
 /*
- * CallListPage.groovy
+ * TicketShowPage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,16 +20,26 @@
 
 package org.amcworld.springcrm.page
 
-import org.amcworld.springcrm.module.CallTableRowModule
+import org.amcworld.springcrm.module.AddressModule
+import org.amcworld.springcrm.module.ButtonModule
+import org.amcworld.springcrm.module.DialogModule
+import org.amcworld.springcrm.module.TicketLogEntryModule
 
 
-class CallListPage extends DefaultListPage {
+class TicketShowPage extends DefaultShowPage {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Anrufe' }
+    static at = { title == 'Ticket anzeigen' }
     static content = {
-        tr { moduleList CallTableRowModule, table.find('tbody > tr') }
+        address { module AddressModule, fieldset[1].colRight }
+        logEntries {
+            moduleList TicketLogEntryModule,
+                fieldset[2].find('section.ticket-log-entry')
+        }
+        sendMsgDialog { module DialogModule, $('#send-message-dialog') }
+        sendMsgToCustomerButton { module ButtonModule, $('#send-message-to-customer-btn') }
+        takeOnButton { module ButtonModule, $('#take-on-btn') }
     }
-    static url = 'call/list'
+    static url = 'ticket/show'
 }

@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm.page
 
+import org.amcworld.springcrm.module.ButtonGroupModule
 import org.amcworld.springcrm.module.ButtonModule
 import org.amcworld.springcrm.module.ShowFieldsetModule
 
@@ -30,7 +31,8 @@ class DefaultShowPage extends DefaultContentPage {
 
     static content = {
         actionBar { $('aside#action-bar') }
-        actionButtons { module ButtonModule, actionBar.find('ul > li', it) }
+        actionButtons { moduleList ButtonModule, actionBar.find('ul > li > .button') }
+        actionButtonGroups { moduleList ButtonGroupModule, actionBar.find('ul > li > .button-group') }
         createBtn { toolbarBtn(1) }
         copyBtn { toolbarBtn(3) }
         dataSheet { $('div#content > div.data-sheet') }

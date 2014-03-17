@@ -1,7 +1,7 @@
 /*
  * Ticket.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ class Ticket {
 
     int number
     String subject
-    TicketStage stage
+    TicketStage stage = TicketStage.created
     Salutation salutation
     String firstName
     String lastName
@@ -101,7 +101,7 @@ class Ticket {
 
 
     //-- Constructors ---------------------------
-    
+
     Ticket() {}
 
     Ticket(Ticket ticket) {
@@ -120,7 +120,7 @@ class Ticket {
         priority = ticket.priority
     }
 
-    
+
     //-- Properties -----------------------------
 
     String getCustomerName() {

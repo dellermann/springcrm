@@ -28,9 +28,9 @@ class ShowFieldModule extends geb.Module {
     static content = {
         field { $('div.field') }
         fieldText { field.text() }
-        htmlContent { module HtmlContentModule, field }
+        htmlContent { module HtmlContentModule, field.find('div.html-content') }
         label { $('div.label') }
         labelText { label.text() }
-        link { module LinkModule, field }
+        link { module LinkModule, field.find('a') }
     }
 }

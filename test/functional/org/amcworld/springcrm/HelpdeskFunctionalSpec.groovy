@@ -95,7 +95,7 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
         lastCode == colR.row[1].fieldText
         def url = makeAbsUrl('tickets', 'lb-duvensee', lastCode)
         url == feLink.@href
-        '_blank' == feLink.@target
+        feLink.opensNewWindow
         url == feLink.text()
         def fs1 = fieldset[1]
         'Zuständige Benutzer' == fs1.title
@@ -168,7 +168,7 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
         '4A51VZ' == colR.row[1].fieldText
         def url = makeAbsUrl('tickets', 'lb-duvensee', '4A51VZ')
         url == feLink.@href
-        '_blank' == feLink.@target
+        feLink.opensNewWindow
         url == feLink.text()
         def fs1 = fieldset[1]
         'Zuständige Benutzer' == fs1.title
@@ -180,13 +180,14 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
         page.checkToolbar 'helpdesk', helpdesk.id
 
         and: 'the action buttons are set correctly'
-        def btn0 = actionButtons(0)
+        2 == actionButtons.size()
+        def btn0 = actionButtons[0]
         btn0.checkColor 'white'
         btn0.checkSize 'medium'
         url == btn0.@href
-        '_blank' == btn0.@target
+        btn0.opensNewWindow
         'Kundenansicht' == btn0.text()
-        def btn1 = actionButtons(1)
+        def btn1 = actionButtons[1]
         btn1.checkColor 'white'
         btn1.checkSize 'medium'
         btn1.checkLinkToPage TicketListPage, '?helpdesk=' + helpdesk.id
@@ -200,7 +201,7 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
     def 'List helpdesks'() {
         given: 'a helpdesk'
         def org = Organization.first()
-        def helpdesk = prepareHelpdesk org
+        def helpdesk = prepareHelpdesk(org)
 
         when: 'I go to the list view'
         to HelpdeskListPage
@@ -271,7 +272,7 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
         '7BY92I' == colR.row[1].fieldText
         def url = makeAbsUrl('tickets', 'l-bau-duvensee', '7BY92I')
         url == feLink.@href
-        '_blank' == feLink.@target
+        feLink.opensNewWindow
         url == feLink.text()
         def fs1 = fieldset[1]
         'Zuständige Benutzer' == fs1.title

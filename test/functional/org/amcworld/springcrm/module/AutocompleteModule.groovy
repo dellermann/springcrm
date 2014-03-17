@@ -25,11 +25,6 @@ import org.openqa.selenium.Keys
 
 class AutocompleteModule extends geb.Module {
 
-    //-- Class variables ------------------------
-
-    static base = { $('input.ui-autocomplete-input') }
-
-
     //-- Public methods -------------------------
 
     /**

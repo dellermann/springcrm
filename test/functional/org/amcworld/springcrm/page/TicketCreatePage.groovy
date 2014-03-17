@@ -1,5 +1,5 @@
 /*
- * EmptyListModule.groovy
+ * TicketCreatePage.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -18,27 +18,13 @@
  */
 
 
-package org.amcworld.springcrm.module
-
-import org.amcworld.springcrm.page.DefaultFormPage
+package org.amcworld.springcrm.page
 
 
-class EmptyListModule extends geb.Module {
+class TicketCreatePage extends TicketFormPage {
 
     //-- Class variables ------------------------
 
-    static content = {
-        buttons { moduleList ButtonModule, $('div.buttons .button') }
-        message { $('p').text() }
-    }
-
-
-    //-- Public methods -------------------------
-
-    void check(Class<DefaultFormPage> createPage, String createLinkText) {
-        assert 'Diese Liste enthält keine Einträge.' == message
-        assert 1 == buttons.size()
-        buttons[0].checkLinkToPage createPage
-        assert createLinkText == buttons[0].text()
-    }
+    static at = { title == 'Ticket anlegen' }
+    static url = 'ticket/create'
 }

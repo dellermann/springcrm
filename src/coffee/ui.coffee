@@ -766,6 +766,8 @@ SPRINGCRM.page = (->
       .on("click", "#spinner", ->
         $(this).css "display", "none"
       )
+      .find("#autoNumber")
+        .trigger("change")
 
     $(".delete-btn").deleteConfirm()
     $(".date-input-date").datepicker
@@ -783,7 +785,6 @@ SPRINGCRM.page = (->
         $html = $("html")
         $(this).wrap("""<div class="textarea-container"/>""")
           .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
-    $("#autoNumber").triggerHandler "change"
     initAjaxEvents()
 
   # Initializes the handling of AJAX requests. The method cares about display

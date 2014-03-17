@@ -30,8 +30,8 @@ class DefaultListPage extends DefaultPage {
 
     static content = {
         createBtn { toolbarButtons[0] }
-        emptyList { module EmptyListModule }
-        letterBar { module LetterBarModule }
+        emptyList { module EmptyListModule, $('div.empty-list') }
+        letterBar { module LetterBarModule, $('ul.letter-bar') }
         table { $('table.content-table') }
     }
 }

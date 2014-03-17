@@ -27,7 +27,6 @@ class AutocompleteExModule extends geb.Module {
 
     //-- Class variables ------------------------
 
-    static base = { $('span.springcrm-autocompleteex-combobox') }
     static content = {
         body { $('#content') }
         dropdownBtn { $('a') }

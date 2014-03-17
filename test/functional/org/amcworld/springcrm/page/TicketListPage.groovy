@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm.page
 
+import org.amcworld.springcrm.module.TicketTableRowModule
+
 
 class TicketListPage extends DefaultListPage {
 
@@ -27,7 +29,7 @@ class TicketListPage extends DefaultListPage {
 
     static at = { title == 'Tickets' }
     static content = {
-//        tr { moduleList CallTableRowModule, table.find('tbody') }
+        tr { moduleList TicketTableRowModule, table.find('tbody > tr') }
     }
     static url = 'ticket/list'
 }

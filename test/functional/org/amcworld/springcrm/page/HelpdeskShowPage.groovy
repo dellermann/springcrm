@@ -29,8 +29,8 @@ class HelpdeskShowPage extends DefaultShowPage {
 
     static at = { title == 'Helpdesk anzeigen' }
     static content = {
-        feLink { module LinkModule, fieldset[0].colRight.row[2].field }
-        users { module LinkModule, fieldset[1].row[0].field.find('ul > li', it) }
+        feLink { module LinkModule, fieldset[0].colRight.row[2].field.find('a') }
+        users { module LinkModule, fieldset[1].row[0].field.find('ul > li', it).find('a') }
     }
     static url = 'helpdesk/show'
 }

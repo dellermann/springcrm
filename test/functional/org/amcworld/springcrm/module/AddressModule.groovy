@@ -1,5 +1,5 @@
 /*
- * EmptyListModule.groovy
+ * AddressModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,25 +20,35 @@
 
 package org.amcworld.springcrm.module
 
-import org.amcworld.springcrm.page.DefaultFormPage
 
-
-class EmptyListModule extends geb.Module {
+class AddressModule extends ShowFieldColModule {
 
     //-- Class variables ------------------------
 
     static content = {
-        buttons { moduleList ButtonModule, $('div.buttons .button') }
-        message { $('p').text() }
+        country { row[5].fieldText }
+        location { row[3].fieldText }
+        mapBtn { module ButtonModule, row[6].field.find('.button') }
+        street { row[0].fieldText }
+        poBox { row[1].fieldText }
+        postalCode { row[2].fieldText }
+        state { row[4].fieldText }
     }
 
 
     //-- Public methods -------------------------
 
-    void check(Class<DefaultFormPage> createPage, String createLinkText) {
-        assert 'Diese Liste enthält keine Einträge.' == message
-        assert 1 == buttons.size()
-        buttons[0].checkLinkToPage createPage
-        assert createLinkText == buttons[0].text()
+    void checkMapButton() {
+        assert 'Auf der Karte zeigen' == mapBtn.text()
+        mapBtn.checkIcon 'map-marker'
+        mapBtn.checkColor 'blue'
+        mapBtn.checkSize 'medium'
+        assert mapBtn.opensNewWindow
+
+        StringBuilder buf = new StringBuilder(street)
+        buf << ', ' << postalCode << ' ' << location
+        String url = 'http://maps.google.de/maps?hl=&q=' +
+            URLEncoder.encode(buf.toString(), 'UTF-8')
+        assert url == mapBtn.@href
     }
 }

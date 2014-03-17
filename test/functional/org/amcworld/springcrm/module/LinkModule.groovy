@@ -25,9 +25,11 @@ import geb.Page
 
 class LinkModule extends geb.Module {
 
-    //-- Class variables ------------------------
+    //-- Properties -----------------------------
 
-    static base = { $('a') }
+    boolean isOpensNewWindow() {
+        this.@target == '_blank'
+    }
 
 
     //-- Public methods -------------------------

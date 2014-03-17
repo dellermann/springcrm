@@ -29,7 +29,7 @@ class HelpdeskFormPage extends DefaultFormPage {
     //-- Class variables ------------------------
 
     static content = {
-        generateAccessCodeBtn { module ButtonModule, $('#generate-access-code').parent() }
-        organization { module AutocompleteExModule, $('#organization').parents('div.field') }
+        generateAccessCodeBtn { module ButtonModule, $('#generate-access-code') }
+        organization { module AutocompleteExModule, $('#organization').parent() }
     }
 }

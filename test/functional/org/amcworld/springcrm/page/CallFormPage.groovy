@@ -30,9 +30,9 @@ class CallFormPage extends DefaultFormPage {
     //-- Class variables ------------------------
 
     static content = {
-        organization { module AutocompleteExModule, $('#organization').parents('div.field') }
-        person { module AutocompleteExModule, $('#person').parents('div.field') }
-        phone { module AutocompleteModule, $('#phone').parents('div.field') }
+        organization { module AutocompleteExModule, $('#organization').parent() }
+        person { module AutocompleteExModule, $('#person').parent() }
+        phone { module AutocompleteModule, $('#phone') }
         status { module SelectModule, form.status() }
         type { module SelectModule, form.type() }
     }

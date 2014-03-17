@@ -1,5 +1,5 @@
 /*
- * EmptyListModule.groovy
+ * TicketTableRowModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,25 +20,21 @@
 
 package org.amcworld.springcrm.module
 
-import org.amcworld.springcrm.page.DefaultFormPage
 
-
-class EmptyListModule extends geb.Module {
+class TicketTableRowModule extends ListTableRowModule {
 
     //-- Class variables ------------------------
 
     static content = {
-        buttons { moduleList ButtonModule, $('div.buttons .button') }
-        message { $('p').text() }
-    }
-
-
-    //-- Public methods -------------------------
-
-    void check(Class<DefaultFormPage> createPage, String createLinkText) {
-        assert 'Diese Liste enthält keine Einträge.' == message
-        assert 1 == buttons.size()
-        buttons[0].checkLinkToPage createPage
-        assert createLinkText == buttons[0].text()
+        customerNames { td(5).text() }
+        dateCreated { td(6).text() }
+        number { numberLink.text() }
+        numberLink { module LinkModule, td(1).find('a') }
+        helpdesk { helpdeskLink.text() }
+        helpdeskLink { module LinkModule, td(3).find('a') }
+        stage { td(4).text() }
+        stageClasses { td(4).classes() }
+        subject { subjectLink.text() }
+        subjectLink { module LinkModule, td(2).find('a') }
     }
 }

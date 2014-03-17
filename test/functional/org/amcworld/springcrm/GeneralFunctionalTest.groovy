@@ -54,10 +54,15 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             Browser.drive { buf << baseUrl }
             buf << url
             if (args) {
-                if (args[0].toString().startsWith('?')) {
-                    buf << args*.toString().join('&')
-                } else {
-                    buf << '/' << args*.toString().join('/')
+                String glue = '/'
+                for (int i = 0; i < args.length; i++) {
+                    String arg = args[i].toString()
+                    if (arg.startsWith('?')) {
+                        glue = '&'
+                    } else {
+                        buf << glue
+                    }
+                    buf << arg
                 }
             }
             buf.toString()
@@ -90,6 +95,22 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             page.loginBtn.click()
             waitFor { at OverviewPage }
         }
+    }
+
+    /**
+     * Prepares an address for storing as embedded property of another domain
+     * model instance.
+     *
+     * @return  the prepared address
+     */
+    protected Address prepareAddress() {
+        new Address(
+            street: 'Dörpstraat 25',
+            postalCode: '23898',
+            location: 'Duvensee',
+            state: 'Schleswig-Holstein',
+            country: 'Deutschland',
+        )
     }
 
     /**
@@ -135,13 +156,7 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
      * @return  the prepared organization
      */
     protected Organization prepareOrganization() {
-        def addr = new Address(
-            street: 'Dörpstraat 25',
-            postalCode: '23898',
-            location: 'Duvensee',
-            state: 'Schleswig-Holstein',
-            country: 'Deutschland',
-        )
+        def addr = prepareAddress()
         def org = new Organization(
             recType: (byte) 1,
             name: 'Landschaftsbau Duvensee GbR',
@@ -167,13 +182,7 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
      * @return      the prepared person
      */
     protected Person preparePerson(Organization org = prepareOrganization()) {
-        def addr = new Address(
-            street: 'Dörpstraat 25',
-            postalCode: '23898',
-            location: 'Duvensee',
-            state: 'Schleswig-Holstein',
-            country: 'Deutschland',
-        )
+        def addr = prepareAddress()
         def person = new Person(
             organization: org,
             salutation: Salutation.get(1),
@@ -191,6 +200,44 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             birthday: new GregorianCalendar(1962, Calendar.FEBRUARY, 14).time
         )
         person.save flush: true, failOnError: true
+    }
+
+    /**
+     * Prepares a ticket for the given helpdesk in the state "created".
+     *
+     * @param helpdesk  the given helpdesk
+     * @return          the prepared ticket
+     */
+    protected Ticket prepareTicket(Helpdesk helpdesk) {
+        def addr = prepareAddress()
+        def ticket = new Ticket(
+            helpdesk: helpdesk,
+            subject: 'Drucker im Verkauf funktioniert nicht',
+            salutation: Salutation.get(2),
+            firstName: 'Marlen',
+            lastName: 'Thoss',
+            address: addr,
+            phone: '04543 31234',
+            mobile: '0170 1896043',
+            fax: '04543 31235',
+            email1: 'm.thoss@landschaftsbau-duvensee.example',
+            priority: TicketPriority.get(1102)
+        )
+        ticket.save flush: true, failOnError: true
+
+        new TicketLogEntry(
+                ticket: ticket,
+                action: TicketLogAction.create
+            ).save flush: true, failOnError: true
+        new TicketLogEntry(
+                ticket: ticket,
+                action: TicketLogAction.sendMessage,
+                message: '''Ich habe versucht, auf Drucker **3** im _Verkauf_ zu drucken, allerdings kommt kein Ausdruck heraus.
+
+Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gestern.'''
+            ).save flush: true, failOnError: true
+
+        ticket
     }
 
     /**

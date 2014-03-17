@@ -27,13 +27,13 @@ class CallTableRowModule extends ListTableRowModule {
 
     static content = {
         organization { organizationLink.text() }
-        organizationLink { module LinkModule, td(2) }
+        organizationLink { module LinkModule, td(2).find('a') }
         person { personLink.text() }
-        personLink { module LinkModule, td(3) }
+        personLink { module LinkModule, td(3).find('a') }
         start { td(4).text() }
         status { td(6).text() }
         subject { subjectLink.text() }
-        subjectLink { module LinkModule, td(1) }
+        subjectLink { module LinkModule, td(1).find('a') }
         type { td(5).text() }
     }
 }

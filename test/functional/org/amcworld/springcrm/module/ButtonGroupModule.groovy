@@ -1,5 +1,5 @@
 /*
- * EmptyListModule.groovy
+ * ButtonGroupModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,25 +20,16 @@
 
 package org.amcworld.springcrm.module
 
-import org.amcworld.springcrm.page.DefaultFormPage
 
-
-class EmptyListModule extends geb.Module {
+class ButtonGroupModule extends geb.Module {
 
     //-- Class variables ------------------------
 
     static content = {
-        buttons { moduleList ButtonModule, $('div.buttons .button') }
-        message { $('p').text() }
-    }
-
-
-    //-- Public methods -------------------------
-
-    void check(Class<DefaultFormPage> createPage, String createLinkText) {
-        assert 'Diese Liste enthält keine Einträge.' == message
-        assert 1 == buttons.size()
-        buttons[0].checkLinkToPage createPage
-        assert createLinkText == buttons[0].text()
+        button { module ButtonModule, $('.button', 0) }
+        dropdownButton { module ButtonModule, $('.dropdown') }
+        dropdownMenu { $('ul.dropdown-menu') }
+        dropdownMenuItems { dropdownMenu.find('li') }
+        dropdownMenuLinks { module LinkModule, dropdownMenuItems[it].find('a') }
     }
 }

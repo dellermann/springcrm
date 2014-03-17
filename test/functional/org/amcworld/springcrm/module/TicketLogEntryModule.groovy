@@ -1,5 +1,5 @@
 /*
- * EmptyListModule.groovy
+ * TicketLogEntryModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -20,25 +20,34 @@
 
 package org.amcworld.springcrm.module
 
-import org.amcworld.springcrm.page.DefaultFormPage
 
-
-class EmptyListModule extends geb.Module {
+class TicketLogEntryModule extends geb.Module {
 
     //-- Class variables ------------------------
 
     static content = {
-        buttons { moduleList ButtonModule, $('div.buttons .button') }
-        message { $('p').text() }
+        entry {
+            def cls = $().classes()
+            if ('ticket-log-entry-action-create' in cls) {
+                module TicketLogEntryCreateModule
+            } else if ('ticket-log-entry-action-sendMessage' in cls) {
+                module TicketLogEntrySendMessageModule
+            } else {
+                this
+            }
+        }
+        row { moduleList TicketLogEntryRowModule, $('div.row') }
+        title { $('h4').text() }
     }
 
 
     //-- Public methods -------------------------
 
-    void check(Class<DefaultFormPage> createPage, String createLinkText) {
-        assert 'Diese Liste enthält keine Einträge.' == message
-        assert 1 == buttons.size()
-        buttons[0].checkLinkToPage createPage
-        assert createLinkText == buttons[0].text()
+    void checkAction(String action) {
+        assert classes().contains('ticket-log-entry-action-' + action)
+    }
+
+    void checkTitle(String text) {
+        assert title ==~ /^\d\d\.\d\d\.\d\d\d\d\s\d\d:\d\d\s–\s\Q${text}\E$/
     }
 }

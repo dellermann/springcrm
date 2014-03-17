@@ -102,6 +102,10 @@
   <sel_value id="1032" version="0" name="Öffentlicher Dienst" order_id="0" class="org.amcworld.springcrm.Industry"/>
   <sel_value id="1033" version="0" name="Handwerk" order_id="0" class="org.amcworld.springcrm.Industry"/>
   <sel_value id="1034" version="0" name="sonstiges" order_id="9000" class="org.amcworld.springcrm.Industry"/>
+  <sel_value id="1100" version="0" name="niedrig" order_id="0" class="org.amcworld.springcrm.TicketPriority"/>
+  <sel_value id="1101" version="0" name="normal" order_id="10" class="org.amcworld.springcrm.TicketPriority"/>
+  <sel_value id="1102" version="0" name="hoch" order_id="20" class="org.amcworld.springcrm.TicketPriority"/>
+  <sel_value id="1103" version="0" name="Notfall" order_id="30" class="org.amcworld.springcrm.TicketPriority"/>
   <sel_value id="2000" version="0" name="Unterstützung" order_id="0" class="org.amcworld.springcrm.ServiceCategory"/>
   <sel_value id="2001" version="0" name="Installation/Konfiguration" order_id="0" class="org.amcworld.springcrm.ServiceCategory"/>
   <sel_value id="2002" version="0" name="Umstellung" order_id="0" class="org.amcworld.springcrm.ServiceCategory"/>
@@ -155,6 +159,7 @@
   <seq_number id="9" version="0" controller_name="note" end_value="99999" prefix="N" start_value="10000" suffix=""/>
   <seq_number id="10" version="0" controller_name="creditMemo" end_value="99999" prefix="G" start_value="10000" suffix=""/>
   <seq_number id="11" version="0" controller_name="project" end_value="99999" prefix="J" start_value="10000" suffix=""/>
+  <seq_number id="12" version="0" controller_name="ticket" end_value="99999" prefix="T" start_value="10000" suffix=""/>
   <config version="0" name="currency" value="EUR"/>
   <config version="0" name="ldapBindDn"/>
   <config version="0" name="ldapBindPasswd"/>

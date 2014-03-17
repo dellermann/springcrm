@@ -32,7 +32,7 @@ class DefaultPage extends geb.Page {
         header { $('h1').text() }
         logoutLink { $('div#top-area > p > a') }
         toolbar { $('ul#toolbar') }
-        toolbarButtons { moduleList ButtonModule, toolbar.find('li') }
+        toolbarButtons { moduleList ButtonModule, toolbar.find('li .button') }
     }
 
 

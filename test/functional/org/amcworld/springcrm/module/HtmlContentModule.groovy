@@ -25,6 +25,7 @@ class HtmlContentModule extends geb.Module {
 
     //-- Class variables ------------------------
 
-    static base = { $('div.html-content') }
-    static content = {}
+    static content = {
+        p { $('p') }
+    }
 }

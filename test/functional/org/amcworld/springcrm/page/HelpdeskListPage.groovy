@@ -29,7 +29,7 @@ class HelpdeskListPage extends DefaultListPage {
 
     static at = { title == 'Helpdesks' }
     static content = {
-        tr { moduleList HelpdeskTableRowModule, table.find('tbody') }
+        tr { moduleList HelpdeskTableRowModule, table.find('tbody > tr') }
     }
     static url = 'helpdesk/list'
 }

@@ -21,7 +21,6 @@
 package org.amcworld.springcrm.module
 
 import geb.Page
-import org.amcworld.springcrm.page.HelpdeskEditPage
 
 
 class HelpdeskTableRowModule extends ListTableRowModule {
@@ -30,13 +29,13 @@ class HelpdeskTableRowModule extends ListTableRowModule {
 
     static content = {
         accessCode { td(2).text() }
-        deleteButton { $('td.action-buttons > a', 2) }
-        editButton { $('td.action-buttons > a', 1) }
-        feButton { $('td.action-buttons > a', 0) }
+        deleteButton { actionButtons[2] }
+        editButton { actionButtons[1] }
+        feButton { actionButtons[0] }
         name { nameLink.text() }
-        nameLink { module LinkModule, td(1) }
+        nameLink { module LinkModule, td(1).find('a') }
         organization { organizationLink.text() }
-        organizationLink { module LinkModule, td(3) }
+        organizationLink { module LinkModule, td(3).find('a') }
         users { td(4).text() }
     }
 
@@ -45,10 +44,11 @@ class HelpdeskTableRowModule extends ListTableRowModule {
 
     void checkActionButtons(String name, String code, long id) {
         assert Page.makeAbsUrl('tickets', name, code) == feButton.@href
-        assert '_blank' in feButton.@target
-        assert ['button', 'small', 'white'] == feButton.classes()
+        assert feButton.opensNewWindow
+        feButton.checkColor 'white'
+        feButton.checkSize 'small'
         assert 'Kundenansicht' == feButton.text()
 
-        super.checkActionButtons HelpdeskEditPage, 'helpdesk', id
+        super.checkActionButtons 'helpdesk', id
     }
 }

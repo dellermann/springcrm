@@ -200,7 +200,7 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         '13.02.2013 09:15' == row.start
         'eingehend' == row.type
         'durchgeführt' == row.status
-        row.checkActionButtons CallEditPage, 'call', call.id
+        row.checkActionButtons 'call', call.id
 
         and: 'there is still one Call object'
         1 == Call.count()
