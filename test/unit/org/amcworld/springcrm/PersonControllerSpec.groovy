@@ -22,9 +22,12 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import grails.test.mixin.domain.DomainClassUnitTestMixin
+import grails.test.mixin.web.ControllerUnitTestMixin
 import javax.naming.AuthenticationException
 import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 
@@ -262,18 +265,14 @@ class PersonControllerSpec extends Specification {
     }
 
 // TODO seqNumberService not mockable in Person
+//    @IgnoreRest
 //    def 'Save action successful with returnUrl'() {
 //        given: 'an organization'
 //        makeOrganizationFixture()
 //        def org = Organization.get(1)
 //
-//        and:
-//        controller.seqNumberService = new SeqNumberService()
-//        def ctrl = mockFor(SeqNumberService)
-//        ctrl.demand.nextNumber(1) { -> 30000 }
-//        defineBeans {
-//            seqNumberService(SeqNumberService)
-//        }
+//        and: 'a mocked beforeInsert method'
+//        Person.metaClass.beforeInsert = { -> delegate.number = 30000 }
 //
 //        when: 'I send a form to the save action'
 //        params.firstName = 'Daniel'
