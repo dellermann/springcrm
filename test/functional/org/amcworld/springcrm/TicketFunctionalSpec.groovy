@@ -277,6 +277,13 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
         def ticket = prepareTicket(hd)
         def users = User.list()
 
+        and: 'a mock for the mail service'
+        def mailData
+        TicketService.metaClass.sendMail = { Closure mail ->
+            def builder = new NodeBuilder()
+            mailData = builder(mail)
+        }
+
         and: 'I go to the show view'
         to TicketShowPage, ticket.id
 
@@ -317,6 +324,16 @@ Vielen Dank.'''
             assert 'Vielen Dank.' == it.p[1].text()
         }
         checkDefaultLogEntries 1
+
+        and: 'the mail sent contains the correct values'
+        'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
+        'm.thoss@landschaftsbau-duvensee.example' == mailData.to.text()
+        'true' == mailData.multipart.text()
+        'Neue Nachricht zu Ticket' == mailData.subject.text()
+        mailData.text.text().startsWith '''Guten Tag Frau Marlen Thoss,
+
+das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht mit folgenden Daten geschickt:'''
+        mailData.html.text().startsWith '''<p>Guten Tag Frau Marlen Thoss,</p><p>das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht mit folgenden Daten geschickt:</p>'''
 
         and: 'there is still one Ticket object'
         1 == Ticket.count()

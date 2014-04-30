@@ -79,7 +79,7 @@ class TicketService {
             String msgText = getTextMessage(
                 'assignedUser', [ticketInstance: ticket, creator: creator]
             )
-            mailService.sendMail {
+            sendMail {
                 multipart true
                 from fromAddr
                 to assignTo.email
@@ -116,7 +116,7 @@ class TicketService {
         {
             String msgText =
                 getTextMessage('assigned', [ticketInstance: ticket])
-            mailService.sendMail {
+            sendMail {
                 multipart true
                 from fromAddr
                 to ticket.email1 ?: ticket.email2
@@ -130,7 +130,7 @@ class TicketService {
             if (ticket.email1 || ticket.email2) {
                 String msgText =
                     getTextMessage('closedCustomer', [ticketInstance: ticket])
-                mailService.sendMail {
+                sendMail {
                     multipart true
                     from fromAddr
                     to ticket.email1 ?: ticket.email2
@@ -144,7 +144,7 @@ class TicketService {
             if (!creator) {
                 String msgText =
                     getTextMessage('closedUser', [ticketInstance: ticket])
-                mailService.sendMail {
+                sendMail {
                     multipart true
                     from fromAddr
                     to ticket.assignedUser.email ?: ticket.helpdesk.users*.email
@@ -210,7 +210,7 @@ class TicketService {
         String msgText = getTextMessage(
             'createdUsers', [ticketInstance: ticket, messageText: message]
         )
-        mailService.sendMail {
+        sendMail {
             multipart true
             from fromAddr
             to ticket.helpdesk.users*.email
@@ -227,7 +227,7 @@ class TicketService {
             model.ticketInstance = ticket
             model.messageText = message
             msgText = getTextMessage('createdCustomer', model)
-            mailService.sendMail {
+            sendMail {
                 multipart true
                 from fromAddr
                 to ticket.email1 ?: ticket.email2
@@ -294,7 +294,7 @@ class TicketService {
         }
 
         if (toAddr) {
-            mailService.sendMail {
+            sendMail {
                 multipart true
                 from fromAddr
                 to toAddr
@@ -391,5 +391,14 @@ class TicketService {
      */
     protected String getTextMessage(String view, Map model) {
         groovyPageRenderer.render view: "/email/ticket/${view}", model: model
+    }
+
+    /**
+     * Really sends a mail using the given data.
+     *
+     * @param mail  the mail data
+     */
+    protected void sendMail(Closure mail) {
+        mailService.sendMail mail
     }
 }
