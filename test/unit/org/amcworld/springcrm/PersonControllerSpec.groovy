@@ -264,43 +264,37 @@ class PersonControllerSpec extends Specification {
         'Ellermann' == model.personInstance.lastName
     }
 
-// TODO seqNumberService not mockable in Person
-//    @IgnoreRest
-//    def 'Save action successful with returnUrl'() {
-//        given: 'an organization'
-//        makeOrganizationFixture()
-//        def org = Organization.get(1)
-//
-//        and: 'a mocked beforeInsert method'
-//        Person.metaClass.beforeInsert = { -> delegate.number = 30000 }
-//
-//        when: 'I send a form to the save action'
-//        params.firstName = 'Daniel'
-//        params.lastName = 'Ellermann'
-//        params.organization = org
-//        params.phone = '123456789'
-//        params.mailingAddr = new Address(
-//            street: 'Fischerinsel 1', postalCode: '10179', location: 'Berlin',
-//            state: 'Berlin', country: 'Deutschland'
-//        )
-//        params.otherAddr = new Address()
-//        params.email1 = 'daniel@example.com'
-//        params.email2 = 'info@example.com'
-//        params.returnUrl = '/organization/show/5'
-//        controller.save()
-//
-//        then: 'I am redirected to the requested URL'
-//        '/organization/show/5' == response.redirectedUrl
-//        'default.created.message' == flash.message
-//
-//        and: 'a person has been created'
-//        1 == Person.count()
-//        def p = Person.first()
-//        30000 == p.number
-//        matchPerson p
-//        null != p.dateCreated
-//        null != p.lastUpdated
-//    }
+    def 'Save action successful with returnUrl'() {
+        given: 'an organization'
+        makeOrganizationFixture()
+        def org = Organization.get(1)
+
+        when: 'I send a form to the save action'
+        params.firstName = 'Daniel'
+        params.lastName = 'Ellermann'
+        params.organization = org
+        params.phone = '123456789'
+        params.mailingAddr = new Address(
+            street: 'Fischerinsel 1', postalCode: '10179', location: 'Berlin',
+            state: 'Berlin', country: 'Deutschland'
+        )
+        params.otherAddr = new Address()
+        params.email1 = 'daniel@example.com'
+        params.email2 = 'info@example.com'
+        params.returnUrl = '/organization/show/5'
+        controller.save()
+
+        then: 'I am redirected to the requested URL'
+        '/organization/show/5' == response.redirectedUrl
+        'default.created.message' == flash.message
+
+        and: 'a person has been created'
+        1 == Person.count()
+        def p = Person.first()
+        matchPerson p
+        null != p.dateCreated
+        null != p.lastUpdated
+    }
 
     // TODO test other actions
 
