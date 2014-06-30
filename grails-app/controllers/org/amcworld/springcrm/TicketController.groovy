@@ -256,7 +256,6 @@ class TicketController {
         }
 
         ticketService.sendMessage ticketInstance, message, params.attachment, creator, recipient
-        // TODO send a message to customer or user
 
         redirect action: 'show', id: id
     }
@@ -403,7 +402,6 @@ class TicketController {
         }
 
         ticketService.sendMessage ticketInstance, message, params.attachment
-        // TODO send a message to customer or user
 
         flash.message = g.message(code: 'ticket.sendMessage.flash')
         redirectToFrontendPage ticketInstance.helpdesk

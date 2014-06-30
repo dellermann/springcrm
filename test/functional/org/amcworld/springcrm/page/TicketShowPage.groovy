@@ -42,6 +42,7 @@ class TicketShowPage extends DefaultShowPage {
             moduleList TicketLogEntryModule,
                 fieldset[2].find('section.ticket-log-entry')
         }
+        resubmitButton { module ButtonModule, $('#resubmit-btn') }
         sendMsgDialog { module DialogModule, $('#send-message-dialog') }
         sendMsgToCustomerButton { module ButtonModule, $('#send-message-to-customer-btn') }
         sendMsgToUserButton { module ButtonGroupModule, $('#send-message-to-user-menu') }

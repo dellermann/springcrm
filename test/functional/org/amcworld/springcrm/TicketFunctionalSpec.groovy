@@ -22,12 +22,16 @@ package org.amcworld.springcrm
 
 import org.amcworld.springcrm.page.HelpdeskShowPage
 import org.amcworld.springcrm.page.TicketCreatePage
+import org.amcworld.springcrm.page.TicketEditPage
 import org.amcworld.springcrm.page.TicketListPage
 import org.amcworld.springcrm.page.TicketShowPage
-import spock.lang.IgnoreRest
+import spock.lang.Shared
 
 
 class TicketFunctionalSpec extends GeneralFunctionalTest {
+
+    @Shared def mailData
+
 
     //-- Fixture methods ------------------------
 
@@ -37,11 +41,17 @@ class TicketFunctionalSpec extends GeneralFunctionalTest {
         assert 2 == User.count()
         prepareHelpdesk org
 
+        TicketService.metaClass.sendMail = { Closure mail ->
+            def builder = new NodeBuilder()
+            mailData = builder(mail)
+        }
+
         login()
     }
 
     def cleanup() {
         Ticket.executeUpdate 'delete from Ticket'
+        TicketLogEntry.executeUpdate 'delete from TicketLogEntry'
         HelpdeskUser.executeUpdate 'delete from HelpdeskUser'
         Helpdesk.executeUpdate 'delete from Helpdesk'
     }
@@ -284,13 +294,6 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
         def ticket = prepareTicket(hd)
         def users = User.list()
 
-        and: 'a mock for the mail service'
-        def mailData
-        TicketService.metaClass.sendMail = { Closure mail ->
-            def builder = new NodeBuilder()
-            mailData = builder(mail)
-        }
-
         and: 'I go to the show view'
         to TicketShowPage, ticket.id
 
@@ -353,13 +356,6 @@ das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im
         def hd = Helpdesk.first()
         def ticket = prepareTicket(hd)
         def users = User.list()
-
-        and: 'a mock for the mail service'
-        def mailData
-        TicketService.metaClass.sendMail = { Closure mail ->
-            def builder = new NodeBuilder()
-            mailData = builder(mail)
-        }
 
         and: 'I go to the show view'
         to TicketShowPage, ticket.id
@@ -517,13 +513,6 @@ zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht wurde eine neue Nach
         to TicketShowPage, ticket.id
         withConfirm { takeOnButton.click() }
 
-        and: 'a mock for the mail service'
-        def mailData
-        TicketService.metaClass.sendMail = { Closure mail ->
-            def builder = new NodeBuilder()
-            mailData = builder(mail)
-        }
-
         when: 'I assign the ticket to a new user'
         assignUserButton.selectItem 1, 'Regina Wendt'
 
@@ -567,10 +556,6 @@ das Ticket mit den folgenden Daten wurde Ihnen von Marcus Kampe zugewiesen. Bitt
         to TicketShowPage, ticket.id
         withConfirm { takeOnButton.click() }
 
-        and: 'a mock for the mail service which must not be called'
-        def mailData
-        TicketService.metaClass.sendMail = { assert false }
-
         when: 'I assign the ticket to myself'
         assignUserButton.selectItem 0, 'Marcus Kampe'
 
@@ -593,7 +578,6 @@ das Ticket mit den folgenden Daten wurde Ihnen von Marcus Kampe zugewiesen. Bitt
         2 == HelpdeskUser.count()
     }
 
-    @IgnoreRest
     def 'Close ticket'() {
         given: 'a ticket'
         def hd = Helpdesk.first()
@@ -603,13 +587,6 @@ das Ticket mit den folgenden Daten wurde Ihnen von Marcus Kampe zugewiesen. Bitt
         and: 'I go to the show view and take on the ticket'
         to TicketShowPage, ticket.id
         withConfirm { takeOnButton.click() }
-
-        and: 'a mock for the mail service'
-        def mailData
-        TicketService.metaClass.sendMail = { Closure mail ->
-            def builder = new NodeBuilder()
-            mailData = builder(mail)
-        }
 
         when: 'I click the button to close the ticket but cancel'
         String msg = withConfirm(false) { closeButton.click() }
@@ -655,8 +632,44 @@ das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter 
         2 == HelpdeskUser.count()
     }
 
+    def 'Resubmit ticket'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the show view and take on the ticket'
+        to TicketShowPage, ticket.id
+        withConfirm { takeOnButton.click() }
+        waitFor { at TicketShowPage }
+        withConfirm { closeButton.click() }
+
+        when: 'I click the button to resubmit the ticket'
+        resubmitButton.click()
+
+        then: 'I get to the show view'
+        waitFor { at TicketShowPage }
+        'Wiedervorlage' == fieldset[0].colRight.row[0].fieldText
+        'Marcus Kampe' == fieldset[0].colRight.row[3].fieldText
+
+        and: 'the action button have changed'
+        checkActionButtonsCreated ticket, users.tail()
+
+        and: 'there is a new log entry'
+        5 == logEntries.size()
+        logEntries[0].entry.check 'Marcus Kampe', 'Wiedervorlage'
+        logEntries[1].entry.check 'Marcus Kampe', 'geschlossen'
+        logEntries[2].entry.check 'Marcus Kampe', 'Marcus Kampe'
+        checkDefaultLogEntries 3
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
     def 'List tickets'() {
-        given: 'a helpdesk'
+        given: 'a helpdesk and a ticket'
         def hd = Helpdesk.first()
         def ticket = prepareTicket(hd)
 
@@ -684,6 +697,192 @@ das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter 
 
         and: 'there is still one Ticket object'
         1 == Ticket.count()
+        2 == TicketLogEntry.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Edit ticket successfully'() {
+        given: 'a helpdesk and a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the list view'
+        to TicketListPage
+
+        when: 'I click on the edit button'
+        tr[0].editButton.click()
+
+        then: 'I get to the edit form'
+        waitFor { at TicketEditPage }
+        'Tickets' == header
+        'Drucker im Verkauf funktioniert nicht' == subheader
+
+        and: 'the form is pre-filled correctly'
+        '10000' == form.number
+        form.number().disabled
+        hd.id == helpdesk.value().toLong()
+        'LB Duvensee' == helpdesk.selectedText
+        'Drucker im Verkauf funktioniert nicht' == form.subject
+        '1102' == form.'priority.id'
+        '2' == form.'salutation.id'
+        'Marlen' == form.firstName
+        'Thoss' == form.lastName
+        '04543 31234' == form.phone
+        '0170 1896043' == form.mobile
+        '04543 31235' == form.fax
+        'm.thoss@landschaftsbau-duvensee.example' == form.email1
+        'Dörpstraat 25' == form.'address.street'
+        '23898' == form.'address.postalCode'
+        'Duvensee' == form.'address.location'
+        'Schleswig-Holstein' == form.'address.state'
+        'Deutschland' == form.'address.country'
+
+        when: 'I set new values and submit the form'
+        form.subject = 'Drucker in der Buchhaltung funktioniert nicht'
+        form.'priority.id' = 1101
+        submitBtn.click()
+
+        then: 'the ticket is updated and I get to the show view'
+        waitFor { at TicketShowPage }
+        'Ticket Drucker in der Buchhaltung funktioniert nicht wurde geändert.' == flashMessage
+        'Tickets' == header
+        'Drucker in der Buchhaltung funktioniert nicht' == subheader
+
+        def fs0 = fieldset[0]
+        'Allgemeine Informationen' == fs0.title
+        def colL0 = fs0.colLeft
+        'T-10000' == colL0.row[0].fieldText
+        colL0.row[1].link.checkLinkToPage HelpdeskShowPage, hd.id
+        'LB Duvensee' == colL0.row[1].link.text()
+        'Drucker in der Buchhaltung funktioniert nicht' == colL0.row[2].fieldText
+        def colR0 = fs0.colRight
+        'erstellt' == colR0.row[0].fieldText
+        'normal' == colR0.row[1].fieldText
+        'Kunde' == colR0.row[2].fieldText
+        '' == colR0.row[3].fieldText
+        def fs1 = fieldset[1]
+        'Kundendaten' == fs1.title
+        def colL1 = fs1.colLeft
+        'Frau' == colL1.row[0].fieldText
+        'Marlen' == colL1.row[1].fieldText
+        'Thoss' == colL1.row[2].fieldText
+        '04543 31234' == colL1.row[3].fieldText
+        '' == colL1.row[4].fieldText
+        '0170 1896043' == colL1.row[5].fieldText
+        '04543 31235' == colL1.row[6].fieldText
+        'mailto:m.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.@href
+        'm.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.text()
+        '' == colL1.row[8].fieldText
+        'Dörpstraat 25' == address.street
+        '' == address.poBox
+        '23898' == address.postalCode
+        'Duvensee' == address.location
+        'Schleswig-Holstein' == address.state
+        'Deutschland' == address.country
+        address.checkMapButton()
+
+        and: 'two activies were stored'
+        'Aktivitätenverlauf' == fieldset[2].title
+        2 == logEntries.size()
+        checkDefaultLogEntries()
+
+        and: 'the action buttons are set correctly'
+        checkActionButtonsCreated ticket, users.tail()
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Edit ticket with errors'() {
+        given: 'a helpdesk and a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        assert 2 == TicketLogEntry.count()
+
+        and: 'I go to the list view'
+        to TicketListPage
+
+        when: 'I click on the edit button'
+        tr[0].editButton.click()
+
+        then: 'I get to the edit form'
+        waitFor { at TicketEditPage }
+        'Tickets' == header
+        'Drucker im Verkauf funktioniert nicht' == subheader
+
+        when: 'I clear mandatory fields and submit the form'
+        form.subject = ''
+        form.firstName = ''
+        form.lastName = ''
+        form.phone = ''
+        form.phoneHome = ''
+        form.mobile = ''
+        form.email1 = ''
+        form.email2 = ''
+        submitBtn.click()
+
+        then: 'I get to the edit form anew and there are user errors'
+        page.checkErrorFields 'subject', 'firstName', 'lastName', 'phone',
+            'phoneHome', 'mobile', 'email1', 'email2'
+
+        when: 'I click the cancel button'
+        cancelBtn.click()
+
+        then: 'I get to the list view and the list has one entry'
+        waitFor { at TicketListPage }
+        1 == tr.size()
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        2 == TicketLogEntry.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Delete ticket really'() {
+        given: 'a helpdesk and a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+
+        and: 'I go to the list view'
+        to TicketListPage
+
+        when: 'I click on the delete button and confirm'
+        withConfirm { tr[0].deleteButton.click() }
+
+        then: 'I get to the list view'
+        waitFor { at TicketListPage }
+        'Ticket wurde gelöscht.' == flashMessage
+        page.emptyList.check TicketCreatePage, 'Ticket anlegen'
+
+        and: 'there is no Ticket object'
+        0 == Ticket.count()
+        0 == TicketLogEntry.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Delete ticket but cancel'() {
+        given: 'a helpdesk and a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+
+        and: 'I go to the list view'
+        to TicketListPage
+
+        when: 'I click on the delete button but cancel'
+        withConfirm(false) { tr[0].deleteButton.click() }
+
+        then: 'I am still on the list view'
+        browser.isAt TicketListPage
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        2 == TicketLogEntry.count()
         1 == Helpdesk.count()
         2 == HelpdeskUser.count()
     }

@@ -213,33 +213,26 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
     protected Ticket prepareTicket(Helpdesk helpdesk) {
         def addr = prepareAddress()
         def ticket = new Ticket(
-            helpdesk: helpdesk,
-            subject: 'Drucker im Verkauf funktioniert nicht',
-            salutation: Salutation.get(2),
-            firstName: 'Marlen',
-            lastName: 'Thoss',
-            address: addr,
-            phone: '04543 31234',
-            mobile: '0170 1896043',
-            fax: '04543 31235',
-            email1: 'm.thoss@landschaftsbau-duvensee.example',
-            priority: TicketPriority.get(1102)
-        )
-        ticket.save flush: true, failOnError: true
-
-        new TicketLogEntry(
-                ticket: ticket,
+                helpdesk: helpdesk,
+                subject: 'Drucker im Verkauf funktioniert nicht',
+                salutation: Salutation.get(2),
+                firstName: 'Marlen',
+                lastName: 'Thoss',
+                address: addr,
+                phone: '04543 31234',
+                mobile: '0170 1896043',
+                fax: '04543 31235',
+                email1: 'm.thoss@landschaftsbau-duvensee.example',
+                priority: TicketPriority.get(1102)
+            ).addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.create
-            ).save flush: true, failOnError: true
-        new TicketLogEntry(
-                ticket: ticket,
+            )).addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.sendMessage,
                 message: '''Ich habe versucht, auf Drucker **3** im _Verkauf_ zu drucken, allerdings kommt kein Ausdruck heraus.
 
 Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gestern.'''
-            ).save flush: true, failOnError: true
-
-        ticket
+            ))
+        ticket.save flush: true, failOnError: true
     }
 
     /**

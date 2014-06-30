@@ -76,9 +76,9 @@
         color="red" size="medium" message="ticket.changeStage.closed" /></li>
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
-      <li><g:button action="changeStage" id="${ticketInstance?.id}"
-        params="[stage: TicketStage.resubmitted]" color="orange"
-        size="medium" icon="share-square-o"
+      <li><g:button elementId="resubmit-btn" action="changeStage"
+        id="${ticketInstance?.id}" params="[stage: TicketStage.resubmitted]"
+        color="orange" size="medium" icon="share-square-o"
         message="ticket.changeStage.resubmitted" /></li>
       </g:if>
     </ul>
