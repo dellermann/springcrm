@@ -1,5 +1,5 @@
 /*
- * ButtonGroupModule.groovy
+ * TicketLogEntryChangeStageModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -21,31 +21,22 @@
 package org.amcworld.springcrm.module
 
 
-class ButtonGroupModule extends geb.Module {
+class TicketLogEntryChangeStageModule extends TicketLogEntryModule {
 
     //-- Class variables ------------------------
 
     static content = {
-        button { module ButtonModule, $('.button', 0) }
-        dropdownButton { module ButtonModule, $('.dropdown') }
-        dropdownMenu { $('ul.dropdown-menu') }
-        dropdownMenuItems { dropdownMenu.find('li') }
-        dropdownMenuLinks { module LinkModule, dropdownMenuItems[it].find('a') }
+        creator { row[0].field }
     }
 
 
     //-- Public methods -------------------------
 
-    void clickDefButton() {
-        this.button.click()
-    }
-
-    void selectItem(int idx, String expectedLabel = null) {
-        this.dropdownButton.click()
-        def link = this.dropdownMenuLinks(idx)
-        if (expectedLabel) {
-            assert expectedLabel == link.text()
-        }
-        link.click()
+    void check(String creator, String stage) {
+        checkAction 'changeStage'
+        checkTitle "Status geändert auf „${stage}“."
+        assert 1 == row.size()
+        assert 'erstellt durch' == row[0].label
+        assert creator == this.creator
     }
 }

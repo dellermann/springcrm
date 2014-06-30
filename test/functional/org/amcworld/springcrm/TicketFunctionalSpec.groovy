@@ -24,6 +24,7 @@ import org.amcworld.springcrm.page.HelpdeskShowPage
 import org.amcworld.springcrm.page.TicketCreatePage
 import org.amcworld.springcrm.page.TicketListPage
 import org.amcworld.springcrm.page.TicketShowPage
+import spock.lang.IgnoreRest
 
 
 class TicketFunctionalSpec extends GeneralFunctionalTest {
@@ -260,10 +261,16 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
 
         then:
         isAt TicketShowPage
+        'zugewiesen' == fieldset[0].colRight.row[0].fieldText
         'Marcus Kampe' == fieldset[0].colRight.row[3].fieldText
 
         and: 'the action button have changed'
-        checkActionButtonsAssigned ticket, users.tail()
+        checkActionButtonsAssigned ticket, users.tail(), users
+
+        and: 'there is a new log entry'
+        3 == logEntries.size()
+        logEntries[0].entry.check 'Marcus Kampe', 'Marcus Kampe'
+        checkDefaultLogEntries 1
 
         and: 'there is still one Ticket object'
         1 == Ticket.count()
@@ -341,6 +348,313 @@ das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im
         2 == HelpdeskUser.count()
     }
 
+    def 'Send message to user'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'a mock for the mail service'
+        def mailData
+        TicketService.metaClass.sendMail = { Closure mail ->
+            def builder = new NodeBuilder()
+            mailData = builder(mail)
+        }
+
+        and: 'I go to the show view'
+        to TicketShowPage, ticket.id
+
+        when: 'I click the button to send a message'
+        sendMsgToUserButton.selectItem 0, 'Regina Wendt'
+
+        then: 'I am still on the show view and a dialog has been opened'
+        isAt TicketShowPage
+        sendMsgDialog.displayed
+        'Nachricht an Benutzer senden' == sendMsgDialog.title
+
+        when: 'I fill in the form but cancel'
+        sendMsgDialog.find('#messageText').value '''Würden Sie sich bitte um diesen Fall kümmern?
+
+Vielen Dank.'''
+        sendMsgDialog.buttons[1].click()
+
+        then: 'the dialog disappears'
+        !sendMsgDialog.displayed
+        isAt TicketShowPage
+        2 == logEntries.size()
+        checkDefaultLogEntries()
+
+        when: 'I click the button again, fill in the form, and submit'
+        sendMsgToUserButton.selectItem 0, 'Regina Wendt'
+        sendMsgDialog.find('#messageText').value '''Würden Sie sich bitte um diesen Fall kümmern?
+
+Vielen Dank.'''
+        sendMsgDialog.buttons[0].click()
+
+        then: 'I get to the show view with a new log entry'
+        waitFor { at TicketShowPage }
+        3 == logEntries.size()
+        logEntries[0].entry.check('Marcus Kampe', 'Regina Wendt') {
+            assert 2 == it.p.size()
+            assert 'Würden Sie sich bitte um diesen Fall kümmern?' == it.p[0].text()
+            assert 'Vielen Dank.' == it.p[1].text()
+        }
+        checkDefaultLogEntries 1
+
+        and: 'the mail sent contains the correct values'
+        'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
+        'r.wendt@kampe.example' == mailData.to.text()
+        'true' == mailData.multipart.text()
+        'Neue Nachricht zu Ticket' == mailData.subject.text()
+        mailData.text.text().startsWith '''Liebes Helpdesk-Team,
+
+zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht wurde eine neue Nachricht mit folgenden Daten verschickt:'''
+        mailData.html.text().startsWith '''<p>Liebes Helpdesk-Team,</p><p>zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht wurde eine neue Nachricht mit folgenden Daten verschickt:</p>'''
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Add note'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the show view'
+        to TicketShowPage, ticket.id
+
+        when: 'I click the button to add a note'
+        createNoteButton.click()
+
+        then: 'I am still on the show view and a dialog has been opened'
+        isAt TicketShowPage
+        sendMsgDialog.displayed
+        'Notiz erstellen' == sendMsgDialog.title
+
+        when: 'I fill in the form but cancel'
+        sendMsgDialog.find('#messageText').value '''# Hinweis zur weiteren Vorgehensweise
+
+- Kunden aufsuchen
+- Drucker überprüfen
+- ggf. Toner wechseln'''
+        sendMsgDialog.buttons[1].click()
+
+        then: 'the dialog disappears'
+        !sendMsgDialog.displayed
+        isAt TicketShowPage
+        2 == logEntries.size()
+        checkDefaultLogEntries()
+
+        when: 'I click the button again, fill in the form, and submit'
+        createNoteButton.click()
+        sendMsgDialog.find('#messageText').value '''# Hinweis zur weiteren Vorgehensweise
+
+- Kunden aufsuchen
+- Drucker überprüfen
+- ggf. Toner wechseln'''
+        sendMsgDialog.buttons[0].click()
+
+        then: 'I get to the show view with a new log entry'
+        waitFor { at TicketShowPage }
+        3 == logEntries.size()
+        logEntries[0].entry.check('Marcus Kampe') {
+            assert 'Hinweis zur weiteren Vorgehensweise' == it.find('h1').text()
+            def ul = it.find('ul')
+            assert 'Kunden aufsuchen' == ul.find('li', 0).text()
+            assert 'Drucker überprüfen' == ul.find('li', 1).text()
+            assert 'ggf. Toner wechseln' == ul.find('li', 2).text()
+        }
+        checkDefaultLogEntries 1
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Change to in process'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the show view and take on the ticket'
+        to TicketShowPage, ticket.id
+        withConfirm { takeOnButton.click() }
+
+        when: 'I change to in process'
+        changeToInProcessButton.click()
+
+        then: 'I get to the show view with the new status'
+        waitFor { at TicketShowPage }
+        'in Bearbeitung' == fieldset[0].colRight.row[0].fieldText
+
+        and: 'the action button have changed'
+        checkActionButtonsInProcess ticket, users.tail(), users
+
+        and: 'there is a new log entry'
+        4 == logEntries.size()
+        logEntries[0].entry.check 'Marcus Kampe', 'in Bearbeitung'
+        logEntries[1].entry.check 'Marcus Kampe', 'Marcus Kampe'
+        checkDefaultLogEntries 2
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Assign to another user'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the show view and take on the ticket'
+        to TicketShowPage, ticket.id
+        withConfirm { takeOnButton.click() }
+
+        and: 'a mock for the mail service'
+        def mailData
+        TicketService.metaClass.sendMail = { Closure mail ->
+            def builder = new NodeBuilder()
+            mailData = builder(mail)
+        }
+
+        when: 'I assign the ticket to a new user'
+        assignUserButton.selectItem 1, 'Regina Wendt'
+
+        then: 'I get to the show view'
+        waitFor { at TicketShowPage }
+        'zugewiesen' == fieldset[0].colRight.row[0].fieldText
+        'Regina Wendt' == fieldset[0].colRight.row[3].fieldText
+
+        and: 'the action button have changed'
+        checkActionButtonsAssigned ticket, users.tail(), users
+
+        and: 'there is a new log entry'
+        4 == logEntries.size()
+        logEntries[0].entry.check 'Marcus Kampe', 'Regina Wendt'
+        logEntries[1].entry.check 'Marcus Kampe', 'Marcus Kampe'
+        checkDefaultLogEntries 2
+
+        and: 'the mail sent contains the correct values'
+        'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
+        'r.wendt@kampe.example' == mailData.to.text()
+        'true' == mailData.multipart.text()
+        'Ticket zugewiesen' == mailData.subject.text()
+        mailData.text.text().startsWith '''Hallo Regina Wendt,
+
+das Ticket mit den folgenden Daten wurde Ihnen von Marcus Kampe zugewiesen. Bitte bearbeiten Sie dieses Ticket.'''
+        mailData.html.text().startsWith '''<p>Hallo Regina Wendt,</p><p>das Ticket mit den folgenden Daten wurde Ihnen von Marcus Kampe zugewiesen. Bitte bearbeiten Sie dieses Ticket.</p>'''
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'Assign to myself'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the show view and take on the ticket'
+        to TicketShowPage, ticket.id
+        withConfirm { takeOnButton.click() }
+
+        and: 'a mock for the mail service which must not be called'
+        def mailData
+        TicketService.metaClass.sendMail = { assert false }
+
+        when: 'I assign the ticket to myself'
+        assignUserButton.selectItem 0, 'Marcus Kampe'
+
+        then: 'I get to the show view'
+        waitFor { at TicketShowPage }
+        'zugewiesen' == fieldset[0].colRight.row[0].fieldText
+        'Marcus Kampe' == fieldset[0].colRight.row[3].fieldText
+
+        and: 'the action button have changed'
+        checkActionButtonsAssigned ticket, users.tail(), users
+
+        and: 'there is no new log entry'
+        3 == logEntries.size()
+        logEntries[0].entry.check 'Marcus Kampe', 'Marcus Kampe'
+        checkDefaultLogEntries 1
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    @IgnoreRest
+    def 'Close ticket'() {
+        given: 'a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+        def users = User.list()
+
+        and: 'I go to the show view and take on the ticket'
+        to TicketShowPage, ticket.id
+        withConfirm { takeOnButton.click() }
+
+        and: 'a mock for the mail service'
+        def mailData
+        TicketService.metaClass.sendMail = { Closure mail ->
+            def builder = new NodeBuilder()
+            mailData = builder(mail)
+        }
+
+        when: 'I click the button to close the ticket but cancel'
+        String msg = withConfirm(false) { closeButton.click() }
+
+        then:
+        'Wollen Sie das Ticket wirklich schließen?' == msg
+        isAt TicketShowPage
+        'zugewiesen' == fieldset[0].colRight.row[0].fieldText
+
+        and: 'the action buttons are unchanged'
+        checkActionButtonsAssigned ticket, users.tail(), users
+
+        when: 'I click the button to close the ticket and confirm'
+        withConfirm { closeButton.click() }
+
+        then: 'I get to the show view'
+        waitFor { at TicketShowPage }
+        'geschlossen' == fieldset[0].colRight.row[0].fieldText
+        'Marcus Kampe' == fieldset[0].colRight.row[3].fieldText
+
+        and: 'the action button have changed'
+        checkActionButtonsClosed ticket, users.tail()
+
+        and: 'there is a new log entry'
+        4 == logEntries.size()
+        logEntries[0].entry.check 'Marcus Kampe', 'geschlossen'
+        logEntries[1].entry.check 'Marcus Kampe', 'Marcus Kampe'
+        checkDefaultLogEntries 2
+
+        and: 'two e-mails have been sent'
+        'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
+        'm.thoss@landschaftsbau-duvensee.example' == mailData.to.text()
+        'true' == mailData.multipart.text()
+        'Ticket geschlossen' == mailData.subject.text()
+        mailData.text.text().startsWith '''Guten Tag Frau Marlen Thoss,
+
+das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter bestehen, können Sie das Ticket jederzeit wieder öffnen (Wiedervorlage).'''
+        mailData.html.text().startsWith '''<p>Guten Tag Frau Marlen Thoss,</p><p>das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter bestehen, können Sie das Ticket jederzeit wieder öffnen (Wiedervorlage).</p>'''
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
     def 'List tickets'() {
         given: 'a helpdesk'
         def hd = Helpdesk.first()
@@ -377,8 +691,67 @@ das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im
 
     //-- Non-public methods ---------------------
 
-    protected void checkActionButtonsAssigned(Ticket ticket, List<User> users)
+    protected void checkActionButtonsAssigned(Ticket ticket,
+                                              List<User> usersMessage,
+                                              List<User> usersAssignTo)
     {
+        def btn = actionButtons[0]
+        btn.checkColor 'white'
+        btn.checkSize 'medium'
+        btn.checkIcon 'envelope-o'
+        assert 'send-message-to-customer-btn' == btn.@id
+        assert 'Nachricht an Kunden' == btn.text()
+
+        def btnGroup = actionButtonGroups[0]
+        btn = btnGroup.button
+        btn.checkColor 'white'
+        btn.checkSize 'medium'
+        btn.checkIcon 'envelope-o'
+        assert 'Nachr. an Ben.' == btn.text()
+        assert usersMessage.size() == btnGroup.dropdownMenuItems.size()
+        for (int i = 0; i < usersMessage.size(); i++) {
+            User user = usersMessage[i]
+            def a = btnGroup.dropdownMenuLinks(i)
+            assert user.id == a.@'data-user-id'.toLong()
+//            assert user.toString() == a.text()    // not visible → text() == ''
+        }
+
+        btn = actionButtons[1]
+        btn.checkColor 'white'
+        btn.checkSize 'medium'
+        btn.checkIcon 'pencil'
+        assert 'create-note-btn' == btn.@id
+        assert 'Notiz erstellen' == btn.text()
+
+        btn = actionButtons[2]
+        btn.checkColor 'green'
+        btn.checkSize 'medium'
+        assert makeAbsUrl('ticket', 'change-stage', ticket.id, '?stage=inProcess') == btn.@href
+        assert 'In Bearbeitung setzen' == btn.text()
+
+        btnGroup = actionButtonGroups[1]
+        btn = btnGroup.button
+        btn.checkColor 'blue'
+        btn.checkSize 'medium'
+        assert 'assign-user-menu' == btn.@id
+        assert 'Benutzer zuweisen' == btn.text()
+        assert usersAssignTo.size() == btnGroup.dropdownMenuItems.size()
+        for (int i = 0; i < usersAssignTo.size(); i++) {
+            User user = usersAssignTo[i]
+            def a = btnGroup.dropdownMenuLinks(i)
+            assert makeAbsUrl('ticket', 'assign-to-user', ticket.id, '?user=' + user.id) == a.@href
+//            assert user.toString() == a.text()    // not visible → text() == ''
+        }
+
+        btn = actionButtons[3]
+        btn.checkColor 'red'
+        btn.checkSize 'medium'
+        assert 'close-ticket-btn' == btn.@id
+        assert makeAbsUrl('ticket', 'change-stage', ticket.id, '?stage=closed') == btn.@href
+        assert 'Ticket schließen' == btn.text()
+    }
+
+    protected void checkActionButtonsClosed(Ticket ticket, List<User> users) {
         def btn = actionButtons[0]
         btn.checkColor 'white'
         btn.checkSize 'medium'
@@ -408,31 +781,10 @@ das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im
         assert 'Notiz erstellen' == btn.text()
 
         btn = actionButtons[2]
-        btn.checkColor 'green'
+        btn.checkColor 'orange'
         btn.checkSize 'medium'
-        assert makeAbsUrl('ticket', 'change-stage', ticket.id, '?stage=inProcess') == btn.@href
-        assert 'In Bearbeitung setzen' == btn.text()
-
-        btnGroup = actionButtonGroups[1]
-        btn = btnGroup.button
-        btn.checkColor 'blue'
-        btn.checkSize 'medium'
-        assert 'assign-user-menu' == btn.@id
-        assert 'Benutzer zuweisen' == btn.text()
-        assert users.size() == btnGroup.dropdownMenuItems.size()
-        for (int i = 0; i < users.size(); i++) {
-            User user = users[i]
-            def a = btnGroup.dropdownMenuLinks(i)
-            assert makeAbsUrl('ticket', 'assign-to-user', ticket.id, '?user=' + user.id) == a.@href
-//            assert user.toString() == a.text()    // not visible → text() == ''
-        }
-
-        btn = actionButtons[3]
-        btn.checkColor 'red'
-        btn.checkSize 'medium'
-        assert 'close-ticket-btn' == btn.@id
-        assert makeAbsUrl('ticket', 'change-stage', ticket.id, '?stage=closed') == btn.@href
-        assert 'Ticket schließen' == btn.text()
+        btn.checkIcon 'share-square-o'
+        assert 'Wiedervorlage' == btn.text()
     }
 
     protected void checkActionButtonsCreated(Ticket ticket, List<User> users) {
@@ -470,6 +822,60 @@ das Helpdesk-Team hat Ihnen eine neue Nachricht zu Ticket T-10000 – Drucker im
         btn.checkIcon 'pencil'
         assert 'create-note-btn' == btn.@id
         assert 'Notiz erstellen' == btn.text()
+    }
+
+    protected void checkActionButtonsInProcess(Ticket ticket,
+                                               List<User> usersMessage,
+                                               List<User> usersAssignTo)
+    {
+        def btn = actionButtons[0]
+        btn.checkColor 'white'
+        btn.checkSize 'medium'
+        btn.checkIcon 'envelope-o'
+        assert 'send-message-to-customer-btn' == btn.@id
+        assert 'Nachricht an Kunden' == btn.text()
+
+        def btnGroup = actionButtonGroups[0]
+        btn = btnGroup.button
+        btn.checkColor 'white'
+        btn.checkSize 'medium'
+        btn.checkIcon 'envelope-o'
+        assert 'Nachr. an Ben.' == btn.text()
+        assert usersMessage.size() == btnGroup.dropdownMenuItems.size()
+        for (int i = 0; i < usersMessage.size(); i++) {
+            User user = usersMessage[i]
+            def a = btnGroup.dropdownMenuLinks(i)
+            assert user.id == a.@'data-user-id'.toLong()
+//            assert user.toString() == a.text()    // not visible → text() == ''
+        }
+
+        btn = actionButtons[1]
+        btn.checkColor 'white'
+        btn.checkSize 'medium'
+        btn.checkIcon 'pencil'
+        assert 'create-note-btn' == btn.@id
+        assert 'Notiz erstellen' == btn.text()
+
+        btnGroup = actionButtonGroups[1]
+        btn = btnGroup.button
+        btn.checkColor 'blue'
+        btn.checkSize 'medium'
+        assert 'assign-user-menu' == btn.@id
+        assert 'Benutzer zuweisen' == btn.text()
+        assert usersAssignTo.size() == btnGroup.dropdownMenuItems.size()
+        for (int i = 0; i < usersAssignTo.size(); i++) {
+            User user = usersAssignTo[i]
+            def a = btnGroup.dropdownMenuLinks(i)
+            assert makeAbsUrl('ticket', 'assign-to-user', ticket.id, '?user=' + user.id) == a.@href
+//            assert user.toString() == a.text()    // not visible → text() == ''
+        }
+
+        btn = actionButtons[2]
+        btn.checkColor 'red'
+        btn.checkSize 'medium'
+        assert 'close-ticket-btn' == btn.@id
+        assert makeAbsUrl('ticket', 'change-stage', ticket.id, '?stage=closed') == btn.@href
+        assert 'Ticket schließen' == btn.text()
     }
 
     protected void checkDefaultLogEntries(int offset = 0) {

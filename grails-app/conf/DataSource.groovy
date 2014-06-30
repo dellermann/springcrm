@@ -39,7 +39,7 @@ environments {
     development {
         dataSource {
             url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
-            username = 'projects'
+            username = 'project'
             password = 'haluni21'
 //            logSql = true
         }

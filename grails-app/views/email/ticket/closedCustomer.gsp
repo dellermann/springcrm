@@ -47,7 +47,7 @@
 
 ## <g:message code="ticket.messageText.label" />
 
-${ticket.initialMessage}
+${ticketInstance.initialMessage}
 
 * * *
 

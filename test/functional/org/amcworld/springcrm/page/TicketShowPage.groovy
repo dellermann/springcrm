@@ -21,6 +21,7 @@
 package org.amcworld.springcrm.page
 
 import org.amcworld.springcrm.module.AddressModule
+import org.amcworld.springcrm.module.ButtonGroupModule
 import org.amcworld.springcrm.module.ButtonModule
 import org.amcworld.springcrm.module.DialogModule
 import org.amcworld.springcrm.module.TicketLogEntryModule
@@ -33,12 +34,17 @@ class TicketShowPage extends DefaultShowPage {
     static at = { title == 'Ticket anzeigen' }
     static content = {
         address { module AddressModule, fieldset[1].colRight }
+        assignUserButton { module ButtonGroupModule, $('#assign-user-menu').parent() }
+        changeToInProcessButton { module ButtonModule, $('#change-to-in-process-btn') }
+        closeButton { module ButtonModule, $('#close-ticket-btn') }
+        createNoteButton { module ButtonModule, $('#create-note-btn') }
         logEntries {
             moduleList TicketLogEntryModule,
                 fieldset[2].find('section.ticket-log-entry')
         }
         sendMsgDialog { module DialogModule, $('#send-message-dialog') }
         sendMsgToCustomerButton { module ButtonModule, $('#send-message-to-customer-btn') }
+        sendMsgToUserButton { module ButtonGroupModule, $('#send-message-to-user-menu') }
         takeOnButton { module ButtonModule, $('#take-on-btn') }
     }
     static url = 'ticket/show'

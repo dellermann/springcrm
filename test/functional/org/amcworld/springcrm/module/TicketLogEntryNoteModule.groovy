@@ -1,5 +1,5 @@
 /*
- * ButtonGroupModule.groovy
+ * TicketLogEntryNoteModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -21,31 +21,25 @@
 package org.amcworld.springcrm.module
 
 
-class ButtonGroupModule extends geb.Module {
+class TicketLogEntryNoteModule extends TicketLogEntryModule {
 
     //-- Class variables ------------------------
 
     static content = {
-        button { module ButtonModule, $('.button', 0) }
-        dropdownButton { module ButtonModule, $('.dropdown') }
-        dropdownMenu { $('ul.dropdown-menu') }
-        dropdownMenuItems { dropdownMenu.find('li') }
-        dropdownMenuLinks { module LinkModule, dropdownMenuItems[it].find('a') }
+        creator { row[0].field }
+        messageText { row[1].htmlContent }
     }
 
 
     //-- Public methods -------------------------
 
-    void clickDefButton() {
-        this.button.click()
-    }
-
-    void selectItem(int idx, String expectedLabel = null) {
-        this.dropdownButton.click()
-        def link = this.dropdownMenuLinks(idx)
-        if (expectedLabel) {
-            assert expectedLabel == link.text()
-        }
-        link.click()
+    void check(String creator, def htmlContentCheck) {
+        checkAction 'note'
+        checkTitle 'Notiz erstellt.'
+        assert 2 == row.size()
+        assert 'erstellt durch' == row[0].label
+        assert creator == this.creator
+        assert 'Nachrichtentext' == row[1].label
+        htmlContentCheck messageText
     }
 }

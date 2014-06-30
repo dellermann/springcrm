@@ -30,8 +30,14 @@ class TicketLogEntryModule extends geb.Module {
             def cls = $().classes()
             if ('ticket-log-entry-action-create' in cls) {
                 module TicketLogEntryCreateModule
+            } else if ('ticket-log-entry-action-assign' in cls) {
+                module TicketLogEntryAssignModule
             } else if ('ticket-log-entry-action-sendMessage' in cls) {
                 module TicketLogEntrySendMessageModule
+            } else if ('ticket-log-entry-action-note' in cls) {
+                module TicketLogEntryNoteModule
+            } else if ('ticket-log-entry-action-changeStage' in cls) {
+                module TicketLogEntryChangeStageModule
             } else {
                 this
             }

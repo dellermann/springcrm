@@ -305,13 +305,13 @@ class TicketController {
             allowedStages = EnumSet.of(TicketStage.resubmitted)
             break
         }
-        TicketStage requiredStage = TicketStage.valueOf(stage)
-        if (!(requiredStage in allowedStages)) {
+        TicketStage requestedStage = TicketStage.valueOf(stage)
+        if (!(requestedStage in allowedStages)) {
             redirect action: 'show', id: id
             return
         }
 
-        ticketService.changeStage ticketInstance, requiredStage, user
+        ticketService.changeStage ticketInstance, requestedStage, user
         redirect action: 'show', id: id
     }
 
@@ -325,7 +325,9 @@ class TicketController {
 
         User creator = session.user
         User recipient = User.get(user)
-        if (!recipient || !(recipient in ticketInstance.helpdesk.users)) {
+        if (!recipient || !(recipient in ticketInstance.helpdesk.users) ||
+            creator == recipient)
+        {
             redirect action: 'show', id: id
             return
         }
@@ -337,7 +339,6 @@ class TicketController {
         }
 
         ticketService.assignUser ticketInstance, creator, recipient
-        // TODO send e-mail to assigned user (recipient)
 
         redirect action: 'show', id: id
     }

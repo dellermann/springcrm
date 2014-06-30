@@ -8,6 +8,7 @@
   <g:set var="entityName" value="${message(code: 'ticket.label', default: 'Ticket')}" />
   <g:set var="entitiesName" value="${message(code: 'ticket.plural', default: 'Tickets')}" />
   <g:set var="user" value="${session.user}" />
+  <g:set var="users" value="${ticketInstance.helpdesk.users}" />
   <g:set var="otherUsers" value="${ticketInstance.helpdesk.users - user}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
 </head>
@@ -55,15 +56,15 @@
           data-submit-url="${createLink(action: 'createNote', id: ticketInstance.id)}" />
       </li>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage == TicketStage.assigned}">
-      <li><g:button action="changeStage" id="${ticketInstance?.id}"
-        params="[stage: TicketStage.inProcess]" color="green" size="medium"
-        message="ticket.changeStage.inProcess" /></li>
+      <li><g:button elementId="change-to-in-process-btn" action="changeStage"
+        id="${ticketInstance?.id}" params="[stage: TicketStage.inProcess]"
+        color="green" size="medium" message="ticket.changeStage.inProcess" /></li>
       </g:if>
       <g:if test="${(user.admin || user == ticketInstance.assignedUser) && ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess] && otherUsers}">
       <li>
         <g:menuButton elementId="assign-user-menu" color="blue"
           size="medium" message="ticket.changeStage.assign">
-          <g:each in="${otherUsers}">
+          <g:each in="${user.admin ? users : otherUsers}">
           <li><g:link action="assignToUser" id="${ticketInstance.id}" params="[user: it.id]">${it.toString().encodeAsHTML()}</g:link></li>
           </g:each>
         </g:menuButton>
