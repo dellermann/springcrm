@@ -31,7 +31,7 @@ class AutocompleteExModule extends geb.Module {
         body { $('#content') }
         dropdownBtn { $('a') }
         input { $('input[type=text]') }
-        value { input.value() }
+//        value { input.value() }
     }
 
 

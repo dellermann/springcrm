@@ -227,8 +227,8 @@ class CallFunctionalSpec extends GeneralFunctionalTest {
         'Bitte um Angebot' == form.subject
         '13.02.2013' == form.start_date
         '09:15' == form.start_time
-        'Landschaftsbau Duvensee GbR' == organization.value
-        'Henry Brackmann' == person.value
+        'Landschaftsbau Duvensee GbR' == organization.input.value()
+        'Henry Brackmann' == person.input.value()
         '04543 31233' == form.phone
         'incoming' == form.type
         'eingehend' == type.selectedText

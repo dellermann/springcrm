@@ -244,7 +244,7 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
         'LB Duvensee' == subheader
 
         and: 'the form is pre-filled correctly'
-        'Landschaftsbau Duvensee GbR' == organization.value
+        'Landschaftsbau Duvensee GbR' == organization.input.value()
         'LB Duvensee' == form.name
         '4A51VZ' == form.accessCode
         userList*.id == form.users*.toLong()

@@ -1,12 +1,11 @@
 eclipse.preferences.version=1
 encoding//.link_to_grails_plugins/dbunit-operator-1.7/grails-app/i18n/messages.properties=UTF-8
-encoding//.link_to_grails_plugins/hibernate-3.6.10.9/grails-app/i18n/messages.properties=UTF-8
 encoding//.link_to_grails_plugins/jquery-1.8.3/grails-app/i18n/messages.properties=UTF-8
 encoding//.link_to_grails_plugins/jquery-json-2.2.2/grails-app/i18n/messages.properties=UTF-8
 encoding//.link_to_grails_plugins/jquery-ui-1.8.24/grails-app/i18n/messages.properties=UTF-8
 encoding//.link_to_grails_plugins/mail-1.0.3/grails-app/i18n/messages.properties=UTF-8
 encoding//.link_to_grails_plugins/mail-1.0.3/grails-app/i18n/messages_fr.properties=UTF-8
-encoding//.link_to_grails_plugins/resources-1.2.7/grails-app/i18n/messages.properties=UTF-8
+encoding//.link_to_grails_plugins/resources-1.2.8/grails-app/i18n/messages.properties=UTF-8
 encoding//grails-app/i18n/messages.properties=UTF-8
 encoding//grails-app/i18n/messages_de.properties=UTF-8
 encoding//grails-app/views/calendarEvent/calendar.gsp=UTF-8

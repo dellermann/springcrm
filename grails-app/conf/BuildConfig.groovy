@@ -18,7 +18,7 @@
  */
 
 
-def gebVersion = '0.9.2'
+def gebVersion = '0.9.3'
 
 grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
@@ -102,8 +102,9 @@ grails.project.dependency.resolution = {
         */
 
         test(
+            'com.google.guava:guava:17.0',
             "org.gebish:geb-spock:${gebVersion}",
-            'org.seleniumhq.selenium:selenium-java:2.40.0'
+            'org.seleniumhq.selenium:selenium-java:2.42.2'
         )
     }
 
@@ -124,15 +125,15 @@ grails.project.dependency.resolution = {
             ':searchable:0.6.6'
         )
         build(
-            ':tomcat:7.0.52.1'
+            ':tomcat:7.0.54'
         )
         runtime(
-            ':database-migration:1.3.8',
-            ':hibernate:3.6.10.9',
+            ':database-migration:1.4.0',
+            ':hibernate:3.6.10.16',
             ':jquery:1.8.3',            // 1.11.0.2
             ':jquery-json:2.2.2',
             ':jquery-ui:1.8.24',        // 1.10.3
-            ':resources:1.2.7'
+            ':resources:1.2.8'
         )
         provided(
             ':codenarc:0.20'

@@ -1,7 +1,7 @@
 /*
  * _Events.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,8 @@ eventCompileStart = { kind ->
     println "| Set build number #${buildNumber}."
 }
 
-eventAllTestsStart = {
-    if (!functionalTests.contains("functional")) {
-        functionalTests << "functional"
-    }
-}
+//eventAllTestsStart = {
+//    if (!functionalTests.contains("functional")) {
+//        functionalTests << "functional"
+//    }
+//}

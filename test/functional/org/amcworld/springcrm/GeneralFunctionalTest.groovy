@@ -24,6 +24,7 @@ import geb.Browser
 import geb.Page
 import org.amcworld.springcrm.page.LoginPage
 import org.amcworld.springcrm.page.OverviewPage
+import spock.lang.Ignore
 
 
 /**
@@ -34,6 +35,7 @@ import org.amcworld.springcrm.page.OverviewPage
  * @version 1.4
  * @since   1.4
  */
+@Ignore
 class GeneralFunctionalTest extends DbUnitSpecBase {
 
     //-- Fixture methods ------------------------
