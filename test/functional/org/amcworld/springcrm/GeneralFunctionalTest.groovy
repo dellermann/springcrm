@@ -205,7 +205,7 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
     }
 
     /**
-     * Prepares a ticket for the given helpdesk in the state "created".
+     * Prepares a ticket for the given helpdesk in the stage "created".
      *
      * @param helpdesk  the given helpdesk
      * @return          the prepared ticket

@@ -1,5 +1,4 @@
-<g:message code="email.ticket.salutation.user"
-  args="[ticketInstance.assignedUser.fullName]" />
+<g:message code="email.ticket.salutation.users" />
 
 <g:message code="email.ticket.closed.users.text1"
   args="[ticketInstance.helpdesk.name]" />

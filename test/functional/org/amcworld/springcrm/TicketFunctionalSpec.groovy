@@ -30,6 +30,8 @@ import spock.lang.Shared
 
 class TicketFunctionalSpec extends GeneralFunctionalTest {
 
+    //-- Instance variables ---------------------
+
     @Shared def mailData
 
 

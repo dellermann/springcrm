@@ -147,7 +147,7 @@ class TicketService {
                 sendMail {
                     multipart true
                     from fromAddr
-                    to ticket.assignedUser.email ?: ticket.helpdesk.users*.email
+                    to ticket.assignedUser?.email ?: ticket.helpdesk.users*.email
                     subject messageSource.getMessage(
                         'email.ticket.closed.subject', null, '', LCH.locale
                     )

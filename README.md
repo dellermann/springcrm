@@ -43,7 +43,7 @@ Daniel Ellermann (AMC World Technologies GmbH)
 Copyright/License
 -----------------
 
-Copyright (c) 2011-2013, AMC World Technologies GmbH
+Copyright (c) 2011-2014, AMC World Technologies GmbH
 All rights reserved.
 
 SpringCRM is distributed under the GNU General Public License version 3.

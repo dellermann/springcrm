@@ -200,15 +200,6 @@
       </table>
     </section>
     </g:if>
-    <g:else>
-      <div class="empty-list">
-        <p><g:message code="default.list.empty" /></p>
-        <div class="buttons">
-          <g:button color="green" class="create-ticket-btn" icon="plus"
-            message="default.new.label" args="[ticketEntityName]" />
-        </div>
-      </div>
-    </g:else>
     <g:set var="closedTickets"
       value="${helpdeskInstance.tickets.findAll { it.stage == TicketStage.closed } }" />
     <g:if test="${closedTickets}">
@@ -269,6 +260,15 @@
         </tbody>
       </table>
     </section>
+    </g:if>
+    <g:if test="${!helpdeskInstance.tickets}">
+    <div class="empty-list">
+      <p><g:message code="default.list.empty" /></p>
+      <div class="buttons">
+        <g:button color="green" class="create-ticket-btn" icon="plus"
+          message="default.new.label" args="[ticketEntityName]" />
+      </div>
+    </div>
     </g:if>
   </div>
 </body>
