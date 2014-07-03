@@ -20,6 +20,9 @@
 
 package org.amcworld.springcrm
 
+import groovyx.net.http.HTTPBuilder
+import java.security.MessageDigest
+
 
 /**
  * The class {@code ErrorController} handles errors in the application.
@@ -107,4 +110,22 @@ class ErrorController {
     }
 
     def notFound() {}
+
+    /**
+     * Sends an error report to AMC World Technologies.
+     */
+    def reportError() {
+        String xml = params.xml
+        def messageDigest = MessageDigest.getInstance('SHA1')
+        messageDigest.update(xml.getBytes('UTF-8'))
+        def sw = new StringWriter()
+        messageDigest.digest().encodeHex().writeTo sw
+        def body = [ xml: xml, checksum: sw.toString() ]
+
+        def http = new HTTPBuilder('http://dev.amc-world.de')
+        http.post(
+            path: '/scripts/springcrm/error-report.php', body: body,
+            requestContentType: groovyx.net.http.ContentType.URLENC
+        )
+    }
 }

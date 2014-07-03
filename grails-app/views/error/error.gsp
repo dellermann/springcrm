@@ -80,7 +80,7 @@
       <h2><a href="#"><g:message code="error.exception.form.title" /></a></h2>
       <div>
         <form id="bugreport-form" name="bugreport-form"
-          data-report-error-url="${createLink(controller: 'notification', action: 'reportError')}">
+          data-report-error-url="${createLink(controller: 'error', action: 'reportError')}">
           <fieldset>
             <div class="row">
               <div class="label">

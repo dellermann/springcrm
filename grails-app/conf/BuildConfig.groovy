@@ -75,7 +75,8 @@ grails.project.dependency.resolution = {
             'commons-fileupload:commons-fileupload:1.2.2',
             'commons-io:commons-io:2.1',
             'jmimemagic:jmimemagic:0.1.2',
-            //'org.apache.xmlgraphics:fop:1.0'
+            //'org.apache.xmlgraphics:fop:1.0',
+            'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
         )
 
         /*
@@ -118,9 +119,9 @@ grails.project.dependency.resolution = {
             ':fields:1.3',
             ':font-awesome-resources:4.0.3.0',
             ':less-resources:1.3.3.2',
-            ':mail:1.0.3',
+            ':mail:1.0.6',
             ':markdown:1.1.1',
-            ':quartz:1.0.1',
+            ':quartz:1.0.2',
             ':scaffolding:1.0.0',
             ':searchable:0.6.6'
         )

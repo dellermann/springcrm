@@ -1,1 +1,0 @@
-<p><g:message code="error.exception.form.submitted" /></p>
