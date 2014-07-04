@@ -20,11 +20,9 @@
 
 package org.amcworld.springcrm
 
-
-
 import grails.test.mixin.TestFor
-import grails.test.mixin.domain.DomainClassUnitTestMixin
-import groovyx.net.http.HTTPBuilder
+import org.apache.http.impl.client.CloseableHttpClient
+import org.apache.http.impl.client.HttpClients
 import spock.lang.Specification
 
 
@@ -106,20 +104,23 @@ class ErrorControllerSpec extends Specification {
   </exception>
 </error-report>'''
 
-        and: 'a mock for the HTTPBuilder class'
-        def postData
-        HTTPBuilder.metaClass.post = { Map data, Closure c = null -> postData = data }
+        and: 'a mock for the HttpClient class'
+        def postData = [: ]
+        def mock = mockFor(CloseableHttpClient)
+        mock.demand.execute {
+            postData.uri = it.URI
+            postData.contentType = it.entity.contentType.value
+            postData.content = it.entity.content.text
+        }
+        HttpClients.metaClass.'static'.createDefault = { mock.createMock() }
 
         when: 'I call the report error action'
         params.xml = xml
         controller.reportError()
 
         then: 'the data is submitted to AMC World'
-        '/scripts/springcrm/error-report.php' == postData.path
-        xml == postData.body.xml
-        '40783a444b360af71f3f34574fa85dda05ddd7ea' == postData.body.checksum
-
-        cleanup:
-        HTTPBuilder.metaClass = null
+        'http://dev.amc-world.de/scripts/springcrm/error-report.php' == postData.uri.toString()
+        'application/x-www-form-urlencoded' == postData.contentType
+        'xml=%3C%3Fxml+version%3D%221.0%22%3F%3E%0A%0A%3Cerror-report+xmlns%3D%22http%3A%2F%2Fwww.amc-world.de%2Fdata%2Fxml%2Fspringcrm%22%0A++++++++++++++xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%0A++++++++++++++xsi%3AschemaLocation%3D%22http%3A%2F%2Fwww.amc-world.de%2Fdata%2Fxml%2Fspringcrm+http%3A%2F%2Fwww.amc-world.de%2Fdata%2Fxml%2Fspringcrm%2Ferror-report-1.1.xsd%22%3E%0A++%3Creport-version%3E1.1%3C%2Freport-version%3E%0A++%3Capplication%3E%0A++++%3Cversion%3E1.2.5%3C%2Fversion%3E%0A++++%3Cbuild-number%3E1489%3C%2Fbuild-number%3E%0A++++%3Cbuild-date%3E2012-11-29T16%3A00%3A52%2B0100%3C%2Fbuild-date%3E%0A++++%3Cbuild-profile%3Elive%3C%2Fbuild-profile%3E%0A++%3C%2Fapplication%3E%0A++%3Ccustomer%3E%0A++++%3Cname%3EJohn+Smith%3C%2Fname%3E%0A++++%3Cemail%3Ej.smith%40example.com%3C%2Femail%3E%0A++%3C%2Fcustomer%3E%0A++%3Cdescription%3E%3C%2Fdescription%3E%0A++%3Cdetails%3E%0A++++%3Cstatus-code%3E500%3C%2Fstatus-code%3E%0A++++%3Cmessage%3Enull+id+in+org.amcworld.springcrm.InvoicingItem+entry+%28don%27t+flush+the+Session+after+an+exception+occurs%29%3C%2Fmessage%3E%0A++++%3Cservlet%3Egrails%3C%2Fservlet%3E%0A++++%3Curi%3E%2Fspringcrm%2Fgrails%2Fquote%2Fupdate.dispatch%3C%2Furi%3E%0A++%3C%2Fdetails%3E%0A++%3Cexception%3E%0A++++%3Cmessage%3Enull+id+in+org.amcworld.springcrm.InvoicingItem+entry+%28don%27t+flush+the+Session+after+an+exception+occurs%29%3C%2Fmessage%3E%0A++++%3Ccaused-by%3Enull+id+in+org.amcworld.springcrm.InvoicingItem+entry+%28don%27t+flush+the+Session+after+an+exception+occurs%29%3C%2Fcaused-by%3E%0A++++%3Cclass-name%3ELruFilters%3C%2Fclass-name%3E%0A++++%3Cline-number%3E68%3C%2Fline-number%3E%0A++++%3Ccode-snippet%3E%0A%0A++++%3C%2Fcode-snippet%3E%0A++++%3Cstack-trace%3E%0A++++org.hibernate.AssertionFailure%3A+null+id+in+org.amcworld.springcrm.InvoicingItem+entry+%28don%27t+flush+the+Session+after+an+exception+occurs%29%0A++++at+grails.orm.HibernateCriteriaBuilder.invokeMethod%28HibernateCriteriaBuilder.java%3A1591%29%0A++++at+org.amcworld.springcrm.LruService.recordItem%28LruService.groovy%3A57%29%0A++++at+org.amcworld.springcrm.LruFilters%24_closure1_closure3_closure6.doCall%28LruFilters.groovy%3A68%29%0A++++at+java.util.concurrent.ThreadPoolExecutor%24Worker.runTask%28ThreadPoolExecutor.java%3A895%29%0A++++at+java.util.concurrent.ThreadPoolExecutor%24Worker.run%28ThreadPoolExecutor.java%3A918%29%0A++++at+java.lang.Thread.run%28Thread.java%3A662%29%0A++++%3C%2Fstack-trace%3E%0A++%3C%2Fexception%3E%0A%3C%2Ferror-report%3E&checksum=40783a444b360af71f3f34574fa85dda05ddd7ea' == postData.content
     }
 }

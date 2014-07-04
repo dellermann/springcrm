@@ -20,8 +20,12 @@
 
 package org.amcworld.springcrm
 
-import groovyx.net.http.HTTPBuilder
 import java.security.MessageDigest
+import org.apache.http.NameValuePair
+import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.message.BasicNameValuePair
 
 
 /**
@@ -120,12 +124,24 @@ class ErrorController {
         messageDigest.update(xml.getBytes('UTF-8'))
         def sw = new StringWriter()
         messageDigest.digest().encodeHex().writeTo sw
-        def body = [ xml: xml, checksum: sw.toString() ]
 
-        def http = new HTTPBuilder('http://dev.amc-world.de')
-        http.post(
-            path: '/scripts/springcrm/error-report.php', body: body,
-            requestContentType: groovyx.net.http.ContentType.URLENC
+        def httpClient = HttpClients.createDefault()
+        def httpPost = new HttpPost(
+            'http://dev.amc-world.de/scripts/springcrm/error-report.php'
         )
+        List<NameValuePair> nvps = [
+            new BasicNameValuePair('xml', xml),
+            new BasicNameValuePair('checksum', sw.toString())
+        ]
+        httpPost.entity = new UrlEncodedFormEntity(nvps)
+        httpClient.execute httpPost
+
+//        def body = [ xml: xml, checksum: sw.toString() ]
+//
+//        def http = new HTTPBuilder('http://dev.amc-world.de')
+//        http.post(
+//            path: '/scripts/springcrm/error-report.php', body: body,
+//            requestContentType: groovyx.net.http.ContentType.URLENC
+//        )
     }
 }
