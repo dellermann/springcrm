@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,14 +121,14 @@ grails.json.legacy.builder = false
 
 //== Plugins ====================================
 
-/* mail configuration */
-grails {
-    mail {
-        host = '192.168.0.1'
-        port = 25
-        props = ['mail.smtp.auth': 'false']
-    }
-}
+///* mail configuration */
+//grails {
+//    mail {
+//        host = '192.168.0.1'
+//        port = 25
+//        props = ['mail.smtp.auth': 'false']
+//    }
+//}
 
 /* Settings for database migration */
 grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']

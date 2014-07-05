@@ -1,7 +1,7 @@
 /*
  * TicketService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,7 @@
 
 package org.amcworld.springcrm
 
-import com.naleid.grails.MarkdownService
-import grails.gsp.PageRenderer
-import grails.plugin.mail.MailService
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder as LCH
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -48,12 +42,8 @@ class TicketService {
     //-- Instance variables ---------------------
 
     DataFileService dataFileService
-    GrailsApplication grailsApplication
     LinkGenerator grailsLinkGenerator
-    PageRenderer groovyPageRenderer
-    MailService mailService
-    MarkdownService markdownService
-    MessageSource messageSource
+    MailSystemService mailSystemService
 
 
     //-- Public methods -------------------------
@@ -76,19 +66,15 @@ class TicketService {
             .save()
 
         if (creator != assignTo) {
-            String msgText = getTextMessage(
-                'assignedUser', [ticketInstance: ticket, creator: creator]
+            mailSystemService.sendMail(
+                to: assignTo.email,
+                subject: [key: 'email.ticket.assignedUser.subject'],
+                message: [
+                    controller: 'ticket',
+                    view: 'assignedUser',
+                    model: [ticketInstance: ticket, creator: creator]
+                ]
             )
-            sendMail {
-                multipart true
-                from fromAddr
-                to assignTo.email
-                subject messageSource.getMessage(
-                    'email.ticket.assignedUser.subject', null, '', LCH.locale
-                )
-                text msgText
-                html getHtmlMessage(msgText)
-            }
         }
 
         ticket
@@ -114,46 +100,37 @@ class TicketService {
 
         if (stage == TicketStage.assigned && (ticket.email1 || ticket.email2))
         {
-            String msgText =
-                getTextMessage('assigned', [ticketInstance: ticket])
-            sendMail {
-                multipart true
-                from fromAddr
-                to ticket.email1 ?: ticket.email2
-                subject messageSource.getMessage(
-                    'email.ticket.assigned.subject', null, '', LCH.locale
-                )
-                text msgText
-                html getHtmlMessage(msgText)
-            }
+            mailSystemService.sendMail(
+                to: ticket.email1 ?: ticket.email2,
+                subject: [key: 'email.ticket.assigned.subject'],
+                message: [
+                    controller: 'ticket',
+                    view: 'assigned',
+                    model: [ticketInstance: ticket]
+                ]
+            )
         } else if (stage == TicketStage.closed) {
             if (ticket.email1 || ticket.email2) {
-                String msgText =
-                    getTextMessage('closedCustomer', [ticketInstance: ticket])
-                sendMail {
-                    multipart true
-                    from fromAddr
-                    to ticket.email1 ?: ticket.email2
-                    subject messageSource.getMessage(
-                        'email.ticket.closed.subject', null, '', LCH.locale
-                    )
-                    text msgText
-                    html getHtmlMessage(msgText)
-                }
+                mailSystemService.sendMail(
+                    to: ticket.email1 ?: ticket.email2,
+                    subject: [key: 'email.ticket.closed.subject'],
+                    message: [
+                        controller: 'ticket',
+                        view: 'closedCustomer',
+                        model: [ticketInstance: ticket]
+                    ]
+                )
             }
             if (!creator) {
-                String msgText =
-                    getTextMessage('closedUser', [ticketInstance: ticket])
-                sendMail {
-                    multipart true
-                    from fromAddr
-                    to ticket.assignedUser?.email ?: ticket.helpdesk.users*.email
-                    subject messageSource.getMessage(
-                        'email.ticket.closed.subject', null, '', LCH.locale
-                    )
-                    text msgText
-                    html getHtmlMessage(msgText)
-                }
+                mailSystemService.sendMail(
+                    to: ticket.assignedUser?.email ?: ticket.helpdesk.users*.email,
+                    subject: [key: 'email.ticket.closed.subject'],
+                    message: [
+                        controller: 'ticket',
+                        view: 'closedUser',
+                        model: [ticketInstance: ticket]
+                    ]
+                )
             }
         }
 
@@ -207,36 +184,28 @@ class TicketService {
             .save()
 
         /* send mail to helpdesk team */
-        String msgText = getTextMessage(
-            'createdUsers', [ticketInstance: ticket, messageText: message]
+        mailSystemService.sendMail(
+            to: ticket.helpdesk.users*.email,
+            subject: [key: 'email.ticket.create.subject'],
+            message: [
+                controller: 'ticket',
+                view: 'createdUsers',
+                model: [ticketInstance: ticket, messageText: message]
+            ]
         )
-        sendMail {
-            multipart true
-            from fromAddr
-            to ticket.helpdesk.users*.email
-            subject messageSource.getMessage(
-                'email.ticket.create.subject', null, '', LCH.locale
-            )
-            text msgText
-            html getHtmlMessage(msgText)
-        }
 
         /* send mail to customer */
         if (ticket.email1 || ticket.email2) {
             Map model = getCustomerEmailLinks(ticket)
             model.ticketInstance = ticket
             model.messageText = message
-            msgText = getTextMessage('createdCustomer', model)
-            sendMail {
-                multipart true
-                from fromAddr
-                to ticket.email1 ?: ticket.email2
-                subject messageSource.getMessage(
-                    'email.ticket.create.subject', null, '', LCH.locale
-                )
-                text msgText
-                html getHtmlMessage(msgText)
-            }
+            mailSystemService.sendMail(
+                to: ticket.email1 ?: ticket.email2,
+                subject: [key: 'email.ticket.create.subject'],
+                message: [
+                    controller: 'ticket', view: 'createdCustomer', model: model
+                ]
+            )
         }
 
         ticket
@@ -269,41 +238,33 @@ class TicketService {
             .save()
 
         def toAddr = null
-        String msgText
+        String msgView = 'sendMessageUser'
+        Map msgModel = null
         if (sender == null) {               // customer -> engineer/team
             toAddr = ticket.assignedUser?.email ?: ticket.helpdesk.users*.email
-            msgText = getTextMessage(
-                'sendMessageUser',
-                [ticketInstance: ticket, messageText: message]
-            )
+            msgModel = [ticketInstance: ticket, messageText: message]
         } else if (recipient == null) {     // engineer -> customer
             toAddr = ticket.email1 ?: ticket.email2
             if (toAddr) {
-                Map model = getCustomerEmailLinks(ticket)
-                model.ticketInstance = ticket
-                model.messageText = message
-                model.sender = sender
-                msgText = getTextMessage('sendMessageCustomer', model)
+                msgView = 'sendMessageCustomer'
+                msgModel = getCustomerEmailLinks(ticket)
+                msgModel.ticketInstance = ticket
+                msgModel.messageText = message
+                msgModel.sender = sender
             }
         } else {                            // engineer -> engineer
             toAddr = recipient.email
-            msgText = getTextMessage(
-                'sendMessageUser',
-                [ticketInstance: ticket, messageText: message, sender: sender]
-            )
+            msgModel = [
+                ticketInstance: ticket, messageText: message, sender: sender
+            ]
         }
 
         if (toAddr) {
-            sendMail {
-                multipart true
-                from fromAddr
-                to toAddr
-                subject messageSource.getMessage(
-                    'email.ticket.sendMessage.subject', null, '', LCH.locale
-                )
-                text msgText
-                html getHtmlMessage(msgText)
-            }
+            mailSystemService.sendMail(
+                to: toAddr,
+                subject: [key: 'email.ticket.sendMessage.subject'],
+                message: [controller: 'ticket', view: msgView, model: msgModel]
+            )
         }
 
         ticket
@@ -348,57 +309,5 @@ class TicketService {
             absolute: true
         )
         [showLink: showLink, overviewLink: overviewLink]
-    }
-
-    /**
-     * Gets the sender address for e-mails from ticket system.
-     *
-     * @return  the sender address
-     */
-    protected String getFromAddr() {
-        grailsApplication.config.springcrm.mail.from
-    }
-
-    /**
-     * Converts the given plain text to HTML using Markdown.
-     *
-     * @param text  the given text
-     * @return      the code converted to HTML
-     */
-    protected String getHtmlMessage(String text) {
-        markdownService.markdown text
-    }
-
-    /**
-     * Retrieves the text in the given view and converts it to HTML using
-     * Markdown.
-     *
-     * @param view  the view that should be rendered relative to
-     *              "/email/ticket/"
-     * @param model a data the view uses
-     * @return      the rendered and converted HTML code
-     */
-    protected String getHtmlMessage(String view, Map model) {
-        getHtmlMessage getTextMessage(view, model)
-    }
-
-    /**
-     * Retrieves the text in the given view.
-     *
-     * @param view  the view that should be rendered
-     * @param model a data the view uses
-     * @return      the rendered plain text code
-     */
-    protected String getTextMessage(String view, Map model) {
-        groovyPageRenderer.render view: "/email/ticket/${view}", model: model
-    }
-
-    /**
-     * Really sends a mail using the given data.
-     *
-     * @param mail  the mail data
-     */
-    protected void sendMail(Closure mail) {
-        mailService.sendMail mail
     }
 }

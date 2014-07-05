@@ -43,9 +43,10 @@ class TicketFunctionalSpec extends GeneralFunctionalTest {
         assert 2 == User.count()
         prepareHelpdesk org
 
-        TicketService.metaClass.sendMail = { Closure mail ->
+        MailSystemService.metaClass.sendRawMail = { Closure mail ->
             def builder = new NodeBuilder()
             mailData = builder(mail)
+            null
         }
 
         login()

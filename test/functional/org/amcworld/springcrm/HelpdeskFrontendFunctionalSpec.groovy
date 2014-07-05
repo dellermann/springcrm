@@ -39,9 +39,10 @@ class HelpdeskFrontendFunctionalSpec extends GeneralFunctionalTest {
         prepareUser()
         prepareHelpdesk org
 
-        TicketService.metaClass.sendMail = { Closure mail ->
+        MailSystemService.metaClass.sendRawMail = { Closure mail ->
             def builder = new NodeBuilder()
             mailData = builder(mail)
+            null
         }
     }
 
