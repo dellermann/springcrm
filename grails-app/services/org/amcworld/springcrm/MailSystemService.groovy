@@ -47,6 +47,32 @@ class MailSystemService {
     PageRenderer groovyPageRenderer
 
 
+    //-- Properties -----------------------------
+
+    /**
+     * Checks whether or not the mail system is configured at all.
+     *
+     * @return  {@code true} if the mail system is configured at all;
+     *          {@code false} otherwise
+     */
+    boolean isConfigured() {
+        config['mailUseConfig'] != null
+    }
+
+    /**
+     * Checks whether or not the mail system is configured by the user, that
+     * is, using system configuration data.
+     *
+     * @return  {@code true} if the mail system is user configured;
+     *          {@code false} if the mail system is configured by the
+     *          underlying system
+     */
+    boolean isUserConfigured() {
+        Boolean b = config['mailUseConfig'] as Boolean
+        b != null && b.booleanValue()
+    }
+
+
     //-- Public methods -------------------------
 
     /**
@@ -127,9 +153,14 @@ class MailSystemService {
      * </ul>
      *
      * @param mail  the mail data
-     * @return      the sent mail message
+     * @return      the sent mail message; {@code null} if the mail system is
+     *              not configured yet
      */
     MailMessage sendMail(Map data) {
+        if (!configured) {
+            return null
+        }
+
         String msgSubject
         if (data.subject instanceof Map) {
             msgSubject = messageSource.getMessage(
@@ -169,6 +200,56 @@ class MailSystemService {
      * @return      the sent mail message
      */
     MailMessage sendRawMail(Closure mail) {
-        mailService.sendMail mail
+        if (!configured) {
+            return null
+        }
+
+        mailService.sendMail mailConfiguration, mail
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets the configuration data from the application wide configuration
+     * holder.
+     *
+     * @return  the configuration holder
+     */
+    protected ConfigHolder getConfig() {
+        ConfigHolder.instance
+    }
+
+    /**
+     * Gets the configuration data for the mail system.
+     *
+     * @return  the configuration data
+     */
+    protected ConfigObject getMailConfiguration() {
+        ConfigObject configuration = new ConfigObject()
+
+        configuration.host = (config['mailHost'] as String) ?: 'localhost'
+        int port = (config['mailPort'] as Integer) ?: 465
+        configuration.port = port
+        String s = config['mailUserName'] as String
+        if (s) configuration.username = s
+        s = config['mailPassword'] as String
+        if (s) configuration.password = s
+
+        def props = [: ]
+        if (config['mailAuth'] as Boolean) {
+            props.'mail.smtp.auth' = true
+        }
+        if (config['mailSSL'] as Boolean) {
+            props.'mail.smtp.socketFactory.port' = port
+            props.'mail.smtp.socketFactory.class' = 'javax.net.ssl.SSLSocketFactory'
+            props.'mail.smtp.socketFactory.fallback' = false
+        } else if (config['mailStartTLS'] as Boolean) {
+            props.'mail.smtp.starttls.enable' = true
+            props.'mail.smtp.port' = port
+        }
+        configuration.props = props
+
+        configuration
     }
 }

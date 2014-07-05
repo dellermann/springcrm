@@ -23,15 +23,53 @@ package org.amcworld.springcrm
 import com.naleid.grails.MarkdownService
 import grails.gsp.PageRenderer
 import grails.plugin.mail.MailService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.springframework.context.MessageSource
 import spock.lang.Specification
 
 
 @TestFor(MailSystemService)
+@Mock([Config])
 class MailSystemServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
+
+    def 'Check if mail system is not configured'() {
+        when: 'I obtain the configuration status without existing configuration'
+        boolean configured = service.configured
+        boolean userConfigured = service.userConfigured
+
+        then: 'I get that the mail system is not configured yet'
+        !configured
+        !userConfigured
+    }
+
+    def 'Check if mail system is set to use system configuration'() {
+        given:
+        mockDomain Config, [[name: 'mailUseConfig', value: 'false']]
+
+        when:
+        boolean configured = service.configured
+        boolean userConfigured = service.userConfigured
+
+        then:
+        configured
+        !userConfigured
+    }
+
+    def 'Check if mail system is set to use user configuration'() {
+        given:
+        mockDomain Config, [[name: 'mailUseConfig', value: 'true']]
+
+        when:
+        boolean configured = service.configured
+        boolean userConfigured = service.userConfigured
+
+        then:
+        configured
+        userConfigured
+    }
 
     def 'Convert plain text to HTML'() {
         given: 'a mock for MarkdownService'
@@ -94,17 +132,30 @@ class MailSystemServiceSpec extends Specification {
     }
 
     def 'Send mail with simple data'() {
-        given:
+        given: 'a mail configuration'
+        mockDomain Config, [
+            [name: 'mailUseConfig', value: 'true'],
+            [name: 'mailHost', value: 'mail.example.com'],
+            [name: 'mailPort', value: '587'],
+            [name: 'mailUserName', value: 'jdoe'],
+            [name: 'mailPassword', value: 'secret'],
+            [name: 'mailAuth', value: 'true'],
+            [name: 'mailStartTLS', value: 'true']
+        ]
+
+        and: 'a mock for MailService'
+        def mailConfig
         def mailData
         def control = mockFor(MailService)
-        control.demand.sendMail(1) { Closure mail ->
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
             def builder = new NodeBuilder()
             mailData = builder(mail)
             null
         }
         service.mailService = control.createMock()
 
-        when:
+        when: 'I send an e-mail with simple data'
         service.sendMail(
             from: 'AMC World system service <noreply@amc-world.de>',
             to: 'Marcus Kampe <m.kampe@kampe.example>',
@@ -113,7 +164,55 @@ class MailSystemServiceSpec extends Specification {
             htmlMessage: '<p>This is a test message.</p>'
         )
 
-        then:
+        then: 'the mail service is called with the correct configuration'
+        'mail.example.com' == mailConfig.host
+        587 == mailConfig.port
+        'jdoe' == mailConfig.username
+        'secret' == mailConfig.password
+        mailConfig.props.'mail.smtp.auth'
+        mailConfig.props.'mail.smtp.starttls.enable'
+        587 == mailConfig.props.'mail.smtp.port'
+
+        and: 'the mail is sent with the correct values'
+        mailData.multipart
+        'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
+        'Marcus Kampe <m.kampe@kampe.example>' == mailData.to.text()
+        'Test email' == mailData.subject.text()
+        'This is a test message.' == mailData.text.text()
+        '<p>This is a test message.</p>' == mailData.html.text()
+    }
+
+    def 'Send mail with simple data and minimal configuration'() {
+        given: 'a mail configuration'
+        mockDomain Config, [[name: 'mailUseConfig', value: 'true']]
+
+        and: 'a mock for MailService'
+        def mailConfig
+        def mailData
+        def control = mockFor(MailService)
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
+            def builder = new NodeBuilder()
+            mailData = builder(mail)
+            null
+        }
+        service.mailService = control.createMock()
+
+        when: 'I send an e-mail with simple data'
+        service.sendMail(
+            from: 'AMC World system service <noreply@amc-world.de>',
+            to: 'Marcus Kampe <m.kampe@kampe.example>',
+            subject: 'Test email',
+            message: 'This is a test message.',
+            htmlMessage: '<p>This is a test message.</p>'
+        )
+
+        then: 'the mail service is called with the correct configuration'
+        'localhost' == mailConfig.host
+        465 == mailConfig.port
+        mailConfig.props.isEmpty()
+
+        and: 'the mail is sent with the correct values'
         mailData.multipart
         'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
         'Marcus Kampe <m.kampe@kampe.example>' == mailData.to.text()
@@ -123,10 +222,23 @@ class MailSystemServiceSpec extends Specification {
     }
 
     def 'Send mail with simple data without HTML text'() {
-        given:
+        given: 'a mail configuration'
+        mockDomain Config, [
+            [name: 'mailUseConfig', value: 'true'],
+            [name: 'mailHost', value: 'mail.example.com'],
+            [name: 'mailPort', value: '587'],
+            [name: 'mailUserName', value: 'jdoe'],
+            [name: 'mailPassword', value: 'secret'],
+            [name: 'mailAuth', value: 'true'],
+            [name: 'mailStartTLS', value: 'true']
+        ]
+
+        and: 'a mock for MailService'
+        def mailConfig
         def mailData
         def control = mockFor(MailService)
-        control.demand.sendMail(1) { Closure mail ->
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
             def builder = new NodeBuilder()
             mailData = builder(mail)
             null
@@ -148,6 +260,17 @@ class MailSystemServiceSpec extends Specification {
             message: 'This is a test message.'
         )
 
+        then: 'the mail service is called with the correct configuration'
+        'mail.example.com' == mailConfig.host
+        587 == mailConfig.port
+        'jdoe' == mailConfig.username
+        'secret' == mailConfig.password
+        mailConfig.props.'mail.smtp.auth'
+        mailConfig.props.'mail.smtp.starttls.enable'
+        587 == mailConfig.props.'mail.smtp.port'
+
+        and: 'the mail is sent with the correct values'
+
         then:
         mailData.multipart
         'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
@@ -158,10 +281,23 @@ class MailSystemServiceSpec extends Specification {
     }
 
     def 'Send mail without sender address'() {
-        given:
+        given: 'a mail configuration'
+        mockDomain Config, [
+            [name: 'mailUseConfig', value: 'true'],
+            [name: 'mailHost', value: 'mail.example.com'],
+            [name: 'mailPort', value: '587'],
+            [name: 'mailUserName', value: 'jdoe'],
+            [name: 'mailPassword', value: 'secret'],
+            [name: 'mailAuth', value: 'true'],
+            [name: 'mailStartTLS', value: 'true']
+        ]
+
+        and: 'a mock for MailService'
+        def mailConfig
         def mailData
         def control = mockFor(MailService)
-        control.demand.sendMail(1) { Closure mail ->
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
             def builder = new NodeBuilder()
             mailData = builder(mail)
             null
@@ -187,6 +323,17 @@ class MailSystemServiceSpec extends Specification {
             message: 'This is a test message.'
         )
 
+        then: 'the mail service is called with the correct configuration'
+        'mail.example.com' == mailConfig.host
+        587 == mailConfig.port
+        'jdoe' == mailConfig.username
+        'secret' == mailConfig.password
+        mailConfig.props.'mail.smtp.auth'
+        mailConfig.props.'mail.smtp.starttls.enable'
+        587 == mailConfig.props.'mail.smtp.port'
+
+        and: 'the mail is sent with the correct values'
+
         then:
         mailData.multipart
         'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
@@ -197,10 +344,23 @@ class MailSystemServiceSpec extends Specification {
     }
 
     def 'Send mail with localized subject'() {
-        given:
+        given: 'a mail configuration'
+        mockDomain Config, [
+            [name: 'mailUseConfig', value: 'true'],
+            [name: 'mailHost', value: 'mail.example.com'],
+            [name: 'mailPort', value: '587'],
+            [name: 'mailUserName', value: 'jdoe'],
+            [name: 'mailPassword', value: 'secret'],
+            [name: 'mailAuth', value: 'true'],
+            [name: 'mailStartTLS', value: 'true']
+        ]
+
+        and: 'a mock for MailService'
+        def mailConfig
         def mailData
         def control = mockFor(MailService)
-        control.demand.sendMail(1) { Closure mail ->
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
             def builder = new NodeBuilder()
             mailData = builder(mail)
             null
@@ -229,6 +389,17 @@ class MailSystemServiceSpec extends Specification {
             message: 'This is a test message.'
         )
 
+        then: 'the mail service is called with the correct configuration'
+        'mail.example.com' == mailConfig.host
+        587 == mailConfig.port
+        'jdoe' == mailConfig.username
+        'secret' == mailConfig.password
+        mailConfig.props.'mail.smtp.auth'
+        mailConfig.props.'mail.smtp.starttls.enable'
+        587 == mailConfig.props.'mail.smtp.port'
+
+        and: 'the mail is sent with the correct values'
+
         then:
         mailData.multipart
         'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
@@ -239,10 +410,23 @@ class MailSystemServiceSpec extends Specification {
     }
 
     def 'Send mail with simple data with template text'() {
-        given:
+        given: 'a mail configuration'
+        mockDomain Config, [
+            [name: 'mailUseConfig', value: 'true'],
+            [name: 'mailHost', value: 'mail.example.com'],
+            [name: 'mailPort', value: '587'],
+            [name: 'mailUserName', value: 'jdoe'],
+            [name: 'mailPassword', value: 'secret'],
+            [name: 'mailAuth', value: 'true'],
+            [name: 'mailStartTLS', value: 'true']
+        ]
+
+        and: 'a mock for MailService'
+        def mailConfig
         def mailData
         def control = mockFor(MailService)
-        control.demand.sendMail(1) { Closure mail ->
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
             def builder = new NodeBuilder()
             mailData = builder(mail)
             null
@@ -277,6 +461,17 @@ class MailSystemServiceSpec extends Specification {
             ]
         )
 
+        then: 'the mail service is called with the correct configuration'
+        'mail.example.com' == mailConfig.host
+        587 == mailConfig.port
+        'jdoe' == mailConfig.username
+        'secret' == mailConfig.password
+        mailConfig.props.'mail.smtp.auth'
+        mailConfig.props.'mail.smtp.starttls.enable'
+        587 == mailConfig.props.'mail.smtp.port'
+
+        and: 'the mail is sent with the correct values'
+
         then:
         mailData.multipart
         'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
@@ -287,10 +482,23 @@ class MailSystemServiceSpec extends Specification {
     }
 
     def 'Send raw mail message'() {
-        given:
+        given: 'a mail configuration'
+        mockDomain Config, [
+            [name: 'mailUseConfig', value: 'true'],
+            [name: 'mailHost', value: 'mail.example.com'],
+            [name: 'mailPort', value: '587'],
+            [name: 'mailUserName', value: 'jdoe'],
+            [name: 'mailPassword', value: 'secret'],
+            [name: 'mailAuth', value: 'true'],
+            [name: 'mailStartTLS', value: 'true']
+        ]
+
+        and: 'a mock for MailService'
+        def mailConfig
         def mailData
         def control = mockFor(MailService)
-        control.demand.sendMail(1) { Closure mail ->
+        control.demand.sendMail(1) { config, Closure mail ->
+            mailConfig = config
             def builder = new NodeBuilder()
             mailData = builder(mail)
             null
@@ -307,6 +515,17 @@ class MailSystemServiceSpec extends Specification {
             html '<p>This is a test message.</p>'
         }
 
+        then: 'the mail service is called with the correct configuration'
+        'mail.example.com' == mailConfig.host
+        587 == mailConfig.port
+        'jdoe' == mailConfig.username
+        'secret' == mailConfig.password
+        mailConfig.props.'mail.smtp.auth'
+        mailConfig.props.'mail.smtp.starttls.enable'
+        587 == mailConfig.props.'mail.smtp.port'
+
+        and: 'the mail is sent with the correct values'
+
         then:
         mailData.multipart
         'AMC World system service <noreply@amc-world.de>' == mailData.from.text()
@@ -314,5 +533,50 @@ class MailSystemServiceSpec extends Specification {
         'Test email' == mailData.subject.text()
         'This is a test message.' == mailData.text.text()
         '<p>This is a test message.</p>' == mailData.html.text()
+    }
+
+    def 'Send mail with simple data without configuration'() {
+        given:
+        def mailData
+        def control = mockFor(MailService)
+        control.demand.sendMail(1) { Closure mail ->
+            throw new IllegalStateException()
+        }
+        service.mailService = control.createMock()
+
+        when: 'I send a message without configuration'
+        def res = service.sendMail(
+            from: 'AMC World system service <noreply@amc-world.de>',
+            to: 'Marcus Kampe <m.kampe@kampe.example>',
+            subject: 'Test email',
+            message: 'This is a test message.',
+            htmlMessage: '<p>This is a test message.</p>'
+        )
+
+        then: 'no message has been sent'
+        null == res
+    }
+
+    def 'Send raw mail message without configuration'() {
+        given:
+        def mailData
+        def control = mockFor(MailService)
+        control.demand.sendMail(1) { Closure mail ->
+            throw new IllegalStateException()
+        }
+        service.mailService = control.createMock()
+
+        when: 'I send a message without configuration'
+        def msg = service.sendRawMail {
+            multipart true
+            from 'AMC World system service <noreply@amc-world.de>'
+            to 'Marcus Kampe <m.kampe@kampe.example>'
+            subject 'Test email'
+            text 'This is a test message.'
+            html '<p>This is a test message.</p>'
+        }
+
+        then: 'no message has been sent'
+        null == msg
     }
 }
