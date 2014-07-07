@@ -229,7 +229,7 @@ class MailSystemService {
         ConfigObject configuration = new ConfigObject()
 
         configuration.host = (config['mailHost'] as String) ?: 'localhost'
-        int port = (config['mailPort'] as Integer) ?: 465
+        int port = (config['mailPort'] as Integer) ?: 587
         configuration.port = port
         String s = config['mailUserName'] as String
         if (s) configuration.username = s

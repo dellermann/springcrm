@@ -136,7 +136,7 @@ class MailSystemServiceSpec extends Specification {
         mockDomain Config, [
             [name: 'mailUseConfig', value: 'true'],
             [name: 'mailHost', value: 'mail.example.com'],
-            [name: 'mailPort', value: '587'],
+            [name: 'mailPort', value: '465'],
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
@@ -166,12 +166,12 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'mail.example.com' == mailConfig.host
-        587 == mailConfig.port
+        465 == mailConfig.port
         'jdoe' == mailConfig.username
         'secret' == mailConfig.password
         mailConfig.props.'mail.smtp.auth'
         mailConfig.props.'mail.smtp.starttls.enable'
-        587 == mailConfig.props.'mail.smtp.port'
+        465 == mailConfig.props.'mail.smtp.port'
 
         and: 'the mail is sent with the correct values'
         mailData.multipart
@@ -209,7 +209,7 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'localhost' == mailConfig.host
-        465 == mailConfig.port
+        587 == mailConfig.port
         mailConfig.props.isEmpty()
 
         and: 'the mail is sent with the correct values'
@@ -226,7 +226,7 @@ class MailSystemServiceSpec extends Specification {
         mockDomain Config, [
             [name: 'mailUseConfig', value: 'true'],
             [name: 'mailHost', value: 'mail.example.com'],
-            [name: 'mailPort', value: '587'],
+            [name: 'mailPort', value: '465'],
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
@@ -262,12 +262,12 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'mail.example.com' == mailConfig.host
-        587 == mailConfig.port
+        465 == mailConfig.port
         'jdoe' == mailConfig.username
         'secret' == mailConfig.password
         mailConfig.props.'mail.smtp.auth'
         mailConfig.props.'mail.smtp.starttls.enable'
-        587 == mailConfig.props.'mail.smtp.port'
+        465 == mailConfig.props.'mail.smtp.port'
 
         and: 'the mail is sent with the correct values'
 
@@ -285,7 +285,7 @@ class MailSystemServiceSpec extends Specification {
         mockDomain Config, [
             [name: 'mailUseConfig', value: 'true'],
             [name: 'mailHost', value: 'mail.example.com'],
-            [name: 'mailPort', value: '587'],
+            [name: 'mailPort', value: '465'],
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
@@ -325,12 +325,12 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'mail.example.com' == mailConfig.host
-        587 == mailConfig.port
+        465 == mailConfig.port
         'jdoe' == mailConfig.username
         'secret' == mailConfig.password
         mailConfig.props.'mail.smtp.auth'
         mailConfig.props.'mail.smtp.starttls.enable'
-        587 == mailConfig.props.'mail.smtp.port'
+        465 == mailConfig.props.'mail.smtp.port'
 
         and: 'the mail is sent with the correct values'
 
@@ -348,7 +348,7 @@ class MailSystemServiceSpec extends Specification {
         mockDomain Config, [
             [name: 'mailUseConfig', value: 'true'],
             [name: 'mailHost', value: 'mail.example.com'],
-            [name: 'mailPort', value: '587'],
+            [name: 'mailPort', value: '465'],
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
@@ -391,12 +391,12 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'mail.example.com' == mailConfig.host
-        587 == mailConfig.port
+        465 == mailConfig.port
         'jdoe' == mailConfig.username
         'secret' == mailConfig.password
         mailConfig.props.'mail.smtp.auth'
         mailConfig.props.'mail.smtp.starttls.enable'
-        587 == mailConfig.props.'mail.smtp.port'
+        465 == mailConfig.props.'mail.smtp.port'
 
         and: 'the mail is sent with the correct values'
 
@@ -414,7 +414,7 @@ class MailSystemServiceSpec extends Specification {
         mockDomain Config, [
             [name: 'mailUseConfig', value: 'true'],
             [name: 'mailHost', value: 'mail.example.com'],
-            [name: 'mailPort', value: '587'],
+            [name: 'mailPort', value: '465'],
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
@@ -463,12 +463,12 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'mail.example.com' == mailConfig.host
-        587 == mailConfig.port
+        465 == mailConfig.port
         'jdoe' == mailConfig.username
         'secret' == mailConfig.password
         mailConfig.props.'mail.smtp.auth'
         mailConfig.props.'mail.smtp.starttls.enable'
-        587 == mailConfig.props.'mail.smtp.port'
+        465 == mailConfig.props.'mail.smtp.port'
 
         and: 'the mail is sent with the correct values'
 
@@ -486,7 +486,7 @@ class MailSystemServiceSpec extends Specification {
         mockDomain Config, [
             [name: 'mailUseConfig', value: 'true'],
             [name: 'mailHost', value: 'mail.example.com'],
-            [name: 'mailPort', value: '587'],
+            [name: 'mailPort', value: '465'],
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
@@ -517,12 +517,12 @@ class MailSystemServiceSpec extends Specification {
 
         then: 'the mail service is called with the correct configuration'
         'mail.example.com' == mailConfig.host
-        587 == mailConfig.port
+        465 == mailConfig.port
         'jdoe' == mailConfig.username
         'secret' == mailConfig.password
         mailConfig.props.'mail.smtp.auth'
         mailConfig.props.'mail.smtp.starttls.enable'
-        587 == mailConfig.props.'mail.smtp.port'
+        465 == mailConfig.props.'mail.smtp.port'
 
         and: 'the mail is sent with the correct values'
 
