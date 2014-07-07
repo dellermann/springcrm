@@ -86,9 +86,16 @@ class ConfigController {
             String value = it.value
             if (key.startsWith('_')) {
                 configHolder.setConfig key.substring(1), 'false'
-            } else if (key != 'ldapBindPasswd' || value) {      // issue #35
+            } else if ((key != 'ldapBindPasswd' && key != 'mailPassword')
+                       || value)    // issue #35
+            {
                 if (key == 'ldapPort') {
                     value = value ?: '389'                      // issue #35
+                } else if (key == 'mailUseConfig') {
+                    if (value == 'null') {
+                        configHolder.removeConfig key
+                        return
+                    }
                 }
                 configHolder.setConfig key, value
             }

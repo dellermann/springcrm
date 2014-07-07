@@ -121,15 +121,6 @@ grails.json.legacy.builder = false
 
 //== Plugins ====================================
 
-///* mail configuration */
-//grails {
-//    mail {
-//        host = '192.168.0.1'
-//        port = 25
-//        props = ['mail.smtp.auth': 'false']
-//    }
-//}
-
 /* Settings for database migration */
 grails.plugin.databasemigration.autoMigrateScripts = ['RunApp', 'TestApp']
 grails.plugin.databasemigration.forceAutoMigrate = true

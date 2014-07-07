@@ -62,7 +62,7 @@ class ConfigControllerSpec extends Specification {
         and: 'there are valid configuration data'
         Map d = model.configData
         null != d
-        7 == d.size()
+        8 == d.size()
         'foo-value' == d.foo
         '15' == d.'int-val'
         'EUR' == d.currency
@@ -186,6 +186,123 @@ class ConfigControllerSpec extends Specification {
         'new' == ch['new-val'].value
         '15' == ch['int-val'].value
         'false' == ch['bar'].value
+
+        and: 'all other data are unmodified'
+        'EUR' == ch['currency'].value
+    }
+
+    def 'Save mail data with no configuration'() {
+        given: 'some configuration data'
+        makeConfigFixture()
+
+        and: 'some request parameters'
+        params.config = [mailUseConfig: 'null', mailHost: '192.168.100.1']
+
+        when: 'I call the save action'
+        controller.save()
+
+        then: 'I am redirected to the configuration overview page'
+        '/config/index' == response.redirectedUrl
+
+        and: 'I get a message about the success'
+        'default.updated.message' == flash.message
+
+        and: 'the submitted values are stored'
+        def ch = ConfigHolder.instance
+        null == ch['mailUseConfig']
+        '192.168.100.1' == ch['mailHost'].value
+
+        and: 'all other data are unmodified'
+        'EUR' == ch['currency'].value
+    }
+
+    def 'Save mail data with system configuration'() {
+        given: 'some configuration data'
+        makeConfigFixture()
+
+        and: 'some request parameters'
+        params.config = [mailUseConfig: 'false', mailHost: '192.168.100.1']
+
+        when: 'I call the save action'
+        controller.save()
+
+        then: 'I am redirected to the configuration overview page'
+        '/config/index' == response.redirectedUrl
+
+        and: 'I get a message about the success'
+        'default.updated.message' == flash.message
+
+        and: 'the submitted values are stored'
+        def ch = ConfigHolder.instance
+        'false' == ch['mailUseConfig'].value
+        '192.168.100.1' == ch['mailHost'].value
+
+        and: 'all other data are unmodified'
+        'EUR' == ch['currency'].value
+    }
+
+    def 'Save mail data with user configuration'() {
+        given: 'some configuration data'
+        makeConfigFixture()
+
+        and: 'some request parameters'
+        params.config = [
+            mailUseConfig: 'false', mailHost: '192.168.100.1', mailPort: '25',
+            mailUserName: 'jdoe', mailPassword: 'secret', mailAuth: 'true',
+            mailEncryption: 'starttls'
+        ]
+
+        when: 'I call the save action'
+        controller.save()
+
+        then: 'I am redirected to the configuration overview page'
+        '/config/index' == response.redirectedUrl
+
+        and: 'I get a message about the success'
+        'default.updated.message' == flash.message
+
+        and: 'the submitted values are stored'
+        def ch = ConfigHolder.instance
+        'false' == ch['mailUseConfig'].value
+        '192.168.100.1' == ch['mailHost'].value
+        '25' == ch['mailPort'].value
+        'jdoe' == ch['mailUserName'].value
+        'secret' == ch['mailPassword'].value
+        'true' == ch['mailAuth'].value
+        'starttls' == ch['mailEncryption'].value
+
+        and: 'all other data are unmodified'
+        'EUR' == ch['currency'].value
+    }
+
+    def 'Save mail data with user configuration without password'() {
+        given: 'some configuration data'
+        makeConfigFixture()
+
+        and: 'some request parameters'
+        params.config = [
+            mailUseConfig: 'false', mailHost: '192.168.100.1', mailPort: '25',
+            mailUserName: 'jdoe', mailAuth: 'true', mailEncryption: 'starttls'
+        ]
+
+        when: 'I call the save action'
+        controller.save()
+
+        then: 'I am redirected to the configuration overview page'
+        '/config/index' == response.redirectedUrl
+
+        and: 'I get a message about the success'
+        'default.updated.message' == flash.message
+
+        and: 'the submitted values are stored'
+        def ch = ConfigHolder.instance
+        'false' == ch['mailUseConfig'].value
+        '192.168.100.1' == ch['mailHost'].value
+        '25' == ch['mailPort'].value
+        'jdoe' == ch['mailUserName'].value
+        'very-secret' == ch['mailPassword'].value
+        'true' == ch['mailAuth'].value
+        'starttls' == ch['mailEncryption'].value
 
         and: 'all other data are unmodified'
         'EUR' == ch['currency'].value
@@ -550,7 +667,8 @@ class ConfigControllerSpec extends Specification {
             [name: 'float-val', value: '8.45'],
             [name: 'boolean-val', value: 'true'],
             [name: 'currency', value: 'EUR'],
-            [name: 'ldapBindPasswd', value: 'secret']
+            [name: 'ldapBindPasswd', value: 'secret'],
+            [name: 'mailPassword', value: 'very-secret']
         ]
     }
 

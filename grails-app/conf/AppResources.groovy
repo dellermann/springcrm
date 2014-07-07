@@ -59,6 +59,13 @@ modules = {
         resource url: 'less/config.less', attrs: [rel: 'stylesheet/less', type: 'css']
     }
 
+    configMail {
+        dependsOn 'config'
+        defaultBundle 'config'
+
+        resource '/js/app/config-mail.js'
+    }
+
     configSelValues {
         dependsOn 'config, mustache'
         defaultBundle 'config'

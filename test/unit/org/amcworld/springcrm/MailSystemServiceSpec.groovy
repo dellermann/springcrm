@@ -140,7 +140,7 @@ class MailSystemServiceSpec extends Specification {
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
-            [name: 'mailStartTLS', value: 'true']
+            [name: 'mailEncryption', value: 'starttls']
         ]
 
         and: 'a mock for MailService'
@@ -230,7 +230,7 @@ class MailSystemServiceSpec extends Specification {
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
-            [name: 'mailStartTLS', value: 'true']
+            [name: 'mailEncryption', value: 'starttls']
         ]
 
         and: 'a mock for MailService'
@@ -289,7 +289,7 @@ class MailSystemServiceSpec extends Specification {
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
-            [name: 'mailStartTLS', value: 'true']
+            [name: 'mailEncryption', value: 'starttls']
         ]
 
         and: 'a mock for MailService'
@@ -352,7 +352,7 @@ class MailSystemServiceSpec extends Specification {
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
-            [name: 'mailStartTLS', value: 'true']
+            [name: 'mailEncryption', value: 'starttls']
         ]
 
         and: 'a mock for MailService'
@@ -418,7 +418,7 @@ class MailSystemServiceSpec extends Specification {
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
-            [name: 'mailStartTLS', value: 'true']
+            [name: 'mailEncryption', value: 'starttls']
         ]
 
         and: 'a mock for MailService'
@@ -490,7 +490,7 @@ class MailSystemServiceSpec extends Specification {
             [name: 'mailUserName', value: 'jdoe'],
             [name: 'mailPassword', value: 'secret'],
             [name: 'mailAuth', value: 'true'],
-            [name: 'mailStartTLS', value: 'true']
+            [name: 'mailEncryption', value: 'starttls']
         ]
 
         and: 'a mock for MailService'

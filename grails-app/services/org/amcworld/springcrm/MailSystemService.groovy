@@ -240,11 +240,12 @@ class MailSystemService {
         if (config['mailAuth'] as Boolean) {
             props.'mail.smtp.auth' = true
         }
-        if (config['mailSSL'] as Boolean) {
+        String encryption = (config['mailEncryption'] as String) ?: 'none'
+        if (encryption == 'ssl') {
             props.'mail.smtp.socketFactory.port' = port
             props.'mail.smtp.socketFactory.class' = 'javax.net.ssl.SSLSocketFactory'
             props.'mail.smtp.socketFactory.fallback' = false
-        } else if (config['mailStartTLS'] as Boolean) {
+        } else if (encryption == 'starttls') {
             props.'mail.smtp.starttls.enable' = true
             props.'mail.smtp.port' = port
         }

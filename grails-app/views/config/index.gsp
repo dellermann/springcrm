@@ -27,6 +27,10 @@
           <dt><g:link action="show" params="[page: 'taxRates']"><g:message code="config.taxRates.title" default="Tax rates"/></g:link></dt>
           <dd><g:message code="config.taxRates.description" /></dd>
         </dl>
+        <dl id="configuration-mail">
+          <dt><g:link action="show" params="[page: 'mail']"><g:message code="config.mail.title" default="Mail settings"/></g:link></dt>
+          <dd><g:message code="config.mail.description" /></dd>
+        </dl>
         <dl id="configuration-sync">
           <dt><g:link action="show" params="[page: 'sync']"><g:message code="config.sync.title" default="Google synchronization"/></g:link></dt>
           <dd><g:message code="config.sync.description" /></dd>
