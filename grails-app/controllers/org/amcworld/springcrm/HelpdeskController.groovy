@@ -1,7 +1,7 @@
 /*
  * HelpdeskController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ class HelpdeskController {
     //-- Instance variables ---------------------
 
     HelpdeskService helpdeskService
+    MailSystemService mailSystemService
 
 
     //-- Public methods -------------------------
@@ -44,7 +45,11 @@ class HelpdeskController {
 
     def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [helpdeskInstanceList: Helpdesk.list(params), helpdeskInstanceTotal: Helpdesk.count()]
+        [
+            helpdeskInstanceList: Helpdesk.list(params),
+            helpdeskInstanceTotal: Helpdesk.count(),
+            mailSystemConfigured: mailSystemService.configured
+        ]
     }
 
     def create() {

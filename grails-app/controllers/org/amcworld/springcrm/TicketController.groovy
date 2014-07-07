@@ -42,6 +42,7 @@ class TicketController {
     //-- Instance variables ---------------------
 
     DataFileService dataFileService
+    MailSystemService mailSystemService
     TicketService ticketService
 
 
@@ -76,7 +77,11 @@ class TicketController {
             ticketInstanceTotal = Ticket.countByHelpdeskInList(helpdesks)
         }
 
-        [ticketInstanceList: ticketInstanceList, ticketInstanceTotal: ticketInstanceTotal]
+        [
+            ticketInstanceList: ticketInstanceList,
+            ticketInstanceTotal: ticketInstanceTotal,
+            mailSystemConfigured: mailSystemService.configured
+        ]
     }
 
     def create() {

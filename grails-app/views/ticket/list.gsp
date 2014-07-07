@@ -22,6 +22,14 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
+    <g:if test="${!mailSystemConfigured}">
+    <div class="flash-message form-warning-hint">
+      <p><g:message code="ticket.warning.mailNotConfigured.description" /></p>
+      <div><g:button controller="config" action="show" params="[page: 'mail']"
+        color="orange" icon="cog"
+        message="ticket.warning.mailNotConfigured.button" /></div>
+    </div>
+    </g:if>
     <g:if test="${ticketInstanceList}">
     <table class="content-table">
       <thead>
