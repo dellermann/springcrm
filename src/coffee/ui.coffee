@@ -1,7 +1,7 @@
 #
 # ui.coffee
 #
-# Copyright (c) 2011-2013, Daniel Ellermann
+# Copyright (c) 2011-2014, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,21 +78,33 @@ JQueryUiExt =
 
   # Disables the elements in the jQuery object.
   #
-  # @return {jQuery}  this jQuery object
+  # @param {boolean} disable  if true the elements are disabled; otherwise they are enabled.  This parameter is used to change the disable state by a boolean value.
+  # @return {jQuery}          this jQuery object
   #
-  disable: ->
-    @each ->
-      $(this).attr("disabled", "disabled")
-        .addClass "disabled"
+  disable: (disable = true) ->
+    $ = jQuery
+
+    if disable
+      @each ->
+        $(this).attr("disabled", "disabled")
+          .addClass "disabled"
+    else
+      @enable()
 
   # Enables the elements in the jQuery object.
   #
-  # @return {jQuery}  this jQuery object
+  # @param {boolean} enable if true the elements are enabled; otherwise they are disabled.  This parameter is used to change the enable state by a boolean value.
+  # @return {jQuery}        this jQuery object
   #
-  enable: ->
-    @each ->
-      $(this).removeAttr("disabled")
-        .removeClass "disabled"
+  enable: (enable = true) ->
+    $ = jQuery
+
+    if enable
+      @each ->
+        $(this).removeAttr("disabled")
+          .removeClass "disabled"
+    else
+      @disable()
 
   # Either renders or compiles a Mustache template using the HTML code of the
   # elements in the jQuery object.

@@ -91,7 +91,7 @@
                 <div class="field${hasErrors(bean: configData, field: 'mailPort', ' error')}">
                   <div class="field-text">
                     <span class="input"><g:textField id="port" name="config.mailPort" value="${configData.mailPort ?: 587}" size="5" /></span>
-                    <span class="hint"><g:message code="config.mail.port.default" /></span>
+                    <span class="hint">(<g:message code="config.mail.port.default" />)</span>
                   </div>
                   <ul class="field-msgs">
                     <g:eachError bean="${configData}" field="mailPort">
@@ -195,7 +195,7 @@
                     </dd>
                     <dt>
                       <g:radio id="mail-encryption-starttls" name="config.mailEncryption"
-                        value="ssl" checked="${configData.mailEncryption == 'starttls'}" />
+                        value="starttls" checked="${configData.mailEncryption == 'starttls'}" />
                     </dt>
                     <dd>
                       <div class="field-text">

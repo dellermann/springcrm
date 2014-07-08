@@ -23,27 +23,23 @@ $ = jQuery
 
 $('#config-form').on('change', 'input[name="config.mailUseConfig"]', ->
     $ = jQuery
+
     enabled = $(this).val() is 'true'
-    $inputs = $(
-      '#host, #port, #mail-auth-false, #mail-auth-true, #user-name, ' +
-      '#password, #mail-encryption-none, #mail-encryption-ssl, ' +
-      '#mail-encryption-starttls'
-    )
-    if enabled
-      $inputs.enable()
-    else
-      $inputs.disable()
+    $(
+      '#host, #port, #mail-auth-false, #mail-auth-true, ' +
+      '#mail-encryption-none, #mail-encryption-ssl, #mail-encryption-starttls'
+    ).enable enabled
+
+    enabled = enabled and $('#mail-auth-true:checked').length > 0
+    $('#user-name, #password').enable enabled
   )
   .on('change', 'input[name="config.mailAuth"]', ->
     $ = jQuery
+
     $useConfig = $('#mail-use-config-user:checked')
     enabled = $(this).val() is 'true' and $useConfig.length > 0
-    $inputs = $('#user-name, #password')
-    if enabled
-      $inputs.enable()
-    else
-      $inputs.disable()
+    $('#user-name, #password').enable enabled
   )
+
 $('input[name="config.mailUseConfig"]:checked').trigger 'change'
 $('input[name="config.mailAuth"]:checked').trigger 'change'
-
