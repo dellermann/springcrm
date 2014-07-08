@@ -21,6 +21,7 @@
 package org.amcworld.springcrm.page
 
 import org.amcworld.springcrm.module.HelpdeskTableRowModule
+import org.amcworld.springcrm.module.MailConfigMissingWarningModule
 
 
 class HelpdeskListPage extends DefaultListPage {
@@ -29,6 +30,7 @@ class HelpdeskListPage extends DefaultListPage {
 
     static at = { title == 'Helpdesks' }
     static content = {
+        mailConfigMissingWarning(required: false) { module MailConfigMissingWarningModule, $('.form-warning-hint') }
         tr { moduleList HelpdeskTableRowModule, table.find('tbody > tr') }
     }
     static url = 'helpdesk/list'

@@ -698,6 +698,51 @@ das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter 
         'Thoss, Marlen' == row.customerNames
         row.checkActionButtons 'ticket', ticket.id
 
+        and: 'there is no warning about missing mail configuration'
+        mailConfigMissingWarning.empty
+
+        and: 'there is still one Ticket object'
+        1 == Ticket.count()
+        2 == TicketLogEntry.count()
+        1 == Helpdesk.count()
+        2 == HelpdeskUser.count()
+    }
+
+    def 'List tickets with non-configured mail delivery'() {
+        given: 'a helpdesk and a ticket'
+        def hd = Helpdesk.first()
+        def ticket = prepareTicket(hd)
+
+        and: 'remove mail configuration'
+        ConfigHolder.instance.removeConfig 'mailUseConfig'
+
+        when: 'I go to the list view'
+        to TicketListPage
+
+        then: 'I get to the list view'
+        waitFor { at TicketListPage }
+        'Tickets' == header
+
+        and: 'the table contains one entry'
+        1 == tr.size()
+        def row = tr[0]
+        row.checkTdClasses 'row-selector', 'string', 'string', 'ref', 'status', 'string', 'date'
+        row.numberLink.checkLinkToPage TicketShowPage, ticket.id
+        'T-10000' == row.number
+        row.subjectLink.checkLinkToPage TicketShowPage, ticket.id
+        'Drucker im Verkauf funktioniert nicht' == row.subject
+        row.helpdeskLink.checkLinkToPage HelpdeskShowPage, hd.id
+        'LB Duvensee' == row.helpdesk
+        'erstellt' == row.stage
+        'ticket-stage-created' in row.stageClasses
+        'Thoss, Marlen' == row.customerNames
+        row.checkActionButtons 'ticket', ticket.id
+
+        and: 'there is a warning about missing mail configuration'
+        !mailConfigMissingWarning.empty
+        'Das E-Mail-System ist nicht konfiguriert. Benachrichtigungen zu Tickets können nicht verschickt werden.' == mailConfigMissingWarning.message
+        mailConfigMissingWarning.checkButton()
+
         and: 'there is still one Ticket object'
         1 == Ticket.count()
         2 == TicketLogEntry.count()

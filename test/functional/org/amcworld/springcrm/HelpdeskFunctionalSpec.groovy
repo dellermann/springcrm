@@ -222,6 +222,45 @@ class HelpdeskFunctionalSpec extends GeneralFunctionalTest {
         'Marcus Kampe, Regina Wendt' == row.users
         row.checkActionButtons 'lb-duvensee', '4A51VZ', helpdesk.id
 
+        and: 'there is no warning about missing mail configuration'
+        mailConfigMissingWarning.empty
+
+        and: 'there is still one Helpdesk object'
+        1 == Helpdesk.count()
+    }
+
+    def 'List helpdesks with non-configured mail delivery'() {
+        given: 'a helpdesk'
+        def org = Organization.first()
+        def helpdesk = prepareHelpdesk(org)
+
+        and: 'remove mail configuration'
+        ConfigHolder.instance.removeConfig 'mailUseConfig'
+
+        when: 'I go to the list view'
+        to HelpdeskListPage
+
+        then: 'I get to the list view'
+        waitFor { at HelpdeskListPage }
+        'Helpdesks' == header
+
+        and: 'the table contains one entry'
+        1 == tr.size()
+        def row = tr[0]
+        row.checkTdClasses 'row-selector', 'string', 'string', 'ref', 'string'
+        row.nameLink.checkLinkToPage HelpdeskShowPage, helpdesk.id
+        'LB Duvensee' == row.name
+        '4A51VZ' == row.accessCode
+        row.organizationLink.checkLinkToPage OrganizationShowPage, org.id
+        'Landschaftsbau Duvensee GbR' == row.organization
+        'Marcus Kampe, Regina Wendt' == row.users
+        row.checkActionButtons 'lb-duvensee', '4A51VZ', helpdesk.id
+
+        and: 'there is a warning about missing mail configuration'
+        !mailConfigMissingWarning.empty
+        'Das E-Mail-System ist nicht konfiguriert. Benachrichtigungen zu Tickets können nicht verschickt werden.' == mailConfigMissingWarning.message
+        mailConfigMissingWarning.checkButton()
+
         and: 'there is still one Helpdesk object'
         1 == Helpdesk.count()
     }

@@ -1,5 +1,5 @@
 /*
- * TicketListPage.groovy
+ * MailConfigMissingWarningModule.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -18,20 +18,28 @@
  */
 
 
-package org.amcworld.springcrm.page
+package org.amcworld.springcrm.module
 
-import org.amcworld.springcrm.module.MailConfigMissingWarningModule
-import org.amcworld.springcrm.module.TicketTableRowModule
+import geb.Page
 
 
-class TicketListPage extends DefaultListPage {
+class MailConfigMissingWarningModule extends geb.Module {
 
     //-- Class variables ------------------------
 
-    static at = { title == 'Tickets' }
     static content = {
-        mailConfigMissingWarning(required: false) { module MailConfigMissingWarningModule, $('.form-warning-hint') }
-        tr { moduleList TicketTableRowModule, table.find('tbody > tr') }
+        message { $('p').text() }
+        button { module ButtonModule, $('.button') }
     }
-    static url = 'ticket/list'
+
+
+    //-- Public methods -------------------------
+
+    void checkButton() {
+        button.checkColor 'orange'
+        button.checkIcon 'cog'
+        assert 'Jetzt konfigurieren' == button.text()
+        def url = Page.makeAbsUrl('config', 'show', '?page=mail')
+        assert url == button.@href
+    }
 }

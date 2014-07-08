@@ -170,18 +170,25 @@
   <config version="0" name="numFractionDigitsExt" value="2"/>
 
   <!-- Client data -->
-  <config version="0" name="configName" value="Agentur Kampe"/>
-  <config version="0" name="configStreet" value="Hauptstraße 148"/>
-  <config version="0" name="configPostalCode" value="23898"/>
-  <config version="0" name="configLocation" value="Labenz"/>
-  <config version="0" name="configPhone" value="04536 45301-0"/>
-  <config version="0" name="configFax" value="04536 45301-90"/>
-  <config version="0" name="configEmail" value="info@kampe.example"/>
-  <config version="0" name="configWebsite" value="http://www.kampe.example"/>
-  <config version="0" name="configBankName" value="Elbebank Hamburg"/>
-  <config version="0" name="configBankCode" value="120340560"/>
-  <config version="0" name="configAccountNumber" value="45671234"/>
+  <config version="0" name="clientName" value="Agentur Kampe"/>
+  <config version="0" name="clientStreet" value="Hauptstraße 148"/>
+  <config version="0" name="clientPostalCode" value="23898"/>
+  <config version="0" name="clientLocation" value="Labenz"/>
+  <config version="0" name="clientPhone" value="04536 45301-0"/>
+  <config version="0" name="clientFax" value="04536 45301-90"/>
+  <config version="0" name="clientEmail" value="info@kampe.example"/>
+  <config version="0" name="clientWebsite" value="http://www.kampe.example"/>
+  <config version="0" name="clientBankName" value="Elbebank Hamburg"/>
+  <config version="0" name="clientBankCode" value="120340560"/>
+  <config version="0" name="clientAccountNumber" value="45671234"/>
   <config version="0" name="installStatus" value="1"/>
+  <config version="0" name="mailUseConfig" value="true"/>
+  <config version="0" name="mailHost" value="localhost"/>
+  <config version="0" name="mailPort" value="25"/>
+  <config version="0" name="mailAuth" value="true"/>
+  <config version="0" name="mailUserName" value="jdoe"/>
+  <config version="0" name="mailPassword" value="secret"/>
+  <config version="0" name="mailEncryption" value="starttls"/>
 
   <!-- Default administrator user -->
   <user_data id="1" version="0" date_created="2013-01-23 15:52:19"
@@ -193,7 +200,10 @@
 
   <!-- Empty all other tables to maintain referential integrity -->
   <calendar_event/>
+  <data_file/>
   <google_data_sync_status/>
+  <helpdesk/>
+  <helpdesk_users/>
   <invoicing_item/>
   <invoicing_transaction/>
   <invoicing_transaction_terms_and_conditions/>
@@ -213,5 +223,7 @@
   <sales_item/>
   <sales_item_pricing/>
   <sales_item_pricing_item/>
+  <ticket/>
+  <ticket_log_entry/>
   <user_setting/>
 </dataset>
