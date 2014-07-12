@@ -1,7 +1,7 @@
 /*
  * ProxyAuthorizationCodeFlow.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,15 @@ package org.amcworld.springcrm.google
 
 import com.google.api.client.auth.oauth2.BearerToken
 import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.auth.oauth2.CredentialStore
-import com.google.api.client.auth.oauth2.CredentialStoreRefreshListener
+import com.google.api.client.auth.oauth2.DataStoreCredentialRefreshListener
+import com.google.api.client.auth.oauth2.StoredCredential
 import com.google.api.client.auth.oauth2.TokenResponse
 import com.google.api.client.auth.oauth2.Credential.AccessMethod
+import com.google.api.client.http.BasicAuthentication
+import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
+import com.google.api.client.util.store.DataStore
 
 
 /**
@@ -44,7 +47,7 @@ class ProxyAuthorizationCodeFlow {
     //-- Instance variables ---------------------
 
     AccessMethod accessMethod
-    CredentialStore credentialStore
+    DataStore dataStore
     JsonFactory jsonFactory
     HttpTransport transport
 
@@ -64,6 +67,10 @@ class ProxyAuthorizationCodeFlow {
         this.transport = transport
         this.jsonFactory = jsonFactory
         this.accessMethod = BearerToken.authorizationHeaderAccessMethod()
+        this.dataStore =
+            UserCredentialDataStoreFactory.defaultInstance.createDataStore(
+                StoredCredential.DEFAULT_DATA_STORE_ID
+            )
     }
 
 
@@ -80,9 +87,7 @@ class ProxyAuthorizationCodeFlow {
     Credential createAndStoreCredential(TokenResponse response, String userId) {
         Credential credential = newCredential(userId)
         credential.fromTokenResponse = response
-        if (credentialStore != null) {
-            credentialStore.store userId, credential
-        }
+        dataStore.set userId, new StoredCredential(credential)
         credential
     }
 
@@ -94,12 +99,16 @@ class ProxyAuthorizationCodeFlow {
      *                  given user is available
      */
     Credential loadCredential(String userId) {
-        if (credentialStore == null) {
+        StoredCredential storedCredential = dataStore.get(userId)
+        if (!storedCredential) {
             return null
         }
 
         Credential credential = newCredential(userId)
-        credentialStore.load(userId, credential) ? credential : null
+        credential.accessToken = storedCredential.accessToken
+        credential.expirationTimeMilliseconds = storedCredential.expirationTimeMilliseconds
+        credential.refreshToken = storedCredential.refreshToken
+        credential
     }
 
     /**
@@ -144,9 +153,8 @@ class ProxyAuthorizationCodeFlow {
             def req = new ProxyRequest(transport, jsonFactory, 'revoke')
             req.put 'token', credential.accessToken
             req.execute()
-            if (credentialStore != null) {
-                credentialStore.delete userId, credential
-            }
+
+            dataStore.delete userId
         }
     }
 
@@ -160,14 +168,18 @@ class ProxyAuthorizationCodeFlow {
      * @return          the created credential
      */
     private Credential newCredential(String userId) {
-        def refreshListeners = []
-        if (credentialStore != null) {
-            refreshListeners << new CredentialStoreRefreshListener(
-                userId, credentialStore
+        new ProxyCredential.Builder(accessMethod)
+            .setTransport(transport)
+            .setJsonFactory(jsonFactory)
+            .setTokenServerUrl(
+                new GenericUrl('https://server.example.com/token')
             )
-        }
-        new ProxyCredential(
-            accessMethod, transport, jsonFactory, refreshListeners
-        )
+            .setClientAuthentication(
+                new BasicAuthentication('s6BhdRkqt3', '7Fjfp0ZBr1KtDRbnfVdmIw')
+            )
+            .setRefreshListeners([
+                new DataStoreCredentialRefreshListener(userId, dataStore)
+            ])
+            .build()
     }
 }

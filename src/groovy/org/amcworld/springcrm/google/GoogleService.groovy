@@ -1,7 +1,7 @@
 /*
  * GoogleService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,16 @@
 
 package org.amcworld.springcrm.google
 
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.json.JsonFactory
 
 
 /**
  * The interface {@code GoogleService} represents a common base class for
  * Google data access services.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 interface GoogleService {
@@ -47,5 +47,5 @@ interface GoogleService {
      * The JSON factory instance which is to use to create and parse JSON data.
      */
     static final JsonFactory JSON_FACTORY =
-        new com.google.api.client.json.jackson.JacksonFactory()
+        com.google.api.client.json.jackson2.JacksonFactory.defaultInstance
 }

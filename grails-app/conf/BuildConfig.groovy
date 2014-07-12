@@ -71,12 +71,12 @@ grails.project.dependency.resolution = {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         compile(
-            'com.google.apis:google-api-services-calendar:v3-rev7-1.6.0-beta',
+            'com.google.apis:google-api-services-calendar:v3-rev85-1.18.0-rc',
+            'com.google.http-client:google-http-client-jackson2:1.18.0-rc',
             'commons-fileupload:commons-fileupload:1.3.1',
             'commons-io:commons-io:2.4',
             'jmimemagic:jmimemagic:0.1.2',
             //'org.apache.xmlgraphics:fop:1.0',
-//            'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
             'org.apache.httpcomponents:httpclient:4.3.2'
         )
 

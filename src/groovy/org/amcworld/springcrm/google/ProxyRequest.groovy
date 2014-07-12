@@ -1,7 +1,7 @@
 /*
  * ProxyRequest.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,18 +101,25 @@ class ProxyRequest extends GenericData {
      *                      receiving the response
      */
     HttpResponse executeUnparsed() throws IOException {
-        HttpRequestFactory requestFactory = transport.createRequestFactory()
         GenericUrl url = new GenericUrl(PROXY_URL)
         url.put 'action', action
         url.putAll this
 
-        HttpRequest request = requestFactory.buildGetRequest(url)
-        request.addParser new ProxyHttpParser(jsonFactory)
+        HttpRequest request = getHttpRequest(url)
+        request.parser = new ProxyHttpParser(jsonFactory)
         HttpResponse response = request.execute()
         if (!response.successStatusCode) {
             throw new HttpResponseException(response)
         }
 
         response
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    protected HttpRequest getHttpRequest(GenericUrl url) {
+        HttpRequestFactory requestFactory = transport.createRequestFactory()
+        requestFactory.buildGetRequest(url)
     }
 }

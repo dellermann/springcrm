@@ -1,7 +1,7 @@
 /*
  * GoogleOAuthService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.http.HttpResponseException
 import org.amcworld.springcrm.google.ProxyAuthorizationCodeFlow
 import org.amcworld.springcrm.google.ProxyCredential
-import org.amcworld.springcrm.google.UserCredentialStore
 
 
 /**
@@ -48,9 +47,7 @@ class GoogleOAuthService extends GoogleService {
      * @return  the authorization code flow instance
      */
     ProxyAuthorizationCodeFlow getAuthorizationCodeFlow() {
-        def flow = new ProxyAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY)
-        flow.credentialStore = new UserCredentialStore()
-        flow
+        new ProxyAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY)
     }
 
     /**
@@ -109,6 +106,7 @@ class GoogleOAuthService extends GoogleService {
         try {
             authorizationCodeFlow.register redirectUrl.toString()
         } catch (HttpResponseException e) {
+            e.printStackTrace()
             null
         }
     }

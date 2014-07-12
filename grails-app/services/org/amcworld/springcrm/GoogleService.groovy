@@ -1,7 +1,7 @@
 /*
  * GoogleService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@ import org.springframework.web.context.request.RequestContextHolder
  * The class {@code GoogleService} represents a common base class for all
  * classes which exchange data with Google.
  *
- * @author	Daniel Ellermann
- * @version 1.2
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.0
  */
 abstract class GoogleService
@@ -54,7 +54,7 @@ abstract class GoogleService
      * @return the session instance
      */
     protected HttpSession getSession() {
-        return RequestContextHolder.currentRequestAttributes().session
+        RequestContextHolder.currentRequestAttributes().session
     }
 
     /**
@@ -67,7 +67,7 @@ abstract class GoogleService
      *              instance with the given name exists
      */
     protected GoogleSync getSyncInstance(String name) {
-        return (GoogleSync) grailsApplication.mainContext.getBean(name)
+        (GoogleSync) grailsApplication.mainContext.getBean(name)
     }
 
     /**
@@ -76,6 +76,6 @@ abstract class GoogleService
      * @return  the current user
      */
     protected User getUser() {
-        return session.user
+        session.user
     }
 }
