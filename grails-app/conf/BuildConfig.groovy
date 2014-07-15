@@ -91,6 +91,7 @@ grails.project.dependency.resolution = {
         }
         */
         runtime(
+            'com.google.guava:guava:17.0',
             'mysql:mysql-connector-java:5.1.27',
             'net.sf.offo:fop-hyph:1.2'
         )
@@ -104,7 +105,6 @@ grails.project.dependency.resolution = {
         */
 
         test(
-            'com.google.guava:guava:17.0',
             "org.gebish:geb-spock:${gebVersion}",
             'org.seleniumhq.selenium:selenium-java:2.42.2'
         )

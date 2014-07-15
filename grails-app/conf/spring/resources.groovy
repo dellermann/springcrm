@@ -20,6 +20,7 @@
 
 import org.amcworld.springcrm.*
 import org.amcworld.springcrm.converter.*
+import org.amcworld.springcrm.google.*
 
 
 beans = {
@@ -55,11 +56,17 @@ beans = {
     }
 
     /* Google synchronization types */
-    googleContactSync(org.amcworld.springcrm.google.GoogleContactSync) {
+    googleSyncFactory(GoogleSyncFactory) { bean ->
+        bean.factoryMethod = 'getDefaultInstance'
+        grailsApplication = ref('grailsApplication')
+    }
+    "${GoogleSyncType.CONTACT.beanName}"(GoogleContactSync) { bean ->
+        bean.singleton = false
         googleOAuthService = ref('googleOAuthService')
         messageSource = ref('messageSource')
     }
-    googleCalendarSync(org.amcworld.springcrm.google.GoogleCalendarSync) {
+    "${GoogleSyncType.CALENDAR.beanName}"(GoogleCalendarSync) { bean ->
+        bean.singleton = false
         googleOAuthService = ref('googleOAuthService')
         messageSource = ref('messageSource')
     }

@@ -1,5 +1,5 @@
 /*
- * GoogleDataCalendarService.groovy
+ * GoogleSyncTypeSpec.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -18,22 +18,22 @@
  */
 
 
-package org.amcworld.springcrm
+package org.amcworld.springcrm.google
 
-import org.amcworld.springcrm.google.GoogleSyncType
-
-
-class GoogleCalendarSyncService extends GoogleService {
-
-    //-- Class variables ------------------------
-
-    static scope = 'session'
-    static transactional = false
+import spock.lang.Specification
 
 
-    //-- Public methods -------------------------
+class GoogleSyncTypeSpec extends Specification {
 
-    void sync() {
-        getSyncInstance(GoogleSyncType.CALENDAR).sync()
+    //-- Feature methods ------------------------
+
+    def 'Enumeration values return bean name'() {
+        expect:
+        beanName == value.beanName
+
+        where:
+        value                       | beanName
+        GoogleSyncType.CONTACT      | 'googleContactSync'
+        GoogleSyncType.CALENDAR     | 'googleCalendarSync'
     }
 }

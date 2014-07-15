@@ -1,5 +1,5 @@
 /*
- * GoogleDataCalendarService.groovy
+ * GoogleSyncType.groovy
  *
  * Copyright (c) 2011-2014, Daniel Ellermann
  *
@@ -18,22 +18,28 @@
  */
 
 
-package org.amcworld.springcrm
-
-import org.amcworld.springcrm.google.GoogleSyncType
+package org.amcworld.springcrm.google
 
 
-class GoogleCalendarSyncService extends GoogleService {
+/**
+ * The class {@code GoogleSyncType} contains available data types for
+ * synchronization with Google.
+ *
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.4
+ */
+enum GoogleSyncType {
 
-    //-- Class variables ------------------------
+    //-- Values ---------------------------------
 
-    static scope = 'session'
-    static transactional = false
+    CONTACT,
+    CALENDAR
 
 
     //-- Public methods -------------------------
 
-    void sync() {
-        getSyncInstance(GoogleSyncType.CALENDAR).sync()
+    String getBeanName() {
+        "google${name().toLowerCase().capitalize()}Sync".toString()
     }
 }

@@ -1,7 +1,7 @@
 /*
  * GoogleSync.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
 
     def googleOAuthService              // injected
     def messageSource                   // injected
-    def CharSequence userName
+    def String userName
     protected Class<E> localEntryClass
 
 
@@ -350,7 +350,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      *          exists
      */
     protected User getUser() {
-        User.findByUserName userName.toString()
+        User.findByUserName userName
     }
 
     /**

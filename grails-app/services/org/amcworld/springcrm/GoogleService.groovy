@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import javax.servlet.http.HttpSession
 import org.amcworld.springcrm.google.GoogleSync
+import org.amcworld.springcrm.google.GoogleSyncFactory
+import org.amcworld.springcrm.google.GoogleSyncType
 import org.springframework.web.context.request.RequestContextHolder
 
 
@@ -61,13 +63,13 @@ abstract class GoogleService
      * Gets the underlying instance which performs the synchronization with
      * Google.
      *
-     * @param name  the name of the bean representing the synchronization
-     *              instance as defined in {@code conf/spring/resources.groovy}
-     * @return      the synchronization instance; {@code null} if no such
-     *              instance with the given name exists
+     * @param type  the type of data that should be synchronized
+     * @return      the synchronization instance
      */
-    protected GoogleSync getSyncInstance(String name) {
-        (GoogleSync) grailsApplication.mainContext.getBean(name)
+    protected GoogleSync getSyncInstance(GoogleSyncType type) {
+        def ctx = grailsApplication.mainContext
+        GoogleSyncFactory factory = ctx.getBean('googleSyncFactory')
+        factory.getSyncInstance(type, user.userName)
     }
 
     /**

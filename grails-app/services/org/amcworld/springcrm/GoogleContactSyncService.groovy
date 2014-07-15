@@ -1,7 +1,7 @@
 /*
  * GoogleContactSyncService.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,27 +20,28 @@
 
 package org.amcworld.springcrm
 
+import org.amcworld.springcrm.google.GoogleSyncType
+
 
 /**
  * The class {@code GoogleContactSyncService} synchronizes person records with
  * Google.
  *
- * @author	Daniel Ellermann
- * @version 1.0
+ * @author  Daniel Ellermann
+ * @version 1.4
+ * @since   1.0
  */
 class GoogleContactSyncService extends GoogleService {
 
-	//-- Class variables ------------------------
+    //-- Class variables ------------------------
 
-	static scope = 'session'
+    static scope = 'session'
     static transactional = false
 
 
     //-- Public methods -------------------------
 
     void sync() {
-        def sync = getSyncInstance('googleContactSync')
-        sync.userName = user.userName
-        sync.sync()
+        getSyncInstance(GoogleSyncType.CONTACT).sync()
     }
 }
