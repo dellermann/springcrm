@@ -1,7 +1,7 @@
 /*
  * GoogleContactSync.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -431,7 +431,7 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
     @Override
     protected String googleEntryToString(ContactEntry entry) {
         StringBuilder res = new StringBuilder()
-        Name name = entry.name
+        Name name = entry?.name
         if (name) {
             if (name.hasFamilyName()) {
                 res << name.familyName.value

@@ -26,6 +26,7 @@ import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.GoogleDataSyncStatus
 import org.amcworld.springcrm.User
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 
@@ -49,7 +50,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
      */
     protected static final String APPLICATION_NAME = 'amcworld-springcrm-1.0'
 
-    private static final log = LogFactory.getLog(this)
+    private static final Log log = LogFactory.getLog(this)
 
 
     //-- Instance variables ---------------------
@@ -98,7 +99,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
                     if (localEntry.lastUpdated > status.lastSync) {
                         if (!googleEntry) {
                             if (primarySyncSource != LOCAL) {
-                                log.debug "L modified, G deleted, S = remote → delete L: L = ${localEntry}"
+                                if (log.debugEnabled) {
+                                    log.debug "L modified, G deleted, S = remote → delete L: L = ${localEntry}"
+                                }
                                 if (allowLocalDelete) {
                                     syncDeleteLocal localEntry
                                     status.delete flush: true
@@ -112,12 +115,16 @@ abstract class GoogleSync<E, G> implements GoogleService {
                             }
                         } else if (hasChanged(googleEntry, status.etag)) {
                             if (primarySyncSource == LOCAL) {
-                                log.debug "L modified, G modified, S = local → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                                if (log.debugEnabled) {
+                                    log.debug "L modified, G modified, S = local → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                                }
                                 syncUpdateGoogle(localEntry, googleEntry)
                                 status.updateToCurrent getEtag(googleEntry)
                                 status.save flush: true
                             } else {
-                                log.debug "L modified, G modified, S = remote → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                                if (log.debugEnabled) {
+                                    log.debug "L modified, G modified, S = remote → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                                }
                                 if (allowLocalModify) {
                                     syncUpdateLocal localEntry, googleEntry
                                     status.updateToCurrent getEtag(googleEntry)
@@ -129,7 +136,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
                             localEntries.remove id
                             googleEntries.remove url
                         } else {
-                            log.debug "L modified, G unmodified → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            if (log.debugEnabled) {
+                                log.debug "L modified, G unmodified → update G: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            }
                             syncUpdateGoogle localEntry, googleEntry
                             status.updateToCurrent getEtag(googleEntry)
                             status.save flush: true
@@ -138,7 +147,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
                         }
                     } else {
                         if (!googleEntry) {
-                            log.debug "L unmodified, G deleted → delete L: L = ${localEntry}"
+                            if (log.debugEnabled) {
+                                log.debug "L unmodified, G deleted → delete L: L = ${localEntry}"
+                            }
                             if (allowLocalDelete) {
                                 syncDeleteLocal localEntry
                                 status.delete flush: true
@@ -147,7 +158,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
                             }
                             localEntries.remove id
                         } else if (hasChanged(googleEntry, status.etag)) {
-                            log.debug "L unmodified, G modified → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            if (log.debugEnabled) {
+                                log.debug "L unmodified, G modified → update L: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            }
                             if (allowLocalModify) {
                                 syncUpdateLocal localEntry, googleEntry
                                 status.updateToCurrent getEtag(googleEntry)
@@ -158,7 +171,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
                             localEntries.remove id
                             googleEntries.remove url
                         } else {
-                            log.debug "L unmodified, G unmodified → nothing to do: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            if (log.debugEnabled) {
+                                log.debug "L unmodified, G unmodified → nothing to do: L = ${localEntry}, G = ${googleEntryToString(googleEntry)}"
+                            }
                             localEntries.remove id
                             googleEntries.remove url
                         }
@@ -167,8 +182,12 @@ abstract class GoogleSync<E, G> implements GoogleService {
                     if (googleEntry && !hasChanged(googleEntry, status.etag)
                         || (primarySyncSource == LOCAL))
                     {
-                        log.debug "L deleted, G unmodified or S = local → delete G: G = ${googleEntryToString(googleEntry)}"
-                        syncDeleteGoogle googleEntry
+                        if (log.debugEnabled) {
+                            log.debug "L deleted, G unmodified or S = local → delete G: G = ${googleEntryToString(googleEntry)}"
+                        }
+                        if (googleEntry) {
+                            syncDeleteGoogle googleEntry
+                        }
                         googleEntries.remove url
                     } else if (log.debugEnabled) {
                         if (!googleEntry) {
@@ -186,7 +205,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
         log.debug 'Start syncing with Google, part II (L = local entry, G = Google entry)'
         for (E localEntry : localEntries.values()) {
             try {
-                log.debug "L exists, G doesn't exist → create G: L = ${localEntry}"
+                if (log.debugEnabled) {
+                    log.debug "L exists, G doesn't exist → create G: L = ${localEntry}"
+                }
                 G googleEntry = syncInsertGoogle(localEntry)
                 insertStatus(localEntry, googleEntry)
             } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
@@ -195,7 +216,9 @@ abstract class GoogleSync<E, G> implements GoogleService {
         if (allowLocalCreate) {
             for (G googleEntry : googleEntries.values()) {
                 try {
-                    log.debug "L doesn't exist, G exists → create L: G = ${googleEntryToString(googleEntry)}"
+                    if (log.debugEnabled) {
+                        log.debug "L doesn't exist, G exists → create L: G = ${googleEntryToString(googleEntry)}"
+                    }
                     E localEntry = syncInsertLocal(googleEntry)
                     insertStatus(localEntry, googleEntry)
                 } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
