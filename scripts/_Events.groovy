@@ -38,6 +38,15 @@ eventCompileStart = { kind ->
     println "| Set build number #${buildNumber}."
 }
 
+eventWebXmlStart = { webXmlFile ->
+    ant.echo message: 'Change display-name for web.xml'
+    def tmpWebXmlFile = new File(projectWorkDir, webXmlFile)
+    ant.replace(
+        file: tmpWebXmlFile, token: "@grails.app.name.version@",
+        value: "SpringCRM ${grailsAppVersion} (Build ${metadata.'app.buildNumber'})"
+    )
+}
+
 //eventAllTestsStart = {
 //    if (!functionalTests.contains("functional")) {
 //        functionalTests << "functional"
