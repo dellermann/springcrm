@@ -5,11 +5,12 @@
 <head>
   <meta charset="utf-8" />
   <title>Number extension tests with different separators</title>
-  <link rel="stylesheet" href="../qunit-1.10.0.css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-  <script src="../qunit-1.10.0.js"></script>
-  <script src="../../../web-app/js/core.js"></script>
+  <link rel="stylesheet" href="css/qunit.css" />
+  <script src="scripts/jquery.js"></script>
+  <script src="scripts/qunit.js"></script>
+  <script src="scripts/core.js"></script>
   <script>
+  module("Numbers");
   test("Number formatting without precision", function () {
       equal((45).format(), "45");
       equal((-45).format(), "-45");
@@ -21,7 +22,7 @@
       equal((-1234567.123).format(), "-1,234,567.123");
       equal((123456.123).format(), "123,456.123");
       equal((-123456.123).format(), "-123,456.123");
-      equal((0 / 0).format(), "0");
+      equal((0 / 0).format(), "---");
   });
 
   test("Number formatting with null precision", function () {
@@ -37,7 +38,7 @@
       equal((-1234567.123).format(n), "-1,234,567.123");
       equal((123456.123).format(n), "123,456.123");
       equal((-123456.123).format(n), "-123,456.123");
-      equal((0 / 0).format(n), "0");
+      equal((0 / 0).format(n), "---");
   });
 
   test("Number formatting with precision", function () {
@@ -55,10 +56,10 @@
       equal((-1234567.123).format(n), "-1,234,567.12");
       equal((123456.123).format(n), "123,456.12");
       equal((-123456.123).format(n), "-123,456.12");
-      equal((0 / 0).format(n), "0.00");
+      equal((0 / 0).format(n), "---");
       equal(Number.MIN_VALUE.format(n), "0.00");
-      equal(Number.POSITIVE_INFINITY.format(n), "NaN");
-      equal(Number.NEGATIVE_INFINITY.format(n), "-NaN");
+      equal(Number.POSITIVE_INFINITY.format(n), "---");
+      equal(Number.NEGATIVE_INFINITY.format(n), "---");
   });
 
   test("Number formatting with negative precision", function () {
@@ -76,10 +77,10 @@
       equal((-1234567.123).format(n), "-1,234,567.12");
       equal((123456.123).format(n), "123,456.12");
       equal((-123456.123).format(n), "-123,456.12");
-      equal((0 / 0).format(n), "0.00");
+      equal((0 / 0).format(n), "---");
       equal(Number.MIN_VALUE.format(n), "0.00");
-      equal(Number.POSITIVE_INFINITY.format(n), "NaN");
-      equal(Number.NEGATIVE_INFINITY.format(n), "-NaN");
+      equal(Number.POSITIVE_INFINITY.format(n), "---");
+      equal(Number.NEGATIVE_INFINITY.format(n), "---");
   });
 
   test("Number formatting with string precision", function () {
@@ -97,10 +98,10 @@
       equal((-1234567.123).format(n), "-1,234,567.12");
       equal((123456.123).format(n), "123,456.12");
       equal((-123456.123).format(n), "-123,456.12");
-      equal((0 / 0).format(n), "0.00");
+      equal((0 / 0).format(n), "---");
       equal(Number.MIN_VALUE.format(n), "0.00");
-      equal(Number.POSITIVE_INFINITY.format(n), "NaN");
-      equal(Number.NEGATIVE_INFINITY.format(n), "-NaN");
+      equal(Number.POSITIVE_INFINITY.format(n), "---");
+      equal(Number.NEGATIVE_INFINITY.format(n), "---");
   });
 
   test("Currency value formatting", function () {
@@ -116,10 +117,10 @@
       equal((-1234567.123).formatCurrencyValue(), "-1,234,567.123");
       equal((123456.123).formatCurrencyValue(), "123,456.123");
       equal((-123456.123).formatCurrencyValue(), "-123,456.123");
-      equal((0 / 0).formatCurrencyValue(), "0.000");
+      equal((0 / 0).formatCurrencyValue(), "---");
       equal(Number.MIN_VALUE.formatCurrencyValue(), "0.000");
-      equal(Number.POSITIVE_INFINITY.formatCurrencyValue(), "NaN");
-      equal(Number.NEGATIVE_INFINITY.formatCurrencyValue(), "-NaN");
+      equal(Number.POSITIVE_INFINITY.formatCurrencyValue(), "---");
+      equal(Number.NEGATIVE_INFINITY.formatCurrencyValue(), "---");
   });
 
   test("Number parsing", function () {

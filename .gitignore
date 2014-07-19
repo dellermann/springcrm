@@ -1,5 +1,6 @@
 *.swp
 caldecott.log
+node_modules
 stacktrace.log
 target/
 target-eclipse/
