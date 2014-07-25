@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta name="layout" content="main" />
-  <r:require modules="about" />
+  <asset:stylesheet src="about" />
   <title><g:message code="about.title" default="About" /></title>
 </head>
 

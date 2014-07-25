@@ -2,8 +2,11 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="error.exception.title" /></title>
-  <r:require modules="error" />
-  <r:external uri="/images/favicon.ico" />
+  <asset:stylesheet src="application" />
+  <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <asset:link rel="shortcut icon" href="favicon.png" type="image/png" />
+  <asset:link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <asset:link rel="icon" href="favicon.png" type="image/png" />
 </head>
 
 <body>
@@ -148,5 +151,6 @@
       </div>
     </div>
   </div>
+  <asset:javascript src="error-page" />
 </body>
 </html>

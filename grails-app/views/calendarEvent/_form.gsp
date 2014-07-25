@@ -1,4 +1,3 @@
-<r:require modules="calendarForm" />
 <fieldset>
   <header><h3><g:message code="calendarEvent.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

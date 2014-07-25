@@ -44,5 +44,8 @@
       <g:render template="/organization/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="organization-form" />
+  </content>
 </body>
 </html>

@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'calendarEvent.label', default: 'CalendarEvent')}" />
   <g:set var="entitiesName" value="${message(code: 'calendarEvent.plural', default: 'CalendarEvents')}" />
   <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <asset:stylesheet src="calendar" />
 </head>
 
 <body>
@@ -33,5 +34,8 @@
       <g:render template="/calendarEvent/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="calendar-form" />
+  </content>
 </body>
 </html>

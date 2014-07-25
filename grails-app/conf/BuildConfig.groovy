@@ -45,7 +45,7 @@ grails.project.dependency.resolution = {
     inherits('global') {
         // uncomment to disable ehcache
         // excludes 'ehcache'
-        excludes 'xml-apis', 'xml-apis-ext', 'xml-resolver', 'commons-digester'
+        excludes 'xml-apis', 'xml-apis-ext', 'xml-resolver', 'commons-digester', 'junit'
     }
 
     log 'warn' // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
@@ -115,11 +115,11 @@ grails.project.dependency.resolution = {
 //            export = false
 //        }
         compile(
-            ':coffeescript-compiler:0.9.4',
+            ':asset-pipeline:1.9.3',
+            ':coffee-asset-pipeline:1.8.0',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-            ':font-awesome-resources:4.0.3.0',
-            ':less-resources:1.3.3.2',
+            ':less-asset-pipeline:1.9.0',
             ':mail:1.0.6',
             ':markdown:1.1.1',
             ':quartz:1.0.2',
@@ -131,11 +131,7 @@ grails.project.dependency.resolution = {
         )
         runtime(
             ':database-migration:1.4.0',
-            ':hibernate:3.6.10.16',
-            ':jquery:1.8.3',            // 1.11.0.2
-            ':jquery-json:2.2.2',
-            ':jquery-ui:1.8.24',        // 1.10.3
-            ':resources:1.2.8'
+            ':hibernate:3.6.10.16'
         )
         provided(
             ':codenarc:0.20'

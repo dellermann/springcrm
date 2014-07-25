@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
   <title><g:message code="invoicingTransaction.edit.label" args="[entityName, invoiceInstance.fullNumber]" /></title>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -27,5 +28,31 @@
       <g:render template="/invoice/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      (function ($) {
+
+          "use strict";
+
+          var params;
+
+          params = $("#invoice-form").invoicingtransaction({
+                  stageValues: {
+                      payment: 903,
+                      shipping: 902
+                  },
+                  type: "I"
+              })
+              .invoicingtransaction("getOrganizationId");
+          $("#quote").autocompleteex({
+                  loadParameters: params
+              });
+          $("#salesOrder").autocompleteex({
+                  loadParameters: params
+              });
+      }(jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>

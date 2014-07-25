@@ -1,7 +1,7 @@
 /*
  * CalendarEventController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse
  * calendar events and reminders.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class CalendarEventController {
 
@@ -68,6 +68,7 @@ class CalendarEventController {
 
     def calendar() {
         calendarEventService.currentCalendarView = 'calendar'
+        [: ]        // needed for ViewFilters.commonData
     }
 
     def listEmbedded(Long organization) {
@@ -96,9 +97,9 @@ class CalendarEventController {
      * @param end   the given end time stamp in seconds since the UNIX epoch
      * @return      the rendered JSON response containing the calendar events
      */
-    def listRange(Long start, Long end) {
-        Date startDate = new Date(start * 1000L)
-        Date endDate = new Date(end * 1000L)
+    def listRange(Date start, Date end) {
+        Date startDate = start //new Date(start * 1000L)
+        Date endDate = end //new Date(end * 1000L)
 
         /* load non-recurring events */
         def c = CalendarEvent.createCriteria()

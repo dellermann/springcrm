@@ -1,18 +1,3 @@
-<r:require modules="invoicingTransactionForm" />
-<r:script>/*<![CDATA[*/
-(function ($) {
-
-    "use strict";
-
-    $("#quote-form").invoicingtransaction({
-            checkStageTransition: false,
-            stageValues: {
-                shipping: 602
-            },
-            type: "Q"
-        });
-}(jQuery));
-/*]]>*/</r:script>
 <fieldset>
   <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
   <section class="multicol-content">

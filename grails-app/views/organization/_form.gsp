@@ -1,4 +1,3 @@
-<r:require modules="organizationForm" />
 <fieldset>
   <header><h3><g:message code="organization.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

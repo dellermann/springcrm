@@ -72,7 +72,7 @@ Date::format = (format = "datetime") ->
     s = "0#{s}" if s.length < 2
     s
 
-  d = @
+  d = this
   regexp = /[^dMyHm]/
   res = ""
   while format

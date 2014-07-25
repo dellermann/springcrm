@@ -5,24 +5,7 @@
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
   <title><g:message code="invoicingTransaction.edit.label" args="[entityName, invoiceInstance.fullNumber]" /></title>
-  <r:require modules="invoicingTransactionForm" />
-  <r:script>//<![CDATA[
-  (function (SPRINGCRM, $) {
-
-      "use strict";
-
-      var it = SPRINGCRM.invoicingTransaction;
-
-      it.initStageValues({
-              checkStageTransition: false,
-              form: $("#invoice-form"),
-              stageValues: {
-                  payment: 903,
-                  shipping: 902
-              }
-          });
-  }(SPRINGCRM, jQuery));
-  //]]></r:script>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -220,5 +203,25 @@
       </section>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      (function (SPRINGCRM, $) {
+
+          "use strict";
+
+          var it = SPRINGCRM.invoicingTransaction;
+
+          it.initStageValues({
+                  checkStageTransition: false,
+                  form: $("#invoice-form"),
+                  stageValues: {
+                      payment: 903,
+                      shipping: 902
+                  }
+              });
+      }(SPRINGCRM, jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>

@@ -1,7 +1,7 @@
 //
 // i18n-source.js
 //
-// Copyright (c) 2011-2013, Daniel Ellermann
+// Copyright (c) 2011-2014, Daniel Ellermann
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,12 +38,8 @@
 //         sub_key3: "submsg3",
 //     }
 [
-    'calendarEvent.allDay.label',
-    'calendarEvent.axis.format',
-    'calendarEvent.button.text{day,month,today,week}',
     'calendarEvent.button.text.gotoDate',
     'calendarEvent.button.text.list',
-    'calendarEvent.column.format{day,month,week}',
     'calendarEvent.reminder.unit.day',
     'calendarEvent.reminder.unit.days',
     'calendarEvent.reminder.unit.hour',
@@ -52,8 +48,6 @@
     'calendarEvent.reminder.unit.minutes',
     'calendarEvent.reminder.unit.week',
     'calendarEvent.reminder.unit.weeks',
-    'calendarEvent.time.format{,agenda}',
-    'calendarEvent.title.format{day,month,week}',
     'default.btn.remove',
     'default.button.cancel.label',
     'default.button.ok.label',

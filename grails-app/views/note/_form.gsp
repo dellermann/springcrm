@@ -1,4 +1,3 @@
-<r:require modules="noteForm" />
 <fieldset>
   <header><h3><g:message code="note.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

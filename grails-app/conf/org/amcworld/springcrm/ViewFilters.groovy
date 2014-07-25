@@ -49,8 +49,9 @@ class ViewFilters {
 
         commonData(controller: '*', action: '*') {
             after = { model ->
-                if (model) {
+                if (model != null) {
                     model.locale = userService.currentLocale.toString().replace('_', '-')
+                    model.lang = userService.currentLocale.language
                     model.currencySymbol = userService.currencySymbol
                     model.numFractionDigits = userService.numFractionDigits
                     model.numFractionDigitsExt = userService.numFractionDigitsExt

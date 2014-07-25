@@ -13,14 +13,14 @@
   <g:set var="entitiesName" value="${message(code: 'organization.plural', default: 'Organizations')}" />
   </g:else>
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <r:script>//<![CDATA[
+  <asset:script>//<![CDATA[
   (function ($) {
 
       "use strict";
 
       $(".remote-list").remotelist({ returnUrl: "${url()}" });
   }(jQuery));
-  //]]></r:script>
+  //]]></asset:script>
 </head>
 
 <body>

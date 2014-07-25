@@ -1,7 +1,6 @@
 <%@ page import="org.amcworld.springcrm.Organization" %>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="layout" content="main" />
   <g:set var="entityName" value="${message(code: 'organization.label', default: 'Organization')}" />
   <g:set var="entitiesName" value="${message(code: 'organization.plural', default: 'Organizations')}" />
@@ -34,5 +33,8 @@
       <g:render template="/organization/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="organization-form" />
+  </content>
 </body>
 </html>

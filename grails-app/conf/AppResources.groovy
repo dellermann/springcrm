@@ -19,40 +19,6 @@
 
 
 modules = {
-    about {
-        dependsOn 'core'
-
-        resource url: 'less/about.less', attrs: [rel: 'stylesheet/less', type: 'css']
-    }
-
-    calendarForm {
-        dependsOn 'core, mustache'
-
-        resource url: 'less/calendar.less', attrs: [rel: 'stylesheet/less', type: 'css']
-        resource '/js/app/calendar-form.js'
-    }
-
-    calendarView {
-        dependsOn 'core'
-
-        resource url: 'less/calendar.less', attrs: [rel: 'stylesheet/less', type: 'css']
-        resource '/css/fullcalendar.css'
-
-        resource url: '/js/fullcalendar.min.js', exclude: 'minify'
-    }
-
-    calendarViewCalendar {
-        dependsOn 'calendarView'
-
-        resource '/js/app/calendar-view.js'
-    }
-
-    callForm {
-        dependsOn 'core'
-
-        resource '/js/call-form.js'
-    }
-
     config {
         dependsOn 'core'
 
@@ -81,7 +47,7 @@ modules = {
     }
 
     core {
-        dependsOn 'jquery-ui, jquery-json, font-awesome-css, test'
+        dependsOn 'jquery-ui, jquery-json, test'
 
         resource url: '/less/reset.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
         resource url: '/less/main.less', attrs: [media: 'all', rel: 'stylesheet/less', type: 'css'], bundle: 'core'
@@ -93,25 +59,6 @@ modules = {
         resource '/js/jquery.autosize-min.js'
         resource '/js/app/core.js'
         resource '/js/app/ui.js'
-        resource url: '/images/spinner.gif', attrs: [ width: 16, height: 16 ], disposition: 'inline'
-    }
-
-    document {
-        dependsOn 'elfinder'
-
-        resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
-
-        resource '/js/document.js'
-    }
-
-    elfinder {
-        dependsOn 'jquery-ui'
-
-        resource url: '/css/elfinder/elfinder.min.css', exclude: 'minify'
-        resource '/css/elfinder/theme.css'
-
-        resource url: '/js/elfinder/elfinder.min.js', exclude: 'minify'
-        resource '/js/elfinder/i18n/elfinder.de.js'
     }
 
     error {
@@ -138,12 +85,6 @@ modules = {
         dependsOn 'core'
 
         resource url: 'less/install.less', attrs: [rel: 'stylesheet/less', type: 'css']
-    }
-
-    invoicingTransaction {
-        dependsOn 'core'
-
-        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
     }
 
     invoicingTransactionForm {
@@ -182,43 +123,6 @@ modules = {
         resource '/js/app/note-form.js'
     }
 
-    organizationForm {
-        dependsOn 'core'
-
-        resource '/js/app/organization-form.js'
-    }
-
-    overview {
-        dependsOn 'core'
-        defaultBundle 'core'
-
-        resource url: 'less/overview.less', attrs: [rel: 'stylesheet/less', type: 'css'], bundle: 'core'
-
-        resource '/js/app/overview.js'
-    }
-
-    personForm {
-        dependsOn 'personShow'
-
-        resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
-
-        resource '/js/app/person-form.js'
-    }
-
-    personShow {
-        dependsOn 'core'
-
-        resource url: '/css/jquery.lightbox.css', attrs: [ media: 'screen' ]
-
-        resource '/js/jquery.lightbox.min.js'
-    }
-
-    project {
-        dependsOn 'core'
-
-        resource url: 'less/project.less', attrs: [rel: 'stylesheet/less', type: 'css']
-    }
-
     projectForm {
         dependsOn 'project'
 
@@ -229,29 +133,6 @@ modules = {
         dependsOn 'project, selectBoxIt, elfinder'
 
         resource '/js/app/project-show.js'
-    }
-
-    purchaseInvoicingForm {
-        dependsOn 'invoicingTransactionForm'
-        defaultBundle 'invoicing-transaction-form'
-
-        resource url: 'less/document.less', attrs: [rel: 'stylesheet/less', type: 'css']
-
-        resource '/js/app/purchase-invoice-form.js'
-    }
-
-    report {
-        dependsOn 'core'
-
-        resource url: 'less/report.less', attrs: [rel: 'stylesheet/less', type: 'css']
-    }
-
-    reportSalesJournal {
-        dependsOn 'report, selectBoxIt'
-
-        resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
-
-        resource '/js/app/report-sales-journal.js'
     }
 
     salesItemForm {

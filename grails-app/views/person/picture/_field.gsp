@@ -3,7 +3,13 @@
   <input type="file" name="picture" />
   <g:if test="${personInstance?.picture}">
   <div class="document-preview">
-    <a id="picture" href="${createLink(action: 'getPicture', id: personInstance?.id)}" data-img-dir="${resource(dir: 'images/lightbox')}"><img src="${createLink(action: 'getPicture', id: personInstance?.id)}" alt="${personInstance?.toString()}" title="${personInstance?.toString()}" height="100" /></a>
+    <g:link action="getPicture" id="${personInstance?.id}"
+      data-lightbox="person-picture"
+      data-title="${personInstance.fullName}"
+      ><img src="${createLink(action: 'getPicture', id: personInstance?.id)}"
+        alt="${personInstance?.toString()}"
+        title="${personInstance?.toString()}" height="100" />
+    </g:link>
   </div>
   <ul class="document-preview-links">
     <li class="document-delete"><g:button color="red" size="small" icon="trash-o" message="person.picture.delete" /></li>

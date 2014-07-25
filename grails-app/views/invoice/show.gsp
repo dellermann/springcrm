@@ -5,15 +5,7 @@
   <g:set var="entityName" value="${message(code: 'invoice.label', default: 'Invoice')}" />
   <g:set var="entitiesName" value="${message(code: 'invoice.plural', default: 'Invoices')}" />
   <title><g:message code="invoicingTransaction.show.label" args="[entityName, invoiceInstance.fullNumber]" /></title>
-  <r:require modules="invoicingTransactionShow" />
-  <r:script>/*<![CDATA[*/
-  (function ($) {
-
-      "use strict";
-
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }(jQuery));
-  /*]]>*/</r:script>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -212,5 +204,8 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: invoiceInstance?.dateCreated), formatDate(date: invoiceInstance?.lastUpdated)]" />
     </p>
   </div>
+  <asset:script>//<![CDATA[
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  //]]></asset:script>
 </body>
 </html>

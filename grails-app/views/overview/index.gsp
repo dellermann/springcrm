@@ -2,10 +2,7 @@
 <head>
   <meta name="layout" content="main" />
   <title>SpringCRM</title>
-  <r:require modules="overview" />
-  <r:script>
-  $(".overview-columns").overviewpanels();
-  </r:script>
+  <asset:stylesheet src="overview" />
 </head>
 
 <body>
@@ -42,5 +39,9 @@
     </g:each>
     </div>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="overview" />
+    <asset:script>$(".overview-columns").overviewpanels();</asset:script>
+  </content>
 </body>
 </html>

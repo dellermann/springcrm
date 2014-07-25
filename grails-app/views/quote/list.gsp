@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
   <title>${entitiesName}</title>
-  <r:require modules="invoicingTransaction" />
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>

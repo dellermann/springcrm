@@ -27,5 +27,8 @@
       <g:render template="/note/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="note-form" />
+  </content>
 </body>
 </html>

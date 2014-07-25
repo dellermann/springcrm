@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -27,5 +28,17 @@
       <g:render template="/quote/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      $("#quote-form").invoicingtransaction({
+              checkStageTransition: false,
+              stageValues: {
+                  shipping: 602
+              },
+              type: "Q"
+          });
+    //]]></asset:script>
+  </content>
 </body>
 </html>

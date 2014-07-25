@@ -1,28 +1,3 @@
-<r:require modules="purchaseInvoicingForm" />
-<r:script>/*<![CDATA[*/
-(function ($) {
-
-    "use strict";
-
-    var params;
-
-    params = $("#purchaseInvoice-form").purchaseinvoice({
-            checkStageTransition: false,
-            loadVendorsUrl: "${createLink(controller: 'organization', action: 'find', params: [type: 2])}",
-            stageValues: {
-                payment: 2102
-            },
-            type: "P"
-        })
-        .purchaseinvoice("getOrganizationId");
-    $("#invoice").autocompleteex({
-            loadParameters: params
-        });
-    $("#dunning").autocompleteex({
-            loadParameters: params
-        });
-}(jQuery));
-/*]]>*/</r:script>
 <fieldset>
   <header><h3><g:message code="purchaseInvoice.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

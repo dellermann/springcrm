@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta name="layout" content="main" />
-  <r:require modules="about" />
+  <asset:stylesheet src="about" />
   <title><g:message code="about.sysInfo" default="System information" /></title>
 </head>
 

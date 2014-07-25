@@ -5,15 +5,7 @@
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
   <title><g:message code="invoicingTransaction.show.label" args="[entityName, dunningInstance.fullNumber]" /></title>
-  <r:require modules="invoicingTransactionShow" />
-  <r:script>//<![CDATA[
-  (function ($) {
-
-      "use strict";
-
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }(jQuery));
-  //]]></r:script>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -182,5 +174,8 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: dunningInstance?.dateCreated, style: 'SHORT'), formatDate(date: dunningInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
   </div>
+  <asset:script>//<![CDATA[
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  //]]></asset:script>
 </body>
 </html>

@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'creditMemo.label', default: 'CreditMemo')}" />
   <g:set var="entitiesName" value="${message(code: 'creditMemo.plural', default: 'CreditMemos')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -28,5 +29,51 @@
       <g:render template="/creditMemo/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      (function ($) {
+
+          "use strict";
+
+          var $form,
+              params;
+
+          $form = $("#credit-memo-form");
+          params = $form.invoicingtransaction({
+                  stageValues: {
+                      payment: 2503,
+                      shipping: 2502
+                  },
+                  type: "C"
+              })
+              .invoicingtransaction("getOrganizationId");
+          $("#invoice").autocompleteex({
+                  loadParameters: params,
+                  select: function (event, ui) {
+                      $form.invoicingtransaction(
+                          "refreshModifiedClosingBalance",
+                          {
+                              id: ui.item.value,
+                              url: "${createLink(controller: 'invoice', action: 'getClosingBalance')}"
+                          }
+                      );
+                  }
+              });
+          $("#dunning").autocompleteex({
+                  loadParameters: params,
+                  select: function (event, ui) {
+                      $form.invoicingtransaction(
+                          "refreshModifiedClosingBalance",
+                          {
+                              id: ui.item.value,
+                              url: "${createLink(controller: 'dunning', action: 'getClosingBalance')}"
+                          }
+                      );
+                  }
+              });
+      }(jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>

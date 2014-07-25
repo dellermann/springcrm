@@ -5,14 +5,12 @@
 <head>
   <meta charset="utf-8" />
   <title><g:message code="default.login.title" /></title>
-  <r:require modules="login" />
-  <r:layoutResources />
-  <r:external uri="/images/favicon.ico" />
-  <r:script disposition="defer">
-  if ($("#password:focus").length == 0) {
-      $("#userName").trigger("focus");
-  }
-  </r:script>
+  <asset:stylesheet src="login"/>
+  <asset:stylesheet src="print" media="print" />
+  <link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon" />
+  <link rel="shortcut icon" href="${assetPath(src: 'favicon.png')}" type="image/png" />
+  <link rel="icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon" />
+  <link rel="icon" href="${assetPath(src: 'favicon.png')}" type="image/png" />
 </head>
 
 <body>
@@ -57,12 +55,18 @@
       </div>
       <footer>
         <div id="app-version">SpringCRM v<g:meta name="app.version" /></div>
-        <div id="copyright"><g:message code="default.copyright" args="[new Date()]" />, <a href="http://www.amc-world.de" target="_blank">AMC World Technologies GmbH</a></div>
+        <div id="copyright"><g:message code="default.copyright" args="[new Date()]" />,
+        <a href="http://www.amc-world.de" target="_blank">AMC World Technologies GmbH</a></div>
       </footer>
     </div>
   </div>
 </section>
 <script src="${createLink(controller: 'i18n', action: 'index')}"></script>
-<r:layoutResources />
+<asset:javascript src="application"/>
+<script>
+if ($("#password:focus").length == 0) {
+    $("#userName").trigger("focus");
+}
+</script>
 </body>
 </html>

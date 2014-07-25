@@ -1,7 +1,7 @@
 /*
  * DateTimeValueConverter.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm.converter
 
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import javax.xml.bind.DatatypeConverter
 import org.grails.databinding.converters.ValueConverter
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
@@ -56,7 +57,7 @@ class DateTimeValueConverter implements ValueConverter {
         }
 
         String text = value.toString()
-        (text.indexOf(' ') < 0) ? parseDate(text) : parseDateTime(text)
+        (text.indexOf(' ') < 0 && text.indexOf('T') < 0) ? parseDate(text) : parseDateTime(text)
     }
 
     @Override
@@ -68,53 +69,72 @@ class DateTimeValueConverter implements ValueConverter {
     //-- Non-public methods ---------------------
 
     protected Date parseDate(String text) throws IllegalArgumentException {
-        String fmt
-        if (text.isLong()) {
-            fmt = (text.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
-        } else {
-            Locale locale = LCH.locale
-            fmt = messageSource.getMessage(
-                'default.format.date', null, 'yyyy-MM-dd', locale
-            )
-        }
         try {
-            return new SimpleDateFormat(fmt).parse(text)
-        } catch (ParseException e) {
-            throw new IllegalArgumentException()
+
+            /* try ISO8601 dates first */
+            return DatatypeConverter.parseDate(text).time
+        } catch (IllegalArgumentException iae) {
+
+            /*
+             * otherwise try either the short format or the locale specific one
+             */
+            String fmt
+            if (text.isLong()) {
+                fmt = (text.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
+            } else {
+                fmt = messageSource.getMessage(
+                    'default.format.date', null, 'yyyy-MM-dd', LCH.locale
+                )
+            }
+            try {
+                return new SimpleDateFormat(fmt).parse(text)
+            } catch (ParseException pe) {
+                throw new IllegalArgumentException()
+            }
         }
     }
 
     protected Date parseDateTime(String text) throws IllegalArgumentException {
-        Locale locale = LCH.locale
-        StringBuilder fmt = new StringBuilder()
-        int pos = text.indexOf(' ')
-        if (pos >= 0) {
-            String s = text.substring(0, pos)
-            if (s.isLong()) {
-                fmt << ((s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy')
-            } else {
-                fmt << messageSource.getMessage(
-                    'default.format.date', null, 'yyyy-MM-dd', locale
-                )
-            }
-            s = text.substring(pos + 1).trim()
-            fmt << ' '
-            if (s.isLong()) {
-                fmt << 'HHmm'
-            } else {
-                fmt << messageSource.getMessage(
-                    'default.format.time', null, 'HH:mm', locale
-                )
-            }
-        } else {
-            fmt << messageSource.getMessage(
-                'default.format.datetime', null, 'yyyy-MM-dd HH:mm', locale
-            )
-        }
         try {
-            return new SimpleDateFormat(fmt.toString()).parse(text)
-        } catch (ParseException e) {
-            throw new IllegalArgumentException()
+
+            /* try ISO8601 dates/times first */
+            return DatatypeConverter.parseDateTime(text).time
+        } catch (IllegalArgumentException iae) {
+
+            /*
+             * otherwise try either the short format or the locale specific one
+             */
+            Locale locale = LCH.locale
+            StringBuilder fmt = new StringBuilder()
+            int pos = text.indexOf(' ')
+            if (pos >= 0) {
+                String s = text.substring(0, pos)
+                if (s.isLong()) {
+                    fmt << ((s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy')
+                } else {
+                    fmt << messageSource.getMessage(
+                        'default.format.date', null, 'yyyy-MM-dd', locale
+                    )
+                }
+                s = text.substring(pos + 1).trim()
+                fmt << ' '
+                if (s.isLong()) {
+                    fmt << 'HHmm'
+                } else {
+                    fmt << messageSource.getMessage(
+                        'default.format.time', null, 'HH:mm', locale
+                    )
+                }
+            } else {
+                fmt << messageSource.getMessage(
+                    'default.format.datetime', null, 'yyyy-MM-dd HH:mm', locale
+                )
+            }
+            try {
+                return new SimpleDateFormat(fmt.toString()).parse(text)
+            } catch (ParseException pe) {
+                throw new IllegalArgumentException()
+            }
         }
     }
 }

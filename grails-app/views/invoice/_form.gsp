@@ -1,27 +1,3 @@
-<r:require modules="invoicingTransactionForm" />
-<r:script>/*<![CDATA[*/
-(function ($) {
-
-    "use strict";
-
-    var params;
-
-    params = $("#invoice-form").invoicingtransaction({
-            stageValues: {
-                payment: 903,
-                shipping: 902
-            },
-            type: "I"
-        })
-        .invoicingtransaction("getOrganizationId");
-    $("#quote").autocompleteex({
-            loadParameters: params
-        });
-    $("#salesOrder").autocompleteex({
-            loadParameters: params
-        });
-}(jQuery));
-/*]]>*/</r:script>
 <fieldset>
   <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

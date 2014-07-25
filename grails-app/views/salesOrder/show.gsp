@@ -5,15 +5,7 @@
   <g:set var="entityName" value="${message(code: 'salesOrder.label', default: 'SalesOrder')}" />
   <g:set var="entitiesName" value="${message(code: 'salesOrder.plural', default: 'SalesOrders')}" />
   <title><g:message code="invoicingTransaction.show.label" args="[entityName, salesOrderInstance.fullNumber]" /></title>
-  <r:require modules="invoicingTransactionShow" />
-  <r:script>//<![CDATA[
-  (function ($) {
-
-      "use strict";
-
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }(jQuery));
-  //]]></r:script>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -160,5 +152,8 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: salesOrderInstance?.dateCreated), formatDate(date: salesOrderInstance?.lastUpdated)]" />
     </p>
   </div>
+  <asset:script>//<![CDATA[
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+  //]]></asset:script>
 </body>
 </html>

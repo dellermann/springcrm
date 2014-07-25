@@ -127,17 +127,8 @@ grails.plugin.databasemigration.forceAutoMigrate = true
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
-/* CoffeeScript compiler settings */
-'coffeescript-compiler' {
-    appSource {
-        coffeeSourcePath = 'src/coffee'
-        jsOutputPath = 'web-app/js/app'
-    }
-    pluginConfig {
-        minifyInEnvironment = ['production', 'cloud', 'standalone']
-        purgeJS = true
-    }
-}
+/* Asset pipeline */
+grails.assets.less.compiler = 'less4j'
 
 /* Markdown settings */
 markdown {

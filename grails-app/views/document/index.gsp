@@ -2,7 +2,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="document.plural" default="Documents" /></title>
-  <r:require modules="document" />
+  <asset:stylesheet src="document" />
 </head>
 
 <body>
@@ -15,5 +15,8 @@
     </g:if>
     <div id="documents" data-load-url="${createLink(controller: 'document', action: 'command')}"></div>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="document" />
+  </content>
 </body>
 </html>

@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
   <g:set var="entitiesName" value="${message(code: 'project.plural', default: 'Projects')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <r:require modules="projectShow" />
+  <asset:stylesheet src="project-show" />
 </head>
 
 <body>
@@ -152,5 +152,8 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: projectInstance?.dateCreated, style: 'SHORT'), formatDate(date: projectInstance?.lastUpdated, style: 'SHORT')]" />
     </p>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="project-show" />
+  </content>
 </body>
 </html>

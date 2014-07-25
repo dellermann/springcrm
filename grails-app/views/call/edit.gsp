@@ -27,5 +27,8 @@
       <g:render template="/call/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="call-form" />
+  </content>
 </body>
 </html>

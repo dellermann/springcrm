@@ -1,4 +1,3 @@
-<r:require modules="personForm" />
 <fieldset>
   <header><h3><g:message code="person.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

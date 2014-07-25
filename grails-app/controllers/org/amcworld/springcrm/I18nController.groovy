@@ -1,7 +1,7 @@
 /*
  * I18nController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.text.Bidi
-import java.text.DateFormatSymbols
-import org.springframework.context.i18n.LocaleContextHolder as LCH
-
 
 /**
  * The class {@code I18nController} contains actions that produce a localized
@@ -31,7 +27,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * {@code /js/i18n/i18n-source.js}.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class I18nController {
 
@@ -39,20 +35,7 @@ class I18nController {
 
     def index() {
         def msgs = [: ]
-
         loadMessages servletContext.getResourceAsStream('/js/i18n/i18n-source.js'), msgs
-
-        def dfs = DateFormatSymbols.getInstance(LCH.locale)
-        msgs['monthNamesLong'] = '[ "' << dfs.months.join('", "') << '" ]'
-        msgs['monthNamesShort'] = '[ "' << dfs.shortMonths.join('", "') << '" ]'
-        msgs['weekdaysLong'] = '[ "' << dfs.weekdays[1..-1].join('", "') << '" ]'
-        msgs['weekdaysShort'] = '[ "' << dfs.shortWeekdays[1..-1].join('", "') << '" ]'
-
-        def cal = Calendar.instance
-        msgs['calendarFirstDay'] = cal.firstDayOfWeek - 1
-        String s = message(code: 'default.bidi.test')
-        msgs['calendarRTL'] = !(new Bidi(s, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT).isLeftToRight())
-
         render contentType: 'text/javascript; charset=utf-8', view: 'index', model: [messages: msgs]
     }
 

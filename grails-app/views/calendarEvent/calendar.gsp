@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'calendarEvent.label', default: 'CalendarEvent')}" />
   <g:set var="entitiesName" value="${message(code: 'calendarEvent.plural', default: 'CalendarEvents')}" />
   <title>${entitiesName}</title>
-  <r:require modules="calendarViewCalendar" />
+  <asset:stylesheet src="calendar" />
 </head>
 
 <body>
@@ -40,5 +40,8 @@
       </ul>
     </div>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="calendar-view" />
+  </content>
 </body>
 </html>

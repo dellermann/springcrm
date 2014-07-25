@@ -1,7 +1,7 @@
 /*
  * DocumentController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,11 @@ import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code DocumentController} handles actions which display documents
- * either in the ElFinder client or as embedded list for an organization.
+ * The class {@code DocumentController} handles actions which display
+ * documents.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.2
  */
 class DocumentController {
@@ -52,10 +52,8 @@ class DocumentController {
 
     def index() {}
 
-    def command() {
-        new Connector(request, response).
-            addVolume(fileService.localVolume).
-            process()
+    def list() {
+
     }
 
     def listEmbedded(Long organization) {
@@ -97,6 +95,12 @@ class DocumentController {
         }
 
         [documentInstanceList: list, documentInstanceTotal: total]
+    }
+
+    def command() {
+        new Connector(request, response).
+            addVolume(fileService.localVolume).
+            process()
     }
 
     def download(String id) {

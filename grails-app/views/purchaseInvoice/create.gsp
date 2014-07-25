@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')}" />
   <g:set var="entitiesName" value="${message(code: 'purchaseInvoice.plural', default: 'PurchaseInvoices')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
+  <asset:stylesheet src="purchase-invoice-form" />
 </head>
 
 <body>
@@ -28,5 +29,32 @@
       <g:render template="/purchaseInvoice/form" />
     </g:uploadForm>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="purchase-invoice-form" />
+    <asset:script>//<![CDATA[
+      (function ($) {
+
+          "use strict";
+
+          var params;
+
+          params = $("#purchaseInvoice-form").purchaseinvoice({
+                  checkStageTransition: false,
+                  loadVendorsUrl: "${createLink(controller: 'organization', action: 'find', params: [type: 2])}",
+                  stageValues: {
+                      payment: 2102
+                  },
+                  type: "P"
+              })
+              .purchaseinvoice("getOrganizationId");
+          $("#invoice").autocompleteex({
+                  loadParameters: params
+              });
+          $("#dunning").autocompleteex({
+                  loadParameters: params
+              });
+      }(jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>

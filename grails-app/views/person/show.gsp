@@ -5,18 +5,7 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <r:require modules="personShow" />
-  <r:script>//<![CDATA[
-  (function ($) {
-
-      "use strict";
-
-      $("#picture").lightbox({
-              imgDir: "${resource(dir: 'images/lightbox')}"
-          });
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  }(jQuery));
-  //]]></r:script>
+  <asset:stylesheet src="person-show" />
 </head>
 
 <body>
@@ -257,5 +246,11 @@
       <g:message code="default.recordTimestamps" args="[formatDate(date: personInstance?.dateCreated), formatDate(date: personInstance?.lastUpdated)]" />
     </p>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="person-show" />
+    <asset:script>//<![CDATA[
+      $(".remote-list").remotelist({ returnUrl: "${url()}" });
+    //]]></asset:script>
+  </content>
 </body>
 </html>

@@ -3,14 +3,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="report.salesJournal.title" /></title>
-  <r:require modules="reportSalesJournal" />
-  <style>
-  @media print {
-    @page {
-      size: landscape;
-    }
-  }
-  </style>
+  <asset:stylesheet src="report-sales-journal" />
 </head>
 
 <body>
@@ -105,5 +98,8 @@
       </div>
     </g:else>
   </section>
+  <content tag="scripts">
+    <asset:javascript src="report-sales-journal" />
+  </content>
 </body>
 </html>

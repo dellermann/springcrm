@@ -5,24 +5,7 @@
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
   <title><g:message code="invoicingTransaction.edit.label" args="[entityName, dunningInstance.fullNumber]" /></title>
-  <r:require modules="invoicingTransactionForm" />
-  <r:script>//<![CDATA[
-  (function (SPRINGCRM, $) {
-
-      "use strict";
-
-      var it = SPRINGCRM.invoicingTransaction;
-
-      it.initStageValues({
-              checkStageTransition: false,
-              form: $("#dunning-form"),
-              stageValues: {
-                  payment: 2203,
-                  shipping: 2202
-              }
-          });
-  }(SPRINGCRM, jQuery));
-  //]]></r:script>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -218,5 +201,25 @@
       </section>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      (function (SPRINGCRM, $) {
+
+          "use strict";
+
+          var it = SPRINGCRM.invoicingTransaction;
+
+          it.initStageValues({
+                  checkStageTransition: false,
+                  form: $("#dunning-form"),
+                  stageValues: {
+                      payment: 2203,
+                      shipping: 2202
+                  }
+              });
+      }(SPRINGCRM, jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>

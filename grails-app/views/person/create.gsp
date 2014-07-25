@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
+  <asset:stylesheet src="person-form" />
 </head>
 
 <body>
@@ -25,5 +26,8 @@
       <g:render template="/person/form" />
     </g:uploadForm>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="person-form" />
+  </content>
 </body>
 </html>

@@ -1,24 +1,3 @@
-<r:require modules="invoicingTransactionForm" />
-<r:script>/*<![CDATA[*/
-(function ($) {
-
-    "use strict";
-
-    var params;
-
-    params = $("#dunning-form").invoicingtransaction({
-            stageValues: {
-                payment: 2203,
-                shipping: 2202
-            },
-            type: "D"
-        })
-        .invoicingtransaction("getOrganizationId");
-    $("#invoice").autocompleteex({
-            loadParameters: params
-        });
-}(jQuery));
-/*]]>*/</r:script>
 <fieldset>
   <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

@@ -1,4 +1,3 @@
-<r:require modules="callForm" />
 <fieldset>
   <header><h3><g:message code="call.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

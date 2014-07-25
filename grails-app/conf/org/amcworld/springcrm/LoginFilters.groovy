@@ -49,7 +49,7 @@ class LoginFilters {
             }
         }
 
-        login(controller: '*', controllerExclude: 'help|i18n|install',
+        login(controller: '*', controllerExclude: 'assets|help|i18n|install',
               action: '*', actionExclude: 'login|authenticate|frontend*')
         {
             before = {
@@ -79,7 +79,7 @@ class LoginFilters {
         }
 
         permission(controller: '*',
-                   controllerExclude: 'about|dataFile|help|i18n|install|notification|overview|searchable',
+                   controllerExclude: 'about|assets|dataFile|help|i18n|install|notification|overview|searchable',
                    action: '*',
                    actionExclude: 'login|authenticate|logout|settings*|frontend*')
         {

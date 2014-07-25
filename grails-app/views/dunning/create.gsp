@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
+  <asset:stylesheet src="invoicing-transaction" />
 </head>
 
 <body>
@@ -27,5 +28,28 @@
       <g:render template="/dunning/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      (function ($) {
+
+          "use strict";
+
+          var params;
+
+          params = $("#dunning-form").invoicingtransaction({
+                  stageValues: {
+                      payment: 2203,
+                      shipping: 2202
+                  },
+                  type: "D"
+              })
+              .invoicingtransaction("getOrganizationId");
+          $("#invoice").autocompleteex({
+                  loadParameters: params
+              });
+      }(jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>

@@ -28,5 +28,29 @@
       <g:render template="/salesOrder/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="invoicing-transaction-form" />
+    <asset:script>//<![CDATA[
+      (function ($) {
+
+          "use strict";
+
+          var params;
+
+          params = $("#sales-order-form").invoicingtransaction({
+                  checkStageTransition: false,
+                  stageValues: {
+                      payment: 803,
+                      shipping: 802
+                  },
+                  type: "S"
+              })
+              .invoicingtransaction("getOrganizationId");
+          $("#quote").autocompleteex({
+                  loadParameters: params
+              });
+      }(jQuery));
+    //]]></asset:script>
+  </content>
 </body>
 </html>
