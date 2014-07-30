@@ -29,6 +29,11 @@ module.exports = (grunt) ->
             expand: true
             src: 'jquery.js'
           ,
+            cwd: '<%= dirs.node.base %>/jquery-mockjax/'
+            dest: '<%= dirs.target.test.js.scripts %>/'
+            expand: true
+            src: 'jquery.mockjax.js'
+          ,
             cwd: '<%= dirs.node.base %>/qunitjs/qunit/'
             dest: '<%= dirs.target.test.js.css %>/'
             expand: true
