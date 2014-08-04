@@ -54,10 +54,7 @@ class DocumentList
         true
 
   renderDocumentList: (path, data) ->
-    $el = @$element
-
-    $el.find('> ul').remove()
-
+    $fragment = $(document.createDocumentFragment())
     $ul = $('<ul class="document-list-container"/>')
       .on('click', 'li.back-link', (event) =>
         @loadDocumentList _parentPath @currentPath
@@ -68,25 +65,33 @@ class DocumentList
         path += $(event.target).find('.name').text()
         @loadDocumentList path
       )
-      .appendTo $el
+      .appendTo $fragment
     if path
-      $li = $('<li/>').addClass("back-link fa-arrow-up")
-        .appendTo $ul
+      $li = $('<li class="back-link"/>').appendTo $ul
+      $('<i class="fa fa-arrow-up"/>').appendTo $li
       $('<span class="name"/>').text($L('document_back_label'))
         .appendTo $li
+      $('<span class="size"/>').appendTo $li
     for folder in data.folders
-      $li = $('<li/>').addClass('folder fa-folder-o')
-        .appendTo $ul
+      $li = $('<li class="folder"/>').appendTo $ul
+      $('<i class="fa fa-folder"/>').appendTo $li
       $('<span class="name"/>').text(folder.name)
         .appendTo $li
+      $('<span class="size"/>').appendTo $li
     for file in data.files
-      $li = $('<li/>').addClass('file')
+      $li = $('<li class="file"/>').appendTo $ul
+      $('<i class="fa"/>')
         .addClass($.fileicon(file.ext))
-        .appendTo $ul
+        .appendTo $li
       $('<span class="name"/>').text(file.name)
         .appendTo $li
       $('<span class="size"/>').text(_sizeToString file.size)
         .appendTo $li
+
+    @$element.find('> ul')
+        .remove()
+      .end()
+      .append $fragment
 
 
   #-- Private methods ---------------------------

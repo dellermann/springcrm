@@ -1,7 +1,7 @@
 /*
  * Volume.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,11 @@ import org.apache.commons.logging.LogFactory
 
 
 /**
- * The class {@code Volume} represents ...
+ * The class {@code Volume} represents a volume which contains files and
+ * folders.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 1.4
  * @since   1.2
  */
 abstract class Volume {
@@ -100,13 +101,12 @@ abstract class Volume {
      * @param id        an ID of this volume used to distinguish multiple
      *                  volumes
      * @param root      the root directory where ElFinder operates
-     * @param config    any configuration settings for this volume; if
-     *                  {@code null} default configuration is used
+     * @param config    any configuration settings for this volume
      */
-    Volume(String id, String root, VolumeConfig config = null) {
+    Volume(String id, String root, VolumeConfig config = new VolumeConfig()) {
         this.id = id
         this.root = root
-        this.config = config ?: new VolumeConfig()
+        this.config = config
         if (this.config.useCache) {
             synchronized (globalDirCache) {
                 dirCache = globalDirCache[id]
@@ -176,7 +176,7 @@ abstract class Volume {
      */
     String closest(String hash, String attr, boolean value) {
         String path = closestByAttr(decode(hash), attr, value)
-        return (path == null) ? null : encode(path)
+        (path == null) ? null : encode(path)
     }
 
     /**
@@ -194,10 +194,7 @@ abstract class Volume {
      * @return  the debug information
      */
     Map<String, Object> debug() {
-        return [
-            id: id,
-            name: this.class.name.toLowerCase()
-        ]
+        [id: id, name: this.class.name.toLowerCase()]
     }
 
     /**
@@ -216,12 +213,13 @@ abstract class Volume {
         if ((pos < 1) || (pos == hash.length())) {
             return null
         }
+
         hash = hash.substring(pos + 1)
         String relPath = new String(hash.tr('-_.', '+/=').decodeBase64())
         if (relPath == '/') {
             relPath = ''
         }
-        return absPath(relPath)
+        absPath(relPath)
     }
 
     /**
@@ -231,11 +229,12 @@ abstract class Volume {
      * @return      the volume ID; {@code null} if the given hash is invalid
      */
     static String decodeVolumeId(String hash) {
-        if (!hash) {
-            return null
+        String res = null
+        if (hash) {
+            int pos = hash.indexOf('_')
+            if (pos > 0) res = hash.substring(0, pos)
         }
-        int pos = hash.indexOf('_')
-        return (pos < 1) ? null : hash.substring(0, pos)
+        res
     }
 
     /**
@@ -256,7 +255,7 @@ abstract class Volume {
                 throw new ConnectorException(CE.NOT_DIR)
             }
         }
-        return dir
+        dir
     }
 
     /**
@@ -285,7 +284,7 @@ abstract class Volume {
         String dir = dirName(path)
         String newPath = copy(path, dir, uniqueName(dir, baseName(path)))
         cachePath(dir, newPath)
-        return cacheStat(newPath)
+        cacheStat(newPath)
     }
 
     /**
@@ -303,16 +302,12 @@ abstract class Volume {
         String relPath = relPath(path) ?: '/'
         StringBuilder buf = new StringBuilder(id)
         buf << '_' << relPath.bytes.encodeBase64().toString().tr('+/=', '-_.').replaceFirst(/\.+$/, '')
-        return buf.toString()
+        buf.toString()
     }
 
     @Override
     boolean equals(Object obj) {
-        if (obj instanceof Volume) {
-            return this.id == obj.id
-        } else {
-            return false
-        }
+        (obj instanceof Volume) ? this.id == obj.id : false
     }
 
     /**
@@ -323,7 +318,7 @@ abstract class Volume {
      *              or directory with the given hash code exists
      */
     Map<String, Object> file(String hash) {
-        return stat(decode(hash))
+        stat decode(hash)
     }
 
     /**
@@ -334,12 +329,12 @@ abstract class Volume {
      * @return  the hash of the default path
      */
     String getDefaultPathHash() {
-        return encode(config.startPath ?: root)
+        encode(config.startPath ?: root)
     }
 
     @Override
     int hashCode() {
-        return id.hashCode()
+        id.hashCode()
     }
 
     /**
@@ -351,7 +346,7 @@ abstract class Volume {
      *              {@code false} otherwise
      */
     boolean isRoot(String path) {
-        return root == path
+        root == path
     }
 
     /**
@@ -371,7 +366,7 @@ abstract class Volume {
         if (!file.read) {
             throw new ConnectorException(CE.PERM_DENIED)
         }
-        return fsLoadContent(decode(hash))
+        fsLoadContent decode(hash)
     }
 
     /**
@@ -395,7 +390,7 @@ abstract class Volume {
                 list << stat.name
             }
         }
-        return list
+        list
     }
 
     /**
@@ -432,8 +427,8 @@ abstract class Volume {
             return null
         }
 
-        cachePath(path, dirPath)
-        return cacheStat(dirPath)
+        cachePath path, dirPath
+        cacheStat dirPath
     }
 
     /**
@@ -468,8 +463,8 @@ abstract class Volume {
             return null
         }
 
-        cachePath(path, filePath)
-        return cacheStat(filePath)
+        cachePath path, filePath
+        cacheStat filePath
     }
 
     /**
@@ -482,7 +477,7 @@ abstract class Volume {
      */
     InputStream open(String hash) {
         Map<String, Object> stat = file(hash)
-        return (stat && stat.mime != 'directory') ? fsOpen(decode(hash)) : null
+        (stat && stat.mime != 'directory') ? fsOpen(decode(hash)) : null
     }
 
     /**
@@ -492,7 +487,7 @@ abstract class Volume {
      * @return      the options
      */
     Map<String, Object> options(String hash) {
-        return [
+        [
             copyOverwrite: 1,
             disabled: false,
             path: fsPath(decode(hash)),
@@ -520,7 +515,9 @@ abstract class Volume {
         List<Map<String, Object>> tree = []
         String path = decode(hash)
         if (path) {
-            log.debug "Retrieving parent info for ${path}…"
+            if (log.debugEnabled) {
+                log.debug "Retrieving parent info for ${path}…"
+            }
             while (!isRoot(path)) {
                 path = dirName(path)
                 Map<String, Object> stat = stat(path)
@@ -537,7 +534,7 @@ abstract class Volume {
             tree.unique { return it.hash }
         }
 
-        return tree ?: [current]
+        tree ?: [current]
     }
 
     /**
@@ -634,7 +631,7 @@ abstract class Volume {
             }
             removed << file
         }
-        return cacheStat(path)
+        cacheStat path
     }
 
     /**
@@ -645,7 +642,7 @@ abstract class Volume {
      * @return      the path relative to the root directory
      */
     String path(String hash) {
-        return fsPath(decode(hash))
+        fsPath decode(hash)
     }
 
     /**
@@ -658,7 +655,7 @@ abstract class Volume {
      */
     String realPath(String hash) {
         String path = decode(hash)
-        return stat(path) ? path : null
+        stat(path) ? path : null
     }
 
     /**
@@ -668,7 +665,7 @@ abstract class Volume {
      * @return      the relative path
      */
     String relPath(String path) {
-        return isRoot(path) ? '' : path.substring(root.length() + 1)
+        isRoot(path) ? '' : path.substring(root.length() + 1)
     }
 
     /**
@@ -720,7 +717,7 @@ abstract class Volume {
             statCache.remove(path)
             statCache.keySet().removeAll { return it.startsWith(prefix) }
         }
-        return cacheStat(newPath)
+        cacheStat newPath
     }
 
     /**
@@ -731,7 +728,7 @@ abstract class Volume {
      *              successfully; {@code false} otherwise
      */
     boolean rm(String hash) {
-        return remove(decode(hash))
+        remove decode(hash)
     }
 
     /**
@@ -750,10 +747,12 @@ abstract class Volume {
         if (dir == null) {
             return null
         }
+
         if (!dir.read) {
             throw new ConnectorException(CE.PERM_DENIED)
         }
-        return getScanDir(decode(hash))
+
+        getScanDir decode(hash)
     }
 
     /**
@@ -764,7 +763,7 @@ abstract class Volume {
      *              contains the query string
      */
     List<Map<String, Object>> search(String query) {
-        return search(root, query)
+        search root, query
     }
 
     /**
@@ -775,11 +774,7 @@ abstract class Volume {
      *              not exist
      */
     Map<String, Object> stat(String path) {
-        Map<String, Object> stat = statCache[path]
-        if (stat == null) {
-            stat = cacheStat(path)
-        }
-        return stat
+        statCache[path] ?: cacheStat(path)
     }
 
     /**
@@ -798,13 +793,13 @@ abstract class Volume {
         }
 
         String path = decode(hash)
-        fsStoreContent(path, content)
-        return cacheStat(path)
+        fsStoreContent path, content
+        cacheStat path
     }
 
     @Override
     String toString() {
-        return id
+        id
     }
 
     /**
@@ -835,7 +830,7 @@ abstract class Volume {
             path, (depth > 0) ? depth - 1 : config.treeDepth - 1,
             decode(excludeHash)
         ))
-        return dirs
+        dirs
     }
 
     /**
@@ -881,9 +876,9 @@ abstract class Volume {
 
         newPath = fsSave(stream, path, name)
         if (newPath) {
-            cachePath(path, newPath)
+            cachePath path, newPath
         }
-        return path ? cacheStat(newPath) : null
+        path ? cacheStat(newPath) : null
     }
 
 
@@ -908,7 +903,7 @@ abstract class Volume {
         if (this.config.useCache) {
             dirCache[path] = entries
         }
-        return entries
+        entries
     }
 
     /**
@@ -930,7 +925,7 @@ abstract class Volume {
             }
             list << path
         }
-        return list
+        list
     }
 
     /**
@@ -970,7 +965,7 @@ abstract class Volume {
                 statCache[path] = stat
             }
         }
-        return stat
+        stat
     }
 
     /**
@@ -991,7 +986,8 @@ abstract class Volume {
                 return res
             }
         }
-        return null
+
+        null
     }
 
     /**
@@ -1025,7 +1021,7 @@ abstract class Volume {
             return path
         }
 
-        return ('directory' == stat.mime) ? childrenByAttr(path, attr, value) : null
+        ('directory' == stat.mime) ? childrenByAttr(path, attr, value) : null
     }
 
     /**
@@ -1119,8 +1115,8 @@ abstract class Volume {
             }
         }
 
-        cachePath(destPath, path)
-        return path
+        cachePath destPath, path
+        path
     }
 
     /**
@@ -1131,7 +1127,7 @@ abstract class Volume {
      *              {@code null}
      */
     protected String formatDate(Long time) {
-        return time ? config.dateFormat.format(new Date(time)) : null
+        time ? config.dateFormat.format(new Date(time)) : null
     }
 
     /**
@@ -1321,7 +1317,7 @@ abstract class Volume {
                 res << stat
             }
         }
-        return res
+        res
     }
 
     /**
@@ -1355,7 +1351,7 @@ abstract class Volume {
                 }
             }
         }
-        return dirs
+        dirs
     }
 
     /**
@@ -1383,7 +1379,7 @@ abstract class Volume {
             return allowEmptyList
         }
 
-        return ('directory' == mimeType) || \
+        ('directory' == mimeType) || \
             (mimeType in allowedMimeTypes) || \
             (mimeType.dropWhile({ it != '/' }) in allowedMimeTypes)
     }
@@ -1398,7 +1394,7 @@ abstract class Volume {
      *                  otherwise
      */
     protected boolean isSameType(String mimeType1, String mimeType2) {
-        return (('directory' == mimeType1) && ('directory' == mimeType2)) || \
+        (('directory' == mimeType1) && ('directory' == mimeType2)) || \
             (('directory' != mimeType1) && ('directory' != mimeType2))
     }
 
@@ -1413,9 +1409,7 @@ abstract class Volume {
      *              {@code false} otherwise
      */
     protected boolean isVisible(String path) {
-        return isRoot(path) || \
-            config.allowHidden || \
-            !fsHidden(path)
+        isRoot(path) || config.allowHidden || !fsHidden(path)
     }
 
     /**
@@ -1448,7 +1442,7 @@ abstract class Volume {
             cachePath(destPath, newPath)
         }
 
-        return newPath
+        newPath
     }
 
     /**
@@ -1485,11 +1479,11 @@ abstract class Volume {
         }
 
         if (this.config.useCache) {
-            dirCache.remove(path)
-            statCache.remove(path)
+            dirCache.remove path
+            statCache.remove path
         }
         removed << stat
-        return true
+        true
     }
 
     /**
@@ -1518,7 +1512,7 @@ abstract class Volume {
                 result.addAll(search(p, query))
             }
         }
-        return result
+        result
     }
 
     /**
@@ -1535,6 +1529,6 @@ abstract class Volume {
 
     protected boolean validateName(String name) {
         // TODO implement file name validation
-        return true
+        true
     }
 }

@@ -12,32 +12,32 @@
 	<classpathentry kind="src" path="test/integration"/>
 	<classpathentry kind="src" path="test/functional"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry excluding="BuildConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy" kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.4/grails-app/conf">
+	<classpathentry excluding="BuildConfig.groovy|*DataSource.groovy|UrlMappings.groovy|Config.groovy|BootStrap.groovy|spring/resources.groovy" kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.6/grails-app/conf">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.4/grails-app/controllers">
+	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.6/grails-app/controllers">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.4/grails-app/services">
+	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.6/grails-app/services">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.4/grails-app/taglib">
+	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.6/grails-app/taglib">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.4/src/groovy">
+	<classpathentry kind="src" path=".link_to_grails_plugins/asset-pipeline-1.9.6/src/groovy">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/coffee-asset-pipeline-1.8.0/src/groovy">
+	<classpathentry kind="src" path=".link_to_grails_plugins/coffee-asset-pipeline-1.9.0/src/groovy">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
@@ -97,7 +97,7 @@
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path=".link_to_grails_plugins/less-asset-pipeline-1.9.0/src/groovy">
+	<classpathentry kind="src" path=".link_to_grails_plugins/less-asset-pipeline-1.10.0/src/groovy">
 		<attributes>
 			<attribute name="org.grails.ide.eclipse.core.SOURCE_FOLDER" value="true"/>
 		</attributes>

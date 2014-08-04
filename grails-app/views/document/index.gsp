@@ -2,7 +2,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="document.plural" default="Documents" /></title>
-  <asset:stylesheet src="document" />
+  <meta name="stylesheet" content="document" />
 </head>
 
 <body>
@@ -13,7 +13,9 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
-    <div id="documents" data-load-url="${createLink(controller: 'document', action: 'command')}"></div>
+    <div class="document-list" data-list="document"
+      data-list-url="${createLink(controller: 'document', action: 'list')}"
+      ></div>
   </div>
   <content tag="scripts">
     <asset:javascript src="document" />

@@ -38,6 +38,11 @@ module.exports = (grunt) ->
             dest: '<%= dirs.target.test.js.css %>/'
             expand: true
             src: 'qunit.css'
+          ,
+            cwd: '<%= dirs.src.assets %>/'
+            dest: '<%= dirs.target.test.js.base %>/'
+            expand: true
+            src: 'fonts/**'
         ]
     dirs:
       node:
@@ -53,6 +58,7 @@ module.exports = (grunt) ->
         coffee: '<%= dirs.src.assets %>/javascripts'
         grailsApp: '<%= dirs.src.base %>/grails-app'
         javascript: '<%= dirs.src.assets %>/javascripts'
+        stylesheet: '<%= dirs.src.assets %>/stylesheets'
         testCases: '<%= dirs.src.base %>/test/js/tests'
       target:
         base: 'target'
@@ -62,11 +68,21 @@ module.exports = (grunt) ->
             base: '<%= dirs.target.test.base %>/javascript'
             css: '<%= dirs.target.test.js.base %>/css'
             scripts: '<%= dirs.target.test.js.base %>/scripts'
+    less:
+      test:
+        files:
+            '<%= dirs.target.test.js.css %>/main.css': '<%= dirs.src.stylesheet %>/main.less'
+            '<%= dirs.target.test.js.css %>/document.css': '<%= dirs.src.stylesheet %>/document.less'
+        options:
+          path: '<%= dirs.src.stylesheets %>/'
     pkg: grunt.file.readJSON 'package.json'
     watch:
       coffee:
         files: ['<%= dirs.src.coffee %>/*.coffee']
         tasks: ['coffee']
+      less:
+        files: ['<%= dirs.src.stylesheet %>/*.less']
+        tasks: ['less']
       testCases:
         files: ['<%= dirs.src.testCases %>/*.html']
         tasks: ['copy:test']
@@ -74,9 +90,12 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-copy'
+  grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-contrib-watch'
 
-  grunt.registerTask 'default', ['clean:test', 'coffee:test', 'copy:test']
+  grunt.registerTask 'default', [
+    'clean:test', 'less:test', 'coffee:test', 'copy:test'
+  ]
 
 # vim:set ts=2 sw=2 sts=2:
 
