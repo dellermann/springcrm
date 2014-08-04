@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
   <g:set var="entitiesName" value="${message(code: 'person.plural', default: 'Persons')}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
-  <asset:stylesheet src="person-show" />
+  <meta name="stylesheet" content="person-show" />
 </head>
 
 <body>

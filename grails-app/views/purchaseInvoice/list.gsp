@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'purchaseInvoice.label', default: 'PurchaseInvoice')}" />
   <g:set var="entitiesName" value="${message(code: 'purchaseInvoice.plural', default: 'PurchaseInvoices')}" />
   <title>${entitiesName}</title>
-  <asset:stylesheet src="invoicing-transaction" />
+  <meta name="stylesheet" content="invoicing-transaction" />
 </head>
 
 <body>

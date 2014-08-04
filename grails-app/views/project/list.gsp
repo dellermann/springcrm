@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
   <g:set var="entitiesName" value="${message(code: 'project.plural', default: 'Projects')}" />
   <title>${entitiesName}</title>
-  <asset:stylesheet src="project" />
+  <meta name="stylesheet" content="project" />
 </head>
 
 <body>

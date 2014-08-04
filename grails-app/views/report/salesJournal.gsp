@@ -3,7 +3,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="report.salesJournal.title" /></title>
-  <asset:stylesheet src="report-sales-journal" />
+  <meta name="stylesheet" content="report-sales-journal" />
 </head>
 
 <body>

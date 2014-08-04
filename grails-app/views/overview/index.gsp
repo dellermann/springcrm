@@ -1,8 +1,8 @@
 <html>
 <head>
   <meta name="layout" content="main" />
+  <meta name="stylesheet" content="overview" />
   <title>SpringCRM</title>
-  <asset:stylesheet src="overview" />
 </head>
 
 <body>

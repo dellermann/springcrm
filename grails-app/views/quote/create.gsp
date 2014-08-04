@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'quote.label', default: 'Quote')}" />
   <g:set var="entitiesName" value="${message(code: 'quote.plural', default: 'Quotes')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
-  <asset:stylesheet src="invoicing-transaction" />
+  <meta name="stylesheet" content="invoicing-transaction" />
 </head>
 
 <body>

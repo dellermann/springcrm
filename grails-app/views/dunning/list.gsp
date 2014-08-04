@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
   <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
   <title>${entitiesName}</title>
-  <asset:stylesheet src="invoicing-transaction" />
+  <meta name="stylesheet" content="invoicing-transaction" />
 </head>
 
 <body>

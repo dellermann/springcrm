@@ -5,7 +5,7 @@
   <g:set var="entityName" value="${message(code: 'creditMemo.label', default: 'CreditMemo')}" />
   <g:set var="entitiesName" value="${message(code: 'creditMemo.plural', default: 'CreditMemos')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
-  <asset:stylesheet src="invoicing-transaction" />
+  <meta name="stylesheet" content="invoicing-transaction" />
 </head>
 
 <body>

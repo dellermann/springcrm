@@ -2,7 +2,6 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="error.exception.title" /></title>
-  <asset:stylesheet src="application" />
   <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
   <asset:link rel="shortcut icon" href="favicon.png" type="image/png" />
   <asset:link rel="icon" href="favicon.ico" type="image/x-icon" />
