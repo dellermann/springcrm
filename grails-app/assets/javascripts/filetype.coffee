@@ -22,8 +22,7 @@
 $ = jQuery
 
 
-# Immutable mapping for extensions to file types and file types to FontAwesome
-# icons.
+# Immutable mapping for extensions to file types.
 #
 # @mixin
 # @author   Daniel Ellermann
@@ -52,34 +51,11 @@ ExtDb = do ->
   #
   extensions = {}
 
-  # Mapping from file types to FontAwesome CSS icon class names.
-  #
-  types =
-    archive: 'fa-file-archive-o'
-    audio: 'fa-file-audio-o'
-    code: 'fa-file-code-o'
-    document: 'fa-file-word-o'
-    file: 'fa-file-o'
-    image: 'fa-file-image-o'
-    pdf: 'fa-file-pdf-o'
-    presentation: 'fa-file-powerpoint-o'
-    spreadsheet: 'fa-file-excel-o'
-    text: 'fa-file-text-o'
-    video: 'fa-file-video-o'
-
   do ->
     for type, extensionString of rawExtensions
       extensionList = extensionString.split ' '
       for ext in extensionList
         extensions[ext] = type
-
-  # Gets the FontAwesome CSS icon class name for the given file extension.
-  #
-  # @param {String} ext the given file extension
-  # @return {String}    the CSS class name
-  #
-  getIcon = (ext) ->
-    getTypeIcon getType ext
 
   # Gets the file type associated to the given file extension.
   #
@@ -89,17 +65,7 @@ ExtDb = do ->
   getType = (ext) ->
     extensions[ext.toLowerCase()] ? 'file'
 
-  # Gets the FontAwesome CSS icon class name for the given file type.
-  #
-  # @param {String} ext the given file type
-  # @return {String}    the CSS class name
-  #
-  getTypeIcon = (type) ->
-    types[type]
-
-  getIcon: getIcon
   getType: getType
-  getTypeIcon: getTypeIcon
 
 
 # This mixin contains static jQuery extensions to obtain file types.
@@ -110,14 +76,6 @@ ExtDb = do ->
 # @since    1.4
 #
 JQueryStaticExt =
-
-  # Gets the FontAwesome icon for the given file extension.
-  #
-  # @param {String} ext the given file extension
-  # @return {String}    the FontAwesome CSS icon class name
-  #
-  fileicon: (ext) ->
-    ExtDb.getIcon ext
 
   # Gets the type of the file for the given file extension.
   #

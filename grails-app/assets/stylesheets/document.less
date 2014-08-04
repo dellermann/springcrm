@@ -19,6 +19,10 @@
 
 
 @import "application";
+@import "font-awesome/variables";
+@import "font-awesome/path";
+@import "font-awesome/core";
+@import "font-awesome/icons";
 
 
 .document-list-container {
@@ -31,6 +35,7 @@
     margin-bottom: 0;
 
     i {
+      .fa;
       color: @color-link;
       cursor: pointer;
       display: table-cell;
@@ -53,5 +58,46 @@
   .size {
     padding-left: 1em;
     text-align: right;
+  }
+
+  // translates item type to FontAwesome icon
+  .back-link i:before {
+    content: @fa-var-arrow-up;
+  }
+  .folder i:before {
+    content: @fa-var-folder;
+  }
+  .filetype-archive i:before {
+    content: @fa-var-file-archive-o;
+  }
+  .filetype-audio i:before {
+    content: @fa-var-file-audio-o;
+  }
+  .filetype-code i:before {
+    content: @fa-var-file-code-o;
+  }
+  .filetype-document i:before {
+    content: @fa-var-file-word-o;
+  }
+  .filetype-file i:before {
+    content: @fa-var-file-o;
+  }
+  .filetype-image i:before {
+    content: @fa-var-file-image-o;
+  }
+  .filetype-pdf i:before {
+    content: @fa-var-file-pdf-o;
+  }
+  .filetype-presentation i:before {
+    content: @fa-var-file-powerpoint-o;
+  }
+  .filetype-spreadsheet i:before {
+    content: @fa-var-file-excel-o;
+  }
+  .filetype-text i:before {
+    content: @fa-var-file-text-o;
+  }
+  .filetype-video i:before {
+    content: @fa-var-file-video-o;
   }
 }

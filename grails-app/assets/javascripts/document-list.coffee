@@ -68,21 +68,21 @@ class DocumentList
       .appendTo $fragment
     if path
       $li = $('<li class="back-link"/>').appendTo $ul
-      $('<i class="fa fa-arrow-up"/>').appendTo $li
+      $('<i/>').appendTo $li
       $('<span class="name"/>').text($L('document_back_label'))
         .appendTo $li
       $('<span class="size"/>').appendTo $li
     for folder in data.folders
       $li = $('<li class="folder"/>').appendTo $ul
-      $('<i class="fa fa-folder"/>').appendTo $li
+      $('<i/>').appendTo $li
       $('<span class="name"/>').text(folder.name)
         .appendTo $li
       $('<span class="size"/>').appendTo $li
     for file in data.files
-      $li = $('<li class="file"/>').appendTo $ul
-      $('<i class="fa"/>')
-        .addClass($.fileicon(file.ext))
-        .appendTo $li
+      $li = $('<li class="file"/>')
+        .addClass("filetype-#{$.filetype(file.ext)}")
+        .appendTo $ul
+      $('<i/>').appendTo $li
       $('<span class="name"/>').text(file.name)
         .appendTo $li
       $('<span class="size"/>').text(_sizeToString file.size)
