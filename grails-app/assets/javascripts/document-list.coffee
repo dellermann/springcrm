@@ -50,20 +50,63 @@ class DocumentList
     url = @$element.data 'list-url'
     if url?
       $.getJSON url, path: path, (data) =>
-        @renderDocumentList path, data
+        @_renderBreadcrumbsPath path
+        @_renderDocumentList path, data
         true
 
-  renderDocumentList: (path, data) ->
+
+  #-- Private methods ---------------------------
+
+  _parentPath = (path) ->
+    pos = path.lastIndexOf '/'
+    if pos < 0 then '' else path.substring 0, pos
+
+  _renderBreadcrumbsPath: (path) ->
+    $ = jQuery
+
+    $fragment = $(document.createDocumentFragment())
+    $nav = $('<nav class="document-list-breadcrumbs"/>').appendTo $fragment
+    $('<strong/>').text($L('document_path_label'))
+      .appendTo $nav
+    $ul = $('<ul/>').on('click', 'li', (event) =>
+        @loadDocumentList $(event.currentTarget).data 'path'
+        false
+      )
+      .appendTo $nav
+    $('<li/>').text($L('document_path_root'))
+      .data('path', '')
+      .appendTo $ul
+    if path
+      currentPath = ''
+      parts = path.split '/'
+      for part in parts
+        currentPath += '/' if currentPath
+        currentPath += part
+
+        $('<li/>').text(part)
+          .data('path', currentPath)
+          .appendTo $ul
+
+    @$element.find('> nav')
+        .remove()
+      .end()
+      .append $fragment
+
+  _renderDocumentList: (path, data) ->
+    $ = jQuery
+
     $fragment = $(document.createDocumentFragment())
     $ul = $('<ul class="document-list-container"/>')
-      .on('click', 'li.back-link', (event) =>
+      .on('click', 'li.back-link', =>
         @loadDocumentList _parentPath @currentPath
+        false
       )
       .on('click', 'li.folder', (event) =>
         path = @currentPath
         path += '/' if path
-        path += $(event.target).find('.name').text()
+        path += $(event.currentTarget).find('.name').text()
         @loadDocumentList path
+        false
       )
       .appendTo $fragment
     if path
@@ -92,13 +135,6 @@ class DocumentList
         .remove()
       .end()
       .append $fragment
-
-
-  #-- Private methods ---------------------------
-
-  _parentPath = (path) ->
-    pos = path.lastIndexOf '/'
-    if pos < 0 then '' else path.substring 0, pos
 
   _sizeToString = (size) ->
     if size >= 1024 ** 3

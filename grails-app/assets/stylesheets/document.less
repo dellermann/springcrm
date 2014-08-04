@@ -25,6 +25,39 @@
 @import "font-awesome/icons";
 
 
+.document-list-breadcrumbs {
+  margin-bottom: 1em;
+
+  strong:after {
+    content: ":";
+  }
+  ul {
+    display: inline;
+    margin: 0;
+    padding-left: 1em;
+  }
+  li {
+    color: @color-link;
+    cursor: pointer;
+    display: inline;
+    list-style: none;
+    margin-bottom: 0;
+
+    &:before {
+      .fa;
+      color: @color-default;
+      cursor: auto;
+      content: @fa-var-angle-right;
+      padding: 0 1ex;
+    }
+    &:first-child:before {
+      content: none;
+    }
+    &:hover {
+      color: @color-link-hover;
+    }
+  }
+}
 .document-list-container {
   display: table;
   margin: 0;
@@ -35,7 +68,7 @@
     margin-bottom: 0;
 
     i {
-      .fa;
+      .fa();
       color: @color-link;
       cursor: pointer;
       display: table-cell;

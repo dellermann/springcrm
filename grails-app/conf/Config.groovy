@@ -127,9 +127,6 @@ grails.plugin.databasemigration.forceAutoMigrate = true
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
-/* Asset pipeline */
-grails.assets.less.compiler = 'less4j'
-
 /* Markdown settings */
 markdown {
     abbreviations = true

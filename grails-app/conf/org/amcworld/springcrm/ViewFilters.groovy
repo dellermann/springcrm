@@ -79,6 +79,8 @@ class ViewFilters {
                     grailsApplication.getArtefactByLogicalPropertyName(
                         'Domain', controllerName
                     )
+                if (!cls) return
+
                 int count = cls.clazz.'count'()
                 int max = Math.min(params.max ? params.int('max') : 10, 100)
                 int maxOffset = Math.floor((count - 1) / max) * max
