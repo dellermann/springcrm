@@ -97,9 +97,9 @@ class CalendarEventController {
      * @param end   the given end time stamp in seconds since the UNIX epoch
      * @return      the rendered JSON response containing the calendar events
      */
-    def listRange(Date start, Date end) {
-        Date startDate = start //new Date(start * 1000L)
-        Date endDate = end //new Date(end * 1000L)
+    def listRange() {
+        Date startDate = params.start //new Date(start * 1000L)
+        Date endDate = params.end //new Date(end * 1000L)
 
         /* load non-recurring events */
         def c = CalendarEvent.createCriteria()
