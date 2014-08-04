@@ -77,6 +77,7 @@ grails.project.dependency.resolution = {
             'commons-io:commons-io:2.4',
             'jmimemagic:jmimemagic:0.1.2',
             //'org.apache.xmlgraphics:fop:1.0',
+            'org.apache.commons:commons-vfs2:2.0',
             'org.apache.httpcomponents:httpclient:4.3.2'
         )
 
@@ -115,11 +116,11 @@ grails.project.dependency.resolution = {
 //            export = false
 //        }
         compile(
-            ':asset-pipeline:1.9.3',
-            ':coffee-asset-pipeline:1.8.0',
+            ':asset-pipeline:1.9.6',
+            ':coffee-asset-pipeline:1.9.0',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-            ':less-asset-pipeline:1.9.0',
+            ':less-asset-pipeline:1.10.0',
             ':mail:1.0.6',
             ':markdown:1.1.1',
             ':quartz:1.0.2',
