@@ -21,9 +21,18 @@
 #= require filetype
 
 
+# @nodoc
 $ = jQuery
 
 
+# Class `DocumentList` represents a Bootstrap compatible widget which renders
+# a list of files and folders, allows traversing the tree, and downloading
+# files.
+#
+# @author   Daniel Ellermann
+# @version  1.4
+# @since    1.4
+#
 class DocumentList
 
   #-- Private variables -------------------------
@@ -33,11 +42,25 @@ class DocumentList
 
   #-- Class variables ---------------------------
 
+  # The ID of the `<iframe>` which is internally generated to realize the file
+  # download.
+  #
+  # @private
+  #
+  @IFRAME_ID: 'document-list-download-area'
+
+  # The version of this widget.
+  #
   @VERSION: '1.4.10'
 
 
   #-- Constructor -------------------------------
 
+  # Creates a new document list within the given element and loads the files
+  # and folders via AJAX.
+  #
+  # @param [Element] element  the given container element
+  #
   constructor: (element) ->
     @$element = $(element)
     @loadDocumentList()
@@ -45,6 +68,11 @@ class DocumentList
 
   #-- Public methods ----------------------------
 
+  # Loads the files and folders within the given absolute path.
+  #
+  # @param [String] path    the given absolute path
+  # @return [DocumentList]  this object
+  #
   loadDocumentList: (path = '') ->
     @currentPath = path
     url = @$element.data 'list-url'
@@ -53,19 +81,63 @@ class DocumentList
         @_renderBreadcrumbsPath path
         @_renderDocumentList path, data
         true
+    this
 
 
   #-- Private methods ---------------------------
 
-  _parentPath = (path) ->
+  # Downloads the file with the given absolute path in an internal `<iframe>`.
+  #
+  # @param [String] absPath the given absolute path
+  # @return [DocumentList]  this object
+  # @private
+  #
+  _downloadFile: (absPath) ->
+    $iframe = $("##{@IFRAME_ID}")
+    unless $iframe.length
+      $iframe = $('<iframe/>')
+        .attr('id', @IFRAME_ID)
+        .css('display', 'none')
+        .appendTo $(window.document.body)
+
+    url = @$element.data 'download-url'
+    url += if url.indexOf('?') < 0 then '?' else '&'
+    url += "path=#{encodeURIComponent(absPath)}"
+    $iframe.attr 'src', url
+    this
+
+  # Gets the absolute path stored in the given tree element.
+  #
+  # @param [jQuery] $elem the given tree element
+  # @return [String]      the absolute path
+  # @private
+  #
+  _getAbsolutePath: ($elem) ->
+    relPath = $elem.find('.name').text()
+    path = @currentPath
+    path += '/' if path
+    path + relPath
+
+  # Obtains the absolute path to the parent of this path.
+  #
+  # @param [String] path  the given absolute path
+  # @return [String]      the absolute path to the parent
+  # @private
+  #
+  _parentPath: (path) ->
     pos = path.lastIndexOf '/'
     if pos < 0 then '' else path.substring 0, pos
 
+  # Renders the breadcrumbs of the given path.
+  #
+  # @param [String] path    the given absolute path
+  # @return [DocumentList]  this object
+  # @private
+  #
   _renderBreadcrumbsPath: (path) ->
     $ = jQuery
 
-    $fragment = $(document.createDocumentFragment())
-    $nav = $('<nav class="document-list-breadcrumbs"/>').appendTo $fragment
+    $nav = $('<nav class="document-list-breadcrumbs"/>')
     $('<strong/>').text($L('document_path_label'))
       .appendTo $nav
     $ul = $('<ul/>').on('click', 'li', (event) =>
@@ -90,53 +162,106 @@ class DocumentList
     @$element.find('> nav')
         .remove()
       .end()
-      .append $fragment
+      .append $nav
+    this
 
+  # Renders the files and folders of the given path.
+  #
+  # @param [String] path    the given absolute path
+  # @param [Object] data    the files and folders of the path received via AJAX
+  # @return [DocumentList]  this object
+  # @private
+  #
   _renderDocumentList: (path, data) ->
     $ = jQuery
 
-    $fragment = $(document.createDocumentFragment())
     $ul = $('<ul class="document-list-container"/>')
-      .on('click', 'li.back-link', =>
-        @loadDocumentList _parentPath @currentPath
+      .on('click', '.back-link', =>
+        @loadDocumentList @_parentPath @currentPath
         false
       )
-      .on('click', 'li.folder', (event) =>
-        path = @currentPath
-        path += '/' if path
-        path += $(event.currentTarget).find('.name').text()
-        @loadDocumentList path
+      .on('click', '.folder', (event) =>
+        @loadDocumentList @_getAbsolutePath $(event.currentTarget)
         false
       )
-      .appendTo $fragment
+      .on('click', '.file', (event) =>
+        @_downloadFile @_getAbsolutePath $(event.currentTarget)
+        false
+      )
     if path
       $li = $('<li class="back-link"/>').appendTo $ul
       $('<i/>').appendTo $li
       $('<span class="name"/>').text($L('document_back_label'))
         .appendTo $li
       $('<span class="size"/>').appendTo $li
+      $('<span class="permissions"/>').appendTo $li
     for folder in data.folders
       $li = $('<li class="folder"/>').appendTo $ul
       $('<i/>').appendTo $li
-      $('<span class="name"/>').text(folder.name)
-        .appendTo $li
+      @_renderName $li, folder
       $('<span class="size"/>').appendTo $li
+      @_renderPermissions $li, folder
     for file in data.files
       $li = $('<li class="file"/>')
         .addClass("filetype-#{$.filetype(file.ext)}")
         .appendTo $ul
       $('<i/>').appendTo $li
-      $('<span class="name"/>').text(file.name)
+      @_renderName $li, file
+      $('<span class="size"/>').text(@_sizeToString file.size)
         .appendTo $li
-      $('<span class="size"/>').text(_sizeToString file.size)
-        .appendTo $li
+      @_renderPermissions $li, file
 
     @$element.find('> ul')
         .remove()
       .end()
-      .append $fragment
+      .append $ul
+    this
 
-  _sizeToString = (size) ->
+  # Renders the name of the given file or folder into the stated list item.
+  #
+  # @param [jQuery] $li the given list item
+  # @param [Object] f   the given file or folder
+  # @return [jQuery]    the generated `<span>` containing the name
+  # @private
+  #
+  _renderName: ($li, f) ->
+    $('<span class="name"/>').text(f.name)
+      .appendTo $li
+
+  # Renders the permissions of the given file or folder into the stated list
+  # item.
+  #
+  # @param [jQuery] $li the given list item
+  # @param [Object] f   the given file or folder
+  # @return [jQuery]    the generated `<span>` containing the permissions
+  # @private
+  #
+  _renderPermissions: ($li, f) ->
+    $ = jQuery
+
+    $perms = $('<span class="permissions"/>').appendTo $li
+
+    b = f.readable
+    $strong = $('<strong/>')
+      .text(if b then $L('document_permissions_read') else '')
+      .appendTo $perms
+    $strong.attr 'title', $L('document_permissions_read_title') if b
+
+    b = f.writeable
+    $strong = $('<strong/>')
+      .text(if b then $L('document_permissions_write') else '')
+      .appendTo $perms
+    $strong.attr('title', $L('document_permissions_write_title')) if b
+
+    $perms
+
+  # Formats the given size as string.
+  #
+  # @param [Number] size  the given in bytes
+  # @return [String]      the formatted size
+  # @private
+  #
+  _sizeToString: (size) ->
     if size >= 1024 ** 3
       "#{(size / 1024 ** 3).format(1)} GB"
     else if size >= 1024 ** 2
@@ -147,6 +272,11 @@ class DocumentList
       "#{size} B"
 
 
+# Renders a document list for the elements in this jQuery object.
+#
+# @param [String] option  a widget operation that should be called
+# @return [jQuery]        this jQuery object
+#
 Plugin = (option) ->
   $ = jQuery
 
@@ -158,11 +288,15 @@ Plugin = (option) ->
     data[option].call $this if typeof option is 'string'
 
 
+# @nodoc
 old = $.fn.documentlist
 
+# @nodoc
 $.fn.documentlist = Plugin
+# @nodoc
 $.fn.documentlist.Constructor = DocumentList
 
+# @nodoc
 $.fn.documentlist.noConflict = ->
   $.fn.documentlist = old
   this

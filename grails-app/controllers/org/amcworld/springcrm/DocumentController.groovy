@@ -20,9 +20,9 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.JSON
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.logging.LogFactory
+import org.apache.commons.vfs2.FileContent
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
 import org.apache.commons.vfs2.FileType
@@ -47,14 +47,13 @@ class DocumentController {
     //-- Instance variables ---------------------
 
     DocumentService documentService
-//    FileService fileService
 
 
     //-- Public methods -------------------------
 
     def index() {}
 
-    def list(String path) {
+    def dir(String path) {
         FileObject root = documentService.root
         if (!root.exists()) {
             render status: HttpServletResponse.SC_NOT_FOUND
@@ -65,13 +64,15 @@ class DocumentController {
             FileObject dir =
                 root.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
 
-            def folderList = []
-            def fileList = []
+            List<FileObject> folderList = []
+            List<FileObject> fileList = []
             for (FileObject child in dir.children) {
-                if (child.type == FileType.FOLDER) {
-                    folderList << child
-                } else {
-                    fileList << child
+                if (!child.hidden) {
+                    if (child.type == FileType.FOLDER) {
+                        folderList << child
+                    } else {
+                        fileList << child
+                    }
                 }
             }
             folderList = folderList.sort { it.name.baseName }
@@ -95,6 +96,31 @@ class DocumentController {
                     }
                 }
             }
+            null
+        } catch (FileSystemException e) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+        }
+
+    }
+
+    def download(String path) {
+        FileObject root = documentService.root
+        if (!root.exists()) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+            return
+        }
+
+        try {
+            FileObject file =
+                root.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
+            FileContent content = file.content
+
+//            response.contentType = Magic.getMagicMatch(data, true).mimeType
+            response.contentLength = content.size
+            response.addHeader 'Content-Disposition',
+                "attachment; filename=\"${file.name.baseName}\""
+            response.outputStream << content.inputStream
+            return null
         } catch (FileSystemException e) {
             render status: HttpServletResponse.SC_NOT_FOUND
         }
@@ -145,27 +171,6 @@ class DocumentController {
 //        new Connector(request, response).
 //            addVolume(fileService.localVolume).
 //            process()
-//    }
-//
-//    def download(String id) {
-//        Volume volume = fileService.localVolume
-//        try {
-//            Map<String, Object> file = volume.file(id)
-//            if (file) {
-//                InputStream stream = volume.open(id)
-//                if (stream) {
-//                    response.contentType = file.mime
-//                    response.contentLength = file.size
-//                    response.addHeader 'Content-Disposition',
-//                        "attachment; filename=\"${file.name}\""
-//                    response.outputStream << stream
-//                    return null
-//                }
-//            }
-//        } catch (ConnectorException e) {
-//            log.error e
-//        }
-//        render status: HttpServletResponse.SC_NOT_FOUND
 //    }
 //
 //    def delete(String id) {

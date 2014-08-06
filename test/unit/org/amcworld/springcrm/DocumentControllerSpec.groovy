@@ -50,13 +50,17 @@ class DocumentControllerSpec extends Specification {
         controller.documentService = mock.createMock()
     }
 
+    def cleanup() {
+        destroyFixtureFileSystem()
+    }
+
 
     //-- Feature methods ------------------------
 
     def 'List root directory'() {
         when: 'I list the content of the root directory with empty path'
         params.path = ''
-        controller.list()
+        controller.dir()
 
         then: 'I get the correct JSON data of these files'
         HttpServletResponse.SC_OK == response.status
@@ -66,7 +70,7 @@ class DocumentControllerSpec extends Specification {
     def 'List non-empty subdirectory content'() {
         when: 'I list the content of the root directory with foo path'
         params.path = 'foo'
-        controller.list()
+        controller.dir()
 
         then: 'I get the correct JSON data of these files'
         HttpServletResponse.SC_OK == response.status
@@ -74,7 +78,7 @@ class DocumentControllerSpec extends Specification {
 
         when: 'I list the content of the root directory with foo/ path'
         params.path = 'foo/'
-        controller.list()
+        controller.dir()
 
         then: 'I get the correct JSON data of these files'
         HttpServletResponse.SC_OK == response.status
@@ -82,7 +86,7 @@ class DocumentControllerSpec extends Specification {
 
         when: 'I list the content of the root directory with a complex path'
         params.path = 'bar/./../foo/.'
-        controller.list()
+        controller.dir()
 
         then: 'I get the correct JSON data of these files'
         HttpServletResponse.SC_OK == response.status
@@ -92,7 +96,7 @@ class DocumentControllerSpec extends Specification {
     def 'List empty subdirectory content'() {
         when: 'I list the content of the root directory with bar path'
         params.path = 'bar'
-        controller.list()
+        controller.dir()
 
         then: 'I get the correct JSON data of these files'
         HttpServletResponse.SC_OK == response.status
@@ -100,63 +104,151 @@ class DocumentControllerSpec extends Specification {
 
         when: 'I list the content of the root directory with /bar/ path'
         params.path = 'bar/'
-        controller.list()
+        controller.dir()
 
         then: 'I get the correct JSON data of these files'
         HttpServletResponse.SC_OK == response.status
         checkBarFolderContent response.json
     }
 
-    def 'List non-existing root directory'() {
+    def 'Cannot list a non-existing root directory'() {
         given: 'the root directory is deleted'
         destroyFixtureFileSystem()
 
         when: 'I list the content of the non-existing root directory'
         params.path = ''
-        controller.list()
+        controller.dir()
 
         then: 'I get an error'
         HttpServletResponse.SC_NOT_FOUND == response.status
     }
 
-    def 'List forbidden file system root directory'() {
+    def 'Cannot list a forbidden file system root directory'() {
         when: 'I list the content of the root directory with / path'
         params.path = '/'
-        controller.list()
+        controller.dir()
 
         then: 'I get an error'
         HttpServletResponse.SC_NOT_FOUND == response.status
     }
 
-    def 'List forbidden directory'() {
+    def 'Cannot list a forbidden directory'() {
         when: 'I list a forbidden directory'
         params.path = '/foo'
-        controller.list()
+        controller.dir()
 
         then: 'I get an error'
         HttpServletResponse.SC_NOT_FOUND == response.status
 
         when: 'I list a forbidden directory'
         params.path = '/foo/'
-        controller.list()
+        controller.dir()
 
         then: 'I get an error'
         HttpServletResponse.SC_NOT_FOUND == response.status
     }
 
-    def 'List forbidden parent directory'() {
+    def 'Cannot list a forbidden parent directory'() {
         when: 'I list the content of the parent directory'
         params.path = '..'
-        controller.list()
+        controller.dir()
 
         then: 'I get an error'
         HttpServletResponse.SC_NOT_FOUND == response.status
     }
 
-    def 'List forbidden parent directory with complex path'() {
+    def 'Cannot list a forbidden parent directory with complex path'() {
         when: 'I list the content of the parent directory'
         params.path = 'foo/../bar/../..'
-        controller.list()
+        controller.dir()
+
+        then: 'I get an error'
+        HttpServletResponse.SC_NOT_FOUND == response.status
+    }
+
+    def 'Download existing file in root directory'() {
+        when: 'I download an existing file'
+        params.path = 'baz.txt'
+        controller.download()
+
+        then: 'I get file'
+        HttpServletResponse.SC_OK == response.status
+        'This is a test file.' == response.text
+        'attachment; filename="baz.txt"' == response.getHeader('Content-Disposition')
+        20 == response.contentLength
+
+        when: 'I download an existing file using a complex path'
+        response.reset()
+        params.path = 'bar/.././baz.txt'
+        controller.download()
+
+        then: 'I get file'
+        HttpServletResponse.SC_OK == response.status
+        'This is a test file.' == response.text
+        'attachment; filename="baz.txt"' == response.getHeader('Content-Disposition')
+        20 == response.contentLength
+    }
+
+    def 'Download existing file in subdirectory'() {
+        when: 'I download an existing file'
+        params.path = 'foo/wheezy.php'
+        controller.download()
+
+        then: 'I get file'
+        HttpServletResponse.SC_OK == response.status
+        '''<?php
+function foobar() {
+    echo 'This is a test.';
+}
+
+function helloWorld() {
+    echo 'Hello World!';
+}
+''' == response.text
+        'attachment; filename="wheezy.php"' == response.getHeader('Content-Disposition')
+        108 == response.contentLength
+
+        when: 'I download an existing file using a complex path'
+        response.reset()
+        params.path = 'bar/.././foo/../foo/wheezy.php'
+        controller.download()
+
+        then: 'I get file'
+        HttpServletResponse.SC_OK == response.status
+        '''<?php
+function foobar() {
+    echo 'This is a test.';
+}
+
+function helloWorld() {
+    echo 'Hello World!';
+}
+''' == response.text
+        'attachment; filename="wheezy.php"' == response.getHeader('Content-Disposition')
+    }
+
+    def 'Cannot download a non-existing file'() {
+        when: 'I download a non-existing file'
+        params.path = 'xyz/whee.doc'
+        controller.download()
+
+        then: 'I get an error'
+        HttpServletResponse.SC_NOT_FOUND == response.status
+    }
+
+    def 'Cannot download a forbidden file'() {
+        when: 'I download a forbidden file'
+        params.path = '../parent-test.txt'
+        controller.download()
+
+        then: 'I get an error'
+        HttpServletResponse.SC_NOT_FOUND == response.status
+    }
+
+    def 'Cannot download a directory'() {
+        when: 'I download a directory'
+        params.path = 'foo'
+        controller.download()
 
         then: 'I get an error'
         HttpServletResponse.SC_NOT_FOUND == response.status
@@ -233,9 +325,14 @@ function helloWorld() {
     echo 'Hello World!';
 }
 '''
+        new File(root, '.directory').text = '''[directory]
+hidden = true
+'''
+        new File(root.parent, 'parent-test.txt').text = 'Unreachable file in parent directory'
     }
 
     protected void destroyFixtureFileSystem() {
         FileUtils.deleteQuietly root
+        new File(root.parent, 'parent-test.txt').delete()
     }
 }

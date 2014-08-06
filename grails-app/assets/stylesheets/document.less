@@ -26,7 +26,7 @@
 
 
 .document-list-breadcrumbs {
-  margin-bottom: 1em;
+  margin-bottom: 1.5em;
 
   strong:after {
     content: ":";
@@ -67,8 +67,18 @@
     list-style: none;
     margin-bottom: 0;
 
+    &:first-child {
+      i, span {
+        border-top: none;
+      }
+    }
+    &:hover {
+      background: lighten(@color-link, 65%);
+    }
+
     i {
       .fa();
+      border-top: 1px solid #DDD;
       color: @color-link;
       cursor: pointer;
       display: table-cell;
@@ -76,21 +86,26 @@
       padding: .3em .5em .3em 0;
     }
     span {
+      border-top: 1px solid #DDD;
       display: table-cell;
       padding: .3em 0;
-    }
-
-    &:hover {
-      background: lighten(@color-link, 65%);
     }
   }
   .name {
     cursor: pointer;
-    width: 200px;
   }
   .size {
     padding-left: 1em;
     text-align: right;
+  }
+  .permissions {
+    padding-left: 1em;
+
+    strong {
+      color: @color-link;
+      display: inline-block;
+      min-width: 1em;
+    }
   }
 
   // translates item type to FontAwesome icon
@@ -134,3 +149,13 @@
     content: @fa-var-file-video-o;
   }
 }
+.lg .document-list-container .name {
+  width: 500px;
+}
+.md .document-list-container .name {
+  width: 300px;
+}
+.sm .document-list-container .name {
+  width: 200px;
+}
+

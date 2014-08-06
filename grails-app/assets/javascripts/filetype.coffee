@@ -75,7 +75,7 @@ ExtDb = do ->
 # @version  1.4
 # @since    1.4
 #
-JQueryStaticExt =
+JQueryStaticFileTypeExt =
 
   # Gets the type of the file for the given file extension.
   #
@@ -85,4 +85,4 @@ JQueryStaticExt =
   filetype: (ext) ->
     ExtDb.getType ext
 
-$.extend JQueryStaticExt
+$.extend JQueryStaticFileTypeExt

@@ -1,7 +1,16 @@
 module.exports = (grunt) ->
   grunt.initConfig
     clean:
+      documentation: ['<%= dirs.target.documentation %>']
       test: ['<%= dirs.target.test.base %>']
+    codo:
+      documentation:
+        dest: '<%= dirs.target.documentation %>'
+        options:
+          name: 'SpringCRM'
+          private: true
+          title: 'SpringCRM CoffeeScript documentation'
+        src: ['<%= dirs.src.coffee %>']
     coffee:
       test:
         files: [
@@ -62,6 +71,7 @@ module.exports = (grunt) ->
         testCases: '<%= dirs.src.base %>/test/js/tests'
       target:
         base: 'target'
+        documentation: '<%= dirs.target.base %>/documentation'
         test:
           base: '<%= dirs.target.base %>/test'
           js:
@@ -92,9 +102,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-codo'
 
   grunt.registerTask 'default', [
     'clean:test', 'less:test', 'coffee:test', 'copy:test'
+  ]
+  grunt.registerTask 'documentation', [
+    'clean:documentation', 'codo:documentation'
   ]
 
 # vim:set ts=2 sw=2 sts=2:
