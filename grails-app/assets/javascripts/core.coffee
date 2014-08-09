@@ -56,8 +56,8 @@ window.$I = do ->
 # * `m`. the minute (0..59)
 # * `mm`. the two-digit minute (0..59), optionally filled with zeros
 #
-# @param {String} format  the format specification used to format the date.  This may be either a user-defined format using the placeholders listed above or any of the given types `date`, `time`, and `datetime`, which obtain the actual format from the localized strings.
-# @return {String}        the formatted date
+# @param [String] format  the format specification used to format the date.  This may be either a user-defined format using the placeholders listed above or any of the given types `date`, `time`, and `datetime`, which obtain the actual format from the localized strings.
+# @return [String]        the formatted date
 #
 Date::format = (format = "datetime") ->
   if (format is "date") or (format is "time") or (format is "datetime")
@@ -117,8 +117,8 @@ Date::format = (format = "datetime") ->
 # are not set, a dot (.) is used as decimal separator and a comma (,) as
 # grouping separator.
 #
-# @param {Number} n the precision; if not set or `null` the precision remains unchanged
-# @return {String}  the formatted number
+# @param [Number] n the precision; if not set or `null` the precision remains unchanged
+# @return [String]  the formatted number
 # @since            1.3
 #
 Number::format = (n = null) ->
@@ -149,7 +149,7 @@ Number::format = (n = null) ->
 # tag.  If the attribute is not specified a number of 2 fraction digits are
 # used.  Furthermore, all formatting used in method `format` is used as well.
 #
-# @return {String}  the formatted currency value
+# @return [String]  the formatted currency value
 # @see              Number#format
 # @see              Number#formatCurrencyValueExt
 # @since            1.3
@@ -163,7 +163,7 @@ Number::formatCurrencyValue = ->
 # digits are used.  Furthermore, all formatting used in method `format` is used
 # as well.
 #
-# @return {String}  the formatted currency value
+# @return [String]  the formatted currency value
 # @see              Number#format
 # @see              Number#formatCurrencyValue
 # @since            1.4
@@ -171,10 +171,28 @@ Number::formatCurrencyValue = ->
 Number::formatCurrencyValueExt = ->
   @format $I.numFractionsExt
 
+# Formats the given number as a size string, such as 430 KB.
+#
+# @return [String]  the formatted size
+# @since            1.4
+#
+Number::formatSize = ->
+  size = this
+  if size >= 1024 ** 4
+    "#{(size / 1024 ** 4).format(1)} TB"
+  else if size >= 1024 ** 3
+    "#{(size / 1024 ** 3).format(1)} GB"
+  else if size >= 1024 ** 2
+    "#{(size / 1024 ** 2).format(1)} MB"
+  else if size >= 1024
+    "#{(size / 1024).format(1)} KB"
+  else
+    "#{size} B"
+
 # Rounds this number to the given number of fraction digits.
 #
 # @param {Number} n the given number of fraction digits
-# @return {Number}  the rounded number
+# @return [Number]  the rounded number
 #
 Number::round = (n = $I.numFractions) ->
   power = Math.pow 10, Math.abs n
@@ -183,8 +201,8 @@ Number::round = (n = $I.numFractions) ->
 # Escapes all characters in the given string which have special meaning in
 # regular expressions.
 #
-# @param {String} s the given string
-# @return {String}  the string with escaped special characters suitable for a regular expression
+# @param [String] s the given string
+# @return [String]  the string with escaped special characters suitable for a regular expression
 # @since            1.3
 #
 RegExp.escape = (s) ->
@@ -192,8 +210,8 @@ RegExp.escape = (s) ->
 
 # Compares this string to the given one.
 #
-# @param {String} s the string to compare
-# @return {Number}  -1 if this string is less than the given one; 1 if this string is greater than the given one; 0 if both the strings are equal
+# @param [String] s the string to compare
+# @return [Number]  -1 if this string is less than the given one; 1 if this string is greater than the given one; 0 if both the strings are equal
 # @since            1.4
 #
 String::compare = (s) ->
@@ -210,9 +228,9 @@ String::compare = (s) ->
 # * `H` or `HH`. the hour (0..23)
 # * `m` or `mm`. the minute (0..59)
 #
-# @param {String} format    the format specification used to parse the date.  This may be either a user-defined format using the placeholders listed above or any of the given types `date`, `time`, and `datetime`, which obtain the actual format from the localized strings.
-# @param {Number} baseYear  the year which acts as limit for year specifications without century: years before the base year are treated as after 2000, all other years before 2000
-# @return {Date}            the parsed date; `null` if this string is empty
+# @param [String] format    the format specification used to parse the date.  This may be either a user-defined format using the placeholders listed above or any of the given types `date`, `time`, and `datetime`, which obtain the actual format from the localized strings.
+# @param [Number] baseYear  the year which acts as limit for year specifications without century: years before the base year are treated as after 2000, all other years before 2000
+# @return [Date]            the parsed date; `null` if this string is empty
 # @throw Error              if this string does not represent a valid date according to the specified or default format
 #
 String::parseDate = (format = "datetime", baseYear = 35) ->
@@ -271,7 +289,7 @@ String::parseDate = (format = "datetime", baseYear = 35) ->
 # respectively, in the`<html>` tag.  If the separators are not set, a dot (.)
 # is used as decimal separator and a comma (,) as grouping separator.
 #
-# @return {Number}  the parsed number
+# @return [Number]  the parsed number
 # @since            1.3
 #
 String::parseNumber = ->
@@ -297,34 +315,34 @@ class HttpUrl
     $
   ///
 
-  # @property {String} the URL scheme
+  # @property [String] the URL scheme
   scheme: 'http'
 
-  # @property {String} the user name, if any
+  # @property [String] the user name, if any
   userName: undefined
 
-  # @property {String} the password of the user, if any
+  # @property [String] the password of the user, if any
   password: undefined
 
-  # @property {String} the host name or IP address
+  # @property [String] the host name or IP address
   host: undefined
 
-  # @property {Number} the port number; the default port number depends on the used scheme
+  # @property [Number] the port number; the default port number depends on the used scheme
   port: undefined
 
-  # @property {String} the path to the resource; if any
+  # @property [String] the path to the resource; if any
   path: undefined
 
-  # @property {Object} any query parameters
+  # @property [Object] any query parameters
   query: {}
 
-  # @property {String} the fragment identifier, if any
+  # @property [String] the fragment identifier, if any
   fragmentIdentifier: undefined
 
 
   # Creates either an empty or a parsed HTTP URL.
   #
-  # @param {String} url the given URL that should be parsed; `null` if an empty URL should be created
+  # @param [String] url the given URL that should be parsed; `null` if an empty URL should be created
   #
   constructor: (url = null) ->
     @_parse url if url
@@ -332,8 +350,8 @@ class HttpUrl
   # Overwrites the query parameters in this URL with the given query string or
   # query data.
   #
-  # @param {String|Object} query  either a query string or an object containing the query parameters
-  # @return {HttpUrl}             this object
+  # @param [String|Object] query  either a query string or an object containing the query parameters
+  # @return [HttpUrl]             this object
   #
   overwriteQuery: (query) ->
     if $.type(query) is 'string'
@@ -344,7 +362,7 @@ class HttpUrl
 
   # Builds a string representation of this URL from the internal data.
   #
-  # @return {String}  the string representation
+  # @return [String]  the string representation
   #
   toString: ->
     s = ''
@@ -365,8 +383,8 @@ class HttpUrl
 
   # Builds a query string from the given data.
   #
-  # @param {Object} query the query data
-  # @return {String}      the built query string
+  # @param [Object] query the query data
+  # @return [String]      the built query string
   #
   _buildQueryString: (query) ->
     parts = []
@@ -375,7 +393,7 @@ class HttpUrl
 
   # Parses the given URL and stores the components in this object.
   #
-  # @param {String} url the URL that should be parsed
+  # @param [String] url the URL that should be parsed
   #
   _parse: (url) ->
     parts = url.match REGEXP
@@ -391,8 +409,8 @@ class HttpUrl
   # Parses the given query string and returns an object containing the
   # parameters.
   #
-  # @param {String} queryString the query string that should be parsed
-  # @return {Object}            the parsed query parameters
+  # @param [String] queryString the query string that should be parsed
+  # @return [Object]            the parsed query parameters
   #
   _parseQueryString: (queryString) ->
     res = {}

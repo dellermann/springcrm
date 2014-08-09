@@ -62,8 +62,9 @@ class DocumentList
   # @param [Element] element  the given container element
   #
   constructor: (element) ->
-    @$element = $(element)
+    @$element = $el = $(element)
     @loadDocumentList()
+    $el.trigger $.Event('springcrm.documentlist.initialized')
 
 
   #-- Public methods ----------------------------
@@ -74,13 +75,19 @@ class DocumentList
   # @return [DocumentList]  this object
   #
   loadDocumentList: (path = '') ->
+    $ = jQuery
+
     @currentPath = path
     url = @$element.data 'list-url'
     if url?
-      $.getJSON url, path: path, (data) =>
-        @_renderBreadcrumbsPath path
-        @_renderDocumentList path, data
-        true
+      $.getJSON(url, path: path)
+        .done (data) =>
+          @_renderBreadcrumbsPath path
+          @_renderDocumentList path, data
+
+          @$element.trigger $.Event('springcrm.documentlist.pathchanged'),
+            path: path
+          return
     this
 
 
@@ -93,6 +100,8 @@ class DocumentList
   # @private
   #
   _downloadFile: (absPath) ->
+    $ = jQuery
+
     $iframe = $("##{@IFRAME_ID}")
     unless $iframe.length
       $iframe = $('<iframe/>')
@@ -207,7 +216,7 @@ class DocumentList
         .appendTo $ul
       $('<i/>').appendTo $li
       @_renderName $li, file
-      $('<span class="size"/>').text(@_sizeToString file.size)
+      $('<span class="size"/>').text(file.size.formatSize())
         .appendTo $li
       @_renderPermissions $li, file
 
@@ -254,22 +263,6 @@ class DocumentList
     $strong.attr('title', $L('document_permissions_write_title')) if b
 
     $perms
-
-  # Formats the given size as string.
-  #
-  # @param [Number] size  the given in bytes
-  # @return [String]      the formatted size
-  # @private
-  #
-  _sizeToString: (size) ->
-    if size >= 1024 ** 3
-      "#{(size / 1024 ** 3).format(1)} GB"
-    else if size >= 1024 ** 2
-      "#{(size / 1024 ** 2).format(1)} MB"
-    else if size >= 1024
-      "#{(size / 1024).format(1)} KB"
-    else
-      "#{size} B"
 
 
 # Renders a document list for the elements in this jQuery object.

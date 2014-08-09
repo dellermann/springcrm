@@ -14,16 +14,22 @@ module.exports = (grunt) ->
     coffee:
       test:
         files: [
-          cwd: '<%= dirs.src.coffee %>/'
-          dest: '<%= dirs.target.test.js.scripts %>/'
-          expand: true
-          ext: '.js'
-          src: ['*.coffee']
+            cwd: '<%= dirs.src.coffee %>/'
+            dest: '<%= dirs.target.test.js.scripts %>/'
+            expand: true
+            ext: '.js'
+            src: ['*.coffee']
+          ,
+            cwd: '<%= dirs.src.test.coffee %>/'
+            dest: '<%= dirs.target.test.js.scripts %>/'
+            expand: true
+            ext: '.js'
+            src: ['*.coffee']
         ]
     copy:
       test:
         files: [
-            cwd: '<%= dirs.src.testCases %>/'
+            cwd: '<%= dirs.src.test.base %>/'
             dest: '<%= dirs.target.test.js.base %>/'
             expand: true
             src: ['*.html']
@@ -68,7 +74,9 @@ module.exports = (grunt) ->
         grailsApp: '<%= dirs.src.base %>/grails-app'
         javascript: '<%= dirs.src.assets %>/javascripts'
         stylesheet: '<%= dirs.src.assets %>/stylesheets'
-        testCases: '<%= dirs.src.base %>/test/js/tests'
+        test:
+          base: '<%= dirs.src.base %>/test/js/tests'
+          coffee: '<%= dirs.src.test.base %>/coffee'
       target:
         base: 'target'
         documentation: '<%= dirs.target.base %>/documentation'
@@ -88,13 +96,16 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON 'package.json'
     watch:
       coffee:
-        files: ['<%= dirs.src.coffee %>/*.coffee']
+        files: [
+          '<%= dirs.src.coffee %>/*.coffee'
+          '<%= dirs.src.test.coffee %>/*.coffee'
+        ]
         tasks: ['coffee']
       less:
         files: ['<%= dirs.src.stylesheet %>/*.less']
         tasks: ['less']
       testCases:
-        files: ['<%= dirs.src.testCases %>/*.html']
+        files: ['<%= dirs.src.test.base %>/*.html']
         tasks: ['copy:test']
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
