@@ -126,7 +126,7 @@ QUnit.assert.itemSize = ($element, size, message) ->
 
 #-- Feature tests -------------------------------
 
-QUnit.module 'Document list widget'
+QUnit.module 'Instantiation'
 QUnit.test 'Instantiate widget without loading', (assert) ->
   fixtureDocumentLists()
 
@@ -146,6 +146,62 @@ QUnit.asyncTest 'Instantiate widget with loading', (assert) ->
       checkRootFolder $('#dl1'), $('#dl2'), assert
       QUnit.start()
 
+
+QUnit.module 'API calls'
+QUnit.asyncTest 'Get initial path', (assert) ->
+  expect 2
+
+  fixtureDocumentLists()
+
+  $('#dl2').documentlist()
+    .one 'springcrm.documentlist.pathchanged', (event, data) ->
+      assert.equal data.path, ''
+      assert.equal $(this).documentlist('path'), ''
+      QUnit.start()
+
+QUnit.asyncTest 'Get path of subfolders', (assert) ->
+  expect 4
+
+  fixtureDocumentLists()
+
+  f1 = (event, data) ->
+    assert.equal data.path, ''
+    $('#dl2').one('springcrm.documentlist.pathchanged', f2)
+      .find('> ul > li:nth-child(2)')
+        .click()
+  f2 = (event, data) ->
+    assert.equal data.path, 'foo'
+    $('#dl2').one('springcrm.documentlist.pathchanged', f3)
+      .find('> ul > li:nth-child(2)')
+        .click()
+  f3 = (event, data) ->
+    assert.equal data.path, 'foo/wheezy'
+    assert.equal $(this).documentlist('path'), 'foo/wheezy'
+    QUnit.start()
+
+  $('#dl2').documentlist()
+    .one 'springcrm.documentlist.pathchanged', f1
+
+QUnit.asyncTest 'Set path', (assert) ->
+  expect 31
+
+  fixtureDocumentLists()
+
+  f1 = (event, data) ->
+    assert.equal data.path, ''
+    $(this).one('springcrm.documentlist.pathchanged', f2)
+      .documentlist 'path', 'foo/wheezy'
+  f2 = (event, data) ->
+    assert.equal data.path, 'foo/wheezy'
+    assert.equal $(this).documentlist('path'), 'foo/wheezy'
+    checkWheezyFolder $('#dl1'), $('#dl2'), assert
+    QUnit.start()
+
+  $('#dl2').documentlist()
+    .one 'springcrm.documentlist.pathchanged', f1
+
+
+QUnit.module 'User interaction'
 QUnit.asyncTest 'Click on folder', (assert) ->
   expect 40
 
@@ -181,42 +237,7 @@ QUnit.asyncTest 'Click on two folders', (assert) ->
         .click()
   f3 = (event, data) ->
     assert.equal data.path, 'foo/wheezy'
-
-    $ul = $('#dl2 > ul')
-    assert.itemSize $('#dl1 > ul'), 0, 'download list 1 is empty'
-
-    $lis = $ul.find('> li')
-    assert.is $ul, '.document-list-container', 'has class "document-list-container"'
-    assert.itemSize $ul, 1, 'exactly 1 <ul> element'
-    assert.itemSize $lis, 3, 'exactly 3 <li> elements inside'
-
-    $li = $lis.eq(0)
-    assert.is $li, '.back-link', 'item 1 has class "back-link"'
-    assert.itemSize $li.find('> i'), 1, 'item 1 has an icon'
-    assert.textEqual $li.find('> .name'), 'back', 'item 1 is called "back"'
-    assert.equal $li.find('> .permissions').html(), '', 'item 1 has no permissions'
-    $li = $lis.eq(1)
-    assert.is $li, '.file', 'item 2 has class "file"'
-    assert.is $li, '.filetype-text', 'item 2 is a text file'
-    assert.itemSize $li.find('> i'), 1, 'item 2 has an icon'
-    assert.textEqual $li.find('> .name'), 'README.md', 'item 2 is called "README.md"'
-    assert.textEqual $li.find('> .size'), '394,3 KB', 'item 2 has a size of 394,3 KB'
-    assert.itemSize $li.find('> .permissions > strong'), 2, 'item 2 has two permissions'
-    assert.itemSize $li.find('> .permissions > strong[title]'), 2, 'item 2 has two permissions with a title'
-    assert.textEqual $li.find('> .permissions > strong:first'), 'R', 'item 2 is readable'
-    assert.equal $li.find('> .permissions > strong:first').attr('title'), 'Read', 'item 2 has readable title'
-    assert.textEqual $li.find('> .permissions > strong:last'), 'W', 'item 2 is writeable'
-    assert.equal $li.find('> .permissions > strong:last').attr('title'), 'Write', 'item 2 has writeable title'
-    $li = $lis.eq(2)
-    assert.is $li, '.file', 'item 3 has class "file"'
-    assert.is $li, '.filetype-document', 'item 3 is a text document file'
-    assert.itemSize $li.find('> i'), 1, 'item 3 has an icon'
-    assert.textEqual $li.find('> .name'), 'Documentation.odt', 'item 3 is called "Documentation.odt"'
-    assert.textEqual $li.find('> .size'), '999,1 KB', 'item 3 has a size of 999,1 KB'
-    assert.itemSize $li.find('> .permissions > strong'), 2, 'item 3 has two permissions'
-    assert.itemSize $li.find('> .permissions > strong[title]'), 0, 'item 3 has no permissions with a title'
-    assert.textEqual $li.find('> .permissions > strong:first'), '', 'item 3 is not readable'
-    assert.textEqual $li.find('> .permissions > strong:last'), '', 'item 3 is not writeable'
+    checkWheezyFolder $('#dl1'), $('#dl2'), assert
     QUnit.start()
 
   $('.document-list').documentlist()
@@ -283,9 +304,9 @@ QUnit.asyncTest 'Click on two back links', (assert) ->
 #-- Auxiliary functions -------------------------
 
 checkFooFolder = ($emptyList, $nonEmptyList, assert) ->
-  $ul = $nonEmptyList.children('ul')
-  assert.itemSize $emptyList.children('ul'), 0, 'download list 1 is empty'
+  assert.itemSize $emptyList.children('ul'), 0, 'one download list is empty'
 
+  $ul = $nonEmptyList.children('ul')
   $lis = $ul.find('> li')
   assert.is $ul, '.document-list-container', 'has class "document-list-container"'
   assert.itemSize $ul, 1, 'exactly 1 <ul> element'
@@ -331,9 +352,9 @@ checkFooFolder = ($emptyList, $nonEmptyList, assert) ->
   assert.equal $li.find('> .permissions > strong:last').attr('title'), 'Write', 'item 4 has writeable title'
 
 checkRootFolder = ($emptyList, $nonEmptyList, assert) ->
-  $ul = $nonEmptyList.children('ul')
-  assert.equal $emptyList.children('ul').length, 0, 'download list 1 is empty'
+  assert.equal $emptyList.children('ul').length, 0, 'one download list is empty'
 
+  $ul = $nonEmptyList.children('ul')
   $lis = $ul.find('> li')
   assert.ok $ul.is('.document-list-container'), 'has class "document-list-container"'
   assert.itemSize $ul, 1, 'exactly 1 <ul> element'
@@ -382,6 +403,43 @@ checkRootFolder = ($emptyList, $nonEmptyList, assert) ->
   assert.textEqual $li.find('> .permissions > strong:last'), 'W', 'item 4 is writeable'
   assert.equal $li.find('> .permissions > strong:last').attr('title'), 'Write', 'item 4 has writeable title'
   assert.notEqual $emptyList.add($nonEmptyList).data('bs.documentlist'), null, 'both document lists are marked as document-list'
+
+checkWheezyFolder = ($emptyList, $nonEmptyList, assert) ->
+  assert.itemSize $emptyList.children('ul'), 0, 'one download list is empty'
+
+  $ul = $nonEmptyList.children('ul')
+  $lis = $ul.find('> li')
+  assert.is $ul, '.document-list-container', 'has class "document-list-container"'
+  assert.itemSize $ul, 1, 'exactly 1 <ul> element'
+  assert.itemSize $lis, 3, 'exactly 3 <li> elements inside'
+
+  $li = $lis.eq(0)
+  assert.is $li, '.back-link', 'item 1 has class "back-link"'
+  assert.itemSize $li.find('> i'), 1, 'item 1 has an icon'
+  assert.textEqual $li.find('> .name'), 'back', 'item 1 is called "back"'
+  assert.equal $li.find('> .permissions').html(), '', 'item 1 has no permissions'
+  $li = $lis.eq(1)
+  assert.is $li, '.file', 'item 2 has class "file"'
+  assert.is $li, '.filetype-text', 'item 2 is a text file'
+  assert.itemSize $li.find('> i'), 1, 'item 2 has an icon'
+  assert.textEqual $li.find('> .name'), 'README.md', 'item 2 is called "README.md"'
+  assert.textEqual $li.find('> .size'), '394,3 KB', 'item 2 has a size of 394,3 KB'
+  assert.itemSize $li.find('> .permissions > strong'), 2, 'item 2 has two permissions'
+  assert.itemSize $li.find('> .permissions > strong[title]'), 2, 'item 2 has two permissions with a title'
+  assert.textEqual $li.find('> .permissions > strong:first'), 'R', 'item 2 is readable'
+  assert.equal $li.find('> .permissions > strong:first').attr('title'), 'Read', 'item 2 has readable title'
+  assert.textEqual $li.find('> .permissions > strong:last'), 'W', 'item 2 is writeable'
+  assert.equal $li.find('> .permissions > strong:last').attr('title'), 'Write', 'item 2 has writeable title'
+  $li = $lis.eq(2)
+  assert.is $li, '.file', 'item 3 has class "file"'
+  assert.is $li, '.filetype-document', 'item 3 is a text document file'
+  assert.itemSize $li.find('> i'), 1, 'item 3 has an icon'
+  assert.textEqual $li.find('> .name'), 'Documentation.odt', 'item 3 is called "Documentation.odt"'
+  assert.textEqual $li.find('> .size'), '999,1 KB', 'item 3 has a size of 999,1 KB'
+  assert.itemSize $li.find('> .permissions > strong'), 2, 'item 3 has two permissions'
+  assert.itemSize $li.find('> .permissions > strong[title]'), 0, 'item 3 has no permissions with a title'
+  assert.textEqual $li.find('> .permissions > strong:first'), '', 'item 3 is not readable'
+  assert.textEqual $li.find('> .permissions > strong:last'), '', 'item 3 is not writeable'
 
 fixtureDocumentLists = ->
   $('#qunit-fixture').append '''

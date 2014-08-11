@@ -59,7 +59,8 @@ class DocumentList
   # Creates a new document list within the given element and loads the files
   # and folders via AJAX.
   #
-  # @param [Element] element  the given container element
+  # @param [Element] element                  the given container element
+  # @event springcrm.documentlist.initialized after this widget has been initialized.
   #
   constructor: (element) ->
     @$element = $el = $(element)
@@ -71,8 +72,9 @@ class DocumentList
 
   # Loads the files and folders within the given absolute path.
   #
-  # @param [String] path    the given absolute path
-  # @return [DocumentList]  this object
+  # @param [String] path                      the given absolute path
+  # @return [DocumentList]                    this object
+  # @event springcrm.documentlist.pathchanged when the current path has been changed and after the files and folders have been rendered.
   #
   loadDocumentList: (path = '') ->
     $ = jQuery
@@ -88,7 +90,18 @@ class DocumentList
           @$element.trigger $.Event('springcrm.documentlist.pathchanged'),
             path: path
           return
-    this
+    $(this)
+
+  # Gets or sets the current path which is displayed.
+  #
+  # @param [String] path      the given path; if omitted the current path is returned
+  # @return [String, jQuery]  either the current path or this object if the path has been set
+  #
+  path: (path) ->
+    if path?
+      @loadDocumentList path
+    else
+      @currentPath
 
 
   #-- Private methods ---------------------------
@@ -272,6 +285,10 @@ class DocumentList
 #
 Plugin = (option) ->
   $ = jQuery
+
+  if option is 'path'
+    $dl = $(this).data('bs.documentlist')
+    return $dl.path.apply $dl, $.makeArray(arguments).slice(1)
 
   @each ->
     $this = $(this)
