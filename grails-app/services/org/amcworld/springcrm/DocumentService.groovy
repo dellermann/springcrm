@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager
+import org.apache.commons.vfs2.NameScope
 import org.apache.commons.vfs2.VFS
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -41,14 +42,24 @@ class DocumentService {
     //-- Public methods -------------------------
 
     /**
+     * Gets the {@code FileObject} with the given path.  The method ensures
+     * that only pathes below the root are used.
+     *
+     * @param path  the given path
+     * @return      the file
+     */
+    FileObject getFile(String path) {
+        root.resolveFile path, NameScope.DESCENDENT_OR_SELF
+    }
+
+    /**
      * Gets the {@code FileObject} representing the root of the document file
      * system.
      *
      * @return  the document root
      */
     FileObject getRoot() {
-        FileSystemManager fsm = VFS.manager
-        fsm.resolveFile rootPath
+        VFS.manager.resolveFile rootPath
     }
 
     /**
@@ -58,5 +69,19 @@ class DocumentService {
      */
     String getRootPath() {
         grailsApplication.config.springcrm.dir.documents
+    }
+
+    /**
+     * Uploads a file to the given folder using the given name.
+     *
+     * @param path      the path where to store the file
+     * @param fileName  the name of the file to create
+     * @param data      the file data to store
+     */
+    void uploadFile(String path, String fileName, InputStream data) {
+        FileObject dir = getFile(path)
+        FileObject f = dir.resolveFile(fileName, NameScope.DESCENDENT_OR_SELF)
+        f.content.outputStream << data
+        f.content.close()
     }
 }

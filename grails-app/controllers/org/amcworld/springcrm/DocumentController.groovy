@@ -27,6 +27,7 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.NameScope
+import org.springframework.web.multipart.MultipartFile
 
 
 /**
@@ -54,15 +55,8 @@ class DocumentController {
     def index() {}
 
     def dir(String path) {
-        FileObject root = documentService.root
-        if (!root.exists()) {
-            render status: HttpServletResponse.SC_NOT_FOUND
-            return
-        }
-
         try {
-            FileObject dir =
-                root.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
+            FileObject dir = documentService.getFile(path)
 
             List<FileObject> folderList = []
             List<FileObject> fileList = []
@@ -104,15 +98,8 @@ class DocumentController {
     }
 
     def download(String path) {
-        FileObject root = documentService.root
-        if (!root.exists()) {
-            render status: HttpServletResponse.SC_NOT_FOUND
-            return
-        }
-
         try {
-            FileObject file =
-                root.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
+            FileObject file = documentService.getFile(path)
             FileContent content = file.content
 
 //            response.contentType = Magic.getMagicMatch(data, true).mimeType
@@ -124,6 +111,14 @@ class DocumentController {
         } catch (FileSystemException e) {
             render status: HttpServletResponse.SC_NOT_FOUND
         }
+    }
+
+    def upload(String path) {
+        MultipartFile file = request.getFile('file')
+        if (!file.empty) {
+            documentService.uploadFile path, file.originalFilename, file.inputStream
+        }
+        render status: HttpServletResponse.SC_OK
     }
 
 //    def listEmbedded(Long organization) {

@@ -23,6 +23,8 @@
 @import "font-awesome/path";
 @import "font-awesome/core";
 @import "font-awesome/icons";
+@import (less) "jquery-fileupload.css";
+@import (less) "jquery-fileupload-ui.css";
 
 
 .document-list-breadcrumbs {
@@ -58,6 +60,7 @@
     }
   }
 }
+
 .document-list-container {
   display: table;
   margin: 0;
@@ -157,5 +160,25 @@
 }
 .sm .document-list-container .name {
   width: 200px;
+}
+
+.fileupload-filelist {
+  display: none;
+}
+.fileinput-button {
+  -moz-user-select: none;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+// overwrite image pathes from jquery-fileupload-ui.css
+.progress-animated {
+  .progress-bar, .bar {
+    background-image: url("../images/progressbar.gif") !important;
+  }
+}
+.fileupload-processing .fileupload-process, .files .processing .preview {
+  background-image: url("../images/loading.gif");
 }
 
