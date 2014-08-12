@@ -34,7 +34,7 @@ module.exports = (grunt) ->
             expand: true
             src: ['*.html']
           ,
-            cwd: '<%= dirs.node.base %>/qunitjs/qunit/'
+            cwd: '<%= dirs.src.bower.qunit %>/qunit/'
             dest: '<%= dirs.target.test.js.scripts %>/'
             expand: true
             src: 'qunit.js'
@@ -44,12 +44,12 @@ module.exports = (grunt) ->
             expand: true
             src: 'jquery.js'
           ,
-            cwd: '<%= dirs.node.base %>/jquery-mockjax/'
+            cwd: '<%= dirs.src.bower.jqueryMockjax %>/'
             dest: '<%= dirs.target.test.js.scripts %>/'
             expand: true
             src: 'jquery.mockjax.js'
           ,
-            cwd: '<%= dirs.node.base %>/qunitjs/qunit/'
+            cwd: '<%= dirs.src.bower.qunit %>/qunit/'
             dest: '<%= dirs.target.test.js.css %>/'
             expand: true
             src: 'qunit.css'
@@ -60,16 +60,16 @@ module.exports = (grunt) ->
             src: 'fonts/**'
         ]
     dirs:
-      node:
-        base: 'node_modules'
       src:
         assets: '<%= dirs.src.grailsApp %>/assets'
         base: '.'
         bower:
           base: '<%= dirs.src.base %>/bower_components'
           jquery: '<%= dirs.src.bower.base %>/jquery'
+          jqueryMockjax: '<%= dirs.src.bower.base %>/jquery-mockjax'
           jqueryUi: '<%= dirs.src.bower.base %>/jquery-ui'
           jqueryUiTouchPunch: '<%= dirs.src.bower.base %>/jquery-ui-touch-punch-working'
+          qunit: '<%= dirs.src.bower.base %>/qunit'
         coffee: '<%= dirs.src.assets %>/javascripts'
         grailsApp: '<%= dirs.src.base %>/grails-app'
         javascript: '<%= dirs.src.assets %>/javascripts'
