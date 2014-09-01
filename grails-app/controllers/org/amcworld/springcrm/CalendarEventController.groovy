@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import javax.servlet.http.HttpServletResponse
+import org.grails.databinding.converters.ValueConverter
 
 
 
@@ -41,6 +42,7 @@ class CalendarEventController {
     //-- Instance variables ---------------------
 
     CalendarEventService calendarEventService
+    ValueConverter defaultDateConverter
 
 
     //-- Public methods -------------------------
@@ -93,13 +95,13 @@ class CalendarEventController {
      * all occurrences of recurring events.  Usually, the method is called by
      * the <em>fullcalendar</em> JavaScript library via AJAX.
      *
-     * @param start the given start time stamp in seconds since the UNIX epoch
-     * @param end   the given end time stamp in seconds since the UNIX epoch
+     * @param start the given start time stamp
+     * @param end   the given end time stamp
      * @return      the rendered JSON response containing the calendar events
      */
-    def listRange() {
-        Date startDate = params.start //new Date(start * 1000L)
-        Date endDate = params.end //new Date(end * 1000L)
+    def listRange(String start, String end) {
+        Date startDate = defaultDateConverter.convert(start)
+        Date endDate = defaultDateConverter.convert(end)
 
         /* load non-recurring events */
         def c = CalendarEvent.createCriteria()
