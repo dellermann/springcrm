@@ -29,12 +29,20 @@ grails.war.resources = { stagingDir ->
 }
 
 if (grailsSettings.grailsEnv != 'test') {
-    def forkConfig = [maxMemory: 1024, minMemory: 64, debug: false, maxPerm: 256]
+    def forkConfig = [
+        maxMemory: 1024, minMemory: 550, debug: false, maxPerm: 192
+    ]
+    def jvmConfig = [
+        jvmArgs: [
+            '-XX:+PrintGC', '-XX:+PrintGCDetails', '-XX:+PrintGCTimeStamps',
+            '-XX:PermSize=128M'
+        ]
+    ]
     grails.project.fork = [
-       console: forkConfig,     // settings for the Swing console JVM
-       run: forkConfig,         // settings for the run-app JVM
-       test: false,             // settings for the test-app JVM
-       war: forkConfig          // settings for the run-war JVM
+       console: forkConfig,             // settings for the Swing console JVM
+       run: forkConfig, // + jvmConfig,     // settings for the run-app JVM
+       test: false,                     // settings for the test-app JVM
+       war: forkConfig                  // settings for the run-war JVM
     ]
 }
 
@@ -116,16 +124,16 @@ grails.project.dependency.resolution = {
 //            export = false
 //        }
         compile(
-            ':asset-pipeline:1.9.6',
+            ':asset-pipeline:1.9.9',
+//            ':codenarc:0.21',
             ':coffee-asset-pipeline:1.9.0',
             ':dbunit-operator:1.7',
             ':fields:1.3',
             ':less-asset-pipeline:1.10.0',
             ':mail:1.0.6',
             ':markdown:1.1.1',
-            ':quartz:1.0.2',
             ':scaffolding:1.0.0',
-            ':searchable:0.6.6'
+            ':searchable:0.6.9'
         )
         build(
             ':tomcat:7.0.54'
@@ -133,9 +141,6 @@ grails.project.dependency.resolution = {
         runtime(
             ':database-migration:1.4.0',
             ':hibernate:3.6.10.16'
-        )
-        provided(
-            ':codenarc:0.20'
         )
         test(
             ":geb:${gebVersion}"

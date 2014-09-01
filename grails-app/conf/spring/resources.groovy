@@ -56,6 +56,10 @@ beans = {
     }
 
     /* Google synchronization types */
+    googleContactSyncTask(GoogleContactSyncTask) {
+        grailsApplication = ref('grailsApplication')
+        googleOAuthService = ref('googleOAuthService')
+    }
     googleSyncFactory(GoogleSyncFactory) { bean ->
         bean.factoryMethod = 'getDefaultInstance'
         grailsApplication = ref('grailsApplication')

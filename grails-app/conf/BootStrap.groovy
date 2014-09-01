@@ -1,7 +1,7 @@
 /*
  * BootStrap.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.InstallService
 import org.amcworld.springcrm.OverviewPanelRepository
+import org.amcworld.springcrm.google.GoogleContactSyncTask
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
@@ -72,10 +73,12 @@ class BootStrap {
         /* perform data migration */
         installService.migrateData dataSource.connection
 
-        /* start Quartz jobs */
+        /* start tasks */
+        def task = grailsApplication.mainContext.getBean('googleContactSyncTask')
         Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
-        Long interval = config ? (config.value as Long) : 5L
-        GoogleContactSyncJob.schedule interval * 60000L, -1
+        long interval = (config ? (config.value as Long) : 5L) * 60000L
+        Timer timer = new Timer('tasks')
+        timer.schedule task, interval, interval
 
         /* initialize panels on overview page */
         OverviewPanelRepository opr = OverviewPanelRepository.instance

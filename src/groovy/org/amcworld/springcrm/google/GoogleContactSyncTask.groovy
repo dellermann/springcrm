@@ -1,7 +1,7 @@
 /*
- * GoogleContactSyncJob.groovy
+ * GoogleContactSyncTask.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,31 @@
  */
 
 
+package org.amcworld.springcrm.google
+
 import com.google.api.client.auth.oauth2.Credential
 import org.amcworld.springcrm.GoogleOAuthService
 import org.amcworld.springcrm.User
-import org.amcworld.springcrm.google.GoogleContactSync
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
 /**
- * The class {@code GoogleContactSyncJob} represents a job which is executed
- * regularly in order to synchronize the person data with Google.  The job is
+ * The class {@code GoogleContactSyncTask} represents a task which is executed
+ * regularly in order to synchronize the person data with Google.  The task is
  * executed in {@link BootStrap} with the interval specified by the
- * administrator.  The job checks each user which has a connection to its
- * Google account and synchronizes the person entries.
+ * administrator.  It checks each user which has a connection to its Google
+ * account and synchronizes the person entries.
  *
  * @author  Daniel Ellermann
  * @version 1.4
  * @since   1.0
  */
-class GoogleContactSyncJob {
+class GoogleContactSyncTask extends TimerTask {
 
     //-- Class variables ------------------------
 
-    static triggers = {}
     private static final Log log = LogFactory.getLog(this)
 
 
@@ -54,7 +54,8 @@ class GoogleContactSyncJob {
 
     //-- Public methods -------------------------
 
-    def execute() {
+    @Override
+    void run() {
         List<User> users = User.list()
         for (User user : users) {
             try {
@@ -69,7 +70,9 @@ class GoogleContactSyncJob {
     //-- Non-public methods ---------------------
 
     protected void sync(User user) {
-        log.debug "Looking for Google account connection for user ${user} (${user.userName})…"
+        if (log.debugEnabled) {
+            log.debug "Looking for Google account connection for user ${user} (${user.userName})…"
+        }
         Credential credential = googleOAuthService.loadCredential(user.userName)
         if (credential) {
             log.debug '    → found'
