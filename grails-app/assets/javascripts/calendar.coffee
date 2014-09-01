@@ -19,4 +19,3 @@
 #= require application
 #= require moment
 #= require fullcalendar
-#= require lang/fullcalendar/${(org.springframework.web.servlet.support.RequestContextUtils.getLocale(org.codehaus.groovy.grails.web.util.WebUtils.retrieveGrailsWebRequest().currentRequest) ?: Locale.default).language}
