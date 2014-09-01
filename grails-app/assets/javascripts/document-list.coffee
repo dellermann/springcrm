@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require jquery
-#= require core
-#= require filetype
+#= require _core
+#= require _filetype
 
 
 # @nodoc
