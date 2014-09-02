@@ -19,4 +19,4 @@
 //= require _core
 //= require _ui
 
-// = require jquery-ui-datepicker-de
+// = require _jquery-ui-datepicker-de

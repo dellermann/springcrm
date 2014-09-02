@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require jquery
-#= require jquery-ui
-#= require jquery-ui-datepicker-de
-#= require jquery-autosize
-#= require mustache
+#= require _jquery
+#= require _jquery-ui
+#= require _jquery-ui-datepicker-de
+#= require _jquery-autosize
+#= require _mustache
 #= require core
 
 
@@ -641,28 +641,6 @@ AddrFieldsWidget =
     this
 
 $.widget "springcrm.addrfields", AddrFieldsWidget
-
-
-LightboxWidget =
-  options:
-    imgDir: "images/lightbox"
-    imageBtnClose: "lightbox-btn-close.gif"
-    imageBtnNext: "lightbox-btn-next.gif"
-    imageBtnPrev: "lightbox-btn-prev.gif"
-    imageLoading: "lightbox-ico-loading.gif"
-
-  _create: ->
-    opts = @options
-    o = {}
-    $.extend o, opts,
-      imageBtnClose: opts.imgDir + "/" + opts.imageBtnClose
-      imageBtnNext: opts.imgDir + "/" + opts.imageBtnNext
-      imageBtnPrev: opts.imgDir + "/" + opts.imageBtnPrev
-      imageLoading: opts.imgDir + "/" + opts.imageLoading
-
-    @element.lightBox o
-
-$.widget "springcrm.lightbox", LightboxWidget
 
 
 RemoteListWidget =

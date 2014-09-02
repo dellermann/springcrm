@@ -18,19 +18,19 @@
 #
 #= require application
 #= require document-list
-#= require mustache
-#= require load-image
-#= require load-image-ios
-#= require load-image-orientation
-#= require load-image-meta
-#= require load-image-exif
-#= require load-image-exif-map
-#= require jquery-fileupload
-#= require jquery-fileupload-process
-#= require jquery-fileupload-image
-#= require jquery-fileupload-audio
-#= require jquery-fileupload-video
-#= require jquery-fileupload-validate
+#= require _mustache
+#= require _load-image
+#= require _load-image-ios
+#= require _load-image-orientation
+#= require _load-image-meta
+#= require _load-image-exif
+#= require _load-image-exif-map
+#= require _jquery-fileupload
+#= require _jquery-fileupload-process
+#= require _jquery-fileupload-image
+#= require _jquery-fileupload-audio
+#= require _jquery-fileupload-video
+#= require _jquery-fileupload-validate
 
 
 $ = jQuery
