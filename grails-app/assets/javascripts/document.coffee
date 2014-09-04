@@ -48,6 +48,7 @@ class DocumentFileUpload
   #-- Instance variables ------------------------
 
   DEFAULT_OPTIONS =
+    $documentList: $('#document-list')
     $fileList: $('#upload-files')
     $uploadRequestTemplate: $('#add-upload-request-template')
 
@@ -82,6 +83,7 @@ class DocumentFileUpload
   _initialize: ->
     @$fileUpload.fileupload
       add: (event, data) => @_onAdd event, data
+      done: (event, data) => @_onDone event, data
     @options.$fileList
       .on('click', '.cancel', (event) => @_onCancelItemUpload event)
       .on('click', '.start', (event) => @_onStartItemUpload event)
@@ -141,6 +143,18 @@ class DocumentFileUpload
     $template.remove()
     @_hideFileList()
     false
+
+  # Called if a file has been uploaded.
+  #
+  # @param [Event] event  any event data
+  # @param [Object] data  information about the upload
+  # @private
+  #
+  _onDone: (event, data) ->
+    if data.textStatus is 'success'
+      file = data.result
+      @options.$documentList.documentlist 'addFile', file
+    null
 
   # Called if the user starts the upload of one item.
   #

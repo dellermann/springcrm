@@ -70,6 +70,17 @@ class DocumentList
 
   #-- Public methods ----------------------------
 
+  # Adds a file to all documents lists in this widget.
+  #
+  # @param [Object] file  the file that should be added
+  # @return [jQuery]      this object
+  #
+  addFile: (file) ->
+    $ = jQuery
+
+    $(this).each ->
+      $(this).data('bs.documentlist')._addFile file
+
   # Loads the files and folders within the given absolute path.
   #
   # @param [String] path                      the given absolute path
@@ -105,6 +116,30 @@ class DocumentList
 
 
   #-- Private methods ---------------------------
+
+  # Adds the given file to the alphabetically sorted position in the document
+  # list.
+  #
+  # @param [Object] file  the file that should be added
+  # @private
+  #
+  _addFile: (file) ->
+    $ = jQuery
+    name = file.name
+    $ul = @$element.find('.document-list-container')
+
+    $item = null
+    $ul.find('.file').each ->
+      $this = $(this)
+      if $this.find('.name').text() > name
+        $item = $this
+
+    $li = @_renderFileItem file
+    if $item
+      $item.before $li
+    else
+      $li.appendTo $ul
+    null
 
   # Downloads the file with the given absolute path in an internal `<iframe>`.
   #
@@ -223,21 +258,28 @@ class DocumentList
       @_renderName $li, folder
       $('<span class="size"/>').appendTo $li
       @_renderPermissions $li, folder
-    for file in data.files
-      $li = $('<li class="file"/>')
-        .addClass("filetype-#{$.filetype(file.ext)}")
-        .appendTo $ul
-      $('<i/>').appendTo $li
-      @_renderName $li, file
-      $('<span class="size"/>').text(file.size.formatSize())
-        .appendTo $li
-      @_renderPermissions $li, file
+    @_renderFileItem(file).appendTo $ul for file in data.files
 
     @$element.find('> ul')
         .remove()
       .end()
       .append $ul
     this
+
+  # Renders a list item for the given file.
+  #
+  # @param [Object] file  the given file
+  # @return [jQuery]      the rendered list item
+  # @private
+  #
+  _renderFileItem: (file) ->
+    $li = $('<li class="file"/>').addClass "filetype-#{$.filetype(file.ext)}"
+    $('<i/>').appendTo $li
+    @_renderName $li, file
+    $('<span class="size"/>').text(file.size.formatSize())
+      .appendTo $li
+    @_renderPermissions $li, file
+    $li
 
   # Renders the name of the given file or folder into the stated list item.
   #
@@ -290,12 +332,14 @@ Plugin = (option) ->
     $dl = $(this).data('bs.documentlist')
     return $dl.path.apply $dl, $.makeArray(arguments).slice(1)
 
+  args = arguments
   @each ->
     $this = $(this)
     data = $this.data 'bs.documentlist'
 
     $this.data 'bs.documentlist', (data = new DocumentList(this)) unless data
-    data[option].call $this if typeof option is 'string'
+    if typeof option is 'string'
+      data[option].apply $this, $.makeArray(args).slice 1
 
 
 # @nodoc

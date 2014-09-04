@@ -77,11 +77,13 @@ class DocumentService {
      * @param path      the path where to store the file
      * @param fileName  the name of the file to create
      * @param data      the file data to store
+     * @return			information about the uploaded file
      */
-    void uploadFile(String path, String fileName, InputStream data) {
+    FileObject uploadFile(String path, String fileName, InputStream data) {
         FileObject dir = getFile(path)
         FileObject f = dir.resolveFile(fileName, NameScope.DESCENDENT_OR_SELF)
         f.content.outputStream << data
         f.content.close()
+		f
     }
 }

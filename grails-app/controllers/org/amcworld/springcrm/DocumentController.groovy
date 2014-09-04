@@ -20,13 +20,14 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_OK
+
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.vfs2.FileContent
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
 import org.apache.commons.vfs2.FileType
-import org.apache.commons.vfs2.NameScope
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -92,7 +93,7 @@ class DocumentController {
             }
             null
         } catch (FileSystemException e) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
         }
 
     }
@@ -109,16 +110,32 @@ class DocumentController {
             response.outputStream << content.inputStream
             return null
         } catch (FileSystemException e) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
         }
     }
 
     def upload(String path) {
         MultipartFile file = request.getFile('file')
-        if (!file.empty) {
-            documentService.uploadFile path, file.originalFilename, file.inputStream
+        if (file.empty) {
+        	render status: SC_OK
+        } else {
+			try {
+	            FileObject f = documentService.uploadFile(
+					path, file.originalFilename, file.inputStream
+				)
+	            render(contentType: 'application/json') {
+	                [
+						name: f.name.baseName,
+	                    ext: f.name.extension,
+	                    size: f.content.size,
+	                    readable: f.readable,
+	                    writeable: f.writeable
+					]
+	            }
+	        } catch (FileSystemException e) {
+	            render status: SC_NOT_FOUND
+	        }
         }
-        render status: HttpServletResponse.SC_OK
     }
 
 //    def listEmbedded(Long organization) {

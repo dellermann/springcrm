@@ -20,11 +20,16 @@
 
 package org.amcworld.springcrm
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_OK
+
 import grails.test.mixin.TestFor
-import javax.servlet.http.HttpServletResponse
 import org.apache.commons.io.FileUtils
+import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager
+import org.apache.commons.vfs2.NameScope
 import org.apache.commons.vfs2.VFS
+import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import org.codehaus.groovy.grails.web.json.JSONObject
 import spock.lang.Specification
 
@@ -41,13 +46,7 @@ class DocumentControllerSpec extends Specification {
 
     def setup() {
         createFixtureFileSystem()
-
-        def mock = mockFor(DocumentService)
-        mock.demandExplicit.getRoot(1..3) { ->
-            FileSystemManager fsm = VFS.manager
-            fsm.resolveFile root.toString()
-        }
-        controller.documentService = mock.createMock()
+		mockGetFileMethod()
     }
 
     def cleanup() {
@@ -63,7 +62,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get the correct JSON data of these files'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         checkRootFolderContent response.json
     }
 
@@ -73,7 +72,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get the correct JSON data of these files'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         checkFooFolderContent response.json
 
         when: 'I list the content of the root directory with foo/ path'
@@ -81,7 +80,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get the correct JSON data of these files'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         checkFooFolderContent response.json
 
         when: 'I list the content of the root directory with a complex path'
@@ -89,7 +88,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get the correct JSON data of these files'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         checkFooFolderContent response.json
     }
 
@@ -99,7 +98,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get the correct JSON data of these files'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         checkBarFolderContent response.json
 
         when: 'I list the content of the root directory with /bar/ path'
@@ -107,7 +106,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get the correct JSON data of these files'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         checkBarFolderContent response.json
     }
 
@@ -120,7 +119,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot list a forbidden file system root directory'() {
@@ -129,7 +128,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot list a forbidden directory'() {
@@ -138,14 +137,14 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
 
         when: 'I list a forbidden directory'
         params.path = '/foo/'
         controller.dir()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot list a forbidden parent directory'() {
@@ -154,7 +153,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot list a forbidden parent directory with complex path'() {
@@ -163,7 +162,7 @@ class DocumentControllerSpec extends Specification {
         controller.dir()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Download existing file in root directory'() {
@@ -172,7 +171,7 @@ class DocumentControllerSpec extends Specification {
         controller.download()
 
         then: 'I get file'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         'This is a test file.' == response.text
         'attachment; filename="baz.txt"' == response.getHeader('Content-Disposition')
         20 == response.contentLength
@@ -183,7 +182,7 @@ class DocumentControllerSpec extends Specification {
         controller.download()
 
         then: 'I get file'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         'This is a test file.' == response.text
         'attachment; filename="baz.txt"' == response.getHeader('Content-Disposition')
         20 == response.contentLength
@@ -195,7 +194,7 @@ class DocumentControllerSpec extends Specification {
         controller.download()
 
         then: 'I get file'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         '''<?php
 function foobar() {
     echo 'This is a test.';
@@ -214,7 +213,7 @@ function helloWorld() {
         controller.download()
 
         then: 'I get file'
-        HttpServletResponse.SC_OK == response.status
+        SC_OK == response.status
         '''<?php
 function foobar() {
     echo 'This is a test.';
@@ -233,7 +232,7 @@ function helloWorld() {
         controller.download()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot download a forbidden file'() {
@@ -242,7 +241,7 @@ function helloWorld() {
         controller.download()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot download a directory'() {
@@ -251,8 +250,89 @@ function helloWorld() {
         controller.download()
 
         then: 'I get an error'
-        HttpServletResponse.SC_NOT_FOUND == response.status
+        SC_NOT_FOUND == response.status
     }
+
+	def 'Upload empty file'() {
+		when: 'I upload an empty file'
+		def file = new GrailsMockMultipartFile(
+			'file', 'foo.dat', 'application/octet-stream', new byte[0]
+		)
+		request.addFile file
+		controller.upload ''
+
+		then: 'I get a success code'
+        SC_OK == response.status
+
+		and: 'no file has been created'
+		!new File(root, 'foo.dat').exists()
+	}
+
+	def 'Upload non-empty file'() {
+		given: 'an example file content'
+		String data = 'Example file for upload'
+
+		and: 'a mock for the service class'
+		mockUploadMethod 2
+
+		when: 'I upload a file'
+		def file = new GrailsMockMultipartFile(
+			'file', 'foo.txt', 'text/plain', data.bytes
+		)
+		request.addFile file
+		controller.upload ''
+
+		then: 'I get information about the uploaded file'
+		'foo.txt' == response.json.name
+		'txt' == response.json.ext
+		data.length() == response.json.size
+		response.json.readable
+		response.json.writeable
+
+		and: 'a file has been created'
+		def f1 = new File(root, 'foo.txt')
+		f1.exists()
+		data.length() == f1.size()
+		data == f1.text
+
+		when: 'I upload a file to a subdirectory'
+		request.addFile file
+		controller.upload 'bar'
+
+		then: 'I get information about the uploaded file'
+		'foo.txt' == response.json.name
+		'txt' == response.json.ext
+		data.length() == response.json.size
+		response.json.readable
+		response.json.writeable
+
+		and: 'a file has been created'
+		def f2 = new File(root, 'bar/foo.txt')
+		f2.exists()
+		data.length() == f2.size()
+		data == f2.text
+	}
+
+	def 'Upload file to invalid folder'() {
+		given: 'an example file content'
+		String data = 'Example file for upload'
+
+		and: 'a mock for the service class'
+		mockUploadMethod()
+
+		when: 'I upload a file'
+		def file = new GrailsMockMultipartFile(
+			'file', 'foo.txt', 'text/plain', data.bytes
+		)
+		request.addFile file
+		controller.upload '..'
+
+		then: 'I get an error'
+        SC_NOT_FOUND == response.status
+
+		and: 'no file has been created'
+		!new File(root, 'foo.txt').exists()
+	}
 
 
     //-- Non-public methods ---------------------
@@ -335,4 +415,28 @@ hidden = true
         FileUtils.deleteQuietly root
         new File(root.parent, 'parent-test.txt').delete()
     }
+
+	protected void mockGetFileMethod() {
+		def mock = mockFor(DocumentService)
+		mock.demandExplicit.getFile(1..3) { String path ->
+			FileSystemManager fsm = VFS.manager
+			FileObject r = fsm.resolveFile root.toString()
+			r.resolveFile path, NameScope.DESCENDENT_OR_SELF
+		}
+		controller.documentService = mock.createMock()
+	}
+
+	protected void mockUploadMethod(num = 1) {
+		def mock = mockFor(DocumentService)
+		mock.demandExplicit.uploadFile(num) { String path, String fileName, InputStream data ->
+			FileSystemManager fsm = VFS.manager
+			FileObject r = fsm.resolveFile root.toString()
+			FileObject p = r.resolveFile path, NameScope.DESCENDENT_OR_SELF
+			FileObject f = p.resolveFile fileName, NameScope.DESCENDENT_OR_SELF
+			f.content.outputStream << data
+			f.content.close()
+			f
+		}
+		controller.documentService = mock.createMock()
+	}
 }

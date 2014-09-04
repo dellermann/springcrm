@@ -21,6 +21,10 @@
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
+
+import org.apache.commons.vfs2.FileObject
+import org.apache.commons.vfs2.FileSystemException
+
 import spock.lang.Specification
 
 
@@ -62,4 +66,160 @@ class DocumentServiceSpec extends Specification {
         '/tmp/springcrm'                | 'file:///tmp/springcrm'
         '/home/jsmith/.springcrm'       | 'file:///home/jsmith/.springcrm'
     }
+
+	def 'Get valid file'() {
+		given: 'a root path'
+		service.grailsApplication.config.springcrm.dir.documents =
+			'/tmp/springcrm-test/47bc3f71ad90b3'
+
+		when: 'I obtain a valid, but non-existing file'
+		FileObject f = service.getFile('foo.txt')
+
+		then: 'I get a file object'
+		null != f
+		!f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+
+		when: 'I obtain a valid, but non-existing file'
+		f = service.getFile('./foo.txt')
+
+		then: 'I get a file object'
+		null != f
+		!f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+	}
+
+	def 'Get valid file in subdirectory'() {
+		given: 'a root path'
+		service.grailsApplication.config.springcrm.dir.documents =
+			'/tmp/springcrm-test/47bc3f71ad90b3'
+
+		when: 'I obtain a valid, but non-existing file'
+		FileObject f = service.getFile('bar/foo.txt')
+
+		then: 'I get a file object'
+		null != f
+		!f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/bar/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+
+		when: 'I obtain a valid, but non-existing file'
+		f = service.getFile('./bar/.././bar/foo.txt')
+
+		then: 'I get a file object'
+		null != f
+		!f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/bar/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+	}
+
+	def 'Get invalid files'() {
+		given: 'a root path'
+		service.grailsApplication.config.springcrm.dir.documents =
+			'/tmp/springcrm-test/47bc3f71ad90b3'
+
+		when: 'I obtain an invalid file in the parent directory'
+		service.getFile('../foo.txt')
+
+		then: 'I get an exception'
+		thrown FileSystemException
+
+		when: 'I obtain an invalid file in the parent directory'
+		service.getFile('./bar/../../foo.txt')
+
+		then: 'I get an exception'
+		thrown FileSystemException
+
+		when: 'I obtain an invalid file in the root directory'
+		service.getFile('/foo.txt')
+
+		then: 'I get an exception'
+		thrown FileSystemException
+	}
+
+	def 'Upload file'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		and: 'an example file'
+		String data = 'Example file for upload'
+		InputStream input = new ByteArrayInputStream(data.bytes)
+
+		when: 'I upload this file'
+		FileObject f = service.uploadFile('.', 'foo.txt', input)
+
+		then: 'the file was uploaded successfully'
+		new File(root, 'foo.txt').exists()
+
+		and: 'I get valid file information'
+		null != f
+		f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+		data.length() == f.content.size
+		data == f.content.inputStream.text
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Upload file to subdirectory'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File bar = new File(root, 'bar')
+		bar.mkdir()
+
+		and: 'an example file'
+		String data = 'Example file for upload into subdirectory "bar"'
+		InputStream input = new ByteArrayInputStream(data.bytes)
+
+		when: 'I upload this file'
+		FileObject f = service.uploadFile('bar', 'foo.txt', input)
+
+		then: 'the file was uploaded successfully'
+		new File(bar, 'foo.txt').exists()
+
+		and: 'I get valid file information'
+		null != f
+		f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/bar/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+		data.length() == f.content.size
+		data == f.content.inputStream.text
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Upload file to invalid path'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		and: 'an example file'
+		String data = 'Example file for upload'
+		InputStream input = new ByteArrayInputStream(data.bytes)
+
+		when: 'I upload this file'
+		service.uploadFile('..', 'foo.txt', input)
+
+		then: 'an exception is thrown'
+		thrown FileSystemException
+
+		and: 'the file was not uploaded'
+		!new File(root.parentFile, 'foo.txt').exists()
+
+		cleanup:
+		root.deleteDir()
+	}
 }

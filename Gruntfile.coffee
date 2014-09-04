@@ -35,6 +35,11 @@ module.exports = (grunt) ->
             src: ['*.html']
           ,
             cwd: '<%= dirs.src.bower.qunit %>/qunit/'
+            dest: '<%= dirs.target.test.js.css %>/'
+            expand: true
+            src: 'qunit.css'
+          ,
+            cwd: '<%= dirs.src.bower.qunit %>/qunit/'
             dest: '<%= dirs.target.test.js.scripts %>/'
             expand: true
             src: 'qunit.js'
@@ -42,17 +47,12 @@ module.exports = (grunt) ->
             cwd: '<%= dirs.src.javascript %>/'
             dest: '<%= dirs.target.test.js.scripts %>/'
             expand: true
-            src: 'jquery.js'
+            src: '_jquery.js'
           ,
             cwd: '<%= dirs.src.bower.jqueryMockjax %>/'
             dest: '<%= dirs.target.test.js.scripts %>/'
             expand: true
             src: 'jquery.mockjax.js'
-          ,
-            cwd: '<%= dirs.src.bower.qunit %>/qunit/'
-            dest: '<%= dirs.target.test.js.css %>/'
-            expand: true
-            src: 'qunit.css'
           ,
             cwd: '<%= dirs.src.assets %>/'
             dest: '<%= dirs.target.test.js.base %>/'
