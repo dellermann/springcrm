@@ -331,7 +331,48 @@ function helloWorld() {
         SC_NOT_FOUND == response.status
 
 		and: 'no file has been created'
-		!new File(root, 'foo.txt').exists()
+		!new File(root.parentFile, 'foo.txt').exists()
+	}
+
+	def 'Create a folder'() {
+		given: 'a mock for the service class'
+		mockCreateFolderMethod()
+
+		when: 'I create a folder'
+		controller.createFolder '', 'my-new-folder'
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the folder has been created'
+		File f = new File(root, 'my-new-folder')
+		f.exists()
+		f.directory
+	}
+
+	def 'Create a folder in invalid path'() {
+		given: 'a mock for the service class'
+		mockCreateFolderMethod()
+
+		when: 'I create a folder'
+		controller.createFolder '..', 'my-new-folder'
+
+		then: 'I get an error code'
+		SC_NOT_FOUND == response.status
+
+		and: 'the folder has not been created'
+		!new File(root.parentFile, 'my-new-folder').exists()
+	}
+
+	def 'Create a folder with invalid name'() {
+		given: 'a mock for the service class'
+		mockCreateFolderMethod()
+
+		when: 'I create a folder'
+		controller.createFolder '', '..'
+
+		then: 'I get an error code'
+		SC_NOT_FOUND == response.status
 	}
 
 
@@ -415,6 +456,20 @@ hidden = true
         FileUtils.deleteQuietly root
         new File(root.parent, 'parent-test.txt').delete()
     }
+
+	protected void mockCreateFolderMethod(num = 1) {
+		def mock = mockFor(DocumentService)
+		mock.demandExplicit.createFolder(num) { String path, String name ->
+			FileSystemManager fsm = VFS.manager
+			FileObject r = fsm.resolveFile root.toString()
+			FileObject p = r.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
+			FileObject f = p.resolveFile(name, NameScope.DESCENDENT_OR_SELF)
+			f.createFolder()
+			f
+		}
+		controller.documentService = mock.createMock()
+
+	}
 
 	protected void mockGetFileMethod() {
 		def mock = mockFor(DocumentService)

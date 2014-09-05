@@ -138,6 +138,15 @@ class DocumentController {
         }
     }
 
+	def createFolder(String path, String name) {
+		try {
+			documentService.createFolder path, name
+        	render status: SC_OK
+		} catch (FileSystemException e) {
+            render status: SC_NOT_FOUND
+		}
+	}
+
 //    def listEmbedded(Long organization) {
 //        def organizationInstance = Organization.get(organization)
 //        File dir = fileService.getOrgDocumentDir(organizationInstance)

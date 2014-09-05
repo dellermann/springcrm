@@ -460,6 +460,158 @@ QUnit.asyncTest 'Add file to empty list', (assert) ->
   $dl.documentlist()
     .one 'springcrm.documentlist.pathchanged', f1
 
+QUnit.asyncTest 'Add folder before item', (assert) ->
+  expect 52
+
+  fixtureDocumentLists()
+  $dl = $('#dl2')
+
+  f1 = (event, data) ->
+    assert.equal data.path, '', 'path is empty'
+    $dl.documentlist 'addFolder',
+      name: 'breeze'
+      readable: true
+      writeable: true
+
+    $ul = $dl.children 'ul'
+    assert.itemSize $ul.children('li.folder'), 3, 'now it has 3 folder elements'
+    assert.documentListEqual $ul,
+      folders: [
+        ['bar', true, false]
+        ['breeze', true, true]
+        ['foo', true, true]
+      ]
+      files: [
+        ['baz.txt', 'text', '19,9 KB', true, true]
+        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+      ]
+
+    QUnit.start()
+
+  $dl.documentlist()
+    .one 'springcrm.documentlist.pathchanged', f1
+
+QUnit.asyncTest 'Add folder after item', (assert) ->
+  expect 52
+
+  fixtureDocumentLists()
+  $dl = $('#dl2')
+
+  f1 = (event, data) ->
+    assert.equal data.path, '', 'path is empty'
+    $dl.documentlist 'addFolder',
+      name: 'mood'
+      readable: true
+      writeable: true
+
+    $ul = $dl.children 'ul'
+    assert.itemSize $ul.children('li.folder'), 3, 'now it has 3 folder elements'
+    assert.documentListEqual $ul,
+      folders: [
+        ['bar', true, false]
+        ['foo', true, true]
+        ['mood', true, true]
+      ]
+      files: [
+        ['baz.txt', 'text', '19,9 KB', true, true]
+        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+      ]
+
+    QUnit.start()
+
+  $dl.documentlist()
+    .one 'springcrm.documentlist.pathchanged', f1
+
+QUnit.asyncTest 'Add folder to list with files only', (assert) ->
+  expect 35
+
+  $ = jQuery
+
+  $.mockjaxClear()
+  $.mockjax
+    data:
+      path: ''
+    responseText:
+      folders: []
+      files: [
+          name: 'baz.txt'
+          ext: 'txt'
+          size: 20405
+          readable: true
+          writeable: true
+        ,
+          name: 'yummy.csv'
+          ext: 'csv'
+          size: 40307430
+          readable: false
+          writeable: true
+      ]
+    url: BASE_URL
+
+  fixtureDocumentLists()
+  $dl = $('#dl2')
+
+  f1 = (event, data) ->
+    assert.equal data.path, '', 'path is empty'
+    $dl.documentlist 'addFolder',
+      name: 'breeze'
+      readable: true
+      writeable: true
+
+    $ul = $dl.children 'ul'
+    assert.itemSize $ul.children('li.folder'), 1, 'now it has 1 folder element'
+    assert.documentListEqual $ul,
+      folders: [
+        ['breeze', true, true]
+      ]
+      files: [
+        ['baz.txt', 'text', '19,9 KB', true, true]
+        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+      ]
+
+    mockAjax()
+    QUnit.start()
+
+  $dl.documentlist()
+    .one 'springcrm.documentlist.pathchanged', f1
+
+QUnit.asyncTest 'Add folder to empty list', (assert) ->
+  expect 14
+
+  $ = jQuery
+
+  $.mockjaxClear()
+  $.mockjax
+    data:
+      path: ''
+    responseText:
+      folders: []
+      files: []
+    url: BASE_URL
+
+  fixtureDocumentLists()
+  $dl = $('#dl2')
+
+  f1 = (event, data) ->
+    assert.equal data.path, '', 'path is empty'
+    $dl.documentlist 'addFolder',
+      name: 'breeze'
+      readable: true
+      writeable: true
+
+    $ul = $dl.children 'ul'
+    assert.itemSize $ul.children('li.folder'), 1, 'now it has 1 folder element'
+    assert.documentListEqual $ul,
+      folders: [
+        ['breeze', true, true]
+      ]
+
+    mockAjax()
+    QUnit.start()
+
+  $dl.documentlist()
+    .one 'springcrm.documentlist.pathchanged', f1
+
 
 QUnit.module 'User interaction'
 QUnit.asyncTest 'Click on folder', (assert) ->

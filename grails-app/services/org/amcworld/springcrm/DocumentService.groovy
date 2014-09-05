@@ -41,6 +41,20 @@ class DocumentService {
 
     //-- Public methods -------------------------
 
+	/**
+	 * Creates a new folder with the given name in the stated path.
+	 *
+	 * @param path	the path where the new folder should be created
+	 * @param name	the name of the new folder
+	 * @return		the created folder
+	 */
+	FileObject createFolder(String path, String name) {
+		FileObject p = getFile(path)
+		FileObject f = p.resolveFile(name, NameScope.CHILD)
+		f.createFolder()
+		f
+	}
+
     /**
      * Gets the {@code FileObject} with the given path.  The method ensures
      * that only pathes below the root are used.

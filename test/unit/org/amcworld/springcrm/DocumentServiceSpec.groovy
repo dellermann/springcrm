@@ -20,11 +20,11 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
+import org.apache.commons.vfs2.FileType;
 
+import grails.test.mixin.TestFor
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
-
 import spock.lang.Specification
 
 
@@ -218,6 +218,179 @@ class DocumentServiceSpec extends Specification {
 
 		and: 'the file was not uploaded'
 		!new File(root.parentFile, 'foo.txt').exists()
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Upload and overwrite existing file'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		and: 'two example files'
+		String data1 = 'Example file for upload'
+		InputStream input1 = new ByteArrayInputStream(data1.bytes)
+		String data2 = 'Another example file for upload and overwrite'
+		InputStream input2 = new ByteArrayInputStream(data2.bytes)
+
+		when: 'I upload this file'
+		service.uploadFile('.', 'foo.txt', input1)
+
+		then: 'the file was uploaded successfully'
+		def f1 = new File(root, 'foo.txt')
+		f1.exists()
+		data1 == f1.text
+
+		when: 'I upload and overwrite this file'
+		FileObject f = service.uploadFile('.', 'foo.txt', input2)
+
+		then: 'the file was uploaded successfully'
+		def f2 = new File(root, 'foo.txt')
+		f2.exists()
+		data2 == f2.text
+
+		and: 'I get valid file information'
+		null != f
+		f.exists()
+		'/tmp/springcrm-test/47bc3f71ad90b3/foo.txt' == f.name.path
+		'foo.txt' == f.name.baseName
+		data2.length() == f.content.size
+		data2 == f.content.inputStream.text
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Create new folder'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		when: 'I create a folder'
+		FileObject f = service.createFolder('.', 'my-new-folder')
+
+		then: 'I get a valid FileObject'
+		null != f
+		f.exists()
+		f.type == FileType.FOLDER
+		'/tmp/springcrm-test/47bc3f71ad90b3/my-new-folder' == f.name.path
+		'my-new-folder' == f.name.baseName
+
+		and: 'the folder was created successfully'
+		File file = new File(root, 'my-new-folder')
+		file.exists()
+		file.directory
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Create new folder in subdirectory'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File bar = new File(root, 'bar')
+		bar.mkdir()
+
+		when: 'I create a folder'
+		FileObject f = service.createFolder('bar', 'my-new-folder')
+
+		then: 'I get a valid FileObject'
+		null != f
+		f.exists()
+		f.type == FileType.FOLDER
+		'/tmp/springcrm-test/47bc3f71ad90b3/bar/my-new-folder' == f.name.path
+		'my-new-folder' == f.name.baseName
+
+		and: 'the folder was created successfully'
+		File file = new File(bar, 'my-new-folder')
+		file.exists()
+		file.directory
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Create new folder in invalid path'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		when: 'I create a folder'
+		service.createFolder('..', 'my-new-folder')
+
+		then: 'I get a valid FileObject'
+		thrown FileSystemException
+
+		and: 'the folder was not created'
+		!new File(root, 'my-new-folder').exists()
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Create new folder with invalid name'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		when: 'I create a folder'
+		service.createFolder('.', '..')
+
+		then: 'I get a valid FileObject'
+		thrown FileSystemException
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Create new folder and overwrite existing one'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		when: 'I create a folder'
+		FileObject f = service.createFolder('.', 'my-new-folder')
+
+		then: 'I get a valid FileObject'
+		null != f
+		f.exists()
+		f.type == FileType.FOLDER
+		'/tmp/springcrm-test/47bc3f71ad90b3/my-new-folder' == f.name.path
+		'my-new-folder' == f.name.baseName
+
+		and: 'the folder was created successfully'
+		File file1 = new File(root, 'my-new-folder')
+		file1.exists()
+		file1.directory
+
+		when: 'I create the folder anew'
+		f = service.createFolder('.', 'my-new-folder')
+
+		then: 'I get a valid FileObject'
+		null != f
+		f.exists()
+		f.type == FileType.FOLDER
+		'/tmp/springcrm-test/47bc3f71ad90b3/my-new-folder' == f.name.path
+		'my-new-folder' == f.name.baseName
+
+		and: 'the folder still exists'
+		File file2 = new File(root, 'my-new-folder')
+		file2.exists()
+		file2.directory
 
 		cleanup:
 		root.deleteDir()

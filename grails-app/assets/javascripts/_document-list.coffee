@@ -81,6 +81,17 @@ class DocumentList
     $(this).each ->
       $(this).data('bs.documentlist')._addFile file
 
+  # Adds a folder to all documents lists in this widget.
+  #
+  # @param [Object] folder  the folder that should be added
+  # @return [jQuery]        this object
+  #
+  addFolder: (folder) ->
+    $ = jQuery
+
+    $(this).each ->
+      $(this).data('bs.documentlist')._addFolder folder
+
   # Loads the files and folders within the given absolute path.
   #
   # @param [String] path                      the given absolute path
@@ -129,16 +140,46 @@ class DocumentList
     $ul = @$element.find('.document-list-container')
 
     $item = null
-    $ul.find('.file').each ->
+    $ul.children('.file').each ->
       $this = $(this)
       if $this.find('.name').text() > name
         $item = $this
+        false
 
     $li = @_renderFileItem file
     if $item
       $item.before $li
     else
       $li.appendTo $ul
+    null
+
+  # Adds the given folder to the alphabetically sorted position in the document
+  # list.
+  #
+  # @param [Object] folder  the folder that should be added
+  # @private
+  #
+  _addFolder: (folder) ->
+    $ = jQuery
+    name = folder.name
+    $ul = @$element.find('.document-list-container')
+
+    $item = null
+    insertBefore = false
+    $ul.children('.folder').each ->
+      $this = $(this)
+      $item = $this
+      if $this.find('.name').text() > name
+        insertBefore = true
+        false
+
+    $li = @_renderFolderItem folder
+    if insertBefore
+      $item.before $li
+    else if $item
+      $item.after $li
+    else
+      $li.prependTo $ul
     null
 
   # Downloads the file with the given absolute path in an internal `<iframe>`.
@@ -252,12 +293,7 @@ class DocumentList
         .appendTo $li
       $('<span class="size"/>').appendTo $li
       $('<span class="permissions"/>').appendTo $li
-    for folder in data.folders
-      $li = $('<li class="folder"/>').appendTo $ul
-      $('<i/>').appendTo $li
-      @_renderName $li, folder
-      $('<span class="size"/>').appendTo $li
-      @_renderPermissions $li, folder
+    @_renderFolderItem(folder).appendTo $ul for folder in data.folders
     @_renderFileItem(file).appendTo $ul for file in data.files
 
     @$element.find('> ul')
@@ -279,6 +315,20 @@ class DocumentList
     $('<span class="size"/>').text(file.size.formatSize())
       .appendTo $li
     @_renderPermissions $li, file
+    $li
+
+  # Renders a list item for the given folder.
+  #
+  # @param [Object] folder  the given folder
+  # @return [jQuery]        the rendered list item
+  # @private
+  #
+  _renderFolderItem: (folder) ->
+    $li = $('<li class="folder"/>')
+    $('<i/>').appendTo $li
+    @_renderName $li, folder
+    $('<span class="size"/>').appendTo $li
+    @_renderPermissions $li, folder
     $li
 
   # Renders the name of the given file or folder into the stated list item.
