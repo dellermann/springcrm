@@ -21,11 +21,6 @@
 $ = jQuery
 
 
-#-- Fixtures ------------------------------------
-
-BASE_URL = '/springcrm/document/list'
-
-
 #-- Feature tests -------------------------------
 
 QUnit.module 'Coding style'

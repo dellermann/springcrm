@@ -47,7 +47,11 @@ module.exports = (grunt) ->
             cwd: '<%= dirs.src.javascript %>/'
             dest: '<%= dirs.target.test.js.scripts %>/'
             expand: true
-            src: '_jquery.js'
+            src: [
+              '_jquery.js'
+              '_jquery-ui.js'
+              '_jquery-autosize.js'
+            ]
           ,
             cwd: '<%= dirs.src.bower.jqueryMockjax %>/'
             dest: '<%= dirs.target.test.js.scripts %>/'

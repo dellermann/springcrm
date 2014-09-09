@@ -55,6 +55,17 @@ class DocumentService {
 		f
 	}
 
+	/**
+	 * Deletes the file or folder with the given path.  If it is a folder all
+	 * its content is deleted, too.
+	 *
+	 * @param path	the path of the file or folder that should be deleted
+	 * @return		the number of deleted files
+	 */
+	int deleteFileObject(String path) {
+		getFile(path).deleteAll()
+	}
+
     /**
      * Gets the {@code FileObject} with the given path.  The method ensures
      * that only pathes below the root are used.

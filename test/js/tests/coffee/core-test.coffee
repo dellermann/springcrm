@@ -30,8 +30,6 @@ $L._messages =
   default_format_time: 'HH:mm'
 window.$L = $L
 
-SPRINGCRM = SPRINGCRM ? {}
-
 
 #-- Feature tests -------------------------------
 

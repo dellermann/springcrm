@@ -71,7 +71,7 @@
     margin-bottom: 0;
 
     &:first-child {
-      i, span {
+      > i, span {
         border-top: none;
       }
     }
@@ -79,7 +79,7 @@
       background: lighten(@color-link, 65%);
     }
 
-    i {
+    > i {
       .fa();
       border-top: 1px solid #DDD;
       color: @color-link;
@@ -110,45 +110,56 @@
       min-width: 1em;
     }
   }
+  .action-buttons {
+    font-size: 131%;
+    padding-left: 1em;
+
+    i {
+      cursor: pointer;
+    }
+    .fa-trash {
+      color: @color-error;
+    }
+  }
 
   // translates item type to FontAwesome icon
-  .back-link i:before {
+  .back-link > i:before {
     content: @fa-var-arrow-up;
   }
-  .folder i:before {
+  .folder > i:before {
     content: @fa-var-folder;
   }
-  .filetype-archive i:before {
+  .filetype-archive > i:before {
     content: @fa-var-file-archive-o;
   }
-  .filetype-audio i:before {
+  .filetype-audio > i:before {
     content: @fa-var-file-audio-o;
   }
-  .filetype-code i:before {
+  .filetype-code > i:before {
     content: @fa-var-file-code-o;
   }
-  .filetype-document i:before {
+  .filetype-document > i:before {
     content: @fa-var-file-word-o;
   }
-  .filetype-file i:before {
+  .filetype-file > i:before {
     content: @fa-var-file-o;
   }
-  .filetype-image i:before {
+  .filetype-image > i:before {
     content: @fa-var-file-image-o;
   }
-  .filetype-pdf i:before {
+  .filetype-pdf > i:before {
     content: @fa-var-file-pdf-o;
   }
-  .filetype-presentation i:before {
+  .filetype-presentation > i:before {
     content: @fa-var-file-powerpoint-o;
   }
-  .filetype-spreadsheet i:before {
+  .filetype-spreadsheet > i:before {
     content: @fa-var-file-excel-o;
   }
-  .filetype-text i:before {
+  .filetype-text > i:before {
     content: @fa-var-file-text-o;
   }
-  .filetype-video i:before {
+  .filetype-video > i:before {
     content: @fa-var-file-video-o;
   }
 }

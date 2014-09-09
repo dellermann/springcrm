@@ -45,6 +45,7 @@
         data-list-url="${createLink(controller: 'document', action: 'dir')}"
         data-download-url="${createLink(controller: 'document', action: 'download')}"
         data-create-folder-url="${createLink(controller: 'document', action: 'createFolder')}"
+        data-delete-url="${createLink(controller: 'document', action: 'delete'}"
         ></div>
       <div class="document-upload-filelist">
         <h3><g:message code="document.upload.header" /></h3>

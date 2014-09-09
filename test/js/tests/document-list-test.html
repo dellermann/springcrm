@@ -7,9 +7,12 @@
   <link rel="stylesheet" href="css/qunit.css" />
   <link rel="stylesheet" href="css/document.css" />
   <script src="scripts/_jquery.js"></script>
+  <script src="scripts/_jquery-ui.js"></script>
+  <script src="scripts/_jquery-autosize.js"></script>
   <script src="scripts/jquery.mockjax.js"></script>
   <script src="scripts/_core.js"></script>
   <script src="scripts/_filetype.js"></script>
+  <script src="scripts/_ui.js"></script>
   <script src="scripts/_document-list.js"></script>
 </head>
 
@@ -17,7 +20,10 @@
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
   <div id="dl3" class="auto-document-list" data-list="document"></div>
-  <div id="dl4" class="auto-document-list" data-list="document" data-list-url="/springcrm/document/list"></div>
+  <div id="dl4" class="auto-document-list" data-list="document"
+    data-list-url="/springcrm/document/list"
+    data-delete-url="/springcrm/document/delete"
+    ></div>
 
   <script src="scripts/qunit.js"></script>
   <script src="scripts/document-list-test.js"></script>

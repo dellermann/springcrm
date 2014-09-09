@@ -27,7 +27,7 @@ mockAjax = ->
   $ = jQuery
 
   baseData =
-    url: BASE_URL
+    url: LIST_URL
 
   $.mockjaxClear()
   $.mockjax $.extend {}, baseData,
@@ -97,6 +97,10 @@ mockAjax = ->
           writeable: false
       ]
 
+  $.mockjax
+    status: 200
+    url: DELETE_URL
+
   null
 
 
@@ -104,6 +108,8 @@ mockAjax = ->
 
 $L = (key) -> $L._messages[key.replace /\./g, '_']
 $L._messages =
+  default_btn_remove: 'Remove entry'
+  default_delete_confirm_msg: 'Are you sure?'
   document_back_label: 'back'
   document_path_label: 'Path'
   document_path_root: 'Root folder'
@@ -113,9 +119,9 @@ $L._messages =
   document_permissions_write_title: 'Write'
 window.$L = $L
 
-SPRINGCRM = SPRINGCRM ? {}
-
-BASE_URL = '/springcrm/document/list'
+BASE_URL = '/springcrm/document'
+DELETE_URL = BASE_URL + '/delete'
+LIST_URL = BASE_URL + '/list'
 
 mockAjax()
 
@@ -160,6 +166,8 @@ mockAjax()
     if writeable
       this.equal $strong.attr('title'), 'Write',
         "item #{pos} has writeable title"
+    this.itemSize $li.find('.action-buttons .delete-btn'), 1,
+      "item #{pos} has a delete button"
 
   assert.folderEqual = ($lis, index, name, readable, writeable) ->
     $li = $lis.eq index
@@ -188,6 +196,10 @@ mockAjax()
     if writeable
       this.equal $strong.attr('title'), 'Write',
         "item #{pos} has writeable title"
+    $deleteBtn = $li.find('.action-buttons .delete-btn')
+    this.itemSize $deleteBtn, 1, "item #{pos} has a delete button"
+    this.equal $deleteBtn.attr('title'), 'Remove entry',
+      "item #{pos} has a delete button with title"
 
   assert.documentListEqual = ($ul, data) ->
     $lis = $ul.find('> li')
@@ -241,137 +253,122 @@ QUnit.test 'Instantiate widget without loading', (assert) ->
   assert.notEqual $dl.data('bs.documentlist'), null, 'both elements are marked as download-list'
 
 QUnit.asyncTest 'Instantiate widget with loading', (assert) ->
-  expect 43
+  expect 49
 
   fixtureDocumentLists()
 
-  $('.document-list').documentlist()
-    .on 'springcrm.documentlist.pathchanged', ->
+  $('.document-list').documentlist
+    init: ->
       checkRootFolder $('#dl1'), $('#dl2'), assert
       QUnit.start()
 
 
 QUnit.module 'API calls'
 QUnit.asyncTest 'Get initial path', (assert) ->
-  expect 2
+  expect 1
 
   fixtureDocumentLists()
 
-  $('#dl2').documentlist()
-    .one 'springcrm.documentlist.pathchanged', (event, data) ->
-      assert.equal data.path, '', 'path is empty'
-      assert.equal $(this).documentlist('path'), ''
+  $('#dl2').documentlist
+    init: ->
+      assert.equal $(this).documentlist('path'), '',
+        '"path" returned correct path'
       QUnit.start()
 
 QUnit.asyncTest 'Get path of subfolders', (assert) ->
-  expect 4
+  expect 1
 
   fixtureDocumentLists()
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $('#dl2').one('springcrm.documentlist.pathchanged', f2)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f2 = (event, data) ->
-    assert.equal data.path, 'foo', 'path is foo'
-    $('#dl2').one('springcrm.documentlist.pathchanged', f3)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f3 = (event, data) ->
-    assert.equal data.path, 'foo/wheezy', 'path is foo/wheezy'
-    assert.equal $(this).documentlist('path'), 'foo/wheezy'
-    QUnit.start()
-
-  $('#dl2').documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+  $('#dl2').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(2)').click()
+    pathChanged: (path) ->
+      switch path
+        when 'foo'
+          $('#dl2 > ul > li:nth-child(2)').click()
+        when 'foo/wheezy'
+          assert.equal $(this).documentlist('path'), 'foo/wheezy',
+            '"path" returned correct path'
+          QUnit.start()
 
 QUnit.asyncTest 'Set path', (assert) ->
   expect 31
 
   fixtureDocumentLists()
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $(this).one('springcrm.documentlist.pathchanged', f2)
-      .documentlist 'path', 'foo/wheezy'
-  f2 = (event, data) ->
-    assert.equal data.path, 'foo/wheezy', 'path is foo/wheezy'
-    assert.equal $(this).documentlist('path'), 'foo/wheezy'
-    checkWheezyFolder $('#dl1'), $('#dl2'), assert
-    QUnit.start()
-
-  $('#dl2').documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+  $('#dl2').documentlist
+    init: ->
+      $(this).documentlist 'path', 'foo/wheezy'
+    pathChanged: (path) ->
+      if path is 'foo/wheezy'
+        assert.equal $(this).documentlist('path'), 'foo/wheezy',
+          '"path" returned correct path'
+        checkWheezyFolder $('#dl1'), $('#dl2'), assert
+        QUnit.start()
 
 QUnit.asyncTest 'Add file before item', (assert) ->
-  expect 54
+  expect 60
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFile',
-      name: 'foo.txt'
-      ext: 'txt'
-      size: 4503
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFile',
+        name: 'foo.txt'
+        ext: 'txt'
+        size: 4503
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.file'), 3, 'now it has 3 file elements'
-    assert.documentListEqual $ul,
-      folders: [
-        ['bar', true, false]
-        ['foo', true, true]
-      ]
-      files: [
-        ['baz.txt', 'text', '19,9 KB', true, true]
-        ['foo.txt', 'text', '4,4 KB', true, true]
-        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.file'), 3, 'now it has 3 file elements'
+      assert.documentListEqual $ul,
+        folders: [
+          ['bar', true, false]
+          ['foo', true, true]
+        ]
+        files: [
+          ['baz.txt', 'text', '19,9 KB', true, true]
+          ['foo.txt', 'text', '4,4 KB', true, true]
+          ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+        ]
 
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      QUnit.start()
 
 QUnit.asyncTest 'Add file after item', (assert) ->
-  expect 54
+  expect 60
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFile',
-      name: 'zzz.txt'
-      ext: 'txt'
-      size: 4503
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFile',
+        name: 'zzz.txt'
+        ext: 'txt'
+        size: 4503
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.file'), 3, 'now it has 3 file elements'
-    assert.documentListEqual $ul,
-      folders: [
-        ['bar', true, false]
-        ['foo', true, true]
-      ]
-      files: [
-        ['baz.txt', 'text', '19,9 KB', true, true]
-        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
-        ['zzz.txt', 'text', '4,4 KB', true, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.file'), 3, 'now it has 3 file elements'
+      assert.documentListEqual $ul,
+        folders: [
+          ['bar', true, false]
+          ['foo', true, true]
+        ]
+        files: [
+          ['baz.txt', 'text', '19,9 KB', true, true]
+          ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+          ['zzz.txt', 'text', '4,4 KB', true, true]
+        ]
 
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      QUnit.start()
 
 QUnit.asyncTest 'Add file to list with folders only', (assert) ->
-  expect 33
+  expect 37
 
   $ = jQuery
 
@@ -390,36 +387,33 @@ QUnit.asyncTest 'Add file to list with folders only', (assert) ->
           writeable: true
       ]
       files: []
-    url: BASE_URL
+    url: LIST_URL
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFile',
-      name: 'foo.txt'
-      ext: 'txt'
-      size: 4503
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFile',
+        name: 'foo.txt'
+        ext: 'txt'
+        size: 4503
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.file'), 1, 'now it has 1 file element'
-    assert.documentListEqual $ul,
-      folders: [
-        ['bar', true, false]
-        ['foo', true, true]
-      ]
-      files: [
-        ['foo.txt', 'text', '4,4 KB', true, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.file'), 1, 'now it has 1 file element'
+      assert.documentListEqual $ul,
+        folders: [
+          ['bar', true, false]
+          ['foo', true, true]
+        ]
+        files: [
+          ['foo.txt', 'text', '4,4 KB', true, true]
+        ]
 
-    mockAjax()
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      mockAjax()
+      QUnit.start()
 
 QUnit.asyncTest 'Add file to empty list', (assert) ->
   expect 16
@@ -433,97 +427,90 @@ QUnit.asyncTest 'Add file to empty list', (assert) ->
     responseText:
       folders: []
       files: []
-    url: BASE_URL
+    url: LIST_URL
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFile',
-      name: 'foo.txt'
-      ext: 'txt'
-      size: 4503
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFile',
+        name: 'foo.txt'
+        ext: 'txt'
+        size: 4503
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.file'), 1, 'now it has 1 file element'
-    assert.documentListEqual $ul,
-      files: [
-        ['foo.txt', 'text', '4,4 KB', true, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.file'), 1, 'now it has 1 file element'
+      assert.documentListEqual $ul,
+        files: [
+          ['foo.txt', 'text', '4,4 KB', true, true]
+        ]
 
-    mockAjax()
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      mockAjax()
+      QUnit.start()
 
 QUnit.asyncTest 'Add folder before item', (assert) ->
-  expect 52
+  expect 59
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFolder',
-      name: 'breeze'
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFolder',
+        name: 'breeze'
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.folder'), 3, 'now it has 3 folder elements'
-    assert.documentListEqual $ul,
-      folders: [
-        ['bar', true, false]
-        ['breeze', true, true]
-        ['foo', true, true]
-      ]
-      files: [
-        ['baz.txt', 'text', '19,9 KB', true, true]
-        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.folder'), 3,
+        'now it has 3 folder elements'
+      assert.documentListEqual $ul,
+        folders: [
+          ['bar', true, false]
+          ['breeze', true, true]
+          ['foo', true, true]
+        ]
+        files: [
+          ['baz.txt', 'text', '19,9 KB', true, true]
+          ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+        ]
 
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      QUnit.start()
 
 QUnit.asyncTest 'Add folder after item', (assert) ->
-  expect 52
+  expect 59
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFolder',
-      name: 'mood'
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFolder',
+        name: 'mood'
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.folder'), 3, 'now it has 3 folder elements'
-    assert.documentListEqual $ul,
-      folders: [
-        ['bar', true, false]
-        ['foo', true, true]
-        ['mood', true, true]
-      ]
-      files: [
-        ['baz.txt', 'text', '19,9 KB', true, true]
-        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.folder'), 3,
+        'now it has 3 folder elements'
+      assert.documentListEqual $ul,
+        folders: [
+          ['bar', true, false]
+          ['foo', true, true]
+          ['mood', true, true]
+        ]
+        files: [
+          ['baz.txt', 'text', '19,9 KB', true, true]
+          ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+        ]
 
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      QUnit.start()
 
 QUnit.asyncTest 'Add folder to list with files only', (assert) ->
-  expect 35
+  expect 38
 
   $ = jQuery
 
@@ -546,37 +533,35 @@ QUnit.asyncTest 'Add folder to list with files only', (assert) ->
           readable: false
           writeable: true
       ]
-    url: BASE_URL
+    url: LIST_URL
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFolder',
-      name: 'breeze'
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFolder',
+        name: 'breeze'
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.folder'), 1, 'now it has 1 folder element'
-    assert.documentListEqual $ul,
-      folders: [
-        ['breeze', true, true]
-      ]
-      files: [
-        ['baz.txt', 'text', '19,9 KB', true, true]
-        ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.folder'), 1,
+        'now it has 1 folder element'
+      assert.documentListEqual $ul,
+        folders: [
+          ['breeze', true, true]
+        ]
+        files: [
+          ['baz.txt', 'text', '19,9 KB', true, true]
+          ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+        ]
 
-    mockAjax()
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      mockAjax()
+      QUnit.start()
 
 QUnit.asyncTest 'Add folder to empty list', (assert) ->
-  expect 14
+  expect 15
 
   $ = jQuery
 
@@ -587,130 +572,152 @@ QUnit.asyncTest 'Add folder to empty list', (assert) ->
     responseText:
       folders: []
       files: []
-    url: BASE_URL
+    url: LIST_URL
 
   fixtureDocumentLists()
-  $dl = $('#dl2')
 
-  f1 = (event, data) ->
-    assert.equal data.path, '', 'path is empty'
-    $dl.documentlist 'addFolder',
-      name: 'breeze'
-      readable: true
-      writeable: true
+  $('#dl2').documentlist
+    init: ->
+      $dl = $(this)
+      $dl.documentlist 'addFolder',
+        name: 'breeze'
+        readable: true
+        writeable: true
 
-    $ul = $dl.children 'ul'
-    assert.itemSize $ul.children('li.folder'), 1, 'now it has 1 folder element'
-    assert.documentListEqual $ul,
-      folders: [
-        ['breeze', true, true]
-      ]
+      $ul = $dl.children 'ul'
+      assert.itemSize $ul.children('li.folder'), 1,
+        'now it has 1 folder element'
+      assert.documentListEqual $ul,
+        folders: [
+          ['breeze', true, true]
+        ]
 
-    mockAjax()
-    QUnit.start()
-
-  $dl.documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+      mockAjax()
+      QUnit.start()
 
 
 QUnit.module 'User interaction'
 QUnit.asyncTest 'Click on folder', (assert) ->
-  expect 40
+  expect 42
 
   fixtureDocumentLists()
 
-  f1 = (event, data) ->
-    assert.equal data.path, ''
-    $('#dl2').one('springcrm.documentlist.pathchanged', f2)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f2 = (event, data) ->
-    assert.equal data.path, 'foo'
-    checkFooFolder $('#dl1'), $('#dl2'), assert
-    QUnit.start()
-
-  $('.document-list').documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(2)').click()
+    pathChanged: (path) ->
+      if path is 'foo'
+        checkFooFolder $('#dl1'), $('#dl2'), assert
+        QUnit.start()
 
 QUnit.asyncTest 'Click on two folders', (assert) ->
-  expect 31
+  expect 30
 
   fixtureDocumentLists()
 
-  f1 = (event, data) ->
-    assert.equal data.path, ''
-    $('#dl2').one('springcrm.documentlist.pathchanged', f2)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f2 = (event, data) ->
-    assert.equal data.path, 'foo'
-    $('#dl2').one('springcrm.documentlist.pathchanged', f3)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f3 = (event, data) ->
-    assert.equal data.path, 'foo/wheezy'
-    checkWheezyFolder $('#dl1'), $('#dl2'), assert
-    QUnit.start()
-
-  $('.document-list').documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(2)').click()
+    pathChanged: (path) ->
+      switch path
+        when 'foo'
+          $('#dl2 > ul > li:nth-child(2)').click()
+        when 'foo/wheezy'
+          checkWheezyFolder $('#dl1'), $('#dl2'), assert
+          QUnit.start()
 
 QUnit.asyncTest 'Click on back link', (assert) ->
-  expect 46
+  expect 49
 
   fixtureDocumentLists()
+  down = false
 
-  f1 = (event, data) ->
-    assert.equal data.path, ''
-    $('#dl2').one('springcrm.documentlist.pathchanged', f2)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f2 = (event, data) ->
-    assert.equal data.path, 'foo'
-    $('#dl2').one('springcrm.documentlist.pathchanged', f3)
-      .find('> ul > .back-link')
-        .click()
-  f3 = (event, data) ->
-    assert.equal data.path, ''
-    checkRootFolder $('#dl1'), $('#dl2'), assert
-    QUnit.start()
-
-  $('.document-list').documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(2)').click()
+    pathChanged: (path) ->
+      switch path
+        when ''
+          if down
+            checkRootFolder $('#dl1'), $('#dl2'), assert
+            QUnit.start()
+        when 'foo'
+          down = true
+          $('#dl2 > ul > .back-link').click()
 
 QUnit.asyncTest 'Click on two back links', (assert) ->
-  expect 86
+  expect 91
+
+  fixtureDocumentLists()
+  up = true
+
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(2)').click()
+    pathChanged: (path) ->
+      switch path
+        when ''
+          unless up
+            checkRootFolder $('#dl1'), $('#dl2'), assert
+            QUnit.start()
+        when 'foo'
+          if up
+            $('#dl2 > ul > li:nth-child(2)').click()
+          else
+            checkFooFolder $('#dl1'), $('#dl2'), assert
+            $('#dl2 > ul > .back-link').click()
+        when 'foo/wheezy'
+          up = false
+          $('#dl2 > ul > .back-link').click()
+
+QUnit.asyncTest 'Click on delete button and confirm', (assert) ->
+  $ = jQuery
+
+  expect 36
+
+  oldConfirm = $.confirm
+  $.confirm = (msg) ->
+    assert.equal msg, 'Are you sure?', 'the confirm message is correct'
+    true
 
   fixtureDocumentLists()
 
-  f1 = (event, data) ->
-    assert.equal data.path, ''
-    $('#dl2').one('springcrm.documentlist.pathchanged', f2)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f2 = (event, data) ->
-    assert.equal data.path, 'foo'
-    $('#dl2').one('springcrm.documentlist.pathchanged', f3)
-      .find('> ul > li:nth-child(2)')
-        .click()
-  f3 = (event, data) ->
-    assert.equal data.path, 'foo/wheezy'
-    $('#dl2').one('springcrm.documentlist.pathchanged', f4)
-      .find('> ul > .back-link')
-        .click()
-  f4 = (event, data) ->
-    assert.equal data.path, 'foo'
-    checkFooFolder $('#dl1'), $('#dl2'), assert
-    $('#dl2').one('springcrm.documentlist.pathchanged', f5)
-      .find('> ul > .back-link')
-        .click()
-  f5 = (event, data) ->
-    assert.equal data.path, ''
-    checkRootFolder $('#dl1'), $('#dl2'), assert
-    QUnit.start()
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(3) .delete-btn').click()
+    remove: (promise) ->
+      promise.done ->
+        assert.documentListEqual $('#dl2 > ul'),
+          folders: [
+            ['bar', true, false]
+            ['foo', true, true]
+          ]
+          files: [
+            ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+          ]
+        $.confirm = oldConfirm
+        QUnit.start()
 
-  $('.document-list').documentlist()
-    .one 'springcrm.documentlist.pathchanged', f1
+QUnit.asyncTest 'Click on delete button but cancel', (assert) ->
+  $ = jQuery
+
+  expect 50
+
+  oldConfirm = $.confirm
+  $.confirm = (msg) ->
+    assert.equal msg, 'Are you sure?', 'the confirm message is correct'
+    false
+
+  fixtureDocumentLists()
+
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(3) .delete-btn').click()
+    remove: (promise) ->
+      promise.fail ->
+        checkRootFolder $('#dl1'), $('#dl2'), assert
+        $.confirm = oldConfirm
+        QUnit.start()
 
 
 #-- Auxiliary functions -------------------------
@@ -728,7 +735,8 @@ checkFooFolder = ($emptyList, $nonEmptyList, assert) ->
     ]
 
 checkRootFolder = ($emptyList, $nonEmptyList, assert) ->
-  assert.equal $emptyList.children('ul').length, 0, 'one download list is empty'
+  assert.equal $emptyList.children('ul').length, 0,
+    'one download list is empty'
   assert.documentListEqual $nonEmptyList.children('ul'),
     folders: [
       ['bar', true, false]
@@ -753,6 +761,9 @@ checkWheezyFolder = ($emptyList, $nonEmptyList, assert) ->
 fixtureDocumentLists = ->
   $('#qunit-fixture').append '''
     <div id="dl1" class="document-list"></div>
-    <div id="dl2" class="document-list" data-list-url="/springcrm/document/list"></div>
+    <div id="dl2" class="document-list"
+      data-list-url="/springcrm/document/list"
+      data-delete-url="/springcrm/document/delete"
+      ></div>
   '''
 

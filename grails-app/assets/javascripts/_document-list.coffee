@@ -19,6 +19,7 @@
 #= require _jquery
 #= require _core
 #= require _filetype
+#= require _ui
 
 
 # @nodoc
@@ -54,18 +55,31 @@ class DocumentList
   @VERSION: '1.4.10'
 
 
+  #-- Instance variables ------------------------
+
+  DEFAULT_OPTIONS =
+    init: null
+    pathChanged: null
+    remove: null
+
+
   #-- Constructor -------------------------------
 
   # Creates a new document list within the given element and loads the files
   # and folders via AJAX.
   #
-  # @param [Element] element                  the given container element
-  # @event springcrm.documentlist.initialized after this widget has been initialized.
+  # @param [Element] element  the given container element
+  # @param [Object] options   any options that overwrite the default options
   #
-  constructor: (element) ->
+  constructor: (element, options = {}) ->
+    $ = jQuery
+
     @$element = $el = $(element)
-    @loadDocumentList()
-    $el.trigger $.Event('springcrm.documentlist.initialized')
+    @options = options = $.extend {}, DEFAULT_OPTIONS, options
+    @_initCallback 'init'
+    @_initCallback 'pathChanged'
+    @_initCallback 'remove'
+    @loadDocumentList().done -> options.init.fireWith $el
 
 
   #-- Public methods ----------------------------
@@ -94,25 +108,16 @@ class DocumentList
 
   # Loads the files and folders within the given absolute path.
   #
-  # @param [String] path                      the given absolute path
-  # @return [DocumentList]                    this object
-  # @event springcrm.documentlist.pathchanged when the current path has been changed and after the files and folders have been rendered.
+  # @param [String] path  the given absolute path
+  # @return [Promise]     the promise object after loading the document list
   #
   loadDocumentList: (path = '') ->
-    $ = jQuery
+    $el = @$element
 
-    @currentPath = path
-    url = @$element.data 'list-url'
-    if url?
-      $.getJSON(url, path: path)
-        .done (data) =>
-          @_renderBreadcrumbsPath path
-          @_renderDocumentList path, data
-
-          @$element.trigger $.Event('springcrm.documentlist.pathchanged'),
-            path: path
-          return
-    $(this)
+    @_getLoadDocumentListPromise($el.data('list-url'), path).done (data) ->
+      @_renderBreadcrumbsPath path
+      @_renderDocumentList path, data
+      @options.pathChanged.fireWith $el, [path]
 
   # Gets or sets the current path which is displayed.
   #
@@ -216,6 +221,46 @@ class DocumentList
     path += '/' if path
     path + relPath
 
+  # Gets the `Promise` object after loading the document list of the given
+  # path.
+  #
+  # @param [String] url   the URL that is to request for the document list
+  # @param [String] path  the given path
+  # @return [Promise]     the promise object
+  # @private
+  #
+  _getLoadDocumentListPromise: (url, path) ->
+    deferred = $.Deferred()
+
+    if url?
+      deferred.resolveWith this, [url, path]
+    else
+      deferred.rejectWith this, [path]
+
+    deferred.then (url, path) ->
+      @currentPath = path
+      $.ajax
+        context: this
+        data:
+          path: path
+        dataType: 'json',
+        url: url
+
+  # Initializes the callback function with the given name in the options.  The
+  # method creates a jQuery `Callbacks` object and adds the callback function
+  # to it if it is specified.
+  #
+  # @param [String] name  the name of the callback option
+  # @return [Callbacks]   the generated `Callbacks` object
+  # @private
+  #
+  _initCallback: (name) ->
+    options = @options
+    f = options[name]
+    callbacks = $.Callbacks()
+    callbacks.add f if f?
+    options[name] = callbacks
+
   # Obtains the absolute path to the parent of this path.
   #
   # @param [String] path  the given absolute path
@@ -225,6 +270,35 @@ class DocumentList
   _parentPath: (path) ->
     pos = path.lastIndexOf '/'
     if pos < 0 then '' else path.substring 0, pos
+
+  # Removes the file or folder represented by the given list item.
+  #
+  # @param [jQuery] $li the list item representing the file or folder
+  # @private
+  #
+  _removeDocument: ($li) ->
+    $ = jQuery
+
+    deferred = $.Deferred()
+    promise = deferred.then( (li) ->
+        path = @_getAbsolutePath $(li)
+        $.ajax
+          context: this
+          data:
+            path: path
+          url: @$element.data('delete-url')
+      )
+      .done( ->
+        $li.remove()
+      )
+    @options.remove.fire promise
+
+    if $.confirm $L('default.delete.confirm.msg')
+      deferred.resolveWith this, $li
+    else
+      deferred.rejectWith this
+
+    return
 
   # Renders the breadcrumbs of the given path.
   #
@@ -263,6 +337,19 @@ class DocumentList
       .append $nav
     this
 
+  # Renders the action buttons for the given file or folder entry.
+  #
+  # @param [jQuery] $li the list item representing the file or folder
+  # @return [jQuery]    the given list item
+  # @private
+  #
+  _renderButtons: ($li) ->
+    $span = $('<span class="action-buttons"/>')
+    $('<i class="fa fa-trash delete-btn"/>')
+      .attr('title', $L('default.btn.remove'))
+      .appendTo $span
+    $li.append $span
+
   # Renders the files and folders of the given path.
   #
   # @param [String] path    the given absolute path
@@ -284,6 +371,10 @@ class DocumentList
       )
       .on('click', '.file', (event) =>
         @_downloadFile @_getAbsolutePath $(event.currentTarget)
+        false
+      )
+      .on('click', '.action-buttons .delete-btn', (event) =>
+        @_removeDocument $(event.currentTarget).parents 'li'
         false
       )
     if path
@@ -315,6 +406,7 @@ class DocumentList
     $('<span class="size"/>').text(file.size.formatSize())
       .appendTo $li
     @_renderPermissions $li, file
+    @_renderButtons $li
     $li
 
   # Renders a list item for the given folder.
@@ -329,6 +421,7 @@ class DocumentList
     @_renderName $li, folder
     $('<span class="size"/>').appendTo $li
     @_renderPermissions $li, folder
+    @_renderButtons $li
     $li
 
   # Renders the name of the given file or folder into the stated list item.
@@ -387,7 +480,8 @@ Plugin = (option) ->
     $this = $(this)
     data = $this.data 'bs.documentlist'
 
-    $this.data 'bs.documentlist', (data = new DocumentList(this)) unless data
+    unless data
+      $this.data 'bs.documentlist', (data = new DocumentList(this, args[0]))
     if typeof option is 'string'
       data[option].apply $this, $.makeArray(args).slice 1
 

@@ -147,6 +147,15 @@ class DocumentController {
 		}
 	}
 
+	def delete(String path) {
+		try {
+			documentService.deleteFileObject path
+        	render status: SC_OK
+		} catch (FileSystemException e) {
+            render status: SC_NOT_FOUND
+		}
+	}
+
 //    def listEmbedded(Long organization) {
 //        def organizationInstance = Organization.get(organization)
 //        File dir = fileService.getOrgDocumentDir(organizationInstance)
