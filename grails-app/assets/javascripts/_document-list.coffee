@@ -60,7 +60,8 @@ class DocumentList
   DEFAULT_OPTIONS =
     init: null
     pathChanged: null
-    remove: null
+    removeFailed: null
+    removeSuccess: null
 
 
   #-- Constructor -------------------------------
@@ -78,7 +79,8 @@ class DocumentList
     @options = options = $.extend {}, DEFAULT_OPTIONS, options
     @_initCallback 'init'
     @_initCallback 'pathChanged'
-    @_initCallback 'remove'
+    @_initCallback 'removeFailed'
+    @_initCallback 'removeSuccess'
     @loadDocumentList().done -> options.init.fireWith $el
 
 
@@ -290,8 +292,11 @@ class DocumentList
       )
       .done( ->
         $li.remove()
+        @options.removeSuccess.fire @$element
       )
-    @options.remove.fire promise
+      .fail( ->
+        @options.removeFailed.fire @$element
+      )
 
     if $.confirm $L('default.delete.confirm.msg')
       deferred.resolveWith this, $li

@@ -693,18 +693,17 @@ QUnit.asyncTest 'Click on delete button and confirm', (assert) ->
   $('.document-list').documentlist
     init: ->
       $('#dl2 > ul > li:nth-child(3) .delete-btn').click()
-    remove: (promise) ->
-      promise.done ->
-        assert.documentListEqual $('#dl2 > ul'),
-          folders: [
-            ['bar', true, false]
-            ['foo', true, true]
-          ]
-          files: [
-            ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
-          ]
-        $.confirm = oldConfirm
-        QUnit.start()
+    removeSuccess: ->
+      assert.documentListEqual $('#dl2 > ul'),
+        folders: [
+          ['bar', true, false]
+          ['foo', true, true]
+        ]
+        files: [
+          ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
+        ]
+      $.confirm = oldConfirm
+      QUnit.start()
 
 QUnit.asyncTest 'Click on delete button but cancel', (assert) ->
   $ = jQuery
@@ -721,11 +720,63 @@ QUnit.asyncTest 'Click on delete button but cancel', (assert) ->
   $('.document-list').documentlist
     init: ->
       $('#dl2 > ul > li:nth-child(3) .delete-btn').click()
-    remove: (promise) ->
-      promise.fail ->
-        checkRootFolder $('#dl1'), $('#dl2'), assert
-        $.confirm = oldConfirm
-        QUnit.start()
+    removeFailed: ->
+      checkRootFolder $('#dl1'), $('#dl2'), assert
+      $.confirm = oldConfirm
+      QUnit.start()
+
+QUnit.asyncTest 'Click on delete button but AJAX failed', (assert) ->
+  $ = jQuery
+
+  expect 49
+
+  oldConfirm = $.confirm
+  $.confirm = (msg) ->
+    assert.equal msg, 'Are you sure?', 'the confirm message is correct'
+    true
+
+  $.mockjaxClear()
+  $.mockjax
+    data:
+      path: ''
+    responseText:
+      folders: [
+          name: 'bar'
+          readable: true
+          writeable: false
+        ,
+          name: 'foo'
+          readable: true
+          writeable: true
+      ]
+      files: [
+          name: 'baz.txt'
+          ext: 'txt'
+          size: 20405
+          readable: true
+          writeable: true
+        ,
+          name: 'yummy.csv'
+          ext: 'csv'
+          size: 40307430
+          readable: false
+          writeable: true
+      ]
+    url: LIST_URL
+  $.mockjax
+    status: 404
+    url: DELETE_URL
+
+  fixtureDocumentLists()
+
+  $('.document-list').documentlist
+    init: ->
+      $('#dl2 > ul > li:nth-child(3) .delete-btn').click()
+    removeFailed: ->
+      checkRootFolder $('#dl1'), $('#dl2'), assert
+      mockAjax()
+      $.confirm = oldConfirm
+      QUnit.start()
 
 
 #-- Auxiliary functions -------------------------
