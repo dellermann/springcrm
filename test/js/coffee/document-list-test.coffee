@@ -103,6 +103,13 @@ mockAjax = ->
 
   null
 
+testDocumentList = (elem, chainFunc) ->
+  chain = new TriggerChain()
+
+  $(elem).documentlist
+    init: -> chainFunc.call this, chain
+    pathChanged: (path) -> chain.trigger path
+
 
 #-- Fixtures ------------------------------------
 
@@ -260,6 +267,8 @@ QUnit.asyncTest 'Instantiate widget with loading', (assert) ->
   $('.document-list').documentlist
     init: ->
       checkRootFolder $('#dl1'), $('#dl2'), assert
+      assert.notEqual $('#dl1').add('#dl2').data('bs.documentlist'),
+        null, 'both document lists are marked as document-list'
       QUnit.start()
 
 
@@ -276,33 +285,36 @@ QUnit.asyncTest 'Get initial path', (assert) ->
       QUnit.start()
 
 QUnit.asyncTest 'Get path of subfolders', (assert) ->
-  expect 1
+  expect 3
 
   fixtureDocumentLists()
 
-  $('#dl2').documentlist
-    init: ->
-      $('#dl2 > ul > li:nth-child(2)').click()
-    pathChanged: (path) ->
-      switch path
-        when 'foo'
-          $('#dl2 > ul > li:nth-child(2)').click()
-        when 'foo/wheezy'
-          assert.equal $(this).documentlist('path'), 'foo/wheezy',
-            '"path" returned correct path'
-          QUnit.start()
+  testDocumentList '#dl2', (chain) ->
+    $this = $(this)
+
+    chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
+      .then( (path) ->
+        assert.equal path, 'foo', 'path is set correctly'
+        @newPromise -> $('#dl2 > ul > li:nth-child(2)').click()
+      )
+      .done (path) ->
+        assert.equal path, 'foo/wheezy', 'path is set correctly'
+        assert.equal $this.documentlist('path'), 'foo/wheezy',
+          '"path" returned correct path'
+        QUnit.start()
 
 QUnit.asyncTest 'Set path', (assert) ->
-  expect 31
+  expect 32
 
   fixtureDocumentLists()
 
-  $('#dl2').documentlist
-    init: ->
-      $(this).documentlist 'path', 'foo/wheezy'
-    pathChanged: (path) ->
-      if path is 'foo/wheezy'
-        assert.equal $(this).documentlist('path'), 'foo/wheezy',
+  testDocumentList '#dl2', (chain) ->
+    $this = $(this)
+
+    chain.newPromise( -> $this.documentlist 'path', 'foo/wheezy')
+      .done (path) ->
+        assert.equal path, 'foo/wheezy', 'path is set correctly'
+        assert.equal $this.documentlist('path'), 'foo/wheezy',
           '"path" returned correct path'
         checkWheezyFolder $('#dl1'), $('#dl2'), assert
         QUnit.start()
@@ -598,77 +610,73 @@ QUnit.asyncTest 'Add folder to empty list', (assert) ->
 
 QUnit.module 'User interaction'
 QUnit.asyncTest 'Click on folder', (assert) ->
-  expect 42
+  expect 43
 
   fixtureDocumentLists()
 
-  $('.document-list').documentlist
-    init: ->
-      $('#dl2 > ul > li:nth-child(2)').click()
-    pathChanged: (path) ->
-      if path is 'foo'
+  testDocumentList '#dl2', (chain) ->
+    chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
+      .done (path) ->
+        assert.equal path, 'foo', 'path is set correctly'
         checkFooFolder $('#dl1'), $('#dl2'), assert
         QUnit.start()
 
 QUnit.asyncTest 'Click on two folders', (assert) ->
-  expect 30
+  expect 32
 
   fixtureDocumentLists()
 
-  $('.document-list').documentlist
-    init: ->
-      $('#dl2 > ul > li:nth-child(2)').click()
-    pathChanged: (path) ->
-      switch path
-        when 'foo'
-          $('#dl2 > ul > li:nth-child(2)').click()
-        when 'foo/wheezy'
-          checkWheezyFolder $('#dl1'), $('#dl2'), assert
-          QUnit.start()
+  testDocumentList '#dl2', (chain) ->
+    chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
+      .then( (path) ->
+        assert.equal path, 'foo', 'path is set correctly'
+        @newPromise -> $('#dl2 > ul > li:nth-child(2)').click()
+      )
+      .done (path) ->
+        assert.equal path, 'foo/wheezy', 'path is set correctly'
+        checkWheezyFolder $('#dl1'), $('#dl2'), assert
+        QUnit.start()
 
 QUnit.asyncTest 'Click on back link', (assert) ->
-  expect 49
+  expect 50
 
   fixtureDocumentLists()
-  down = false
 
-  $('.document-list').documentlist
-    init: ->
-      $('#dl2 > ul > li:nth-child(2)').click()
-    pathChanged: (path) ->
-      switch path
-        when ''
-          if down
-            checkRootFolder $('#dl1'), $('#dl2'), assert
-            QUnit.start()
-        when 'foo'
-          down = true
-          $('#dl2 > ul > .back-link').click()
+  testDocumentList '#dl2', (chain) ->
+    chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
+      .then( (path) ->
+        assert.equal path, 'foo'
+        @newPromise -> $('#dl2 > ul > .back-link').click()
+      )
+      .done (path) ->
+        assert.equal path, ''
+        checkRootFolder $('#dl1'), $('#dl2'), assert
+        QUnit.start()
 
 QUnit.asyncTest 'Click on two back links', (assert) ->
-  expect 91
+  expect 94
 
   fixtureDocumentLists()
-  up = true
 
-  $('.document-list').documentlist
-    init: ->
-      $('#dl2 > ul > li:nth-child(2)').click()
-    pathChanged: (path) ->
-      switch path
-        when ''
-          unless up
-            checkRootFolder $('#dl1'), $('#dl2'), assert
-            QUnit.start()
-        when 'foo'
-          if up
-            $('#dl2 > ul > li:nth-child(2)').click()
-          else
-            checkFooFolder $('#dl1'), $('#dl2'), assert
-            $('#dl2 > ul > .back-link').click()
-        when 'foo/wheezy'
-          up = false
-          $('#dl2 > ul > .back-link').click()
+  testDocumentList '#dl2', (chain) ->
+    chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
+      .then( (path) ->
+        assert.equal path, 'foo', 'path is set correctly'
+        @newPromise -> $('#dl2 > ul > li:nth-child(2)').click()
+      )
+      .then( (path) ->
+        assert.equal path, 'foo/wheezy', 'path is set correctly'
+        @newPromise -> $('#dl2 > ul > .back-link').click()
+      )
+      .then( (path) ->
+        assert.equal path, 'foo', 'path is set correctly'
+        checkFooFolder $('#dl1'), $('#dl2'), assert
+        @newPromise -> $('#dl2 > ul > .back-link').click()
+      )
+      .done (path) ->
+        assert.equal path, '', 'path is set correctly'
+        checkRootFolder $('#dl1'), $('#dl2'), assert
+        QUnit.start()
 
 QUnit.asyncTest 'Click on delete button and confirm', (assert) ->
   $ = jQuery
@@ -701,7 +709,7 @@ QUnit.asyncTest 'Click on delete button and confirm', (assert) ->
 QUnit.asyncTest 'Click on delete button but cancel', (assert) ->
   $ = jQuery
 
-  expect 50
+  expect 49
 
   oldConfirm = $.confirm
   $.confirm = (msg) ->
@@ -746,8 +754,6 @@ checkRootFolder = ($emptyList, $nonEmptyList, assert) ->
       ['baz.txt', 'text', '19,9 KB', true, true]
       ['yummy.csv', 'spreadsheet', '38,4 MB', false, true]
     ]
-  assert.notEqual $emptyList.add($nonEmptyList).data('bs.documentlist'), null,
-    'both document lists are marked as document-list'
 
 checkWheezyFolder = ($emptyList, $nonEmptyList, assert) ->
   assert.itemSize $emptyList.children('ul'), 0, 'one download list is empty'
