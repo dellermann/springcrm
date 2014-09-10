@@ -79,7 +79,7 @@ module.exports = (grunt) ->
         javascript: '<%= dirs.src.assets %>/javascripts'
         stylesheet: '<%= dirs.src.assets %>/stylesheets'
         test:
-          base: '<%= dirs.src.base %>/test/js/tests'
+          base: '<%= dirs.src.base %>/test/js'
           coffee: '<%= dirs.src.test.base %>/coffee'
       target:
         base: 'target'
