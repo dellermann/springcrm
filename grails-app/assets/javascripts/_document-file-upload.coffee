@@ -19,7 +19,6 @@
 #= require _jquery
 #= require _document-list
 #= require _document-file-upload
-#= require _mustache
 #= require _load-image
 #= require _load-image-ios
 #= require _load-image-orientation
@@ -32,6 +31,8 @@
 #= require _jquery-fileupload-audio
 #= require _jquery-fileupload-video
 #= require _jquery-fileupload-validate
+#= require _handlebars-ext
+#= require templates/document/document-file-upload
 
 
 # @nodoc
@@ -156,6 +157,10 @@ class DocumentFileUpload
       )
     return
 
+  # Called if all the uploads in the queue should be removed.
+  #
+  # @private
+  #
   _onCancelAllItemUpload: ->
     @options.$fileList
       .find('.document-upload-cancel')
@@ -188,6 +193,10 @@ class DocumentFileUpload
       @options.$documentList.documentlist 'addFile', file
     null
 
+  # Called if all items in the upload queue should be processed.
+  #
+  # @private
+  #
   _onStartAllItemUpload: ->
     @options.$fileList
       .find('.document-upload-start')
@@ -218,7 +227,7 @@ class DocumentFileUpload
   # @private
   #
   _renderTemplate: (data) ->
-    Mustache.render @options.$uploadRequestTemplate.html(),
+    Handlebars.templates['document/document-file-upload']
       files: data.files
 
 

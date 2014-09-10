@@ -1,0 +1,66 @@
+<nav class="document-list-breadcrumbs">
+  <strong>{{message 'document.path.label'}}</strong>
+  <ul>
+    <li data-path="">{{message 'document.path.root'}}</li>
+    {{#each pathParts}}
+    <li data-path="{{path}}">{{label}}</li>
+    {{/each}}
+  </ul>
+</nav>
+<ul class="document-list-container">
+  {{#if path}}
+  <li class="back-link">
+    <i></i>
+    <span class="name">{{message 'document.back.label'}}</span>
+    <span class="size"></span>
+    <span class="permissions"></span>
+    <span class="action-buttons"></span>
+  </li>
+  {{/if}}
+  {{#each folders}}
+  <li class="folder">
+    <i></i>
+    <span class="name">{{name}}</span>
+    <span class="size"></span>
+    <span class="permissions">
+      {{#if readable}}
+      <strong title="{{message 'document.permissions.read.title'}}">{{message 'document.permissions.read'}}</strong>
+      {{^}}
+      <strong></strong>
+      {{/if}}
+      {{#if writeable}}
+      <strong title="{{message 'document.permissions.write.title'}}">{{message 'document.permissions.write'}}</strong>
+      {{^}}
+      <strong></strong>
+      {{/if}}
+    </span>
+    <span class="action-buttons">
+      <i class="fa fa-trash delete-btn"
+        title="{{message 'default.btn.remove'}}"></i>
+    </span>
+  </li>
+  {{/each}}
+  {{#each files}}
+  <li class="file filetype-{{fileType}}">
+    <i></i>
+    <span class="name">{{name}}</span>
+    <span class="size" title="{{size}} B">{{sizeFormatted}}</span>
+    <span class="permissions">
+      {{#if readable}}
+      <strong title="{{message 'document.permissions.read.title'}}">{{message 'document.permissions.read'}}</strong>
+      {{^}}
+      <strong></strong>
+      {{/if}}
+      {{#if writeable}}
+      <strong title="{{message 'document.permissions.write.title'}}">{{message 'document.permissions.write'}}</strong>
+      {{^}}
+      <strong></strong>
+      {{/if}}
+    </span>
+    <span class="action-buttons">
+      <i class="fa fa-trash delete-btn"
+        title="{{message 'default.btn.remove'}}"></i>
+    </span>
+  </li>
+  {{/each}}
+</ul>

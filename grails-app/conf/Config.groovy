@@ -115,6 +115,16 @@ grails {
     }
 }
 
+/* Asset pipeline settings */
+grails {
+	assets {
+		handlebars {
+			templateRoot = 'templates'
+			templatePathSeperator = '/'
+		}
+	}
+}
+
 /* Set to false to use the new Grails 1.2 JSONBuilder in the render method */
 grails.json.legacy.builder = false
 

@@ -1,5 +1,5 @@
 #
-# document-list.coffee
+# _document-list.coffee
 #
 # Copyright (c) 2011-2014, Daniel Ellermann
 #
@@ -20,6 +20,8 @@
 #= require _core
 #= require _filetype
 #= require _ui
+#= require _handlebars-ext
+#= require templates/document/document-list
 
 
 # @nodoc
@@ -117,7 +119,7 @@ class DocumentList
     $el = @$element
 
     @_getLoadDocumentListPromise($el.data('list-url'), path).done (data) ->
-      @_renderBreadcrumbsPath path
+      @currentPath = path
       @_renderDocumentList path, data
       @options.pathChanged.fireWith $el, [path]
 
@@ -153,12 +155,13 @@ class DocumentList
         $item = $this
         false
 
-    $li = @_renderFileItem file
+    html = @_renderTemplate files: [file]
+    $li = $(html).find 'li.file'
     if $item
       $item.before $li
     else
       $li.appendTo $ul
-    null
+    return
 
   # Adds the given folder to the alphabetically sorted position in the document
   # list.
@@ -180,14 +183,15 @@ class DocumentList
         insertBefore = true
         false
 
-    $li = @_renderFolderItem folder
+    html = @_renderTemplate folders: [folder]
+    $li = $(html).find 'li.folder'
     if insertBefore
       $item.before $li
     else if $item
       $item.after $li
     else
       $li.prependTo $ul
-    null
+    return
 
   # Downloads the file with the given absolute path in an internal `<iframe>`.
   #
@@ -240,7 +244,6 @@ class DocumentList
       deferred.rejectWith this, [path]
 
     deferred.then (url, path) ->
-      @currentPath = path
       $.ajax
         context: this
         data:
@@ -305,56 +308,6 @@ class DocumentList
 
     return
 
-  # Renders the breadcrumbs of the given path.
-  #
-  # @param [String] path    the given absolute path
-  # @return [DocumentList]  this object
-  # @private
-  #
-  _renderBreadcrumbsPath: (path) ->
-    $ = jQuery
-
-    $nav = $('<nav class="document-list-breadcrumbs"/>')
-    $('<strong/>').text($L('document_path_label'))
-      .appendTo $nav
-    $ul = $('<ul/>').on('click', 'li', (event) =>
-        @loadDocumentList $(event.currentTarget).data 'path'
-        false
-      )
-      .appendTo $nav
-    $('<li/>').text($L('document_path_root'))
-      .data('path', '')
-      .appendTo $ul
-    if path
-      currentPath = ''
-      parts = path.split '/'
-      for part in parts
-        currentPath += '/' if currentPath
-        currentPath += part
-
-        $('<li/>').text(part)
-          .data('path', currentPath)
-          .appendTo $ul
-
-    @$element.find('> nav')
-        .remove()
-      .end()
-      .append $nav
-    this
-
-  # Renders the action buttons for the given file or folder entry.
-  #
-  # @param [jQuery] $li the list item representing the file or folder
-  # @return [jQuery]    the given list item
-  # @private
-  #
-  _renderButtons: ($li) ->
-    $span = $('<span class="action-buttons"/>')
-    $('<i class="fa fa-trash delete-btn"/>')
-      .attr('title', $L('default.btn.remove'))
-      .appendTo $span
-    $li.append $span
-
   # Renders the files and folders of the given path.
   #
   # @param [String] path    the given absolute path
@@ -365,107 +318,73 @@ class DocumentList
   _renderDocumentList: (path, data) ->
     $ = jQuery
 
-    $ul = $('<ul class="document-list-container"/>')
-      .on('click', '.back-link', =>
-        @loadDocumentList @_parentPath @currentPath
-        false
-      )
-      .on('click', '.folder', (event) =>
-        @loadDocumentList @_getAbsolutePath $(event.currentTarget)
-        false
-      )
-      .on('click', '.file', (event) =>
-        @_downloadFile @_getAbsolutePath $(event.currentTarget)
-        false
-      )
-      .on('click', '.action-buttons .delete-btn', (event) =>
-        @_removeDocument $(event.currentTarget).parents 'li'
-        false
-      )
-    if path
-      $li = $('<li class="back-link"/>').appendTo $ul
-      $('<i/>').appendTo $li
-      $('<span class="name"/>').text($L('document_back_label'))
-        .appendTo $li
-      $('<span class="size"/>').appendTo $li
-      $('<span class="permissions"/>').appendTo $li
-    @_renderFolderItem(folder).appendTo $ul for folder in data.folders
-    @_renderFileItem(file).appendTo $ul for file in data.files
+    html = @_renderTemplate
+      path: path
+      pathParts: @_splitPath path
+      folders: data.folders
+      files: $.map data.files, (file) ->
+        file.fileType = $.filetype file.ext
+        file.sizeFormatted = file.size.formatSize()
+        file
 
-    @$element.find('> ul')
-        .remove()
+    @$element.empty()
+      .html(html)
+      .find('.document-list-breadcrumbs')
+        .on('click', 'li', (event) =>
+          @loadDocumentList $(event.currentTarget).data 'path'
+          false
+        )
       .end()
-      .append $ul
+      .find('.document-list-container')
+        .on('click', '.back-link', =>
+          @loadDocumentList @_parentPath @currentPath
+          false
+        )
+        .on('click', '.folder', (event) =>
+          @loadDocumentList @_getAbsolutePath $(event.currentTarget)
+          false
+        )
+        .on('click', '.file', (event) =>
+          @_downloadFile @_getAbsolutePath $(event.currentTarget)
+          false
+        )
+        .on('click', '.action-buttons .delete-btn', (event) =>
+          @_removeDocument $(event.currentTarget).parents 'li'
+          false
+        )
     this
 
-  # Renders a list item for the given file.
+  # Renders the Handlebars template using the given data.
   #
-  # @param [Object] file  the given file
-  # @return [jQuery]      the rendered list item
+  # @param [Object] data  the given data
+  # @return [String]      the generated HTML
   # @private
   #
-  _renderFileItem: (file) ->
-    $li = $('<li class="file"/>').addClass "filetype-#{$.filetype(file.ext)}"
-    $('<i/>').appendTo $li
-    @_renderName $li, file
-    $('<span class="size"/>').text(file.size.formatSize())
-      .appendTo $li
-    @_renderPermissions $li, file
-    @_renderButtons $li
-    $li
+  _renderTemplate: (data) ->
+    data.files = $.map data.files ? [], (file) ->
+      file.fileType = $.filetype file.ext
+      file.sizeFormatted = file.size.formatSize()
+      file
+    Handlebars.templates['document/document-list'] data
 
-  # Renders a list item for the given folder.
+  # Splits the given path into parts.
   #
-  # @param [Object] folder  the given folder
-  # @return [jQuery]        the rendered list item
+  # @param [String] path  the given absolute path
+  # @return [Array]       an array containing the parts; each part is an object containing the keys `path` and `label`
   # @private
   #
-  _renderFolderItem: (folder) ->
-    $li = $('<li class="folder"/>')
-    $('<i/>').appendTo $li
-    @_renderName $li, folder
-    $('<span class="size"/>').appendTo $li
-    @_renderPermissions $li, folder
-    @_renderButtons $li
-    $li
-
-  # Renders the name of the given file or folder into the stated list item.
-  #
-  # @param [jQuery] $li the given list item
-  # @param [Object] f   the given file or folder
-  # @return [jQuery]    the generated `<span>` containing the name
-  # @private
-  #
-  _renderName: ($li, f) ->
-    $('<span class="name"/>').text(f.name)
-      .appendTo $li
-
-  # Renders the permissions of the given file or folder into the stated list
-  # item.
-  #
-  # @param [jQuery] $li the given list item
-  # @param [Object] f   the given file or folder
-  # @return [jQuery]    the generated `<span>` containing the permissions
-  # @private
-  #
-  _renderPermissions: ($li, f) ->
-    $ = jQuery
-
-    $perms = $('<span class="permissions"/>').appendTo $li
-
-    b = f.readable
-    $strong = $('<strong/>')
-      .text(if b then $L('document_permissions_read') else '')
-      .appendTo $perms
-    $strong.attr 'title', $L('document_permissions_read_title') if b
-
-    b = f.writeable
-    $strong = $('<strong/>')
-      .text(if b then $L('document_permissions_write') else '')
-      .appendTo $perms
-    $strong.attr('title', $L('document_permissions_write_title')) if b
-
-    $perms
+  _splitPath: (path) ->
+    res = []
+    if path
+      currentPath = ''
+      parts = path.split '/'
+      for part in parts
+        currentPath += '/' if currentPath
+        currentPath += part
+        res.push
+          path: currentPath
+          label: part
+    res
 
 
 # Renders a document list for the elements in this jQuery object.

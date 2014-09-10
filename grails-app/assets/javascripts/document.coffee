@@ -22,11 +22,11 @@
 
 
 $ = jQuery
-$documentList = $('#document-list')
 
 
-$documentList.on 'springcrm.documentlist.pathchanged', (event, data) ->
-  $('#current-path').val data.path
+$documentList = $('#document-list').documentlist
+  pathChanged: (path) -> $('#current-path').val path
+
 $('#document-list-upload').documentfileupload()
 
 $('.create-folder-button').on 'click', ->

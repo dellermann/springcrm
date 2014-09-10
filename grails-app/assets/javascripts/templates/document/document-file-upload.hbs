@@ -1,0 +1,21 @@
+{{#each files}}
+<tr class="upload-request-template">
+  <td class="preview"></td>
+  <td class="name">{{name}}</td>
+  <td class="size"></td>
+  <td>
+    <div class="progress" role="progressbar" aria-valuemin="0"
+      aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-bar progress-bar-success" style="width: 0%;"></div>
+    </div>
+  </td>
+  <td>
+    <button class="button green document-upload-start" disabled="disabled">
+      <i class="fa fa-upload"></i> {{message 'document.button.start'}}
+    </button>
+    <button class="button orange document-upload-cancel">
+      <i class="fa fa-ban"></i> {{message 'default.btn.cancel'}}
+    </button>
+  </td>
+</tr>
+{{/each}}
