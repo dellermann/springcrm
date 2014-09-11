@@ -58,6 +58,11 @@ module.exports = (grunt) ->
             expand: true
             src: 'jquery.mockjax.js'
           ,
+            cwd: '<%= dirs.src.bower.handlebars %>/'
+            dest: '<%= dirs.target.test.js.scripts %>/'
+            expand: true
+            src: 'handlebars.js'
+          ,
             cwd: '<%= dirs.src.assets %>/'
             dest: '<%= dirs.target.test.js.base %>/'
             expand: true
@@ -69,10 +74,12 @@ module.exports = (grunt) ->
         base: '.'
         bower:
           base: '<%= dirs.src.base %>/bower_components'
+          handlebars: '<%= dirs.src.bower.base %>/handlebars'
           jquery: '<%= dirs.src.bower.base %>/jquery'
           jqueryMockjax: '<%= dirs.src.bower.base %>/jquery-mockjax'
           jqueryUi: '<%= dirs.src.bower.base %>/jquery-ui'
-          jqueryUiTouchPunch: '<%= dirs.src.bower.base %>/jquery-ui-touch-punch-working'
+          jqueryUiTouchPunch:
+            '<%= dirs.src.bower.base %>/jquery-ui-touch-punch-working'
           qunit: '<%= dirs.src.bower.base %>/qunit'
         coffee: '<%= dirs.src.assets %>/javascripts'
         grailsApp: '<%= dirs.src.base %>/grails-app'
@@ -90,6 +97,19 @@ module.exports = (grunt) ->
             base: '<%= dirs.target.test.base %>/javascript'
             css: '<%= dirs.target.test.js.base %>/css'
             scripts: '<%= dirs.target.test.js.base %>/scripts'
+    handlebars:
+      test:
+        files: [
+          cwd: '<%= dirs.src.javascript %>/templates/'
+          dest: '<%= dirs.target.test.js.scripts %>/templates/'
+          expand: true
+          ext: '.js'
+          src: ['**/*.hbs']
+        ]
+        options:
+          namespace: 'Handlebars.templates'
+          processName: (filePath) ->
+            filePath.replace /^grails-app\/assets\/javascripts\/templates\/(.+)\.hbs/, '$1'
     less:
       test:
         files:
@@ -115,12 +135,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-copy'
+  grunt.loadNpmTasks 'grunt-contrib-handlebars'
   grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-codo'
 
   grunt.registerTask 'default', [
-    'clean:test', 'less:test', 'coffee:test', 'copy:test'
+    'clean:test', 'less:test', 'coffee:test', 'handlebars:test', 'copy:test'
   ]
   grunt.registerTask 'documentation', [
     'clean:documentation', 'codo:documentation'
