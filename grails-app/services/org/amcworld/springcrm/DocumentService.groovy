@@ -21,8 +21,8 @@
 package org.amcworld.springcrm
 
 import org.apache.commons.vfs2.FileObject
-import org.apache.commons.vfs2.FileSystemManager
 import org.apache.commons.vfs2.NameScope
+import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
@@ -63,7 +63,7 @@ class DocumentService {
 	 * @return		the number of deleted files
 	 */
 	int deleteFileObject(String path) {
-		getFile(path).deleteAll()
+		getFile(path).delete Selectors.SELECT_ALL
 	}
 
     /**
