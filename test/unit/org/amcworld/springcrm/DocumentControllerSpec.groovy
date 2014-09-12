@@ -24,11 +24,8 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
 import grails.test.mixin.TestFor
-import org.apache.commons.io.FileUtils
 import org.apache.commons.vfs2.FileObject
-import org.apache.commons.vfs2.FileSystemManager
-import org.apache.commons.vfs2.NameScope
-import org.apache.commons.vfs2.Selectors
+import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.VFS
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -40,14 +37,14 @@ class DocumentControllerSpec extends Specification {
 
     //-- Instance variables ---------------------
 
-    File root
+    FileObject root
 
 
     //-- Fixture methods ------------------------
 
     def setup() {
         createFixtureFileSystem()
-		mockGetFileMethod()
+		mockDocumentService()
     }
 
     def cleanup() {
@@ -109,43 +106,6 @@ class DocumentControllerSpec extends Specification {
         then: 'I get the correct JSON data of these files'
         SC_OK == response.status
         checkBarFolderContent response.json
-    }
-
-    def 'Cannot list a non-existing root directory'() {
-        given: 'the root directory is deleted'
-        destroyFixtureFileSystem()
-
-        when: 'I list the content of the non-existing root directory'
-        params.path = ''
-        controller.dir()
-
-        then: 'I get an error'
-        SC_NOT_FOUND == response.status
-    }
-
-    def 'Cannot list a forbidden file system root directory'() {
-        when: 'I list the content of the root directory with / path'
-        params.path = '/'
-        controller.dir()
-
-        then: 'I get an error'
-        SC_NOT_FOUND == response.status
-    }
-
-    def 'Cannot list a forbidden directory'() {
-        when: 'I list a forbidden directory'
-        params.path = '/foo'
-        controller.dir()
-
-        then: 'I get an error'
-        SC_NOT_FOUND == response.status
-
-        when: 'I list a forbidden directory'
-        params.path = '/foo/'
-        controller.dir()
-
-        then: 'I get an error'
-        SC_NOT_FOUND == response.status
     }
 
     def 'Cannot list a forbidden parent directory'() {
@@ -266,15 +226,12 @@ function helloWorld() {
         SC_OK == response.status
 
 		and: 'no file has been created'
-		!new File(root, 'foo.dat').exists()
+		!root.resolveFile('foo.dat').exists()
 	}
 
 	def 'Upload non-empty file'() {
 		given: 'an example file content'
 		String data = 'Example file for upload'
-
-		and: 'a mock for the service class'
-		mockUploadMethod 2
 
 		when: 'I upload a file'
 		def file = new GrailsMockMultipartFile(
@@ -291,10 +248,10 @@ function helloWorld() {
 		response.json.writeable
 
 		and: 'a file has been created'
-		def f1 = new File(root, 'foo.txt')
+		def f1 = root.resolveFile('foo.txt')
 		f1.exists()
-		data.length() == f1.size()
-		data == f1.text
+		data.length() == f1.content.size
+		data == f1.content.inputStream.text
 
 		when: 'I upload a file to a subdirectory'
 		request.addFile file
@@ -308,18 +265,15 @@ function helloWorld() {
 		response.json.writeable
 
 		and: 'a file has been created'
-		def f2 = new File(root, 'bar/foo.txt')
+		def f2 = root.resolveFile('bar/foo.txt')
 		f2.exists()
-		data.length() == f2.size()
-		data == f2.text
+		data.length() == f2.content.size
+		data == f2.content.inputStream.text
 	}
 
 	def 'Upload file to invalid folder'() {
 		given: 'an example file content'
 		String data = 'Example file for upload'
-
-		and: 'a mock for the service class'
-		mockUploadMethod()
 
 		when: 'I upload a file'
 		def file = new GrailsMockMultipartFile(
@@ -332,13 +286,10 @@ function helloWorld() {
         SC_NOT_FOUND == response.status
 
 		and: 'no file has been created'
-		!new File(root.parentFile, 'foo.txt').exists()
+		!root.resolveFile('foo.dat').exists()
 	}
 
 	def 'Create a folder'() {
-		given: 'a mock for the service class'
-		mockCreateFolderMethod()
-
 		when: 'I create a folder'
 		controller.createFolder '', 'my-new-folder'
 
@@ -346,15 +297,12 @@ function helloWorld() {
 		SC_OK == response.status
 
 		and: 'the folder has been created'
-		File f = new File(root, 'my-new-folder')
+		FileObject f = root.resolveFile('my-new-folder')
 		f.exists()
-		f.directory
+		FileType.FOLDER == f.type
 	}
 
 	def 'Create a folder in invalid path'() {
-		given: 'a mock for the service class'
-		mockCreateFolderMethod()
-
 		when: 'I create a folder'
 		controller.createFolder '..', 'my-new-folder'
 
@@ -362,13 +310,10 @@ function helloWorld() {
 		SC_NOT_FOUND == response.status
 
 		and: 'the folder has not been created'
-		!new File(root.parentFile, 'my-new-folder').exists()
+		!root.resolveFile('my-new-folder').exists()
 	}
 
 	def 'Create a folder with invalid name'() {
-		given: 'a mock for the service class'
-		mockCreateFolderMethod()
-
 		when: 'I create a folder'
 		controller.createFolder '', '..'
 
@@ -377,9 +322,6 @@ function helloWorld() {
 	}
 
 	def 'Delete a file'() {
-		given: 'a mock for the service class'
-		mockDeleteFileObjectMethod()
-
 		when: 'I delete a file'
 		controller.delete 'baz.txt'
 
@@ -387,14 +329,10 @@ function helloWorld() {
 		SC_OK == response.status
 
 		and: 'the file has been deleted'
-		File f = new File(root, 'baz.txt')
-		!f.exists()
+		!root.resolveFile('baz.txt').exists()
 	}
 
 	def 'Delete a file in subdirectory'() {
-		given: 'a mock for the service class'
-		mockDeleteFileObjectMethod()
-
 		when: 'I delete a file'
 		controller.delete 'baz.txt'
 
@@ -402,14 +340,10 @@ function helloWorld() {
 		SC_OK == response.status
 
 		and: 'the file has been deleted'
-		File f = new File(root, 'baz.txt')
-		!f.exists()
+		!root.resolveFile('baz.txt').exists()
 	}
 
 	def 'Delete a folder'() {
-		given: 'a mock for the service class'
-		mockDeleteFileObjectMethod()
-
 		when: 'I delete a folder'
 		controller.delete 'foo'
 
@@ -417,14 +351,10 @@ function helloWorld() {
 		SC_OK == response.status
 
 		and: 'the folder has been deleted'
-		File foo = new File(root, 'foo')
-		!foo.exists()
+		!root.resolveFile('foo').exists()
 	}
 
 	def 'Cannot delete whole root path'() {
-		given: 'a mock for the service class'
-		mockDeleteFileObjectMethod 3
-
 		when: 'I delete the root folder'
 		controller.delete ''
 
@@ -433,7 +363,7 @@ function helloWorld() {
 
 		and: 'the root folder has not been deleted'
 		root.exists()
-		root.directory
+		FileType.FOLDER == root.type
 
 		when: 'I delete the root folder'
 		controller.delete '.'
@@ -443,7 +373,7 @@ function helloWorld() {
 
 		and: 'the root folder has not been deleted'
 		root.exists()
-		root.directory
+		FileType.FOLDER == root.type
 
 		when: 'I delete the root folder'
 		controller.delete './foo/.././.'
@@ -453,13 +383,10 @@ function helloWorld() {
 
 		and: 'the root folder has not been deleted'
 		root.exists()
-		root.directory
+		FileType.FOLDER == root.type
 	}
 
 	def 'Cannot delete a file with an invalid path'() {
-		given: 'a mock for the service class'
-		mockDeleteFileObjectMethod 3
-
 		when: 'I delete the parent folder'
 		controller.delete '..'
 
@@ -468,17 +395,7 @@ function helloWorld() {
 
 		and: 'the root folder has not been deleted'
 		root.exists()
-		root.directory
-
-		when: 'I delete the root folder of the file system'
-		controller.delete '/'
-
-		then: 'I get an error code'
-		SC_NOT_FOUND == response.status
-
-		and: 'the root folder has not been deleted'
-		root.exists()
-		root.directory
+		FileType.FOLDER == root.type
 	}
 
 
@@ -531,19 +448,27 @@ function helloWorld() {
     }
 
     protected void createFixtureFileSystem() {
-        root = new File('/tmp/springcrm-test-4793732949')
-        destroyFixtureFileSystem()
-
-        root.mkdirs()
-        def foo = new File(root, 'foo')
-        foo.mkdir()
-        def bar = new File(root, 'bar')
-        bar.mkdir()
-        new File(root, 'yummy.csv').text = '''foo;bar;baz
+		root = VFS.manager.resolveFile('ram:///')
+		FileObject foo = root.resolveFile('foo')
+		foo.createFolder()
+		FileObject bar = root.resolveFile('bar')
+		bar.createFolder()
+		FileObject f = root.resolveFile('yummy.csv')
+		f.createFile()
+		def out = f.content.outputStream
+		out << '''foo;bar;baz
 wheezy;groovy;yummy
 '''
-        new File(root, 'baz.txt').text = 'This is a test file.'
-        new File(foo, 'wheezy.php').text = '''<?php
+		out.close()
+		f = root.resolveFile('baz.txt')
+		f.createFile()
+		out = f.content.outputStream
+		out << 'This is a test file.'
+		out.close()
+		f = foo.resolveFile('wheezy.php')
+		f.createFile()
+		out = f.content.outputStream
+		out << '''<?php
 function foobar() {
     echo 'This is a test.';
 }
@@ -552,65 +477,15 @@ function helloWorld() {
     echo 'Hello World!';
 }
 '''
-        new File(root, '.directory').text = '''[directory]
-hidden = true
-'''
-        new File(root.parent, 'parent-test.txt').text = 'Unreachable file in parent directory'
+		out.close()
     }
 
     protected void destroyFixtureFileSystem() {
-        FileUtils.deleteQuietly root
-        new File(root.parent, 'parent-test.txt').delete()
+		VFS.manager.closeFileSystem root.fileSystem
     }
 
-	protected void mockCreateFolderMethod(num = 1) {
-		def mock = mockFor(DocumentService)
-		mock.demandExplicit.createFolder(num) { String path, String name ->
-			FileSystemManager fsm = VFS.manager
-			FileObject r = fsm.resolveFile root.toString()
-			FileObject p = r.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
-			FileObject f = p.resolveFile(name, NameScope.DESCENDENT_OR_SELF)
-			f.createFolder()
-			f
-		}
-		controller.documentService = mock.createMock()
-	}
-
-	protected void mockDeleteFileObjectMethod(num = 1) {
-		def mock = mockFor(DocumentService)
-		mock.demandExplicit.deleteFileObject(num) { String path ->
-			num = 0
-			FileSystemManager fsm = VFS.manager
-			FileObject r = fsm.resolveFile root.toString()
-			FileObject fo = r.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
-			if (fo != r) num = fo.delete Selectors.SELECT_ALL
-			num
-		}
-		controller.documentService = mock.createMock()
-
-	}
-
-	protected void mockGetFileMethod() {
-		def mock = mockFor(DocumentService)
-		mock.demandExplicit.getFile(1..3) { String path ->
-			FileSystemManager fsm = VFS.manager
-			FileObject r = fsm.resolveFile root.toString()
-			r.resolveFile path, NameScope.DESCENDENT_OR_SELF
-		}
-		controller.documentService = mock.createMock()
-	}
-
-	protected void mockUploadMethod(num = 1) {
-		def mock = mockFor(DocumentService)
-		mock.demandExplicit.uploadFile(num) { String path, String fileName, InputStream data ->
-			FileSystemManager fsm = VFS.manager
-			FileObject r = fsm.resolveFile root.toString()
-			FileObject p = r.resolveFile path, NameScope.DESCENDENT_OR_SELF
-			FileObject f = p.resolveFile fileName, NameScope.DESCENDENT_OR_SELF
-			f.content.outputStream << data
-			f.content.close()
-			f
-		}
-		controller.documentService = mock.createMock()
+	protected void mockDocumentService() {
+		DocumentService.metaClass.getRootPath { -> 'ram:///' }
+		controller.documentService = new DocumentService()
 	}
 }
