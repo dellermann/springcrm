@@ -115,7 +115,7 @@ class DocumentServiceSpec extends Specification {
 		'foo.txt' == f.name.baseName
 	}
 
-	def 'Get invalid files'() {
+	def 'Cannot get invalid files'() {
 		given: 'a root path'
 		service.grailsApplication.config.springcrm.dir.documents =
 			'/tmp/springcrm-test/47bc3f71ad90b3'
@@ -199,7 +199,7 @@ class DocumentServiceSpec extends Specification {
 		root.deleteDir()
 	}
 
-	def 'Upload file to invalid path'() {
+	def 'Cannot upload file to invalid path'() {
 		given: 'a root path'
 		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
 		service.grailsApplication.config.springcrm.dir.documents = rootPath
@@ -318,7 +318,7 @@ class DocumentServiceSpec extends Specification {
 		root.deleteDir()
 	}
 
-	def 'Create new folder in invalid path'() {
+	def 'Cannot create new folder in invalid path'() {
 		given: 'a root path'
 		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
 		service.grailsApplication.config.springcrm.dir.documents = rootPath
@@ -338,7 +338,7 @@ class DocumentServiceSpec extends Specification {
 		root.deleteDir()
 	}
 
-	def 'Create new folder with invalid name'() {
+	def 'Cannot create new folder with invalid name'() {
 		given: 'a root path'
 		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
 		service.grailsApplication.config.springcrm.dir.documents = rootPath
@@ -391,6 +391,217 @@ class DocumentServiceSpec extends Specification {
 		File file2 = new File(root, 'my-new-folder')
 		file2.exists()
 		file2.directory
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Delete a file'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		and: 'an example file'
+		File file = new File(root, 'foo.txt')
+		file.createNewFile()
+		file.text = 'This is an example file'
+		File otherFile = new File(root, 'bar.txt')
+		otherFile.createNewFile()
+		otherFile.text = 'This is another example file'
+
+		when: 'I delete that file'
+		int num = service.deleteFileObject('foo.txt')
+
+		then: 'one file has been deleted'
+		1 == num
+
+		and: 'the file has been deleted successfully'
+		!file.exists()
+
+		and: 'the other file is untouched'
+		otherFile.exists()
+		'This is another example file' == otherFile.text
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Delete a file in a subdirectory'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File bar = new File(root, 'bar')
+		bar.mkdir()
+
+		and: 'an example file'
+		File file = new File(bar, 'foo.txt')
+		file.createNewFile()
+		file.text = 'This is an example file'
+		File otherFile = new File(root, 'wheezy.txt')
+		otherFile.createNewFile()
+		otherFile.text = 'This is another example file'
+
+		when: 'I delete that file'
+		int num = service.deleteFileObject('bar/foo.txt')
+
+		then: 'one file has been deleted'
+		1 == num
+
+		and: 'the file has been deleted successfully'
+		!file.exists()
+
+		and: 'the other file is untouched'
+		otherFile.exists()
+		'This is another example file' == otherFile.text
+
+		and: 'the folder is untouched'
+		bar.exists()
+		bar.directory
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Delete a folder'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File bar = new File(root, 'bar')
+		bar.mkdir()
+
+		and: 'an example file'
+		File file = new File(bar, 'foo.txt')
+		file.createNewFile()
+		file.text = 'This is an example file'
+		File otherFile = new File(root, 'wheezy.txt')
+		otherFile.createNewFile()
+		otherFile.text = 'This is another example file'
+
+		when: 'I delete that folder'
+		int num = service.deleteFileObject('bar')
+
+		then: 'two FileObjects have been deleted'
+		2 == num
+
+		and: 'the file and folder has been deleted successfully'
+		!bar.exists()
+		!file.exists()
+
+		and: 'the other file is untouched'
+		otherFile.exists()
+		'This is another example file' == otherFile.text
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Cannot delete whole root path'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File bar = new File(root, 'bar')
+		bar.mkdir()
+
+		and: 'an example file'
+		File file = new File(root, 'foo.txt')
+		file.createNewFile()
+		file.text = 'This is an example file'
+
+		when: 'I delete the root path'
+		int num = service.deleteFileObject('')
+
+		then: 'no file has been deleted'
+		0 == num
+
+		and: 'the root folder still exists'
+		root.exists()
+
+		and: 'the file and folder are untouched'
+		file.exists()
+		'This is an example file' == file.text
+		bar.exists()
+		bar.directory
+
+		when: 'I delete the root path'
+		num = service.deleteFileObject('.')
+
+		then: 'no file has been deleted'
+		0 == num
+
+		and: 'the root folder still exists'
+		root.exists()
+
+		and: 'the file and folder are untouched'
+		file.exists()
+		'This is an example file' == file.text
+		bar.exists()
+		bar.directory
+
+		when: 'I delete the root path'
+		num = service.deleteFileObject('./bar/.././.')
+
+		then: 'no file has been deleted'
+		0 == num
+
+		and: 'the root folder still exists'
+		root.exists()
+
+		and: 'the file and folder are untouched'
+		file.exists()
+		'This is an example file' == file.text
+		bar.exists()
+		bar.directory
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Cannot delete a file with an invalid path'() {
+		given: 'a root path'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		and: 'an example file'
+		File file = new File(root, 'foo.txt')
+		file.createNewFile()
+		file.text = 'This is an example file'
+		File otherFile = new File(root, 'bar.txt')
+		otherFile.createNewFile()
+		otherFile.text = 'This is another example file'
+
+		when: 'I delete that file'
+		service.deleteFileObject('../foo.txt')
+
+		then: 'I get an exception'
+		thrown FileSystemException
+
+		and: 'the files are untouched'
+		file.exists()
+		'This is an example file' == file.text
+		otherFile.exists()
+		'This is another example file' == otherFile.text
+
+		when: 'I delete the file system root folder'
+		service.deleteFileObject('/')
+
+		then: 'I get an exception'
+		thrown FileSystemException
+
+		and: 'the files are untouched'
+		file.exists()
+		'This is an example file' == file.text
+		otherFile.exists()
+		'This is another example file' == otherFile.text
 
 		cleanup:
 		root.deleteDir()

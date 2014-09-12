@@ -63,7 +63,12 @@ class DocumentService {
 	 * @return		the number of deleted files
 	 */
 	int deleteFileObject(String path) {
-		getFile(path).delete Selectors.SELECT_ALL
+		int num = 0
+		FileObject fo = getFile(path)
+		if (fo != root) {
+			num = fo.delete Selectors.SELECT_ALL
+		}
+		num
 	}
 
     /**

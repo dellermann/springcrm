@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager
 import org.apache.commons.vfs2.NameScope
+import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import org.codehaus.groovy.grails.web.json.JSONObject
@@ -375,6 +376,111 @@ function helloWorld() {
 		SC_NOT_FOUND == response.status
 	}
 
+	def 'Delete a file'() {
+		given: 'a mock for the service class'
+		mockDeleteFileObjectMethod()
+
+		when: 'I delete a file'
+		controller.delete 'baz.txt'
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the file has been deleted'
+		File f = new File(root, 'baz.txt')
+		!f.exists()
+	}
+
+	def 'Delete a file in subdirectory'() {
+		given: 'a mock for the service class'
+		mockDeleteFileObjectMethod()
+
+		when: 'I delete a file'
+		controller.delete 'baz.txt'
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the file has been deleted'
+		File f = new File(root, 'baz.txt')
+		!f.exists()
+	}
+
+	def 'Delete a folder'() {
+		given: 'a mock for the service class'
+		mockDeleteFileObjectMethod()
+
+		when: 'I delete a folder'
+		controller.delete 'foo'
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the folder has been deleted'
+		File foo = new File(root, 'foo')
+		!foo.exists()
+	}
+
+	def 'Cannot delete whole root path'() {
+		given: 'a mock for the service class'
+		mockDeleteFileObjectMethod 3
+
+		when: 'I delete the root folder'
+		controller.delete ''
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the root folder has not been deleted'
+		root.exists()
+		root.directory
+
+		when: 'I delete the root folder'
+		controller.delete '.'
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the root folder has not been deleted'
+		root.exists()
+		root.directory
+
+		when: 'I delete the root folder'
+		controller.delete './foo/.././.'
+
+		then: 'I get a success code'
+		SC_OK == response.status
+
+		and: 'the root folder has not been deleted'
+		root.exists()
+		root.directory
+	}
+
+	def 'Cannot delete a file with an invalid path'() {
+		given: 'a mock for the service class'
+		mockDeleteFileObjectMethod 3
+
+		when: 'I delete the parent folder'
+		controller.delete '..'
+
+		then: 'I get an error code'
+		SC_NOT_FOUND == response.status
+
+		and: 'the root folder has not been deleted'
+		root.exists()
+		root.directory
+
+		when: 'I delete the root folder of the file system'
+		controller.delete '/'
+
+		then: 'I get an error code'
+		SC_NOT_FOUND == response.status
+
+		and: 'the root folder has not been deleted'
+		root.exists()
+		root.directory
+	}
+
 
     //-- Non-public methods ---------------------
 
@@ -466,6 +572,19 @@ hidden = true
 			FileObject f = p.resolveFile(name, NameScope.DESCENDENT_OR_SELF)
 			f.createFolder()
 			f
+		}
+		controller.documentService = mock.createMock()
+	}
+
+	protected void mockDeleteFileObjectMethod(num = 1) {
+		def mock = mockFor(DocumentService)
+		mock.demandExplicit.deleteFileObject(num) { String path ->
+			num = 0
+			FileSystemManager fsm = VFS.manager
+			FileObject r = fsm.resolveFile root.toString()
+			FileObject fo = r.resolveFile(path, NameScope.DESCENDENT_OR_SELF)
+			if (fo != r) num = fo.delete Selectors.SELECT_ALL
+			num
 		}
 		controller.documentService = mock.createMock()
 
