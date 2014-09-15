@@ -21,6 +21,9 @@
 package org.amcworld.springcrm
 
 import org.apache.commons.vfs2.FileObject
+import org.apache.commons.vfs2.FileSelectInfo
+import org.apache.commons.vfs2.FileSelector
+import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.NameScope
 import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
@@ -81,6 +84,85 @@ class DocumentService {
     FileObject getFile(String path) {
         root.resolveFile path, NameScope.DESCENDENT_OR_SELF
     }
+
+	/**
+	 * Gets all files belonging to the given organization.
+	 *
+	 * @param org   the given organization
+	 * @return		a list of files belonging to the given organization
+	 */
+	List<FileObject> getFilesOfOrganization(Organization org) {
+		FileObject folder = getFolderOfOrganization(org)
+		List res = []
+		if (folder) {
+			res = folder.findFiles([
+					includeFile: { FileSelectInfo fi ->
+						fi.depth > 0 && fi.file.type == FileType.FILE &&
+						!fi.file.hidden
+					},
+					traverseDescendents: { FileSelectInfo fi -> true }
+				] as FileSelector) as List
+		}
+		res
+	}
+
+	/**
+	 * Gets the folder containing the documents of the given organization.  The
+	 * method uses the root directory (see {@code getRootPath} and then tries
+	 * various modifications of the organization name.
+	 *
+	 * @param org   the given organization
+	 * @return      the folder of that organization; {@code null} if no such
+	 *              folder could be found
+	 * @see			#getRootPath()
+	 */
+	FileObject getFolderOfOrganization(Organization org) {
+		String pathSpec =
+			ConfigHolder.instance['pathDocumentByOrg']?.value ?: '%o'
+
+		def checkDirAndUpdate = { String name ->
+			FileObject folder = getFile(pathSpec.replace('%o', name))
+			if (!folder.exists()) {
+				return null
+			}
+
+			org.docPlaceholderValue = name
+			org.save flush: true
+			folder
+		}
+
+		// check the document placeholder of the organization
+		FileObject folder
+		String name = org.docPlaceholderValue
+		if (name) {
+			folder = getFile(pathSpec.replace('%o', name))
+			if (folder.exists()) {
+				return folder
+			}
+		}
+
+		// check variations of the organization name
+		name = org.name
+		folder = checkDirAndUpdate(name)
+		if (!folder) {
+			folder = checkDirAndUpdate(name.replace(' ', '-'))
+			if (!folder) {
+				folder = checkDirAndUpdate(name.replace(' ', '_'))
+				if (!folder) {
+					name = name.toLowerCase()
+					folder = checkDirAndUpdate(name)
+					if (!folder) {
+						folder = checkDirAndUpdate(name.replace(' ', '-'))
+						if (!folder) {
+							folder = checkDirAndUpdate(name.replace(' ', '_'))
+						}
+					}
+				}
+			}
+		}
+
+		folder
+	}
 
     /**
      * Gets the {@code FileObject} representing the root of the document file

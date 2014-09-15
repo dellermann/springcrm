@@ -20,15 +20,16 @@
 
 package org.amcworld.springcrm
 
-import org.apache.commons.vfs2.FileType;
-
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
+import org.apache.commons.vfs2.FileType
 import spock.lang.Specification
 
 
 @TestFor(DocumentService)
+@Mock([Config])
 class DocumentServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -605,5 +606,242 @@ class DocumentServiceSpec extends Specification {
 
 		cleanup:
 		root.deleteDir()
+	}
+
+	def 'Get folder of organization with folder name and default path spec'() {
+		given: 'a folder structure'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File orgFolder = new File(root, 'your-organization')
+		orgFolder.mkdir()
+
+		and: 'an organization'
+		Organization org = mockOrganization()
+		org.docPlaceholderValue = 'your-organization'
+
+		when: 'I obtain the folder of this organization'
+		FileObject folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/your-organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Get folder of organization with folder name and configured path spec'()
+	{
+		given: 'a folder structure'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File docFolder = new File(root, 'documents')
+		docFolder.mkdir()
+		File orgFolder = new File(docFolder, 'your-organization')
+		orgFolder.mkdir()
+
+		and: 'a configured path spec'
+		new Config(name: 'pathDocumentByOrg', value: 'documents/%o').save flush: true
+
+		and: 'an organization'
+		Organization org = mockOrganization()
+		org.docPlaceholderValue = 'your-organization'
+
+		when: 'I obtain the folder of this organization'
+		FileObject folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/documents/your-organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Get folder of organization without folder name'() {
+		given: 'a folder structure'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+
+		and: 'an organization'
+		Organization org = mockOrganization()
+
+		when: 'I obtain the folder of this organization'
+		File orgFolder = new File(root, 'Your Organization')
+		orgFolder.mkdir()
+		FileObject folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/Your Organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		when: 'I obtain the folder of this organization'
+		orgFolder.delete()
+		orgFolder = new File(root, 'Your-Organization')
+		orgFolder.mkdir()
+		folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/Your-Organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		when: 'I obtain the folder of this organization'
+		orgFolder.delete()
+		orgFolder = new File(root, 'Your_Organization')
+		orgFolder.mkdir()
+		folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/Your_Organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		when: 'I obtain the folder of this organization'
+		orgFolder.delete()
+		orgFolder = new File(root, 'your organization')
+		orgFolder.mkdir()
+		folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/your organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		when: 'I obtain the folder of this organization'
+		orgFolder.delete()
+		orgFolder = new File(root, 'your-organization')
+		orgFolder.mkdir()
+		folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/your-organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		when: 'I obtain the folder of this organization'
+		orgFolder.delete()
+		orgFolder = new File(root, 'your_organization')
+		orgFolder.mkdir()
+		folder = service.getFolderOfOrganization(org)
+
+		then: 'I get a valid folder'
+		null != folder
+		rootPath + '/your_organization' == folder.name.path
+		folder.exists()
+		FileType.FOLDER == folder.type
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Get files of organization'() {
+		given: 'a folder structure'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File orgFolder = new File(root, 'your-organization')
+		orgFolder.mkdir()
+		File foo = new File(orgFolder, 'foo.txt')
+		foo.createNewFile()
+		foo.text = 'This is an example file'
+		File subfolder = new File(orgFolder, 'website')
+		subfolder.mkdir()
+		File bar = new File(subfolder, 'bar.csv')
+		bar.createNewFile()
+		bar.text = 'data1;data2;data3'
+
+		and: 'an organization'
+		Organization org = mockOrganization()
+
+		when: 'I obtain the documents of this organization'
+		List<FileObject> files = service.getFilesOfOrganization(org)
+
+		then: 'I get a valid list of files only'
+		null != files
+		2 == files.size()
+		'bar.csv' == files.first().name.baseName
+		'foo.txt' == files.last().name.baseName
+
+		cleanup:
+		root.deleteDir()
+	}
+
+	def 'Get files of organization with non-existing path'() {
+		given: 'a folder structure'
+		String rootPath = '/tmp/springcrm-test/47bc3f71ad90b3'
+		service.grailsApplication.config.springcrm.dir.documents = rootPath
+		File root = new File(rootPath)
+		root.mkdirs()
+		File orgFolder = new File(root, 'my-organization')
+		orgFolder.mkdir()
+		File foo = new File(orgFolder, 'foo.txt')
+		foo.createNewFile()
+		foo.text = 'This is an example file'
+		File subfolder = new File(orgFolder, 'website')
+		subfolder.mkdir()
+		File bar = new File(subfolder, 'bar.csv')
+		bar.createNewFile()
+		bar.text = 'data1;data2;data3'
+
+		and: 'an organization'
+		Organization org = mockOrganization()
+
+		when: 'I obtain the documents of this organization'
+		List<FileObject> files = service.getFilesOfOrganization(org)
+
+		then: 'I get a valid list of files only'
+		null != files
+		files.empty
+
+		cleanup:
+		root.deleteDir()
+	}
+
+
+	//-- Non-public methods ---------------------
+
+	protected Organization mockOrganization() {
+		mockDomain Organization, [
+			[
+	            number: 40473,
+	            recType: 1,
+	            name: 'Your Organization',
+	            billingAddr: new Address(),
+	            shippingAddr: new Address(),
+	            phone: '3030303',
+	            fax: '703037494',
+	            phoneOther: '73903037',
+	            email1: 'info@yourorganization.example',
+	            email2: 'office@yourorganization.example',
+	            website: 'www.yourorganization.example',
+	            legalForm: 'Ltd.',
+	            type: new OrgType(name: 'foo'),
+	            industry: new Industry(name: 'bar'),
+	            owner: 'Mr. Smith',
+	            numEmployees: '5',
+	            rating: new Rating(name: 'active'),
+	            notes: 'whee'
+			]
+		]
+
+		Organization.first()
 	}
 }

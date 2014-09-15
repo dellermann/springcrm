@@ -25,6 +25,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK
 
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.vfs2.FileContent
+import org.apache.commons.vfs2.FileName
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
 import org.apache.commons.vfs2.FileType
@@ -95,7 +96,59 @@ class DocumentController {
         } catch (FileSystemException e) {
             render status: SC_NOT_FOUND
         }
+    }
 
+    def listEmbedded(Long organization) {
+        def organizationInstance = Organization.get(organization)
+		if (!organizationInstance) {
+			render status: SC_NOT_FOUND
+			return
+		}
+
+		List<FileObject> documents =
+			documentService.getFilesOfOrganization(organizationInstance)
+		int total = documents.size()
+
+        String sort = params.sort
+        String order = params.order
+        documents.sort { FileObject f1, FileObject f2 ->
+            def res
+			switch (sort) {
+			case 'size':
+                res = f1.content.size <=> f2.content.size
+				break
+			case 'lastModified':
+                res = f1.content.lastModifiedTime <=> f2.content.lastModifiedTime
+				break
+            default:
+                res = f1.name.baseName <=> f2.name.baseName
+            }
+
+            if ('desc' == order) res *= -1
+            res
+        }
+
+        def offset = (params.offset ?: 0) as Integer
+        def max = (params.max ?: 10) as Integer
+        def list = documents.subList(offset, Math.min(offset + max, total))
+
+		FileName rootName = documentService.root.name
+		def documentInstanceList = []
+		for (FileObject f in list) {
+			FileName name = f.name
+			FileContent content = f.content
+			documentInstanceList << [
+				path: rootName.getRelativeName(name),
+				name: name.baseName,
+				size: content.size,
+				lastModified: new Date(content.lastModifiedTime)
+			]
+		}
+
+    	[
+			documentInstanceList: documentInstanceList,
+			documentInstanceTotal: total
+		]
     }
 
     def download(String path) {
@@ -148,73 +201,17 @@ class DocumentController {
 	}
 
 	def delete(String path) {
+		int sc = SC_OK
 		try {
 			documentService.deleteFileObject path
-        	render status: SC_OK
 		} catch (FileSystemException e) {
-            render status: SC_NOT_FOUND
+            sc = SC_NOT_FOUND
 		}
-	}
 
-//    def listEmbedded(Long organization) {
-//        def organizationInstance = Organization.get(organization)
-//        File dir = fileService.getOrgDocumentDir(organizationInstance)
-//        Volume volume = fileService.localVolume
-//        def list = []
-//        int total = 0
-//        if (dir) {
-//            List<Document> documents = []
-//            dir.eachFileRecurse(FileType.FILES) {
-//                if (!it.hidden) {
-//                    documents << new Document(volume.encode(it.path), it)
-//                }
-//            }
-//
-//            String sort = params.sort
-//            String order = params.order
-//            documents.sort { f1, f2 ->
-//                def res
-//                if ('size' == sort) {
-//                    res = f1.size <=> f2.size
-//                } else if ('lastModified' == sort) {
-//                    res = f1.lastModified <=> f2.lastModified
-//                } else {
-//                    res = f1.name <=> f2.name
-//                }
-//
-//                if ('desc' == order) {
-//                    res *= -1
-//                }
-//                return res
-//            }
-//            total = documents.size()
-//
-//            def offset = (params.offset ?: 0) as Integer
-//            def max = (params.max ?: 10) as Integer
-//            list = documents.subList(offset, Math.min(offset + max, total))
-//        }
-//
-//        [documentInstanceList: list, documentInstanceTotal: total]
-//    }
-//
-//    def command() {
-//        new Connector(request, response).
-//            addVolume(fileService.localVolume).
-//            process()
-//    }
-//
-//    def delete(String id) {
-//        try {
-//            if (fileService.localVolume.rm(id)) {
-//                flash.message = message(code: 'default.deleted.message', args: [message(code: 'document.label', default: 'Document')])
-//            }
-//        } catch (ConnectorException e) {
-//            log.error e
-//        }
-//        if (params.returnUrl) {
-//            redirect url: params.returnUrl
-//        } else {
-//            redirect action: 'list'
-//        }
-//    }
+        if (params.returnUrl) {
+            redirect url: params.returnUrl
+        } else {
+            render status: sc
+        }
+	}
 }
