@@ -390,6 +390,7 @@ class ProjectSelectItemDlg
         init: doneFunc
         listUrl: url
         multiSelect: true
+        scrollable: true
 
   # Submits the selected documents to the server to associate them to the
   # current project.

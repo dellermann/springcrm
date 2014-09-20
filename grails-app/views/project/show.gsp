@@ -169,7 +169,7 @@
         <h2></h2>
         <div id="select-project-content">
           <div id="select-project-item-list"></div>
-          <div id="select-project-document-list" class="lg"></div>
+          <div id="select-project-document-list" class="lg scrollable"></div>
         </div>
       </div>
     </div>

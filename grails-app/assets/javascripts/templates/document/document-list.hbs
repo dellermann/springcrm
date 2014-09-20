@@ -7,6 +7,9 @@
     {{/each}}
   </ul>
 </nav>
+{{#if options.scrollable}}
+<div class="document-list-scrollable">
+{{/if}}
 <ul class="document-list-container">
   {{#if path}}
   <li class="back-link">
@@ -81,3 +84,6 @@
   </li>
   {{/each}}
 </ul>
+{{#if options.scrollable}}
+</div>
+{{/if}}

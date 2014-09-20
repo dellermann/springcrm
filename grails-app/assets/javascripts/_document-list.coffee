@@ -69,6 +69,7 @@ class DocumentList
     selectionMode: false
     removeFailed: null
     removeSuccess: null
+    scrollable: false
 
 
   #-- Constructor -------------------------------
