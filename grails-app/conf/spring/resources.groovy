@@ -54,6 +54,7 @@ beans = {
     startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet) {
         markdownService = ref('markdownService')
     }
+	startupDiffSet4(org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet)
 
     /* Google synchronization types */
     googleContactSyncTask(GoogleContactSyncTask) {

@@ -13,7 +13,8 @@
     <tr>
       <td class="string document-name">
         <g:link controller="document" action="download"
-          params="[path: documentInstance.path]" target="_blank"
+          params="[path: documentInstance.path]"
+          download="${documentInstance.name}"
           >${documentInstance.name}</g:link>
       </td>
       <td class="number document-size">

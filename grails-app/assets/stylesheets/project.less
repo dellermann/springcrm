@@ -62,11 +62,15 @@
       height: 5em;
 
       div {
+        -webkit-transform: scale(0.9999);
+        -ms-transform: scale(0.9999);
+        -o-transform: scale(0.9999);
         width: 0;
         height: 0;
         border-top: 5em solid @color-default-border-2;
         border-left: 7em solid transparent;
         border-right: 7em solid transparent;
+        transform: scale(0.9999);
       }
     }
   }

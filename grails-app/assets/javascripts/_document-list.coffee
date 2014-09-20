@@ -60,8 +60,13 @@ class DocumentList
   #-- Instance variables ------------------------
 
   DEFAULT_OPTIONS =
+    hideActions: false
     init: null
+    listUrl: null
+    multiSelect: false
     pathChanged: null
+    selected: null
+    selectionMode: false
     removeFailed: null
     removeSuccess: null
 
@@ -79,10 +84,18 @@ class DocumentList
 
     @$element = $el = $(element)
     @options = options = $.extend {}, DEFAULT_OPTIONS, options
+    options.listUrl = options.listUrl ? $el.data('list-url')
+    options.selectionMode = true if options.selected
+
     @_initCallback 'init'
     @_initCallback 'pathChanged'
     @_initCallback 'removeFailed'
     @_initCallback 'removeSuccess'
+    @_initCallback 'selected'
+
+    @selectedPath = null
+    @selectedPaths = []
+
     @loadDocumentList().done -> options.init.fireWith $el
 
 
@@ -117,11 +130,12 @@ class DocumentList
   #
   loadDocumentList: (path = '') ->
     $el = @$element
+    options = @options
 
-    @_getLoadDocumentListPromise($el.data('list-url'), path).done (data) ->
+    @_getLoadDocumentListPromise(options.listUrl, path).done (data) ->
       @currentPath = path
       @_renderDocumentList path, data
-      @options.pathChanged.fireWith $el, [path]
+      options.pathChanged.fireWith $el, [path]
 
   # Gets or sets the current path which is displayed.
   #
@@ -133,6 +147,31 @@ class DocumentList
       @loadDocumentList path
     else
       @currentPath
+
+  # Gets or sets the selected files.
+  #
+  # @param [String, Array] selection  the pathes of files that should be selected; if omitted the current selection is returned
+  # @return [String, Array, jQuery]   either a single path (in single selection mode) or an array of paths (in multiple selection mode); this object if the selection has been set
+  #
+  selection: (selection) ->
+    $ = jQuery
+    options = @options
+
+    if selection?
+      if options.selectionMode
+        if options.multiSelect
+          selection = [selection] unless $.isArray selection
+          @selectedPaths = selection
+          @_setSelection()
+        else
+          selection = selection.shift() if $.isArray selection
+          @selectedPath = selection
+      $(this)
+    else
+      res = null
+      if options.selectionMode or options.multiSelect
+        res = if options.multiSelect then @selectedPaths else @selectedPath
+      res
 
 
   #-- Private methods ---------------------------
@@ -317,12 +356,19 @@ class DocumentList
   #
   _renderDocumentList: (path, data) ->
     $ = jQuery
+    options = @options
+    selectedPaths = @selectedPaths
 
     html = @_renderTemplate
+      options: options
       path: path
       pathParts: @_splitPath path
       folders: data.folders
       files: $.map data.files, (file) ->
+        p = path
+        p += '/' if path
+        p += file.name
+        file.selected = $.inArray(p, selectedPaths) >= 0
         file.fileType = $.filetype file.ext
         file.sizeFormatted = file.size.formatSize()
         file
@@ -344,12 +390,21 @@ class DocumentList
           @loadDocumentList @_getAbsolutePath $(event.currentTarget)
           false
         )
-        .on('click', '.file', (event) =>
-          @_downloadFile @_getAbsolutePath $(event.currentTarget)
+        .on('click', '.file .name', (event) =>
+          $li = $(event.currentTarget).parents 'li'
+          if options.selectionMode
+            @_selectFile $li
+          else
+            @_downloadFile @_getAbsolutePath $li
           false
         )
         .on('click', '.action-buttons .delete-btn', (event) =>
           @_removeDocument $(event.currentTarget).parents 'li'
+          false
+        )
+        .on('change', '.selection input', (event) =>
+          $target = $(event.currentTarget)
+          @_selectFile $target.parents('li'), $target.is(':checked')
           false
         )
     this
@@ -366,6 +421,53 @@ class DocumentList
       file.sizeFormatted = file.size.formatSize()
       file
     Handlebars.templates['document/document-list'] data
+
+  # Stores the selection of the given file item in an internal list and calls
+  # the `selection` callback.
+  #
+  # @param [jQuery] $li       the list item that has been clicked
+  # @param [Boolean] selected `true` if the item has been selected; `false` otherwise
+  # @private
+  #
+  _selectFile: ($li, selected = true) ->
+    options = @options
+    path = @_getAbsolutePath $li
+
+    if options.multiSelect
+      selectedPaths = @selectedPaths
+      pos = $.inArray path, selectedPaths
+      if selected
+        if pos < 0 then selectedPaths.push path
+      else if pos >= 0
+        selectedPaths.splice pos, 1
+      selection = selectedPaths.slice 0
+    else
+      selection = @selectedPath = path
+
+    options.selected.fireWith @$element, [
+        file: $li
+        selected: selected
+        selection: selection
+      ]
+    return
+
+  # Sets the selection according the paths in `this.selectedPaths`.
+  #
+  # @private
+  #
+  _setSelection: ->
+    $ = jQuery
+    that = this
+    paths = @selectedPaths
+
+    @$element.find('.document-list-container .file')
+      .each ->
+        $this = $(this)
+        path = that._getAbsolutePath $this
+        checked = $.inArray(path, paths) >= 0
+        $this.find('.selection input')
+          .prop 'checked', checked
+    return
 
   # Splits the given path into parts.
   #
@@ -395,9 +497,9 @@ class DocumentList
 Plugin = (option) ->
   $ = jQuery
 
-  if option is 'path'
+  if option is 'path' or option is 'selection'
     $dl = $(this).data('bs.documentlist')
-    return $dl.path.apply $dl, $.makeArray(arguments).slice(1)
+    return $dl[option].apply $dl, $.makeArray(arguments).slice(1)
 
   args = arguments
   @each ->
@@ -417,6 +519,8 @@ old = $.fn.documentlist
 $.fn.documentlist = Plugin
 # @nodoc
 $.fn.documentlist.Constructor = DocumentList
+# @nodoc
+$.fn.hasdocumentlist = -> @first().data('bs.documentlist')?
 
 # @nodoc
 $.fn.documentlist.noConflict = ->

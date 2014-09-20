@@ -1,7 +1,7 @@
 /*
  * ProjectController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
-import org.amcworld.springcrm.elfinder.fs.Volume
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_OK
+
+import org.apache.commons.vfs2.FileObject
 import org.codehaus.groovy.grails.commons.GrailsClass
 
 
@@ -30,7 +32,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * project management.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 1.4
  */
 class ProjectController {
 
@@ -41,7 +43,7 @@ class ProjectController {
 
     //-- Instance variables ---------------------
 
-    FileService fileService
+	DocumentService documentService
 
 
     //-- Public methods -------------------------
@@ -228,9 +230,11 @@ class ProjectController {
             projectInstance.phase = ProjectPhase.valueOf(phase)
             projectInstance.save flush: true
         }
+
+		render status: SC_OK
     }
 
-    def setStatus(Long id, String status) {
+    def setStatus(Long id, Long status) {
         def projectInstance = Project.get(id)
         if (projectInstance) {
             def ps = ProjectStatus.get(status)
@@ -239,59 +243,78 @@ class ProjectController {
                 projectInstance.save flush: true
             }
         }
+
+		render status: SC_OK
     }
 
-    def addSelectedItems(Long id, String projectPhase, String itemIds,
-                         String documents)
-    {
+    def addSelectedItems(Long id, String projectPhase, String itemIds) {
         def projectInstance = Project.get(id)
-        if (projectInstance) {
-            ProjectPhase pp = ProjectPhase.valueOf(projectPhase)
-            String controllerName = params.controllerName
-            GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
-                'Domain', controllerName
-            )
-            if (itemIds) {
-                itemIds.split(',').each {
-                    long itemId = it as long
-                    def itemInstance = cls.clazz.'get'(itemId)
-                    if (itemInstance) {
-                        def projectItem = new ProjectItem(
-                            project: projectInstance, phase: pp,
-                            controller: controllerName, itemId: itemId,
-                            title: itemInstance.toString()
-                        )
-                        projectItem.save flush: true
-                    }
-                }
-            }
-            if (documents) {
-                Volume volume = fileService.localVolume
-                documents.split(',').each {
-                    Map<String, Object> stat = volume.file(it)
-                    if (stat) {
-                        def projectDoc = new ProjectDocument(
-                            project: projectInstance, phase: pp,
-                            path: it, title: stat.name
-                        )
-                        projectDoc.save flush: true
-                    }
-                }
-            }
-            projectInstance.phase = pp
-            projectInstance.save flush: true
+        if (!projectInstance) {
+            render status: SC_NOT_FOUND
+            return
         }
-        render status: HttpServletResponse.SC_OK
+
+        ProjectPhase pp = ProjectPhase.valueOf(projectPhase)
+
+        if (itemIds) {
+			String controllerName = params.controllerName
+            GrailsClass cls =
+				grailsApplication.getArtefactByLogicalPropertyName(
+					'Domain', controllerName
+				)
+            itemIds.split(',').each {
+                long itemId = it as long
+                def itemInstance = cls.clazz.'get'(itemId)
+                if (itemInstance) {
+                    new ProjectItem(
+	                        project: projectInstance, phase: pp,
+	                        controller: controllerName, itemId: itemId,
+	                        title: itemInstance.toString()
+	                    )
+                    	.save flush: true
+                }
+            }
+        }
+
+		List<String> documents = params.list('documents[]')
+        if (documents) {
+			for (String path in documents) {
+				FileObject fo = documentService.getFile(path)
+				if (fo.exists()) {
+					new ProjectDocument(
+							project: projectInstance, phase: pp,
+							path: path, title: fo.name.baseName
+						)
+						.save flush: true
+				}
+			}
+        }
+
+        projectInstance.phase = pp
+        projectInstance.save flush: true
+
+        render status: SC_OK
     }
 
     def removeItem(Long id) {
         def projectItemInstance = ProjectItem.get(id)
         if (!projectItemInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
             return
         }
 
         projectItemInstance.delete flush: true
-        render status: HttpServletResponse.SC_OK
+        render status: SC_OK
     }
+
+	def removeDocument(Long id) {
+		def projectDocumentInstance = ProjectDocument.get(id)
+		if (!projectDocumentInstance) {
+			render status: SC_NOT_FOUND
+			return
+		}
+
+		projectDocumentInstance.delete flush: true
+		render status: SC_OK
+	}
 }

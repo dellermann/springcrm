@@ -37,7 +37,7 @@ class BootStrap {
 
     //-- Constants ------------------------------
 
-    public static final int CURRENT_DB_VERSION = 3i
+    public static final int CURRENT_DB_VERSION = 4i
 
 
     //-- Instance variables ---------------------

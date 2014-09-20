@@ -10,15 +10,23 @@
 <ul class="document-list-container">
   {{#if path}}
   <li class="back-link">
+    {{#if options.multiSelect}}
+    <span class="selection"></span>
+    {{/if}}
     <i></i>
     <span class="name">{{message 'document.back.label'}}</span>
     <span class="size"></span>
     <span class="permissions"></span>
+    {{#unless options.hideActions}}
     <span class="action-buttons"></span>
+    {{/unless}}
   </li>
   {{/if}}
   {{#each folders}}
   <li class="folder">
+    {{#if ../options.multiSelect}}
+    <span class="selection"></span>
+    {{/if}}
     <i></i>
     <span class="name">{{name}}</span>
     <span class="size"></span>
@@ -34,14 +42,21 @@
       <strong></strong>
       {{/if}}
     </span>
+    {{#unless ../options.hideActions}}
     <span class="action-buttons">
       <i class="fa fa-trash delete-btn"
         title="{{message 'default.btn.remove'}}"></i>
     </span>
+    {{/unless}}
   </li>
   {{/each}}
   {{#each files}}
   <li class="file filetype-{{fileType}}">
+    {{#if ../options.multiSelect}}
+    <span class="selection">
+      <input type="checkbox"{{#if selected}}checked="checked"{{/if}} />
+    </span>
+    {{/if}}
     <i></i>
     <span class="name">{{name}}</span>
     <span class="size" title="{{size}} B">{{sizeFormatted}}</span>
@@ -57,10 +72,12 @@
       <strong></strong>
       {{/if}}
     </span>
+    {{#unless ../options.hideActions}}
     <span class="action-buttons">
       <i class="fa fa-trash delete-btn"
         title="{{message 'default.btn.remove'}}"></i>
     </span>
+    {{/unless}}
   </li>
   {{/each}}
 </ul>

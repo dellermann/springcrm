@@ -55,7 +55,7 @@
       <section class="fieldset">
         <header><h3><g:message code="project.fieldset.procedure.label" /></h3></header>
         <div class="form-fragment">
-          <div id="project-phases"
+          <div id="project-phases" class="project-phases"
             data-set-phase-url="${createLink(action: 'setPhase', id: projectInstance.id)}">
             <g:each var="phase"
               in="${org.amcworld.springcrm.ProjectPhase.class.enumConstants}">
@@ -76,15 +76,41 @@
                 <ul class="project-phase-items data-type-list">
                   <g:each in="${items}" var="item">
                   <li>
-                    <g:link controller="${item.controller}" action="show" id="${item.itemId}"><g:dataTypeIcon controller="${item.controller}" /> <g:fieldValue bean="${item}" field="title" /></g:link>
+                    <g:link controller="${item.controller}" action="show"
+                      id="${item.itemId}"
+                      ><g:dataTypeIcon controller="${item.controller}" />
+                      <g:fieldValue bean="${item}" field="title"
+                    /></g:link>
                     <span class="item-actions">
-                      <g:link controller="${item.controller}" action="edit" id="${item.itemId}" params="[returnUrl: url()]" class="bubbling-icon" title="${message(code: 'project.item.edit.label')}"><i class="fa fa-pencil-square-o"></i></g:link>
-                      <g:link action="removeItem" id="${item.id}" class="item-delete-btn bubbling-icon" title="${message(code: 'project.item.remove.label')}"><i class="fa fa-times"></i></g:link>
+                      <g:link controller="${item.controller}" action="edit"
+                        id="${item.itemId}" params="[returnUrl: url()]"
+                        class="bubbling-icon"
+                        title="${message(code: 'project.item.edit.label')}"
+                        ><i class="fa fa-pencil-square-o"></i
+                      ></g:link>
+                      <g:link action="removeItem" id="${item.id}"
+                        class="item-delete-btn bubbling-icon"
+                        title="${message(code: 'project.item.remove.label')}"
+                        ><i class="fa fa-times"></i
+                      ></g:link>
                     </span>
                   </li>
                   </g:each>
                   <g:each in="${documents}" var="document">
-                  <li><g:link controller="document" action="download" id="${document.path}" target="_blank"><g:dataTypeIcon controller="document" /> <g:fieldValue bean="${document}" field="title" /></g:link></li>
+                  <li>
+                    <g:link controller="document" action="download"
+                      params="[path: document.path]" download="${document.title}"
+                      ><g:dataTypeIcon controller="document" />
+                      <g:fieldValue bean="${document}" field="title"
+                    /></g:link>
+                    <span class="item-actions">
+                      <g:link action="removeDocument" id="${document.id}"
+                        class="item-delete-btn bubbling-icon"
+                        title="${message(code: 'project.item.remove.label')}"
+                        ><i class="fa fa-times"></i
+                      ></g:link>
+                    </span>
+                  </li>
                   </g:each>
                 </ul>
                 </g:if>
@@ -124,7 +150,7 @@
                   data-controller="${it}"
                   ><g:message code="${it}.plural" default="${it}" /></option>
                 </g:each>
-                <option value="${createLink(controller: 'document', action: 'command')}" data-controller="document"><g:message code="document.plural" default="Documents" /></option>
+                <option value="${createLink(controller: 'document', action: 'dir')}" data-controller="document"><g:message code="document.plural" default="Documents" /></option>
               </select>
             </div>
             <div class="field search-field">
@@ -143,7 +169,7 @@
         <h2></h2>
         <div id="select-project-content">
           <div id="select-project-item-list"></div>
-          <div id="select-project-document-list"></div>
+          <div id="select-project-document-list" class="lg"></div>
         </div>
       </div>
     </div>

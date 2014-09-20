@@ -66,16 +66,16 @@ mockAjax = ->
         writeable: true
       ]
       files: [
-          name: 'hello-world.md'
-          ext: 'md'
-          size: 303122
-          readable: false
-          writeable: true
-        ,
           name: 'hello-world.c'
           ext: 'c'
           size: 749393
           readable: true
+          writeable: true
+        ,
+          name: 'hello-world.md'
+          ext: 'md'
+          size: 303122
+          readable: false
           writeable: true
       ]
   $.mockjax $.extend {}, baseData,
@@ -103,12 +103,25 @@ mockAjax = ->
 
   null
 
-testDocumentList = (elem, chainFunc) ->
+newDocumentList = (elem, options = {}) ->
   chain = new TriggerChain()
 
-  $(elem).documentlist
-    init: -> chainFunc.call this, chain
-    pathChanged: (path) -> chain.trigger path
+  init = (chainFunc) ->
+    options.init = -> chainFunc.call this, chain
+  run = -> $(elem).documentlist options
+
+  testPathChanged: (chainFunc) ->
+    init chainFunc
+    options.pathChanged = (path) -> chain.trigger path
+    run()
+  testSelected: (chainFunc) ->
+    init chainFunc
+    options.pathChanged = (path) -> chain.trigger path
+    options.selected = (data) -> chain.trigger data
+    run()
+
+testPathChanged = (elem, chainFunc) ->
+  newDocumentList(elem).testPathChanged chainFunc
 
 
 #-- Fixtures ------------------------------------
@@ -289,7 +302,7 @@ QUnit.asyncTest 'Get path of subfolders', (assert) ->
 
   fixtureDocumentLists()
 
-  testDocumentList '#dl2', (chain) ->
+  testPathChanged '#dl2', (chain) ->
     $this = $(this)
 
     chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
@@ -308,7 +321,7 @@ QUnit.asyncTest 'Set path', (assert) ->
 
   fixtureDocumentLists()
 
-  testDocumentList '#dl2', (chain) ->
+  testPathChanged '#dl2', (chain) ->
     $this = $(this)
 
     chain.newPromise( -> $this.documentlist 'path', 'foo/wheezy')
@@ -607,6 +620,105 @@ QUnit.asyncTest 'Add folder to empty list', (assert) ->
       mockAjax()
       QUnit.start()
 
+QUnit.asyncTest 'Get selection at single-select', (assert) ->
+  expect 5
+
+  fixtureDocumentLists()
+
+  newDocumentList('.document-list', selectionMode: true)
+    .testSelected (chain) ->
+      chain.newPromise( ->
+          selection = $('#dl2').documentlist('selection')
+          assert.equal selection, null, 'no file has been selected'
+          $('#dl2 > ul > li:nth-child(3) > .name').click()
+        )
+        .then( (data) ->
+          selection = $('#dl2').documentlist('selection')
+          assert.ok not $.isArray(selection), 'it is not an array'
+          assert.equal 'baz.txt', selection, 'baz.txt has been selected'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(3) > .name').click()
+        )
+        .then( (data) ->
+          selection = $('#dl2').documentlist('selection')
+          assert.ok not $.isArray(selection), 'it is not an array'
+          assert.equal 'baz.txt', selection, 'baz.txt has been selected'
+          QUnit.start()
+        )
+
+QUnit.asyncTest 'Get selection at multi-select', (assert) ->
+  expect 12
+
+  fixtureDocumentLists()
+
+  newDocumentList('.document-list', multiSelect: true)
+    .testSelected (chain) ->
+      chain.newPromise( ->
+          selection = $('#dl2').documentlist('selection')
+          assert.equal selection.length, 0, 'no files have been selected'
+          $('#dl2 > ul > li:nth-child(3) > .selection > input').click()
+        )
+        .then( (data) ->
+          selection = $('#dl2').documentlist('selection')
+          assert.ok $.isArray(selection), 'it is an array'
+          assert.equal selection.length, 1, 'one file has been selected'
+          assert.equal 'baz.txt', selection[0], 'baz.txt has been selected'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(4) > .selection > input').click()
+        )
+        .then( (data) ->
+          selection = $('#dl2').documentlist('selection')
+          assert.ok $.isArray(selection), 'it is an array'
+          assert.equal selection.length, 2, 'two files have been selected'
+          assert.equal 'baz.txt', selection[0], 'baz.txt has been selected'
+          assert.equal 'yummy.csv', selection[1], 'yummy.csv has been selected'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(3) > .selection > input').click()
+        )
+        .then( (data) ->
+          selection = $('#dl2').documentlist('selection')
+          assert.ok $.isArray(selection), 'it is an array'
+          assert.equal selection.length, 1, 'one file has been selected'
+          assert.equal 'yummy.csv', selection[0], 'yummy.csv has been selected'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(4) > .selection > input').click()
+        )
+        .then( (data) ->
+          selection = $('#dl2').documentlist('selection')
+          assert.equal selection.length, 0, 'no files have been selected'
+          QUnit.start()
+        )
+
+QUnit.asyncTest 'Set selection at multi-select', (assert) ->
+  expect 4
+
+  fixtureDocumentLists()
+
+  newDocumentList('.document-list', multiSelect: true)
+    .testSelected (chain) ->
+      chain.newPromise( ->
+          $('#dl2').documentlist 'selection', [
+              'yummy.csv'
+              'foo/hello-world.c'
+            ]
+          assert.ok not $('#dl2 > ul > li:nth-child(3) > .selection > input').
+            is(':checked'),
+            'baz.txt is not selected'
+          assert.ok $('#dl2 > ul > li:nth-child(4) > .selection > input').
+            is(':checked'),
+            'yummy.csv is selected'
+          $('#dl2 > ul > li:nth-child(2)').click()
+        )
+        .then( (data) ->
+          assert.ok $('#dl2 > ul > li:nth-child(3) > .selection > input').
+            is(':checked'),
+            'hello-world.c is selected'
+          assert.ok not $('#dl2 > ul > li:nth-child(4) > .selection > input').
+            is(':checked'),
+            'hello-world.md is not selected'
+          QUnit.start()
+        )
+
 
 QUnit.module 'User interaction'
 QUnit.asyncTest 'Click on folder', (assert) ->
@@ -614,7 +726,7 @@ QUnit.asyncTest 'Click on folder', (assert) ->
 
   fixtureDocumentLists()
 
-  testDocumentList '#dl2', (chain) ->
+  testPathChanged '#dl2', (chain) ->
     chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
       .done (path) ->
         assert.equal path, 'foo', 'path is set correctly'
@@ -626,7 +738,7 @@ QUnit.asyncTest 'Click on two folders', (assert) ->
 
   fixtureDocumentLists()
 
-  testDocumentList '#dl2', (chain) ->
+  testPathChanged '#dl2', (chain) ->
     chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
       .then( (path) ->
         assert.equal path, 'foo', 'path is set correctly'
@@ -642,7 +754,7 @@ QUnit.asyncTest 'Click on back link', (assert) ->
 
   fixtureDocumentLists()
 
-  testDocumentList '#dl2', (chain) ->
+  testPathChanged '#dl2', (chain) ->
     chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
       .then( (path) ->
         assert.equal path, 'foo'
@@ -658,7 +770,7 @@ QUnit.asyncTest 'Click on two back links', (assert) ->
 
   fixtureDocumentLists()
 
-  testDocumentList '#dl2', (chain) ->
+  testPathChanged '#dl2', (chain) ->
     chain.newPromise( -> $('#dl2 > ul > li:nth-child(2)').click())
       .then( (path) ->
         assert.equal path, 'foo', 'path is set correctly'
@@ -677,6 +789,97 @@ QUnit.asyncTest 'Click on two back links', (assert) ->
         assert.equal path, '', 'path is set correctly'
         checkRootFolder $('#dl1'), $('#dl2'), assert
         QUnit.start()
+
+QUnit.asyncTest 'Single selection', (assert) ->
+  expect 4
+
+  fixtureDocumentLists()
+
+  newDocumentList('.document-list', selectionMode: true)
+    .testSelected (chain) ->
+      chain.newPromise( ->
+          assert.itemSize $('#dl2 > .selection > input'), 0,
+            'there are no selection checkboxes'
+          $('#dl2 > ul > li:nth-child(3) > .name').click()
+        )
+        .then (data) ->
+          assert.equal 'baz.txt', $(data.file).find('.name').text(),
+            'baz.txt has been selected'
+          assert.equal 'baz.txt', data.selection, 'one path has been selected'
+          assert.equal true, data.selected, 'the item has been selected'
+          QUnit.start()
+
+QUnit.asyncTest 'Single selection with callback only', (assert) ->
+  expect 4
+
+  fixtureDocumentLists()
+
+  newDocumentList('.document-list').testSelected (chain) ->
+    chain.newPromise( ->
+        assert.itemSize $('#dl2 .selection > input'), 0,
+          'there are no selection checkboxes'
+        $('#dl2 > ul > li:nth-child(3) > .name').click()
+      )
+      .then (data) ->
+        assert.equal 'baz.txt', $(data.file).find('.name').text(),
+          'baz.txt has been selected'
+        assert.equal 'baz.txt', data.selection, 'one path has been selected'
+        assert.equal true, data.selected, 'the item has been selected'
+        QUnit.start()
+
+QUnit.asyncTest 'Multiple selection', (assert) ->
+  expect 17
+
+  fixtureDocumentLists()
+
+  newDocumentList('.document-list', multiSelect: true)
+    .testSelected (chain) ->
+      chain.newPromise( ->
+          assert.itemSize $('#dl2 .selection > input'), 2,
+            'there are two selection checkboxes'
+          $('#dl2 > ul > li:nth-child(3) > .selection > input').click()
+        )
+        .then( (data) ->
+          assert.equal 'baz.txt', $(data.file).find('.name').text(),
+            'baz.txt has been selected'
+          assert.equal true, data.selected, 'the item has been selected'
+          selection = data.selection
+          assert.equal 1, selection.length, 'one path has been selected'
+          assert.equal 'baz.txt', selection[0], 'the correct path has been set'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(4) > .selection > input').click()
+        )
+        .then( (data) ->
+          assert.equal 'yummy.csv', $(data.file).find('.name').text(),
+            'yummy.csv has been selected'
+          assert.equal true, data.selected, 'the item has been selected'
+          selection = data.selection
+          assert.equal 2, selection.length, 'two paths have been selected'
+          assert.equal 'baz.txt', selection[0], 'the correct path has been set'
+          assert.equal 'yummy.csv', selection[1],
+            'the correct path has been set'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(3) > .selection > input').click()
+        )
+        .then( (data) ->
+          assert.equal 'baz.txt', $(data.file).find('.name').text(),
+            'baz.txt has been unselected'
+          assert.equal false, data.selected, 'the item has been unselected'
+          selection = data.selection
+          assert.equal 1, selection.length, 'one path has been selected'
+          assert.equal 'yummy.csv', selection[0],
+            'the correct path has been set'
+          @newPromise ->
+            $('#dl2 > ul > li:nth-child(4) > .selection > input').click()
+        )
+        .then( (data) ->
+          assert.equal 'yummy.csv', $(data.file).find('.name').text(),
+            'yummy.csv has been unselected'
+          assert.equal false, data.selected, 'the item has been unselected'
+          selection = data.selection
+          assert.equal 0, selection.length, 'no path has been selected'
+          QUnit.start()
+        )
 
 QUnit.asyncTest 'Click on delete button and confirm', (assert) ->
   $ = jQuery
@@ -789,8 +992,8 @@ checkFooFolder = ($emptyList, $nonEmptyList, assert) ->
       ['wheezy', true, true]
     ]
     files: [
-      ['hello-world.md', 'text', '296,0 KB', false, true]
       ['hello-world.c', 'code', '731,8 KB', true, true]
+      ['hello-world.md', 'text', '296,0 KB', false, true]
     ]
 
 checkRootFolder = ($emptyList, $nonEmptyList, assert) ->
