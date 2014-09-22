@@ -130,7 +130,7 @@ modules = {
     }
 
     projectShow {
-        dependsOn 'project, selectBoxIt, elfinder'
+        dependsOn 'project, selectBoxIt'
 
         resource '/js/app/project-show.js'
     }
