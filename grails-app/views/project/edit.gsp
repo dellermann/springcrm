@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'project.label', default: 'Project')}" />
   <g:set var="entitiesName" value="${message(code: 'project.plural', default: 'Projects')}" />
   <title><g:message code="default.edit.label" args="[entityName]" /></title>
+  <meta name="stylesheet" content="project" />
 </head>
 
 <body>
@@ -27,5 +28,8 @@
       <g:render template="form"/>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="project-form" />
+  </content>
 </body>
 </html>

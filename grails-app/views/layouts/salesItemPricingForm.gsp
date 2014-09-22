@@ -1,6 +1,5 @@
 <%@page import="org.amcworld.springcrm.SalesItem"%>
 <%@page import="org.amcworld.springcrm.PricingItemType"%>
-<r:require modules="salesItemForm" />
 <fieldset>
   <input type="hidden" name="pricingEnabled"
     value="${salesItem.pricing ? '1' : ''}" />

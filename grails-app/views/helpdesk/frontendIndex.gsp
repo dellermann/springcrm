@@ -8,7 +8,7 @@
   <g:set var="ticketEntityName" value="${message(code: 'ticket.label', default: 'Ticket')}" />
   <title><g:fieldValue bean="${helpdeskInstance}" field="name" /> –
   <g:message code="helpdesk.frontend.title" /></title>
-  <r:require modules="ticket" />
+  <meta name="stylesheet" content="helpdesk-frontend" />
 </head>
 
 <body>
@@ -271,5 +271,8 @@
     </div>
     </g:if>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="ticket" />
+  </content>
 </body>
 </html>

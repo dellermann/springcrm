@@ -1,4 +1,3 @@
-<r:require modules="projectForm" />
 <fieldset>
   <header><h3><g:message code="project.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

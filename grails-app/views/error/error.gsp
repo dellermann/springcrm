@@ -150,6 +150,8 @@
       </div>
     </div>
   </div>
-  <asset:javascript src="error-page" />
+  <content tag="scripts">
+    <asset:javascript src="error-page" />
+  </content>
 </body>
 </html>

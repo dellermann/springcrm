@@ -1,5 +1,5 @@
 #
-# search.coffee
+# project-form.coffee
 #
 # Copyright (c) 2011-2014, Daniel Ellermann
 #
@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # 
-#= require application
+#=require application
 
 
 $ = jQuery
 
 
-#-- Main -----------------------------------
+$organizationId = $('#organization\\.id')
+$('#organization').autocompleteex()
+$('#person').autocompleteex loadParameters: ->
+  organization: $organizationId.val()
 
-#$("#search-queries").accordion
-#  active: false
-#  collapsible: true

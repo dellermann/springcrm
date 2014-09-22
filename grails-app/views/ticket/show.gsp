@@ -4,13 +4,13 @@
 <html>
 <head>
   <meta name="layout" content="main" />
-  <r:require modules="ticket" />
   <g:set var="entityName" value="${message(code: 'ticket.label', default: 'Ticket')}" />
   <g:set var="entitiesName" value="${message(code: 'ticket.plural', default: 'Tickets')}" />
   <g:set var="user" value="${session.user}" />
   <g:set var="users" value="${ticketInstance.helpdesk.users}" />
   <g:set var="otherUsers" value="${ticketInstance.helpdesk.users - user}" />
   <title><g:message code="default.show.label" args="[entityName]" /></title>
+  <meta name="stylesheet" content="helpdesk" />
 </head>
 
 <body>
@@ -167,5 +167,8 @@
       </div>
     </g:uploadForm>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="ticket" />
+  </content>
 </body>
 </html>

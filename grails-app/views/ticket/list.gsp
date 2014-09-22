@@ -2,10 +2,10 @@
 <html>
 <head>
   <meta name="layout" content="main" />
-  <r:require modules="ticket" />
   <g:set var="entityName" value="${message(code: 'ticket.label', default: 'Ticket')}" />
   <g:set var="entitiesName" value="${message(code: 'ticket.plural', default: 'Tickets')}" />
   <title>${entitiesName}</title>
+  <meta name="stylesheet" content="helpdesk" />
 </head>
 
 <body>
@@ -90,5 +90,8 @@
       </div>
     </g:else>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="ticket" />
+  </content>
 </body>
 </html>

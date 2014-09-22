@@ -2,16 +2,6 @@
 <head>
   <meta name="layout" content="install" />
   <title><g:message code="install.title" /></title>
-  <g:if test="${existingData}">
-  <r:script disposition="defer">//<![CDATA[
-  $("#install-base-data-form").submit(function () {
-          if (window.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
-              return window.confirm("${message(code: 'install.installBaseData.confirm2')}");
-          }
-          return false;
-      });
-  //]]></r:script>
-  </g:if>
 </head>
 
 <body>
@@ -56,5 +46,17 @@
       </g:if>
     </g:form>
   </div>
+  <g:if test="${existingData}">
+  <content tag="scripts">
+    <asset:script>//<![CDATA[
+    $("#install-base-data-form").submit(function () {
+            if (window.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
+                return window.confirm("${message(code: 'install.installBaseData.confirm2')}");
+            }
+            return false;
+        });
+    //]]></asset:script>
+  </content>
+  </g:if>
 </body>
 </html>

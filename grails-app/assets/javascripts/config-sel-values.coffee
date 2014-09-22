@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+#= require application
 #= require _jquery-json
 #= require _handlebars-ext
 #= require templates/config/sel-values
@@ -92,8 +93,7 @@ ConfigSelValuesWidget =
   # @return {Boolean} `false` to prevent event bubbling
   #
   _onClickAddBtn: ->
-    template = @template
-    s = template items: [id: -1]
+    s = @_renderTemplate items: [id: -1]
     $li = $(s).find 'li'
 
     @element.find('ul')

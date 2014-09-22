@@ -2,7 +2,6 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="searchable.results.label" default="Search results" /></title>
-  <r:require modules="searchResults" />
 </head>
 
 <body>
@@ -55,5 +54,8 @@
       </div>
     </div>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="search" />
+  </content>
 </body>
 </html>

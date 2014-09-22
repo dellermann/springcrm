@@ -2,7 +2,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="config.seqNumbers.title" default="Sequence numbers" /></title>
-  <r:require modules="configSeqNumbers" />
+  <meta name="stylesheet" content="config" />
 </head>
 
 <body>
@@ -104,5 +104,8 @@
       </fieldset>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="config-seq-numbers" />
+  </content>
 </body>
 </html>

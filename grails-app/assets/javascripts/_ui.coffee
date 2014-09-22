@@ -1,5 +1,5 @@
 #
-# ui.coffee
+# _ui.coffee
 #
 # Copyright (c) 2011-2014, Daniel Ellermann
 #
@@ -20,7 +20,7 @@
 #= require _jquery-ui
 #= require _jquery-ui-datepicker-de
 #= require _jquery-autosize
-#= require core
+#= require _core
 
 
 $ = jQuery

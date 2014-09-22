@@ -2,7 +2,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="config.mail.title" default="Mail settings" /></title>
-  <r:require modules="configMail" />
+  <meta name="stylesheet" content="config" />
 </head>
 
 <body>
@@ -211,5 +211,8 @@
       </div>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="config-mail" />
+  </content>
 </body>
 </html>

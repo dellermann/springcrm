@@ -1,5 +1,5 @@
 #
-# core.coffee
+# _core.coffee
 #
 # Copyright (c) 2011-2014, Daniel Ellermann
 #
@@ -217,7 +217,7 @@ RegExp.escape = (s) ->
 # @since            1.4
 #
 String::compare = (s) ->
-  (if s < this then -1 else (if s > this then 1 else 0))
+  (if s < this then 1 else (if s > this then -1 else 0))
 
 # Parses this string as a date and/or time value in either the given
 # user-defined format or the localized date and time format as specified

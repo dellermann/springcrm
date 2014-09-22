@@ -5,6 +5,7 @@
   <g:set var="entityName" value="${message(code: 'product.label', default: 'Product')}" />
   <g:set var="entitiesName" value="${message(code: 'product.plural', default: 'Products')}" />
   <title><g:message code="default.create.label" args="[entityName]" /></title>
+  <meta name="stylesheet" content="pricing" />
 </head>
 
 <body>
@@ -25,5 +26,8 @@
       <g:render template="/product/form" />
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="sales-item-pricing" />
+  </content>
 </body>
 </html>

@@ -2,7 +2,7 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="config.taxRates.title" default="Tax rates" /></title>
-  <r:require modules="configSelValues" />
+  <meta name="stylesheet" content="config" />
 </head>
 
 <body>
@@ -46,5 +46,8 @@
       </fieldset>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="config-sel-values" />
+  </content>
 </body>
 </html>

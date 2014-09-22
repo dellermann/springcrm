@@ -18,5 +18,3 @@
  */
 //= require _core
 //= require _ui
-
-// = require _jquery-ui-datepicker-de

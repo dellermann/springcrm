@@ -25,5 +25,8 @@
       <g:render template="form"/>
     </g:form>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="helpdesk-form" />
+  </content>
 </body>
 </html>

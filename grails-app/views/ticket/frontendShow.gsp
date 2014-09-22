@@ -9,7 +9,7 @@
   <g:set var="helpdeskInstance" value="${ticketInstance.helpdesk}" />
   <title><g:fieldValue bean="${helpdeskInstance}" field="name" /> –
   <g:message code="helpdesk.frontend.title" /></title>
-  <r:require modules="ticket" />
+  <meta name="stylesheet" content="helpdesk-frontend" />
 </head>
 
 <body>
@@ -131,5 +131,8 @@
       </div>
     </g:uploadForm>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="ticket" />
+  </content>
 </body>
 </html>

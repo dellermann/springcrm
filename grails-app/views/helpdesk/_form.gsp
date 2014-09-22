@@ -1,4 +1,3 @@
-<r:require modules="helpdeskForm" />
 <fieldset>
   <header><h3><g:message code="helpdesk.fieldset.general.label" /></h3></header>
   <div class="multicol-content">

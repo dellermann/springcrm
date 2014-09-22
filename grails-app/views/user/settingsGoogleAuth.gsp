@@ -2,7 +2,6 @@
 <head>
   <meta name="layout" content="main" />
   <title><g:message code="user.settings.googleAuth.title" default="Authorize at Google" /></title>
-  <r:require module="settingsGoogleAuth" />
 </head>
 
 <body>
@@ -40,5 +39,8 @@
       </div>
     </div>
   </div>
+  <content tag="scripts">
+    <asset:javascript src="settings-google-auth" />
+  </content>
 </body>
 </html>
