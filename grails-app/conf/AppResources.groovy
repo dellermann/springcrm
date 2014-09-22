@@ -33,7 +33,7 @@ modules = {
     }
 
     configSelValues {
-        dependsOn 'config, mustache'
+        dependsOn 'config'
         defaultBundle 'config'
 
         resource '/js/app/config-sel-values.js'
@@ -88,7 +88,7 @@ modules = {
     }
 
     invoicingTransactionForm {
-        dependsOn 'invoicingTransaction, mustache'
+        dependsOn 'invoicingTransaction'
         defaultBundle 'invoicing-transaction-form'
 
         resource '/js/app/invoicing-items.js'
@@ -111,10 +111,6 @@ modules = {
         defaultBundle 'core'
 
         resource url: 'less/login.less', attrs: [rel: 'stylesheet/less', type: 'css'], bundle: 'core'
-    }
-
-    mustache {
-        resource '/js/mustache.js'
     }
 
     noteForm {
@@ -140,7 +136,7 @@ modules = {
     }
 
     salesItemPricing {
-        dependsOn 'core, mustache'
+        dependsOn 'core'
 
         resource url: 'less/invoicing-transaction.less', attrs: [rel: 'stylesheet/less', type: 'css']
         resource url: 'less/pricing.less', attrs: [rel: 'stylesheet/less', type: 'css']

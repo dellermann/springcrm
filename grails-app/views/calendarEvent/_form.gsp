@@ -224,18 +224,3 @@
       rows="5" />
   </div>
 </fieldset>
-<script id="add-reminder-template" type="text/html">
-  <ul>
-    {{#reminders}}
-    <li>
-      <select>
-      {{#options}}
-        <option value="{{optionValue}}" {{{selected}}}>{{value}} {{unit}}</option>
-      {{/options}}
-      </select>
-      <g:button color="red" size="small" icon="trash-o"
-        message="calendarEvent.reminder.delete.label" />
-    </li>
-    {{/reminders}}
-  </ul>
-</script>

@@ -181,6 +181,5 @@
       </fieldset>
     </g:form>
   </div>
-  <g:render template="configSelValuesTemplate" />
 </body>
 </html>

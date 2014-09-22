@@ -332,7 +332,7 @@
   <g:button elementId="remove-pricing" color="red" size="medium" icon="times"
     message="salesItem.pricing.removePricing" />
 </div>
-<script id="add-pricing-item-template" type="text/html">
+<script id="add-pricing-item-template" type="text/x-handlebars-template">
   <tr>
     <td class="pos number">{{pos}}.</td>
     <td class="quantity number">

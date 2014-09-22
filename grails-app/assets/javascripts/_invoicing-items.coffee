@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _mustache
+#= require _handlebars-ext
 
 
 $ = jQuery
@@ -51,14 +51,14 @@ InvoicingItemsWidget =
   _addItem: (jumpToNewRow) ->
     $ = jQuery
 
-    # prepare Mustache template
+    # prepare Handlebars template
     template = @addItemTemplate
     unless template
-      template = $("#add-item-template").mustache()
+      template = Handlebars.compile $("#add-item-template").html()
       @addItemTemplate = template
 
     index = @_getNumRows()
-    s = Mustache.render template,
+    s = template
       index: index
       pos: index + 1
       zero: (0).formatCurrencyValue()
@@ -149,10 +149,10 @@ InvoicingItemsWidget =
     taxRates.sort (a, b) ->
       a.taxRate - b.taxRate
 
-    # prepare Mustache template
+    # prepare Handlebars template
     template = @taxRateSumTemplate
     unless template
-      template = $("#tax-rate-sum-template").mustache()
+      template = Handlebars.compile $("#tax-rate-sum-template").html()
       @taxRateSumTemplate = template
 
     # display the tax rates
@@ -163,7 +163,7 @@ InvoicingItemsWidget =
       t = tr.tax
       taxTotal += t
       label = $L("invoicingTransaction.taxRate.label").replace /\{0\}/, tr.taxRate.format(1)
-      s += Mustache.render template,
+      s += template
         label: label
         value: t.formatCurrencyValue()
     $(".tax-rate-sum").remove()

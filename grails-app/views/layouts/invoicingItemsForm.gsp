@@ -248,7 +248,7 @@
 <div id="inventory-selector-services"
   title="${message(code: 'invoicingTransaction.selector.services.title')}"
   ></div>
-<script id="add-item-template" type="text/html">
+<script id="add-item-template" type="text/x-handlebars-template">
   <tr>
     <td class="pos number">{{pos}}.</td>
     <td class="item-number">
@@ -307,7 +307,7 @@
     </td>
   </tr>
 </script>
-<script id="tax-rate-sum-template" type="text/html">
+<script id="tax-rate-sum-template" type="text/x-handlebars-template">
   <tr class="tax-rate-sum">
     <td colspan="5" class="label"><label>{{label}}</label></td>
     <td></td>

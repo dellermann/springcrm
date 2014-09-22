@@ -20,7 +20,6 @@
 #= require _jquery-ui
 #= require _jquery-ui-datepicker-de
 #= require _jquery-autosize
-#= require _mustache
 #= require core
 
 
@@ -111,25 +110,6 @@ JQueryUiExt =
           .removeClass "disabled"
     else
       @disable()
-
-  # Either renders or parses a Mustache template using the HTML code of the
-  # elements in the jQuery object.
-  #
-  # @param {Object} data  given data for template rendering; if not specified the template is parsed
-  # @return {String}      if data are given the method returns a string as result of the rendering process; otherwise it returns a string which contains the template code
-  #
-  mustache: (data) ->
-    $ = jQuery
-
-    template = ""
-    @each ->
-      template += $.trim $(this).text()
-
-    if data?
-      Mustache.render template, data
-    else
-      Mustache.parse template
-      template
 
   # Reverses the elements in the jQuery object.
   #

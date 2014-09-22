@@ -17,7 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require _jquery-json
-#= require _mustache
+#= require _handlebars-ext
+#= require templates/config/sel-values
 
 
 $ = jQuery
@@ -40,26 +41,15 @@ ConfigSelValuesWidget =
   # Called if this widget should be initialized.
   #
   _create: ->
-    @element.on("click", ".edit-btn", (event) => @_onClickEditBtn event)
-      .on("click", ".delete-btn", (event) => @_onClickDeleteBtn event)
-      .on("click", ".add-btn", => @_onClickAddBtn())
-      .on("click", ".restore-btn", => @restore())
-      .on("click", ".sort-btn", => @_onClickSortBtn())
-      .on("dblclick", "li", (event) => @_onDblClickItemList event)
-      .on("blur", "input", (event, cancel) => @_onBlurItemInput event, cancel)
-      .on("keypress", "input", (event) => @_onKeyPressItem event)
+    @element.on('click', '.edit-btn', (event) => @_onClickEditBtn event)
+      .on('click', '.delete-btn', (event) => @_onClickDeleteBtn event)
+      .on('click', '.add-btn', => @_onClickAddBtn())
+      .on('click', '.restore-btn', => @restore())
+      .on('click', '.sort-btn', => @_onClickSortBtn())
+      .on('dblclick', 'li', (event) => @_onDblClickItemList event)
+      .on('blur', 'input', (event, cancel) => @_onBlurItemInput event, cancel)
+      .on('keypress', 'input', (event) => @_onKeyPressItem event)
     @restore()
-
-  # Gets the Mustache template to render the select values.
-  #
-  # @return {Function}  the precompiled template as function which can be called to render the template
-  #
-  _getTemplate: ->
-    template = @template
-    unless template
-      template = $("#config-sel-values-template").mustache()
-      @template = template
-    template
 
   # Called if the input control to edit the value has lost its focus.
   #
@@ -72,18 +62,18 @@ ConfigSelValuesWidget =
 
     $input = $(event.currentTarget)
     val = $input.val()
-    $li = $input.parents "li"
+    $li = $input.parents 'li'
 
     # look for other occurrences of this value
     unless cancel
       $li.siblings().each ->
-        if $(this).find(".value").text() is val
+        if $(this).find('.value').text() is val
           cancel = true
-          val = ""
+          val = ''
           return false
         true
 
-    if val is ""
+    if val is ''
 
       # XXX the blur event is triggered again when removing the <li> so we
       # need to set a variable which prevents recursive handling
@@ -91,9 +81,9 @@ ConfigSelValuesWidget =
       $li.remove()
       @removingRow = false
     else
-      $span = $li.find(".value").show()
+      $span = $li.find('.value').show()
       $span.text val unless cancel
-      $li.find("i").fadeIn()
+      $li.find('i').fadeIn()
       $input.parent().remove()
     false
 
@@ -104,12 +94,12 @@ ConfigSelValuesWidget =
   _onClickAddBtn: ->
     template = @template
     s = template items: [id: -1]
-    $li = $(s).find "li"
+    $li = $(s).find 'li'
 
-    @element.find("ul")
-      .data("dirty", true)
+    @element.find('ul')
+      .data('dirty', true)
       .append $li
-    @_showEditField $li.find(".value")
+    @_showEditField $li.find('.value')
     false
 
   # Called if the delete button of an item has been clicked.
@@ -118,11 +108,11 @@ ConfigSelValuesWidget =
   # @return {Boolean}     `false` to prevent event bubbling
   #
   _onClickDeleteBtn: (event) ->
-    $li = $(event.currentTarget).parents("li")
-    id = $li.data("item-id")
-    @_itemsToRemove.push parseInt(id, 10) if id and (id isnt "-1")
+    $li = $(event.currentTarget).parents('li')
+    id = $li.data('item-id')
+    @_itemsToRemove.push parseInt(id, 10) if id and (id isnt '-1')
     $li.parent()
-        .data("dirty", true)
+        .data('dirty', true)
       .end()
       .remove()
     false
@@ -133,9 +123,9 @@ ConfigSelValuesWidget =
   # @return {Boolean}     `false` to prevent event bubbling
   #
   _onClickEditBtn: (event) ->
-    @_showEditField($(event.currentTarget).prevAll(".value"))
-      .parents("ul")
-        .data("dirty", true)
+    @_showEditField($(event.currentTarget).prevAll('.value'))
+      .parents('ul')
+        .data('dirty', true)
     false
 
   # Called if the sort button has been clicked.
@@ -144,7 +134,7 @@ ConfigSelValuesWidget =
   #
   _onClickSortBtn: ->
     $ = jQuery
-    @element.find("li")
+    @element.find('li')
       .sortElements (li1, li2) -> $(li1).text().compare $(li2).text()
     false
 
@@ -154,10 +144,10 @@ ConfigSelValuesWidget =
   #
   _onDblClickItemList: (event) ->
     $li = $(event.currentTarget)
-    if $li.find("input").length is 0 and not $li.data("item-disabled")
-      @_showEditField($li.find(".value"))
-        .parents("ul")
-          .data("dirty", true)
+    if $li.find('input').length is 0 and not $li.data('item-disabled')
+      @_showEditField($li.find('.value'))
+        .parents('ul')
+          .data('dirty', true)
 
   # Called if a key in the input control has been pressed.
   #
@@ -168,10 +158,10 @@ ConfigSelValuesWidget =
     $input = $(event.currentTarget)
     switch event.keyCode
       when 13 # Enter/Return
-        $input.trigger "blur"
+        $input.trigger 'blur'
         return false
       when 27 # Esc
-        $input.trigger "blur", [true]
+        $input.trigger 'blur', [true]
         return false
     true
 
@@ -180,16 +170,15 @@ ConfigSelValuesWidget =
   # @param {Array} data the loaded data
   #
   _onLoaded: (data) ->
-    template = @_getTemplate()
-    s = template items: data
+    s = @_renderTemplate items: data
 
     @element.html(s)
-      .find("ul")
-        .data("dirty", false)
+      .find('ul')
+        .data('dirty', false)
         .sortable
-          change: (event) => $(event.currentTarget).data "dirty", true
+          change: (event) => $(event.currentTarget).data 'dirty', true
           forcePlaceholderSize: true
-          placeholder: "ui-state-highlight"
+          placeholder: 'ui-state-highlight'
 
   # Creates a hidden input control and stores the values of this list as JSON.
   # The method only works if the list is marked as dirty.
@@ -198,29 +187,38 @@ ConfigSelValuesWidget =
     $ = jQuery
 
     el = @element
-    $ul = el.find("ul")
-    if $ul.data "dirty"
+    $ul = el.find('ul')
+    if $ul.data 'dirty'
       data = []
-      $ul.children("li")
+      $ul.children('li')
         .each ->
           $this = $(this)
-          item = id: parseInt $this.data("item-id"), 10
-          unless $this.data "item-disabled"
-            item.name = $this.find(".value").text()
+          item = id: parseInt $this.data('item-id'), 10
+          unless $this.data 'item-disabled'
+            item.name = $this.find('.value').text()
           data.push item
 
       data.push id: id, remove: true for id in @_itemsToRemove
 
       $("""<input type="hidden"/>""")
-        .attr("name", "selValues.#{el.data "list-type"}")
+        .attr('name', "selValues.#{el.data "list-type"}")
         .val($.toJSON data)
         .appendTo el
-      $ul.data "dirty", false
+      $ul.data 'dirty', false
+
+  # Renders the Handlebars template with the given data.
+  #
+  # @param [Object] data    the given data
+  # @return [String]        the HTML code of the rendered template
+  # @private
+  #
+  _renderTemplate: (data) ->
+    Handlebars.templates['config/sel-values'] data
 
   # Restores the whole list by loading the previous select values from server.
   #
   restore: ->
-    $.getJSON @element.data("load-url"), (data) =>
+    $.getJSON @element.data('load-url'), (data) =>
       @_onLoaded data
 
   # Displays an input control to edit the value represented by the given
@@ -233,26 +231,26 @@ ConfigSelValuesWidget =
     $ = jQuery
 
     $span = $("""<span class="input"/>""").insertAfter $elem
-    $("<input/>",
-        type: "text"
+    $('<input/>',
+        type: 'text'
         value: $elem.text()
       )
       .appendTo($span)
       .focus()
     $elem.hide()
-      .nextAll("i")
+      .nextAll('i')
         .fadeOut()
       .end()
 
-$.widget "springcrm.configSelValues", ConfigSelValuesWidget
+$.widget 'springcrm.configSelValues', ConfigSelValuesWidget
 
 
 #-- Main ----------------------------------------
 
-$lists = $(".sel-values-list")
+$lists = $('.sel-values-list')
 $lists.configSelValues()
-  .parents("form")
-    .on "submit", ->
-      $lists.each -> $(this).configSelValues "prepareSubmit"
+  .parents('form')
+    .on 'submit', ->
+      $lists.each -> $(this).configSelValues 'prepareSubmit'
       true
 

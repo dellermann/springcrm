@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _mustache
+#= require _handlebars-ext
 
 
 $ = jQuery
@@ -37,7 +37,7 @@ SalesItemPricing =
   # The names of the input controls of a table row.
   #
   INPUT_FIELD_NAMES: [
-      "quantity", "unit", "name", "type", "relToPos", "unitPercent", "unitPrice"
+      'quantity', 'unit', 'name', 'type', 'relToPos', 'unitPercent', 'unitPrice'
   ]
 
   # During finder mode the row that referring item currently is searched.
@@ -65,7 +65,7 @@ SalesItemPricing =
   # The options for this widget.
   #
   options:
-    fieldNamePrefix: "pricing.items"
+    fieldNamePrefix: 'pricing.items'
     units: null
 
   # Adds a row for a new item to the pricing table.
@@ -74,10 +74,10 @@ SalesItemPricing =
   #
   _addItem: (jumpToNewRow) ->
 
-    # prepare Mustache template
+    # prepare Handlebars template
     template = @addItemTemplate
     unless template
-      template = $("#add-pricing-item-template").mustache()
+      template = Handlebars.compile $('#add-pricing-item-template').html()
       @addItemTemplate = template
 
     index = @_getRows().length
@@ -88,12 +88,12 @@ SalesItemPricing =
 
     $row = $(s)
     @_initItemCtrls $row
-    @element.find("> .items").append $row
-    @_initUnitAutocomplete $row.find(".unit input")
+    @element.find('> .items').append $row
+    @_initUnitAutocomplete $row.find('.unit input')
 
     if jumpToNewRow
-      pos = $row.position().top - $("#toolbar").outerHeight()
-      $("html, body").animate { scrollTop: pos }, "slow"
+      pos = $row.position().top - $('#toolbar').outerHeight()
+      $('html, body').animate { scrollTop: pos }, 'slow'
 
   # Computes the total price of the given item.
   #
@@ -103,10 +103,10 @@ SalesItemPricing =
   _computeTotalPrice: (item) ->
     idx = @_getIndex item
     type = @_getRowType item
-    return @_getCurrentSum(idx - 1) if type is "sum"
+    return @_getCurrentSum(idx - 1) if type is 'sum'
 
     unitPrice = @_computeUnitPrice idx
-    (if (unitPrice is null) then null else @_getFieldVal(item, "quantity") * unitPrice)
+    (if (unitPrice is null) then null else @_getFieldVal(item, 'quantity') * unitPrice)
 
   # Computes the unit price of the given item.
   #
@@ -118,22 +118,22 @@ SalesItemPricing =
 
     unitPrice = null
     switch @_getRowType item
-      when "absolute"
-        unitPrice = @_getFieldVal item, "unit-price"
-      when "relativeToPos"
-        otherIndex = @_getFieldVal item, "relative-to-pos"
+      when 'absolute'
+        unitPrice = @_getFieldVal item, 'unit-price'
+      when 'relativeToPos'
+        otherIndex = @_getFieldVal item, 'relative-to-pos'
         if otherIndex >= 0
           totalPrice = @_computeTotalPrice otherIndex
-          unitPrice = (@_getFieldVal(item, "unit-percent") * totalPrice / 100.0).round(2) if totalPrice isnt null
-      when "relativeToLastSum"
+          unitPrice = (@_getFieldVal(item, 'unit-percent') * totalPrice / 100.0).round(2) if totalPrice isnt null
+      when 'relativeToLastSum'
         otherIndex = @_getLastSumIndex idx
         if otherIndex < 0
-          unitPrice = (@_getFieldVal(item, "unit-percent") * @_getCurrentSum(idx - 1) / 100.0).round(2)
+          unitPrice = (@_getFieldVal(item, 'unit-percent') * @_getCurrentSum(idx - 1) / 100.0).round(2)
         else
           totalPrice = @_computeTotalPrice otherIndex
-          unitPrice = (@_getFieldVal(item, "unit-percent") * totalPrice / 100.0).round(2) if totalPrice isnt null
-      when "relativeToCurrentSum"
-        unitPrice = (@_getFieldVal(item, "unit-percent") * @_getCurrentSum(idx - 1) / 100.0).round(2)
+          unitPrice = (@_getFieldVal(item, 'unit-percent') * totalPrice / 100.0).round(2) if totalPrice isnt null
+      when 'relativeToCurrentSum'
+        unitPrice = (@_getFieldVal(item, 'unit-percent') * @_getCurrentSum(idx - 1) / 100.0).round(2)
     unitPrice
 
   # Initializes this widget.
@@ -143,49 +143,49 @@ SalesItemPricing =
 
     el = @element
     opts = @options
-    opts.units = opts.units or el.data("units").split(",")
+    opts.units = opts.units or el.data('units').split(',')
     @_inputRegExp = new RegExp("^#{opts.fieldNamePrefix}\\[(\\d+)\\]\\.(\\w+)$")
 
-    $("#start-pricing").on "click", => @_onClickStartPricing()
-    $("#remove-pricing").on "click", => @_onClickRemovePricing()
+    $('#start-pricing').on 'click', => @_onClickStartPricing()
+    $('#remove-pricing').on 'click', => @_onClickRemovePricing()
 
-    $form = el.parents("form")
+    $form = el.parents('form')
     @_form = form = $form.get(0)
     @_pricingEnabled = pricingEnabled = form.pricingEnabled
     @_initialPricingEnabled = initialPricingEnabled = !!pricingEnabled.value
-    $(".hidden :input").attr "disabled", "disabled"
+    $('.hidden :input').attr 'disabled', 'disabled'
     @_toggleVisibility() if initialPricingEnabled
 
     @_registerClickEvents()
       .on(
-        "change",
-        "td.quantity :input, td.unit-percent :input, td.unit-price :input", =>
+        'change',
+        'td.quantity :input, td.unit-percent :input, td.unit-price :input', =>
           @_updateItems()
       )
-      .on("change", "td.type :input", (event) =>
+      .on('change', 'td.type :input', (event) =>
         $target = $(event.currentTarget)
-        $tr = $target.parents "tr"
+        $tr = $target.parents 'tr'
 
         @_initItemCtrls $tr
-        if $target.val() is "relativeToPos"
-          idx = @_getFieldVal $tr, "relative-to-pos"
-          idx = (if (idx < 0) then "" else String(idx + 1) + ".")
-          $tr.find("> .relative-to-pos > span").fadeIn()
+        if $target.val() is 'relativeToPos'
+          idx = @_getFieldVal $tr, 'relative-to-pos'
+          idx = (if (idx < 0) then '' else String(idx + 1) + '.')
+          $tr.find('> .relative-to-pos > span').fadeIn()
         else
-          $tr.find("> .relative-to-pos > span").fadeOut()
+          $tr.find('> .relative-to-pos > span').fadeOut()
         @_updateReferenceClasses()
         @_updateItems()
       )
-      .on("focusin", ".number :input", ->
+      .on('focusin', '.number :input', ->
         $this = $(this)
         val = $this.val().parseNumber()
-        $this.val (if val then val.format() else "")
+        $this.val (if val then val.format() else '')
       )
-      .on("focusout", ".currency :input", ->
+      .on('focusout', '.currency :input', ->
         $this = $(this)
         $this.val $this.val().parseNumber().formatCurrencyValue()
       )
-      .on("focusout", ".percentage :input", ->
+      .on('focusout', '.percentage :input', ->
         $this = $(this)
         $this.val $this.val().parseNumber().format 2
       )
@@ -195,15 +195,15 @@ SalesItemPricing =
     @_updateReferenceClasses()
 
     @_initUnitAutocomplete() if $trs.length
-    $(".add-pricing-item-btn").on "click", =>
+    $('.add-pricing-item-btn').on 'click', =>
       @_addItem true
       false
 
-    $("#step1-pricing-quantity").on "change", => @_updateItems()
-    $("#step1-pricing-unit").on "change", => @_updateItems()
-    $("#step2").on "change", => @_updateSalesPricing()
-    $("#step3-quantity").on "change", => @_updateSalesPricing()
-    $("#step3-unit").on "change", => @_updateSalesPricing()
+    $('#step1-pricing-quantity').on 'change', => @_updateItems()
+    $('#step1-pricing-unit').on 'change', => @_updateItems()
+    $('#step2').on 'change', => @_updateSalesPricing()
+    $('#step3-quantity').on 'change', => @_updateSalesPricing()
+    $('#step3-unit').on 'change', => @_updateSalesPricing()
 
   # Disables all options of the type selector in the given item which are not
   # available in the current state.  The method disables options if the item
@@ -215,21 +215,21 @@ SalesItemPricing =
   _disableTypeOptions: (item) ->
     @_enableTypeOptions item
     $tr = @_getRow item
-    $select = $tr.find "td.type select"
+    $select = $tr.find 'td.type select'
 
     disableOption = (name) ->
       $select.children("option[value=#{name}]")
-        .attr("disabled", "disabled")
+        .attr('disabled', 'disabled')
 
     idx = @_getIndex item
     referrers = @_getReferrers idx
-    disableOption "relativeToPos" if referrers.length
+    disableOption 'relativeToPos' if referrers.length
 
     for referrer in referrers
       if referrer < idx
-        disableOption "relativeToLastSum"
-        disableOption "relativeToCurrentSum"
-        disableOption "sum"
+        disableOption 'relativeToLastSum'
+        disableOption 'relativeToCurrentSum'
+        disableOption 'sum'
         break
     item
 
@@ -240,8 +240,8 @@ SalesItemPricing =
   # @return {jQuery|Number}     the given item
   #
   _enableTypeOptions: (item) ->
-    @_getRow(item).find("td.type option:disabled")
-      .removeAttr("disabled")
+    @_getRow(item).find('td.type option:disabled')
+      .removeAttr('disabled')
     item
 
   # Gets the sum of all items' total prices at the given index and before.
@@ -257,7 +257,7 @@ SalesItemPricing =
     sum = 0
     $trs.slice(0, idx + 1)
       .each (i, elem) =>
-        sum += @_computeTotalPrice i unless @_getRowType($(elem)) is "sum"
+        sum += @_computeTotalPrice i unless @_getRowType($(elem)) is 'sum'
     sum
 
   # Gets the input control in the table cell with the given name in the given
@@ -268,7 +268,7 @@ SalesItemPricing =
   # @return {jQuery}            the input control or the `<output>` object
   #
   _getField: (item, name) ->
-    sel = (if (name is "total-price") then "output" else ":input")
+    sel = (if (name is 'total-price') then 'output' else ':input')
     @_getRow(item).find("> .#{name} #{sel}")
 
   # Gets the value of the input control in the table cell with the given name
@@ -281,11 +281,11 @@ SalesItemPricing =
   #
   _getFieldVal: (item, name) ->
     $field = @_getField item, name
-    val = (if (name is "total-price") then $field.text() else $field.val())
-    if (name is "quantity") or (name is "unit-percent") or (name is "unit-price") or (name is "total-price")
+    val = (if (name is 'total-price') then $field.text() else $field.val())
+    if (name is 'quantity') or (name is 'unit-percent') or (name is 'unit-price') or (name is 'total-price')
       val = val.parseNumber()
-    else if name is "relative-to-pos"
-      val = (if (val is "") then -1 else val.parseNumber())
+    else if name is 'relative-to-pos'
+      val = (if (val is '') then -1 else val.parseNumber())
     val
 
   # Gets the index of the item with the given table item or index in the table.
@@ -294,7 +294,7 @@ SalesItemPricing =
   # @return {Number}            the zero-based index or -1 if the item was not found
   #
   _getIndex: (item) ->
-    (if (typeof item is "number") then item else @_getRows().index item)
+    (if (typeof item is 'number') then item else @_getRows().index item)
 
   # Returns the input field with the given name and item index.
   #
@@ -303,7 +303,7 @@ SalesItemPricing =
   # @param {String} suffix  a suffix which is to append to the field name prefix defined in the options
   # @return {Object}        the DOM element representing the input field; `null` if no such input field exists
   #
-  _getInput: (index, name = "", suffix = "") ->
+  _getInput: (index, name = '', suffix = '') ->
     @_form.elements[@_getInputName index, name, suffix]
 
   # Computes the name of an input field for the given name and item index.
@@ -313,7 +313,7 @@ SalesItemPricing =
   # @param {String} suffix  a suffix which is to append to the field name prefix defined in the options
   # @return {String}        the computed field name
   #
-  _getInputName: (index, name = "", suffix = "") ->
+  _getInputName: (index, name = '', suffix = '') ->
     "#{@options.fieldNamePrefix}#{suffix}[#{index}].#{name}"
 
   # Gets the last index of the item of type <code>SUM</code>.
@@ -330,7 +330,7 @@ SalesItemPricing =
     $trs.slice(0, idx + 1)
       .reverse()
       .each (i, elem) =>
-        if @_getRowType($(elem)) is "sum"
+        if @_getRowType($(elem)) is 'sum'
           res = idx - i
           return false
         true
@@ -342,7 +342,7 @@ SalesItemPricing =
   # @return {jQuery}            the referred table row; `null` if no reference is defined
   #
   _getReferredRow: (item) ->
-    refIdx = @_getFieldVal item, "relative-to-pos"
+    refIdx = @_getFieldVal item, 'relative-to-pos'
     (if refIdx is -1 then null else @_getRow refIdx)
 
   # Gets a list of items which refer to the item with the given index.
@@ -356,8 +356,8 @@ SalesItemPricing =
     res = []
     @_getRows().each (i, tr) =>
       $tr = $(tr)
-      if @_getFieldVal($tr, "type") is "relativeToPos"
-        refIdx = @_getFieldVal $tr, "relative-to-pos"
+      if @_getFieldVal($tr, 'type') is 'relativeToPos'
+        refIdx = @_getFieldVal $tr, 'relative-to-pos'
         res.push i if refIdx is idx
     res
 
@@ -367,7 +367,7 @@ SalesItemPricing =
   # @return {jQuery}            the table row
   #
   _getRow: (item) ->
-    (if (typeof item is "number") then @_getRows().eq(item) else item)
+    (if (typeof item is 'number') then @_getRows().eq(item) else item)
 
   # Gets all rows of the pricing table.
   #
@@ -375,7 +375,7 @@ SalesItemPricing =
   # @return {jQuery}    all table rows, optionally up to but not including the given index
   #
   _getRows: (idx) ->
-    $trs = @element.find("> .items > tr")
+    $trs = @element.find('> .items > tr')
     $trs = $trs.slice 0, idx if idx?
     $trs
 
@@ -385,7 +385,7 @@ SalesItemPricing =
   # @return {String}            the type of the item: `absolute`, `relativeToPos`, `relativeToLastSum`, `relativeToCurrentSum`, or `sum`
   #
   _getRowType: (item) ->
-    @_getFieldVal item, "type"
+    @_getFieldVal item, 'type'
 
   # Initializes the given item by enabling or disabling the input controls
   # depending on the item type.
@@ -396,13 +396,13 @@ SalesItemPricing =
     type = @_getRowType item
     @_disableTypeOptions item
 
-    notSum = type isnt "sum"
-    notAbs = type isnt "absolute"
-    @_getField(item, "quantity").toggleEnable notSum
-    @_getField(item, "unit").toggleEnable notSum
-    @_getField(item, "name").toggleEnable notSum
-    @_getField(item, "unit-percent").toggleEnable notAbs and notSum
-    @_getField(item, "unit-price").toggleEnable not notAbs
+    notSum = type isnt 'sum'
+    notAbs = type isnt 'absolute'
+    @_getField(item, 'quantity').toggleEnable notSum
+    @_getField(item, 'unit').toggleEnable notSum
+    @_getField(item, 'name').toggleEnable notSum
+    @_getField(item, 'unit-percent').toggleEnable notAbs and notSum
+    @_getField(item, 'unit-price').toggleEnable not notAbs
 
   # Augments the given input control with the autocomplete feature to select
   # units.
@@ -412,7 +412,7 @@ SalesItemPricing =
   _initUnitAutocomplete: ($input) ->
     units = @options.units
     if units
-      $input ?= @element.find ".unit input"
+      $input ?= @element.find '.unit input'
       $input.autocomplete source: units
 
   # Moves a row in step 1 table up or down.
@@ -421,13 +421,13 @@ SalesItemPricing =
   # @param {Number} dir   a negative value moves the row upwards; otherwise it moves it downwards
   #
   _moveItem: ($icon, dir) ->
-    $tr = $icon.parents("tr")
+    $tr = $icon.parents('tr')
 
     checkReferee = ($tr, dir) =>
-      if dir < 0 and @_getRowType($tr) is "relativeToPos"
+      if dir < 0 and @_getRowType($tr) is 'relativeToPos'
         $refTr = @_getReferredRow $tr
-        unless $refTr is null or @_getRowType($refTr) is "absolute" or @_getIndex($tr) - 1 > @_getIndex($refTr)
-          $.alert $L("salesItem.pricing.error.notMovable.refBeforeReferee")
+        unless $refTr is null or @_getRowType($refTr) is 'absolute' or @_getIndex($tr) - 1 > @_getIndex($refTr)
+          $.alert $L('salesItem.pricing.error.notMovable.refBeforeReferee')
           return false
       true
 
@@ -465,7 +465,7 @@ SalesItemPricing =
     $finderRow = @_$finderRow
     idx = @_getIndex $finderRow
     refIdx = @_getIndex $tr
-    oldIdx = @_getFieldVal $finderRow, "relative-to-pos"
+    oldIdx = @_getFieldVal $finderRow, 'relative-to-pos'
     @_enableTypeOptions oldIdx unless oldIdx is -1
     @_setItemReference idx, refIdx
     @_disableTypeOptions $tr
@@ -480,14 +480,14 @@ SalesItemPricing =
   #
   _onClickRemovePricing: ->
     if @_initialPricingEnabled
-      ok = $.confirm $L("salesItem.pricing.removePricing.confirm")
+      ok = $.confirm $L('salesItem.pricing.removePricing.confirm')
       return false unless ok
 
-    @_pricingEnabled.value = ""
+    @_pricingEnabled.value = ''
     @_toggleVisibility()
-    $("#quantity").val $("#step3-quantity").val()
-    $("#unit").val $("#step3-unit").val()
-    $("#unitPrice").val $("#step3-unit-price").text().parseNumber().formatCurrencyValue()
+    $('#quantity').val $('#step3-quantity').val()
+    $('#unit').val $('#step3-unit').val()
+    $('#unitPrice').val $('#step3-unit-price').text().parseNumber().formatCurrencyValue()
     false
 
   # Called if the button to start pricing has been clicked.
@@ -496,7 +496,7 @@ SalesItemPricing =
   # @since            1.3
   #
   _onClickStartPricing: ->
-    @_pricingEnabled.value = "1"
+    @_pricingEnabled.value = '1'
     @_toggleVisibility()
     @_addItem false
     false
@@ -514,19 +514,19 @@ SalesItemPricing =
   # @return {jQuery}  the element representing this widget; same as `this.element`
   #
   _registerClickEvents: ->
-    @element.on("click", ".up-btn", (event) =>
+    @element.on('click', '.up-btn', (event) =>
         @_moveItem $(event.currentTarget), -1
         false
       )
-      .on("click", ".down-btn", (event) =>
+      .on('click', '.down-btn', (event) =>
         @_moveItem $(event.currentTarget), 1
         false
       )
-      .on("click", "tr:not(.not-removable) .remove-btn", (event) =>
+      .on('click', 'tr:not(.not-removable) .remove-btn', (event) =>
         @_removeItem $(event.currentTarget)
         false
       )
-      .on("click", ".relative-to-pos i", (event) =>
+      .on('click', '.relative-to-pos i', (event) =>
         @_startFinderMode $(event.currentTarget)
         false
       )
@@ -537,7 +537,7 @@ SalesItemPricing =
   #
   _removeItem: ($icon) ->
     $ = jQuery
-    $tr = $icon.parents "tr"
+    $tr = $icon.parents 'tr'
     fieldPrefix = @options.fieldNamePrefix
     index = @_getIndex $tr
     re = @_inputRegExp
@@ -548,19 +548,19 @@ SalesItemPricing =
           $tr = $(tr)
 
           idx = index
-          $tr.find("td:first-child")
+          $tr.find('td:first-child')
             .text "#{idx + i + 1}."
 
-          type = @_getFieldVal $tr, "type"
-          if type is "relativeToPos"
-            $tr.find("td.relative-to-pos")
-              .find("input")
+          type = @_getFieldVal $tr, 'type'
+          if type is 'relativeToPos'
+            $tr.find('td.relative-to-pos')
+              .find('input')
                 .each( ->
                   $this = $(this)
                   $this.val $this.val() - 1
                 )
               .end()
-              .find("strong")
+              .find('strong')
                 .each( ->
                   $this = $(this)
                   $this.text parseInt($this.text(), 10) - 1
@@ -568,7 +568,7 @@ SalesItemPricing =
 
           prefix = fieldPrefix
           regexp = re
-          $tr.find(":input").each( ->
+          $tr.find(':input').each( ->
             parts = @name.match regexp
             @name = "#{prefix}[#{idx + i}].#{parts[2]}" if parts
           )
@@ -587,10 +587,10 @@ SalesItemPricing =
   #
   _setFieldVal: (item, name, val) ->
     $field = @_getField item, name
-    val = val.format() if (name is "quantity") or (name is "unit-percent")
-    val = val.formatCurrencyValue() if (name is "unit-price") or (name is "total-price")
+    val = val.format() if (name is 'quantity') or (name is 'unit-percent')
+    val = val.formatCurrencyValue() if (name is 'unit-price') or (name is 'total-price')
 
-    if name is "total-price" then $field.text val else $field.val val
+    if name is 'total-price' then $field.text val else $field.val val
 
   # Sets the referred item for the given item in the associated table row.  The
   # method displays the index of the referred item and stores the index in the
@@ -602,11 +602,11 @@ SalesItemPricing =
   _setItemReference: (item, refItem) ->
     idx = @_getIndex refItem
     @_getRow(item)
-      .find("> .relative-to-pos")
-        .find("strong")
+      .find('> .relative-to-pos')
+        .find('strong')
           .text(String(idx + 1))
         .end()
-        .find("> input")
+        .find('> input')
           .val idx
 
   # Starts the mode where the user should select a referred item.  The method
@@ -629,24 +629,24 @@ SalesItemPricing =
   # @see                  #_onClickReferenceItem-mixin _onClickReferenceItem
   #
   _startFinderMode: ($icon) ->
-    $tr = $icon.parents "tr"
+    $tr = $icon.parents 'tr'
 
     @_$finderRow = $tr
-    $tr.addClass("non-selectable")
+    $tr.addClass('non-selectable')
       .prevAll()
         .each((index, tr) =>
           $tr = $(tr)
-          $tr.addClass (if @_getRowType($tr) is "relativeToPos" then "non-" else "") + "selectable"
+          $tr.addClass (if @_getRowType($tr) is 'relativeToPos' then 'non-' else '') + 'selectable'
         )
       .end()
       .nextAll()
         .each (index, tr) =>
           $tr = $(tr)
-          $tr.addClass (if @_getRowType($tr) is "absolute" then "" else "non-") + "selectable"
-    @element.off("click", "**")
-      .on "click", "tr.selectable", (event) =>
+          $tr.addClass (if @_getRowType($tr) is 'absolute' then '' else 'non-') + 'selectable'
+    @element.off('click', '**')
+      .on 'click', 'tr.selectable', (event) =>
         @_onClickReferenceItem $(event.currentTarget)
-    $doc.on "keydown", (event) => @_onKeyDown event
+    $doc.on 'keydown', (event) => @_onKeyDown event
 
   # Stops the mode where the user should select a referred item.
   #
@@ -654,10 +654,10 @@ SalesItemPricing =
   #
   _stopFinderMode: ->
     @_$finderRow = null
-    @_getRows().removeClass "selectable non-selectable"
-    @element.off "click", "**"
+    @_getRows().removeClass 'selectable non-selectable'
+    @element.off 'click', '**'
     @_registerClickEvents()
-    $doc.off "keydown"
+    $doc.off 'keydown'
 
   # Swaps the indices of the input controls of both the given table rows.
   #
@@ -678,7 +678,7 @@ SalesItemPricing =
 
     name1 = @_getInputName(index)
     name2 = @_getInputName(destIndex)
-    name3 = @_getInputName(destIndex, "", "-dest")
+    name3 = @_getInputName(destIndex, '', '-dest')
     swap name1, name3
     swap name2, name1
     swap name3, name2
@@ -689,8 +689,8 @@ SalesItemPricing =
   # @param {jQuery} $destTr the given destination table row
   #
   _swapItemPos: ($tr, $destTr) ->
-    $td = $tr.find "td:first-child"
-    $destTd = $destTr.find "td:first-child"
+    $td = $tr.find 'td:first-child'
+    $destTd = $destTr.find 'td:first-child'
 
     s = $td.text()
     $td.text $destTd.text()
@@ -717,16 +717,16 @@ SalesItemPricing =
   # Toggles the visibility of the pricing form section.
   #
   _toggleVisibility: ->
-    $(".toggle-visibility")
-      .filter(".hidden")
-        .find(":input")
-          .removeAttr("disabled")
+    $('.toggle-visibility')
+      .filter('.hidden')
+        .find(':input')
+          .removeAttr('disabled')
         .end()
       .end()
-      .toggleClass("hidden")
-        .filter(".hidden")
-          .find(":input")
-            .attr "disabled", "disabled"
+      .toggleClass('hidden')
+        .filter('.hidden')
+          .find(':input')
+            .attr 'disabled', 'disabled'
 
   # Updates the computable fields in the given item.
   #
@@ -735,8 +735,8 @@ SalesItemPricing =
   _updateItem: (item) ->
     totalPrice = @_computeTotalPrice item
     unitPrice = @_computeUnitPrice item
-    @_setFieldVal item, "unit-price", unitPrice unless unitPrice is null
-    @_setFieldVal item, "total-price", totalPrice unless totalPrice is null
+    @_setFieldVal item, 'unit-price', unitPrice unless unitPrice is null
+    @_setFieldVal item, 'total-price', totalPrice unless totalPrice is null
 
   # Updates the computable fields of all items and updates the total sum of the
   # pricing table.  Furthermore, the function updates the computable fields in
@@ -751,16 +751,16 @@ SalesItemPricing =
     @_getRows().each (idx, elem) =>
       @_updateItem $(elem)
 
-    $("#step1-total-price, #step2-total-price").text sum.formatCurrencyValue()
-    quantity = $("#step1-pricing-quantity").val().parseNumber()
+    $('#step1-total-price, #step2-total-price').text sum.formatCurrencyValue()
+    quantity = $('#step1-pricing-quantity').val().parseNumber()
     quantityFmt = quantity.format()
-    $("#step2-quantity, #step2-total-quantity").text quantityFmt
-    unit = $("#step1-pricing-unit option:selected").text()
-    $("#step2-unit, #step2-total-unit").text unit
-    $("#step1-total-price-quantity").text "(#{quantityFmt} #{unit})"
-    $("#step1-unit-price-quantity").text "(1 #{unit})"
+    $('#step2-quantity, #step2-total-quantity').text quantityFmt
+    unit = $('#step1-pricing-unit option:selected').text()
+    $('#step2-unit, #step2-total-unit').text unit
+    $('#step1-total-price-quantity').text "(#{quantityFmt} #{unit})"
+    $('#step1-unit-price-quantity').text "(1 #{unit})"
     unitPrice = sum / quantity
-    $("#step1-unit-price, #step2-unit-price").text if isNaN unitPrice then '---' else unitPrice.formatCurrencyValue()
+    $('#step1-unit-price, #step2-unit-price').text if isNaN unitPrice then '---' else unitPrice.formatCurrencyValue()
     @_updateSalesPricing()
 
   # Updates the class names for each row in the pricing table.  If a row is
@@ -776,41 +776,41 @@ SalesItemPricing =
       $tr = $(tr)
       referrers = @_getReferrers i
       if referrers.length
-        $tr.addClass("not-removable")
-          .find(".remove-btn")
-            .attr "title", $L("salesItem.pricing.error.notRemovable")
+        $tr.addClass('not-removable')
+          .find('.remove-btn')
+            .attr 'title', $L('salesItem.pricing.error.notRemovable')
       else
-        $tr.removeClass("not-removable")
-          .find(".remove-btn")
-            .attr "title", $L("default.btn.remove")
+        $tr.removeClass('not-removable')
+          .find('.remove-btn')
+            .attr 'title', $L('default.btn.remove')
 
   # Updates the computed fields in the sales pricing section.
   #
   _updateSalesPricing: ->
-    discountPercent = $("#step2-discount-percent").val().parseNumber()
-    step2TotalPrice = $("#step2-total-price").text().parseNumber()
+    discountPercent = $('#step2-discount-percent').val().parseNumber()
+    step2TotalPrice = $('#step2-total-price').text().parseNumber()
     discountPercentAmount = discountPercent * step2TotalPrice / 100
-    $("#step2-discount-percent-amount").text discountPercentAmount.formatCurrencyValue()
+    $('#step2-discount-percent-amount').text discountPercentAmount.formatCurrencyValue()
 
-    adjustment = $("#step2-adjustment").val().parseNumber()
+    adjustment = $('#step2-adjustment').val().parseNumber()
     step2TotalPrice += adjustment - discountPercentAmount
     step2TotalPriceFmt = step2TotalPrice.formatCurrencyValue()
-    $("#step2-total").text step2TotalPriceFmt
+    $('#step2-total').text step2TotalPriceFmt
 
-    step1Qty = $("#step1-pricing-quantity").val().parseNumber()
-    step1Unit = $("#step1-pricing-unit option:selected").val()
-    step3Qty = $("#step3-quantity").val().parseNumber()
-    step3Unit = $("#step3-unit option:selected").val()
+    step1Qty = $('#step1-pricing-quantity').val().parseNumber()
+    step1Unit = $('#step1-pricing-unit option:selected').val()
+    step3Qty = $('#step3-quantity').val().parseNumber()
+    step3Unit = $('#step3-unit option:selected').val()
 
     step2TotalUnitPrice = step2TotalPrice / step1Qty
-    $("#step2-total-unit-price").text step2TotalUnitPrice.formatCurrencyValue()
+    $('#step2-total-unit-price').text step2TotalUnitPrice.formatCurrencyValue()
     qty = if step1Unit is step3Unit then step1Qty else step3Qty
     step3UnitPrice = step2TotalPrice / qty
-    $("#step3-unit-price").text step3UnitPrice.formatCurrencyValue()
+    $('#step3-unit-price').text step3UnitPrice.formatCurrencyValue()
     step3TotalPrice = step3UnitPrice * step3Qty
-    $("#step3-total-price").text step3TotalPrice.formatCurrencyValue()
+    $('#step3-total-price').text step3TotalPrice.formatCurrencyValue()
 
 
-$.widget "springcrm.salesitempricing", SalesItemPricing
+$.widget 'springcrm.salesitempricing', SalesItemPricing
 
-$("#step1-pricing-items").salesitempricing()
+$('#step1-pricing-items').salesitempricing()

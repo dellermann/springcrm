@@ -1,0 +1,25 @@
+<div class="scroll-pane">
+  <ul>
+    {{#each items}}
+    <li class="ui-state-default" data-item-id="{{id}}"
+      data-item-disabled="{{disabled}}">
+      <span class="value">{{name}}</span>
+      {{#unless disabled}}
+        <i class="fa fa-trash-o delete-btn"
+          title="{{message 'default.btn.remove'}}"></i>
+        <i class="fa fa-pencil-square-o edit-btn"
+          title="{{message 'default.btn.edit'}}"></i>
+      {{/unless}}
+    </li>
+    {{/each}}
+  </ul>
+</div>
+<div class="buttons">
+  <span class="button green medium add-btn"><i class="fa fa-plus"></i>
+  {{message 'default.btn.add.short'}}</span>
+  <span class="button orange medium restore-btn"><i class="fa fa-undo"></i>
+  {{message 'config.restoreList.label'}}</span>
+  <span class="button white medium sort-btn"><i class="fa fa-sort"></i>
+  {{message 'default.btn.sort.short'}}
+  </span>
+</div>

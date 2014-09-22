@@ -1,0 +1,13 @@
+<ul>
+  {{#each reminders}}
+  <li>
+    <select>
+    {{#each options}}
+      <option value="{{optionValue}}" {{{selected}}}>{{value}} {{unit}}</option>
+    {{/each}}
+    </select>
+    <span class="button red small"><i class="fa fa-trash-o"></i>
+    {{message 'calendarEvent.reminder.delete.label'}}</span>
+  </li>
+  {{/each}}
+</ul>
