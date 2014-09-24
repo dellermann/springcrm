@@ -33,12 +33,12 @@ window.SPRINGCRM = window.SPRINGCRM ? {}
 # * `numFractionsExt`. the number of fraction digits for prices that are used externally
 #
 window.$I = do ->
-  $html = $("html")
+  $html = $('html')
 
-  decimalSeparator: $html.data("decimal-separator") or ","
-  groupingSeparator: $html.data("grouping-separator") or "."
-  numFractions: $html.data("num-fraction-digits") or 2
-  numFractionsExt: $html.data("num-fraction-digits-ext") or 2
+  decimalSeparator: $html.data('decimal-separator') or ','
+  groupingSeparator: $html.data('grouping-separator') or '.'
+  numFractions: $html.data('num-fraction-digits') or 2
+  numFractionsExt: $html.data('num-fraction-digits-ext') or 2
 
 
 # Formats this date with either the given user-defined format or the localized
@@ -61,12 +61,12 @@ window.$I = do ->
 # @param [String] format  the format specification used to format the date.  This may be either a user-defined format using the placeholders listed above or any of the given types `date`, `time`, and `datetime`, which obtain the actual format from the localized strings.
 # @return [String]        the formatted date
 #
-Date::format = (format = "datetime") ->
-  if (format is "date") or (format is "time") or (format is "datetime")
-    fmt = ""
-    fmt += $L("default.format.date") if (format is "date") or (format is "datetime")
-    fmt += " " if format is "datetime"
-    fmt += $L("default.format.time") if (format is "time") or (format is "datetime")
+Date::format = (format = 'datetime') ->
+  if (format is 'date') or (format is 'time') or (format is 'datetime')
+    fmt = ''
+    fmt += $L('default.format.date') if (format is 'date') or (format is 'datetime')
+    fmt += ' ' if format is 'datetime'
+    fmt += $L('default.format.time') if (format is 'time') or (format is 'datetime')
     format = fmt
 
   pad = (x) ->
@@ -76,7 +76,7 @@ Date::format = (format = "datetime") ->
 
   d = this
   regexp = /[^dMyHm]/
-  res = ""
+  res = ''
   while format
     if regexp.test(format)
       token = RegExp.leftContext
@@ -84,31 +84,31 @@ Date::format = (format = "datetime") ->
       format = RegExp.rightContext
     else
       token = format
-      delimiter = ""
-      format = ""
+      delimiter = ''
+      format = ''
 
     switch token
-      when "d"
+      when 'd'
         res += d.getDate()
-      when "dd"
+      when 'dd'
         res += pad(d.getDate())
-      when "M"
+      when 'M'
         res += d.getMonth() + 1
-      when "MM"
+      when 'MM'
         res += pad(d.getMonth() + 1)
-      when "y"
+      when 'y'
         res += d.getYear()
-      when "yy"
+      when 'yy'
         res += pad(d.getYear() % 100)
-      when "yyy", "yyyy"
+      when 'yyy', 'yyyy'
         res += String(d.getFullYear())
-      when "H"
+      when 'H'
         res += d.getHours()
-      when "HH"
+      when 'HH'
         res += pad(d.getHours())
-      when "m"
+      when 'm'
         res += d.getMinutes()
-      when "mm"
+      when 'mm'
         res += pad(d.getMinutes())
     res += delimiter
   res
@@ -130,21 +130,23 @@ Number::format = (n = null) ->
   if isNaN(num) or not isFinite(num)
     return '---'
   numSgn = (if (n is null) then num else num.round(n))
-  sgn = (if numSgn < 0 then "-" else "")
+  sgn = (if numSgn < 0 then '-' else '')
   n = (if (n is null) then undefined else Math.abs(n))
   num = Math.abs(+num or 0)
-  int = String(parseInt(num = (if isNaN(n) then num.toString() else num.toFixed(n)), 10))
+  int = String(parseInt(
+    num = (if isNaN(n) then num.toString() else num.toFixed(n)), 10
+  ))
   pos = (if (pos = int.length) > 3 then pos % 3 else 0)
 
-  frac = ""
+  frac = ''
   if n isnt 0
-    dotPos = num.indexOf(".")
+    dotPos = num.indexOf('.')
     if dotPos >= 0
       frac = Math.abs(num.substring(dotPos))
       frac = (if isNaN(n) then frac.toString() else frac.toFixed(n))
       frac = $I.decimalSeparator + frac.substring(2)
-  sgn + ((if pos then int.substr(0, pos) + gs else "")) +
-    int.substr(pos).replace(/(\d{3})(?=\d)/g, "$1" + gs) + frac
+  sgn + ((if pos then int.substr(0, pos) + gs else '')) +
+    int.substr(pos).replace(/(\d{3})(?=\d)/g, '$1' + gs) + frac
 
 # Formats the given number as currency value, that is with the number of
 # fraction digits specified in attribute `num-fraction-digits` of the `<html>`
@@ -193,7 +195,7 @@ Number::formatSize = ->
 
 # Rounds this number to the given number of fraction digits.
 #
-# @param {Number} n the given number of fraction digits
+# @param [Number] n the given number of fraction digits
 # @return [Number]  the rounded number
 #
 Number::round = (n = $I.numFractions) ->
@@ -208,7 +210,7 @@ Number::round = (n = $I.numFractions) ->
 # @since            1.3
 #
 RegExp.escape = (s) ->
-  s.replace /[\-\/\\\^$*+?.()|\[\]{}]/g, "\\$&"
+  s.replace /[\-\/\\\^$*+?.()|\[\]{}]/g, '\\$&'
 
 # Compares this string to the given one.
 #
@@ -235,15 +237,17 @@ String::compare = (s) ->
 # @return [Date]            the parsed date; `null` if this string is empty
 # @throw Error              if this string does not represent a valid date according to the specified or default format
 #
-String::parseDate = (format = "datetime", baseYear = 35) ->
+String::parseDate = (format = 'datetime', baseYear = 35) ->
   s = this
   return null unless $.trim(s)
 
-  if (format is "date") or (format is "time") or (format is "datetime")
-    fmt = ""
-    fmt += $L("default.format.date") if (format is "date") or (format is "datetime")
-    fmt += " " if format is "datetime"
-    fmt += $L("default.format.time") if (format is "time") or (format is "datetime")
+  if (format is 'date') or (format is 'time') or (format is 'datetime')
+    fmt = ''
+    if (format is 'date') or (format is 'datetime')
+      fmt += $L('default.format.date')
+    fmt += ' ' if format is 'datetime'
+    if (format is 'time') or (format is 'datetime')
+      fmt += $L('default.format.time')
     format = fmt
 
   day = 1
@@ -266,19 +270,19 @@ String::parseDate = (format = "datetime", baseYear = 35) ->
     else
       token = format
       part = s
-      format = ""
+      format = ''
 
     switch token
-      when "d", "dd"
+      when 'd', 'dd'
         day = parseInt(part, 10)
-      when "M", "MM"
+      when 'M', 'MM'
         month = parseInt(part, 10) - 1
-      when "y", "yy", "yyy", "yyyy"
+      when 'y', 'yy', 'yyy', 'yyyy'
         year = parseInt(part, 10)
         year += (if (year < baseYear) then 2000 else 1900) if year < 100
-      when "H", "HH"
+      when 'H', 'HH'
         hours = parseInt(part, 10)
-      when "m", "mm"
+      when 'm', 'mm'
         minutes = parseInt(part, 10)
 
   if isNaN(year) or isNaN(month) or isNaN(day) or isNaN(hours) or isNaN(minutes)
@@ -295,10 +299,10 @@ String::parseDate = (format = "datetime", baseYear = 35) ->
 # @since            1.3
 #
 String::parseNumber = ->
-  reD = new RegExp(RegExp.escape($I.decimalSeparator), "g")
-  reG = new RegExp(RegExp.escape($I.groupingSeparator), "g")
+  reD = new RegExp(RegExp.escape($I.decimalSeparator), 'g')
+  reG = new RegExp(RegExp.escape($I.groupingSeparator), 'g')
   s = this.toString()
-  (if (s is "") then 0 else parseFloat(s.replace(reG, "").replace(reD, ".")))
+  (if (s is '') then 0 else parseFloat(s.replace(reG, '').replace(reD, '.')))
 
 
 # Handles HTTP and HTTPS URLs including parsing and building.
@@ -376,7 +380,8 @@ class HttpUrl
         s += '@'
       s += @host
       if @port?
-        s += ":#{@port}" unless @scheme is 'http' and @port is 80 or @scheme is 'https' and @port is 443
+        unless @scheme is 'http' and @port is 80 or @scheme is 'https' and @port is 443
+          s += ":#{@port}"
     s += @path ? ''
     qs = @_buildQueryString @query
     s += "?#{qs}" if qs
@@ -390,7 +395,8 @@ class HttpUrl
   #
   _buildQueryString: (query) ->
     parts = []
-    parts.push "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}" for key, value of query
+    for key, value of query
+      parts.push "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}"
     parts.join '&'
 
   # Parses the given URL and stores the components in this object.
@@ -401,7 +407,8 @@ class HttpUrl
     parts = url.match REGEXP
     if parts is null
       throw new Error("Invalid URL #{url}.")
-    [dummy, @scheme, @userName, @password, @host, @port, @path, qs, @fragmentIdentifier] = parts
+    [dummy, @scheme, @userName, @password, @host, @port, @path, qs,
+      @fragmentIdentifier] = parts
     if @port?
       @port = parseInt(@port, 10)
     else if @scheme
@@ -421,7 +428,9 @@ class HttpUrl
     parts = queryString.split '&'
     for part in parts
       [key, value] = part.split '='
-      res[decodeURIComponent(key)] = decodeURIComponent(value).replace /\+/, ' '
+      res[decodeURIComponent(key)] =
+        decodeURIComponent(value).replace /\+/, ' '
     res
 
 window.HttpUrl = HttpUrl
+

@@ -41,7 +41,7 @@ if (grailsSettings.grailsEnv != 'test') {
     grails.project.fork = [
        console: forkConfig,             // settings for the Swing console JVM
        run: forkConfig, // + jvmConfig,     // settings for the run-app JVM
-       test: false,                     // settings for the test-app JVM
+       test: forkConfig,                     // settings for the test-app JVM
        war: forkConfig                  // settings for the run-war JVM
     ]
 }
@@ -115,7 +115,7 @@ grails.project.dependency.resolution = {
 
         test(
             "org.gebish:geb-spock:${gebVersion}",
-            'org.seleniumhq.selenium:selenium-java:2.42.2'
+            'org.seleniumhq.selenium:selenium-java:2.43.1'
         )
     }
 

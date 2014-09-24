@@ -21,62 +21,7 @@
 
 
 $ = jQuery
-$createTicketForm = $("#create-ticket-form")
-$sendMessageForm = $("#send-message-form")
 storage = $.localStorage
-
-
-#-- Functions -----------------------------------
-
-onClickCreateTicketBtn = ->
-  $form = $createTicketForm
-  $form.slideUp() unless $form.css("display") is "none"
-  $form.slideDown()
-  $sendMessageForm.slideUp()
-  $(".content-table tr").removeClass "active"
-  $(".flash-message").remove()
-
-onCloseSendMessageForm = ->
-  $createTicketForm.slideDown()
-  $sendMessageForm.slideUp()
-  $(".content-table tr").removeClass "active"
-  $(".flash-message").remove()
-
-onCloseTicket = ->
-  $.confirm $L("ticket.changeStage.closed.confirm")
-
-onOpenSendMessageDlg = ->
-  $ = jQuery
-
-  $("#send-message-dialog").dialog
-    buttons: [
-        click: ->
-          $(this).find("form").submit()
-        text: $L("default.button.send.label")
-      ,
-        class: "red"
-        click: ->
-          $(this).dialog("close")
-        text: $L("default.button.cancel.label")
-    ]
-    minHeight: "15em"
-    modal: true
-    width: "40em"
-  false
-
-onSendMessage = ->
-  $form = $sendMessageForm
-  $form.slideUp() unless $form.css("display") is "none"
-  $tr = $(this).parents("tr")
-    .addClass("active")
-    .siblings()
-      .removeClass("active")
-    .end()
-  $createTicketForm.slideUp()
-  $form.slideDown()
-    .find("input[name=id]")
-      .val $tr.data("ticket-id")
-  false
 
 
 #-- Main ----------------------------------------
@@ -85,9 +30,4 @@ $("#font-size-sel").fontsize
   change: (event, fontSize) ->
     storage.set 'fontSize', fontSize
   currentSize: storage.get('fontSize')
-$sendMessageForm.on "click", ".cancel-btn", onCloseSendMessageForm
-$(".create-ticket-btn").on "click", onClickCreateTicketBtn
-$("#main-container").on("click", ".send-btn", onSendMessage)
-  .on("click", ".close-btn", onCloseTicket)
-$("#send-message-btn").on "click", onOpenSendMessageDlg
 

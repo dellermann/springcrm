@@ -29,7 +29,7 @@ class HelpdeskFrontendFormModule extends ListTableRowModule {
         header { $('h3').text() }
         priority { module SelectModule, $('#priority') }
         salutation { module SelectModule, $('#salutation') }
-        submitBtn { module ButtonModule, $('div.buttons .button') }
+        submitBtn { module ButtonModule, $('div.buttons button.button') }
         cancelBtn { module ButtonModule, $('.cancel-btn') }
     }
 }

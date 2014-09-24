@@ -132,7 +132,7 @@
     </g:uploadForm>
   </div>
   <content tag="scripts">
-    <asset:javascript src="ticket" />
+    <asset:javascript src="helpdesk-frontend" />
   </content>
 </body>
 </html>

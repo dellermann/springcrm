@@ -27,7 +27,7 @@ class LoginPage extends geb.Page {
 
     static at = { title == 'Anmeldung' }
     static content = {
-        loginBtn { $('input#submit') }
+        loginBtn { $('button[type=submit]') }
         message { $('aside > div.message').text() }
         password { $('input#password') }
         userName { $('input#userName') }
