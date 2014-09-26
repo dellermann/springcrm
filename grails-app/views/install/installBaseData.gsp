@@ -50,8 +50,8 @@
   <content tag="scripts">
     <asset:script>//<![CDATA[
     $("#install-base-data-form").submit(function () {
-            if (window.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
-                return window.confirm("${message(code: 'install.installBaseData.confirm2')}");
+            if ($.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
+                return $.confirm("${message(code: 'install.installBaseData.confirm2')}");
             }
             return false;
         });
