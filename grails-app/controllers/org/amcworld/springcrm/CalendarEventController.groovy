@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import javax.servlet.http.HttpServletResponse
 import org.grails.databinding.converters.ValueConverter
 
@@ -42,6 +44,7 @@ class CalendarEventController {
     //-- Instance variables ---------------------
 
     CalendarEventService calendarEventService
+	DateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
     ValueConverter defaultDateConverter
 
 
@@ -95,8 +98,8 @@ class CalendarEventController {
      * all occurrences of recurring events.  Usually, the method is called by
      * the <em>fullcalendar</em> JavaScript library via AJAX.
      *
-     * @param start the given start time stamp
-     * @param end   the given end time stamp
+     * @param start the given start in ISO 8601 format
+     * @param end   the given end in ISO 8601 format
      * @return      the rendered JSON response containing the calendar events
      */
     def listRange(String start, String end) {
@@ -140,16 +143,19 @@ class CalendarEventController {
 
         render(contentType: 'text/json') {
             array {
-                for (CalendarEvent ce in list) {
-                    event(
-                        id: ce.id, title: ce.subject, allDay: ce.allDay,
-                        start: ce.start.time / 1000L, end: ce.end.time / 1000L,
-                        url: createLink(action: 'show', id: ce.id),
-                        editable: !ce.synthetic
-                    )
-                }
-            }
-        }
+            	synchronized (iso8601Format) {
+	                for (CalendarEvent ce in list) {
+	                    event(
+	                        id: ce.id, title: ce.subject, allDay: ce.allDay,
+	                        start: iso8601Format.format(ce.start),
+							end: iso8601Format.format(ce.end),
+	                        url: createLink(action: 'show', id: ce.id),
+	                        editable: !ce.synthetic
+	                    )
+	                }
+	            }
+	        }
+		}
     }
 
     def create() {
@@ -267,15 +273,13 @@ class CalendarEventController {
      * in the calendar view.  Currently, changing the start and end time stamp
      * or recurring calendar events is not supported.
      *
-     * @param start the given start time stamp in milliseconds since the UNIX
-     *              epoch
-     * @param end   the given end time stamp in milliseconds since the UNIX
-     *              epoch
+     * @param start the given start in ISO 8601 format
+     * @param end   the given end in ISO 8601 format
      * @return      the HTTP status code
      */
-    def updateStartEnd(Long id, Long start, Long end) {
-        Date startDate = new Date(start)
-        Date endDate = new Date(end)
+    def updateStartEnd(Long id, String start, String end) {
+        Date startDate = defaultDateConverter.convert(start)
+        Date endDate = defaultDateConverter.convert(end)
 
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {

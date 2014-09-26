@@ -25,7 +25,7 @@ $calendar = $('#calendar')
 # Called if the user clicks a day in the calendar view.  The method loads the
 # form to create a new calendar event.
 #
-# @param {Moment} date  the currently clicked date, optionally with time
+# @param [Moment] date  the currently clicked date, optionally with time
 #
 onClickDay = (date) ->
   start = encodeURIComponent date.format()
@@ -67,22 +67,20 @@ onClickListViewBtn = ->
 # Called if a calendar event is moved by drag & drop, that is, the start and
 # end time is changed.
 #
-# @param {Object} event         data about the calendar event
-# @param {Number} dayDelta      the difference of the start and end time in days
-# @param {Number} minuteDelta   the difference of the start and end time in minutes
-# @param {Boolean} allDay       whether or not the calendar event has been moved to the all-day section
-# @param {Function} revertFunc  a function to be called if the moved calendar event is to revert, for example, in case of an AJAX error
+# @param [Event] event          data about the calendar event
+# @param [Duration] delta       the amount of time the event was moved by
+# @param [Function] revertFunc  a function to be called if the moved calendar event should be reverted, for example, in case of an AJAX error
 #
-onDropEvent = (event, dayDelta, minuteDelta, allDay, revertFunc) ->
-  if allDay
+onDropEvent = (event, delta, revertFunc) ->
+  if event.allDay
     revertFunc.call()
     return
 
   $.ajax
     data:
       id: event.id
-      start: event.start.getTime()
-      end: event.end.getTime()
+      start: event.start.format()
+      end: event.end.format()
     error: ->
       revertFunc.call()
     url: $calendar.data('update-event-url')
@@ -95,17 +93,16 @@ onHoverBtn = ->
 
 # Called if a calendar event is resized, that is, the end time is changed.
 #
-# @param {Object} event         data about the calendar event
-# @param {Number} dayDelta      the difference of the end time in days
-# @param {Number} minuteDelta   the difference of the end time in minutes
-# @param {Function} revertFunc  a function to be called if the resized calendar event is to revert, for example, in case of an AJAX error
+# @param [Event] event          data of the calendar event
+# @param [Duration] delta       the amount of time the end of the event was extended by
+# @param [Function] revertFunc  a function to be called if the resized calendar event should be reverted, for example, in case of an AJAX error
 #
-onResizeEvent = (event, dayDelta, minuteDelta, revertFunc) ->
+onResizeEvent = (event, delta, revertFunc) ->
   $.ajax
     data:
       id: event.id
-      start: event.start.getTime()
-      end: event.end.getTime()
+      start: event.start.format()
+      end: event.end.format()
     error: ->
       revertFunc.call()
     url: $calendar.data('update-event-url')

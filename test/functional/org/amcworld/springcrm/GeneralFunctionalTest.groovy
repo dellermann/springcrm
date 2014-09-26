@@ -116,25 +116,44 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
     }
 
     /**
-     * Prepares a phone call and stores it into the database.
+     * Prepares a calendar event and stores it into the database.
      *
-     * @param org   the organization the phone call belongs to
-     * @param p     the person the phone call belongs to
-     * @return      the prepared phone call
+     * @param org   the organization the calendar event belongs to
+     * @return      the prepared calendar event
      */
-    protected Call prepareCall(Organization org, Person p) {
-        def call = new Call(
-            subject: 'Bitte um Angebot',
-            start: new GregorianCalendar(2013, Calendar.FEBRUARY, 13, 9, 15, 0).time,
+    protected CalendarEvent prepareCalendarEvent(Organization org) {
+        def calEvent = new CalendarEvent(
+            subject: 'Besprechung Werbekonzept',
+            location: 'Büro Landschaftsbau Duvensee GbR',
+            description: 'Besprechung des Konzepts für die geplante Marketing-Aktion.',
+            start: new GregorianCalendar(2013, Calendar.JANUARY, 23, 10, 00, 0).time,
+            end: new GregorianCalendar(2013, Calendar.JANUARY, 23, 12, 00, 0).time,
             organization: org,
-            person: p,
-            phone: '04543 31233',
-            type: CallType.incoming,
-            status: CallStatus.completed,
-            notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
+            owner: User.get(1)
         )
-        call.save flush: true, failOnError: true
+        calEvent.save flush: true, failOnError: true
     }
+
+	/**
+	 * Prepares a phone call and stores it into the database.
+	 *
+	 * @param org   the organization the phone call belongs to
+	 * @param p     the person the phone call belongs to
+	 * @return      the prepared phone call
+	 */
+	protected Call prepareCall(Organization org, Person p) {
+		def call = new Call(
+			subject: 'Bitte um Angebot',
+			start: new GregorianCalendar(2013, Calendar.FEBRUARY, 13, 9, 15, 0).time,
+			organization: org,
+			person: p,
+			phone: '04543 31233',
+			type: CallType.incoming,
+			status: CallStatus.completed,
+			notes: 'Herr Brackmann bittet um die Zusendung eines Angebots für die **geplante Marketing-Aktion**.'
+		)
+		call.save flush: true, failOnError: true
+	}
 
     /**
      * Prepares a helpdesk and stores it into the database.
