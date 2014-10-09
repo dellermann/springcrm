@@ -1,7 +1,7 @@
 /*
  * ProjectFunctionalTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,7 +223,7 @@ class ProjectFunctionalTests extends InvoicingTransactionTestCase {
         WebDriverWait wait = new WebDriverWait(driver, 10)
         By dlgBy = By.id('create-project-item-dialog')
         WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(dlgBy))
-        dialog.findElement(By.xpath('./preceding-sibling::div/a')).click()
+        dialog.findElement(By.xpath('./preceding-sibling::div/button')).click()
         wait.until(ExpectedConditions.invisibilityOfElementLocated(dlgBy))
 
         createProjectItem 2, 7, '/call/create'

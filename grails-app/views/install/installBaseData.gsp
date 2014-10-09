@@ -48,8 +48,9 @@
   </div>
   <g:if test="${existingData}">
   <content tag="scripts">
+    <asset:javascript src="application" />
     <asset:script>//<![CDATA[
-    $("#install-base-data-form").submit(function () {
+    $("#install-base-data-form").on("submit", function () {
             if ($.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
                 return $.confirm("${message(code: 'install.installBaseData.confirm2')}");
             }
