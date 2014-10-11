@@ -46,7 +46,7 @@ if (grailsSettings.grailsEnv != 'test') {
     ]
 }
 
-grails.project.dependency.resolver = 'ivy'
+grails.project.dependency.resolver = 'maven'
 grails.project.dependency.resolution = {
 
     // inherit Grails' default dependencies
@@ -114,15 +114,13 @@ grails.project.dependency.resolution = {
         */
 
         test(
+            'junit:junit:4.11',
             "org.gebish:geb-spock:${gebVersion}",
             'org.seleniumhq.selenium:selenium-java:2.43.1'
         )
     }
 
     plugins {
-//        compile(':cloud-foundry:1.2.3') {
-//            export = false
-//        }
         compile(
             ':asset-pipeline:1.9.9',
 //            ':codenarc:0.21',
@@ -133,7 +131,7 @@ grails.project.dependency.resolution = {
             ':less-asset-pipeline:1.10.0',
             ':mail:1.0.6',
             ':markdown:1.1.1',
-            ':scaffolding:1.0.0',
+            ':scaffolding:2.1.2',
             ':searchable:0.6.9'
         )
         build(
@@ -141,7 +139,7 @@ grails.project.dependency.resolution = {
         )
         runtime(
             ':database-migration:1.4.0',
-            ':hibernate:3.6.10.16'
+            ':hibernate:3.6.10.17'
         )
         test(
             ":geb:${gebVersion}"

@@ -242,8 +242,8 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         driver.findElement(By.name('location')).sendKeys('Labenz')
         driver.findElement(By.name('phone')).sendKeys('04536 45301-0')
         driver.findElement(By.name('fax')).sendKeys('04536 45301-90')
-        driver.findElement(By.name('email')).sendKeys('info@kampe.example')
-        driver.findElement(By.name('website')).sendKeys('http://www.kampe.example')
+        driver.findElement(By.name('email')).sendKeys('info@kampe.de')
+        driver.findElement(By.name('website')).sendKeys('http://www.kampe.de')
         driver.findElement(By.name('bankName')).sendKeys('Elbebank Hamburg')
         driver.findElement(By.name('bankCode')).sendKeys('120340560')
         driver.findElement(By.name('accountNumber')).sendKeys('45671234')
@@ -275,7 +275,7 @@ class InstallationFunctionalTests extends GeneralFunctionalTestCase {
         driver.findElement(By.name('phoneHome')).sendKeys('04536 65530')
         driver.findElement(By.name('mobile')).sendKeys('0172 12034056')
         driver.findElement(By.name('fax')).sendKeys('04536 45301-90')
-        driver.findElement(By.name('email')).sendKeys('m.kampe@kampe.example')
+        driver.findElement(By.name('email')).sendKeys('m.kampe@kampe.de')
         driver.findElement(link2Sel).click()
 
         /* page "finish" */

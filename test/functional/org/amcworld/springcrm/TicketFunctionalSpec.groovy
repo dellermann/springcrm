@@ -90,7 +90,7 @@ class TicketFunctionalSpec extends GeneralFunctionalTest {
         form.phone = '04543 31234'
         form.mobile = '0170 1896043'
         form.fax = '04543 31235'
-        form.email1 = 'm.thoss@landschaftsbau-duvensee.example'
+        form.email1 = 'm.thoss@landschaftsbau-duvensee.de'
         form.'address.street' = 'Dörpstraat 25'
         form.'address.postalCode' = '23898'
         form.'address.location' = 'Duvensee'
@@ -130,8 +130,8 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
         '' == colL1.row[4].fieldText
         '0170 1896043' == colL1.row[5].fieldText
         '04543 31235' == colL1.row[6].fieldText
-        'mailto:m.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.@href
-        'm.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.text()
+        'mailto:m.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.@href
+        'm.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.text()
         '' == colL1.row[8].fieldText
         'Dörpstraat 25' == address.street
         '' == address.poBox
@@ -224,8 +224,8 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
         '' == colL1.row[4].fieldText
         '0170 1896043' == colL1.row[5].fieldText
         '04543 31235' == colL1.row[6].fieldText
-        'mailto:m.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.@href
-        'm.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.text()
+        'mailto:m.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.@href
+        'm.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.text()
         '' == colL1.row[8].fieldText
         'Dörpstraat 25' == address.street
         '' == address.poBox
@@ -340,7 +340,7 @@ Vielen Dank.'''
 
         and: 'the mail sent contains the correct values'
         'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
-        'm.thoss@landschaftsbau-duvensee.example' == mailData.to.text()
+        'm.thoss@landschaftsbau-duvensee.de' == mailData.to.text()
         'true' == mailData.multipart.text()
         'Neue Nachricht zu Ticket' == mailData.subject.text()
         mailData.text.text().startsWith '''Guten Tag Frau Marlen Thoss,
@@ -402,7 +402,7 @@ Vielen Dank.'''
 
         and: 'the mail sent contains the correct values'
         'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
-        'r.wendt@kampe.example' == mailData.to.text()
+        'r.wendt@kampe.de' == mailData.to.text()
         'true' == mailData.multipart.text()
         'Neue Nachricht zu Ticket' == mailData.subject.text()
         mailData.text.text().startsWith '''Liebes Helpdesk-Team,
@@ -535,7 +535,7 @@ zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht wurde eine neue Nach
 
         and: 'the mail sent contains the correct values'
         'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
-        'r.wendt@kampe.example' == mailData.to.text()
+        'r.wendt@kampe.de' == mailData.to.text()
         'true' == mailData.multipart.text()
         'Ticket zugewiesen' == mailData.subject.text()
         mailData.text.text().startsWith '''Hallo Regina Wendt,
@@ -621,7 +621,7 @@ das Ticket mit den folgenden Daten wurde Ihnen von Marcus Kampe zugewiesen. Bitt
 
         and: 'two e-mails have been sent'
         'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
-        'm.thoss@landschaftsbau-duvensee.example' == mailData.to.text()
+        'm.thoss@landschaftsbau-duvensee.de' == mailData.to.text()
         'true' == mailData.multipart.text()
         'Ticket geschlossen' == mailData.subject.text()
         mailData.text.text().startsWith '''Guten Tag Frau Marlen Thoss,
@@ -780,7 +780,7 @@ das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter 
         '04543 31234' == form.phone
         '0170 1896043' == form.mobile
         '04543 31235' == form.fax
-        'm.thoss@landschaftsbau-duvensee.example' == form.email1
+        'm.thoss@landschaftsbau-duvensee.de' == form.email1
         'Dörpstraat 25' == form.'address.street'
         '23898' == form.'address.postalCode'
         'Duvensee' == form.'address.location'
@@ -820,8 +820,8 @@ das Ticket mit den folgenden Daten wurde geschlossen. Sollte das Problem weiter 
         '' == colL1.row[4].fieldText
         '0170 1896043' == colL1.row[5].fieldText
         '04543 31235' == colL1.row[6].fieldText
-        'mailto:m.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.@href
-        'm.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.text()
+        'mailto:m.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.@href
+        'm.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.text()
         '' == colL1.row[8].fieldText
         'Dörpstraat 25' == address.street
         '' == address.poBox

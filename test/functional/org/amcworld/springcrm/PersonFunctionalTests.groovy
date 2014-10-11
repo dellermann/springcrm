@@ -79,7 +79,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'phone', '04543 31233'
         setInputValue 'mobile', '0163 3343267'
         setInputValue 'fax', '04543 31235'
-        setInputValue 'email1', 'h.brackmann@landschaftsbau-duvensee.example'
+        setInputValue 'email1', 'h.brackmann@landschaftsbau-duvensee.de'
         setInputValue 'mailingAddr.street', 'Dörpstraat 25'
         setInputValue 'mailingAddr.postalCode', '23898'
         setInputValue 'mailingAddr.location', 'Duvensee'
@@ -109,8 +109,8 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert '0163 3343267' == getShowFieldText(col, 3)
         assert '04543 31235' == getShowFieldText(col, 4)
         link = getShowField(col, 7).findElement(By.tagName('a'))
-        assert 'mailto:h.brackmann@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'h.brackmann@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:h.brackmann@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'h.brackmann@landschaftsbau-duvensee.de' == link.text
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -169,8 +169,8 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert '0163 3343267' == getShowFieldText(col, 3)
         assert '04543 31235' == getShowFieldText(col, 4)
         link = getShowField(col, 7).findElement(By.tagName('a'))
-        assert 'mailto:h.brackmann@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'h.brackmann@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:h.brackmann@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'h.brackmann@landschaftsbau-duvensee.de' == link.text
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -324,8 +324,8 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         td = tr.findElement(By.xpath('td[7]'))
         assert td.getAttribute('class').contains('string')
         link = td.findElement(By.tagName('a'))
-        assert 'mailto:h.brackmann@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'h.brackmann@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:h.brackmann@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'h.brackmann@landschaftsbau-duvensee.de' == link.text
         td = tr.findElement(By.xpath('td[8]'))
         assert td.getAttribute('class').contains('action-buttons')
         link = td.findElement(By.xpath('a[1]'))
@@ -369,7 +369,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert '04543 31233' == getInputValue('phone')
         assert '0163 3343267' == getInputValue('mobile')
         assert '04543 31235' == getInputValue('fax')
-        assert 'h.brackmann@landschaftsbau-duvensee.example' == getInputValue('email1')
+        assert 'h.brackmann@landschaftsbau-duvensee.de' == getInputValue('email1')
         assert 'Dörpstraat 25' == getInputValue('mailingAddr.street')
         assert '' == getInputValue('mailingAddr.poBox')
         assert '23898' == getInputValue('mailingAddr.postalCode')
@@ -386,7 +386,7 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'birthday_date', '26.05.1970'
         setInputValue 'phone', '04543 31234'
         setInputValue 'mobile', '0170 1896043'
-        setInputValue 'email1', 'm.thoss@landschaftsbau-duvensee.example'
+        setInputValue 'email1', 'm.thoss@landschaftsbau-duvensee.de'
         setInputValue 'notes', 'Häufig unterwegs; mobil anrufen.'
         submitForm getUrl('/person/show/')
 
@@ -412,8 +412,8 @@ class PersonFunctionalTests extends GeneralFunctionalTestCase {
         assert '0170 1896043' == getShowFieldText(col, 3)
         assert '04543 31235' == getShowFieldText(col, 4)
         link = getShowField(col, 7).findElement(By.tagName('a'))
-        assert 'mailto:m.thoss@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'm.thoss@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:m.thoss@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'm.thoss@landschaftsbau-duvensee.de' == link.text
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)

@@ -1,7 +1,7 @@
 /*
  * Searchable.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,14 +203,6 @@ environments {
     development {
         searchable {
             bulkIndexOnStartup = false
-        }
-    }
-
-    /* CloudFoundry environment */
-    cloud {
-        searchable {
-            bulkIndexOnStartup = false
-            compassConnection = 'ram://test-index'
         }
     }
 

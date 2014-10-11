@@ -176,8 +176,8 @@
   <config version="0" name="clientLocation" value="Labenz"/>
   <config version="0" name="clientPhone" value="04536 45301-0"/>
   <config version="0" name="clientFax" value="04536 45301-90"/>
-  <config version="0" name="clientEmail" value="info@kampe.example"/>
-  <config version="0" name="clientWebsite" value="http://www.kampe.example"/>
+  <config version="0" name="clientEmail" value="info@kampe.de"/>
+  <config version="0" name="clientWebsite" value="http://www.kampe.de"/>
   <config version="0" name="clientBankName" value="Elbebank Hamburg"/>
   <config version="0" name="clientBankCode" value="120340560"/>
   <config version="0" name="clientAccountNumber" value="45671234"/>
@@ -192,7 +192,7 @@
 
   <!-- Default administrator user -->
   <user_data id="1" version="0" date_created="2013-01-23 15:52:19"
-    email="m.kampe@kampe.example" fax="04536 45301-90" first_name="Marcus"
+    email="m.kampe@kampe.de" fax="04536 45301-90" first_name="Marcus"
     last_name="Kampe" last_updated="2013-01-23 15:52:19" mobile="0172 12034056"
     password="c9b359951c09c5d04de4f852746671ab2b2d0994" phone="04536 45301-10"
     phone_home="04536 65530" user_name="mkampe" admin="1"/>

@@ -76,8 +76,8 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'industry.id', '1012'
         setInputValue 'phone', '04543 31233'
         setInputValue 'fax', '04543 31235'
-        setInputValue 'email1', 'info@landschaftsbau-duvensee.example'
-        setInputValue 'website', 'http://www.landschaftsbau-duvensee.example'
+        setInputValue 'email1', 'info@landschaftsbau-duvensee.de'
+        setInputValue 'website', 'http://www.landschaftsbau-duvensee.de'
         setInputValue 'billingAddr.street', 'Dörpstraat 25'
         setInputValue 'billingAddr.postalCode', '23898'
         setInputValue 'billingAddr.location', 'Duvensee'
@@ -106,12 +106,12 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert '04543 31233' == getShowFieldText(col, 1)
         assert '04543 31235' == getShowFieldText(col, 2)
         def link = getShowField(col, 4).findElement(By.tagName('a'))
-        assert 'mailto:info@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'info@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:info@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'info@landschaftsbau-duvensee.de' == link.text
         link = getShowField(col, 6).findElement(By.tagName('a'))
-        assert 'http://www.landschaftsbau-duvensee.example/' == link.getAttribute('href')
+        assert 'http://www.landschaftsbau-duvensee.de/' == link.getAttribute('href')
         assert '_blank' == link.getAttribute('target')
-        assert 'http://www.landschaftsbau-duvensee.example' == link.text
+        assert 'http://www.landschaftsbau-duvensee.de' == link.text
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Dörpstraat 25' == getShowFieldText(col, 1)
@@ -173,12 +173,12 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert '04543 31233' == getShowFieldText(col, 1)
         assert '04543 31235' == getShowFieldText(col, 2)
         def link = getShowField(col, 4).findElement(By.tagName('a'))
-        assert 'mailto:info@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'info@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:info@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'info@landschaftsbau-duvensee.de' == link.text
         link = getShowField(col, 6).findElement(By.tagName('a'))
-        assert 'http://www.landschaftsbau-duvensee.example/' == link.getAttribute('href')
+        assert 'http://www.landschaftsbau-duvensee.de/' == link.getAttribute('href')
         assert '_blank' == link.getAttribute('target')
-        assert 'http://www.landschaftsbau-duvensee.example' == link.text
+        assert 'http://www.landschaftsbau-duvensee.de' == link.text
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))
         assert 'Rechnungsanschrift' == col.findElement(By.tagName('h3')).text
@@ -394,14 +394,14 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         td = tr.findElement(By.xpath('td[6]'))
         assert td.getAttribute('class').contains('string')
         link = td.findElement(By.tagName('a'))
-        assert 'mailto:info@landschaftsbau-duvensee.example' == link.getAttribute('href')
-        assert 'info@landschaftsbau-duvensee.example' == link.text
+        assert 'mailto:info@landschaftsbau-duvensee.de' == link.getAttribute('href')
+        assert 'info@landschaftsbau-duvensee.de' == link.text
         td = tr.findElement(By.xpath('td[7]'))
         assert td.getAttribute('class').contains('string')
         link = td.findElement(By.tagName('a'))
-        assert 'http://www.landschaftsbau-duvensee.example/' == link.getAttribute('href')
+        assert 'http://www.landschaftsbau-duvensee.de/' == link.getAttribute('href')
         assert '_blank' == link.getAttribute('target')
-        assert 'www.landschaftsbau-duvensee.example' == link.text
+        assert 'www.landschaftsbau-duvensee.de' == link.text
         td = tr.findElement(By.xpath('td[8]'))
         assert td.getAttribute('class').contains('action-buttons')
         link = td.findElement(By.xpath('a[1]'))
@@ -442,9 +442,9 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert '' == select.firstSelectedOption.text
         assert '04543 31233' == getInputValue('phone')
         assert '04543 31235' == getInputValue('fax')
-        assert 'info@landschaftsbau-duvensee.example' == getInputValue('email1')
+        assert 'info@landschaftsbau-duvensee.de' == getInputValue('email1')
         assert '' == getInputValue('email2')
-        assert 'http://www.landschaftsbau-duvensee.example' == getInputValue('website')
+        assert 'http://www.landschaftsbau-duvensee.de' == getInputValue('website')
         assert '' == getInputValue('owner')
         assert '' == getInputValue('numEmployees')
         assert 'Dörpstraat 25' == getInputValue('billingAddr.street')
@@ -469,8 +469,8 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         setInputValue 'industry.id', '1021'
         setInputValue 'phone', '04541 428717'
         setInputValue 'fax', '04541 428719'
-        setInputValue 'email1', 'arne@friesing.example'
-        setInputValue 'website', 'http://friesing.example'
+        setInputValue 'email1', 'arne@friesing.de'
+        setInputValue 'website', 'http://friesing.de'
         setInputValue 'numEmployees', '1'
         setInputValue 'billingAddr.street', 'Kirschenallee 17a'
         setInputValue 'billingAddr.postalCode', '23909'
@@ -500,12 +500,12 @@ class OrganizationFunctionalTests extends GeneralFunctionalTestCase {
         assert '04541 428717' == getShowFieldText(col, 1)
         assert '04541 428719' == getShowFieldText(col, 2)
         def link = getShowField(col, 4).findElement(By.tagName('a'))
-        assert 'mailto:arne@friesing.example' == link.getAttribute('href')
-        assert 'arne@friesing.example' == link.text
+        assert 'mailto:arne@friesing.de' == link.getAttribute('href')
+        assert 'arne@friesing.de' == link.text
         link = getShowField(col, 6).findElement(By.tagName('a'))
-        assert 'http://friesing.example/' == link.getAttribute('href')
+        assert 'http://friesing.de/' == link.getAttribute('href')
         assert '_blank' == link.getAttribute('target')
-        assert 'http://friesing.example' == link.text
+        assert 'http://friesing.de' == link.text
         assert '1' == getShowFieldText(col, 8)
         fieldSet = dataSheet.findElement(By.xpath('section[@class="multicol-content"][1]'))
         col = fieldSet.findElement(By.className('col-l'))

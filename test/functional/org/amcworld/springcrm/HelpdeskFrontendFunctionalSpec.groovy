@@ -91,7 +91,7 @@ class HelpdeskFrontendFunctionalSpec extends GeneralFunctionalTest {
         createForm.lastName = 'Thoss'
         createForm.phone = '04543 31234'
         createForm.mobile = '0170 1896043'
-        createForm.email1 = 'm.thoss@landschaftsbau-duvensee.example'
+        createForm.email1 = 'm.thoss@landschaftsbau-duvensee.de'
         createForm.messageText = '''Ich habe versucht, auf Drucker **3** im _Verkauf_ zu drucken, allerdings kommt kein Ausdruck heraus.
 
 Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gestern.'''
@@ -213,7 +213,7 @@ Hilft Ihnen das weiter?'''
 
         and: 'the mail sent contains the correct values'
         'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
-        ['m.kampe@kampe.example', 'r.wendt@kampe.example'] == mailData.to[0].children()
+        ['m.kampe@kampe.de', 'r.wendt@kampe.de'] == mailData.to[0].children()
         'true' == mailData.multipart.text()
         'Neue Nachricht zu Ticket' == mailData.subject.text()
         mailData.text.text().startsWith '''Liebes Helpdesk-Team,
@@ -265,8 +265,8 @@ zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht wurde eine neue Nach
         '' == colL1.row[4].fieldText
         '0170 1896043' == colL1.row[5].fieldText
         '04543 31235' == colL1.row[6].fieldText
-        'mailto:m.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.@href
-        'm.thoss@landschaftsbau-duvensee.example' == colL1.row[7].link.text()
+        'mailto:m.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.@href
+        'm.thoss@landschaftsbau-duvensee.de' == colL1.row[7].link.text()
         '' == colL1.row[8].fieldText
         'Dörpstraat 25' == address.street
         '' == address.poBox
@@ -366,7 +366,7 @@ Hilft Ihnen das weiter?'''
 
         and: 'the mail sent contains the correct values'
         'SpringCRM Service <noreply@springcrm.de>' == mailData.from.text()
-        ['m.kampe@kampe.example', 'r.wendt@kampe.example'] == mailData.to[0].children()
+        ['m.kampe@kampe.de', 'r.wendt@kampe.de'] == mailData.to[0].children()
         'true' == mailData.multipart.text()
         'Neue Nachricht zu Ticket' == mailData.subject.text()
         mailData.text.text().startsWith '''Liebes Helpdesk-Team,
@@ -529,7 +529,7 @@ zu Ticket T-10000 – Drucker im Verkauf funktioniert nicht wurde eine neue Nach
                 phone: '04543 31234',
                 mobile: '0170 1896043',
                 fax: '04543 31235',
-                email1: 'm.thoss@landschaftsbau-duvensee.example',
+                email1: 'm.thoss@landschaftsbau-duvensee.de',
                 priority: TicketPriority.get(1101),
                 stage: TicketStage.closed
             ).addToLogEntries(new TicketLogEntry(

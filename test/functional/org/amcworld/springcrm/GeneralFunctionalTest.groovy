@@ -186,8 +186,8 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             industry: Industry.get(1012),
             phone: '04543 31233',
             fax: '04543 31235',
-            email1: 'info@landschaftsbau-duvensee.example',
-            website: 'http://www.landschaftsbau-duvensee.example',
+            email1: 'info@landschaftsbau-duvensee.de',
+            website: 'http://www.landschaftsbau-duvensee.de',
             billingAddr: addr,
             shippingAddr: addr,
             notes: 'Kontakt über Peter Hermann hergestellt.\nErstes Treffen am 13.06.2012.'
@@ -214,7 +214,7 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
             phone: '04543 31233',
             mobile: '0163 3343267',
             fax: '04543 31235',
-            email1: 'h.brackmann@landschaftsbau-duvensee.example',
+            email1: 'h.brackmann@landschaftsbau-duvensee.de',
             jobTitle: 'Geschäftsführer',
             department: 'Geschäftsleitung',
             assistant: 'Anna Schmarge',
@@ -241,7 +241,7 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
                 phone: '04543 31234',
                 mobile: '0170 1896043',
                 fax: '04543 31235',
-                email1: 'm.thoss@landschaftsbau-duvensee.example',
+                email1: 'm.thoss@landschaftsbau-duvensee.de',
                 priority: TicketPriority.get(1102)
             ).addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.create
@@ -269,7 +269,7 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
             fax: '04536 45301-90',
             mobile: '0162 37493393',
             phoneHome: '04536 37471',
-            email: 'r.wendt@kampe.example'
+            email: 'r.wendt@kampe.de'
         )
         user.save flush: true, failOnError: true
     }
