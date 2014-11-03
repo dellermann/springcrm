@@ -81,18 +81,19 @@
               <g:formatBoolean boolean="\${${propertyName}.${p.name}}" />
             </td>
             <%
-        } else if (p.type == Date || p.type == java.sql.Date || p.type == java.sql.Time || p.type == Calendar) {
+            } else if (p.type == Date || p.type == java.sql.Date || p.type == java.sql.Time || p.type == Calendar) {
             %>
             <td class="date ${cssName}-${GrailsNameUtils.getScriptName(p.name)}">
               <g:formatDate date="\${${propertyName}.${p.name}}" />
             </td>
             <%
-        } else {
+            } else {
         	%>
             <td class="string ${cssName}-${GrailsNameUtils.getScriptName(p.name)}">
               <g:fieldValue bean="\${${propertyName}}" field="${p.name}" />
             </td>
             <%
+            }
         }
     }
             %>

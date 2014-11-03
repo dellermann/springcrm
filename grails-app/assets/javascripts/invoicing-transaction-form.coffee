@@ -222,7 +222,8 @@ InvoicingTransactionWidget =
     switch parseInt $(event.currentTarget).val(), 10
       when stageValues.shipping then $input = $("#shippingDate-date")
       when stageValues.payment then $input = $("#paymentDate-date")
-    $input.datepicker("setDate", new Date()).trigger("change") if $input
+    if $input and not $input.val()
+      $input.datepicker("setDate", new Date()).trigger("change")
     true
 
   # Called if the user clicks the link "still unpaid".  The method sets the
