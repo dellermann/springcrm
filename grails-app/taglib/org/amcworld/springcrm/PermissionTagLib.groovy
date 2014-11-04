@@ -1,7 +1,7 @@
 /*
  * PermissionTagLib.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ class PermissionTagLib {
         } else if (!(controllers instanceof List)) {
             controllers = [controllers]
         }
-        if (session.user.checkAllowedControllers(controllers)) {
+        if (session.user?.checkAllowedControllers(controllers)) {
             out << body()
         }
     }
