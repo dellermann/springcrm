@@ -1,0 +1,37 @@
+{
+  "name": "springcrm",
+  "version": "1.5.0",
+  "homepage": "https://github.com/dellermann/springcrm",
+  "authors": [
+    "Daniel Ellermann <d.ellermann@amc-world.de>"
+  ],
+  "description": "An open-source customer relationship management (CRM) software.",
+  "keywords": [
+    "SpringCRM",
+    "CRM",
+    "Groovy",
+    "Grails"
+  ],
+  "license": "GPL-3.0+",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "~4.2.0",
+    "fullcalendar": "~2.1.1",
+    "handlebars": "~2.0.0",
+    "jQuery-Storage-API": "~1.7.3",
+    "jquery-autosize": "~1.18.9",
+    "jquery-file-upload": "~9.8.0",
+    "jquery-mockjax": "1.6.1",
+    "jquery-ui": "~1.11.1",
+    "lightbox": "~2.7.1",
+    "mustache": "~0.8.2",
+    "qunit": "~1.15.0"
+  }
+}
