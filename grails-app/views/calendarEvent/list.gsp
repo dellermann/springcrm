@@ -22,8 +22,27 @@
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
-    <div class="fc-header" style="margin-bottom: 1em; text-align: right;">
-      <span class="fc-button fc-button-agendaDay ui-state-default ui-corner-left"><span class="fc-button-inner"><span class="fc-button-content">day</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-agendaWeek ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">week</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-month ui-state-default"><span class="fc-button-inner"><span class="fc-button-content">month</span><span class="fc-button-effect"><span></span></span></span></span><span class="fc-button fc-button-list ui-state-default ui-corner-right ui-state-active"><span class="fc-button-inner"><span class="fc-button-content"><g:message code="calendarEvent.button.text.list" default="list" /></span><span class="fc-button-effect"><span></span></span></span></span>
+    <div class="fc">
+      <div class="fc-toolbar">
+        <div class="fc-right">
+          <div class="fc-button-group">
+            <button type="button"
+              class="fc-agendaDay-button ui-button ui-state-default ui-corner-left"
+              >day</button
+            ><button type="button"
+              class="fc-agendaWeek-button ui-button ui-state-default"
+              >week</button
+            ><button type="button"
+              class="fc-month-button ui-button ui-state-default">month</button
+            ><button type="button"
+              class="fc-list-button ui-button ui-state-default ui-corner-right ui-state-active"
+              ><g:message code="calendarEvent.button.text.list" default="list"
+              /></button
+            >
+          </div>
+        </div>
+        <div class="fc-clear"></div>
+      </div>
     </div>
     <g:if test="${calendarEventInstanceList}">
     <table class="content-table">
@@ -85,21 +104,18 @@
           var lang = $.fullCalendar.langs["${lang}"].defaultButtonText,
               location = window.location;
 
-          $(".fc-button-agendaDay").click(function () {
+          $(".fc-agendaDay-button").click(function () {
                   location.href = "${createLink(controller: 'calendarEvent', action: 'calendar', params: [view: 'agendaDay'])}";
               })
-              .find(".fc-button-content")
-                  .text(lang.day);
-          $(".fc-button-agendaWeek").click(function () {
+              .text(lang.day);
+          $(".fc-agendaWeek-button").click(function () {
                   location.href = "${createLink(controller: 'calendarEvent', action: 'calendar', params: [view: 'agendaWeek'])}";
               })
-              .find(".fc-button-content")
-                  .text(lang.week);
-          $(".fc-button-month").click(function () {
+              .text(lang.week);
+          $(".fc-month-button").click(function () {
                   location.href = "${createLink(controller: 'calendarEvent', action: 'calendar', params: [view: 'month'])}";
               })
-              .find(".fc-button-content")
-                  .text(lang.month);
+              .text(lang.month);
           $(".fc-button").hover(function () {
                   $(this).toggleClass("ui-state-hover");
               });

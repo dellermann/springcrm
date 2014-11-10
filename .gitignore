@@ -1,7 +1,8 @@
 *.swp
+/bower_components/
+/node_modules
+/target/
+/web-app/js/app
+/web-app/WEB-INF/data/install/ENABLE_INSTALLER
 caldecott.log
-node_modules
 stacktrace.log
-target/
-web-app/js/app
-web-app/WEB-INF/data/install/ENABLE_INSTALLER

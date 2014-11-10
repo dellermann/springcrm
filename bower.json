@@ -31,7 +31,6 @@
     "jquery-mockjax": "1.6.1",
     "jquery-ui": "~1.11.1",
     "lightbox": "~2.7.1",
-    "mustache": "~0.8.2",
     "qunit": "~1.15.0"
   }
 }

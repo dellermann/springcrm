@@ -36,27 +36,30 @@ onClickDay = (date) ->
 #
 onClickGotoDateBtn = ->
   $dlg = $('#goto-date-dialog')
+
   onOk = ->
-    s = $dlg.find('input').val()
+    $d = $dlg
+    s = $d.find('input').val()
     if s
       date = s.parseDate 'date'
       $calendar.fullCalendar 'gotoDate', date
-    $dlg.dialog('close')
+    $d.dialog('close')
 
-  $dlg.on 'keydown', 'input', (event) ->
-    onOk() if event.which == 13
-    true
-  $dlg.dialog
-    buttons: [
-        click: onOk
-        text: $L('default.button.ok.label')
-      ,
-        click: ->
-          $dlg.dialog 'close'
-        text: $L('default.button.cancel.label')
-    ]
-    modal: true
-    width: 200
+  $dlg.on('keydown', 'input', (event) ->
+      onOk() if event.which == 13
+      false
+    )
+    .dialog
+      buttons: [
+          click: onOk
+          text: $L('default.button.ok.label')
+        ,
+          click: ->
+            $dlg.dialog 'close'
+          text: $L('default.button.cancel.label')
+      ]
+      modal: true
+      width: 200
 
 # Called if the user clicks the list view button.  The method loads the list
 # view of the calendar.
@@ -121,26 +124,22 @@ $calendar.fullCalendar
     right: 'agendaDay,agendaWeek,month'
   theme: true
 
-$('.fc-header-left').append """
-  <span class="fc-button fc-button-goto ui-state-default ui-corner-right">
-    <span class="fc-button-inner">
-      <span class="fc-button-content">#{$L('calendarEvent.button.text.gotoDate')}</span>
-      <span class="fc-button-effect"></span>
-    </span>
-  </span>
+$('.fc-today-button').wrap('<div class="fc-button-group"/>')
+  .removeClass('ui-corner-right')
+  .after """
+  <button type="button"
+    class="fc-goto-button ui-button ui-state-default ui-corner-right">
+    #{$L('calendarEvent.button.text.gotoDate')}
+  </button>
 """
-$('.fc-header-right').append """
-  <span class="fc-button fc-button-list ui-state-default ui-corner-right">
-    <span class="fc-button-inner">
-      <span class="fc-button-content">#{$L('calendarEvent.button.text.list')}</span>
-      <span class="fc-button-effect"></span>
-    </span>
-  </span>
+$('.fc-toolbar .fc-right .fc-button-group').append """
+  <button type="button"
+    class="fc-list-button ui-button ui-state-default ui-corner-right">
+    #{$L('calendarEvent.button.text.list')}
+  </button>
 """
-$('.fc-button-today').removeClass 'ui-corner-right'
-$('.fc-button-month').removeClass 'ui-corner-right'
+$('.fc-month-button').removeClass 'ui-corner-right'
 
-$calendar.on('click', '.fc-button-goto', onClickGotoDateBtn)
-  .on('mouseenter mouseleave', '.fc-button-goto', onHoverBtn)
-  .on('click', '.fc-button-list', onClickListViewBtn)
-  .on('mouseenter mouseleave', '.fc-button-list', onHoverBtn)
+$calendar.on('click', '.fc-goto-button', onClickGotoDateBtn)
+  .on('click', '.fc-list-button', onClickListViewBtn)
+  .on('mouseenter mouseleave', '.fc-goto-button, .fc-list-button', onHoverBtn)
