@@ -110,6 +110,13 @@
       </div>
     </li>
     <li>
+      <a href="#" id="calculator-button"
+        title="${message(code: 'calculator.button.label')}"><i class="fa fa-calculator"></i></a>
+      <div class="calculator-dialog" title="${message(code: 'calculator.title')}">
+        <div class="calculator"></div>
+      </div>
+    </li>
+    <li>
       <select id="quick-access">
         <option value=""><g:message code="default.quickMenu" /></option>
         <g:ifControllerAllowed controllers="organization"><option value="${createLink(controller: 'organization', action: 'create')}"><g:message code="default.quickMenu.organization" /></option></g:ifControllerAllowed>

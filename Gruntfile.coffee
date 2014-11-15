@@ -10,6 +10,7 @@ module.exports = (grunt) ->
         '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.fonts %>/'
         '<%= dirs.src.images %>/lightbox/'
+        '<%= dirs.src.stylesheets %>/js-calc/'
         '<%= dirs.src.javascripts %>/lang/fullcalendar/'
       ]
       test: ['<%= dirs.target.test.base %>']
@@ -36,6 +37,20 @@ module.exports = (grunt) ->
             ext: '.js'
             src: ['*.coffee']
         ]
+    concat:
+      publish:
+        files: [
+          dest: '<%= dirs.src.javascripts %>/_js-calc.coffee'
+          src: [
+            '<%= dirs.bower.jsCalc %>/coffee/js-calc.coffee'
+            '<%= dirs.bower.jsCalc %>/coffee/stack.coffee'
+            '<%= dirs.bower.jsCalc %>/coffee/input.coffee'
+          ]
+        ]
+        options:
+          process: (src, filepath) ->
+            src.replace /Handlebars\.templates\['js-calc'\]/g,
+              'Handlebars.templates[\'tools/js-calc\']'
     copy:
       publish:
         files: [
@@ -124,6 +139,21 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/_jquery-ui.js'
             src: '<%= dirs.bower.jqueryUi %>/jquery/jquery-ui.js'
           ,
+            cwd: '<%= dirs.bower.jsCalc %>/less/'
+            dest: '<%= dirs.src.stylesheets %>/js-calc/'
+            expand: true
+            rename: (dest, src) -> "#{dest}_#{src}"
+            src: [
+              'core.less'
+              'variables.less'
+            ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
+            src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
+          ,
+            dest: '<%= dirs.src.javascripts %>/_lightbox.js'
+            src: '<%= dirs.bower.lightbox %>/js/lightbox.js'
+          ,
             dest: '<%= dirs.src.stylesheets %>/_lightbox.css'
             src: '<%= dirs.bower.lightbox %>/css/lightbox.css'
           ,
@@ -145,9 +175,7 @@ module.exports = (grunt) ->
         ]
         options:
           encoding: null
-          noProcess: [
-            '**/*.{eot|gif|jpg|js|otf|png|ttf|woff}'
-          ]
+          noProcess: '**/*.{eot|gif|jpg|js|otf|png|ttf|woff}'
           process: (contents, srcPath) ->
             g = grunt
             conf = g.config
@@ -155,12 +183,17 @@ module.exports = (grunt) ->
 
             lb = conf.get 'dirs.bower.lightbox'
             fa = conf.get 'dirs.bower.fontAwesome'
+            jc = conf.get 'dirs.bower.jsCalc'
             if file.arePathsEquivalent srcPath, "#{lb}/css/lightbox.css"
               contents = String(contents)
               contents = contents.replace /\.\.\/img\//g, '../images/lightbox/'
             else if file.arePathsEquivalent srcPath, "#{fa}/less/core.less"
               contents = String(contents)
               contents = contents.replace /\.@\{fa-css-prefix\}/, '.fa'
+            else if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
+              contents = String(contents)
+              contents = contents.replace /@import\s+"variables";/,
+                '@import "_variables";'
             contents
       test:
         files: [
@@ -218,6 +251,7 @@ module.exports = (grunt) ->
         jqueryUi: '<%= dirs.bower.base %>/jquery-ui'
         jqueryUiTouchPunch:
           '<%= dirs.bower.base %>/jquery-ui-touch-punch-working'
+        jsCalc: '<%= dirs.bower.base %>/js-calc'
         lightbox: '<%= dirs.bower.base %>/lightbox'
         moment: '<%= dirs.bower.base %>/moment'
         qunit: '<%= dirs.bower.base %>/qunit'
@@ -282,6 +316,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-bower-task'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-handlebars'
   grunt.loadNpmTasks 'grunt-contrib-less'
@@ -297,7 +332,12 @@ module.exports = (grunt) ->
   grunt.registerTask 'publish', 'Copy library code to project.', ->
     g = grunt
 
-    g.task.run ['bower:install', 'clean:publish', 'copy:publish']
+    g.task.run [
+      'bower:install'
+      'clean:publish'
+      'copy:publish'
+      'concat:publish'
+    ]
     g.log.writelns '!!'.blue, 'Don\'t forget to change',
       (g.config.get('dirs.src.stylesheets') + '/_jquery-ui.css').green,
       'after installing a new version of jQueryUI.'

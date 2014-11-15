@@ -1,0 +1,112 @@
+{{!--
+
+  js-calc.hbs
+
+  Copyright (c) 2014, Daniel Ellermann
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+ 
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+ 
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+--}}
+
+<div class="jscalc-calculator">
+  <div class="jscalc-calculator-container">
+    <div class="jscalc-display">
+      <span class="jscalc-memory">M</span>
+      <span class="jscalc-sign">–</span>
+      <span class="jscalc-error">E</span>
+      <output></output>
+    </div>
+    <div class="jscalc-keyboard">
+      <div class="jscalc-row">
+        <div class="jscalc-key jscalc-key-memory" data-code="MR"
+          title="R"><span>MR</span></div>
+        <div class="jscalc-key jscalc-key-memory" data-code="MS"
+          title="S"><span>MS</span></div>
+        <div class="jscalc-key jscalc-key-memory"
+          data-code="M+"><span>M+</span></div>
+        <div class="jscalc-key jscalc-key-memory"
+          data-code="MC"><span>MC</span></div>
+        <div class="jscalc-key jscalc-key-operator" data-code="%"
+          title="%"><span>%</span></div>
+      </div>
+      <div class="jscalc-row">
+        <div class="jscalc-key jscalc-key-operator" data-code="x^2"
+          title="²"><span>x²</span></div>
+        <div class="jscalc-key jscalc-key-operator"
+          data-code="sqrt"><span>√</span></div>
+        <div class="jscalc-key jscalc-key-operator"
+          data-code="^" title="^"><span>y<sup>x</sup></span></div>
+        <div class="jscalc-key jscalc-key-operator"
+          data-code="root"><span><sup>x</sup>√y</span></div>
+        <div class="jscalc-key jscalc-key-operator" data-code="1/x"
+          title="\"><span>1/x</span></div>
+      </div>
+      <div class="jscalc-row">
+        <div class="jscalc-key jscalc-key-digit" data-code="7"
+          title="7"><span>7</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="8"
+          title="8"><span>8</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="9"
+          title="9"><span>9</span></div>
+        <div class="jscalc-key jscalc-key-erase" data-code="CE"
+          title="C"><span>CE</span></div>
+        <div class="jscalc-key jscalc-key-erase" data-code="AC"
+          title="Del"><span>AC</span></div>
+      </div>
+      <div class="jscalc-row">
+        <div class="jscalc-key jscalc-key-digit" data-code="4"
+          title="4"><span>4</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="5"
+          title="5"><span>5</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="6"
+          title="6"><span>6</span></div>
+        <div class="jscalc-key jscalc-key-base-operator" data-code="*"
+          title="*"><span>×</span></div>
+        <div class="jscalc-key jscalc-key-base-operator" data-code="/"
+          title="+"><span>÷</span></div>
+      </div>
+      <div class="jscalc-row">
+        <div class="jscalc-key jscalc-key-digit" data-code="1"
+          title="1"><span>1</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="2"
+          title="2"><span>2</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="3"
+          title="3"><span>3</span></div>
+        <div class="jscalc-key jscalc-key-base-operator" data-code="+"
+          title="+"><span>+</span></div>
+        <div class="jscalc-key jscalc-key-base-operator" data-code="-"
+          title="-"><span>–</span></div>
+      </div>
+      <div class="jscalc-row">
+        <div class="jscalc-key jscalc-key-digit" data-code="0"
+          title="0"><span>0</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="+/-"
+          title="#"><span>±</span></div>
+        <div class="jscalc-key jscalc-key-digit" data-code="."
+          title="{{point}}"><span>{{point}}</span></div>
+        <div class="jscalc-key jscalc-key-erase" data-code="DEL"
+          title="←"><span>←</span></div>
+        <div class="jscalc-key jscalc-key-result" data-code="="
+          title="Enter"><span>=</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- vim:set ft=html: --}}

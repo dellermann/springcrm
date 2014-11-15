@@ -21,6 +21,9 @@
 #= require _jquery-ui-datepicker-de
 #= require _jquery-autosize
 #= require _core
+#= require _handlebars-ext
+#= require templates/tools/js-calc
+#= require _js-calc
 
 
 $ = jQuery
@@ -704,6 +707,15 @@ SPRINGCRM.page = (->
       $(this).parent().get(0).submit()
       false
     $('#quick-access').change onChangeQuickAccess
+    $('#calculator-button').on 'click', ->
+      $('.calculator-dialog')
+        .find('.calculator')
+          .jscalc(point: $('html').data('decimal-separator'))
+        .end()
+        .dialog
+          height: 440
+          width: 340
+      false
 
     $('#main-container').on('focusin', '.currency :input, :input.currency', ->
         $this = $(this)
