@@ -708,13 +708,15 @@ SPRINGCRM.page = (->
       false
     $('#quick-access').change onChangeQuickAccess
     $('#calculator-button').on 'click', ->
-      $('.calculator-dialog')
-        .find('.calculator')
-          .jscalc(point: $('html').data('decimal-separator'))
-        .end()
-        .dialog
-          height: 440
-          width: 340
+      $dlg = $('.calculator-dialog')
+      $calculator = $dlg.find('.calculator')
+        .jscalc(point: $('html').data('decimal-separator'))
+      $jsCalcContainer = $calculator.find '.jscalc-calculator-container'
+      $dlg.dialog(
+          resizable: false
+        ).dialog 'option',
+          height: $jsCalcContainer.height() + 65
+          width: $jsCalcContainer.width() + 30
       false
 
     $('#main-container').on('focusin', '.currency :input, :input.currency', ->

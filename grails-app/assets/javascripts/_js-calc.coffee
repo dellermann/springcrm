@@ -221,7 +221,8 @@ class Calculator
       if value < 0
         negative = true
         value *= -1
-      value = String(value)
+      # bugfix #2
+      value = String(parseFloat(value.toPrecision Input.MAX_INPUT_LENGTH))
     @_displayValue value, negative
 
   # Displays the given value with optional negative flag.
@@ -426,7 +427,7 @@ class Calculator
       @$element.find(".jscalc-key[data-code='#{keyCode}']")
         .addClass('active')
         .click()
-      return false
+      event.stopPropagation()
 
     true
 
@@ -632,9 +633,11 @@ class Stack
 
 class Input
 
-  #-- Constants ---------------------------------
+  #-- Class variables ---------------------------
 
-  MAX_INPUT_LENGTH = 15
+  # The maximum number of characters that may be entered.
+  #
+  @MAX_INPUT_LENGTH: 15
 
 
   #-- Constructor -------------------------------
@@ -654,7 +657,7 @@ class Input
   #
   addDigit: (digit) ->
     input = @input
-    @input = input + digit if input.length <= MAX_INPUT_LENGTH
+    @input = input + digit if input.length <= Input.MAX_INPUT_LENGTH
     this
 
   # Adds a decimal point to the input.  The decimal point is added if not
@@ -664,6 +667,7 @@ class Input
   #
   addPoint: ->
     input = @input
+    input = '0' unless input
     @input = input + '.' if input.indexOf('.') < 0
     this
 
@@ -683,7 +687,9 @@ class Input
   deleteLastChar: ->
     input = @input
     n = input.length
-    @input = input.substring(0, n - 1) if n > 0
+    input = input.substring(0, n - 1) if n > 0
+    input = '' if input is '0'
+    @input = input
     this
 
   # Sets the input to the given number.

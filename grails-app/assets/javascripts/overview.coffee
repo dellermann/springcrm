@@ -60,6 +60,7 @@ OverviewPanelsWidget =
         @_initPanel $(panel)
     @$columns = $columns = elem.find(opts.columns)
       .droppable
+        accept: '.springcrm-overviewpanels-panel'
         drop: (event, ui) => @_onDrop event, ui
         hoverClass: "drag-hover"
         out: (event, ui) => @_onDropOut event, ui
