@@ -22,7 +22,6 @@ import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.InstallService
 import org.amcworld.springcrm.OverviewPanelRepository
-import org.amcworld.springcrm.google.GoogleContactSyncTask
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
@@ -68,21 +67,27 @@ class BootStrap {
         }
 
         /* apply difference sets */
-        installService.applyAllDiffSets dataSource.connection, CURRENT_DB_VERSION
+        installService.applyAllDiffSets dataSource.connection,
+            CURRENT_DB_VERSION
 
         /* perform data migration */
         installService.migrateData dataSource.connection
 
         /* start tasks */
-        def task = grailsApplication.mainContext.getBean('googleContactSyncTask')
-        Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
+        def task = grailsApplication.mainContext.getBean(
+            'googleContactSyncTask'
+        )
+        Config config =
+            ConfigHolder.instance.getConfig('syncContactsFrequency')
         long interval = (config ? (config.value as Long) : 5L) * 60000L
         Timer timer = new Timer('tasks')
         timer.schedule task, interval, interval
 
         /* initialize panels on overview page */
         OverviewPanelRepository opr = OverviewPanelRepository.instance
-        opr.initialize servletContext.getResourceAsStream('/WEB-INF/data/overview-panel-repository.xml')
+        opr.initialize(servletContext.getResourceAsStream(
+            '/WEB-INF/data/overview-panel-repository.xml'
+        ))
     }
 
     def destroy = {}

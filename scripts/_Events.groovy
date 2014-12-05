@@ -52,3 +52,4 @@ eventWebXmlStart = { webXmlFile ->
 //        functionalTests << "functional"
 //    }
 //}
+

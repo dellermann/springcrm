@@ -57,7 +57,7 @@
       <asset:image src="spinner.gif"
         alt="${message(code: 'default.spinner.alt', default: 'Loading data…')}" />
     </div>
-    <script src="${createLink(controller: 'i18n', action: 'index')}"></script>
+    <asset:i18n locale="${locale}" />
     <g:pageProperty name="page.scripts" default="${asset.javascript(src: 'frontend')}" />
     <asset:deferredScripts />
   </body>

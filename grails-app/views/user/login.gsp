@@ -64,12 +64,7 @@
     </div>
   </div>
 </section>
-<script src="${createLink(controller: 'i18n', action: 'index')}"></script>
+<asset:i18n locale="${locale}" />
 <asset:javascript src="application"/>
-<script>
-if ($("#password:focus").length == 0) {
-    $("#userName").trigger("focus");
-}
-</script>
 </body>
 </html>

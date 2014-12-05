@@ -1,7 +1,7 @@
 /*
  * LoginFilters.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
  * access permissions.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 1.5
  */
 class LoginFilters {
 
@@ -49,7 +49,7 @@ class LoginFilters {
             }
         }
 
-        login(controller: '*', controllerExclude: 'assets|help|i18n|install',
+        login(controller: '*', controllerExclude: 'assets|help|install',
               action: '*', actionExclude: 'login|authenticate|frontend*')
         {
             before = {
@@ -79,7 +79,7 @@ class LoginFilters {
         }
 
         permission(controller: '*',
-                   controllerExclude: 'about|assets|dataFile|help|i18n|install|notification|overview|searchable',
+                   controllerExclude: 'about|assets|dataFile|help|install|notification|overview|searchable',
                    action: '*',
                    actionExclude: 'login|authenticate|logout|settings*|frontend*')
         {
