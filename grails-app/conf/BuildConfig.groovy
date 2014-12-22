@@ -23,7 +23,8 @@ def gebVersion = '0.9.3'
 grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
 grails.project.test.reports.dir = 'target/test-reports'
-grails.project.war.file = "target/${appName}.war"
+//grails.project.work.dir = 'target/work'
+grails.project.war.file = "target/${appName}-${appVersion}.war"
 grails.war.resources = { stagingDir ->
     delete dir: "${stagingDir}/test-data"
 }
@@ -128,7 +129,7 @@ grails.project.dependency.resolution = {
             ':dbunit-operator:1.7',
             ':fields:1.3',
 			':handlebars-asset-pipeline:1.3.0.3',
-            ':i18n-asset-pipeline:0.9.0',
+            ':i18n-asset-pipeline:0.9.1',
             ':less-asset-pipeline:1.10.0',
             ':mail:1.0.6',
             ':markdown:1.1.1',

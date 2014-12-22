@@ -90,6 +90,8 @@ grails.web.url.converter = 'hyphenated'
 
 //== Views ======================================
 
+grails.assets.less.compiler = 'less4j'
+
 /* Enable Sitemesh preprocessing of GSP pages */
 grails.views.gsp.sitemesh.preprocess = true
 
