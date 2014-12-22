@@ -1,7 +1,7 @@
 /*
  * DataSource.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2014, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@
 dataSource {
     dbCreate = 'none'   // updated by database-migration plugin
     pooled = true
-    driverClassName = 'com.mysql.jdbc.Driver'
+    driverClassName = 'org.h2.Driver'
+    username = 'sa'
+    password = ''
 }
 
 /* Cache settings */
@@ -38,9 +40,7 @@ environments {
     /* development environment */
     development {
         dataSource {
-            url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
-            username = 'project'
-            password = 'haluni21'
+            url = "jdbc:h2:file:${appName}"
 //            logSql = true
         }
     }
@@ -51,8 +51,6 @@ environments {
             driverClassName = 'org.h2.Driver'
             url = 'jdbc:h2:mem:testDb'
 //            url = "jdbc:h2:file:${appName}"
-            username = 'sa'
-            password = ''
             dbunitXmlType = 'flat'
             jndiName = null
             properties {

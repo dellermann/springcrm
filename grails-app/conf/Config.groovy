@@ -175,34 +175,6 @@ springcrm {
 }
 
 
-//== Environment-specific settings ==============
-
-/* environment specific settings */
-environments {
-
-    /* development environment */
-    development {}
-
-    /* test environment */
-    test {
-        grails.plugin.databasemigration.dropOnStart = true
-        springcrm.dir.base = System.getProperty('java.io.tmpdir') + '/springcrm'
-        springcrm.dir.data = "${springcrm.dir.base}/data"
-        springcrm.dir.documents = "${springcrm.dir.base}/documents"
-        springcrm.dir.installer = "${springcrm.dir.base}/install"
-    }
-
-    /* production (deployment) environment */
-    production {}
-
-    /* CloudFoundry environment */
-    cloud {}
-
-    /* standalone environment for demonstration purposes */
-    standalone {}
-}
-
-
 //== Logging ====================================
 
 /* Request parameters to mask when logging exceptions */
@@ -215,7 +187,7 @@ grails.exceptionresolver.params.exclude = ['password']
 grails.logging.jul.usebridge = false
 
 /* loggers */
-log4j = {
+log4j.main = {
     appenders {
         console(
             name: 'stdout', layout: pattern(conversionPattern: '%c{2} %m%n')
@@ -258,11 +230,23 @@ log4j = {
 //        'org.amcworld.springcrm.google.GoogleSync',
     )
 
-    environments {
-        development {
+}
+
+
+//== Environment-specific settings ==============
+
+environments {
+
+    /* development environment */
+    development {
+        log4j.env = {
             debug 'org.amcworld.springcrm.InvoicingTransactionXML'
         }
-        production {
+    }
+
+    /* production (deployment) environment */
+    production {
+        log4j.env = {
             appenders {
                 rollingFile(
                     name: 'stacktrace', maxBackupIndex: 10,
@@ -274,7 +258,24 @@ log4j = {
                 warn 'stacktrace'
             }
         }
-        standalone {
+    }
+
+    /* test environment */
+    test {
+        grails.plugin.databasemigration.dropOnStart = true
+        springcrm.dir.base = System.getProperty('java.io.tmpdir') + '/springcrm'
+        springcrm.dir.data = "${springcrm.dir.base}/data"
+        springcrm.dir.documents = "${springcrm.dir.base}/documents"
+        springcrm.dir.installer = "${springcrm.dir.base}/install"
+
+        log4j.env = {
+            debug 'grails.app.controllers.org.amcworld.springcrm'
+        }
+    }
+
+    /* standalone environment for demonstration purposes */
+    standalone {
+        log4j.env = {
             appenders {
                 rollingFile(
                     name: 'stacktrace', maxBackupIndex: 10,
@@ -285,9 +286,6 @@ log4j = {
             root {
                 warn 'stacktrace'
             }
-        }
-        test {
-            debug 'grails.app.controllers.org.amcworld.springcrm'
         }
     }
 }
