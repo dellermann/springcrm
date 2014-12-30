@@ -92,7 +92,8 @@ grails.web.url.converter = 'hyphenated'
 
 grails.assets.less.compiler = 'less4j'
 grails.assets.excludes = [
-    'bootstrap', 'font-awesome', 'js-calc'
+    'bootstrap/**/*.less', 'font-awesome/**/*.less',
+    'bootstrap/*.js', 'js-calc/**/*.less'
 ]
 
 /* Enable Sitemesh preprocessing of GSP pages */
