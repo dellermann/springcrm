@@ -7,6 +7,7 @@ module.exports = (grunt) ->
     clean:
       documentation: ['<%= dirs.target.documentation %>']
       publish: [
+        '<%= dirs.src.stylesheets %>/bootstrap/'
         '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.fonts %>/'
         '<%= dirs.src.images %>/lightbox/'
@@ -67,10 +68,24 @@ module.exports = (grunt) ->
               'load-image.js'
             ]
           ,
+            cwd: '<%= dirs.bower.bootstrap %>/less/'
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/'
+            expand: true
+            src: ['**/*.less']
+          ,
+            cwd: '<%= dirs.bower.bootstrap %>/js/'
+            dest: '<%= dirs.src.javascripts %>/bootstrap/'
+            expand: true
+            src: [
+              'alert.js'
+              'collapse.js'
+              'dropdown.js'
+              'transition.js'
+            ]
+          ,
             cwd: '<%= dirs.bower.fontAwesome %>/less/'
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
             expand: true
-            rename: (dest, src) -> "#{dest}_#{src}"
             src: [
               'core.less'
               'fixed-width.less'
@@ -136,13 +151,9 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
           ,
-            dest: '<%= dirs.src.javascripts %>/_jquery-ui.js'
-            src: '<%= dirs.bower.jqueryUi %>/jquery/jquery-ui.js'
-          ,
             cwd: '<%= dirs.bower.jsCalc %>/less/'
             dest: '<%= dirs.src.stylesheets %>/js-calc/'
             expand: true
-            rename: (dest, src) -> "#{dest}_#{src}"
             src: [
               'core.less'
               'variables.less'
@@ -240,6 +251,7 @@ module.exports = (grunt) ->
       bower:
         base: '<%= dirs.src.base %>/bower_components'
         blueimpLoadImage: '<%= dirs.bower.base %>/blueimp-load-image'
+        bootstrap: '<%= dirs.bower.base %>/bootstrap'
         fontAwesome: '<%= dirs.bower.base %>/font-awesome'
         fullCalendar: '<%= dirs.bower.base %>/fullcalendar'
         handlebars: '<%= dirs.bower.base %>/handlebars'
@@ -248,9 +260,6 @@ module.exports = (grunt) ->
         jqueryFileUpload: '<%= dirs.bower.base %>/jquery-file-upload'
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
-        jqueryUi: '<%= dirs.bower.base %>/jquery-ui'
-        jqueryUiTouchPunch:
-          '<%= dirs.bower.base %>/jquery-ui-touch-punch-working'
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         lightbox: '<%= dirs.bower.base %>/lightbox'
         moment: '<%= dirs.bower.base %>/moment'
@@ -329,18 +338,9 @@ module.exports = (grunt) ->
   grunt.registerTask 'documentation', [
     'clean:documentation', 'codo:documentation'
   ]
-  grunt.registerTask 'publish', 'Copy library code to project.', ->
-    g = grunt
-
-    g.task.run [
-      'bower:install'
-      'clean:publish'
-      'copy:publish'
-      'concat:publish'
-    ]
-    g.log.writelns '!!'.blue, 'Don\'t forget to change',
-      (g.config.get('dirs.src.stylesheets') + '/_jquery-ui.css').green,
-      'after installing a new version of jQueryUI.'
+  grunt.registerTask 'publish', [
+    'bower:install', 'clean:publish', 'copy:publish', 'concat:publish'
+  ]
 
 # vim:set ts=2 sw=2 sts=2:
 
