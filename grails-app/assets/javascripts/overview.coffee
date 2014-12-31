@@ -127,7 +127,8 @@ class OverviewPanels
     @$element.append $newPanel
     @_initPanel $newPanel
 
-    $panel.remove()
+    $panel.parent()
+      .remove()
     @_toggleAvailablePanels() unless @_enableDisableAddPanelBtn()
 
     $.getJSON @options.addPanelUrl,

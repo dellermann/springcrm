@@ -21,7 +21,7 @@
 @import "application";
 
 
-.overview-panel-defaults {
+.overview-panel-defaults() {
   .panel-heading {
     background: @spring-green-light;
     display: table;
@@ -54,7 +54,10 @@
     }
   }
 }
-.available-panels:extend(.overview-panel-defaults all) {
+
+.available-panels {
+  .overview-panel-defaults();
+
   > .row {
     margin: 0;
     padding: (@grid-gutter-width / 2) 0 0;
@@ -65,7 +68,9 @@
     margin-bottom: (@grid-gutter-width / 2);
   }
 }
-.overview-panels:extend(.overview-panel-defaults all) {
+.overview-panels {
+  .overview-panel-defaults();
+
   .panel {
     display: inline-block;
     width: 100%;
