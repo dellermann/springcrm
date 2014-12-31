@@ -1,7 +1,7 @@
 #
 # _ui.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require _jquery
-#= require _jquery-ui
-#= require _jquery-ui-datepicker-de
 #= require _jquery-autosize
 #= require _core
+#= require bootstrap/transition
+#= require bootstrap/alert
+#= require bootstrap/collapse
+#= require bootstrap/dropdown
 #= require _handlebars-ext
 #= require templates/tools/js-calc
 #= require _js-calc
@@ -170,82 +172,6 @@ JQueryUiExt =
     (if b then @enable() else @disable())
 
 $.fn.extend JQueryUiExt
-
-
-
-# Displays a selector for font sizes and scales the whole appearance of the
-# page.
-#
-# @mixin
-# @author   Daniel Ellermann
-# @version  1.4
-# @since    1.3
-#
-FontSizeWidget =
-  options:
-    change: null
-    currentSize: '11px'
-    numItems: 5
-    url: null
-
-  # Initializes this widget.
-  #
-  _create: ->
-    DEF_SIZE = 11
-    $ = jQuery
-
-    baseClass = @widgetFullName
-    $ul = $('<ul/>')
-      .addClass("#{baseClass}-selector")
-      .click((event) => @_onChangeFontSize(event))
-      .appendTo(@element)
-
-    opts = @options
-    currentSize = opts.currentSize
-    currentSize = if currentSize then parseInt(opts.currentSize, 10) else DEF_SIZE
-    $('body').css 'font-size', "#{currentSize}px"
-    n = opts.numItems
-    offset = Math.floor(n / 2)
-    clsCurrent = "#{baseClass}-current"
-    for i in [0..n]
-      size = DEF_SIZE - offset + i
-      $('<li/>',
-          class: (if (size is currentSize) then clsCurrent else null)
-          style: "font-size: #{size}px;"
-          text: 'A'
-        )
-        .appendTo $ul
-
-  # Called if this widget is destroyed.
-  #
-  _destroy: ->
-    @element.remove 'ul'
-
-  # Called if the user changes the font size.  The method submits the new font
-  # size to the server.
-  #
-  # @param [Object] event the event data
-  #
-  _onChangeFontSize: (event) ->
-    $ = jQuery
-
-    $target = $(event.target)
-    fontSize = $target.css('font-size')
-    $('body').css 'font-size', fontSize
-    clsCurrent = "#{@widgetFullName}-current"
-    $target.addClass(clsCurrent)
-      .siblings(".#{clsCurrent}")
-        .removeClass clsCurrent
-
-    url = @options.url
-    if url
-      $.get url,
-        key: 'fontSize'
-        value: fontSize
-
-    @_trigger 'change', event, fontSize
-
-$.widget 'springcrm.fontsize', FontSizeWidget
 
 
 # Renders an autocomplete input field with extended functionality.  The
@@ -703,10 +629,6 @@ SPRINGCRM.page = (->
     $ = jQuery
 
     $document.scroll onScrollDocument if $toolbar.length
-    $('#search-area span').on 'click', ->
-      $(this).parent().get(0).submit()
-      false
-    $('#quick-access').change onChangeQuickAccess
     $('#calculator-button').on 'click', ->
       $dlg = $('.calculator-dialog')
       $calculator = $dlg.find('.calculator')

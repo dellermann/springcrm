@@ -142,14 +142,14 @@ class ViewTagLib {
      * @attr back       if true and a return URL is set in the parameters a back link is generated
      */
     def button = { attrs, body ->
-        StringBuilder buf = new StringBuilder('button')
+        StringBuilder buf = new StringBuilder('btn')
         String s = attrs.remove('color')
         if (s) {
-            buf << ' ' << s
+            buf << ' btn-' << s
         }
         s = attrs.remove('size')
         if (s) {
-            buf << ' ' << s
+            buf << ' btn-' << s
         }
         s = attrs.remove('class')
         if (s) {
@@ -160,7 +160,7 @@ class ViewTagLib {
         buf = new StringBuilder()
         s = attrs.remove('icon')
         if (s) {
-            buf << '<i class="fa fa-' << s << '"></i>'
+            buf << '<i class="fa fa-' << s << '"></i> '
         }
         s = attrs.remove('message')
         if (s) {
@@ -181,7 +181,7 @@ class ViewTagLib {
             def data = attrs + [class: cssClass]
             out << link(data) { content }
         } else {
-            out << '<span class="' << cssClass << '"'
+            out << '<button type="button" class="' << cssClass << '"'
             def id = attrs.remove('elementId')
             if (id) {
                 out << ' id="' << id << '"'
@@ -190,7 +190,7 @@ class ViewTagLib {
             for (key in remainingKeys) {
                 out << ' ' << key << '="' << attrs[key]?.encodeAsHTML() << '"'
             }
-            out << '>' << content << '</span>'
+            out << '>' << content << '</button>'
         }
     }
 

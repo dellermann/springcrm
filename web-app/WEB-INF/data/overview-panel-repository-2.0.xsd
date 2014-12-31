@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  overview-panel-repository-2.0.xsd
+
+  Copyright (c) 2011-2015, Daniel Ellermann
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<xs:schema xmlns="http://www.amc-world.de/data/xml/springcrm"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.amc-world.de/data/xml/springcrm"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+  <xs:annotation>
+    <xs:documentation>
+      Schema for the repository of panels which are used on the overview page
+      of SpringCRM.
+
+      Version 2.0
+
+      Copyright © 2011-2015, AMC World Technologies GmbH
+    </xs:documentation>
+  </xs:annotation>
+
+
+  <!-- ==========================================
+
+    Elements
+
+  =========================================== -->
+
+  <xs:element name="overview-panel-repository"
+    type="overview-panel-repository"/>
+  <xs:element name="panel" type="panel"/>
+  <xs:element name="controller" type="xs:NCName"/>
+  <xs:element name="action" type="xs:NCName"/>
+  <xs:element name="title" type="localized-text"/>
+  <xs:element name="description" type="localized-text"/>
+  <xs:element name="style" type="xs:string"/>
+
+
+  <!-- ==========================================
+
+    Type definitions
+
+  =========================================== -->
+
+  <xs:complexType name="overview-panel-repository">
+    <xs:annotation>
+      <xs:documentation>
+        Defines a repository of panels which can be placed on the overview page
+        by the user.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="panel" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="panel">
+    <xs:annotation>
+      <xs:documentation>
+        Defines a panel on the overview page.  Each panel must be identified by
+        attribute "id".
+
+        The following child elements may be used:
+
+        - controller. The name of the controller which should be called to
+          produce the content of the panel.
+        - action. The action which should be called within the given controller
+          to produce the content of the panel.
+        - title. The title of the panel in various languages.
+        - description. Any description of what the panel is used for in various
+          languages.
+        - style. Optional CSS style specifications which should be applied to
+          the panel.
+
+        The following attributes may be used:
+
+        - id. The unique ID of the panel.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="controller"/>
+      <xs:element ref="action"/>
+      <xs:element ref="title" maxOccurs="unbounded"/>
+      <xs:element ref="description" maxOccurs="unbounded"/>
+      <xs:element ref="style" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="localized-text">
+    <xs:annotation>
+      <xs:documentation>
+        Defines a text either in the given language or the default language.
+
+        The following attributes may be used:
+
+        - lang. An identifier for the language of the text. If not specified
+          the default language is used.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:normalizedString">
+        <xs:attribute name="lang" type="xs:language"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

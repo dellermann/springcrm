@@ -1,7 +1,7 @@
 #
 # overview.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,287 +17,262 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require _handlebars-ext
+#= require templates/overview/available-panels
+#= require templates/overview/panel
 
 
 $ = jQuery
 
 
-OverviewPanelsWidget =
-  options:
-    addPanelLink: "#add-panel"
-    addPanelUrl: null
-    columns: ".overview-column"
-    movePanelUrl: null
-    panelList: "#panel-list"
-    panels: ".springcrm-overviewpanels-panel"
-    removePanelUrl: null
+#== Widgets =====================================
 
-  # Computes a list of Y-positions of all panels within the given column.
+class OverviewPanels
+
+  #-- Class variables ---------------------------
+
+  @DEFAULTS =
+    addPanelBtn: '.add-panel-btn'
+    availablePanels: '.available-panels'
+
+  
+  #-- Constructor -------------------------------
+
+  # Creates a new overview page panel view using the given element and
+  # options.
   #
-  # @param {jQuery} $col  the given column
-  # @return {Array}       the Y-positions
+  # @param [Element|jQuery] element the given element
+  # @param [Object] options         any options
   #
-  _computeYList: ($col) ->
-    yList = [ 0 ]
-    $col.find(@options.panels).each ->
-      $this = $(this)
-      yList.push $this.position().top + $this.outerHeight(true)
-    yList
+  constructor: (element, options) ->
+    @$element = $el = $(element)
+    @options = opts = options
 
-  # Initializes this overview panels widget.
+    $el.on('click', '.panel-heading .up-btn', (event) =>
+        @_onClickUpBtn event
+      )
+      .on('click', '.panel-heading .down-btn', (event) =>
+        @_onClickDownBtn event
+      )
+      .on('click', '.panel-heading .close-btn', (event) =>
+        @_onClickCloseBtn event
+      )
+      .find('.panel')
+        .each (idx, panel) =>
+          @_initPanel $(panel)
+
+    @$addPanelBtn = $(opts.addPanelBtn).on 'click', =>
+      @_toggleAvailablePanels()
+    @$availablePanels = availablePanels = $(opts.availablePanels)
+    url = availablePanels.data 'load-available-panels-url'
+    $.getJSON url, (data) => @_onLoadedPanels data
+
+
+  #-- Non-public methods ------------------------
+
+  # Enables or disables the button to add panels depending on the number of
+  # available panels.
   #
-  _create: ->
-    $ = jQuery
-    elem = @element
+  # @return   `true` if the button has been enabled; `false` otherwise
+  # @private
+  #
+  _enableDisableAddPanelBtn: ->
+    if @_getNumOfAvailablePanels()
+      @$addPanelBtn.removeAttr 'disabled'
+      true
+    else
+      @$addPanelBtn.attr 'disabled', 'disabled'
+      false
 
-    opts = @options
-    opts.addPanelUrl ?= elem.data("add-panel-url")
-    opts.movePanelUrl ?= elem.data("move-panel-url")
-    opts.removePanelUrl ?= elem.data("remove-panel-url")
-
-    @$panels = elem.find(opts.panels)
-      .each (idx, panel) =>
-        @_initPanel $(panel)
-    @$columns = $columns = elem.find(opts.columns)
-      .droppable
-        accept: '.springcrm-overviewpanels-panel'
-        drop: (event, ui) => @_onDrop event, ui
-        hoverClass: "drag-hover"
-        out: (event, ui) => @_onDropOut event, ui
-        over: (event, ui) => @_onDropOver event, ui
-
-    @$addPanelLink = $(opts.addPanelLink).on "click", (event) =>
-      @_onClickAddPanel event
-    @$columnParent = $columns.parent()
+  # Gets the number of available panels.
+  #
+  # @return the number of available panels
+  # @private
+  #
+  _getNumOfAvailablePanels: ->
+    @$availablePanels.find('.panel').length
 
   # Initializes the given overview page panel.
   #
-  # @param {jQuery} $panel  the given panel
+  # @param [jQuery] $panel  the given panel
+  # @private
   #
   _initPanel: ($panel) ->
-    $ = jQuery
-
-    url = $panel.data("panel-url")
+    url = $panel.data('panel-url')
     if url
       $.ajax
-        dataType: "html"
+        dataType: 'html'
         success: (html) ->
-          $panel.find("> div").html html
+          $panel.find('> .panel-heading').after html
         url: url
-    $panel.draggable
-      containment: "document"
-      drag: (event, ui) => @_onDrag event, ui
-      handle: "h3"
-      opacity: 0.5
-      start: (event, ui) => @_onDragStart event, ui
-      stop: => @_onDragStop
-    $a = $panel.find("header a")
-    $a.on "click", (event) => @_onRemovePanel(event) if $a.length
+
     null
 
-  # Called if the user clicks on the button to add panels.  The method shows
-  # the area to select available panels.  If the available panel list is not
-  # loaded yet it is requested via AJAX.
+  # Called if a panel should be added to the overview page.
   #
-  # @param {Object} event the event data
-  # @return {Boolean}     always `false` to prevent event bubbling
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
   #
   _onClickAddPanel: (event) ->
-    $ = jQuery
+    options = @options
+    $panel = $(event.currentTarget).closest '.panel'
+    id = $panel.data 'panel-id'
 
-    if @availablePanels
-      @_onShowPanelList()
-    else
-      url = $(event.target).attr("href")
-      $.getJSON url, (data) => @_onPanelsLoaded data
+    html = Handlebars.templates['overview/panel']
+      id: id
+      panel: @availablePanels[id]
+      closeUrl: options.closePanelUrl
+    $newPanel = $(html)
+    @$element.append $newPanel
+    @_initPanel $newPanel
+
+    $panel.remove()
+    @_toggleAvailablePanels() unless @_enableDisableAddPanelBtn()
+
+    $.getJSON @options.addPanelUrl,
+      panelId: id
+      pos: $newPanel.index()
+
     false
 
-  # Called if a panel is dragged.
+  # Called if the user toggles the button to add a panel.  The method loads
+  # the list of available panels, if necessary and toggles the available panel
+  # list area.
   #
-  # @param {Object} event the event data
-  # @param {Object} ui    information about the dragged panel
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
   #
-  _onDrag: (event, ui) ->
-    opts = @options
-
-    $col = @$activeCol
-    panelSel = opts.panels
-    $panels = $col.find(panelSel)
-    offset = ui.offset
-    top = offset.top - $col.offset().top + $col.scrollTop()
-
-    yList = @yList
-    n = yList.length - 1
-    $panel = null
-    for i in [0..n]
-      if (top >= yList[i]) and (top < yList[i + 1])
-        $panel = $panels.eq(i)
-        if top > $panel.position().top + $panel.height() / 2
-          $panel = $panels.eq(i + 1)
-        break
-
-    helper = ui.helper
-    if $panel and ($panel.length > 0)
-      panel = $panel.get(0)
-      if (helper.get(0) isnt panel) and (@lastMovedPanel isnt panel)
-        $panel.prevAll(panelSel)
-            .not(helper)
-              .stop(true, true)
-              .animate({ top: 0 }, "slow")
-            .end()
-          .end()
-          .nextAll(panelSel)
-          .addBack()
-            .not(helper)
-              .stop(true, true)
-              .animate { top: helper.outerHeight(true) }, "slow"
-        @lastMovedPanel = $panel.get(0)
-    else if top >= yList[n]
-      $panels.not(helper)
-        .stop(true, true)
-        .animate { top: 0 }, "slow"
-    @$dropBefore = $panel
-
-  # Called if a panel is about to be dragged.
-  #
-  # @param {Object} event the event data
-  # @param {Object} ui    information about the dropped panel
-  #
-  _onDragStart: (event, ui) ->
-    @$columns.css "padding-bottom", ui.helper.outerHeight(true) + 10
-
-  # Called if a panel has been stopped dragging.
-  #
-  _onDragStop: ->
-    @$columns.css "padding-bottom", 0
-
-  # Called if the panel has been dropped on a column.
-  #
-  # @param {Object} event the event data
-  # @param {Object} ui    information about the dropped panel
-  #
-  _onDrop: (event, ui) ->
-    $col = $(event.target)
-    opts = @options
-
-    # check whether a new panel has been dropped
-    helper = ui.helper
-    panelAdded = helper.attr("id").match /^add-panel-([\w\-]+)$/
-    if panelAdded
-      panelId = RegExp.$1
-      panelDef = @availablePanels[panelId]
-      html = """
-        <div id="#{panelId}" class="#{@widgetFullName}-panel"
-          data-panel-url="#{panelDef.url}">
-          <header>
-            <h3>#{panelDef.title}</h3>
-"""
-      removePanelUrl = opts.removePanelUrl
-      if removePanelUrl
-        html += """
-            <a href="#{removePanelUrl}"><i class="fa fa-times fa-lg"></i></a>
-"""
-      html += """
-          </header>
-          <div style="#{panelDef.style}"></div>
-        </div>
-"""
-      $panel = $(html)
-      @_initPanel $panel
-
-      helper.remove()
-      $panelList = $(opts.panelList)
-      $panelList.slideUp() unless $panelList.find("li").length
+  _onClickAddPanelBtn: (event) ->
+    if @availablePanels
+      @_toggleAvailablePanels()
     else
-      $panel = helper
-      helper.css
-        left: 0
-        top: 0
 
-    # place the moved panel
-    $dropBefore = @$dropBefore
-    if $dropBefore
-      $dropBefore.before $panel unless $dropBefore.get(0) is $panel.get(0)
-    else
-      $col.append $panel
-    @$panels.stop(true, true)
-      .animate { top: 0 }, "slow"
-    col = @$columnParent.find(opts.columns).index($col)
-    pos = $col.find(opts.panels).index($panel)
-    url = (if panelAdded then opts.addPanelUrl else opts.movePanelUrl)
-    if url
-      $.getJSON url,
-        col: col
-        panelId: $panel.attr("id")
-        pos: pos
+    false
 
-  # Called if a panel is dragged out of a column.
+  # Called if the user clicks the button to close a panel.
   #
-  # @param {Object} event the event data
-  # @param {Object} information about the panel
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
   #
-  _onDropOut: (event, ui) ->
-    $(event.target).find(@options.panels)
-      .not(ui.helper)
-        .stop(true, true)
-        .animate { top: 0 }, "slow"
+  _onClickCloseBtn: (event) ->
+    that = this
+    $target = $(event.currentTarget)
+    url = $target.attr 'href'
+    $target.closest('.panel')
+      .slideUp 400, ->
+        $this = $(this)
+        panelId = $this.attr 'id'
+        $this.remove()
+        $.getJSON url, panelId: panelId
+        that._refreshPanelList()
 
-  # Called if a panel is dragged over a column.  The method stores the
-  # selected column as active column.
+    false
+
+  # Called if the user clicks the button to move a panel downwards.
   #
-  # @param {Object} event the event data
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
   #
-  _onDropOver: (event) ->
-    $col = $(event.target)
-    @yList = @_computeYList $col
-    @$activeCol = $col
+  _onClickDownBtn: (event) ->
+    $panel = $(event.currentTarget).closest '.panel'
+    $targetPanel = $panel.next()
+    $panel.insertAfter $targetPanel if $targetPanel.length
+    @_submitPanelPos $panel, $targetPanel
+
+    false
+
+  # Called if the user clicks the button to move a panel upwards.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickUpBtn: (event) ->
+    $panel = $(event.currentTarget).closest '.panel'
+    $targetPanel = $panel.prev()
+    $panel.insertBefore $targetPanel if $targetPanel.length
+    @_submitPanelPos $panel, $targetPanel
+
+    false
 
   # Called if the list of available panels has been loaded from the server.
   #
-  # @param {Array} data the available panels
+  # @param [Array] data the available panels
+  # @private
   #
-  _onPanelsLoaded: (data) ->
+  _onLoadedPanels: (data) ->
     @availablePanels = data
+    @$availablePanels.on 'click', '.add-btn', (event) =>
+      @_onClickAddPanel event
     @_refreshPanelList()
-    @_onShowPanelList()
-
-  # Called if a panel is to remove from the overview page.
-  #
-  # @param {Object} event the event data
-  # @return {Boolean}     always `false` to prevent event bubbling
-  #
-  _onRemovePanel: (event) ->
-    $ = jQuery
-    $a = $(event.target).closest "a"
-    $panel = $a.parents @options.panels
-    panelId = $panel.attr "id"
-    url = $a.attr("href")
-    $panel.remove()
-    $.getJSON url,
-      panelId: panelId
-    @_refreshPanelList()
-    false
-
-  # Opens the list of available panels.
-  #
-  _onShowPanelList: ->
-    $(@options.panelList).slideToggle()
 
   # Refreshes the list of available panels.
   #
   _refreshPanelList: ->
-    $ = jQuery
+    panels = $.extend {}, @availablePanels
+    @$element.find('.panel').each -> delete panels[$(this).attr('id')]
 
-    data = @availablePanels
-    html = ""
-    for d of data
-      if data.hasOwnProperty(d) and $("##{d}").length is 0
-        html += """<li id="add-panel-#{d}">#{data[d].title}</li>"""
+    html = Handlebars.templates['overview/available-panels']
+      panels: panels
+    @$availablePanels.html html
+    @_enableDisableAddPanelBtn()
 
-    $(@options.panelList).html(if html then "<ol>#{html}</ol>" else "")
-      .find("li")
-        .draggable
-          containment: "#content"
-          revert: "invalid"
+  # Submits the current positions of both the given panels.
+  #
+  # @param [jQuery] $panel        the one panel
+  # @param [jQuery] $targetPanel  the other panel
+  # @private
+  #
+  _submitPanelPos: ($panel, $targetPanel) ->
+    url = @options.movePanelUrl
+    if url
+      $.ajax
+        data:
+          panelId1: $panel.attr('id')
+          pos1: $panel.index()
+          panelId2: $targetPanel.attr('id')
+          pos2: $targetPanel.index()
+        url: url
 
-$.widget "springcrm.overviewpanels", OverviewPanelsWidget
+    null
+
+  # Opens or closes the list of available panels.
+  #
+  _toggleAvailablePanels: ->
+    numPanels = @_getNumOfAvailablePanels()
+    $panelList = @$availablePanels
+    $panelList.slideToggle() if numPanels > 0 or $panelList.is ':visible'
+
+
+Plugin = (option) ->
+  @each ->
+    $this = $(this)
+    data = $this.data 'springcrm.overviewpanels'
+    options = $.extend {}, OverviewPanels.DEFAULTS, $this.data(),
+      typeof option is 'object' and option
+
+    unless data
+      $this.data 'springcrm.overviewpanels',
+        (data = new OverviewPanels(this, options))
+    data[option]() if typeof option is 'string'
+
+old = $.fn.overviewpanels
+
+$.fn.overviewpanels = Plugin
+$.fn.overviewpanels.Constructor = OverviewPanels
+
+$.fn.overviewpanels.noConflict = ->
+  $.fn.overviewpanels = old
+  this
+
+
+#== Main ========================================
+
+$('.overview-panels').overviewpanels()
+
+# vim:set ts=2 sw=2 sts=2:
+

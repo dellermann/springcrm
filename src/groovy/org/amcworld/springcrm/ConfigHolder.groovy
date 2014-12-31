@@ -1,7 +1,7 @@
 /*
  * ConfigHolder.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,9 @@ package org.amcworld.springcrm
  * application.
  *
  * @author  Daniel Ellermann
- * @version 1.4
- * @since   0.9
+ * @version 2.0
  */
 class ConfigHolder {
-
-    //-- Class variables ------------------------
-
-    static ConfigHolder instance
-
 
     //-- Public methods -------------------------
 
@@ -50,11 +44,13 @@ class ConfigHolder {
         Config.findByName name
     }
 
-    static synchronized ConfigHolder getInstance() {
-        if (instance == null) {
-            instance = new ConfigHolder()
-        }
-        instance
+    /**
+     * Gets the only instance of this class.
+     *
+     * @return    the instance
+     */
+    static ConfigHolder getInstance() {
+        InstanceHolder.INSTANCE
     }
 
     void removeConfig(String name) {
@@ -72,6 +68,16 @@ class ConfigHolder {
         Config config = getConfig(name) ?: new Config(name: name)
         config.value = value
         config.save flush: true
+    }
+
+
+    //-- Inner classes --------------------------
+
+    private static class InstanceHolder {
+
+        //-- Constants --------------------------
+
+        public static final ConfigHolder INSTANCE = new ConfigHolder()
     }
 }
 

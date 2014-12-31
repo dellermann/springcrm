@@ -1,25 +1,40 @@
-<ol class="simple-ordered-list">
-<g:each in="${invoiceInstanceList}" var="invoiceInstance">
-  <li>
-    <g:link controller="invoice" action="show" id="${invoiceInstance.id}"><g:fieldValue bean="${invoiceInstance}" field="fullNumber" /> ${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link>
-    <span class="item-actions">
-      <g:link controller="invoice" action="edit" id="${invoiceInstance.id}" params="[returnUrl: createLink(uri: '/')]" class="bubbling-icon"><i class="fa fa-pencil-square-o"></i></g:link>
-    </span>
-    <div class="indent">
+<ul class="list-group">
+  <g:each in="${invoiceInstanceList}" var="invoiceInstance">
+  <g:if test="${invoiceInstance.paymentStateColor == 'red'}">
+  <g:set var="dueColorClass" value=" due-danger" />
+  </g:if>
+  <g:elseif test="${invoiceInstance.paymentStateColor == 'yellow'}">
+  <g:set var="dueColorClass" value=" due-warning" />
+  </g:elseif>
+  <li class="list-group-item${dueColorClass}">
+    <g:link controller="invoice" action="show" id="${invoiceInstance.id}">
+      ${invoiceInstance.fullNumber}
+      ${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}
+    </g:link>
+    <div class="text">
       <g:message code="invoice.for.label" />
       ${invoiceInstance.organization.name}<br />
       <g:message code="invoice.due.label" />:
-      <strong><g:formatDate date="${invoiceInstance.dueDatePayment}"
-        type="date" /></strong><br />
+      <strong><time><g:formatDate date="${invoiceInstance.dueDatePayment}"
+        type="date" /></time></strong><br />
       <g:message code="invoice.amount.label" />:
       <strong><g:formatCurrency number="${invoiceInstance.total}"
-        displayZero="true" external="true"
-        /><g:if test="${invoiceInstance.paymentAmount}">,
-        <g:message code="invoice.stillUnpaid.label" default="still unpaid" />:
-        <g:formatCurrency number="${-invoiceInstance.balance}"
-          external="true" displayZero="true"
-        /></g:if></strong>
+        displayZero="true" external="true" /></strong>
+      <g:if test="${invoiceInstance.paymentAmount}">
+      <br />
+      <g:message code="invoice.stillUnpaid.label" />:
+      <strong><g:formatCurrency number="${-invoiceInstance.balance}"
+        external="true" displayZero="true" /></strong>
+      </g:if>
+    </div>
+    <div class="buttons">
+      <g:link controller="invoice" action="edit" id="${invoiceInstance.id}"
+        params="[returnUrl: createLink(uri: '/')]"
+        title="${message(code: 'default.btn.edit')}"
+        ><i class="fa fa-pencil-square-o"></i
+        ><span class="sr-only"><g:message code="default.btn.edit" /></span
+      ></g:link>
     </div>
   </li>
-</g:each>
-</ol>
+  </g:each>
+</ul>

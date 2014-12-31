@@ -1,7 +1,7 @@
 /*
  * OverviewPanel.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
-import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes as GA
+import grails.util.Holders
+import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
+import org.springframework.context.ApplicationContext
 
 
 /**
@@ -29,73 +30,24 @@ import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes as GA
  * be used on the overview page.
  *
  * @author  Daniel Ellermann
- * @version 0.9
+ * @version 2.0
  */
 class OverviewPanel {
 
     //-- Instance variables ---------------------
 
-    String controller
     String action
-    String url
+    String controller
+    String defDescription
     String defTitle
     String style
-    Map<Locale, String> localizedTitles
 
-
-    //-- Constructors ---------------------------
-
-    /**
-     * Creates a new overview page panel instance with the given data.
-     *
-     * @param controller    the name of the controller which is called to
-     *                      generate the content of the panel
-     * @param action        the name of the action which is called to generate
-     *                      the content of the panel
-     * @param defTitle      the title in the default language
-     * @param style         any CSS style attributes which are applied to the
-     *                      panel
-     */
-    OverviewPanel(String controller, String action, String defTitle,
-                  String style) {
-        this.controller = controller
-        this.action = action
-        this.defTitle = defTitle
-        this.style = style
-        localizedTitles = new HashMap<Locale, String>()
-    }
+    protected Map<Locale, String> localizedDescriptions = [: ]
+    protected Map<Locale, String> localizedTitles = [: ]
+    protected String url
 
 
     //-- Properties -----------------------------
-
-    /**
-     * Gets the name of the controller which is called to generate the content
-     * of the panel.
-     *
-     * @return  the name of the controller
-     */
-    String getController() {
-        return controller
-    }
-
-    /**
-     * Gets the name of the action which is called to generate the content of
-     * the panel.
-     *
-     * @return  the name of the action
-     */
-    String getAction() {
-        return action
-    }
-
-    /**
-     * Gets any CSS style attributes which are applied to the panel.
-     *
-     * @return  the CSS styles
-     */
-    String getStyle() {
-        return style
-    }
 
     /**
      * Gets the URL which is called to obtain the content of the panel.
@@ -104,20 +56,42 @@ class OverviewPanel {
      */
     String getUrl() {
         if (!url) {
-            def ctx = SCH.servletContext.getAttribute(GA.APPLICATION_CONTEXT)
-            def g = ctx.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+            ApplicationContext ctx = Holders.applicationContext
+            ApplicationTagLib g = ctx.getBean(ApplicationTagLib.class.name)
             url = g.createLink(controller: controller, action: action)
         }
-        return url
+
+        url
     }
 
 
     //-- Public methods -------------------------
 
     /**
-     * Adds a title in the given language.
+     * Adds a description for the given locale.
      *
-     * @param locale    the locale representing the given language
+     * @param locale        the given locale
+     * @param description   the description
+     */
+    void addLocalizedDescription(Locale locale, String description) {
+        localizedDescriptions[locale] = description
+    }
+
+    /**
+     * Adds a description for the given locale.
+     *
+     * @param locale        the locale ID as string in the form
+     *                      {@code language[-country[-variant]]}
+     * @param description   the description
+     */
+    void addLocalizedDescription(String locale, String description) {
+        addLocalizedDescription locale.tokenize('-') as Locale, description
+    }
+
+    /**
+     * Adds a title for the given locale.
+     *
+     * @param locale    the given locale
      * @param title     the title
      */
     void addLocalizedTitle(Locale locale, String title) {
@@ -125,34 +99,55 @@ class OverviewPanel {
     }
 
     /**
-     * Adds a title in the given language.
+     * Adds a title for the given locale.
      *
-     * @param locale    the locale ID representing the given language; the ID
-     *                  must be specified in the form
+     * @param locale    the locale ID as string in the form
      *                  {@code language[-country[-variant]]}
      * @param title     the title
      */
     void addLocalizedTitle(String locale, String title) {
-        addLocalizedTitle(locale.tokenize('-') as Locale, title)
+        addLocalizedTitle locale.tokenize('-') as Locale, title
     }
 
     /**
-     * Gets the title in the given language or in the default language.
+     * Gets the description for the given locale or in the default language.
      *
-     * @param locale    the locale representing the given language; if
-     *                  <code>null</code> the default locale is used
-     * @return          the title in that language
+     * @param locale    the given locale; if {@code null} the default locale
+     *                  should be used
+     * @return          the description for that locale
      */
-    String getTitle(Locale locale = null) {
-        locale = locale ?: Locale.default
+    String getDescription(Locale locale = Locale.default) {
+        String description = localizedDescriptions[locale]
+        if (!description) {
+            locale = new Locale(locale.language, locale.country)
+        }
+
+        description = localizedDescriptions[locale]
+        if (!description) {
+            locale = new Locale(locale.language)
+        }
+
+        localizedDescriptions[locale] ?: defDescription
+    }
+
+    /**
+     * Gets the title for the given locale or in the default language.
+     *
+     * @param locale    the given locale; if {@code null} the default locale
+     *                  should be used
+     * @return          the title for that locale
+     */
+    String getTitle(Locale locale = Locale.default) {
         String title = localizedTitles[locale]
         if (!title) {
             locale = new Locale(locale.language, locale.country)
         }
+
         title = localizedTitles[locale]
         if (!title) {
             locale = new Locale(locale.language)
         }
-        return localizedTitles[locale] ?: defTitle
+
+        localizedTitles[locale] ?: defTitle
     }
 }
