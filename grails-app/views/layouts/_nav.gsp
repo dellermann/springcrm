@@ -22,33 +22,14 @@
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="button" aria-expanded="false">
-            <g:message code="menu.sales" /> <span class="caret"></span>
+            <g:message code="menu.contacts" /> <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu">
             <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
             <li><g:link controller="organization" params="[type: 1]"><g:message code="organization.customers" /></g:link></li>
-            <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
-          </ul>
-        </li>
-        </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="organization person purchaseInvoice">
-        <li>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-            role="button" aria-expanded="false">
-            <g:message code="menu.purchasing" /> <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu" role="menu">
-            <g:ifControllerAllowed controllers="organization">
-            <li><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
             <li><g:link controller="organization" params="[type: 2]"><g:message code="organization.vendors" /></g:link></li>
-            </g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="person">
-            <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
-            </g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="purchaseInvoice">
             <li class="divider"></li>
-            <li><g:link controller="purchaseInvoice"><g:message code="purchaseInvoice.plural" /></g:link></li>
-            </g:ifControllerAllowed>
+            <li><g:link controller="person"><g:message code="person.plural" /></g:link></li>
           </ul>
         </li>
         </g:ifControllerAllowed>
@@ -67,6 +48,10 @@
             <g:ifControllerAllowed controllers="purchaseInvoice">
             <li class="divider"></li>
             <li><g:link controller="purchaseInvoice"><g:message code="purchaseInvoice.plural" /></g:link></li>
+            </g:ifControllerAllowed>
+            <li class="divider"></li>
+            <g:ifControllerAllowed controllers="organization invoice dunning creditMemo">
+            <li><g:link controller="report" action="salesJournal"><g:message code="report.salesJournal.title" /></g:link></li>
             </g:ifControllerAllowed>
           </ul>
         </li>
@@ -112,17 +97,6 @@
           </ul>
         </li>
         </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="organization invoice dunning creditMemo">
-        <li>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-            role="button" aria-expanded="false">
-            <g:message code="menu.reports" /> <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu" role="menu">
-            <li><g:link controller="report" action="salesJournal"><g:message code="report.salesJournal.title" /></g:link></li>
-          </ul>
-        </li>
-        </g:ifControllerAllowed>
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="button" aria-expanded="false">
@@ -144,19 +118,22 @@
         </li>
 --%>
         <li class="visible-xs">
-          <a href="login.html" class="btn btn-warning navbar-btn">
-            <i class="fa fa-sign-out"></i> Abmelden
-          </a>
+          <g:link controller="user" action="logout"
+            class="btn btn-warning navbar-btn">
+            <i class="fa fa-sign-out"></i> <g:message code="default.logout" />
+          </g:link>
         </li>
         <li class="visible-xs">
           <form>
           <div class="input-group">
             <input type="search" class="form-control"
-              placeholder="Suche…" />
+              placeholder="${message(code: 'default.search.label')}" />
             <span class="input-group-btn">
               <button type="submit" class="btn btn-default">
                 <i class="fa fa-search"></i>
-                <span class="sr-only">Suchen</span>
+                <span class="sr-only"
+                  ><g:message code="default.search.button.label"
+                /></span>
               </button>
             </span>
           </div>
