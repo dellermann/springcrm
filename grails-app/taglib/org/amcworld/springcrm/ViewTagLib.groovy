@@ -431,23 +431,25 @@ class ViewTagLib {
             code: 'default.letters', default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         )
         int n = availableLetters.size()
-        def items = []
+        List<String> items = []
         for (int i = 0; i < n; i += numLetters) {
             boolean inList = false
             for (int j = 0; j < numLetters && i + j < n; j++) {
                 String letter = availableLetters[i + j]
                 inList |= letter in letters
             }
-            StringBuilder buf = new StringBuilder('<li')
-            buf << (inList ? ' class="available"' : '') << '>'
+            StringBuilder buf = new StringBuilder('<a href="')
             if (inList) {
-                buf << '<a href="'
                 buf << createLink(
                     controller: controller, action: action,
                     params: [letter: availableLetters[i]]
                 )
-                buf << '">'
+            } else {
+                buf << '#'
             }
+            buf << '" class="btn btn-default"'
+            if (!inList) buf << ' disabled="disabled"'
+            buf << '>'
             if (separator && numLetters > 2) {
                 buf << availableLetters[i] << separator
                 buf << availableLetters[Math.min(n, i + numLetters) - 1]
@@ -456,13 +458,10 @@ class ViewTagLib {
                     buf << availableLetters[i + j]
                 }
             }
-            if (inList) {
-                buf << '</a>'
-            }
-            buf << '</li>'
+            buf << '</a>'
             items << buf.toString()
         }
-        out << '<ul class="letter-bar">' << items.join('') << '</ul>'
+        out << '<div class="btn-group btn-group-justified letter-bar" role="group">' << items.join('') << '</div>'
     }
 
     /**
@@ -592,6 +591,7 @@ class ViewTagLib {
      * @attr offset Used only if params.offset is empty
      * @attr mapping The named URL mapping to use to rewrite the link
      * @attr fragment The link fragment (often called anchor tag) to use
+     * @attr class Any CSS classes that should be added to the pagination container
      */
     Closure paginate = { attrs ->
         def writer = out
@@ -606,6 +606,7 @@ class ViewTagLib {
         def offset = params.int('offset') ?: 0
         def max = params.int('max')
         def maxsteps = (attrs.int('maxsteps') ?: 10)
+        def cssClass = attrs.remove('class')
 
         if (!offset) offset = (attrs.int('offset') ?: 0)
         if (!max) max = (attrs.int('max') ?: 10)
@@ -651,7 +652,9 @@ class ViewTagLib {
         int firststep = 1
         int laststep = Math.round(Math.ceil(total / max))
 
-        writer << '<ul class="pagination">'
+        writer << '<ul class="pagination'
+        if (cssClass) writer << ' ' << cssClass
+        writer << '">'
 
         // display previous link when not on firststep unless omitPrev is true
         if (currentstep > firststep && !attrs.boolean('omitPrev')) {

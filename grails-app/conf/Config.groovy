@@ -90,7 +90,7 @@ grails.web.url.converter = 'hyphenated'
 
 //== Views ======================================
 
-grails.assets.less.compiler = 'less4j'
+grails.assets.less.compiler = 'standard'
 grails.assets.excludes = [
     'bootstrap/**/*.less', 'font-awesome/**/*.less',
     'bootstrap/*.js', 'js-calc/**/*.less'

@@ -39,6 +39,7 @@
 @import "bootstrap/alerts";
 @import "bootstrap/list-group";
 @import "bootstrap/panels";
+@import "bootstrap/wells";
 @import "bootstrap/close";
 @import "bootstrap/utilities";
 @import "bootstrap/responsive-utilities";
@@ -50,7 +51,7 @@
 @import "font-awesome/icons";
 
 @import "_variables";
-//@import "_mixins";
+@import "_mixins";
 
 
 //===============================================
@@ -201,9 +202,9 @@ body > .container > header {
     }
   }
 }
-//.make-fixed-title-toolbar(sm);
-//.make-fixed-title-toolbar(md);
-//.make-fixed-title-toolbar(lg);
+.make-fixed-title-toolbar(sm);
+.make-fixed-title-toolbar(md);
+.make-fixed-title-toolbar(lg);
 
 // caption and action bar
 .caption-action-bar {
@@ -284,6 +285,14 @@ body > .container > header {
     text-decoration: none;
   }
 }
+.empty-list {
+  margin-top: (3 * @line-height-computed);
+  text-align: center;
+
+  .buttons {
+    margin-top: @line-height-computed;
+  }
+}
 
 // data forms in create, edit, and show view
 .data-form {
@@ -348,9 +357,9 @@ body > .container > header {
   .control-container {
     .make-xs-column(12);
   }
-//  .make-control-sizes(sm; 5);
-//  .make-control-sizes(md; 4);
-//  .make-control-sizes(lg; 3);
+  .make-control-sizes(sm; 5);
+  .make-control-sizes(md; 4);
+  .make-control-sizes(lg; 3);
   .last-modified {
     font-style: italic;
   }
@@ -431,6 +440,7 @@ body > .container > footer {
 //
 //===============================================
 
+// typography
 h1 {
   margin-top: 0;
 }
@@ -438,6 +448,17 @@ h2 {
   margin-bottom: @line-height-computed;
 }
 
+// button groups
+.btn-group-justified {
+  > a + a {
+    border-left: none;
+  }
+}
+.letter-bar {
+  margin-bottom: @line-height-computed;
+}
+
+// navigation bars
 .navbar-default {
   border: none;
   margin-bottom: 0;

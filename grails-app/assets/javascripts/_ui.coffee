@@ -321,7 +321,7 @@ AutoCompleteExWidget =
       false
     this
 
-$.widget 'springcrm.autocompleteex', $.ui.autocomplete, AutoCompleteExWidget
+#$.widget 'springcrm.autocompleteex', $.ui.autocomplete, AutoCompleteExWidget
 
 
 # Handles actions in address fields which allow copying data from left to right
@@ -552,7 +552,7 @@ AddrFieldsWidget =
           @_fillAddress prefix, propPrefix, data
     this
 
-$.widget 'springcrm.addrfields', AddrFieldsWidget
+#$.widget 'springcrm.addrfields', AddrFieldsWidget
 
 
 RemoteListWidget =
@@ -610,7 +610,7 @@ RemoteListWidget =
       element.find('.delete-btn').deleteConfirm()
     this
 
-$.widget 'springcrm.remotelist', RemoteListWidget
+#$.widget 'springcrm.remotelist', RemoteListWidget
 
 
 SPRINGCRM.page = (->
@@ -693,16 +693,16 @@ SPRINGCRM.page = (->
         .trigger('change')
 
     $('.delete-btn').deleteConfirm()
-    $('.date-input-date').datepicker
-        changeMonth: true
-        changeYear: true
-        gotoCurrent: true
-        selectOtherMonths: true
-        showButtonPanel: true
-        showOtherMonths: true
-    $('.date-input-time').autocomplete
-        select: onSelectTimeValue
-        source: timeValues
+#    $('.date-input-date').datepicker
+#        changeMonth: true
+#        changeYear: true
+#        gotoCurrent: true
+#        selectOtherMonths: true
+#        showButtonPanel: true
+#        showOtherMonths: true
+#    $('.date-input-time').autocomplete
+#        select: onSelectTimeValue
+#        source: timeValues
     $('textarea').autosize()
       .each ->
         $html = $('html')
@@ -788,3 +788,59 @@ SPRINGCRM.page = (->
 
   init()
 )()
+
+
+#== Classes =====================================
+
+# Class `Page` handles default components of pages in this application.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
+class Page
+
+  #-- Constructor -------------------------------
+
+  # Initializes a page in this application.
+  #
+  constructor: ->
+    $(window).on 'load', (event) => @_onLoadWindow event
+
+
+  #-- Non-public methods ------------------------
+
+  # Initializes the title/toolbar that it may be treated as fixed when
+  # scrolling.
+  #
+  # @private
+  #
+  _initToolbar: ->
+    @$titleToolbar = $titleToolbar = $('.title-toolbar')
+    @yToolbar = $titleToolbar.offset().top
+    $titleToolbar.parent().height $titleToolbar.innerHeight()
+
+  # Called if the window has been finished loading and rendering.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onLoadWindow: (event) ->
+    @_initToolbar()
+    $(event.target).on 'scroll', (event) => @_onScrollWindow event
+
+  # Called if the window is scrolling.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onScrollWindow: (event) ->
+    $target = $(event.target)
+    @$titleToolbar.toggleClass 'fixed', $target.scrollTop() >= @yToolbar
+
+
+#== Main ========================================
+
+new Page()
+
+# vim:set ts=2 sw=2 sts=2:
+
