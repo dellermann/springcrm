@@ -304,6 +304,14 @@ String::parseNumber = ->
   s = this.toString()
   (if (s is '') then 0 else parseFloat(s.replace(reG, '').replace(reD, '.')))
 
+# Changes the first character of this string to upper case.
+#
+# @return [String]  the changed string
+# @since            2.0
+#
+String::ucFirst = ->
+  this.charAt(0).toUpperCase() + this.substring(1)
+
 
 # Handles HTTP and HTTPS URLs including parsing and building.
 #

@@ -24,7 +24,7 @@
       <div class="row">
         <div class="title-toolbar">
           <div class="title">
-            <h1 class="hidden-xs"><g:message code="${entitiesName}" /></h1>
+            <h1 class="hidden-xs">${entitiesName}</h1>
             <h2 class="visible-xs">${organizationInstance?.toString()}</h2>
           </div>
           <g:render template="/layouts/toolbarShow"

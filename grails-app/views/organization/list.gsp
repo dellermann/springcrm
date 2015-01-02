@@ -24,7 +24,7 @@
       <div class="row">
         <div class="title-toolbar">
           <div class="title">
-            <h1 class="hidden-xs"><g:message code="${entitiesName}" /></h1>
+            <h1 class="hidden-xs">${entitiesName}</h1>
             <h2 class="visible-xs"><g:message code="default.overview" /></h2>
           </div>
           <div class="toolbar">

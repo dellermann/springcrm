@@ -76,28 +76,32 @@ class ViewTagLib {
      * @attr suffix the suffix to display after the number field
      */
     def autoNumber = { attrs, body ->
-        out << '<span class="auto-number">'
+        boolean checked = true
+        if (params._autoNumber != null) checked = params.autoNumber
+
+        out << '<div class="auto-number"><div class="input-group">'
         if (attrs.prefix) {
-            out << '<span class="prefix">'
+            out << '<span class="input-group-addon">'
             out << attrs.prefix.encodeAsHTML()
             out << '-</span>'
         }
-        out << '<span class="input">'
-        out << textField(name: 'number', value: attrs.value, size: 10)
-        out << '</span>'
+        out << '<input type="number" name="number" id="number" class="form-control" value="'
+        out << attrs.value
+        out << '" size="10"'
+        if (checked) out << ' disabled="disabled"'
+        out << ' />'
         if (attrs.suffix) {
-            out << '<span class="suffix">-'
+            out << '<span class="input-group-addon">-'
             out << attrs.suffix.encodeAsHTML()
             out << '</span>'
         }
-        boolean checked = true
-        if (params._autoNumber != null) checked = params.autoNumber
-        out << '<span class="checkbox">'
+        out << '</div>'
+        out << '<div class="checkbox">'
+        out << '<label class="checkbox-inline">'
         out << checkBox(name: 'autoNumber', checked: checked)
-        out << '</span><label for="autoNumber">'
         out << message(code: 'default.number.auto.label')
         out << '</label>'
-        out << '</span>'
+        out << '</div></div>'
     }
 
     /**

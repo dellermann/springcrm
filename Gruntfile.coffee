@@ -80,6 +80,7 @@ module.exports = (grunt) ->
               'alert.js'
               'collapse.js'
               'dropdown.js'
+              'modal.js'
               'transition.js'
             ]
           ,

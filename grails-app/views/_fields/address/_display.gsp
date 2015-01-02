@@ -7,7 +7,7 @@
       <g:button
         url="http://maps.google.de/maps?hl=&q=${address.toString().encodeAsURL()}"
         target="_blank" color="primary" size="xs" icon="map-marker"
-        message="default.link.viewInGoogleMaps" />
+        message="default.button.viewOnMap" />
       </g:if>
     </div>
   </header>

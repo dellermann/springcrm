@@ -1,71 +1,57 @@
-<fieldset>
-  <header><h3><g:message code="organization.fieldset.general.label" /></h3></header>
-  <div class="multicol-content">
-    <div class="col col-l">
-      <div class="form">
-        <f:field bean="${organizationInstance}" property="number" />
-        <f:field bean="${organizationInstance}" property="recType" />
-        <f:field bean="${organizationInstance}" property="name" />
-        <f:field bean="${organizationInstance}" property="legalForm" />
-        <f:field bean="${organizationInstance}" property="type" />
-        <f:field bean="${organizationInstance}" property="industry" />
-        <f:field bean="${organizationInstance}" property="rating" />
-      </div>
+<section>
+  <header>
+    <h3><g:message code="organization.fieldset.general.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${organizationInstance}" property="number" />
+      <f:field bean="${organizationInstance}" property="recType" />
+      <f:field bean="${organizationInstance}" property="name" />
+      <f:field bean="${organizationInstance}" property="legalForm" />
+      <f:field bean="${organizationInstance}" property="type" />
+      <f:field bean="${organizationInstance}" property="industry" />
+      <f:field bean="${organizationInstance}" property="rating" />
     </div>
-    <div class="col col-r">
-      <div class="form">
-        <f:field bean="${organizationInstance}" property="phone" />
-        <f:field bean="${organizationInstance}" property="fax" />
-        <f:field bean="${organizationInstance}" property="phoneOther" />
-        <f:field bean="${organizationInstance}" property="email1" />
-        <f:field bean="${organizationInstance}" property="email2" />
-        <f:field bean="${organizationInstance}" property="website" />
-        <f:field bean="${organizationInstance}" property="owner" />
-        <f:field bean="${organizationInstance}" property="numEmployees" size="10" />
-      </div>
+    <div class="column">
+      <f:field bean="${organizationInstance}" property="phone" />
+      <f:field bean="${organizationInstance}" property="fax" />
+      <f:field bean="${organizationInstance}" property="phoneOther" />
+      <f:field bean="${organizationInstance}" property="email1" />
+      <f:field bean="${organizationInstance}" property="email2" />
+      <f:field bean="${organizationInstance}" property="website" />
+      <f:field bean="${organizationInstance}" property="owner" />
+      <f:field bean="${organizationInstance}" property="numEmployees" size="10" />
     </div>
   </div>
-</fieldset>
-<div class="multicol-content" id="addresses">
-  <div class="col col-l left-address">
-    <fieldset>
-      <header>
-        <h3><g:message code="organization.fieldset.billingAddr.label" /></h3>
-        <div class="buttons">
-          <g:menuButton color="white" size="small" icon="location-arrow"
-            message="default.options.label" />
-        </div>
-      </header>
-      <div class="form-fragment">
-        <f:field bean="${organizationInstance}" property="billingAddr" />
-      </div>
-    </fieldset>
+</section>
+<section class="column-group addresses">
+  <g:applyLayout name="formAddrColumn"
+    model="[side: 'left', prefix: 'billingAddr', title: message(code: 'organization.fieldset.billingAddr.label')]">
+    <f:field bean="${organizationInstance}" property="billingAddr" />
+  </g:applyLayout>
+  <g:applyLayout name="formAddrColumn"
+    model="[side: 'right', prefix: 'shippingAddr', title: message(code: 'organization.fieldset.shippingAddr.label')]">
+    <f:field bean="${organizationInstance}" property="shippingAddr"
+      title="${message(code: 'organization.fieldset.shippingAddr.label')}" />
+  </g:applyLayout>
+</section>
+<section>
+  <header>
+    <h3><g:message code="organization.fieldset.notes.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${organizationInstance}" property="notes" rows="5" />
+    </div>
   </div>
-  <div class="col col-r right-address">
-    <fieldset>
-      <header>
-        <h3><g:message code="organization.fieldset.shippingAddr.label" /></h3>
-        <div class="buttons">
-          <g:menuButton color="white" size="small" icon="location-arrow"
-            message="default.options.label" />
-        </div>
-      </header>
-      <div class="form-fragment">
-        <f:field bean="${organizationInstance}" property="shippingAddr" />
-      </div>
-    </fieldset>
+</section>
+<section>
+  <header>
+    <h3><g:message code="organization.fieldset.misc.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${organizationInstance}" property="docPlaceholderValue" />
+    </div>
   </div>
-</div>
-<fieldset>
-  <header><h3><g:message code="organization.fieldset.notes.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${organizationInstance}" property="notes" cols="80" rows="5" />
-  </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="organization.fieldset.misc.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${organizationInstance}" property="docPlaceholderValue"
-      size="50"/>
-  </div>
-</fieldset>
+</section>
