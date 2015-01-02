@@ -1,1 +1,1 @@
-<g:applyLayout name="fieldDisplay">${value}</g:applyLayout>
+<g:applyLayout name="fieldDisplay"><output>${value}</output></g:applyLayout>

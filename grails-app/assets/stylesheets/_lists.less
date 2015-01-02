@@ -1,0 +1,98 @@
+//
+// _lists.less
+//
+// Copyright (c) 2011-2015, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//
+
+
+//===============================================
+//
+// Page components
+//
+//===============================================
+
+.data-table {
+  .table-striped();
+  .table-hover();
+  margin-bottom: 0;
+
+  > thead, > tbody, > tfoot {
+    > tr {
+      > th, > td {
+        border: 1px solid @table-border-color;
+        padding: (@table-condensed-cell-padding + @padding-xs-vertical + 1px)
+          @table-condensed-cell-padding;
+
+        &:first-child {
+          border-left: none;
+        }
+        &:last-child {
+          border-right: none;
+        }
+      }
+    }
+  }
+  > thead > tr {
+    background: @table-bg-header;
+
+    > th {
+      text-align: center;
+    }
+  }
+  .sorted:after {
+    content: @fa-var-caret-up;
+    font-family: FontAwesome;
+    padding-left: @padding-xs-horizontal;
+  }
+  .desc:after {
+    content: @fa-var-caret-down;
+  }
+  .col-type-id, .col-type-date, .col-type-status {
+    text-align: center;
+  }
+  .col-type-number, .col-type-currency {
+    text-align: right;
+  }
+  .col-actions {
+    padding: @table-condensed-cell-padding;
+    text-align: right;
+    width: 1%;    // shrink to fit
+  }
+  a:hover {
+    text-decoration: none;
+  }
+}
+.remote-list .pagination {
+  margin-bottom: 0;
+}
+.empty-list {
+  margin-top: (3 * @line-height-computed);
+  text-align: center;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+  .buttons {
+    margin-top: @line-height-computed;
+  }
+  .remote-list & {
+    margin-top: 0;
+  }
+}
+
+// vim:set ts=2 sw=2 sts=2:
+

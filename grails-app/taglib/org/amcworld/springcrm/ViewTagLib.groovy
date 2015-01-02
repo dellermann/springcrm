@@ -652,9 +652,11 @@ class ViewTagLib {
         int firststep = 1
         int laststep = Math.round(Math.ceil(total / max))
 
-        writer << '<ul class="pagination'
-        if (cssClass) writer << ' ' << cssClass
-        writer << '">'
+        if (laststep > 1) {
+            writer << '<ul class="pagination'
+            if (cssClass) writer << ' ' << cssClass
+            writer << '">'
+        }
 
         // display previous link when not on firststep unless omitPrev is true
         if (currentstep > firststep && !attrs.boolean('omitPrev')) {
@@ -738,7 +740,7 @@ class ViewTagLib {
             } << '</li>'
         }
 
-        writer << '</ul>'
+        if (laststep > 1) writer << '</ul>'
     }
 
     /**

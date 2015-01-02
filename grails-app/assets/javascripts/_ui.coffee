@@ -24,11 +24,70 @@
 #= require bootstrap/collapse
 #= require bootstrap/dropdown
 #= require _handlebars-ext
+#= require widgets/remote-list
 #= require templates/tools/js-calc
 #= require _js-calc
 
 
 $ = jQuery
+
+
+#== Classes =====================================
+
+# Class `Page` handles default components of pages in this application.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
+class Page
+
+  #-- Constructor -------------------------------
+
+  # Initializes a page in this application.
+  #
+  constructor: ->
+    $(window).on 'load', (event) => @_onLoadWindow event
+
+
+  #-- Non-public methods ------------------------
+
+  # Initializes the title/toolbar that it may be treated as fixed when
+  # scrolling.
+  #
+  # @private
+  #
+  _initToolbar: ->
+    @$titleToolbar = $titleToolbar = $('.title-toolbar')
+    @yToolbar = $titleToolbar.offset().top
+    $titleToolbar.parent().height $titleToolbar.innerHeight()
+
+  # Called if the window has been finished loading and rendering.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onLoadWindow: (event) ->
+    @_initToolbar()
+    $(event.target).on 'scroll', (event) => @_onScrollWindow event
+
+  # Called if the window is scrolling.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onScrollWindow: (event) ->
+    $target = $(event.target)
+    @$titleToolbar.toggleClass 'fixed', $target.scrollTop() >= @yToolbar
+
+
+#== Main ========================================
+
+new Page()
+
+
+
+
+#============== TODO ============================
 
 
 # This mixin contains various static extensions for jQuery UI.
@@ -555,64 +614,6 @@ AddrFieldsWidget =
 #$.widget 'springcrm.addrfields', AddrFieldsWidget
 
 
-RemoteListWidget =
-  options:
-    container: '> div'
-    returnUrl: null
-
-  # Computes the URL to load the remote data either from the given URL or the
-  # data attributes.  If attribute `data-load-params` is specified the
-  # parameters given there are added to the URL.
-  #
-  # @param [String] url the given URL to use; if not specified the URL is obtained from attribute `data-load-url`
-  # @return [String]    the computed URL
-  #
-  _computeUrl: (url) ->
-    el = @element
-    url = new HttpUrl(url or el.data('load-url'))
-    params = el.data('load-params')
-    url.overwriteQuery params if params
-    url.toString()
-
-  # Initializes this widget.
-  #
-  _create: ->
-    url = @element.data('load-url')
-    @_loadContent @_computeUrl(url) if url
-
-  # Loads the content of the given URL.
-  #
-  # @param [String] url         the given URL
-  # @return [RemoteListWidget]  this object
-  #
-  _loadContent: (url) ->
-    el = @element
-    opts = @options
-    el.find(opts.container).load url, =>
-      $ = jQuery
-      element = el
-
-      element.find('thead a, .paginator a')
-        .click (event) =>
-          @_loadContent @_computeUrl($(event.currentTarget).attr('href'))
-          false
-
-      returnUrl = opts.returnUrl
-      if returnUrl
-        element.find('tbody .button')
-          .each ->
-            $this = $(this)
-            url = $this.attr('href')
-            url += (if url.indexOf('?') < 0 then '?' else '&')
-            url += "returnUrl=#{returnUrl}"
-            $this.attr 'href', url
-
-      element.find('.delete-btn').deleteConfirm()
-    this
-
-#$.widget 'springcrm.remotelist', RemoteListWidget
-
-
 SPRINGCRM.page = (->
   $ = jQuery
   win = window
@@ -788,59 +789,6 @@ SPRINGCRM.page = (->
 
   init()
 )()
-
-
-#== Classes =====================================
-
-# Class `Page` handles default components of pages in this application.
-#
-# @author   Daniel Ellermann
-# @version  2.0
-#
-class Page
-
-  #-- Constructor -------------------------------
-
-  # Initializes a page in this application.
-  #
-  constructor: ->
-    $(window).on 'load', (event) => @_onLoadWindow event
-
-
-  #-- Non-public methods ------------------------
-
-  # Initializes the title/toolbar that it may be treated as fixed when
-  # scrolling.
-  #
-  # @private
-  #
-  _initToolbar: ->
-    @$titleToolbar = $titleToolbar = $('.title-toolbar')
-    @yToolbar = $titleToolbar.offset().top
-    $titleToolbar.parent().height $titleToolbar.innerHeight()
-
-  # Called if the window has been finished loading and rendering.
-  #
-  # @param [Event] event  any event data
-  # @private
-  #
-  _onLoadWindow: (event) ->
-    @_initToolbar()
-    $(event.target).on 'scroll', (event) => @_onScrollWindow event
-
-  # Called if the window is scrolling.
-  #
-  # @param [Event] event  any event data
-  # @private
-  #
-  _onScrollWindow: (event) ->
-    $target = $(event.target)
-    @$titleToolbar.toggleClass 'fixed', $target.scrollTop() >= @yToolbar
-
-
-#== Main ========================================
-
-new Page()
 
 # vim:set ts=2 sw=2 sts=2:
 

@@ -1,0 +1,180 @@
+//
+// _forms.less
+//
+// Copyright (c) 2011-2015, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//
+
+
+//===============================================
+//
+// Page components
+//
+//===============================================
+
+.data-form {
+  > section {
+    margin-bottom: @line-height-computed;
+  }
+  header {
+    .clearfix();
+    background: @spring-gray;
+    font-size: @font-size-base;
+    font-weight: bold;
+    margin-bottom: (@line-height-computed / 2);
+    padding: @padding-base-vertical @padding-base-horizontal;
+
+    h3 {
+      float: left;
+      font-size: @font-size-base;
+      font-weight: bold;
+      line-height: @line-height-small;
+      margin: 0;
+      padding: (@padding-xs-vertical + 1px) 0;
+    }
+    .buttons {
+      float: right;
+    }
+    .btn {
+      .btn-xs();
+      font-size: @font-size-base;
+
+      .fa {
+        padding-right: @padding-xs-horizontal;
+      }
+      .caret {
+        margin-left: @padding-xs-horizontal;
+      }
+    }
+    .btn-default {
+      border-color: #888;
+    }
+    .dropdown-menu {
+      left: auto;
+      right: 0;
+    }
+  }
+  .column {
+    padding: 0 (@grid-gutter-width / 2);
+
+    > header {
+      margin-left: (-@grid-gutter-width / 2);
+      margin-right: (-@grid-gutter-width / 2);
+    }
+  }
+  .column-content {
+    margin-left: (-@grid-gutter-width / 2);
+    margin-right: (-@grid-gutter-width / 2);
+    padding-left: (@grid-gutter-width / 2);
+    padding-right: (@grid-gutter-width / 2);
+  }
+  .control-label {
+    .make-xs-column(12);
+  }
+  .control-container {
+    .make-xs-column(12);
+  }
+  .make-control-sizes(sm; 5);
+  .make-control-sizes(md; 4);
+  .make-control-sizes(lg; 3);
+  .last-modified {
+    font-style: italic;
+  }
+
+  @media (min-width: @screen-sm-min) {
+
+    // dividing rule between two columns with common header
+    > section header + .column-group {
+      > .column:first-child {
+        border-right: 1px dotted @spring-gray;
+      }
+      > .column:only-child {
+        border-right: none;
+      }
+    }
+    .column-group {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+
+      // dividing rule between two columns with separate headers
+      > .column:first-child > .column-content {
+        border-right: 1px dotted @spring-gray;
+      }
+      > .column:only-child {
+        width: 100%;
+      }
+    }
+    .column {
+      display: table-cell;
+      vertical-align: top;
+      width: 50%;
+    }
+  }
+}
+
+
+//===============================================
+//
+// Default style rewrites
+//
+//===============================================
+
+.form-horizontal .control-label {
+  text-align: left;
+}
+.input-group + .checkbox {
+  padding-top: floor(@padding-small-vertical / 2);
+}
+.control-messages {
+  list-style: none;
+  margin: @padding-small-vertical 0 0;
+  padding-left: @padding-xs-horizontal;
+
+  li {
+    display: inline;
+    font-size: @font-size-small;
+    padding-left: @padding-small-horizontal;
+
+    &:before {
+      content: @fa-var-caret-up;
+      font-family: FontAwesome;
+      padding-right: @padding-xs-horizontal;
+    }
+    &:first-child {
+      padding-left: 0;
+    }
+  }
+  .control-message-info {
+    color: @brand-success;
+  }
+  .control-message-error {
+    color: @brand-danger;
+  }
+}
+@media (max-width: @screen-xs-max) {
+  output {
+    padding-top: 0;
+  }
+}
+@media (min-width: @screen-sm-min) {
+  .form-group {
+    margin-bottom: 7px;
+  }
+}
+
+// vim:set ts=2 sw=2 sts=2:
+

@@ -1,0 +1,141 @@
+//
+// _bars.less
+//
+// Copyright (c) 2011-2015, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//
+
+
+//===============================================
+//
+// Page components
+//
+//===============================================
+
+// title and toolbar
+.title-toolbar {
+  .transition(background-color 1s);
+  display: table;
+  padding: (@navbar-margin-bottom / 2) 0 (@line-height-computed / 2);
+  width: 100%;
+}
+.title {
+  display: table-cell;
+  padding: 0 (@grid-gutter-width / 2);
+  vertical-align: middle;
+
+  h1, h2 {
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+.toolbar {
+  display: table-cell;
+  padding-right: (@grid-gutter-width / 2);
+  text-align: right;
+  vertical-align: middle;
+
+  .go-top-btn {
+    display: none;
+  }
+  .dropdown-menu {
+    left: auto;
+    right: (@grid-gutter-width / 2);
+    top: auto;
+  }
+}
+@media (max-width: @screen-xs-max) {
+  .title-toolbar {
+    background: fade(#FFF, 90%);
+    margin-bottom: @line-height-computed;
+    left: 0;
+    right: 0;
+    padding-top: @navbar-margin-bottom;
+    position: fixed;
+    table-layout: fixed;
+    top: @navbar-height;
+    z-index: 10000;
+  }
+  .title {
+    width: 55%;
+
+    h2 {
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .toolbar {
+    width: 45%;
+
+    .btn {
+      .button-size(
+          @padding-base-vertical; @padding-xs-horizontal; @font-size-base;
+          @line-height-base; @border-radius-base
+        );
+    }
+  }
+}
+@media (min-width: @screen-sm-min) {
+  .title-toolbar.fixed {
+    background: fade(@spring-gray, 80%);
+    border-bottom: 1px solid #DDD;
+    border-bottom-left-radius: @border-radius-base;
+    border-bottom-right-radius: @border-radius-base;
+    box-shadow: 0 5px 2px fade(@gray-base, 10%);
+    left: 50%;
+    position: fixed;
+    top: 0;
+    z-index: 20000;
+
+    .toolbar .go-top-btn {
+      display: inline-block;
+    }
+  }
+}
+.make-fixed-title-toolbar(sm);
+.make-fixed-title-toolbar(md);
+.make-fixed-title-toolbar(lg);
+
+// caption and action bar
+.caption-action-bar {
+  border-top: 1px solid @spring-gray;
+  display: table;
+  margin-bottom: (@line-height-computed / 2);
+  table-layout: fixed;
+  width: 100%;
+}
+.caption {
+  color: @spring-green-base;
+  display: table-cell;
+  vertical-align: middle;
+  width: 80%;
+}
+.action-bar {
+  display: table-cell;
+  position: relative;
+  text-align: right;
+  vertical-align: middle;
+  width: 20%;
+
+  .dropdown-menu {
+    left: auto;
+    right: 0;
+    top: auto;
+  }
+}
+
+// vim:set ts=2 sw=2 sts=2:
+

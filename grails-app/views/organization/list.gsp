@@ -32,7 +32,8 @@
               <i class="fa fa-arrow-up"></i>
             </a>
             <g:button action="create" params="[recType: params.type ?: 0]"
-              color="success" icon="plus-circle" message="default.new.short" />
+              color="success" icon="plus-circle"
+              message="default.button.create.label" />
           </div>
         </div>
       </div>

@@ -35,7 +35,7 @@ class OverviewPanels
     addPanelBtn: '.add-panel-btn'
     availablePanels: '.available-panels'
 
-  
+
   #-- Constructor -------------------------------
 
   # Creates a new overview page panel view using the given element and
