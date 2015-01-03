@@ -113,7 +113,9 @@ JQueryUiExt =
       # Since the element itself will change position, we have to have some way
       # of storing its original position in the DOM. The easiest way is to have
       # a 'flag' node:
-      nextSibling = parentNode.insertBefore(document.createTextNode(''), sortElement.nextSibling)
+      nextSibling = parentNode.insertBefore(
+        document.createTextNode(''), sortElement.nextSibling
+      )
 
       ->
         if parentNode is this
@@ -159,8 +161,11 @@ class Page
   # Initializes a page in this application.
   #
   constructor: ->
-    $(window).on('load', (event) => @_onLoadWindow event)
-      .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
+    win = window
+    $(win).on('load', (event) => @_onLoadWindow event)
+    $(win.document).on(
+        'click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn()
+      )
 
     $('textarea').autosize()
       .each ->
@@ -197,19 +202,26 @@ class Page
       .find('.input-group input')
         .toggleEnable $target, true
 
+  # Called if the user clicks on the icon to display the Markdown help.
+  #
+  # @private
+  #
   _onClickMarkdownHelpBtn: ->
     $ = jQuery
 
     $markdownHelp = $('#markdown-help')
     if $markdownHelp.length
-      $markdownHelp.dialog 'open'
+      $markdownHelp.modal 'show'
     else
-      $('<div id="markdown-help"/>').appendTo('body')
+      html = '''\
+<div id="markdown-help" class="modal fade" tabindex="-1" role="dialog"
+  aria-hidden="true"/>
+'''
+      $(html).appendTo('body')
         .load $('html').data('load-markdown-help-url'), ->
-          $(this).dialog
-            title: $L('help.markdown.title')
-            width: '35em'
-    false
+          $(this).modal()
+
+    return
 
   # Called if the window has been finished loading and rendering.
   #

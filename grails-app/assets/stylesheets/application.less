@@ -19,16 +19,23 @@
  */
 
 
+// Bootstrap core variables and mixins
 @import "bootstrap/variables";
 @import "bootstrap/mixins";
+
+// Reset and dependencies
 @import "bootstrap/normalize";
 @import "bootstrap/print";
+
+// Core Bootstrap CSS
 @import "bootstrap/scaffolding";
 @import "bootstrap/type";
 @import "bootstrap/grid";
 @import "bootstrap/tables";
 @import "bootstrap/forms";
 @import "bootstrap/buttons";
+
+// Components
 @import "bootstrap/component-animations";
 @import "bootstrap/dropdowns";
 @import "bootstrap/button-groups";
@@ -41,20 +48,31 @@
 @import "bootstrap/panels";
 @import "bootstrap/wells";
 @import "bootstrap/close";
+
+// Components w/ JavaScript
+@import "bootstrap/modals";
+
+// Utility classes
 @import "bootstrap/utilities";
 @import "bootstrap/responsive-utilities";
 
+// FontAwesome
 @import "font-awesome/variables";
 @import "font-awesome/mixins";
 @import "font-awesome/path";
 @import "font-awesome/core";
 @import "font-awesome/icons";
 
+// Application variables and mixins
 @import "_variables";
 @import "_mixins";
+
+// Page parts
 @import "_header";
 @import "_bars";
 @import "_footer";
+
+// Component redefinitions
 @import "_nav";
 @import "_lists";
 @import "_forms";
@@ -132,10 +150,36 @@ h2 {
   position: relative;
 }
 .markdown-help-btn {
+  .transition(background-color, border-color, opacity .5s; );
+  border: 1px solid transparent;
+  border-bottom-left-radius: @border-radius-base;
+  border-top-right-radius: @border-radius-base;
+  color: @input-color;
+  cursor: pointer;
   font-size: @font-size-large;
+  line-height: @line-height-computed;
+  opacity: .15;
+  padding: @padding-base-vertical @padding-base-horizontal;
   position: absolute;
-  right: @padding-base-vertical;
-  top: @padding-base-vertical;
+  right: 0;
+  top: 0;
+
+  &:hover {
+    background: @input-bg;
+    border-color: @input-border;
+    opacity: .9;
+  }
+  textarea:focus ~ & {
+    border-color: @input-border-focus;
+  }
+}
+.markdown-help-text {
+  font-size: @font-size-small;
+  margin-bottom: 0;
+
+  pre {
+    margin: 0;
+  }
 }
 
 // vim:set ts=2 sw=2 sts=2:
