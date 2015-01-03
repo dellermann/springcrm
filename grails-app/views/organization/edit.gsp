@@ -45,8 +45,8 @@
         </div>
       </div>
       <div class="main-content">
-        <g:form action="update" id="organization-form"
-          class="form-horizontal data-form form-view">
+        <form action="${createLink(action: 'update')}" id="organization-form"
+          class="form-horizontal data-form form-view" method="post">
           <g:if test="${flash.message}">
           <div class="alert alert-success" role="alert">
             ${raw(flash.message)}
@@ -61,7 +61,7 @@
           <g:hiddenField name="version" value="${organizationInstance?.version}" />
           <g:hiddenField name="listType" value="${params.listType}" />
           <g:render template="/organization/form" />
-        </g:form>
+        </form>
       </div>
     </div>
     <content tag="scripts">
