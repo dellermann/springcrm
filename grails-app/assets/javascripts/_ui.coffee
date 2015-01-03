@@ -25,8 +25,6 @@
 #= require bootstrap/dropdown
 #= require bootstrap/modal
 #= require _handlebars-ext
-#= require widgets/addr-fields
-#= require widgets/remote-list
 #= require templates/tools/js-calc
 #= require _js-calc
 
@@ -487,7 +485,6 @@ SPRINGCRM.page = (->
 #    $('.date-input-time').autocomplete
 #        select: onSelectTimeValue
 #        source: timeValues
-    initAjaxEvents()
 
   # Called if either the date or time part of a date/time input field has
   # changed. The method computes a formatted composed value in a hidden

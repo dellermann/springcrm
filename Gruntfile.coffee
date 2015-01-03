@@ -10,7 +10,6 @@ module.exports = (grunt) ->
         '<%= dirs.src.stylesheets %>/bootstrap/'
         '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.fonts %>/'
-        '<%= dirs.src.images %>/lightbox/'
         '<%= dirs.src.stylesheets %>/js-calc/'
         '<%= dirs.src.javascripts %>/lang/fullcalendar/'
       ]
@@ -164,25 +163,6 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
             src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
           ,
-            dest: '<%= dirs.src.javascripts %>/_lightbox.js'
-            src: '<%= dirs.bower.lightbox %>/js/lightbox.js'
-          ,
-            dest: '<%= dirs.src.stylesheets %>/_lightbox.css'
-            src: '<%= dirs.bower.lightbox %>/css/lightbox.css'
-          ,
-            dest: '<%= dirs.src.javascripts %>/_lightbox.js'
-            src: '<%= dirs.bower.lightbox %>/js/lightbox.js'
-          ,
-            cwd: '<%= dirs.bower.lightbox %>/img/'
-            dest: '<%= dirs.src.images %>/lightbox/'
-            expand: true
-            src: [
-              'close.png'
-              'loading.gif'
-              'next.png'
-              'prev.png'
-            ]
-          ,
             dest: '<%= dirs.src.javascripts %>/_moment.js'
             src: '<%= dirs.bower.moment %>/moment.js'
         ]
@@ -194,16 +174,8 @@ module.exports = (grunt) ->
             conf = g.config
             file = g.file
 
-            lb = conf.get 'dirs.bower.lightbox'
-            fa = conf.get 'dirs.bower.fontAwesome'
             jc = conf.get 'dirs.bower.jsCalc'
-            if file.arePathsEquivalent srcPath, "#{lb}/css/lightbox.css"
-              contents = String(contents)
-              contents = contents.replace /\.\.\/img\//g, '../images/lightbox/'
-            else if file.arePathsEquivalent srcPath, "#{fa}/less/core.less"
-              contents = String(contents)
-              contents = contents.replace /\.@\{fa-css-prefix\}/, '.fa'
-            else if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
+            if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
               contents = String(contents)
               contents = contents.replace /@import\s+"variables";/,
                 '@import "_variables";'
@@ -263,7 +235,6 @@ module.exports = (grunt) ->
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
         jsCalc: '<%= dirs.bower.base %>/js-calc'
-        lightbox: '<%= dirs.bower.base %>/lightbox'
         moment: '<%= dirs.bower.base %>/moment'
         qunit: '<%= dirs.bower.base %>/qunit'
       src:

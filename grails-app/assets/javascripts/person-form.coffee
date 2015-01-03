@@ -1,7 +1,7 @@
 #
 # person-form.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require widgets/addr-fields
 #= require _lightbox-widget
 
 
@@ -30,44 +31,39 @@ $(".document-delete").on "click", ->
   $("#pictureRemove").val 1
   $(".document-preview").add(".document-preview-links").remove()
 
-$("#addresses").addrfields
-  leftPrefix: "mailingAddr"
-  menuItems: [
-    action: "clear"
-    side: "left"
-    text: $L("person.mailingAddr.clear")
-  ,
-    action: "copy"
-    side: "left"
-    text: $L("person.mailingAddr.copy")
-  ,
-    action: "loadFromOrganization"
-    propPrefix: "billingAddr"
-    side: "left"
-    text: $L("person.addr.fromOrgBillingAddr")
-  ,
-    action: "loadFromOrganization"
-    propPrefix: "shippingAddr"
-    side: "left"
-    text: $L("person.addr.fromOrgShippingAddr")
-  ,
-    action: "clear"
-    side: "right"
-    text: $L("person.otherAddr.clear")
-  ,
-    action: "copy"
-    side: "right"
-    text: $L("person.otherAddr.copy")
-  ,
-    action: "loadFromOrganization"
-    propPrefix: "billingAddr"
-    side: "right"
-    text: $L("person.addr.fromOrgBillingAddr")
-  ,
-    action: "loadFromOrganization"
-    propPrefix: "shippingAddr"
-    side: "right"
-    text: $L("person.addr.fromOrgShippingAddr")
-  ]
-  organizationId: "#organization\\.id"
-  rightPrefix: "otherAddr"
+$('.addresses').addrfields
+  menuItems:
+    left: [
+        action: 'clear'
+        text: $L('person.mailingAddr.clear')
+      ,
+        action: 'copy'
+        text: $L('person.mailingAddr.copy')
+      ,
+        action: 'loadFromOrganization'
+        propPrefix: 'billingAddr'
+        text: $L('person.addr.fromOrgBillingAddr')
+      ,
+        action: 'loadFromOrganization'
+        propPrefix: 'shippingAddr'
+        text: $L('person.addr.fromOrgShippingAddr')
+    ]
+    right: [
+        action: 'clear'
+        text: $L('person.otherAddr.clear')
+      ,
+        action: 'copy'
+        text: $L('person.otherAddr.copy')
+      ,
+        action: 'loadFromOrganization'
+        propPrefix: 'billingAddr'
+        text: $L('person.addr.fromOrgBillingAddr')
+      ,
+        action: 'loadFromOrganization'
+        propPrefix: 'shippingAddr'
+        text: $L('person.addr.fromOrgShippingAddr')
+    ]
+  organizationId: '#organization.id'
+
+# vim:set ts=2 sw=2 sts=2:
+

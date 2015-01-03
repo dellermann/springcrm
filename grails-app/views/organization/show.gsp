@@ -63,6 +63,7 @@
                 <g:message code="default.create.label"
                   args="[message(code: 'invoice.label')]" />
               </g:link>
+            </li>
             </g:if>
           </ul>
         </div>
@@ -137,6 +138,7 @@
               </div>
             </div>
           </section>
+
           <section class="remote-list"
             data-load-url="${createLink(controller: 'person', action: 'listEmbedded')}"
             data-load-params="organization=${organizationInstance.id}"
@@ -335,5 +337,8 @@
         </div>
       </div>
     </div>
+    <content tag="scripts">
+      <asset:javascript src="show" />
+    </content>
   </body>
 </html>

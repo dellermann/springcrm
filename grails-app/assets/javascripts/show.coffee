@@ -1,5 +1,5 @@
 #
-# person-show.coffee
+# show.coffee
 #
 # Copyright (c) 2011-2015, Daniel Ellermann
 #
@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require show
-#= require widgets/lightbox
-
-# vim:set ts=2 sw=2 sts=2:
+#= require application
+#= require widgets/remote-list
 

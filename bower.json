@@ -31,7 +31,6 @@
     "jquery-file-upload": "~9.8.0",
     "jquery-mockjax": "1.6.1",
     "js-calc": "~0.9.8",
-    "lightbox": "~2.7.1",
     "qunit": "~1.15.0"
   }
 }
