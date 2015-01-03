@@ -163,6 +163,9 @@ h2 {
   .transition(all 250ms ease-out);
   display: inline-block;
 
+  &:hover, &:active, &:focus {
+    outline: none;
+  }
   &:hover {
     .scale(@bubbling-icon-scale);
   }
