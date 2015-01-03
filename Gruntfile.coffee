@@ -94,6 +94,7 @@ module.exports = (grunt) ->
               'larger.less'
               'mixins.less'
               'path.less'
+              'spinning.less'
               'variables.less'
             ]
           ,

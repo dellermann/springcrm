@@ -50,9 +50,8 @@
       </div>
       <g:render template="/layouts/footer" />
     </div>
-    <div id="spinner" class="spinner" style="display: none;">
-      <asset:image src="spinner.gif"
-        alt="${message(code: 'default.spinner.alt')}" />
+    <div id="spinner" class="spinner">
+      <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
     <asset:i18n locale="${locale}" />
     <g:pageProperty name="page.scripts" default="${asset.javascript(src: 'application')}" />

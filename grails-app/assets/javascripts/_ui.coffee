@@ -161,11 +161,17 @@ class Page
   # Initializes a page in this application.
   #
   constructor: ->
+    $ = jQuery
     win = window
+    $spinner = $('#spinner')
+
     $(win).on('load', (event) => @_onLoadWindow event)
     $(win.document).on(
         'click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn()
       )
+      .on('click', '#spinner', -> $(this).fadeOut())
+      .ajaxSend( -> $spinner.fadeIn())
+      .ajaxComplete( -> $spinner.fadeOut())
 
     $('textarea').autosize()
       .each ->
@@ -469,9 +475,6 @@ SPRINGCRM.page = (->
       )
       .on('click', '#print-btn', -> win.print())
       .on('change', '.date-input-date, .date-input-time', onChangeDateInput)
-      .on('click', '#spinner', ->
-        $(this).css 'display', 'none'
-      )
 
     $('.delete-btn').deleteConfirm()
 #    $('.date-input-date').datepicker
@@ -485,18 +488,6 @@ SPRINGCRM.page = (->
 #        select: onSelectTimeValue
 #        source: timeValues
     initAjaxEvents()
-
-  # Initializes the handling of AJAX requests. The method cares about display
-  # of a spinner view while loading data.
-  #
-  initAjaxEvents = ->
-    $ = jQuery
-
-    $spinner.ajaxSend(->
-        $(this).show()
-      ).ajaxComplete(->
-        $(this).hide()
-      )
 
   # Called if either the date or time part of a date/time input field has
   # changed. The method computes a formatted composed value in a hidden

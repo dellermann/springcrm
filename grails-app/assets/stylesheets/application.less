@@ -61,6 +61,7 @@
 @import "font-awesome/mixins";
 @import "font-awesome/path";
 @import "font-awesome/core";
+@import "font-awesome/spinning";
 @import "font-awesome/icons";
 
 // Application variables and mixins
@@ -102,6 +103,27 @@
   @media (min-width: @screen-sm-min) {
     #gradient .vertical(#EEE, #FFF);
     min-height: 400px;
+  }
+}
+
+.spinner {
+  color: @spring-green-base;
+  cursor: pointer;
+  display: none;
+  height: @spinner-size;
+  line-height: @spinner-size;
+  left: 50%;
+  margin-left: (-@spinner-size / 2);
+  margin-top: (-@spinner-size / 2);
+  position: fixed;
+  text-align: center;
+  top: 50%;
+  width: @spinner-size;
+  z-index: 50000;
+
+  .fa {
+    font-size: (@spinner-size - 5px);
+    line-height: (@spinner-size - 5px);
   }
 }
 
