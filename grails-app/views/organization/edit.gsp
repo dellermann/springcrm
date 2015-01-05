@@ -22,7 +22,7 @@
         <div class="title-toolbar">
           <div class="title">
             <h1 class="hidden-xs">${entitiesName}</h1>
-            <h2 class="visible-xs">AMC World Technologies GmbH</h2>
+            <h2 class="visible-xs">${organizationInstance?.toString()}</h2>
           </div>
           <div class="toolbar">
             <a href="#top" class="btn btn-default go-top-btn">

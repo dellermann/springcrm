@@ -31,8 +31,7 @@
   </g:applyLayout>
   <g:applyLayout name="formAddrColumn"
     model="[side: 'right', prefix: 'shippingAddr', title: message(code: 'organization.fieldset.shippingAddr.label')]">
-    <f:field bean="${organizationInstance}" property="shippingAddr"
-      title="${message(code: 'organization.fieldset.shippingAddr.label')}" />
+    <f:field bean="${organizationInstance}" property="shippingAddr" />
   </g:applyLayout>
 </section>
 <section>

@@ -18,18 +18,21 @@
 #
 #= require application
 #= require widgets/addr-fields
-#= require _lightbox-widget
+#= require widgets/lightbox
 
 
 $ = jQuery
 
 
-$("#organization").autocompleteex()
+#$("#organization").autocompleteex()
 
 $(".document-delete").on "click", ->
   $ = jQuery
   $("#pictureRemove").val 1
   $(".document-preview").add(".document-preview-links").remove()
+
+
+#== Main ========================================
 
 $('.addresses').addrfields
   menuItems:
@@ -41,11 +44,11 @@ $('.addresses').addrfields
         text: $L('person.mailingAddr.copy')
       ,
         action: 'loadFromOrganization'
-        propPrefix: 'billingAddr'
+        prefix: 'billingAddr'
         text: $L('person.addr.fromOrgBillingAddr')
       ,
         action: 'loadFromOrganization'
-        propPrefix: 'shippingAddr'
+        prefix: 'shippingAddr'
         text: $L('person.addr.fromOrgShippingAddr')
     ]
     right: [
@@ -56,11 +59,11 @@ $('.addresses').addrfields
         text: $L('person.otherAddr.copy')
       ,
         action: 'loadFromOrganization'
-        propPrefix: 'billingAddr'
+        prefix: 'billingAddr'
         text: $L('person.addr.fromOrgBillingAddr')
       ,
         action: 'loadFromOrganization'
-        propPrefix: 'shippingAddr'
+        prefix: 'shippingAddr'
         text: $L('person.addr.fromOrgShippingAddr')
     ]
   organizationId: '#organization.id'

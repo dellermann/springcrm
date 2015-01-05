@@ -67,7 +67,7 @@ class AddrFields
       .on('click', '.option-menu-item-copy', (event) =>
         @_onClickCopyAddress event
       )
-      .on('click', '.option-menu-item-load', (event) =>
+      .on('click', '.option-menu-item-loadFromOrganization', (event) =>
         @_onClickLoadFromOrganization event
       )
 
@@ -93,6 +93,7 @@ class AddrFields
         href: '#'
         text: item.text
       )
+      .data prefix: item.prefix
     $('<li/>').append($a)
       .appendTo $menu
 
@@ -117,19 +118,21 @@ class AddrFields
   #
   # @param [jQuery] $toAddr the address that fields should be filled
   # @param [Object] data    the given data
+  # @param [String] prefix  the prefix of the organization address fields that should be used
   # @private
   #
-  _fillAddress: ($toAddr, data) ->
+  _fillAddress: ($toAddr, data, prefix) ->
     toPrefix = $toAddr.data 'prefix'
 
     if (@_doesExist $toAddr)
       msg = $L("default.copyAddressWarning.#{toPrefix}")
       return unless @options.confirm msg
 
+    data = data[prefix]
     for own key, value of data
       name = "#{toPrefix}.#{key}"
       $toAddr.find(".column-content :input[name='#{name}']")
-        .val $this.val()
+        .val value
 
     return
 
@@ -196,13 +199,16 @@ class AddrFields
       if $.isFunction organizationId
         id = organizationId.call this
       else if $.type(organizationId) is 'string'
-        id = $(organizationId).val()
+        id = $(organizationId.replace('.', '\\.')).val()
       else if $.type(organizationId) is 'number'
         id = organizationId
 
       unless id is null
-        $toAddr = $(event.currentTarget).closest '.address'
-        $.getJSON url, { id: id }, (data) => @_fillAddress $toAddr, data
+        $target = $(event.currentTarget)
+        prefix = $target.data 'prefix'
+        $toAddr = $target.closest '.address'
+        $.getJSON url, { id: id }, (data) =>
+          @_fillAddress $toAddr, data, prefix
 
     return
 
