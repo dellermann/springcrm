@@ -1,7 +1,7 @@
 /*
  * BootStrap.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  * application.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 1.5
  */
 class BootStrap {
 
@@ -45,7 +45,7 @@ class BootStrap {
     def exceptionHandler
     GrailsApplication grailsApplication
     InstallService installService
-    def springcrmConfig
+    String springcrmConfig
 
 
     //-- Public methods -------------------------
@@ -57,11 +57,16 @@ class BootStrap {
 
         /* load instance specific configuration file */
         if (springcrmConfig) {
-            def file = new File(springcrmConfig)
+            File file = new File(springcrmConfig)
             if (file.exists()) {
-                def properties = new Properties()
-                properties.load file.newReader()
-                def config = new ConfigSlurper().parse(properties)
+                def whatToParse
+                if (file.name.endsWith('.groovy')) {
+                    whatToParse = file.toURI().toURL()
+                } else {
+                    whatToParse = new Properties()
+                    whatToParse.load file.newReader()
+                }
+                ConfigObject config = new ConfigSlurper().parse(whatToParse)
                 grailsApplication.config.merge config
             }
         }

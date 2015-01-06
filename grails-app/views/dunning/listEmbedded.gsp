@@ -9,7 +9,7 @@
       <g:sortableColumn scope="col" property="docDate" title="${message(code: 'dunning.docDate.label.short', default: 'Date')}" />
       <g:sortableColumn scope="col" property="dueDatePayment" title="${message(code: 'dunning.dueDatePayment.label', default: 'Due date of payment')}" />
       <g:sortableColumn scope="col" property="total" title="${message(code: 'dunning.total.label.short', default: 'Total')}" />
-      <g:sortableColumn scope="col" property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label', default: 'Closing balance')}" />
+      <th scope="col"><g:message code="invoicingTransaction.closingBalance.label" /></th>
       <th scope="col"></th>
     </tr>
   </thead>
