@@ -16,7 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//
 
 
 // Generates rules to size the labels and control containers for column groups
@@ -47,6 +46,11 @@
   }
 }
 
+// Generates a rule that specifies the width of the fixed toolbar for the given
+// screen size class.
+//
+// @param class the given screen size class, e. g. "sm", "md" etc.
+//
 .make-fixed-title-toolbar(@class) {
   @container-var: "container-@{class}";
   @size-var: "screen-@{class}-min";
@@ -60,3 +64,4 @@
 }
 
 // vim:set ts=2 sw=2 sts=2:
+

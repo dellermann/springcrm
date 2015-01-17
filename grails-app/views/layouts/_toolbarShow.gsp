@@ -11,7 +11,7 @@
   <g:button action="copy" id="${instance?.id}" color="primary"
     class="hidden-xs" icon="copy" message="default.button.copy.label" />
   <g:button action="delete" id="${instance?.id}" color="danger"
-    class="hidden-xs delete-btn" icon="trash"
+    class="hidden-xs btn-action-delete" icon="trash"
     message="default.button.delete.label" />
   <button type="button" class="btn btn-default visible-xs-inline-block"
     data-toggle="dropdown" aria-expanded="false"
@@ -31,7 +31,7 @@
       </g:link>
     </li>
     <li>
-      <g:link action="delete" id="${instance?.id}" class="delete-btn">
+      <g:link action="delete" id="${instance?.id}" class="btn-action-delete">
         <i class="fa fa-trash"></i>
         <g:message code="default.button.delete.label" />
       </g:link>

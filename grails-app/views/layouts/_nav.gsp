@@ -3,7 +3,9 @@
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed"
         data-toggle="collapse" data-target="#main-nav">
-        <span class="sr-only"><g:message code="default.btn.toggleNavigation" /></span>
+        <span class="sr-only"
+          ><g:message code="default.btn.toggleNavigation"
+        /></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
