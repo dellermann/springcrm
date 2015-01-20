@@ -1,7 +1,7 @@
 /*
  * ConfigController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 1.5
  */
 class ConfigController {
 
@@ -244,8 +244,8 @@ class ConfigController {
                 Map props = entry.value
                 seqNumber.prefix = props.prefix
                 seqNumber.suffix = props.suffix
-                seqNumber.startValue = props.startValue
-                seqNumber.endValue = props.endValue
+                seqNumber.startValue = props.startValue as int
+                seqNumber.endValue = props.endValue as int
 
                 l << seqNumber
                 hasErrors |= !seqNumber.save(flush: true)
@@ -289,13 +289,18 @@ class ConfigController {
      * @see         SelValue
      */
     private Class<?> getTypeClass(String type) {
-        GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
+        GrailsClass gc =
+            grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
         if (!gc) {
-            throw new IllegalArgumentException("Type ${type} is no valid type for a domain class.")
+            throw new IllegalArgumentException(
+                "Type ${type} is no valid type for a domain class."
+            )
         }
         Class<?> cls = gc.clazz
         if (!SelValue.isAssignableFrom(cls)) {
-            throw new IllegalArgumentException("Type ${type} must be of type SelValue.")
+            throw new IllegalArgumentException(
+                "Type ${type} must be of type SelValue."
+            )
         }
         cls
     }

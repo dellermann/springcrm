@@ -10,7 +10,8 @@
         <g:sortableColumn property="dueDatePayment" title="${message(code: 'dunning.dueDatePayment.label')}" />
         <g:sortableColumn property="total" title="${message(code: 'dunning.total.label.short')}" />
         <g:sortableColumn property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label')}" />
-        <th scope="col"></th>
+        <th><g:message code="invoicingTransaction.closingBalance.label" /></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>

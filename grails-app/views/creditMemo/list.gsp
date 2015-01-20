@@ -34,7 +34,7 @@
           <g:sortableColumn scope="col" property="docDate" title="${message(code: 'creditMemo.docDate.label.short', default: 'Date')}" />
           <g:sortableColumn scope="col" property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label', default: 'Payment date')}" />
           <g:sortableColumn scope="col" property="total" title="${message(code: 'creditMemo.total.label.short', default: 'Total')}" />
-          <g:sortableColumn scope="col" property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label', default: 'Closing balance')}" />
+          <th scope="col"><g:message code="invoicingTransaction.closingBalance.label" /></th>
           <th scope="col"></th>
         </tr>
       </thead>
