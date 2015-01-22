@@ -45,7 +45,7 @@ class BootStrap {
     def exceptionHandler
     GrailsApplication grailsApplication
     InstallService installService
-    String springcrmConfig
+    def springcrmConfig
 
 
     //-- Public methods -------------------------
@@ -57,7 +57,7 @@ class BootStrap {
 
         /* load instance specific configuration file */
         if (springcrmConfig) {
-            File file = new File(springcrmConfig)
+            File file = new File(springcrmConfig.toString())
             if (file.exists()) {
                 def whatToParse
                 if (file.name.endsWith('.groovy')) {
