@@ -1,11 +1,15 @@
-<footer>
+<footer role="contentinfo">
   <div class="row">
     <div class="col-xs-12 col-sm-6">
       <ul>
         <li><g:message code="default.appName" />
         <g:message code="default.version.long"
           args="[meta(name: 'app.version'), meta(name: 'app.buildNumber')]" /></li>
-        <li><g:link controller="about"><g:message code="default.about.label" /></g:link></li>
+        <li>
+          <g:link controller="about"
+            ><g:message code="default.about.label"
+          /></g:link>
+        </li>
       </ul>
     </div>
     <div class="col-xs-12 col-sm-6">

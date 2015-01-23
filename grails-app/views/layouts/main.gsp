@@ -29,7 +29,8 @@
   data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">
   <head>
     <meta charset="utf-8" />
-    <title><g:layoutTitle default="${message(code: 'default.appName')}" /></title>
+    <title><g:layoutTitle default="${message(code: 'default.appName')}" /> -
+    <g:message code="default.appName" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <asset:stylesheet src="${pageProperty(name: 'meta.stylesheet') ?: 'application'}" />
@@ -41,7 +42,7 @@
     <g:layoutHead />
   </head>
 
-  <body>
+  <body role="application" aria-labelledby="application-title">
     <div class="container">
       <g:render template="/layouts/header" />
       <g:render template="/layouts/nav" />
@@ -50,7 +51,8 @@
       </div>
       <g:render template="/layouts/footer" />
     </div>
-    <div id="spinner" class="spinner">
+    <g:render template="/layouts/modals" />
+    <div id="spinner" class="spinner" aria-hidden="true">
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
     <asset:i18n locale="${locale}" />

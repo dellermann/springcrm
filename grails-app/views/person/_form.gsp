@@ -30,12 +30,16 @@
 </section>
 <section class="column-group addresses"
   data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
-  <g:applyLayout name="formAddrColumn"
-    model="[side: 'left', prefix: 'mailingAddr', title: message(code: 'person.fieldset.mailingAddr.label')]">
+  <g:applyLayout name="formAddrColumn" model="[
+      side: 'left', prefix: 'mailingAddr',
+      title: message(code: 'person.fieldset.mailingAddr.label')
+    ]">
     <f:field bean="${personInstance}" property="mailingAddr" />
   </g:applyLayout>
-  <g:applyLayout name="formAddrColumn"
-    model="[side: 'right', prefix: 'otherAddr', title: message(code: 'person.fieldset.otherAddr.label')]">
+  <g:applyLayout name="formAddrColumn" model="[
+      side: 'right', prefix: 'otherAddr',
+      title: message(code: 'person.fieldset.otherAddr.label')
+    ]">
     <f:field bean="${personInstance}" property="otherAddr" />
   </g:applyLayout>
 </section>
@@ -49,3 +53,4 @@
     </div>
   </div>
 </section>
+

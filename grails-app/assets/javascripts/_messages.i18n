@@ -38,6 +38,7 @@ default.btn.remove
 default.btn.sort.short
 default.btn.up
 default.button.cancel.label
+default.button.delete.label
 default.button.ok.label
 default.button.send.label
 default.copyAddressWarning.billingAddr
@@ -45,6 +46,7 @@ default.copyAddressWarning.mailingAddr
 default.copyAddressWarning.otherAddr
 default.copyAddressWarning.shippingAddr
 default.delete.confirm.msg
+default.delete.confirm.title
 default.format.date
 default.format.time
 document.back.label
@@ -69,6 +71,7 @@ organization.billingAddr.copy
 organization.shippingAddr.clear
 organization.shippingAddr.copy
 overview.addPanel.label
+overview.buttons.label
 overview.closePanel.label
 person.addr.fromOrgBillingAddr
 person.addr.fromOrgShippingAddr

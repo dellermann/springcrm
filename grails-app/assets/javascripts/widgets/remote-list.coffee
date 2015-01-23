@@ -83,7 +83,8 @@ class RemoteList
     $el = @$element
     opts = @options
 
-    $el.find(opts.container).load url, =>
+    $container = $el.find(opts.container)
+    $container.load url, =>
       $ = jQuery
       $element = $el
 
@@ -99,6 +100,8 @@ class RemoteList
             url += (if url.indexOf('?') < 0 then '?' else '&')
             url += "returnUrl=#{returnUrl}"
             $this.attr 'href', url
+
+      $container.removeAttr 'aria-busy'
 
     this
 

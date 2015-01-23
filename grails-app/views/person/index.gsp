@@ -9,43 +9,48 @@
   </head>
 
   <body>
-    <div class="row">
-      <div class="title-toolbar">
-        <div class="title">
-          <h1 class="hidden-xs">${entitiesName}</h1>
-          <h2 class="visible-xs"><g:message code="default.overview" /></h2>
+    <g:applyLayout name="list" model="[list: personInstanceList]">
+      <content tag="additionalToolbarButtons">
+        <div class="btn-group hidden-xs">
+          <button type="button" class="btn btn-default dropdown-toggle"
+            data-toggle="dropdown" aria-haspopup="true"
+            aria-owns="person-export-menu">
+            <i class="fa fa-arrow-circle-right"></i>
+            <g:message code="default.export" /> <span class="caret"></span>
+          </button>
+          <ul id="person-export-menu" class="dropdown-menu" role="menu"
+            aria-expanded="false">
+            <li role="menuitem">
+              <g:link action="gdatasync"
+                ><g:message code="person.action.gdataExport.label"
+              /></g:link>
+            </li>
+            <li role="menuitem">
+              <g:link action="ldapexport"
+                ><g:message code="person.action.ldapExport.label"
+              /></g:link>
+            </li>
+          </ul>
         </div>
-        <div class="toolbar">
-          <a href="#top" class="btn btn-default go-top-btn">
-            <i class="fa fa-arrow-up"></i>
-          </a>
-          <g:button action="create" color="success" icon="plus-circle"
-            message="default.button.create.label" />
-          <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle"
-              data-toggle="dropdown" aria-expanded="false">
-              <i class="fa fa-arrow-circle-right"></i>
-              <g:message code="default.export" /> <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><g:link action="gdatasync"><g:message code="person.action.gdataExport.label" /></g:link></li>
-              <li><g:link action="ldapexport"><g:message code="person.action.ldapExport.label" /></g:link></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="main-content">
-      <g:if test="${flash.message}">
-      <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert">
-          <span aria-hidden="true">×</span>
-          <span class="sr-only"><g:message code="default.btn.close" /></span>
-        </button>
-        ${raw(flash.message)}
-      </div>
-      </g:if>
-      <g:if test="${personInstanceList}">
+        <button type="button" class="btn btn-default visible-xs-inline-block"
+          data-toggle="dropdown" aria-haspopup="true"
+          aria-owns="list-toolbar-menu"
+          ><span class="caret"></span
+        ></button>
+        <ul id="list-toolbar-menu" class="dropdown-menu" role="menu"
+          aria-expanded="false">
+          <li role="menuitem">
+            <g:link action="gdatasync"
+              ><g:message code="person.action.gdataExport.label"
+            /></g:link>
+          </li>
+          <li role="menuitem">
+            <g:link action="ldapexport"
+              ><g:message code="person.action.ldapExport.label"
+            /></g:link>
+          </li>
+        </ul>
+      </content>
       <div class="visible-xs">
         <g:letterBar clazz="${Person}" property="lastName" numLetters="5"
           separator="-" />
@@ -98,16 +103,6 @@
           <g:paginate total="${personInstanceTotal}" />
         </div>
       </nav>
-      </g:if>
-      <g:else>
-        <div class="well well-lg empty-list">
-          <p><g:message code="default.list.empty" /></p>
-          <div class="buttons">
-            <g:button action="create" color="success" icon="plus-circle"
-              message="default.new.label" args="[entityName]" />
-          </div>
-        </div>
-      </g:else>
-    </div>
+    </g:applyLayout>
   </body>
 </html>

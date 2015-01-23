@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * views.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class ViewTagLib {
 
@@ -184,7 +184,7 @@ class ViewTagLib {
         if (attrs.action || attrs.controller || attrs.id || attrs.mapping ||
             attrs.params || attrs.uri || attrs.url)
         {
-            def data = attrs + [class: cssClass]
+            def data = attrs + [class: cssClass, role: 'button']
             out << link(data) { content }
         } else {
             out << '<button type="button" class="' << cssClass << '"'
@@ -412,6 +412,7 @@ class ViewTagLib {
      * @attr property REQUIRED  the name of the property that values are used to obtain the initial letters
      * @attr controller         the controller which is called when the user clicks a letter; if not specified the current controller name is used
      * @attr action             the action which is called when the user clicks a letter; if not specified the current action name is used
+     * @attr params             a map containing URL query parameters
      * @attr where              an optional HSQL WHERE clause which is used in the SQL query for the initial letters
      * @attr numLetters         the number of letters which are combined to one link; defaults to 1
      * @attr separator          the separator used to represent ranges of letters like A-C; if not specified the letters are not represented as range
@@ -432,7 +433,8 @@ class ViewTagLib {
         List<String> letters = cls.'executeQuery'(sql)
 
         String availableLetters = message(
-            code: 'default.letters', default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            code: 'default.letterBar.letters',
+            default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         )
         int n = availableLetters.size()
         List<String> items = []
@@ -446,13 +448,16 @@ class ViewTagLib {
             if (inList) {
                 buf << createLink(
                     controller: controller, action: action,
-                    params: [letter: availableLetters[i]]
+                    params:
+                        (attrs.params ?: [: ]) + [letter: availableLetters[i]]
                 )
             } else {
                 buf << '#'
             }
-            buf << '" class="btn btn-default"'
-            if (!inList) buf << ' disabled="disabled"'
+            buf << '" class="btn btn-default'
+            if (!inList) buf << ' disabled'
+            buf << '" role="button"'
+            if (!inList) buf << ' aria-disabled="true"'
             buf << '>'
             if (separator && numLetters > 2) {
                 buf << availableLetters[i] << separator
@@ -465,7 +470,9 @@ class ViewTagLib {
             buf << '</a>'
             items << buf.toString()
         }
-        out << '<div class="btn-group btn-group-justified letter-bar" role="group">' << items.join('') << '</div>'
+        out << '<div class="btn-group btn-group-justified letter-bar" role="group" aria-label="'
+        out << message(code: 'default.letterBar.label')
+        out << '">' << items.join('') << '</div>'
     }
 
     /**
@@ -659,18 +666,18 @@ class ViewTagLib {
         if (laststep > 1) {
             writer << '<ul class="pagination'
             if (cssClass) writer << ' ' << cssClass
-            writer << '">'
+            writer << '" role="group">'
         }
 
         // display previous link when not on firststep unless omitPrev is true
         if (currentstep > firststep && !attrs.boolean('omitPrev')) {
             linkParams.offset = offset - max
-            writer << '<li>' << link(linkTagAttrs.clone()) {
+            writer << '<li role="listitem" aria-label="'
+            writer << messageSource.getMessage('default.paginate.prev', null, 'Previous', locale)
+            writer << '">'
+            writer << link(linkTagAttrs.clone()) {
                 StringBuilder buf = new StringBuilder('<span aria-hidden="true">')
                 buf << (attrs.prev ?: messageSource.getMessage('default.paginate.prev.short', null, '«', locale))
-                buf << '</span>'
-                buf << '<span class="sr-only">'
-                buf << messageSource.getMessage('default.paginate.prev', null, 'Previous', locale)
                 buf << '</span>'
             } << '</li>'
         }
@@ -697,36 +704,42 @@ class ViewTagLib {
             // display firststep link when beginstep is not firststep
             if (beginstep > firststep && !attrs.boolean('omitFirst')) {
                 linkParams.offset = 0
-                writer << '<li>' << link(linkTagAttrs.clone()) {firststep.toString()} << '</li>'
+                writer << '<li role="listitem">' <<
+                    link(linkTagAttrs.clone()) {firststep.toString()} <<
+                    '</li>'
             }
             //show a gap if beginstep isn't immediately after firststep, and if were not omitting first or rev
             if (beginstep > firststep+1 && (!attrs.boolean('omitFirst') || !attrs.boolean('omitPrev')) ) {
-                writer << '<li class="disabled"><a href="#">…</a></li>'
+                writer << '<li class="disabled" role="listitem" aria-disabled="true"><a href="#">…</a></li>'
             }
 
             // display paginate steps
             (beginstep..endstep).each { i ->
                 if (currentstep == i) {
                     writer << """\
-<li class="active">
+<li class="active" role="listitem">
   <span>${i} <span class="sr-only">${messageSource.getMessage('default.paginate.current', null, 'current', locale)}</span></span>
 </li>
 """
                 }
                 else {
                     linkParams.offset = (i - 1) * max
-                    writer << '<li>' << link(linkTagAttrs.clone()) {i.toString()} << '</li>'
+                    writer << '<li role="listitem">' <<
+                        link(linkTagAttrs.clone()) {i.toString()} <<
+                        '</li>'
                 }
             }
 
             //show a gap if beginstep isn't immediately before firststep, and if were not omitting first or rev
             if (endstep+1 < laststep && (!attrs.boolean('omitLast') || !attrs.boolean('omitNext'))) {
-                writer << '<li class="disabled"><a href="#">…</a></li>'
+                writer << '<li class="disabled" role="listitem" aria-disabled="true"><a href="#">…</a></li>'
             }
             // display laststep link when endstep is not laststep
             if (endstep < laststep && !attrs.boolean('omitLast')) {
                 linkParams.offset = (laststep - 1) * max
-                writer << '<li>' << link(linkTagAttrs.clone()) { laststep.toString() } << '</li>'
+                writer << '<li role="listitem">' <<
+                    link(linkTagAttrs.clone()) { laststep.toString() } <<
+                    '</li>'
             }
         }
 
@@ -734,12 +747,11 @@ class ViewTagLib {
         if (currentstep < laststep && !attrs.boolean('omitNext')) {
             linkTagAttrs.class = 'nextLink'
             linkParams.offset = offset + max
-            writer << '<li>' << link(linkTagAttrs.clone()) {
+            writer << '<li role="listitem" aria-label="'
+            writer << messageSource.getMessage('default.paginate.next', null, 'Next', locale)
+            writer << '">' << link(linkTagAttrs.clone()) {
                 StringBuilder buf = new StringBuilder('<span aria-hidden="true">')
                 buf << (attrs.prev ?: messageSource.getMessage('default.paginate.next.short', null, '»', locale))
-                buf << '</span>'
-                buf << '<span class="sr-only">'
-                buf << messageSource.getMessage('default.paginate.next', null, 'Next', locale)
                 buf << '</span>'
             } << '</li>'
         }

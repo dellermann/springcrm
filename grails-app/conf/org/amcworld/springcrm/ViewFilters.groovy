@@ -1,7 +1,7 @@
 /*
  * ViewFilters.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,13 +28,18 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * The class {@code ViewFilters} contains various filters concerning the view.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class ViewFilters {
+
+    //-- Instance variables ---------------------
 
     def dependsOn = [LoginFilters]
 
     UserService userService
+
+
+    //-- Filters --------------------------------
 
     def filters = {
 
@@ -61,7 +66,7 @@ class ViewFilters {
             }
         }
 
-        pagination(controller: '*', action: 'list') {
+        pagination(controller: '*', action: 'index') {
             def sessionKey = { String name ->
                 String key = name + controllerName.capitalize()
                 if (params.type) key += params.type
@@ -109,9 +114,9 @@ class ViewFilters {
             }
         }
 
-        selectorView(controller: '*', action: 'list') {
+        selectorView(controller: 'product|service', action: 'index') {
             after = { model ->
-                String view = (params.view == 'selector') ? 'selectorList' : 'list'
+                String view = (params.view == 'selector') ? 'selectorList' : 'index'
                 render view: "/${controllerName}/${view}", model: model
             }
         }
@@ -124,11 +129,12 @@ class ViewFilters {
                  * parameter should be received because the JavaScript does not
                  * send the request if the user has not confirmed the deletion.
                  * However, crafted URLs or programming errors may cause this
-                 * situation happen.  If so, we simply redirect to the list
+                 * situation happen.  If so, we simply redirect to the index
                  * view.
                  */
                 if (!params.confirmed) {
-                    redirect controller: controllerName, action: 'list'
+                    redirect controller: controllerName, action: 'index'
+                    return false
                 }
             }
         }

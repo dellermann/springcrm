@@ -34,6 +34,90 @@ $ = jQuery
 
 #== Classes =====================================
 
+# This mixin contains various static extensions for jQuery UI.
+#
+# @mixin
+# @author   Daniel Ellermann
+# @version  2.0
+#
+JQueryUiStaticExt =
+
+  # Displays an alert message in a modal to the user.  The method is used to
+  # abstract the access to the actual alert modal.
+  #
+  # @param [String] msg     the message (prompt) to be displayed
+  # @param [String] [title] an optional title of the modal
+  # @return [jQuery]        this jQuery object
+  #
+  alert: (msg, title) ->
+    $dlg = $('#alert-modal')
+    $dlg.find('.modal-title').text title if title
+
+    btnOpts = options.okBtn
+    if btnOpts
+      $btn = $dlg.find '.btn-ok'
+      s = btnOpts.color
+      $btn.removeClass('btn-default').addClass "btn-#{s}" if s
+      s = btnOpts.label
+      $btn.find('span').text s if s
+      s = btnOpts.icon
+      $btn.find('i').attr 'class', "fa fa-#{s}" if s
+
+    $dlg.find('.model-body p')
+        .text(msg)
+      .end()
+      .modal()
+
+    this
+
+  # Displays a confirmation message to the user.  The method is used to
+  # abstract the access to the actual confirmation dialog.
+  #
+  # @param [String] msg       the message (prompt) to be displayed
+  # @param [String] [title]   an optional title of the modal
+  # @param [Object] [options] any options which are used in the modal
+  # @return [Promise]         a deferred object which is resolved if the user confirms; otherwise it is rejected
+  #
+  confirm: (msg, title, options = {}) ->
+    $ = jQuery
+
+    deferred = $.Deferred()
+
+    $dlg = $('#confirm-modal')
+    $dlg.find('.modal-title').text title if title
+
+    btnOpts = options.okBtn
+    if btnOpts
+      $btn = $dlg.find '.btn-ok'
+      s = btnOpts.color
+      $btn.removeClass('btn-success').addClass "btn-#{s}" if s
+      s = btnOpts.label
+      $btn.find('span').text s if s
+      s = btnOpts.icon
+      $btn.find('i').attr 'class', "fa fa-#{s}" if s
+
+    btnOpts = options.cancelBtn
+    if btnOpts
+      $btn = $dlg.find '.btn-cancel'
+      s = btnOpts.color
+      $btn.removeClass('btn-default').addClass "btn-#{s}" if s
+      s = btnOpts.label
+      $btn.find('span').text s if s
+      s = btnOpts.icon
+      $btn.find('i').attr 'class', "fa fa-#{s}" if s
+
+    $dlg.find('.modal-body p')
+        .text(msg)
+      .end()
+      .on('click', '.btn-ok', -> deferred.resolveWith $dlg)
+      .on('click', '.btn-cancel', -> deferred.rejectWith $dlg)
+      .modal()
+
+    deferred.promise()
+
+$.extend JQueryUiStaticExt
+
+
 # Defines jQuery extensions which are used in the user interface (UI).
 #
 # @mixin
@@ -41,23 +125,6 @@ $ = jQuery
 # @version  2.0
 #
 JQueryUiExt =
-
-  # Registers a click handler for each element in this jQuery object which
-  # displays a deletion confirmation dialog.  If the user confirms the link is
-  # rewritten and followed to allow deletion on the server.
-  #
-  deleteConfirm: ->
-    @filter('[href]')
-      .on('click', ->
-        res = $.confirm $L('default.delete.confirm.msg')
-        if res
-          $this = $(this)
-          url = $this.attr('href')
-          url += (if url.indexOf('?') < 0 then '?' else '&') + 'confirmed=1'
-          $this.attr 'href', url
-        res
-      )
-    .end()
 
   # Disables the elements in the jQuery object.
   #
@@ -168,6 +235,9 @@ class Page
         'click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn()
       )
       .on('click', '#spinner', -> $(this).fadeOut())
+      .on('click', '.btn-action-delete[href]', (event) =>
+        @_onClickDeleteBtn event
+      )
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
@@ -206,6 +276,35 @@ class Page
       .find('.input-group input')
         .toggleEnable $target, true
 
+  # Called if the user clicks on a link to delete a record.  This method
+  # displays a deletion confirmation dialog.  If the user confirms the link is
+  # loaded to the current window.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickDeleteBtn: (event) ->
+    $ = jQuery
+    $LANG = $L
+
+    $target = $(event.currentTarget)
+    $.confirm(
+        $LANG('default.delete.confirm.msg'),
+        $LANG('default.delete.confirm.title'),
+        okBtn:
+          color: 'danger'
+          icon: 'trash'
+          label: $LANG('default.button.delete.label')
+      )
+      .done( ->
+        url = $target.attr 'href'
+        url += (if url.indexOf('?') < 0 then '?' else '&') + 'confirmed=1'
+        window.location.assign url
+      )
+
+    false
+
   # Called if the user clicks on the icon to display the Markdown help.
   #
   # @private
@@ -234,7 +333,8 @@ class Page
   #
   _onLoadWindow: (event) ->
     @_initToolbar()
-    $(event.target).on 'scroll', (event) => @_onScrollWindow event
+    $(event.target).on('scroll', (event) => @_onScrollWindow event)
+      .triggerHandler 'scroll'
 
   # Called if the window is scrolling.
   #
@@ -254,36 +354,6 @@ new Page()
 
 
 #============== TODO ============================
-
-
-# This mixin contains various static extensions for jQuery UI.
-#
-# @mixin
-# @author   Daniel Ellermann
-# @version  1.4
-#
-JQueryUiStaticExt =
-
-  # Displays an alert message to the user.  The method is used to  abstract the
-  # access to the actual alert dialog.
-  #
-  # @param [String] msg the message (prompt) to be displayed
-  # @return [jQuery]    this jQuery object
-  #
-  alert: (msg) ->
-    window.alert msg
-    this
-
-  # Displays a confirmation message to the user.  The method is used to
-  # abstract the access to the actual confirmation dialog.
-  #
-  # @param [String] msg the message (prompt) to be displayed
-  # @return [Boolean]   `true` if the user has confirmed; `false` otherwise
-  #
-  confirm: (msg) ->
-    window.confirm msg
-
-$.extend JQueryUiStaticExt
 
 
 # Renders an autocomplete input field with extended functionality.  The
@@ -474,7 +544,6 @@ SPRINGCRM.page = (->
       .on('click', '#print-btn', -> win.print())
       .on('change', '.date-input-date, .date-input-time', onChangeDateInput)
 
-    $('.delete-btn').deleteConfirm()
 #    $('.date-input-date').datepicker
 #        changeMonth: true
 #        changeYear: true

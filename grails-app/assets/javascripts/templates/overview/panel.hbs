@@ -1,8 +1,10 @@
 <div id="{{id}}" class="panel panel-default panel-type-{{id}}"
-  style="{{panel.style}}" data-panel-url="{{panel.url}}">
+  style="{{panel.style}}" data-panel-url="{{panel.url}}"
+  role="region" aria-labelledby="{{id}}-title">
   <div class="panel-heading">
-    <h3>{{panel.title}}</h3>
-    <div class="buttons">
+    <h3 id="{{id}}-title">{{panel.title}}</h3>
+    <div class="buttons" role="toolbar"
+      aria-label="{{message 'overview.buttons.label'}}">
       <button type="button" class="up-btn" title="{{message 'default.btn.up'}}"
         ><i class="fa fa-caret-up"></i
         ><span class="sr-only">{{message 'default.btn.up'}}</span
@@ -19,4 +21,4 @@
       ></a>
     </div>
   </div>
-
+</div>

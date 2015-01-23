@@ -13,12 +13,12 @@
         <g:link controller="${lruEntry.controller}" action="edit"
           id="${lruEntry.itemId}"
           params="[returnUrl: createLink(uri: '/', absolute: true)]"
-          title="${message(code: 'default.btn.edit')}"
+          title="${message(code: 'default.btn.edit')}" role="button"
           ><i class="fa fa-pencil-square-o"></i
           ><span class="sr-only"><g:message code="default.btn.edit" /></span
         ></g:link>
         <%--
-        <a href="#" class="text-danger" title="Aus Liste entfernen"><i class="fa fa-close"></i><span class="sr-only">Aus Liste entfernen</span></a>
+        <a href="#" class="text-danger" title="Aus Liste entfernen" role="button"><i class="fa fa-close"></i><span class="sr-only">Aus Liste entfernen</span></a>
         --%>
       </div>
     </li>

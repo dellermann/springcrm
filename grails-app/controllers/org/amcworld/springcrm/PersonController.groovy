@@ -1,7 +1,7 @@
 /*
  * PersonController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import net.sf.jmimemagic.Magic
  * that belong to an organization.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class PersonController {
 
@@ -52,10 +52,6 @@ class PersonController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
             int num = Person.countByLastNameLessThan(params.letter)
@@ -99,7 +95,7 @@ class PersonController {
         def personInstance = Person.get(id)
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
@@ -134,7 +130,7 @@ class PersonController {
         def personInstance = Person.get(id)
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
@@ -145,7 +141,7 @@ class PersonController {
         def personInstance = Person.get(id)
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
@@ -156,7 +152,7 @@ class PersonController {
         def personInstance = Person.get(id)
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
@@ -204,7 +200,7 @@ class PersonController {
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
@@ -219,7 +215,7 @@ class PersonController {
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])
@@ -291,7 +287,7 @@ class PersonController {
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
-            redirect action: 'list'
+            redirect action: 'index'
         }
     }
 
@@ -316,7 +312,7 @@ class PersonController {
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
-            redirect action: 'list'
+            redirect action: 'index'
         }
     }
 
@@ -327,7 +323,7 @@ class PersonController {
                 ldapService.delete personInstance
             }
         }
-        redirect action: 'list'
+        redirect action: 'index'
     }
 
     def handleAuthenticationException(AuthenticationException e) {

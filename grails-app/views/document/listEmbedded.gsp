@@ -1,5 +1,5 @@
-<g:if test="${documentInstanceList}">
-<div class="table-responsive">
+<g:applyLayout name="listEmbedded"
+  model="[list: documentInstanceList, total: documentInstanceTotal]">
   <table class="table data-table">
     <thead>
       <tr>
@@ -34,10 +34,4 @@
     </g:each>
     </tbody>
   </table>
-</div>
-<g:render template="/layouts/remoteListPaginate"
-  model="[total: documentInstanceTotal]" />
-</g:if>
-<g:else>
-  <g:render template="/layouts/remoteListEmpty" />
-</g:else>
+</g:applyLayout>

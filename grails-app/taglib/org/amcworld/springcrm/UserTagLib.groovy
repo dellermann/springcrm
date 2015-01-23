@@ -41,7 +41,8 @@ class UserTagLib {
                 user.userName << ']</small>'
             out << link(
                 controller: 'user', action: 'logout',
-                'class': 'btn btn-warning btn-xs'
+                'class': 'btn btn-warning btn-xs',
+                'role': 'button'
             ) {
                 '<i class="fa fa-sign-out"></i> ' +
                     message(code: 'default.logout')

@@ -50,6 +50,7 @@
 
     > th {
       text-align: center;
+      vertical-align: middle;
     }
   }
   .sorted:after {
@@ -62,9 +63,12 @@
   }
   .col-type-id, .col-type-date, .col-type-status {
     text-align: center;
+    width: 1%;    // shrink to fit
   }
   .col-type-number, .col-type-currency {
     text-align: right;
+    white-space: nowrap;
+    width: 1%;    // shrink to fit
   }
   .col-actions {
     padding: @table-condensed-cell-padding;

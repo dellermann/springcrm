@@ -1,3 +1,4 @@
+<g:hiddenField name="listType" value="${params.listType ?: params.recType}" />
 <section>
   <header>
     <h3><g:message code="organization.fieldset.general.label" /></h3>
@@ -25,12 +26,16 @@
   </div>
 </section>
 <section class="column-group addresses">
-  <g:applyLayout name="formAddrColumn"
-    model="[side: 'left', prefix: 'billingAddr', title: message(code: 'organization.fieldset.billingAddr.label')]">
+  <g:applyLayout name="formAddrColumn" model="[
+      side: 'left', prefix: 'billingAddr',
+      title: message(code: 'organization.fieldset.billingAddr.label')
+    ]">
     <f:field bean="${organizationInstance}" property="billingAddr" />
   </g:applyLayout>
-  <g:applyLayout name="formAddrColumn"
-    model="[side: 'right', prefix: 'shippingAddr', title: message(code: 'organization.fieldset.shippingAddr.label')]">
+  <g:applyLayout name="formAddrColumn" model="[
+      side: 'right', prefix: 'shippingAddr',
+      title: message(code: 'organization.fieldset.shippingAddr.label')
+    ]">
     <f:field bean="${organizationInstance}" property="shippingAddr" />
   </g:applyLayout>
 </section>
@@ -54,3 +59,4 @@
     </div>
   </div>
 </section>
+

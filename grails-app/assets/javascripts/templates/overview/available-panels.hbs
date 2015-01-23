@@ -1,9 +1,11 @@
-<div class="row">
-  {{#each panels}} 
+<div class="row" role="row">
+  {{#each panels}}
   <div class="col-xs-12 col-sm-4 col-lg-3">
-    <div class="panel" data-panel-id="{{@key}}">
+    <div class="panel" data-panel-id="{{@key}}" role="gridcell"
+      aria-labelledby="available-panel-{{@key}}-title"
+      aria-describedby="available-panel-{{@key}}-description">
       <div class="panel-heading">
-        <h4>{{title}}</h4>
+        <h4 id="available-panel-{{@key}}-title">{{title}}</h4>
         <div class="buttons">
           <button type="button" class="add-btn"
             title="{{message 'overview.addPanel.label'}}"
@@ -12,7 +14,9 @@
           ></button>
         </div>
       </div>
-      <div class="panel-body">{{description}}</div>
+      <div id="available-panel-{{@key}}-description" class="panel-body">
+        {{description}}
+      </div>
     </div>
   </div>
   {{/each}}

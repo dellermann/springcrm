@@ -1,4 +1,5 @@
 <%@ page import="org.amcworld.springcrm.User" %>
+
 <!DOCTYPE html>
 
 <!--
@@ -36,16 +37,18 @@
     <link rel="icon" href="${assetPath(src: 'favicon.png')}" type="image/png" />
   </head>
 
-  <body>
+  <body role="application" aria-labelledby="title">
     <g:if test="${flash.message}">
     <div class="alert-container">
-      <div class="alert alert-danger">${flash.message}</div>
+      <div class="alert alert-danger" role="alert">${flash.message}</div>
     </div>
     </g:if>
     <div class="login-container">
       <div class="login">
-        <h1><g:message code="default.appName" /></h1>
-        <g:form action="authenticate" class="form" role="form">
+        <div role="banner">
+          <h1 id="title"><g:message code="default.appName" /></h1>
+        </div>
+        <g:form action="authenticate" class="form">
           <div class="form-group">
             <div class="input-group input-group-lg">
               <div class="input-group-addon"><i class="fa fa-user"></i></div>
@@ -71,7 +74,7 @@
           </div>
         </g:form>
       </div>
-      <footer>
+      <footer role="contentinfo">
         <div class="row">
           <div class="col-xs-12 col-sm-4">
             <g:message code="default.appName" />

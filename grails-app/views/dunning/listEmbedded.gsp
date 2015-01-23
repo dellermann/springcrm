@@ -1,5 +1,5 @@
-<g:if test="${dunningInstanceList}">
-<div class="table-responsive">
+<g:applyLayout name="listEmbedded"
+  model="[list: dunningInstanceList, total: dunningInstanceTotal]">
   <table class="table data-table">
     <thead>
       <tr>
@@ -35,10 +35,4 @@
     </g:each>
     </tbody>
   </table>
-</div>
-<g:render template="/layouts/remoteListPaginate"
-  model="[total: dunningInstanceList]" />
-</g:if>
-<g:else>
-  <g:render template="/layouts/remoteListEmpty" />
-</g:else>
+</g:applyLayout>
