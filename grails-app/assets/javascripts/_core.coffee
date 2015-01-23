@@ -35,6 +35,7 @@ window.SPRINGCRM = window.SPRINGCRM ? {}
 window.$I = do ->
   $html = $('html')
 
+  lang: $html.attr('lang') or 'en'
   decimalSeparator: $html.data('decimal-separator') or ','
   groupingSeparator: $html.data('grouping-separator') or '.'
   numFractions: $html.data('num-fraction-digits') or 2

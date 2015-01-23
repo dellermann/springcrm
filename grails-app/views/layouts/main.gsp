@@ -56,7 +56,10 @@
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
     <asset:i18n locale="${locale}" />
-    <g:pageProperty name="page.scripts" default="${asset.javascript(src: 'application')}" />
+    <g:pageProperty name="page.scripts"
+      default="${asset.javascript(src: 'application')}" />
+    <asset:javascript
+      src="lang/bootstrap-datepicker/bootstrap-datepicker.${lang}.js" />
     <asset:deferredScripts />
   </body>
 </html>

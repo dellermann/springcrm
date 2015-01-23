@@ -24,6 +24,7 @@
 #= require bootstrap/collapse
 #= require bootstrap/dropdown
 #= require bootstrap/modal
+#= require _bootstrap-datepicker
 #= require _handlebars-ext
 #= require templates/tools/js-calc
 #= require _js-calc
@@ -238,6 +239,9 @@ class Page
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
       )
+      .on('change', '.date-input-control', (event) =>
+        @_onChangeDateInput event
+      )
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
@@ -275,6 +279,36 @@ class Page
     $target.closest('.control-container')
       .find('.input-group input')
         .toggleEnable $target, true
+
+  # Called if either the date or time part of a date/time input field has been
+  # changed. The method computes a formatted composed value in a hidden
+  # date/time field.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onChangeDateInput: (event) ->
+    $target = $(event.currentTarget)
+
+    if $target.attr('id').match /^([\w\-.]+)-(date|time)$/
+      baseId = RegExp.$1
+      type = RegExp.$2
+
+      input = $target[0]
+      elements = input.form.elements
+
+      otherPartField =
+        elements["#{baseId}_#{if (type is 'date') then 'time' else 'date'}"]
+
+      val = ''
+      if type is 'date'
+        val += input.value
+        val += " #{otherPartField.value}" if otherPartField
+      else
+        val += "#{otherPartField.value} " if otherPartField
+        val += input.value
+
+      elements[baseId].value = val
 
   # Called if the user clicks on a link to delete a record.  This method
   # displays a deletion confirmation dialog.  If the user confirms the link is
@@ -335,6 +369,17 @@ class Page
     @_initToolbar()
     $(event.target).on('scroll', (event) => @_onScrollWindow event)
       .triggerHandler 'scroll'
+
+    # I initialize the Bootstrap datepicker widget here because before, the
+    # l18n file in lang/bootstrap-datepicker hasn't been loaded yet.
+    datePickerDefaults =
+      autoclose: true
+      clearBtn: true
+      language: $I.lang.split('-')[0]
+      todayBtn: true
+      todayHighlight: true
+    $.extend $.fn.datepicker.defaults, datePickerDefaults
+    $('.date-input-date-control').datepicker()
 
   # Called if the window is scrolling.
   #
@@ -542,54 +587,10 @@ SPRINGCRM.page = (->
         $this.val if $this.is '.currency-ext' then val.formatCurrencyValueExt() else val.formatCurrencyValue()
       )
       .on('click', '#print-btn', -> win.print())
-      .on('change', '.date-input-date, .date-input-time', onChangeDateInput)
 
-#    $('.date-input-date').datepicker
-#        changeMonth: true
-#        changeYear: true
-#        gotoCurrent: true
-#        selectOtherMonths: true
-#        showButtonPanel: true
-#        showOtherMonths: true
 #    $('.date-input-time').autocomplete
 #        select: onSelectTimeValue
 #        source: timeValues
-
-  # Called if either the date or time part of a date/time input field has
-  # changed. The method computes a formatted composed value in a hidden
-  # date/time field.
-  #
-  onChangeDateInput = ->
-    if @id.match /^([\w\-.]+)-(date|time)$/
-      els = @form.elements
-      baseId = RegExp.$1
-      partId = RegExp.$2
-      otherPartField = els["#{baseId}_" + (if (partId is 'date') then 'time' else 'date')]
-
-      type = ''
-      val = ''
-      if partId is 'date'
-        val += @value
-        type = 'date'
-        if otherPartField
-          val += " #{otherPartField.value}"
-          type += 'time'
-      else
-        if otherPartField
-          val += "#{otherPartField.value} "
-          type = 'date'
-        val += @value
-        type += 'time'
-      els[baseId].value = val
-
-  # Called if an item of the quick access selector was selected. The method
-  # calls the associated URL.
-  #
-  onChangeQuickAccess = ->
-    $this = $(this)
-    val = $this.val()
-    $this.val ''
-    win.location.href = val if val
 
   # Called if the user selects a time from the autocomplete list.
   #

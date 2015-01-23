@@ -83,6 +83,18 @@ module.exports = (grunt) ->
               'transition.js'
             ]
           ,
+            dest: '<%= dirs.src.stylesheets %>/_bootstrap-datepicker.less'
+            src: '<%= dirs.bower.bootstrapDatepicker %>/less/datepicker3.less'
+          ,
+            dest: '<%= dirs.src.javascripts %>/_bootstrap-datepicker.js'
+            src:
+              '<%= dirs.bower.bootstrapDatepicker %>/js/bootstrap-datepicker.js'
+          ,
+            cwd: '<%= dirs.bower.bootstrapDatepicker %>/js/locales/'
+            dest: '<%= dirs.src.javascripts %>/lang/bootstrap-datepicker/'
+            expand: true
+            src: ['*.js']
+          ,
             cwd: '<%= dirs.bower.fontAwesome %>/less/'
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
             expand: true
@@ -226,6 +238,7 @@ module.exports = (grunt) ->
         base: '<%= dirs.src.base %>/bower_components'
         blueimpLoadImage: '<%= dirs.bower.base %>/blueimp-load-image'
         bootstrap: '<%= dirs.bower.base %>/bootstrap'
+        bootstrapDatepicker: '<%= dirs.bower.base %>/bootstrap-datepicker'
         fontAwesome: '<%= dirs.bower.base %>/font-awesome'
         fullCalendar: '<%= dirs.bower.base %>/fullcalendar'
         handlebars: '<%= dirs.bower.base %>/handlebars'

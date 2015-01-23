@@ -318,20 +318,26 @@ class ViewTagLib {
          * date/time strings we use type "text" here. Maybe in future this will
          * be corrected in the HTML 5 standard.
          */
-        out << """<input type="hidden" name="${name}"
-  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />"""
+        out << """\
+<input type="hidden" name="${name}"
+  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />
+"""
         if (useTime) {
-            out << """<span class="date-time-input">"""
+            out << '<span class="date-time-control-group">'
         }
-        out << """<input type="text" name="${name}_date" id="${id}-date"
+        out << """\
+<input type="text" id="${id}-date" name="${name}_date"
   value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
-  size="10" class="date-input date-input-date" />"""
+  class="form-control date-input-control date-input-date-control" />
+"""
 
         if (useTime) {
-            out << """<input type="text" name="${name}_time" id="${id}-time"
+            out << """\
+<input type="text" id="${id}-time" name="${name}_time"
   value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
-  size="5" class="date-input date-input-time" />"""
-            out << "</span>"
+  class="form-control date-input-control date-input-time-control" />
+"""
+            out << '</span>'
         }
     }
 
