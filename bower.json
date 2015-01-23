@@ -22,15 +22,15 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.1",
+    "bootstrap": "~3.3.2",
     "font-awesome": "~4.2.0",
-    "fullcalendar": "~2.1.1",
+    "fullcalendar": "~2.2.6",
     "handlebars": "~2.0.0",
     "jQuery-Storage-API": "~1.7.3",
-    "jquery-autosize": "~1.18.9",
+    "jquery-autosize": "~1.18.17",
     "jquery-file-upload": "~9.8.0",
     "jquery-mockjax": "1.6.1",
     "js-calc": "~0.9.8",
-    "qunit": "~1.15.0"
+    "qunit": "~1.17.1"
   }
 }
