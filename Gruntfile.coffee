@@ -174,9 +174,6 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
             src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
-          ,
-            dest: '<%= dirs.src.javascripts %>/_moment.js'
-            src: '<%= dirs.bower.moment %>/moment.js'
         ]
         options:
           encoding: null

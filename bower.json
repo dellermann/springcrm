@@ -32,6 +32,7 @@
     "jquery-file-upload": "~9.8.0",
     "jquery-mockjax": "1.6.1",
     "js-calc": "~0.9.8",
-    "qunit": "~1.17.1"
+    "qunit": "~1.17.1",
+    "typeahead.js": "~0.10.5"
   }
 }

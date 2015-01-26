@@ -1,2 +1,6 @@
-<input type="text" id="${property}" value="${bean?."${property}"?.name}" size="35" data-find-url="${createLink(controller: 'organization', action: 'find')}" />
-<input type="hidden" name="${property}.id" id="${property}.id" value="${bean?."${property}"?.id}" />
+<select id="${property}-select" name="${property}.id"
+  data-find-url="${createLink(controller: 'organization', action: 'find')}">
+  <g:if test="${value}">
+  <option value="${value.id}">${value}</option>
+  </g:if>
+</select>

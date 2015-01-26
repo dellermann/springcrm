@@ -25,6 +25,7 @@
 #= require bootstrap/dropdown
 #= require bootstrap/modal
 #= require _bootstrap-datepicker
+#= require _selectize
 #= require _handlebars-ext
 #= require templates/tools/js-calc
 #= require _js-calc
@@ -245,6 +246,7 @@ class Page
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
+    $('select').each (index, element) => @_initSelect index, element
     $('textarea').autosize()
       .each ->
         $(this).wrap("""<div class="textarea-container"/>""")
@@ -257,6 +259,38 @@ class Page
 
 
   #-- Non-public methods ------------------------
+  
+  # Initializes the given select control using Selectize.  Depending on
+  # attribute data-find-url the control is initialized to load the options from
+  # the given URL.
+  #
+  # @param [Number] index
+  # @param [Element] element  the given select control
+  # @private
+  #
+  _initSelect: (index, element) ->
+    $element = $(element)
+
+    opts =
+      onInitialize: ->
+        id = @$input.attr 'id'
+        @$control_input.attr 'id', id.replace(/-select$/, '') if id
+
+    url = $element.data 'find-url'
+    if url
+      $.extend opts,
+        labelField: 'name'
+        load: (query, callback) ->
+          $.getJSON(url, name: query)
+            .done((data) -> callback data)
+            .fail(-> callback())
+        preload: 'focus'
+        searchField: ['name']
+        sortField: 'name'
+        valueField: 'id'
+
+    $element.selectize opts
+    return
 
   # Initializes the title/toolbar that it may be treated as fixed when
   # scrolling.

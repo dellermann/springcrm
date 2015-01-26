@@ -65,7 +65,10 @@
 @import "font-awesome/icons";
 
 // Bootstrap datepicker
-@import "_bootstrap-datepicker.less";
+@import "_bootstrap-datepicker";
+
+// Selectize
+@import "_selectize";
 
 // Application variables and mixins
 @import "_variables";
@@ -212,6 +215,25 @@ h2 {
 
 .fa {
   transform: translate(0, 0); // ensures no half-pixel rendering in firefox
+}
+
+// Selectize redefinitions
+.selectize-control.single .selectize-input:after {
+  transform: scale(.9999);
+}
+.selectize-dropdown {
+  .selectize-box-shadow(0 3px 3px rgba(0, 0, 0, .3));
+
+  [data-selectable] {
+    box-sizing: content-box;
+    min-height: @selectize-line-height;
+
+    &:last-child {
+      .selectize-border-radius(
+          0 0 @selectize-border-radius @selectize-border-radius
+        );
+    }
+  }
 }
 
 // vim:set ts=2 sw=2 sts=2:
