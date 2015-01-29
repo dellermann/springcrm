@@ -220,6 +220,9 @@ h2 {
 }
 
 // Selectize redefinitions
+.selectize-input {
+  padding: @padding-base-vertical @padding-base-horizontal;
+}
 .selectize-control.single .selectize-input:after {
   transform: scale(.9999);
 }
@@ -229,11 +232,20 @@ h2 {
   [data-selectable] {
     box-sizing: content-box;
     min-height: @selectize-line-height;
+    padding-left: @padding-base-horizontal;
+    padding-right: @padding-base-horizontal;
 
     &:last-child {
       .selectize-border-radius(
           0 0 @selectize-border-radius @selectize-border-radius
         );
+    }
+  }
+  .selected {
+    background: lighten(@spring-green-base, 20%);
+
+    &:hover, &:active, &:focus {
+      background: @selectize-color-dropdown-item-active;
     }
   }
 }
