@@ -18,21 +18,139 @@
 #
 #= require application
 #= require widgets/addr-fields
-#= require widgets/lightbox
+#= require _fileinput-builder
+#= require _handlebars-ext
+#= require templates/widgets/file-upload-image
 
 
 $ = jQuery
 
 
-#$("#organization").autocompleteex()
+#== Classes =====================================
 
-$(".document-delete").on "click", ->
+# Class `PictureFileinput` represents a file input widget for setting the
+# picture of a person.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
+class PictureFileinput
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
   $ = jQuery
-  $("#pictureRemove").val 1
-  $(".document-preview").add(".document-preview-links").remove()
+
+
+  #-- Constructor -------------------------------
+
+  # Creates a new file input widget for setting the picture of a person.
+  #
+  # @param [jQuery] $element  the file input control which is augmented as widget
+  #
+  constructor: ($element) ->
+    @$element = $element
+    @$pictureRemove = $('#pictureRemove')
+    @url = $element.data 'picture'
+    @newPicture = false
+
+    @_initBuilder()
+
+
+  #-- Non-public methods ------------------------
+
+  # Initializes the builder to build a fileinput widget.  The method loads the
+  # necessary templates, initializes the preview of the existing picture, and
+  # registers the event listeners.
+  #
+  # @private
+  #
+  _initBuilder: ->
+    tmpl = Handlebars.templates['widgets/file-upload-image']
+
+    builder = new SPRINGCRM.FileinputBuilder
+      browseIcon: '<i class="fa fa-picture-o"></i> '
+      browseLabel: $L('person.picture.selectButton')
+      layoutTemplates:
+        preview: tmpl section: 'preview'
+      maxFileSize: 1024
+      previewFileType: 'image'
+      previewTemplates:
+        generic: tmpl section: 'preview-generic'
+        image: tmpl section: 'preview-image'
+        other: tmpl section: 'preview-other'
+    builder.addOptions @_initPreviewOptions()
+
+    builder.build @$element
+    @_registerListeners()
+
+    return
+
+  # Initializes the initial preview if a picture already exists.
+  #
+  # @return [Object]  any options which should be set to display the initial preview
+  # @private
+  #
+  _initPreviewOptions: ->
+    previewOptions = {}
+
+    url = @url
+    if url
+      previewOptions.initialPreview = [
+          """
+<img src="#{url}" class="file-preview-image img-responsive" alt="" />
+"""
+        ]
+
+    @previewOptions = previewOptions
+
+  # Called if the user removes the file from the input.  The method sets the
+  # hidden picture remove field to inform the server that the picture should
+  # be removed.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onFileCleared: (event) ->
+    if @newPicture
+      if @url
+        $target = $(event.currentTarget)
+        window.setTimeout( =>
+            $target.fileinput 'refresh', @previewOptions
+            @_registerListeners $target
+            @newPicture = false
+
+            return
+          , 0
+        )
+    else
+      @$pictureRemove.val '1'
+
+    return
+
+  # Called if a new picture has been selected and loading into the preview.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onFileLoaded: (event) ->
+    @newPicture = true
+    @$pictureRemove.val '0'
+
+    return
+
+  # Registers any event listeners for the file input control.
+  #
+  # @private
+  #
+  _registerListeners: ->
+    @$element.on('filecleared', (event) => @_onFileCleared event)
+      .on('fileloaded', (event) => @_onFileLoaded event)
 
 
 #== Main ========================================
+
+$('#picture').each -> new PictureFileinput $(this)
 
 $('.addresses').addrfields
   menuItems:

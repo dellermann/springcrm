@@ -61,11 +61,13 @@
 @import "font-awesome/mixins";
 @import "font-awesome/path";
 @import "font-awesome/core";
+@import "font-awesome/larger";
 @import "font-awesome/spinning";
 @import "font-awesome/icons";
 
-// Bootstrap datepicker
+// Bootstrap extensions
 @import "_bootstrap-datepicker";
+@import "_bootstrap-fileinput.css";
 
 // Selectize
 @import "_selectize";
@@ -234,6 +236,50 @@ h2 {
         );
     }
   }
+}
+
+// Bootstrap file input redefinitions
+.file-preview {
+  padding: (@grid-gutter-width / 2);
+}
+.file-preview-thumbnails {
+  .clearfix();
+}
+.file-preview-frame-image {
+  border: none;
+  box-shadow: none;
+  display: block;
+  float: none;
+  height: auto;
+  margin: 0;
+  padding: 0;
+
+  &:hover {
+    box-shadow: none;
+  }
+}
+.file-caption-name {
+  .file-preview & {
+    display: block;
+    padding-right: 0;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .kv-fileinput-caption & {
+    word-break: break-all;
+    word-wrap: break-word;
+  }
+}
+.file-preview-status, .file-error-message {
+  word-break: break-all;
+  word-wrap: break-word;
+}
+.file-other-error {
+  text-align: inherit;
+}
+.fileinput-remove {
+  margin-top: 10px;
 }
 
 // vim:set ts=2 sw=2 sts=2:

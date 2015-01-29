@@ -21,7 +21,7 @@
 
 $ = jQuery
 
-window.SPRINGCRM = window.SPRINGCRM ? {}
+window.SPRINGCRM ?= {}
 
 
 # Contains variables with default values for i18n and computing.  The object

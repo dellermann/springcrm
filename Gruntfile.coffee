@@ -95,6 +95,12 @@ module.exports = (grunt) ->
             expand: true
             src: ['*.js']
           ,
+            dest: '<%= dirs.src.stylesheets %>/_bootstrap-fileinput.css'
+            src: '<%= dirs.bower.bootstrapFileinput %>/css/fileinput.css'
+          ,
+            dest: '<%= dirs.src.javascripts %>/_bootstrap-fileinput.js'
+            src: '<%= dirs.bower.bootstrapFileinput %>/js/fileinput.js'
+          ,
             cwd: '<%= dirs.bower.fontAwesome %>/less/'
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
             expand: true
@@ -236,6 +242,7 @@ module.exports = (grunt) ->
         blueimpLoadImage: '<%= dirs.bower.base %>/blueimp-load-image'
         bootstrap: '<%= dirs.bower.base %>/bootstrap'
         bootstrapDatepicker: '<%= dirs.bower.base %>/bootstrap-datepicker'
+        bootstrapFileinput: '<%= dirs.bower.base %>/bootstrap-fileinput'
         fontAwesome: '<%= dirs.bower.base %>/font-awesome'
         fullCalendar: '<%= dirs.bower.base %>/fullcalendar'
         handlebars: '<%= dirs.bower.base %>/handlebars'

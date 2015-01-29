@@ -1,7 +1,7 @@
 #
 # handlebars-ext.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,5 +19,16 @@
 #= require handlebars
 
 
+Handlebars.registerHelper 'section', (name, options) ->
+  if arguments.length < 2
+    throw new Error 'Handlebars helper "section" needs 1 parameter.'
+
+  if @section is name
+    options.fn this
+  else
+    options.inverse this
+
 Handlebars.registerHelper 'message', (key) -> $L(key)
+
+# vim:set ts=2 sw=2 sts=2:
 
