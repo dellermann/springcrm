@@ -98,7 +98,9 @@ class ViewTagLib {
         out << '</div>'
         out << '<div class="checkbox">'
         out << '<label class="checkbox-inline">'
-        out << checkBox(name: 'autoNumber', checked: checked)
+        out << checkBox(
+            name: 'autoNumber', checked: checked, 'aria-controls': 'number'
+        )
         out << message(code: 'default.number.auto.label')
         out << '</label>'
         out << '</div></div>'
