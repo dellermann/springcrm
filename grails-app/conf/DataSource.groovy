@@ -40,7 +40,8 @@ environments {
     /* development environment */
     development {
         dataSource {
-            url = "jdbc:h2:file:${appName}"
+            driverClassName = 'com.mysql.jdbc.Driver'
+            url = 'jdbc:mysql://localhost/springcrm2?autoreconnect=true'
 //            logSql = true
         }
     }

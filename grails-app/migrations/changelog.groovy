@@ -31,4 +31,5 @@ databaseChangeLog = {
     include file: 'person-title.xml'
     include file: 'bugfixes-002.xml'
     include file: 'panel-pos.xml'
+    include file: 'invoicing-items-sales-items-rel.xml'
 }
