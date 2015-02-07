@@ -21,7 +21,7 @@ module.exports = (grunt) ->
           name: 'SpringCRM'
           private: true
           title: 'SpringCRM CoffeeScript documentation'
-        src: ['<%= dirs.src.coffee %>']
+        src: ['<%= dirs.src.javascripts %>']
     coffee:
       test:
         files: [

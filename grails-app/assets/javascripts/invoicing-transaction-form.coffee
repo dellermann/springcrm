@@ -1,7 +1,7 @@
 #
 # invoicing-transaction-form.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +17,100 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _invoicing-items
+#= require widgets/addr-fields
+# = require _invoicing-items
 
 
 $ = jQuery
+
+
+#== Classes =====================================
+
+class InvoicingTransaction
+
+  #-- Internal variables ------------------------
+  
+  # @nodoc
+  $ = jQuery
+
+  # @nodoc
+  $LANG = $L
+
+
+  #-- Class variables ---------------------------
+
+  @DEFAULTS =
+    organizationId: '#organization-select'
+
+
+  #-- Constructor -------------------------------
+
+  # Creates a new widget which handles the actions within an invoicing
+  # transaction form.
+  #
+  # @param [jQuery] $element  the element containing the form
+  # @param [Object] [options] any options
+  #
+  constructor: ($element, options = {}) ->
+    $ = jQuery
+
+    @$element = $element
+    @options = opts = $.extend {}, InvoicingTransaction.DEFAULTS, options
+
+    $(opts.organizationId).on 'change', => @_onSelectOrganization()
+    @_initAddrFields()
+
+
+  #-- Non-public methods ------------------------
+
+  # Initializes the address fields of this form.
+  #
+  # @private
+  #
+  _initAddrFields: ->
+    $L = $LANG
+
+    @$addresses = $('.addresses').addrfields
+      menuItems:
+        left: [
+            action: 'clear'
+            text: $L('invoicingTransaction.billingAddr.clear')
+          ,
+            action: 'copy'
+            text: $L('invoicingTransaction.billingAddr.copy')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'billingAddr'
+            text: $L('invoicingTransaction.addr.fromOrgBillingAddr')
+        ]
+        right: [
+            action: 'clear'
+            text: $L('invoicingTransaction.shippingAddr.clear')
+          ,
+            action: 'copy'
+            text: $L('invoicingTransaction.shippingAddr.copy')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'shippingAddr'
+            text: $L('invoicingTransaction.addr.fromOrgShippingAddr')
+        ]
+      organizationId: @options.organizationId
+    
+    return
+
+  # Called if an organization has been selected.  The method fills in the
+  # address fields with the data of the selected organization.
+  #
+  # @private
+  #
+  _onSelectOrganization: ->
+    @$addresses.addrfields 'loadFromOrganization'
+
+SPRINGCRM.InvoicingTransaction = InvoicingTransaction
+
+
+
+
 
 
 # Defines a jQuery widget which handles invoicing transactions such as quotes,
@@ -28,13 +118,12 @@ $ = jQuery
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 #
 InvoicingTransactionWidget =
 
   options:
     checkStageTransition: true
-    organizationId: "#organization\\.id"
     stageValues: null
 
   # Gets the ID of the selected organization.
@@ -70,11 +159,6 @@ InvoicingTransactionWidget =
       .find(".price-table")
         .invoicingitems()
       .end()
-      .find("#organization")
-        .autocompleteex(
-          select: => @_onSelectOrganization()
-        )
-      .end()
       .find("#person")
         .autocompleteex(
           loadParameters: => @getOrganizationId()
@@ -83,39 +167,6 @@ InvoicingTransactionWidget =
       .find("#paymentAmount")
         .trigger("change")
       .end()
-      .find("#addresses")
-        .addrfields(
-          leftPrefix: "billingAddr"
-          menuItems: [
-            action: "clear"
-            side: "left"
-            text: $L("invoicingTransaction.billingAddr.clear")
-          ,
-            action: "copy"
-            side: "left"
-            text: $L("invoicingTransaction.billingAddr.copy")
-          ,
-            action: "loadFromOrganization"
-            propPrefix: "billingAddr"
-            side: "left"
-            text: $L("invoicingTransaction.addr.fromOrgBillingAddr")
-          ,
-            action: "clear"
-            side: "right"
-            text: $L("invoicingTransaction.shippingAddr.clear")
-          ,
-            action: "copy"
-            side: "right"
-            text: $L("invoicingTransaction.shippingAddr.copy")
-          ,
-            action: "loadFromOrganization"
-            propPrefix: "shippingAddr"
-            side: "right"
-            text: $L("invoicingTransaction.addr.fromOrgShippingAddr")
-          ]
-          organizationId: @options.organizationId
-          rightPrefix: "shippingAddr"
-        )
     @_initStageValues()
 
   # Gets the modified closing balance of this invoicing transaction used as
@@ -245,14 +296,6 @@ InvoicingTransactionWidget =
           .trigger("change")
     false
 
-  # Called if the user selects an organization.  The method fills in the
-  # address fields with the data of the selected organization.
-  #
-  _onSelectOrganization: ->
-    @element.find("#addresses")
-      .addrfields("loadFromOrganizationToLeft", "billingAddr")
-      .addrfields("loadFromOrganizationToRight", "shippingAddr")
-
   # Called if the invoicing transaction form is submitted.  The method checks
   # whether there is a stage transition and asks the user for confirmation if
   # the stages changes to a value equal to or above "shipping".  This is
@@ -273,4 +316,7 @@ InvoicingTransactionWidget =
           res = $.confirm $L("invoicingTransaction.changeState.label")
     res
 
-$.widget "springcrm.invoicingtransaction", InvoicingTransactionWidget
+#$.widget "springcrm.invoicingtransaction", InvoicingTransactionWidget
+
+# vim:set ts=2 sw=2 sts=2:
+

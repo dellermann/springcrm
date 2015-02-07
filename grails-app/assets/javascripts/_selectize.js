@@ -1168,7 +1168,6 @@
 			$dropdown_content = $('<div>').addClass(settings.dropdownContentClass).appendTo($dropdown);
 	
 			if(self.settings.copyClassesToDropdown) {
-				debugger;
 				$dropdown.addClass(classes);
 			}
 	

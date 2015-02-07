@@ -47,9 +47,9 @@ JQueryUiStaticExt =
   # Displays an alert message in a modal to the user.  The method is used to
   # abstract the access to the actual alert modal.
   #
-  # @param [String] msg     the message (prompt) to be displayed
-  # @param [String] [title] an optional title of the modal
-  # @return [jQuery]        this jQuery object
+  # @param [String] msg   the message (prompt) to be displayed
+  # @param [String] title an optional title of the modal
+  # @return [jQuery]      this jQuery object
   #
   alert: (msg, title) ->
     $dlg = $('#alert-modal')
@@ -75,47 +75,80 @@ JQueryUiStaticExt =
   # Displays a confirmation message to the user.  The method is used to
   # abstract the access to the actual confirmation dialog.
   #
-  # @param [String] msg       the message (prompt) to be displayed
-  # @param [String] [title]   an optional title of the modal
-  # @param [Object] [options] any options which are used in the modal
-  # @return [Promise]         a deferred object which is resolved if the user confirms; otherwise it is rejected
+  # The function accepts the following options:
+  #
+  # #### Dialog options
+  #
+  # * `okBtn`.  Options concerning the OK button
+  #
+  #   - `color`.  The color of the button.
+  #
+  #   - `label`.  The label of the button.
+  #
+  #   - `icon`.  The icon to display without the `fa-` prefix.
+  #
+  # * `cancelBtn`.  Options concerning the cancel button
+  #
+  #   - `color`.  The color of the button.
+  #
+  #   - `label`.  The label of the button.
+  #
+  #   - `icon`.  The icon to display without the `fa-` prefix.
+  #
+  # #### Options for deferred object
+  #
+  # * `context`.  The context object to set when resolving or rejecting the
+  #   returned deferred object.
+  # * `arguments`.  Any arguments to pass to the deferred object when
+  #   resolving or rejecting the returned deferred object.
+  #
+  # @param [String] msg     the message (prompt) to be displayed
+  # @param [String] title   an optional title of the modal
+  # @param [Object] options any options which are used in the modal and the deferred object; see function description for more information
+  # @return [Promise]       a deferred object which is resolved if the user confirms; otherwise it is rejected
   #
   confirm: (msg, title, options = {}) ->
     $ = jQuery
+    unless $.type(title) is 'string'
+      options = title
+      title = null
 
-    deferred = $.Deferred()
+    $.Deferred((d) ->
+        opts = options
 
-    $dlg = $('#confirm-modal')
-    $dlg.find('.modal-title').text title if title
+        $dlg = $('#confirm-modal')
+        $dlg.find('.modal-title').text title if title
 
-    btnOpts = options.okBtn
-    if btnOpts
-      $btn = $dlg.find '.btn-ok'
-      s = btnOpts.color
-      $btn.removeClass('btn-success').addClass "btn-#{s}" if s
-      s = btnOpts.label
-      $btn.find('span').text s if s
-      s = btnOpts.icon
-      $btn.find('i').attr 'class', "fa fa-#{s}" if s
+        btnOpts = opts.okBtn
+        if btnOpts
+          $btn = $dlg.find '.btn-ok'
+          s = btnOpts.color
+          $btn.removeClass('btn-success').addClass "btn-#{s}" if s
+          s = btnOpts.label
+          $btn.find('span').text s if s
+          s = btnOpts.icon
+          $btn.find('i').attr 'class', "fa fa-#{s}" if s
 
-    btnOpts = options.cancelBtn
-    if btnOpts
-      $btn = $dlg.find '.btn-cancel'
-      s = btnOpts.color
-      $btn.removeClass('btn-default').addClass "btn-#{s}" if s
-      s = btnOpts.label
-      $btn.find('span').text s if s
-      s = btnOpts.icon
-      $btn.find('i').attr 'class', "fa fa-#{s}" if s
+        btnOpts = opts.cancelBtn
+        if btnOpts
+          $btn = $dlg.find '.btn-cancel'
+          s = btnOpts.color
+          $btn.removeClass('btn-default').addClass "btn-#{s}" if s
+          s = btnOpts.label
+          $btn.find('span').text s if s
+          s = btnOpts.icon
+          $btn.find('i').attr 'class', "fa fa-#{s}" if s
 
-    $dlg.find('.modal-body p')
-        .text(msg)
-      .end()
-      .on('click', '.btn-ok', -> deferred.resolveWith $dlg)
-      .on('click', '.btn-cancel', -> deferred.rejectWith $dlg)
-      .modal()
-
-    deferred.promise()
+        method = 'rejectWith'
+        $dlg.find('.modal-body p')
+            .text(msg)
+          .end()
+          .on('click', '.btn-ok', -> method = 'resolveWith')
+          .on('hidden.bs.modal', ->
+            d[method].apply d, [opts.context ? $dlg, opts.arguments ? []]
+          )
+          .modal()
+      ).promise()
 
 $.extend JQueryUiStaticExt
 
@@ -278,12 +311,25 @@ class Page
 
     url = $element.data 'find-url'
     if url
+      $organization = $($element.data 'filter-organization')
+      $resetOnChange = $($element.data 'reset-on-change')
       $.extend opts,
         labelField: 'name'
         load: (query, callback) ->
-          $.getJSON(url, name: query)
+          $org = $organization
+
+          data = name: query
+          data.organization = $org.val() if $org.length
+
+          $.getJSON(url, data)
             .done((data) -> callback data)
             .fail(-> callback())
+
+          return
+        onItemAdd: ->
+          $otherSel = $resetOnChange
+          $otherSel[0].selectize.clearOptions() if $otherSel.length
+          return
         preload: 'focus'
         searchField: ['name']
         sortField: 'name'

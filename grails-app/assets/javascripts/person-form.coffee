@@ -184,7 +184,7 @@ $('.addresses').addrfields
         prefix: 'shippingAddr'
         text: $L('person.addr.fromOrgShippingAddr')
     ]
-  organizationId: '#organization.id'
+  organizationId: '#organization-select'
 
 # vim:set ts=2 sw=2 sts=2:
 
