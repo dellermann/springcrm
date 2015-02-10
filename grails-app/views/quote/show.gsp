@@ -11,8 +11,12 @@
 
   <body>
     <g:applyLayout name="show" model="[instance: quoteInstance]">
+      <content tag="toolbarItems">
+        <g:applyLayout name="invoicingTransactionPrintToolbar"
+          model="[id: quoteInstance.id]" />
+      </content>
       <content tag="actionBarStart">
-        <g:applyLayout name="invoicingTransactionPrint"
+        <g:applyLayout name="invoicingTransactionPrintActionBar"
           model="[id: quoteInstance.id]" />
       </content>
       <content tag="actionMenu">

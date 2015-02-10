@@ -7,19 +7,19 @@
   ></button>
   <ul id="print-menu" class="dropdown-menu" role="menu" aria-expanded="false">
     <li class="dropdown-header" role="presentation">
-      <g:message code="invoicingTransaction.print.original" />
+      <g:message code="invoicingTransaction.print.original.short" />
     </li>
     <g:each in="${printTemplates}">
-    <li>
+    <li role="menuitem">
       <g:link action="print" id="${id}" params="[template: it.key]"
         >${it.value}</g:link>
     </li>
     </g:each>
     <li class="dropdown-header" role="presentation">
-      <g:message code="invoicingTransaction.print.copy" />
+      <g:message code="invoicingTransaction.print.copy.short" />
     </li>
     <g:each in="${printTemplates}">
-    <li>
+    <li role="menuitem">
       <g:link action="print" id="${id}"
         params="[duplicate: 1, template: it.key]">${it.value}</g:link>
     </li>

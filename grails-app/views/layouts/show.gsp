@@ -1,3 +1,14 @@
+<content tag="backLink">
+  <g:link action="index" params="${listParams}"
+    class="navbar-back-link visible-xs"
+    ><i class="fa fa-arrow-left"></i>
+    <span class="sr-only"
+      ><g:message code="default.button.back.toList"
+    /></span
+  ></g:link>
+  <h1 class="navbar-title visible-xs">${entitiesName}</h1>
+</content>
+
 <div class="row">
   <div class="title-toolbar">
     <div class="title">
@@ -54,6 +65,7 @@
             <g:message code="default.button.delete.label" />
           </g:link>
         </li>
+        <g:pageProperty name="page.toolbarItems" />
       </ul>
     </div>
   </div>
