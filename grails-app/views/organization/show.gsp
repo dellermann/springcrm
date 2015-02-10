@@ -107,38 +107,65 @@
 
       <g:set var="loadParams" value="organization=${organizationInstance.id}" />
       <g:applyLayout name="remoteList"
-        model="[controller: 'person', createParams: ['organization.id': organizationInstance.id, returnUrl: url()]]" />
+        model="[
+          controller: 'person', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
       <g:if test="${organizationInstance.isCustomer()}">
       <g:ifModuleAllowed modules="quote">
       <g:applyLayout name="remoteList"
-        model="[controller: 'quote', createParams: ['organization.id': organizationInstance.id]]" />
+        model="[
+          controller: 'quote',
+          createParams: ['organization.id': organizationInstance.id]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="salesOrder">
       <g:applyLayout name="remoteList"
-        model="[controller: 'salesOrder', createParams: ['organization.id': organizationInstance.id]]" />
+        model="[
+          controller: 'salesOrder',
+          createParams: ['organization.id': organizationInstance.id]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="invoice">
       <g:applyLayout name="remoteList"
-        model="[controller: 'invoice', createParams: ['organization.id': organizationInstance.id]]" />
+        model="[
+          controller: 'invoice',
+          createParams: ['organization.id': organizationInstance.id]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="dunning">
       <g:applyLayout name="remoteList"
-        model="[controller: 'dunning', createParams: ['organization.id': organizationInstance.id]]" />
+        model="[
+          controller: 'dunning',
+          createParams: ['organization.id': organizationInstance.id]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="creditMemo">
       <g:applyLayout name="remoteList"
-        model="[controller: 'creditMemo', createParams: ['organization.id': organizationInstance.id]]" />
+        model="[
+          controller: 'creditMemo',
+          createParams: ['organization.id': organizationInstance.id]
+        ]" />
       </g:ifModuleAllowed>
       </g:if>
       <g:if test="${organizationInstance.isVendor()}">
       <g:ifModuleAllowed modules="purchaseInvoice">
       <g:applyLayout name="remoteList"
-        model="[controller: 'purchaseInvoice', createParams: ['organization.id': organizationInstance.id, returnUrl: url()]]" />
+        model="[
+          controller: 'purchaseInvoice', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
       </g:if>
       <g:ifModuleAllowed modules="project">
       <g:applyLayout name="remoteList"
-        model="[controller: 'project', createParams: ['organization.id': organizationInstance.id, returnUrl: url()]]" />
+        model="[
+          controller: 'project', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="document">
       <g:applyLayout name="remoteList"
@@ -146,11 +173,19 @@
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="call">
       <g:applyLayout name="remoteList"
-        model="[controller: 'call', createParams: ['organization.id': organizationInstance.id, returnUrl: url()]]" />
+        model="[
+          controller: 'call', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="note">
       <g:applyLayout name="remoteList"
-        model="[controller: 'note', createParams: ['organization.id': organizationInstance.id, returnUrl: url()]]" />
+        model="[
+          controller: 'note', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
     </g:applyLayout>
 

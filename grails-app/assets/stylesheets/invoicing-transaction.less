@@ -22,7 +22,7 @@
 @import "_typeahead";
 
 
-// price tables
+// price tables (forms)
 .price-table {
   .row-subtotal-net {
     border-top: 1px double @spring-gray;        // displayed as 1px solid
@@ -106,50 +106,6 @@
       width: 200px;
     }
   }
-//  .item-name {
-//    font-weight: bold;
-//  }
-//  .item-description {
-//    margin-top: .5em;
-//
-//    li {
-//      margin-bottom: .3em;
-//    }
-//    ol, ul {
-//      margin-bottom: .5em;
-//      margin-top: .5em;
-//    }
-//    p {
-//      margin-bottom: .5em;
-//
-//      &:last-child {
-//        margin-bottom: 0;
-//      }
-//    }
-//  }
-//  .field-text span {
-//    padding-right: .7ex;
-//  }
-//  #discount-from-percent {
-//    padding-top: @padding-input-v + .1em;
-//  }
-//  .label {
-//    vertical-align: middle;
-//  }
-//  label {
-//    padding: 0;
-//
-//    &:after {
-//      content: "";
-//    }
-//  }
-//  output:empty {            // bugfix for Chrome
-//    content: "\00A0";
-//    display: inline-block;
-//  }
-//  .total, .subtotal {
-//    font-weight: bold;
-//  }
 }
 .price-table-buttons {
   margin-top: @line-height-computed;
@@ -168,15 +124,43 @@
   }
 }
 
-///* balance markers */
-//.balance-state-green {
-//  color: #080;
-//}
-//.balance-state-red {
-//  color: #800;
-//}
-//
-///* payment markers */
+// price tables (detail view)
+.detail-view .price-table {
+  .item-name {
+    font-weight: bold;
+  }
+  .item-description {
+    margin-top: @margin-small-vertical;
+
+    li {
+      margin-bottom: @margin-xs-vertical;
+    }
+    ol, ul {
+      margin-bottom: @margin-small-vertical;
+      margin-top: @margin-small-vertical;
+    }
+    p {
+      margin-bottom: @margin-small-vertical;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .row-total, .row-subtotal {
+    font-weight: bold;
+  }
+}
+
+// balance markers
+.balance-state-green {
+  color: #080;
+}
+.balance-state-red {
+  color: #800;
+}
+
+// payment markers
 //.payment-state-green {
 //  .background-alpha(rgba(183, 255, 29, .6));
 //}
@@ -200,26 +184,26 @@
 //  .background-alpha(rgba(0, 7, 24, .6));
 //  color: white;
 //}
-//
-///* markers for still unpaid text */
-//#still-unpaid {
-//  padding-left: 1ex;
-//
-//  &:hover {
-//    cursor: pointer;
-//    text-decoration: underline;
-//  }
-//}
-//.still-unpaid-unpaid, .still-unpaid-unpaid:hover {
-//  color: #800;
-//}
-//.still-unpaid-paid, .still-unpaid-paid:hover {
-//  color: #080;
-//}
-//.still-unpaid-too-much, .still-unpaid-too-much:hover {
-//  color: #880;
-//  cursor: default;
-//}
+
+// markers for still unpaid text
+#still-unpaid {
+  padding-left: 1ex;
+
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+.still-unpaid-unpaid, .still-unpaid-unpaid:hover {
+  color: #800;
+}
+.still-unpaid-paid, .still-unpaid-paid:hover {
+  color: #080;
+}
+.still-unpaid-too-much, .still-unpaid-too-much:hover {
+  color: #880;
+  cursor: default;
+}
 
 // vim:set ts=2 sw=2 sts=2:
 

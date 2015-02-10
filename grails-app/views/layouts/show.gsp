@@ -60,18 +60,22 @@
 </div>
 <div class="caption-action-bar hidden-xs">
   <div class="caption"><h2>${instance}</h2></div>
-  <div class="action-bar">
+  <div class="action-bar${pageProperty(name: 'page.actionBarStart') || pageProperty(name: 'page.actionBarEnd') ? ' action-bar-lg' : ''}">
+    <g:pageProperty name="page.actionBarStart" />
     <g:if test="${pageProperty(name: 'page.actionMenu')}">
-    <button type="button" class="btn btn-default" data-toggle="dropdown"
-      aria-haspopup="true" aria-owns="action-bar-menu"
-      ><i class="fa fa-cogs"></i> <g:message code="default.actions" />
-      <span class="caret"></span
-    ></button>
-    <ul id="action-bar-menu" class="dropdown-menu" role="menu"
-      aria-expanded="false">
-      <g:pageProperty name="page.actionMenu" />
-    </ul>
+    <div class="btn-group">
+      <button type="button" class="btn btn-default dropdown-toggle"
+        data-toggle="dropdown" aria-haspopup="true" aria-owns="action-bar-menu"
+        ><i class="fa fa-cogs"></i> <g:message code="default.actions" />
+        <span class="caret"></span
+      ></button>
+      <ul id="action-bar-menu" class="dropdown-menu" role="menu"
+        aria-expanded="false">
+        <g:pageProperty name="page.actionMenu" />
+      </ul>
+    </div>
     </g:if>
+    <g:pageProperty name="page.actionBarEnd" />
   </div>
 </div>
 <div class="main-content">

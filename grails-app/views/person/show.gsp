@@ -97,35 +97,78 @@
       <g:set var="loadParams" value="person=${personInstance.id}" />
       <g:ifModuleAllowed modules="quote">
       <g:applyLayout name="remoteList"
-        model="[controller: 'quote', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id]]" />
+        model="[
+          controller: 'quote', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="salesOrder">
       <g:applyLayout name="remoteList"
-        model="[controller: 'salesOrder', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id]]" />
+        model="[
+          controller: 'salesOrder', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="invoice">
       <g:applyLayout name="remoteList"
-        model="[controller: 'invoice', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id]]" />
+        model="[
+          controller: 'invoice', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="dunning">
       <g:applyLayout name="remoteList"
-        model="[controller: 'dunning', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id]]" />
+        model="[
+          controller: 'dunning', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="creditMemo">
       <g:applyLayout name="remoteList"
-        model="[controller: 'creditMemo', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id]]" />
+        model="[
+          controller: 'creditMemo', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="project">
       <g:applyLayout name="remoteList"
-        model="[controller: 'project', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id, returnUrl: url()]]" />
+        model="[
+          controller: 'project', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id,
+            returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="call">
       <g:applyLayout name="remoteList"
-        model="[controller: 'call', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id, returnUrl: url()]]" />
+        model="[
+          controller: 'call', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id,
+            returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
       <g:ifModuleAllowed modules="note">
       <g:applyLayout name="remoteList"
-        model="[controller: 'note', createParams: ['person.id': personInstance.id, 'organization.id': personInstance?.organization?.id, returnUrl: url()]]" />
+        model="[
+          controller: 'note', createParams: [
+            'person.id': personInstance.id,
+            'organization.id': personInstance?.organization?.id,
+            returnUrl: url()
+          ]
+        ]" />
       </g:ifModuleAllowed>
     </g:applyLayout>
 
