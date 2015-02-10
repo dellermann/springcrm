@@ -273,6 +273,12 @@ class Page
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
       )
+      .on('focusin', '.form-control-number', (event) =>
+        @_onFocusInNumberControl event
+      )
+      .on('focusout', '.form-control-number', (event) =>
+        @_onFocusOutNumberControl event
+      )
       .on('change', '.date-input-control', (event) =>
         @_onChangeDateInput event
       )
@@ -440,6 +446,42 @@ class Page
 
     return
 
+  # Called if a number control gets the focus.  The method removes all zeros
+  # after the decimal point.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onFocusInNumberControl: (event) ->
+    $target = $(event.currentTarget)
+
+    val = $target.val().parseNumber()
+    $target.val (if val then val.format(null, false) else '')
+
+    return
+
+  # Called if a number control looses the focus.  The method formats the
+  # number depending on the type of number control (currency, percentage
+  # etc.).
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onFocusOutNumberControl: (event) ->
+    $target = $(event.currentTarget)
+
+    numDigits = $I.numFractions
+    if $target.hasClass 'form-control-currency-ext'
+      numDigits = $I.numFractionsExt
+    else if $target.hasClass 'form-control-percentage'
+      numDigits = 1
+    d = $target.data('num-fraction-digits')
+    numDigits = parseInt d, 10 if d?
+    numDigits = null if $target.data 'suppress-reformat'
+
+    val = $target.val().parseNumber()
+    $target.val val.format numDigits
+
   # Called if the window has been finished loading and rendering.
   #
   # @param [Event] event  any event data
@@ -480,164 +522,11 @@ new Page()
 
 #============== TODO ============================
 
-
-# Renders an autocomplete input field with extended functionality.  The
-# `autocompleteex` widget forces the user to select a value.  If not, the input
-# field is reset to its old content.
-#
-# @mixin
-# @author   Daniel Ellermann
-# @version  1.3
-#
-AutoCompleteExWidget =
-  options:
-    combobox: true
-    labelProp: 'name'
-    loadParameters: {}
-    lookupUrl: null
-    noSelectValue: 'null'
-    url: null
-    valueInput: null
-    valueProp: 'id'
-
-  # Initializes this widget.
-  #
-  _create: ->
-    $ = jQuery
-
-    parentOpts = {}
-    @_prepareOptions()
-    opts = @options
-    $.extend parentOpts, opts
-
-    el = @element
-    el.autocomplete(parentOpts)
-      .wrap("<span class='#{@widgetFullName}-combobox'/>")
-      .focus(=> @_onFocus())
-      .blur => @_onBlur()
-
-    @valueInput = @_getValueInput()
-    if opts.combobox
-      el.after $('<a/>',
-          click: (event) => @_onClickComboboxBtn event
-          html: '<i class="fa fa-caret-down"></i>'
-        )
-
-  _getValueInput: ->
-    $ = jQuery
-
-    valueInput = null
-    v = @options.valueInput
-    if v
-      switch $.type(v)
-        when 'string' then valueInput = $(v)
-        when 'function' then valueInput = v.call(this)
-    else
-      el = @element
-      name = el.attr('name')
-      if name
-        valueInput = $(":input[name=#{name}.id]")
-      else
-        name = el.attr('id')
-        if name
-          valueInput = $("##{name}\\.id")
-          valueInput = $("##{name}-id") unless valueInput.length
-    valueInput
-
-  _load: (request, response) ->
-    opts = @options
-    url = opts.url
-    if url
-      $ = jQuery
-
-      p = opts.loadParameters
-      params = {}
-      params = (if $.isFunction(p) then p.call(this) else p) if p
-      params.name = request.term
-
-      $.getJSON url, params, (data) =>
-        opts = @options
-        labelProp = opts.labelProp
-        valueProp = opts.valueProp
-        response $.map(data, (item) ->
-          label: item[labelProp]
-          value: item[valueProp]
-        )
-
-  _onBlur: ->
-    el = @element
-    val = el.val()
-    valueInput = @valueInput
-    if val is ''
-      valueInput.val @options.noSelectValue
-    else
-      valueInput.val @oldValue
-      el.val @oldLabel
-
-  _onClickComboboxBtn: (event) ->
-    el = @element
-    if el.autocomplete('widget').is ':visible'
-      el.autocomplete 'close'
-      return
-
-    # work around a bug (likely same cause as #5265)
-    $(event.target).blur()
-
-    # pass wildcard as value to search for, displaying all results
-    el.autocomplete 'search', '%'
-    el.focus()
-
-  _onFocus: ->
-    @oldValue = @valueInput.val()
-    @oldLabel = @element.val()
-
-  _onFocusItem: (event, ui) ->
-    $(event.target).val ui.item.label
-
-  _onSelect: (event, ui) ->
-    item = ui.item
-    s = item.label
-    @oldLabel = s
-    @element.val s
-
-    s = item.value
-    @oldValue = s
-    @valueInput.val s
-
-  _prepareOptions: ->
-    el = @element
-    self = this
-
-    opts = @options
-    unless opts.source
-      url = opts.url or el.data('find-url')
-      if url
-        opts.url = url
-        opts.source = (request, response) => @_load(request, response)
-
-    select = opts.select
-    opts.select = =>
-      @_onSelect.apply this, arguments
-      select.apply this, arguments if select
-      false
-
-    focus = opts.focus
-    opts.focus = =>
-      @_onFocusItem.apply this, arguments
-      focus.apply this, arguments if focus
-      false
-    this
-
-#$.widget 'springcrm.autocompleteex', $.ui.autocomplete, AutoCompleteExWidget
-
-
 SPRINGCRM.page = (->
   $ = jQuery
   win = window
   doc = win.document
   $document = $(doc)
-
-  $spinner = $('#spinner')
 
   # Initializes the page and their elements.
   #
@@ -656,17 +545,7 @@ SPRINGCRM.page = (->
           width: $jsCalcContainer.width() + 30
       false
 
-    $('#main-container').on('focusin', '.currency :input, :input.currency', ->
-        $this = $(this)
-        val = $this.val().parseNumber()
-        $this.val (if val then val.format() else '')
-      )
-      .on('focusout', '.currency :input, :input.currency', ->
-        $this = $(this)
-        val = $this.val().parseNumber()
-        $this.val if $this.is '.currency-ext' then val.formatCurrencyValueExt() else val.formatCurrencyValue()
-      )
-      .on('click', '#print-btn', -> win.print())
+    $('#main-container').on('click', '#print-btn', -> win.print())
 
 #    $('.date-input-time').autocomplete
 #        select: onSelectTimeValue

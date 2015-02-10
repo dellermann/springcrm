@@ -1,0 +1,51 @@
+//
+// _typeahead.less
+//
+// Copyright (c) 2011-2015, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
+span.twitter-typeahead {
+  width: 100%;
+
+  .tt-dropdown-menu:extend(.dropdown-menu) {}
+  .tt-suggestion > p:extend(.dropdown-menu > li > a all) {
+    margin-bottom: 0;
+
+    &:hover, &:focus {
+      &:extend(.dropdown-menu > .active > a);
+    }
+  }
+  .input-group & {
+    display: block !important;
+
+    .tt-dropdown-menu {
+      top: 32px !important;
+    }
+  }
+  .input-group.input-group-lg & {
+    .tt-dropdown-menu {
+      top: 44px !important;
+    }
+  }
+  .input-group.input-group-sm & {
+    .tt-dropdown-menu {
+      top: 28px !important;
+    }
+  }
+}
+
+// vim:set ts=2 sw=2 sts=2:

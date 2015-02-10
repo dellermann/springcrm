@@ -180,6 +180,9 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
             src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
+          ,
+            dest: '<%= dirs.src.javascripts %>/_typeahead.js'
+            src: '<%= dirs.bower.typeahead %>/typeahead.bundle.js'
         ]
         options:
           encoding: null
@@ -254,6 +257,7 @@ module.exports = (grunt) ->
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         moment: '<%= dirs.bower.base %>/moment'
         qunit: '<%= dirs.bower.base %>/qunit'
+        typeahead: '<%= dirs.bower.base %>/typeahead.js'
       src:
         assets: '<%= dirs.src.grailsApp %>/assets'
         base: '.'

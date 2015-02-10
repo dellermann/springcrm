@@ -36,6 +36,7 @@ window.$I = do ->
   $html = $('html')
 
   lang: $html.attr('lang') or 'en'
+  currencySymbol: $html.data('currency-symbol') or '€'
   decimalSeparator: $html.data('decimal-separator') or ','
   groupingSeparator: $html.data('grouping-separator') or '.'
   numFractions: $html.data('num-fraction-digits') or 2
@@ -120,32 +121,38 @@ Date::format = (format = 'datetime') ->
 # are not set, a dot (.) is used as decimal separator and a comma (,) as
 # grouping separator.
 #
-# @param [Number] n the precision; if not set or `null` the precision remains unchanged
-# @return [String]  the formatted number
+# @param [Number] n                     the precision; if not set or `null` the precision remains unchanged
+# @param [Boolean] useGroupingSeparator if `true` the grouping separator is used; `false` otherwise
+# @return [String]                      the formatted number
 # @since            1.3
 #
-Number::format = (n = null) ->
-  gs = $I.groupingSeparator
+Number::format = (n = null, useGroupingSeparator = true) ->
+  gs = if useGroupingSeparator then $I.groupingSeparator else ''
 
   num = this
-  if isNaN(num) or not isFinite(num)
-    return '---'
-  numSgn = (if (n is null) then num else num.round(n))
-  sgn = (if numSgn < 0 then '-' else '')
-  n = (if (n is null) then undefined else Math.abs(n))
+  return '---' if isNaN(num) or not isFinite(num)
+
+  numSgn = if n is null then num else num.round(n)
+  sgn = if numSgn < 0 then '-' else ''
+  n = if n is null then undefined else Math.abs(n)
   num = Math.abs(+num or 0)
   int = String(parseInt(
-    num = (if isNaN(n) then num.toString() else num.toFixed(n)), 10
+    num = (if isNaN n then num.toString() else num.toFixed n), 10
   ))
-  pos = (if (pos = int.length) > 3 then pos % 3 else 0)
+  pos = if (pos = int.length) > 3 then pos % 3 else 0
 
   frac = ''
   if n isnt 0
-    dotPos = num.indexOf('.')
+    dotPos = num.indexOf '.'
     if dotPos >= 0
-      frac = Math.abs(num.substring(dotPos))
-      frac = (if isNaN(n) then frac.toString() else frac.toFixed(n))
-      frac = $I.decimalSeparator + frac.substring(2)
+      frac = Math.abs num.substring dotPos
+      if isNaN n
+        frac = frac.toString()
+        frac = '' if frac.match /[Ee]-/
+      else
+        frac = frac.toFixed n
+      frac = $I.decimalSeparator + frac.substring(2) if frac
+
   sgn + ((if pos then int.substr(0, pos) + gs else '')) +
     int.substr(pos).replace(/(\d{3})(?=\d)/g, '$1' + gs) + frac
 

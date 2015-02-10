@@ -143,8 +143,14 @@
 .form-horizontal .control-label {
   text-align: left;
 }
-.input-group + .checkbox {
-  padding-top: floor(@padding-small-vertical / 2);
+.input-group {
+  + .checkbox {
+    padding-top: floor(@padding-small-vertical / 2);
+  }
+  > .twitter-typeahead:first-child .tt-input {
+    border-bottom-left-radius: @input-border-radius;
+    border-top-left-radius: @input-border-radius;
+  }
 }
 .control-messages {
   list-style: none;

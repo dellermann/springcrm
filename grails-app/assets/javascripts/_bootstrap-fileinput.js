@@ -2,14 +2,14 @@
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2015
  * @version 4.1.6
  *
- * File input styled for Bootstrap 3.0 that utilizes HTML5 File Input's advanced
- * features including the FileReader API.
- *
+ * File input styled for Bootstrap 3.0 that utilizes HTML5 File Input's advanced 
+ * features including the FileReader API. 
+ * 
  * The plugin drastically enhances the HTML file input to preview multiple files on the client before
- * upload. In addition it provides the ability to preview content of images, text, videos, audio, html,
- * flash and other objects. It also offers the ability to upload and delete files using AJAX, and add
+ * upload. In addition it provides the ability to preview content of images, text, videos, audio, html, 
+ * flash and other objects. It also offers the ability to upload and delete files using AJAX, and add 
  * files in batches (i.e. preview, append, or remove before upload).
- *
+ * 
  * Author: Kartik Visweswaran
  * Copyright: 2015, Kartik Visweswaran, Krajee.com
  * For more JQuery plugins visit http://plugins.krajee.com
@@ -794,7 +794,7 @@
                     xhr[i].abort();
                 }
             }
-            self.$preview.find('.file-preview-frame').each(function () {
+            self.$preview.find('.file-preview-frame').each(function () {  
                 $thumb = $(this), ind = $thumb.attr('data-fileindex');
                 $thumb.removeClass('file-uploading');
                 if (self.filestack[ind] !== undefined) {
@@ -1110,7 +1110,7 @@
                     var outData = self.getOutData(jqXHR);
                     self.showUploadError(errorThrown, outData, null, null, 'filebatchuploaderror');
                     self.uploadFileCount = total - 1;
-                    self.$preview.find('.file-preview-frame').each(function () {
+                    self.$preview.find('.file-preview-frame').each(function () {  
                         var $thumb = $(this), key = $thumb.attr('data-fileindex');
                         $thumb.removeClass('file-uploading');
                         if (self.filestack[key] !== undefined) {
@@ -1218,7 +1218,7 @@
             if (arguments.length > 2) {
                 var $err = $(self.msgValidationError);
                 frameClass = ' btn disabled';
-                footer += '<div class="file-other-error text-danger"><i class="fa fa-warning"></i></div>';
+                footer += '<div class="file-other-error text-danger"><i class="glyphicon glyphicon-exclamation-sign"></i></div>';
             }
             self.$preview.append("\n" + previewOtherTemplate
                 .replace(/\{previewId\}/g, previewId)

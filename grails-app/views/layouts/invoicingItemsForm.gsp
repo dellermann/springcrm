@@ -34,7 +34,8 @@
         <td></td>
         <td class="col-type-number col-type-currency">
           <div class="input-group">
-            <input type="text" id="subtotal-net" class="form-control"
+            <input type="text" id="subtotal-net"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: "number", number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="subtotal-net-currency" />
@@ -55,7 +56,8 @@
         <td></td>
         <td class="col-type-number col-type-currency">
           <div class="input-group">
-            <input type="text" id="subtotal-gross" class="form-control"
+            <input type="text" id="subtotal-gross"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: "number", number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="subtotal-gross-currency" />
@@ -75,8 +77,9 @@
         </td>
         <td class="col-type-number col-type-percentage">
           <div class="input-group">
-            <g:textField name="discountPercent" class="form-control"
-              value="${fieldValue(bean: invoicingTransaction, field: 'discountPercent')}"
+            <g:textField name="discountPercent"
+              class="form-control form-control-number form-control-percentage"
+              value="${formatNumber(type: "number", number: invoicingTransaction.discountPercent, minFractionDigits: 1)}"
               size="4" aria-describedby="discount-percent" />
             <span class="input-group-addon" id="discount-percent">%</span>
           </div>
@@ -91,7 +94,8 @@
         </td>
         <td class="col-type-number col-type-currency">
           <div class="input-group">
-            <input type="text" id="discount-from-percent" class="form-control"
+            <input type="text" id="discount-from-percent"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: "number", number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="discount-from-percent-currency" />
@@ -112,7 +116,8 @@
         <td></td>
         <td class="col-type-number col-type-currency">
           <div class="input-group">
-            <g:textField name="discountAmount" class="form-control"
+            <g:textField name="discountAmount"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: 'number', number: invoicingTransaction?.discountAmount, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" aria-describedby="discount-amount-currency" />
             <span class="input-group-addon" id="discount-amount-currency"
@@ -133,13 +138,14 @@
       <tr>
         <td colspan="4">
           <label for="adjustment" class="control-label"
-            ><g:message code="invoicingTransaction.adjustment.label" 
+            ><g:message code="invoicingTransaction.adjustment.label"
           /></label>
         </td>
         <td></td>
         <td class="col-type-number col-type-currency">
           <div class="input-group">
-            <g:textField name="adjustment" class="form-control"
+            <g:textField name="adjustment"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: 'number', number: invoicingTransaction?.adjustment, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" aria-describedby="adjustment-currency" />
             <span class="input-group-addon" id="adjustment-currency"
@@ -166,7 +172,8 @@
         <td></td>
         <td class="col-type-number col-type-currency">
           <div class="input-group">
-            <input type="text" id="total-price" class="form-control"
+            <input type="text" id="total-price"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: 'number', number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="total-price-currency" />
@@ -188,9 +195,10 @@
       <tr>
         <td class="col-type-number col-pos"><span>${i + 1}.</span></td>
         <td class="col-type-number col-quantity">
-          <input type="text" name="items[${i}].quantity" class="form-control"
+          <input type="text" name="items[${i}].quantity"
+            class="form-control form-control-number"
             value="${formatNumber(type: 'number', number: item.quantity, maxFractionDigits: 3, groupingUsed: true)}"
-            size="5" />
+            size="5" data-suppress-reformat="true" />
         </td>
         <td class="col-type-string col-unit">
           <input type="text" name="items[${i}].unit" class="form-control"
@@ -230,7 +238,7 @@
         <td class="col-type-number col-type-currency col-unit-price">
           <div class="input-group">
             <input type="text" name="items[${i}].unitPrice"
-              class="form-control"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: 'number', number: item.unitPrice, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" aria-describedby="item-${i}-unit-price-currency" />
             <span class="input-group-addon" id="item-${i}-unit-price-currency"
@@ -240,7 +248,8 @@
         </td>
         <td class="col-type-number col-type-currency col-total-price">
           <div class="input-group">
-            <input type="text" class="form-control"
+            <input type="text"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: "number", number: item.total, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="item-${i}-total-currency" />
@@ -251,7 +260,8 @@
         </td>
         <td class="col-type-number col-type-percentage col-tax">
           <div class="input-group">
-            <input type="text" name="items[${i}].tax" class="form-control"
+            <input type="text" name="items[${i}].tax"
+              class="form-control form-control-number form-control-percentage"
               value="${formatNumber(number: item.tax, minFractionDigits: 1)}"
               size="4" aria-describedby="item-${i}-tax-percent" />
             <span class="input-group-addon"
@@ -286,9 +296,10 @@
           /></label>
         </td>
         <td></td>
-        <td class="col-type-number col-type-currency">
+        <td class="col-type-number col-type-currency col-total-price">
           <div class="input-group">
-            <g:textField name="shippingCosts" class="form-control"
+            <g:textField name="shippingCosts"
+              class="form-control form-control-number form-control-currency"
               value="${formatNumber(type: 'number', number: invoicingTransaction?.shippingCosts, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" aria-describedby="shipping-costs-currency" />
             <span class="input-group-addon" id="shipping-costs-currency"
@@ -305,7 +316,8 @@
         </td>
         <td class="col-type-number col-type-percentage">
           <div class="input-group">
-            <g:textField name="shippingTax" class="form-control"
+            <g:textField name="shippingTax"
+              class="form-control form-control-number form-control-percentage"
               value="${formatNumber(number: invoicingTransaction?.shippingTax, minFractionDigits: 1)}"
               size="4" aria-describedby="shipping-tax-percent" />
             <span class="input-group-addon"
@@ -343,68 +355,113 @@
   ></div>
 <script id="add-item-template" type="text/x-handlebars-template">
   <tr>
-    <td class="pos number">{{pos}}.</td>
-    <td class="item-number">
-      <input type="text" name="items[{{index}}].number" size="10" />
+    <td class="col-type-number col-pos"><span>{{pos}}.</span></td>
+    <td class="col-type-number col-quantity">
+      <input type="text" name="items[{{index}}].quantity"
+        class="form-control form-control-number" value="" size="5"
+        data-suppress-reformat="true" />
     </td>
-    <td class="quantity number">
-      <input type="text" name="items[{{index}}].quantity" size="5" />
+    <td class="col-type-string col-unit">
+      <input type="text" name="items[{{index}}].unit" class="form-control"
+        value="" size="8" />
     </td>
-    <td class="unit">
-      <input type="text" name="items[{{index}}].unit" size="10" />
-    </td>
-    <td class="name">
-      <input type="text" name="items[{{index}}].name" size="30" />
-      <g:if test="${params.controller != 'purchase-invoice'}">
-      <span class="button-icon-group">
-        <g:ifModuleAllowed modules="product">
-        <i class="fa fa-cog bubbling-icon select-btn-products"
-          title="${message(code: 'invoicingTransaction.selector.products.title')}"></i>
-        </g:ifModuleAllowed>
-        <g:ifModuleAllowed modules="service">
-        <i class="fa fa-laptop bubbling-icon select-btn-services"
-          title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
-        </g:ifModuleAllowed>
-      </span>
-      </g:if><br />
-      <textarea name="items[{{index}}].description" cols="30" rows="3"
-        ></textarea>
-    </td>
-    <td class="unit-price currency number">
-      <div class="field-text">
-        <span class="input">
-          <input type="text" name="items[{{index}}].unitPrice" size="9"
-            value="{{zero}}" />
-        </span>
-        <span class="currency-symbol"><g:currency /></span>
+    <td class="col-type-string col-name">
+      <div class="col-content">
+        <div class="input-group">
+          <input type="text" name="items[{{index}}].name" class="form-control"
+            value="" />
+          <g:if test="${params.controller != 'purchase-invoice'}">
+          <span class="input-group-btn">
+            <g:ifModuleAllowed modules="product">
+            <button type="button"
+              class="btn btn-default select-btn-products">
+              <i class="fa fa-cog"
+                title="${message(code: 'invoicingTransaction.selector.products.title')}"></i>
+              <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
+            </button>
+            </g:ifModuleAllowed>
+            <g:ifModuleAllowed modules="service">
+            <button type="button"
+              class="btn btn-default select-btn-services">
+              <i class="fa fa-laptop"
+                title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
+              <span class="sr-only">${message(code: 'invoicingTransaction.selector.services.title')}</span>
+            </button>
+            </g:ifModuleAllowed>
+          </span>
+          </g:if>
+        </div>
+        <textarea name="items[{{index}}].description" class="form-control"
+          rows="3"></textarea>
       </div>
     </td>
-    <td class="total-price currency number">
-      <output>{{zero}}</output> <g:currency />
-    </td>
-    <td class="tax percentage number">
-      <div class="field-text">
-        <span class="input">
-          <input type="text" name="items[{{index}}].tax" size="4" />
-        </span>
-        <span class="percent-sign">%</span>
+    <td class="col-type-number col-type-currency col-unit-price">
+      <div class="input-group">
+        <input type="text" name="items[{{index}}].unitPrice"
+          class="form-control form-control-number form-control-currency"
+          value="{{zero}}" size="8"
+          aria-describedby="item-{{index}}-unit-price-currency" />
+        <span class="input-group-addon" id="item-{{index}}-unit-price-currency"
+          ><g:currency
+        /></span>
       </div>
     </td>
-    <td class="action-buttons">
-      <i class="fa fa-arrow-up up-btn bubbling-icon"
-        title="${message(code: 'default.btn.up')}"></i>
-      <i class="fa fa-arrow-down down-btn bubbling-icon"
-        title="${message(code: 'default.btn.down')}"></i>
-      <i class="fa fa-trash-o remove-btn bubbling-icon"
-        title="${message(code: 'default.btn.remove')}"></i>
+    <td class="col-type-number col-type-currency col-total-price">
+      <div class="input-group">
+        <input type="text"
+          class="form-control form-control-number form-control-currency"
+          value="{{zero}}" size="8" disabled="disabled"
+          aria-describedby="item-{{index}}-total-currency" />
+        <span class="input-group-addon" id="item-{{index}}-total-currency"
+          ><g:currency
+        /></span>
+      </div>
+    </td>
+    <td class="col-type-number col-type-percentage col-tax">
+      <div class="input-group">
+        <input type="text" name="items[{{index}}].tax"
+          class="form-control form-control-number form-control-percentage"
+          value="" size="4" aria-describedby="item-{{index}}-tax-percent" />
+        <span class="input-group-addon"
+          id="item-{{index}}-tax-percent">%</span>
+      </div>
+    </td>
+    <td class="col-actions">
+      <button type="button" class="btn btn-link up-btn"
+        title="${message(code: 'default.btn.up')}">
+        <i class="fa fa-arrow-up"></i>
+        <span class="sr-only">${message(code: 'default.btn.up')}</span>
+      </button>
+      <button type="button" class="btn btn-link down-btn"
+        title="${message(code: 'default.btn.down')}">
+        <i class="fa fa-arrow-down"></i>
+        <span class="sr-only">${message(code: 'default.btn.down')}</span>
+      </button>
+      <button type="button" class="btn btn-link remove-btn"
+        title="${message(code: 'default.btn.remove')}">
+        <i class="fa fa-trash"></i>
+        <span class="sr-only">${message(code: 'default.btn.remove')}</span>
+      </button>
     </td>
   </tr>
 </script>
 <script id="tax-rate-sum-template" type="text/x-handlebars-template">
-  <tr class="tax-rate-sum">
-    <td colspan="5" class="label"><label>{{label}}</label></td>
+  <tr class="row-tax-rate-sum">
+    <td colspan="4">
+      <label class="control-label">{{label}}</label>
+    </td>
     <td></td>
-    <td class="total-price currency number">{{value}} <g:currency /></td>
+    <td class="col-type-number col-type-currency total-price">
+      <div class="input-group">
+        <input type="text"
+          class="form-control form-control-number form-control-currency"
+          value="{{value}}" size="8" disabled="disabled"
+          aria-describedby="tax-rate-sum-{{i}}-currency" />
+        <span class="input-group-addon" id="tax-rate-sum-{{i}}-currency"
+          ><g:currency
+        /></span>
+      </div>
+    </td>
     <td></td>
     <td></td>
   </tr>

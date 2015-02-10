@@ -18,7 +18,7 @@
 #
 #= require application
 #= require widgets/addr-fields
-# = require _invoicing-items
+#= require _invoicing-items
 
 
 $ = jQuery
@@ -59,6 +59,8 @@ class InvoicingTransaction
 
     $(opts.organizationId).on 'change', => @_onSelectOrganization()
     @_initAddrFields()
+
+    new SPRINGCRM.InvoicingItems($element.find '.price-table')
 
 
   #-- Non-public methods ------------------------
@@ -156,14 +158,6 @@ InvoicingTransactionWidget =
     @element
       .on("click", "#still-unpaid", (event) => @_onClickStillUnpaid(event))
       .on("change", "#paymentAmount", => @_onChangePaymentAmount())
-      .find(".price-table")
-        .invoicingitems()
-      .end()
-      .find("#person")
-        .autocompleteex(
-          loadParameters: => @getOrganizationId()
-        )
-      .end()
       .find("#paymentAmount")
         .trigger("change")
       .end()
@@ -315,8 +309,6 @@ InvoicingTransactionWidget =
         if (oldVal < shippingStageValue) and (newVal >= shippingStageValue)
           res = $.confirm $L("invoicingTransaction.changeState.label")
     res
-
-#$.widget "springcrm.invoicingtransaction", InvoicingTransactionWidget
 
 # vim:set ts=2 sw=2 sts=2:
 

@@ -19,6 +19,7 @@
 
 
 @import "application";
+@import "_typeahead";
 
 
 // price tables
@@ -54,6 +55,13 @@
     .form-control {
       text-align: right;
       width: auto;
+
+      &:focus {
+        text-align: left;
+      }
+    }
+    .tt-hint {
+      text-align: left;
     }
   }
   .col-unit {
