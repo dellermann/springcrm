@@ -54,6 +54,12 @@ class InvoicingItems
 
   #-- Constructor -------------------------------
 
+  # Creates a new widget instance to handle invoicing transaction items within
+  # the given element.
+  #
+  # @param [jQuery] $element  the given element
+  # @param [Object] options   any options
+  #
   constructor: ($element, options) ->
     $ = jQuery
     @$element = $element
@@ -68,15 +74,10 @@ class InvoicingItems
     $element
       .on('click', '.up-btn', (event) => @_onClickMoveItem event, -1)
       .on('click', '.down-btn', (event) => @_onClickMoveItem event, 1)
-      .on('click', '.remove-btn', (event) => @_onRemoveItem event)
-#      .on('click', '.select-btn-products', (event) =>
-#        @_showSalesItemSelector $(event.currentTarget), "products"
-#        false
-#      )
-#      .on('click', '.select-btn-services', (event) =>
-#        @_showSalesItemSelector $(event.currentTarget), "services"
-#        false
-#      )
+      .on('click', '.remove-btn', (event) => @_onClickRemoveItem event)
+      .on('click', '.btn-select-sales-item', (event) =>
+        @_onClickSelectSalesItem event
+      )
       .on('change', (event) => @_onChange event)
 
     @units = options.units
@@ -301,7 +302,8 @@ class InvoicingItems
 
   # Initialize the autocomplete fields for tax rates.
   #
-  # @param [jQuery] $input  a selector which input fields should be initialized; if not defined, all tax input fields are initialized
+  # @param [jQuery] $input  a selector representing the input fields that should be initialized; if not defined, all tax input fields are initialized
+  # @private
   #
   _initTaxTypeahead: ($input = $('.col-tax input')) ->
     taxes = @taxes
@@ -321,9 +323,9 @@ class InvoicingItems
 
   # Initialize the autocomplete fields for units.
   #
-  # @param {jQuery} $input  a selector which input fields are to initialize; if not defined, all unit input fields are initialized
+  # @param [jQuery] $input  a selector representing the input fields that should be initialized; if not defined, all unit input fields are initialized
   #
-  _initUnitTypeahead: ($input = $(".col-unit input")) ->
+  _initUnitTypeahead: ($input = $('.col-unit input')) ->
     units = @units
     if units
       $input.typeahead
@@ -338,6 +340,20 @@ class InvoicingItems
             re = new RegExp("^#{RegExp.escape(q)}", 'i')
             $.each units, (_, t) -> matches.push value: t if re.test t
             cb matches
+
+  # Loads the content of the sales item selector via AJAX.
+  #
+  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `service`
+  # @param [Number] pos     the zero-based position of the row that should be filled in the price table
+  # @param [String] url     the URL which is called to load the sales items via AJAX
+  # @param [Object] params  any parameters which are to send (optional)
+  # @private
+  #
+  _loadSalesItemSelector: (type, pos, url, params) ->
+    $modal = $("#inventory-selector-#{type}")
+    $modal.find('.modal-body')
+      .load url, params, =>
+        @_onLoadedSalesItemSelector $modal, type, pos
 
   # Called if an input field is changed.  The method re-computes the total
   # value if either the quantity or the unit prices has been changed.  In each
@@ -390,17 +406,73 @@ class InvoicingItems
 
     return
 
-  # Removes the row in the pricing table that remove symbol was clicked.
+  # Called if the button has been clicked to remove a row in the pricing
+  # table.
   #
   # @param [Event] event  any event data
   # @private
   #
-  _onRemoveItem: (event) ->
+  _onClickRemoveItem: (event) ->
     if @_getNumRows() > 1
       @_removeRow $(event.currentTarget).parents 'tr'
       @_computeFooterValues()
 
     return
+
+  # Called if a button has been clicked to display the sales item selector of
+  # the given type and loads its content
+  # via AJAX.
+  #
+  # @param [Event] event  any event data
+  # @param [String] url   an optional URL which is called to load the sales items via AJAX; if not specified the URL is obtained from the options
+  # @private
+  #
+  _onClickSelectSalesItem: (event, url) ->
+    $target = $(event.currentTarget)
+    type = $target.data 'type'
+
+    opts = @options
+    url ?= opts["#{type}ListUrl"]
+    if url
+      pos = @_getRowPosition $target.parents 'tr'
+      @_loadSalesItemSelector type, pos, url
+
+    return
+
+  # Called if the the content of the sales item selector has been successfully
+  # loaded via AJAX.
+  #
+  # @param [jQuery] $modal  the modal where the selector content has been loaded
+  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `service`
+  # @param [Number] pos     the zero-based position of the row that should be filled in the price table
+  # @private
+  #
+  _onLoadedSalesItemSelector: ($modal, type, pos) ->
+    $ = jQuery
+
+    getData = ->
+      search = $modal.find('[name=search]').val()
+      if search is '' then null else search: search
+
+    $modal
+      .off('click')
+      .on('click', '.modal-header .close', (event) -> $modal.modal 'hide')
+      .on('click', '.modal-body a.select-link', (event) =>
+        @_retrieveSalesItem $modal, pos, $(event.currentTarget).attr('href')
+        false
+      )
+      .on('click', '.modal-body a:not(.select-link)', (event) =>
+        @_loadSalesItemSelector type, pos,
+          $(event.currentTarget).attr('href'), getData()
+        false
+      )
+      .find('form')
+        .on('submit', (event) =>
+          @_loadSalesItemSelector type, pos, event.target.action, getData()
+          false
+        )
+      .end()
+      .modal()
 
   # Converts all tax rates in the given array to formatted strings.
   #
@@ -446,6 +518,45 @@ class InvoicingItems
       .end()
       .remove()
 
+  # Retrieves the sales item of the given type and URL and fills in the input
+  # fields of the price table row with the given position.
+  #
+  # @param [jQuery] $modal  the modal where the selector content has been loaded
+  # @param [Number] pos     the zero-based position of the row that should be filled in the price table
+  # @param [String] url     the URL used to retrieve the sales item data from the server
+  # @return [Promise]       a promise representing the state of loading data
+  # @private
+  #
+  _retrieveSalesItem: ($modal, pos, url) ->
+    $.ajax(
+        context: this
+        dataType: 'json'
+        url: url
+      )
+      .done (data) =>
+        prefix = @_getInputName pos
+        els = @form.elements
+
+        item = data.inventoryItem
+        qty = item.quantity
+        els[prefix + 'quantity'].value = qty.format()
+        els[prefix + 'unit'].value = item.unit.name
+        els[prefix + 'salesItem.id'].value = item.id
+        els[prefix + 'name'].value = item.name
+        textArea = els[prefix + 'description']
+        textArea.value = item.description
+        $textArea = $(textArea).trigger 'autosize.resize'
+        unitPrice = item.unitPrice
+        unitPriceInput = els[prefix + 'unitPrice']
+        unitPriceInput.value = unitPrice.formatCurrencyValue()
+        total = (qty * unitPrice).formatCurrencyValue()
+        $textArea.closest('tr')
+          .find('.col-total-price input').val total
+        els[prefix + 'tax'].value = (item.taxRate.taxValue * 100.0).format(1)
+
+        @_computeFooterValues()
+        $modal.modal 'hide'
+
   # Swaps the positions in the input field names for both the given rows.
   #
   # @param [jQuery] $tr     the given row
@@ -487,105 +598,5 @@ class InvoicingItems
     return
 
 SPRINGCRM.InvoicingItems = InvoicingItems
-
-
-
-foo =
-
-  # Loads the content of the sales item selector via AJAX.
-  #
-  # @param {String} type  the type of sales items which are to retrieve; may be either `products` or `services`
-  # @param {String} url   the URL called to load the sales items via AJAX; if not specified the URL is obtained from the options
-  # @param {Number} pos   the zero-based position of the row in the price table to fill
-  # @param {Array} params any parameters which are to send (optional)
-  #
-  _loadSalesItemSelector: (type, url, pos, params) ->
-    $dialog = $("#inventory-selector-#{type}")
-    $dialog.load url, params, =>
-      @_onLoadSalesItemSelector $dialog, type, pos
-
-  # Called if the the content of the sales item selector has been successfully
-  # loaded via AJAX.
-  #
-  # @param {jQuery} $dialog the dialog where the selector content has been loaded
-  # @param {String} type    the type of sales items which are to retrieve; may be either `products` or `services`
-  # @param {Number} pos     the zero-based position of the row in the price table to fill
-  #
-  _onLoadSalesItemSelector: ($dialog, type, pos) ->
-    $ = jQuery
-
-    getData = ->
-      search = $dialog.find("[name=search]").val()
-      if search is "" then null else search: search
-
-    $dialog.off("click")
-      .on("click", "a.select-link", (event) =>
-        @_retrieveSalesItem type, $(event.currentTarget).attr("href"), pos
-        false
-      )
-      .on("click", "a:not(.select-link)", (event) =>
-        @_loadSalesItemSelector type, $(event.currentTarget).attr("href"), pos, getData()
-        false
-      )
-      .find("form")
-        .submit((event) =>
-          @_loadSalesItemSelector type, event.target.action, pos, getData()
-          false
-        )
-      .end()
-      .dialog(
-        minWidth: 700
-        minHeight: 400
-        modal: true
-      )
-
-  # Retrieves the sales item of the given type and URL and fills in the input
-  # fields of the price table row with the given position.
-  #
-  # @param {String} type  the type of sales item which is to retrieve; may be either `products` or `services`
-  # @param {String} url   the URL used to retrieve the sales item data from the server
-  # @param {Number} pos   the zero-based position of the row in the pricing table which is to fill with the retrieved data
-  #
-  _retrieveSalesItem: (type, url, pos) ->
-    self = this
-    $.ajax
-      url: url
-      dataType: "json"
-      success: (data) =>
-        prefix = @_getInputName pos
-        els = @form.elements
-        els[prefix + "number"].value = data.fullNumber
-        item = data.inventoryItem
-        qty = item.quantity
-        els[prefix + "quantity"].value = qty.format()
-        els[prefix + "unit"].value = item.unit.name
-        els[prefix + "name"].value = item.name
-        textArea = els[prefix + "description"]
-        textArea.value = item.description
-        $(textArea).trigger 'autosize.resize'
-        unitPrice = item.unitPrice
-        unitPriceInput = els[prefix + "unitPrice"]
-        unitPriceInput.value = unitPrice.formatCurrencyValue()
-        total = (qty * unitPrice).formatCurrencyValue()
-        $(unitPriceInput).parents("tr")
-          .find(".total-price output").text total
-        els[prefix + "tax"].value = (item.taxRate.taxValue * 100.0).format(1)
-        @_computeFooterValues()
-        $("#inventory-selector-" + type).dialog "close"
-
-  # Displays the sales item selector of the given type and loads its content
-  # via AJAX.
-  #
-  # @param {jQuery} $icon the selector symbol which was clicked
-  # @param {String} type  the type of sales items which are to retrieve; may be either `products` or `services`
-  # @param {String} url   the URL called to load the sales items via AJAX; if not specified the URL is obtained from the options
-  #
-  _showSalesItemSelector: ($icon, type, url) ->
-    opts = @options
-    unless url
-      url = (if (type is "products") then opts.productListUrl else opts.serviceListUrl)
-    if url
-      pos = @_getRowPosition $icon.parents("tr")
-      @_loadSalesItemSelector type, url, pos
 
 # vim:set ts=2 sw=2 sts=2:

@@ -206,6 +206,8 @@
         </td>
         <td class="col-type-string col-name">
           <div class="col-content">
+            <input type="hidden" name="items[${i}].salesItem.id"
+              value="${item.salesItem?.id}" />
             <div class="input-group">
               <input type="text" name="items[${i}].name" class="form-control"
                 value="${fieldValue(bean: item, field: 'name')}" />
@@ -213,7 +215,8 @@
               <span class="input-group-btn">
                 <g:ifModuleAllowed modules="product">
                 <button type="button"
-                  class="btn btn-default select-btn-products">
+                  class="btn btn-default btn-select-sales-item"
+                  data-type="product">
                   <i class="fa fa-cog"
                     title="${message(code: 'invoicingTransaction.selector.products.title')}"></i>
                   <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
@@ -221,7 +224,8 @@
                 </g:ifModuleAllowed>
                 <g:ifModuleAllowed modules="service">
                 <button type="button"
-                  class="btn btn-default select-btn-services">
+                  class="btn btn-default btn-select-sales-item"
+                  data-type="service">
                   <i class="fa fa-laptop"
                     title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
                   <span class="sr-only">${message(code: 'invoicingTransaction.selector.services.title')}</span>
@@ -347,12 +351,40 @@
   ></g:renderItemErrors
 ></ul>
 
-<div id="inventory-selector-products"
-  title="${message(code: 'invoicingTransaction.selector.products.title')}"
-  ></div>
-<div id="inventory-selector-services"
-  title="${message(code: 'invoicingTransaction.selector.services.title')}"
-  ></div>
+<div id="inventory-selector-product" class="modal fade inventory-selector"
+  aria-labelledby="inventory-selector-product-title" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"
+          aria-label="${message(code: 'default.btn.close')}"
+          ><span aria-hidden="true">×</span
+        ></button>
+        <h4 id="inventory-selector-product-title" class="modal-title"
+          ><g:message code="invoicingTransaction.selector.products.title"
+        /></h4>
+      </div>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+</div>
+<div id="inventory-selector-service" class="modal fade inventory-selector"
+  aria-labelledby="inventory-selector-service-title" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"
+          aria-label="${message(code: 'default.btn.close')}"
+          ><span aria-hidden="true">×</span
+        ></button>
+        <h4 id="inventory-selector-service-title" class="modal-title"
+          ><g:message code="invoicingTransaction.selector.services.title"
+        /></h4>
+      </div>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+</div>
 <script id="add-item-template" type="text/x-handlebars-template">
   <tr>
     <td class="col-type-number col-pos"><span>{{pos}}.</span></td>
@@ -367,22 +399,23 @@
     </td>
     <td class="col-type-string col-name">
       <div class="col-content">
+        <input type="hidden" name="items[{{index}}].salesItem.id" value="" />
         <div class="input-group">
           <input type="text" name="items[{{index}}].name" class="form-control"
             value="" />
           <g:if test="${params.controller != 'purchase-invoice'}">
           <span class="input-group-btn">
             <g:ifModuleAllowed modules="product">
-            <button type="button"
-              class="btn btn-default select-btn-products">
+            <button type="button" class="btn btn-default btn-select-sales-item"
+              data-type="product">
               <i class="fa fa-cog"
                 title="${message(code: 'invoicingTransaction.selector.products.title')}"></i>
               <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
             </button>
             </g:ifModuleAllowed>
             <g:ifModuleAllowed modules="service">
-            <button type="button"
-              class="btn btn-default select-btn-services">
+            <button type="button" class="btn btn-default btn-select-sales-item"
+              data-type="service">
               <i class="fa fa-laptop"
                 title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
               <span class="sr-only">${message(code: 'invoicingTransaction.selector.services.title')}</span>

@@ -1,10 +1,17 @@
 <%@ page import="org.amcworld.springcrm.Product" %>
-<nav class="selector-toolbar">
-  <div class="selector-letter-bar">
-    <g:letterBar clazz="${Product}" property="name" numLetters="3"
-      separator="-" where="name like '%${params.search ?: ''}%'" />
+
+<nav class="row">
+  <div class="col-xs-12 col-sm-8 col-md-9">
+    <div class="visible-xs visible-sm">
+      <g:letterBar clazz="${Product}" property="name" numLetters="5"
+        separator="-" where="name like '%${params.search ?: ''}%'" />
+    </div>
+    <div class="hidden-xs hidden-sm">
+      <g:letterBar clazz="${Product}" property="name" numLetters="3"
+        separator="-" where="name like '%${params.search ?: ''}%'" />
+    </div>
   </div>
-  <div class="selector-toolbar-search">
+  <div class="col-xs-12 col-sm-4 col-md-3 text-right">
     <%--
       XXX leave the </form> tag alone because it prevents the following
       <form> tag from being stripped by the jQuery $.load function.  It's not
@@ -12,43 +19,65 @@
       which strips form tags in most of the browsers.
     --%>
     </form>
-    <g:form action="selectorList">
-      <g:textField name="search" value="${params.search}" placeholder="${message(code: 'default.search.label')}" />
-      <button type="submit" class="search-btn" title="${message(code: 'default.search.button.label')}"><i class="fa fa-search"></i></button>
+    <g:form action="selectorList" class="search-form">
+      <div class="input-group">
+        <g:textField type="search" name="search" class="form-control"
+          value="${params.search}"
+          placeholder="${message(code: 'default.search.label')}" />
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn-default search-btn"
+            title="${message(code: 'default.search.button.label')}"
+            ><i class="fa fa-search"></i
+            ><span class="sr-only"
+              ><g:message code="default.search.button.label"
+            /></span
+          ></button>
+        </span>
+      </div>
     </g:form>
   </div>
 </nav>
+
 <g:if test="${productInstanceList}">
-<table class="content-table">
-  <thead>
-    <tr>
-      <%--<th scope="col"><input type="checkbox" id="product-row-selector" /></th>--%>
-      <g:sortableColumn scope="col" property="number" title="${message(code: 'salesItem.number.label', default: 'Number')}" />
-      <g:sortableColumn scope="col" property="name" title="${message(code: 'salesItem.name.label', default: 'Name')}" />
-      <g:sortableColumn scope="col" property="category.name" title="${message(code: 'salesItem.category.label', default: 'Category')}" />
-      <g:sortableColumn scope="col" property="quantity" title="${message(code: 'salesItem.quantity.label', default: 'Quantity')}" />
-      <g:sortableColumn scope="col" property="unit.name" title="${message(code: 'salesItem.unit.label', default: 'Unit')}" />
-      <g:sortableColumn scope="col" property="unitPrice" title="${message(code: 'salesItem.unitPrice.label', default: 'Unit Price')}" />
-    </tr>
-  </thead>
-  <tbody>
-  <g:each in="${productInstanceList}" status="i" var="productInstance">
-    <tr>
-      <%--<td class="row-selector"><input type="checkbox" id="product-row-selector-${productInstance.id}" data-id="${productInstance.id}" /></td>--%>
-      <td class="id product-number"><g:link action="get" id="${productInstance.id}" class="select-link"><g:fieldValue bean="${productInstance}" field="fullNumber" /></g:link></td>
-      <td class="string product-name"><g:link action="get" id="${productInstance.id}" class="select-link"><g:fieldValue bean="${productInstance}" field="name" /></g:link></td>
-      <td class="string product-category"><g:fieldValue bean="${productInstance}" field="category" /></td>
-      <td class="number product-quantity"><g:fieldValue bean="${productInstance}" field="quantity" /></td>
-      <td class="string product-unit"><g:fieldValue bean="${productInstance}" field="unit" /></td>
-      <td class="currency product-unit-price"><g:formatCurrency number="${productInstance.unitPrice}" displayZero="true" /></td>
-    </tr>
-  </g:each>
-  </tbody>
-</table>
-<div class="paginator">
-  <g:paginate total="${productInstanceTotal}" />
+<div class="table-responsive">
+  <table class="table data-table">
+    <thead>
+      <tr>
+        <g:sortableColumn property="number" title="${message(code: 'salesItem.number.label')}" />
+        <g:sortableColumn property="name" title="${message(code: 'salesItem.name.label')}" />
+        <g:sortableColumn property="category.name" title="${message(code: 'salesItem.category.label')}" />
+        <g:sortableColumn property="quantity" title="${message(code: 'salesItem.quantity.label')}" />
+        <g:sortableColumn property="unit.name" title="${message(code: 'salesItem.unit.label')}" />
+        <g:sortableColumn property="unitPrice" title="${message(code: 'salesItem.unitPrice.label')}" />
+      </tr>
+    </thead>
+    <tbody>
+    <g:each in="${productInstanceList}" status="i" var="productInstance">
+      <tr>
+        <td class="col-type-id product-number"><g:link action="get" id="${productInstance.id}" class="select-link"><g:fieldValue bean="${productInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-string product-name"><g:link action="get" id="${productInstance.id}" class="select-link"><g:fieldValue bean="${productInstance}" field="name" /></g:link></td>
+        <td class="col-type-string product-category"><g:fieldValue bean="${productInstance}" field="category" /></td>
+        <td class="col-type-number product-quantity"><g:fieldValue bean="${productInstance}" field="quantity" /></td>
+        <td class="col-type-string product-unit"><g:fieldValue bean="${productInstance}" field="unit" /></td>
+        <td class="col-type-currency product-unit-price"><g:formatCurrency number="${productInstance.unitPrice}" displayZero="true" /></td>
+      </tr>
+    </g:each>
+    </tbody>
+  </table>
 </div>
+
+<nav class="text-center">
+  <div class="visible-xs">
+    <g:paginate total="${productInstanceTotal}" maxsteps="3"
+      class="pagination-sm" />
+  </div>
+  <div class="hidden-xs">
+    <g:paginate total="${productInstanceTotal}" />
+  </div>
+</nav>
 </g:if>
 <g:else>
-  <div class="empty-list"><p><g:message code="default.list.empty" /></p></div>
+<div class="well well-lg empty-list">
+  <p><g:message code="default.list.empty" /></p>
+</div>
 </g:else>
