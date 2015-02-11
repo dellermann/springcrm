@@ -61,52 +61,54 @@
           <div id="error-details" class="panel-collapse collapse"
             role="tabpanel" aria-labelledby="error-details-title">
             <div class="panel-body">
-              <table class="table table-striped table-hover error-message">
-                <tbody>
-                  <tr>
-                    <th><g:message code="error.exception.details.number" /></th>
-                    <td>${request.'javax.servlet.error.status_code'}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.message" /></th>
-                    <td>${request.'javax.servlet.error.message'}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.servlet" /></th>
-                    <td>${request.'javax.servlet.error.servlet_name'}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.uri" /></th>
-                    <td>${request.'javax.servlet.error.request_uri'}</td>
-                  </tr>
-                  <g:if test="${exception}">
-                  <tr>
-                    <th><g:message code="error.exception.details.exceptionMessage" /></th>
-                    <td>${exception.message}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.causedBy" /></th>
-                    <td>${exception.cause?.message}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.className" /></th>
-                    <td>${exception.className}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.lineNumber" /></th>
-                    <td>${exception.lineNumber}</td>
-                  </tr>
-                  <tr>
-                    <th><g:message code="error.exception.details.snippet" /></th>
-                    <td class="snippet">
-                      <g:each var="cs" in="${exception.codeSnippet}">
-                        ${cs}<br />
-                      </g:each>
-                    </td>
-                  </tr>
-                  </g:if>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table class="table table-striped table-hover error-message">
+                  <tbody>
+                    <tr>
+                      <th><g:message code="error.exception.details.number" /></th>
+                      <td>${request.'javax.servlet.error.status_code'}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.message" /></th>
+                      <td>${request.'javax.servlet.error.message'}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.servlet" /></th>
+                      <td>${request.'javax.servlet.error.servlet_name'}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.uri" /></th>
+                      <td>${request.'javax.servlet.error.request_uri'}</td>
+                    </tr>
+                    <g:if test="${exception}">
+                    <tr>
+                      <th><g:message code="error.exception.details.exceptionMessage" /></th>
+                      <td>${exception.message}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.causedBy" /></th>
+                      <td>${exception.cause?.message}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.className" /></th>
+                      <td>${exception.className}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.lineNumber" /></th>
+                      <td>${exception.lineNumber}</td>
+                    </tr>
+                    <tr>
+                      <th><g:message code="error.exception.details.snippet" /></th>
+                      <td class="snippet">
+                        <g:each var="cs" in="${exception.codeSnippet}">
+                          ${cs}<br />
+                        </g:each>
+                      </td>
+                    </tr>
+                    </g:if>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -148,40 +150,41 @@
               <form class="form-horizontal"
                 data-report-error-url="${createLink(controller: 'error', action: 'reportError')}">
                 <div class="form-group">
-                  <label for="name" class="col-sm-2 control-label"
+                  <label for="name" class="col-sm-3 col-md-2 control-label"
                     ><g:message code="error.exception.form.name.label"
                   /></label>
-                  <div class="col-sm-10">
+                  <div class="col-sm-9 col-md-10">
                     <g:textField name="name" class="form-control" />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="email" class="col-sm-2 control-label"
+                  <label for="email" class="col-sm-3 col-md-2 control-label"
                     ><g:message code="error.exception.form.email.label"
                   /></label>
-                  <div class="col-sm-10">
+                  <div class="col-sm-9 col-md-10">
                     <g:textField type="email" name="email"
                       class="form-control" />
                   </div>
                 </div>
                 <div class="form-group">
-                  <label for="description" class="col-sm-2 control-label"
+                  <label for="description"
+                    class="col-sm-3 col-md-2 control-label"
                     ><g:message code="error.exception.form.description.label"
                   /></label>
-                  <div class="col-sm-10">
+                  <div class="col-sm-9 col-md-10">
                     <g:textArea name="description" class="form-control"
                       rows="5" />
                   </div>
                 </div>
                 <div class="form-group">
-                  <div class="col-sm-10 col-sm-offset-2">
+                  <div class="col-sm-9 col-md-10 col-sm-offset-3 col-md-offset-2">
                     <p class="text-warning">
                       <g:message code="error.exception.form.privacy" />
                     </p>
                   </div>
                 </div>
                 <div class="form-group">
-                  <div class="col-sm-10 col-sm-offset-2">
+                  <div class="col-sm-9 col-md-10 col-sm-offset-3 col-md-offset-2">
                     <button type="submit" class="btn btn-success">
                       <i class="fa fa-send"></i>
                       <g:message code="error.exception.form.submit" />
