@@ -1,29 +1,58 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <meta name="stylesheet" content="about" />
-  <title><g:message code="about.title" default="About" /></title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="about.title" /></title>
+    <meta name="stylesheet" content="about" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="about.title" default="About" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button action="sysInfo" color="white" icon="cog"
-          message="about.sysInfo.label" default="System info" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content" class="about">
-    <p id="app-title"><strong>SpringCRM</strong></p>
-    <p><g:message code="about.app.description" /></p>
-    <p><g:message code="about.app.version" args="${[meta(name: 'app.version'), meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'), meta(name: 'app.buildProfile')]}" /></p>
-    <p><g:message code="about.app.copyright" args="[new Date()]" /></p>
+  <body>
+    <content tag="backLink">
+      <g:link uri="/" class="navbar-back-link visible-xs"
+        ><i class="fa fa-home"></i>
+        <span class="sr-only"
+          ><g:message code="default.button.home.label"
+        /></span
+      ></g:link>
+      <h1 class="navbar-title visible-xs"><g:message code="about.title" /></h1>
+    </content>
 
-    <h3><g:message code="about.license" default="License" /></h3>
-    <p><g:message code="about.license.name" /></p>
-    <pre class="license-text">                    GNU GENERAL PUBLIC LICENSE
+    <div class="row">
+      <div class="title-toolbar">
+        <div class="title">
+          <h1 class="hidden-xs"><g:message code="about.title" /></h1>
+          <h2 class="visible-xs"><g:message code="about.title" /></h2>
+        </div>
+        <div class="toolbar" role="toolbar"
+          aria-label="${message(code: 'default.toolbar.label')}">
+          <div>
+            <a href="#top" class="btn btn-default go-top-btn" role="button">
+              <i class="fa fa-arrow-up"></i>
+              <span class="sr-only"
+                ><g:message code="default.button.top.label"
+              /></span>
+            </a>
+            <g:button action="sysInfo" color="default" class="hidden-xs"
+              icon="cog" message="about.sysInfo.label" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content" role="main">
+      <div class="row">
+        <div class="col-xs-12 col-md-9">
+          <p class="app-title"><strong>SpringCRM</strong></p>
+          <p><g:message code="about.app.description" /></p>
+          <p><g:message code="about.app.version"
+            args="[
+                meta(name: 'app.version'), meta(name: 'app.buildNumber'),
+                meta(name: 'app.buildDate'), meta(name: 'app.buildProfile')
+              ]" /></p>
+          <p><g:message code="about.app.copyright" args="[new Date()]" /></p>
+
+          <h3><g:message code="about.license" /></h3>
+          <p><g:message code="about.license.name" /></p>
+          <pre class="license-text">                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
@@ -645,15 +674,15 @@ copy of the Program in return for a fee.
 
                      END OF TERMS AND CONDITIONS</pre>
 
-    <h3><g:message code="about.furtherLicenses" /></h3>
-    <p><g:message code="about.furtherLicenses.logo" /></p>
-    <p><g:message code="about.furtherLicenses.configuration" /></p>
-    <p><g:message code="about.furtherLicenses.gpl2" /></p>
-    <p><g:message code="about.furtherLicenses.mit" /></p>
-    <p><g:message code="about.furtherLicenses.sil" /></p>
-    <p><g:message code="about.furtherLicenses.lightbox" /></p>
-    <p><g:message code="about.furtherLicenses.handlebars" /></p>
-    <pre class="license-text">Copyright (C) 2011-2014 by Yehuda Katz
+          <h3><g:message code="about.furtherLicenses" /></h3>
+          <p><g:message code="about.furtherLicenses.logo" /></p>
+          <p><g:message code="about.furtherLicenses.configuration" /></p>
+          <p><g:message code="about.furtherLicenses.gpl2" /></p>
+          <p><g:message code="about.furtherLicenses.mit" /></p>
+          <p><g:message code="about.furtherLicenses.sil" /></p>
+          <p><g:message code="about.furtherLicenses.lightbox" /></p>
+          <p><g:message code="about.furtherLicenses.handlebars" /></p>
+          <pre class="license-text">Copyright (C) 2011-2014 by Yehuda Katz
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -673,10 +702,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.</pre>
 
-    <h3><g:message code="about.authors" default="Authors" /></h3>
-    <ul>
-      <li><a href="mailto:d.ellermann@amc-world.de">Daniel Ellermann</a></li>
-    </ul>
-  </div>
-</body>
+          <h3><g:message code="about.authors" /></h3>
+          <ul>
+            <li><a href="mailto:d.ellermann@amc-world.de">Daniel Ellermann</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
