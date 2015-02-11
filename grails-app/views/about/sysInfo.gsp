@@ -7,11 +7,9 @@
 
   <body>
     <content tag="backLink">
-      <g:link uri="/" class="navbar-back-link visible-xs"
-        ><i class="fa fa-home"></i>
-        <span class="sr-only"
-          ><g:message code="default.button.home.label"
-        /></span
+      <g:link action="index" class="navbar-back-link visible-xs"
+        ><i class="fa fa-arrow-left"></i>
+        <span class="sr-only"><g:message code="about.back.label" /></span
       ></g:link>
       <h1 class="navbar-title visible-xs"
         ><g:message code="about.sysInfo"
