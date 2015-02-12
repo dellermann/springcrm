@@ -45,6 +45,7 @@ class InvoicingItems
   @INPUT_FIELD_NAMES = [
     'quantity'
     'unit'
+    'salesItem.id'
     'name'
     'description'
     'unitPrice'

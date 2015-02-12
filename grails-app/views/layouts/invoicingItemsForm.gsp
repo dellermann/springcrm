@@ -202,7 +202,8 @@
         </td>
         <td class="col-type-string col-unit">
           <input type="text" name="items[${i}].unit" class="form-control"
-            value="${fieldValue(bean: item, field: 'unit')}" size="8" />
+            value="${fieldValue(bean: item, field: 'unit')}" size="8"
+            required="required" />
         </td>
         <td class="col-type-string col-name">
           <div class="col-content">
@@ -210,7 +211,8 @@
               value="${item.salesItem?.id}" />
             <div class="input-group">
               <input type="text" name="items[${i}].name" class="form-control"
-                value="${fieldValue(bean: item, field: 'name')}" />
+                value="${fieldValue(bean: item, field: 'name')}"
+                required="required" />
               <g:if test="${params.controller != 'purchase-invoice'}">
               <span class="input-group-btn">
                 <g:ifModuleAllowed modules="product">
@@ -395,14 +397,14 @@
     </td>
     <td class="col-type-string col-unit">
       <input type="text" name="items[{{index}}].unit" class="form-control"
-        value="" size="8" />
+        value="" size="8" required="required" />
     </td>
     <td class="col-type-string col-name">
       <div class="col-content">
         <input type="hidden" name="items[{{index}}].salesItem.id" value="" />
         <div class="input-group">
           <input type="text" name="items[{{index}}].name" class="form-control"
-            value="" />
+            value="" required="required" />
           <g:if test="${params.controller != 'purchase-invoice'}">
           <span class="input-group-btn">
             <g:ifModuleAllowed modules="product">
