@@ -271,7 +271,8 @@ class QuoteController {
         render(contentType: 'text/json') {
             array {
                 for (Quote q in list) {
-                    quote id: q.id, name: q.fullName
+                    quote id: q.id, number: q.fullNumber, name: q.subject,
+                        fullName: q.fullName
                 }
             }
         }

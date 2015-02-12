@@ -1,3 +1,5 @@
+<%@ page import="grails.util.GrailsNameUtils" %>
+
 <content tag="backLink">
   <g:link action="index" params="${listParams}"
     class="navbar-back-link visible-xs"
@@ -9,6 +11,7 @@
   <h1 class="navbar-title visible-xs">${entitiesName}</h1>
 </content>
 
+<g:set var="formName" value="${GrailsNameUtils.getScriptName(type)}-form" />
 <div class="row">
   <div class="title-toolbar">
     <div class="title">
@@ -23,7 +26,7 @@
           ><g:message code="default.button.top.label"
         /></span>
       </a>
-      <button type="submit" form="${type}-form" class="btn btn-success">
+      <button type="submit" form="${formName}" class="btn btn-success">
         <i class="fa fa-save"></i>
         <g:message code="default.button.save.label" />
       </button>
@@ -37,7 +40,7 @@
   <div class="caption"><h2>${instance}</h2></div>
 </div>
 <div class="main-content" role="main">
-  <form action="${createLink(action: 'update')}" id="${type}-form"
+  <form action="${createLink(action: 'update')}" id="${formName}"
     class="form-horizontal data-form form-view" method="post"
     enctype="${enctype ?: 'application/x-www-form-urlencoded'}">
     <g:if test="${flash.message}">

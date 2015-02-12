@@ -43,11 +43,13 @@
   }
   .navbar-title {
     float: left;
+    font-size: @font-size-large;
     height: @navbar-height;
     line-height: @line-height-computed;
     margin: 0;
     padding: @navbar-padding-vertical (@grid-gutter-width / 2)
       @navbar-padding-vertical 0;
+    text-overflow: ellipsis;
   }
   .navbar-nav > li > .btn-warning:extend(.btn-warning all) {}
 

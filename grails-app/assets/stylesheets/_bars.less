@@ -81,6 +81,9 @@
   .toolbar {
     width: 45%;
 
+    .title.hidden-xs + & {
+      width: 100%;    // full size toolbar if title is hidden
+    }
     .btn {
       .button-size(
           @padding-base-vertical; @padding-xs-horizontal; @font-size-base;

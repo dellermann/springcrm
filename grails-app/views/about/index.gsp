@@ -18,9 +18,8 @@
 
     <div class="row">
       <div class="title-toolbar">
-        <div class="title">
-          <h1 class="hidden-xs"><g:message code="about.title" /></h1>
-          <h2 class="visible-xs"><g:message code="about.title" /></h2>
+        <div class="title hidden-xs">
+          <h1><g:message code="about.title" /></h1>
         </div>
         <div class="toolbar" role="toolbar"
           aria-label="${message(code: 'default.toolbar.label')}">
@@ -31,8 +30,8 @@
                 ><g:message code="default.button.top.label"
               /></span>
             </a>
-            <g:button action="sysInfo" color="default" class="hidden-xs"
-              icon="cog" message="about.sysInfo.label" />
+            <g:button action="sysInfo" color="default" icon="cog"
+              message="about.sysInfo.label" />
           </div>
         </div>
       </div>

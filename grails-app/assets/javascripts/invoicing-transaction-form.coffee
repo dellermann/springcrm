@@ -18,6 +18,7 @@
 #
 #= require application
 #= require widgets/addr-fields
+#= require _selectize
 #= require _invoicing-items
 
 
@@ -26,6 +27,12 @@ $ = jQuery
 
 #== Classes =====================================
 
+# Class `InvoicingTransaction` contains the scripting needed for invoicing
+# transaction forms.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
 class InvoicingTransaction
 
   #-- Internal variables ------------------------
@@ -58,6 +65,8 @@ class InvoicingTransaction
     @options = opts = $.extend {}, InvoicingTransaction.DEFAULTS, options
 
     $(opts.organizationId).on 'change', => @_onSelectOrganization()
+    $('.invoicing-transaction-selector.selectized').each (_, elem) =>
+      @_initInvoicingTransactionSelector elem
     @_initAddrFields()
 
     new SPRINGCRM.InvoicingItems($element.find '.price-table')
@@ -98,6 +107,43 @@ class InvoicingTransaction
         ]
       organizationId: @options.organizationId
     
+    return
+
+  # Initializes the selectors for dependent invoicing transactions which
+  # display the transaction number in a special way.
+  #
+  # @param [Element] selector the selector that should be initialized
+  # @private
+  #
+  _initInvoicingTransactionSelector: (selector) ->
+    selectize = selector.selectize
+    $.extend true, selectize.settings,
+      labelField: 'fullName'
+      searchField: ['name', 'number']
+      sortField:
+        direction: 'desc'
+        field: 'number'
+      render:
+        item: (data, escape) ->
+          """
+<div class="item">
+  <span class="number">#{escape(data.number)}</span>
+  #{escape(data.name)}
+</div>
+"""
+        option: (data, escape) ->
+          """
+<div class="option">
+  <span class="number">#{escape(data.number)}</span>
+  #{escape(data.name)}
+</div>
+"""
+
+    item = $(selector).data 'value'
+    if item
+      selectize.addOption item
+      selectize.addItem item.id
+
     return
 
   # Called if an organization has been selected.  The method fills in the
