@@ -194,6 +194,45 @@ JQueryUiExt =
   #
   reverse: [].reverse
 
+  # Scrolls this jQuery object to a particular target or offset.
+  #
+  # @param [Number, String, jQuery] target  either a target or a numeric offset
+  # @param [Object] options                 any options (see below)
+  # @option options [Number] duration       the duration for scroll animation
+  # @option options [String] easing         the easing type of scroll animation
+  # @param [Function] callback              an optional callback function which is executed after scrolling
+  # @return [jQuery]                        this jQuery object
+  # @since 2.0
+  #
+  scrollTo: (target, options, callback) ->
+    $ = jQ = jQuery
+
+    if $.isFunction options and arguments.length is 2
+      callback = options
+      options = target
+
+    settings = $.extend
+        duration: 500
+        easing: 'swing'
+        scrollTarget: target
+      , options
+
+    @each ->
+      $ = jQ
+      $scrollPane = $(this)
+
+      if $.isNumeric settings.scrollTarget
+        scrollTarget = settings.scrollTarget
+        scrollY = scrollTarget
+      else
+        scrollTarget = $(settings.scrollTarget)
+        scrollY = scrollTarget.offset().top
+
+      $scrollPane.animate { scrollTop: scrollY },
+        parseInt(settings.duration, 10),
+        settings.easing,
+        -> if $.isFunction callback then callback.call this
+
   # Sorts the jQuery elements or the elements which are returned by the given
   # `getSortable` function.
   #
@@ -266,9 +305,13 @@ class Page
     $spinner = $('#spinner')
 
     $(win).on('load', (event) => @_onLoadWindow event)
-    $(win.document).on(
-        'click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn()
+    $(win.document)
+      .on('click', '.go-top-btn', (event) ->
+        $ = jQuery
+        $('html').scrollTo $(event.currentTarget).attr 'href'
+        false
       )
+      .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
       .on('click', '#spinner', -> $(this).fadeOut())
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event

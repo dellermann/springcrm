@@ -43,6 +43,7 @@
   </head>
 
   <body role="application" aria-labelledby="application-title">
+    <div id="top"></div>
     <div class="container">
       <g:render template="/layouts/header" />
       <g:render template="/layouts/nav" />
