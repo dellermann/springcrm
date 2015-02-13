@@ -1,11 +1,11 @@
-<%@ page import="org.amcworld.springcrm.SalesOrder" %>
-
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'salesOrder.label')}" />
-    <g:set var="entitiesName" value="${message(code: 'salesOrder.plural')}" />
-    <title><g:message code="invoicingTransaction.show.label" args="[entityName, salesOrderInstance.fullNumber]" /></title>
+    <title>
+      <g:message code="invoicingTransaction.show.label"
+        args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]" /> -
+      <g:message code="salesOrder.plural" />
+    </title>
     <meta name="stylesheet" content="invoicing-transaction" />
   </head>
 

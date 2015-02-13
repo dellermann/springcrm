@@ -1,9 +1,6 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'salesOrder.label')}" />
-    <g:set var="entitiesName" value="${message(code: 'salesOrder.plural')}" />
-    <title>${entitiesName}</title>
   </head>
 
   <body>

@@ -1,8 +1,6 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName"
-      value="${message(code: 'organization.label')}" />
     <g:if test="${(params.listType ?: 0) as int & 1}">
     <g:set var="entitiesName"
       value="${message(code: 'organization.customers')}" />
@@ -15,14 +13,15 @@
     <g:set var="entitiesName"
       value="${message(code: 'organization.plural')}" />
     </g:else>
-    <title>${organizationInstance} -
-    <g:message code="default.edit.label" args="[entityName]" /></title>
+    <meta name="caption" content="${entitiesName}" />
+    <meta name="backLinkUrl"
+      content="${createLink(action: 'index', params: [listType: params.listType])}" />
   </head>
 
   <body>
     <g:applyLayout name="edit" model="[
         type: 'organization', instance: organizationInstance,
-        listParams: [type: params.listType]
+        listParams: [listType: params.listType]
       ]" />
 
     <content tag="scripts">

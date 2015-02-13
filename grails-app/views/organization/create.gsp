@@ -1,21 +1,8 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName"
-      value="${message(code: 'organization.label')}" />
-    <g:if test="${(params.listType ?: 0) as int & 1}">
-    <g:set var="entitiesName"
-      value="${message(code: 'organization.customers')}" />
-    </g:if>
-    <g:elseif test="${(params.listType ?: 0) as int & 2}">
-    <g:set var="entitiesName"
-      value="${message(code: 'organization.vendors')}" />
-    </g:elseif>
-    <g:else>
-    <g:set var="entitiesName"
-      value="${message(code: 'organization.plural')}" />
-    </g:else>
-    <title><g:message code="default.create.label" args="[entityName]" /></title>
+    <meta name="backLinkUrl"
+      content="${createLink(action: 'index', params: [listType: params.listType])}" />
   </head>
 
   <body>

@@ -1,11 +1,11 @@
-<%@ page import="org.amcworld.springcrm.Quote" %>
-
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'quote.label')}" />
-    <g:set var="entitiesName" value="${message(code: 'quote.plural')}" />
-    <title><g:message code="default.show.label" args="[entityName]" /></title>
+    <title>
+      <g:message code="invoicingTransaction.show.label"
+        args="[message(code: 'quote.label'), quoteInstance.fullNumber]" /> -
+      <g:message code="quote.plural" />
+    </title>
     <meta name="stylesheet" content="invoicing-transaction" />
   </head>
 

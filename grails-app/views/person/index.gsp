@@ -3,9 +3,6 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'person.label')}" />
-    <g:set var="entitiesName" value="${message(code: 'person.plural')}" />
-    <title>${entitiesName}</title>
   </head>
 
   <body>

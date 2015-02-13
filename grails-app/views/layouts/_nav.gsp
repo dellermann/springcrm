@@ -11,7 +11,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <g:pageProperty name="page.backLink" />
+      <g:render template="/layouts/backLink" />
     </div>
     <div id="main-nav" class="collapse navbar-collapse">
       <ul class="nav navbar-nav" role="menubar">

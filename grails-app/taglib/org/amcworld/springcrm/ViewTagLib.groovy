@@ -949,6 +949,37 @@ class ViewTagLib {
     }
 
     /**
+     * Renders a normalised title for the current page considering controller
+     * and action name.
+     *
+     * @since 2.0
+     */
+    def title = { attrs ->
+        if (layoutTitle()) {
+            out << layoutTitle()
+            return
+        }
+
+        String entityName = message(code: "${controllerName}.label")
+
+        switch (actionName) {
+        case 'edit':
+        case 'show':
+            def instance = pageScope."${controllerName}Instance"
+            out << message(
+                code: "default.${actionName}.label",
+                args: [instance?.toString() ?: entityName]
+            ) << ' - '
+            break
+        case 'create':
+            out << message(code: 'default.create.label', args: [entityName])
+            out << ' - '
+            break
+        }
+        out << message(code: "${controllerName}.plural", default: entityName)
+    }
+
+    /**
      * Generates the URL of the current page including all request parameters.
      */
     def url = { attrs, body ->

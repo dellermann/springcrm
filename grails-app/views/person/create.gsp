@@ -1,9 +1,6 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'person.label')}" />
-    <g:set var="entitiesName" value="${message(code: 'person.plural')}" />
-    <title><g:message code="default.create.label" args="[entityName]" /></title>
     <meta name="stylesheet" content="person-form" />
   </head>
 

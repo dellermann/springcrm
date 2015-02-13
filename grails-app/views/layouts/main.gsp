@@ -29,8 +29,7 @@
   data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">
   <head>
     <meta charset="utf-8" />
-    <title><g:layoutTitle default="${message(code: 'default.appName')}" /> -
-    <g:message code="default.appName" /></title>
+    <title><g:title /> - <g:message code="default.appName" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <asset:stylesheet src="${pageProperty(name: 'meta.stylesheet') ?: 'application'}" />
@@ -48,7 +47,50 @@
       <g:render template="/layouts/header" />
       <g:render template="/layouts/nav" />
       <div class="inner-container">
-        <g:layoutBody />
+        <div class="row">
+          <div class="title-toolbar">
+            <div class="title">
+              <h1 class="hidden-xs">
+                <g:if test="${pageProperty(name: 'meta.caption')}">
+                <g:pageProperty name="meta.caption" />
+                </g:if>
+                <g:else>
+                <g:message code="${controllerName}.plural"
+                  default="${message(code: "${controllerName}.label")}" />
+                </g:else>
+              </h1>
+              <h2 class="visible-xs">
+                <g:if test="${actionName == 'edit' || actionName == 'show'}">
+                ${pageScope."${controllerName}Instance"}
+                </g:if>
+                <g:elseif test="${actionName == 'create'}">
+                <g:message code="${controllerName}.new.label" />
+                </g:elseif>
+                <g:else>
+                <g:message code="default.overview" />
+                </g:else>
+              </h2>
+            </div>
+            <div class="toolbar" role="toolbar"
+              aria-label="${message(code: 'default.toolbar.label')}">
+              <a href="#top" class="btn btn-default go-top-btn" role="button">
+                <i class="fa fa-arrow-up"></i>
+                <span class="sr-only"
+                  ><g:message code="default.button.top.label"
+                /></span>
+              </a>
+              <g:pageProperty name="page.toolbar" />
+            </div>
+          </div>
+        </div>
+        <g:if test="${pageProperty(name: 'page.captionActionBar')}">
+        <div class="caption-action-bar hidden-xs">
+          <g:pageProperty name="page.captionActionBar" />
+        </div>
+        </g:if>
+        <div class="main-content" role="main">
+          <g:layoutBody />
+        </div>
       </div>
       <g:render template="/layouts/footer" />
     </div>

@@ -3,7 +3,6 @@
 <html>
   <head>
     <meta name="layout" content="main" />
-    <g:set var="entityName" value="${message(code: 'organization.label')}" />
     <g:if test="${(params.listType ?: 0) as int & 1}">
     <g:set var="entitiesName"
       value="${message(code: 'organization.customers')}" />
@@ -16,6 +15,7 @@
     <g:set var="entitiesName"
       value="${message(code: 'organization.plural')}" />
     </g:else>
+    <meta name="caption" content="${entitiesName}" />
     <title>${entitiesName}</title>
   </head>
 
