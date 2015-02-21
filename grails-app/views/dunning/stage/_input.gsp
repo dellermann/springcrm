@@ -1,2 +1,4 @@
-<input type="hidden" id="old-stage" value="${session.user.admin ? 0 : bean?.stage?.id}" />
-<g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.DunningStage.list()}" optionKey="id" value="${bean?.stage?.id}" />
+<input type="hidden" id="stage-old"
+  value="${session.user.admin ? 0 : bean?.stage?.id}" />
+<g:select name="stage" id="stage" from="${type.list()}" optionKey="id"
+  value="${bean?.stage?.id}" />

@@ -1,86 +1,38 @@
-<%@ page import="org.amcworld.springcrm.Dunning" %>
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <g:set var="entityName" value="${message(code: 'dunning.label', default: 'Dunning')}" />
-  <g:set var="entitiesName" value="${message(code: 'dunning.plural', default: 'Dunnings')}" />
-  <title><g:message code="invoicingTransaction.show.label" args="[entityName, dunningInstance.fullNumber]" /></title>
-  <meta name="stylesheet" content="invoicing-transaction" />
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title>
+      <g:message code="invoicingTransaction.show.label"
+        args="[message(code: 'dunning.label'), dunningInstance.fullNumber]" />
+      - <g:message code="dunning.plural" />
+    </title>
+    <meta name="stylesheet" content="invoicing-transaction" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="${entitiesName}" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button action="list" color="white" icon="list"
-          message="default.button.list.label" /></li>
-        <li><g:button action="create" color="green" icon="plus"
-          message="default.button.create.label" /></li>
-        <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
-        <li><g:button action="edit" id="${dunningInstance?.id}" color="green"
-          icon="pencil-square-o" message="default.button.edit.label" /></li>
-        </g:if>
-        <g:else>
-        <li><g:button action="editPayment" id="${dunningInstance?.id}"
-          color="green" icon="pencil-square-o"
-          message="invoicingTransaction.button.editPayment.label" /></li>
-        </g:else>
-        <li><g:button action="copy" id="${dunningInstance?.id}" color="blue"
-          icon="files-o" message="default.button.copy.label" /></li>
-        <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
-        <li><g:button action="delete" id="${dunningInstance?.id}" color="red"
-          class="delete-btn" icon="trash-o"
-          message="default.button.delete.label" /></li>
-        </g:if>
-      </ul>
-    </nav>
-  </header>
-  <aside id="action-bar">
-    <h3><g:message code="default.actions" /></h3>
-    <ul>
-      <li>
-        <g:menuButton action="print" id="${dunningInstance?.id}" color="white"
-          size="medium" icon="print" target="_blank"
-          message="default.button.print.label">
-          <g:each in="${printTemplates}">
-          <li><g:link action="print" id="${dunningInstance?.id}"
-            params="[template: it.key]">${it.value}</g:link></li>
-          </g:each>
-        </g:menuButton>
-      </li>
-      <li>
-        <g:menuButton action="print" id="${dunningInstance?.id}"
-          params="[duplicate: 1]" color="white" size="medium" icon="print"
-          target="_blank"
-          message="invoicingTransaction.button.printDuplicate.label">
-          <g:each in="${printTemplates}">
-          <li>
-            <g:link action="print" id="${dunningInstance?.id}"
-              params="[duplicate: 1, template: it.key]">${it.value}</g:link>
-          </li>
-          </g:each>
-        </g:menuButton>
-      </li>
-      <g:ifModuleAllowed modules="creditMemo">
-      <li>
-        <g:button controller="creditMemo" action="create"
-          params="[dunning: dunningInstance?.id]" color="white" size="medium"
-          message="invoice.button.createCreditMemo" />
-      </li>
-      </g:ifModuleAllowed>
-    </ul>
-  </aside>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
-    <h2>${dunningInstance?.toString()}</h2>
-    <div class="data-sheet">
-      <section class="fieldset">
-        <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
-        <div class="multicol-content">
-          <div class="col col-l">
+  <body>
+    <g:applyLayout name="show" model="[instance: dunningInstance]">
+      <content tag="actionBarStart">
+        <g:applyLayout name="invoicingTransactionPrintActionBar"
+          model="[id: dunningInstance.id]" />
+      </content>
+      <content tag="actionMenu">
+        <g:ifModuleAllowed modules="creditMemo">
+        <li role="menuitem">
+          <g:link controller="creditMemo" action="create"
+            params="[dunning: dunningInstance?.id]">
+            <g:message code="invoice.button.createCreditMemo" />
+          </g:link>
+        </li>
+        </g:ifModuleAllowed>
+      </content>
+
+      <section>
+        <header>
+          <h3><g:message
+            code="invoicingTransaction.fieldset.general.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
             <f:display bean="${dunningInstance}" property="number">
               <g:fieldValue bean="${dunningInstance}" field="fullNumber" />
             </f:display>
@@ -91,7 +43,7 @@
             <f:display bean="${dunningInstance}" property="stage" />
             <f:display bean="${dunningInstance}" property="level" />
           </div>
-          <div class="col col-r">
+          <div class="column">
             <f:display bean="${dunningInstance}" property="docDate" />
             <f:display bean="${dunningInstance}" property="dueDatePayment" />
             <f:display bean="${dunningInstance}" property="shippingDate" />
@@ -103,79 +55,129 @@
           </div>
         </div>
       </section>
-
-      <section class="multicol-content">
-        <div class="col col-l">
-          <div class="fieldset">
-            <header><h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3></header>
-            <div class="form-fragment">
-              <f:display bean="${dunningInstance}" property="billingAddr" />
-            </div>
+      <section class="column-group">
+        <f:display bean="${dunningInstance}" property="billingAddr"
+          title="${message(code: 'invoicingTransaction.fieldset.billingAddr.label')}" />
+        <f:display bean="${dunningInstance}" property="shippingAddr"
+          title="${message(code: 'invoicingTransaction.fieldset.shippingAddr.label')}" />
+      </section>
+      <section>
+        <header>
+          <h3><g:message
+            code="invoicingTransaction.fieldset.header.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <f:display bean="${dunningInstance}" property="headerText" />
           </div>
         </div>
-        <div class="col col-r">
-          <div class="fieldset">
-            <header><h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3></header>
-            <div class="form-fragment">
-              <f:display bean="${dunningInstance}" property="shippingAddr" />
-            </div>
+      </section>
+      <section>
+        <header>
+          <h3><g:message code="dunning.fieldset.items.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <g:set var="invoicingTransaction" value="${dunningInstance}" />
+            <g:applyLayout name="invoicingItemsShow"
+              params="[className: 'dunning']" />
           </div>
         </div>
       </section>
-
-      <section class="fieldset">
-        <header><h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3></header>
-        <div>
-          <f:display bean="${dunningInstance}" property="headerText" />
+      <section>
+        <header>
+          <h3><g:message
+            code="invoicingTransaction.fieldset.footer.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <f:display bean="${dunningInstance}" property="footerText" />
+            <f:display bean="${dunningInstance}"
+              property="termsAndConditions" />
+          </div>
         </div>
       </section>
-
-      <section class="fieldset">
-        <header><h3><g:message code="dunning.fieldset.items.label" /></h3></header>
-        <g:set var="invoicingTransaction" value="${dunningInstance}" />
-        <g:applyLayout name="invoicingItemsShow"
-          params="[className: 'dunning']" />
-      </section>
-
-      <section class="fieldset">
-        <header><h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3></header>
-        <div>
-          <f:display bean="${dunningInstance}" property="footerText" />
-          <f:display bean="${dunningInstance}" property="termsAndConditions" />
-        </div>
-      </section>
-
       <g:if test="${dunningInstance?.notes}">
-      <section class="fieldset">
-        <header><h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3></header>
-        <div>
-          <f:display bean="${dunningInstance}" property="notes" />
+      <section>
+        <header>
+          <h3><g:message
+            code="invoicingTransaction.fieldset.notes.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <f:display bean="${dunningInstance}" property="notes" />
+          </div>
         </div>
       </section>
       </g:if>
 
+      <g:set var="loadParams" value="dunning=${dunningInstance.id}" />
       <g:ifModuleAllowed modules="creditMemo">
-      <section class="fieldset remote-list" data-load-url="${createLink(controller: 'creditMemo', action: 'listEmbedded')}" data-load-params="dunning=${dunningInstance.id}">
-        <header>
-          <h3><g:message code="creditMemo.plural" /></h3>
-          <div class="buttons">
-            <g:button controller="creditMemo" action="create"
-              params="[quote: dunningInstance.id]" color="green" size="small"
-              icon="plus" message="default.create.label"
-              args="[message(code: 'creditMemo.label')]" />
-          </div>
-        </header>
-        <div></div>
-      </section>
+      <g:applyLayout name="remoteList"
+        model="[
+          controller: 'creditMemo', createParams: [dunning: dunningInstance.id]
+        ]" />
       </g:ifModuleAllowed>
-    </div>
+    </g:applyLayout>
 
-    <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: dunningInstance?.dateCreated, style: 'SHORT'), formatDate(date: dunningInstance?.lastUpdated, style: 'SHORT')]" />
-    </p>
-  </div>
-  <asset:script>//<![CDATA[
-      $(".remote-list").remotelist({ returnUrl: "${url()}" });
-  //]]></asset:script>
-</body>
+    <content tag="toolbar">
+      <g:button action="index" color="default" class="hidden-xs"
+        icon="th-list" message="default.button.list.label" />
+      <g:button action="create" color="success" class="hidden-xs"
+        icon="plus-circle" message="default.button.create.label" />
+      <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+      <g:button action="edit" id="${dunningInstance?.id}" color="success"
+        icon="pencil-square-o" message="default.button.edit.label" />
+      </g:if>
+      <g:else>
+      <g:button action="editPayment" id="${dunningInstance?.id}"
+        color="success" icon="pencil-square-o"
+        message="invoicingTransaction.button.editPayment.label" />
+      </g:else>
+      <g:button action="copy" id="${dunningInstance?.id}" color="primary"
+        class="hidden-xs" icon="copy" message="default.button.copy.label" />
+      <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+      <g:button action="delete" id="${dunningInstance?.id}" color="danger"
+        class="hidden-xs btn-action-delete" icon="trash"
+        message="default.button.delete.label" aria-haspopup="true"
+        aria-owns="confirm-modal" />
+      </g:if>
+      <button type="button" class="btn btn-default visible-xs-inline-block"
+        data-toggle="dropdown" aria-haspopup="true"
+        aria-owns="show-toolbar-menu"
+        ><span class="caret"></span
+      ></button>
+      <ul id="show-toolbar-menu" class="dropdown-menu" role="menu"
+        aria-expanded="false">
+        <li role="menuitem">
+          <g:link action="create">
+            <i class="fa fa-plus-circle"></i>
+            <g:message code="default.button.create.label" />
+          </g:link>
+        </li>
+        <li role="menuitem">
+          <g:link action="copy" id="${dunningInstance?.id}">
+            <i class="fa fa-copy"></i>
+            <g:message code="default.button.copy.label" />
+          </g:link>
+        </li>
+        <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+        <li role="menuitem">
+          <g:link action="delete" id="${dunningInstance?.id}"
+            class="btn-action-delete" aria-haspopup="true"
+            aria-owns="confirm-modal">
+            <i class="fa fa-trash"></i>
+            <g:message code="default.button.delete.label" />
+          </g:link>
+        </li>
+        </g:if>
+        <g:applyLayout name="invoicingTransactionPrintToolbar"
+          model="[id: dunningInstance.id]" />
+      </ul>
+    </content>
+
+    <content tag="scripts">
+      <asset:javascript src="show" />
+    </content>
+  </body>
 </html>

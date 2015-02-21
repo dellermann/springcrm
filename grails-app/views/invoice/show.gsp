@@ -109,7 +109,7 @@
           </div>
         </div>
       </section>
-      <g:if test="${quoteInstance?.notes}">
+      <g:if test="${invoiceInstance?.notes}">
       <section>
         <header>
           <h3><g:message
