@@ -107,11 +107,12 @@ JQueryUiStaticExt =
   # @param [Object] options any options which are used in the modal and the deferred object; see function description for more information
   # @return [Promise]       a deferred object which is resolved if the user confirms; otherwise it is rejected
   #
-  confirm: (msg, title, options = {}) ->
+  confirm: (msg, title, options) ->
     $ = jQuery
     unless $.type(title) is 'string'
       options = title
       title = null
+    options ?= {}
 
     $.Deferred((d) ->
         opts = options

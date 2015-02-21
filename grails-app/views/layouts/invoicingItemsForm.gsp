@@ -36,7 +36,7 @@
           <div class="input-group">
             <input type="text" id="subtotal-net"
               class="form-control form-control-number form-control-currency"
-              value="${formatNumber(type: "number", number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
+              value="${formatNumber(type: "number", number: invoicingTransaction.subtotalNet, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="subtotal-net-currency" />
             <span class="input-group-addon" id="subtotal-net-currency"
@@ -58,7 +58,7 @@
           <div class="input-group">
             <input type="text" id="subtotal-gross"
               class="form-control form-control-number form-control-currency"
-              value="${formatNumber(type: "number", number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
+              value="${formatNumber(type: "number", number: invoicingTransaction.subtotalGross, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="subtotal-gross-currency" />
             <span class="input-group-addon" id="subtotal-gross-currency"
@@ -174,7 +174,7 @@
           <div class="input-group">
             <input type="text" id="total-price"
               class="form-control form-control-number form-control-currency"
-              value="${formatNumber(type: 'number', number: 0, minFractionDigits: numFractionDigits, groupingUsed: true)}"
+              value="${formatNumber(type: 'number', number: invoicingTransaction.total, minFractionDigits: numFractionDigits, groupingUsed: true)}"
               size="8" disabled="disabled"
               aria-describedby="total-price-currency" />
             <span class="input-group-addon" id="total-price-currency"

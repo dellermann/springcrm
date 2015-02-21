@@ -22,9 +22,6 @@
 #= require _invoicing-items
 
 
-$ = jQuery
-
-
 #== Classes =====================================
 
 # Class `InvoicingTransaction` contains the scripting needed for invoicing
@@ -48,6 +45,7 @@ class InvoicingTransaction
 
   @DEFAULTS =
     checkStageTransition: true
+    handleInvoiceDunningChange: false
     organizationId: '#organization-select'
     reducedView: false
     stageValues: null
@@ -69,6 +67,9 @@ class InvoicingTransaction
     @$stillUnpaid = $('#still-unpaid')
     @options = opts = $.extend {}, InvoicingTransaction.DEFAULTS, options
 
+    unless options.reducedView
+      new SPRINGCRM.InvoicingItems($element.find '.price-table')
+
     $element
       .on('click', '#still-unpaid', (event) => @_onClickStillUnpaid event)
       .on('change', '#paymentAmount', => @_onChangePaymentAmount())
@@ -77,14 +78,14 @@ class InvoicingTransaction
       .end()
 
     @_initStageValues()
+    if opts.handleInvoiceDunningChange
+      $element.on 'change', '#invoice-select, #dunning-select', (event) =>
+        @_onChangeInvoiceDunning event
 
     $(opts.organizationId).on 'change', => @_onSelectOrganization()
     $('.invoicing-transaction-selector.selectized').each (_, elem) =>
       @_initInvoicingTransactionSelector elem
     @_initAddrFields()
-
-    unless options.reducedView
-      new SPRINGCRM.InvoicingItems($element.find '.price-table')
 
 
   #-- Non-public methods ------------------------
@@ -218,12 +219,47 @@ class InvoicingTransaction
       if stageValues.shipping
         $el.on 'change', '#shippingDate-date', (event) =>
           @_onChangeShippingDate event
-        $el.on('submit', => @_onSubmitForm()) if opts.checkStageTransition
+        if opts.checkStageTransition
+          $el.on 'submit', (event) => @_onSubmitForm event
       if stageValues.payment
         $el.on 'change', '#paymentDate-date', (event) =>
           @_onChangePaymentDate event
 
     return
+
+  # Called if the invoice or dunning has been changed.  The method recomputes
+  # the closing balance of a credit memo.
+  #
+  # @param [Event] event  any event data
+  # @return [Promise]     the status of obtaining the closing balance
+  # @private
+  # @since                2.0
+  #
+  _onChangeInvoiceDunning: (event) ->
+    $ = jq
+    $target = $(event.currentTarget)
+
+    $.ajax(
+        context: this
+        data:
+          id: $target.val()
+        dataType: 'json'
+        url: $target.data 'get-closing-balance-url'
+      )
+      .done (data) ->
+        $ = jq
+
+        @$element
+          .find('#still-unpaid')
+            .each(->
+              $this = $(this)
+              initialBalance = parseFloat $this.data 'initial-balance'
+              val = initialBalance - data.closingBalance
+              $this.data 'modified-closing-balance', val
+            )
+          .end()
+          .find('#paymentAmount')
+            .trigger('change')
 
   # Called if the payment amount has been changed.  The method sets a CSS class
   # to the unpaid amount link in order to indicate the payment status (unpaid,
@@ -318,20 +354,26 @@ class InvoicingTransaction
   # necessary because the application prevents access to shipped invoicing
   # transactions for non-admin users.
   #
-  # @return {Boolean} `true` if the form should be submitted; `false` otherwise
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent the form from being submitted
+  # @private
   #
-  _onSubmitForm: ->
-    res = true
+  _onSubmitForm: (event) ->
+    $form = $(event.currentTarget)
+
     $oldStage = $('#stage-old')
     if $oldStage.length
       oldVal = $oldStage.val()
       if oldVal > 0
-        newVal = @$element.find('#stage').val()
+        newVal = $form.find('#stage').val()
         shippingStageValue = @options.stageValues.shipping
         if (oldVal < shippingStageValue) and (newVal >= shippingStageValue)
-          res = $.confirm $LANG("invoicingTransaction.changeState.label")
+          $.confirm($LANG('invoicingTransaction.changeState.label'))
+            .done ->
+              $form.off('submit')
+                .submit()
 
-    res
+    false
 
 SPRINGCRM.InvoicingTransaction = InvoicingTransaction
 

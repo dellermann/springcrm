@@ -197,6 +197,7 @@ class DunningController {
 
         if (!session.user.admin && dunningInstance.stage.id >= 2202) {
             redirect action: 'index'
+            return
         }
 
         [dunningInstance: dunningInstance]
@@ -243,9 +244,6 @@ class DunningController {
                 render view: 'edit', model: [dunningInstance: dunningInstance]
                 return
             }
-        }
-        if (params.autoNumber) {
-            params.number = dunningInstance.number
         }
 
         if (!invoicingTransactionService.save(dunningInstance, params)) {

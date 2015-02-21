@@ -32,7 +32,7 @@
               <td class="col-type-date dunning-subjectdue-date-payment"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
               <td class="col-type-currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" displayZero="true" external="true" /></td>
               <td class="col-type-currency dunning-closing-balance balance-state balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" external="true" /></td>
-              <td class="action-buttons">
+              <td class="col-actions">
                 <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
                 <g:button action="edit" id="${dunningInstance.id}"
                   color="success" size="xs" icon="pencil-square-o"
