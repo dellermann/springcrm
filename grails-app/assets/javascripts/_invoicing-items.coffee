@@ -39,8 +39,8 @@ class InvoicingItems
     fieldNamePrefix: 'items'
     productListUrl: $('.price-table').data('product-list-url')
     serviceListUrl: $('.price-table').data('service-list-url')
-    taxes: $('.price-table').data('tax-items').split(',')
-    units: $('.price-table').data('units').split(',')
+    taxes: $('.price-table').data('tax-items')?.split(',') ? []
+    units: $('.price-table').data('units')?.split(',') ? []
 
   @INPUT_FIELD_NAMES = [
     'quantity'

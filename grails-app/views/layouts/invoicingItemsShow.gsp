@@ -98,8 +98,10 @@
         </td>
         <td></td>
         <td class="col-type-number col-type-currency">
-          <g:formatCurrency number="${invoicingTransaction?.total}"
-            displayZero="true" />
+          <output id="total-price"
+            ><g:formatCurrency number="${invoicingTransaction?.total}"
+              displayZero="true"
+          /></output>
         </td>
         <td></td>
       </tr>

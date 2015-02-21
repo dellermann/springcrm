@@ -110,10 +110,7 @@ class QuoteController {
 
     def save() {
         Quote quoteInstance = new Quote()
-        if (!invoicingTransactionService.saveInvoicingTransaction(
-                quoteInstance, params
-            ))
-        {
+        if (!invoicingTransactionService.save(quoteInstance, params)) {
             render view: 'create', model: [quoteInstance: quoteInstance]
             return
         }
@@ -145,10 +142,7 @@ class QuoteController {
             return
         }
 
-        [
-            quoteInstance: quoteInstance,
-            printTemplates: fopService.templateNames
-        ]
+        [quoteInstance: quoteInstance]
     }
 
     def edit(Long id) {
@@ -189,10 +183,7 @@ class QuoteController {
             }
         }
 
-        if (!invoicingTransactionService.saveInvoicingTransaction(
-                quoteInstance, params
-            ))
-        {
+        if (!invoicingTransactionService.save(quoteInstance, params)) {
             render view: 'edit', model: [quoteInstance: quoteInstance]
             return
         }

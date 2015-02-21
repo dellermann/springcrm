@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.text.DecimalFormatSymbols
 import org.codehaus.groovy.grails.commons.GrailsClass
 
 
@@ -36,6 +35,7 @@ class ViewFilters {
 
     def dependsOn = [LoginFilters]
 
+    FopService fopService
     UserService userService
 
 
@@ -162,6 +162,16 @@ class ViewFilters {
                 if (model) {
                     model.units = Unit.list(sort: 'orderId')
                     model.taxRates = TaxRate.list(sort: 'orderId')
+                }
+            }
+        }
+
+        printTemplates(controller: 'quote|salesOrder|invoice|dunning|creditMemo',
+                       action: 'show')
+        {
+            after = { model ->
+                if (model) {
+                    model.printTemplates = fopService.templateNames
                 }
             }
         }

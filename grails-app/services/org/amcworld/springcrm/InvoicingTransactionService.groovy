@@ -28,7 +28,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  * invoicing transactions such as quotes, sales order, invoices etc.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.2
  */
 class InvoicingTransactionService {
@@ -81,9 +81,8 @@ class InvoicingTransactionService {
      * @return                      {@code true} if validating and saving was
      *                              successful; {@code false} otherwise
      */
-    boolean saveInvoicingTransaction(InvoicingTransaction invoicingTransaction,
-                                     def params)
-    {
+    boolean save(InvoicingTransaction invoicingTransaction, def params) {
+        boolean create = !invoicingTransaction.id
         if (params.autoNumber) {
             params.number = invoicingTransaction.number
         }
@@ -108,7 +107,7 @@ class InvoicingTransactionService {
             invoicingTransaction.items.clear()
         }
         for (int i = 0; params."items[${i}]"; i++) {
-            if (params."items[${i}]".id != 'null') {
+            if (create || params."items[${i}]".id != 'null') {
                 invoicingTransaction.addToItems params."items[${i}]"
             }
         }

@@ -123,7 +123,7 @@ class SalesOrderController {
 
     def save() {
         SalesOrder salesOrderInstance = new SalesOrder(params)
-        if (!salesOrderInstance.save(flush: true)) {
+        if (!invoicingTransactionService.save(salesOrderInstance, params)) {
             render view: 'create',
                 model: [salesOrderInstance: salesOrderInstance]
             return
@@ -155,10 +155,7 @@ class SalesOrderController {
             return
         }
 
-        [
-            salesOrderInstance: salesOrderInstance,
-            printTemplates: fopService.templateNames
-        ]
+        [salesOrderInstance: salesOrderInstance]
     }
 
     def edit(Long id) {
@@ -199,14 +196,8 @@ class SalesOrderController {
                 return
             }
         }
-        if (params.autoNumber) {
-            params.number = salesOrderInstance.number
-        }
 
-        if (!invoicingTransactionService.saveInvoicingTransaction(
-                salesOrderInstance, params
-            ))
-        {
+        if (!invoicingTransactionService.save(salesOrderInstance, params)) {
             render view: 'edit',
                 model: [salesOrderInstance: salesOrderInstance]
             return
@@ -220,6 +211,7 @@ class SalesOrderController {
                 salesOrderInstance.toString()
             ]
         )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -267,7 +259,7 @@ class SalesOrderController {
         try {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
-        def organization = params.organization \
+        Organization organization = params.organization \
             ? Organization.get(params.organization) \
             : null
 
@@ -288,7 +280,8 @@ class SalesOrderController {
         render(contentType: 'text/json') {
             array {
                 for (SalesOrder so in list) {
-                    salesOrder id: so.id, name: so.fullName
+                    salesOrder id: so.id, number: so.fullNumber,
+                        name: so.subject, fullName: so.fullName
                 }
             }
         }
