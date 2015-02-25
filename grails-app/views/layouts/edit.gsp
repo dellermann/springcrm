@@ -16,16 +16,8 @@
 <form action="${createLink(action: 'update')}" id="${formName}"
   class="form-horizontal data-form form-view" method="post"
   enctype="${enctype ?: 'application/x-www-form-urlencoded'}">
-  <g:if test="${flash.message}">
-  <div class="alert alert-success" role="alert">
-    ${raw(flash.message)}
-  </div>
-  </g:if>
-  <g:hasErrors bean="${instance}">
-  <div class="alert alert-danger" role="alert">
-    <g:message code="default.form.errorHint" />
-  </div>
-  </g:hasErrors>
+  <g:render template="/layouts/flashMessage" />
+  <g:render template="/layouts/errorMessage" />
   <g:hiddenField name="id" value="${instance?.id}" />
   <g:hiddenField name="version" value="${instance?.version}" />
   <g:layoutBody />

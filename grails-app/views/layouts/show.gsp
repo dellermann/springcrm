@@ -66,15 +66,7 @@
 </content>
 
 <div class="form-horizontal data-form detail-view">
-  <g:if test="${flash.message}">
-  <div class="alert alert-success alert-dismissible" role="alert">
-    <button type="button" class="close" data-dismiss="alert">
-      <span aria-hidden="true">×</span>
-      <span class="sr-only"><g:message code="default.btn.close" /></span>
-    </button>
-    ${raw(flash.message)}
-  </div>
-  </g:if>
+  <g:render template="/layouts/flashMessage" />
   <g:layoutBody />
   <p class="last-modified">
     <g:message code="default.recordTimestamps"
