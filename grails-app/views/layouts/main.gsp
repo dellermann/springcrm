@@ -60,9 +60,12 @@
                 </g:else>
               </h1>
               <h2 class="visible-xs">
-                <g:if test="${actionName == 'edit' || actionName == 'show'}">
-                ${pageScope."${controllerName}Instance"}
+                <g:if test="${pageProperty(name: 'meta.subcaption')}">
+                <g:pageProperty name="meta.subcaption" />
                 </g:if>
+                <g:elseif test="${actionName == 'edit' || actionName == 'show'}">
+                ${pageScope."${controllerName}Instance"}
+                </g:elseif>
                 <g:elseif test="${actionName == 'create'}">
                 <g:message code="${controllerName}.new.label" />
                 </g:elseif>
@@ -94,10 +97,12 @@
       </div>
       <g:render template="/layouts/footer" />
     </div>
+
     <g:render template="/layouts/modals" />
     <div id="spinner" class="spinner" aria-hidden="true">
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
+
     <asset:i18n locale="${locale}" />
     <g:pageProperty name="page.scripts"
       default="${asset.javascript(src: 'application')}" />
