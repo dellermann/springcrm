@@ -102,6 +102,8 @@ person.otherAddr.clear
 person.otherAddr.copy
 person.picture.delete
 person.picture.selectButton
+purchaseInvoice.documentFile.delete
+purchaseInvoice.documentFile.select
 salesItem.pricing.error.notMovable.refBeforeReferee
 salesItem.pricing.error.notRemovable
 salesItem.pricing.removePricing.confirm

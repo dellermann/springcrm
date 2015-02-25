@@ -31,5 +31,8 @@
   <changeSet author="d.ellermann@amc-world.de" id="20150202-3">
     <dropColumn columnName="number" tableName="invoicing_item"/>
   </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20150225-1">
+    <dropColumn columnName="number" tableName="purchase_invoice_item"/>
+  </changeSet>
 </databaseChangeLog>
 

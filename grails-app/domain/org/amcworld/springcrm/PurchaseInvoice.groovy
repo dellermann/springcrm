@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoice.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class PurchaseInvoice {
 
@@ -190,7 +190,7 @@ class PurchaseInvoice {
      * @see     #getSubtotalNet()
      */
     double getSubtotalGross() {
-        subtotalNet + taxRateSums.values().sum()
+        subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
     }
 
     /**
@@ -201,7 +201,7 @@ class PurchaseInvoice {
      * @see     #getSubtotalGross()
      */
     double getSubtotalNet() {
-        items.total.sum() + shippingCosts
+        items ? (items.total.sum() + shippingCosts) : 0.0d
     }
 
     /**

@@ -207,13 +207,15 @@
         </td>
         <td class="col-type-string col-name">
           <div class="col-content">
+            <g:if test="${item.hasProperty('salesItem')}">
             <input type="hidden" name="items[${i}].salesItem.id"
               value="${item.salesItem?.id}" />
+            </g:if>
+            <g:if test="${params.controller != 'purchase-invoice'}">
             <div class="input-group">
               <input type="text" name="items[${i}].name" class="form-control"
                 value="${fieldValue(bean: item, field: 'name')}"
                 required="required" />
-              <g:if test="${params.controller != 'purchase-invoice'}">
               <span class="input-group-btn">
                 <g:ifModuleAllowed modules="product">
                 <button type="button"
@@ -234,8 +236,15 @@
                 </button>
                 </g:ifModuleAllowed>
               </span>
-              </g:if>
             </div>
+            </g:if>
+            <g:else>
+            <div>
+              <input type="text" name="items[${i}].name" class="form-control"
+                value="${fieldValue(bean: item, field: 'name')}"
+                required="required" />
+            </div>
+            </g:else>
             <textarea name="items[${i}].description" class="form-control"
               rows="3"
               ><g:fieldValue bean="${item}" field="description" /></textarea>
