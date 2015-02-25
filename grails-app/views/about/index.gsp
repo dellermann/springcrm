@@ -4,6 +4,7 @@
     <title><g:message code="about.title" /></title>
     <meta name="stylesheet" content="about" />
     <meta name="caption" content="${message(code: 'about.title')}" />
+    <meta name="noSubcaption" content="true" />
   </head>
 
   <body>

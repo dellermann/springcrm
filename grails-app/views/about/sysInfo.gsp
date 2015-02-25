@@ -4,7 +4,7 @@
     <title><g:message code="about.sysInfo" /></title>
     <meta name="stylesheet" content="about" />
     <meta name="caption" content="${message(code: 'about.sysInfo')}" />
-    <meta name="subcaption" content="${message(code: 'about.sysInfo')}" />
+    <meta name="noSubcaption" content="true" />
   </head>
 
   <body>

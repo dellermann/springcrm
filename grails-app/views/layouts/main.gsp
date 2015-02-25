@@ -59,6 +59,7 @@
                   default="${message(code: "${controllerName}.label")}" />
                 </g:else>
               </h1>
+              <g:if test="${!pageProperty(name: 'meta.noSubcaption')}">
               <h2 class="visible-xs">
                 <g:if test="${pageProperty(name: 'meta.subcaption')}">
                 <g:pageProperty name="meta.subcaption" />
@@ -73,6 +74,7 @@
                 <g:message code="default.overview" />
                 </g:else>
               </h2>
+              </g:if>
             </div>
             <div class="toolbar" role="toolbar"
               aria-label="${message(code: 'default.toolbar.label')}">
