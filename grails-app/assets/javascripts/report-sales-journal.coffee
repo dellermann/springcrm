@@ -1,7 +1,7 @@
 #
 # report-sales-journal.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,46 +17,90 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _jquery-ui-selectboxit
 
 
 $ = jQuery
 
 
-# Called if the year selector has been changed.
-#
-onChangeYearSelector = ->
-  submitFilter $("#month-selector").find(".current")
+#== Classes =====================================
 
-# Called if the month selector has been clicked.
+# Class `SalesJournalReport` represents a widget that handles user actions in
+# sales journals.
 #
-# @param {Object} event the event data
-# @return {Boolean}     always `false` to prevent event bubbling
+# @author   Daniel Ellermann
+# @version  2.0
 #
-onClickMonthSelector = (event) ->
-  $li = $(event.target).parent("li")
-  $li
-    .siblings()
-      .removeClass("current")
-    .end()
-    .addClass "current"
-  submitFilter $li
-  false
+class SalesJournalReport
 
-# Submits the currently selected month and year to the server.
-#
-# @param {jQuery} $monthLink  the currently clicked month link
-#
-submitFilter = ($monthLink) ->
-  params =
-    month: $monthLink.data("month")
-    year: $("#year-selector").val()
+  #-- Internal variables ------------------------
 
-  url = $monthLink.find("a").attr("href")
-  url += (if /\?/.test(url) then "&" else "?") + $.param(params)
-  window.location.href = url
+  # @nodoc
+  $ = jq = jQuery
 
-$("#month-selector").click onClickMonthSelector
-$("#year-selector").selectBoxIt(
-    theme: "jqueryui"
-  ).change onChangeYearSelector
+
+  #-- Constructor -------------------------------
+
+  # Creates a new instance to handle user actions in sales journals.
+  #
+  constructor: ->
+    $('.month-year-selector')
+      .on('click', '.btn-month', (event) => @_onClickMonth event)
+      .on('click', '.year-selector a', (event) => @_onClickYear event)
+
+
+  #-- Non-public methods ------------------------
+
+  # Called if a month in the selector bar has been clicked.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickMonth: (event) ->
+    $ = jq
+
+    $month = $(event.currentTarget)
+      .siblings('.btn')
+        .removeClass('active')
+      .end()
+      .addClass('active')
+    @_submitFilter $month, $('.year-selector').data('current-year')
+
+    false
+
+  # Called if the year in the selector has been changed.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickYear: (event) ->
+    $ = jq
+
+    $target = $(event.currentTarget)
+    $month = $('.month-year-selector .btn-month.active')
+    @_submitFilter $month, $target.text()
+
+    false
+
+  # Submits the currently selected month and year to the server and loads the
+  # sales journal of that time.
+  #
+  # @param [jQuery] $aMonth the currently selected month link
+  # @param [Number] year    the currently selected year
+  # @private
+  #
+  _submitFilter: ($aMonth, year) ->
+    url = new HttpUrl($aMonth.attr 'href')
+    url.query.month = $aMonth.data 'month'
+    url.query.year = year
+    window.location.href = url.toString()
+
+
+
+#== Main ========================================
+
+new SalesJournalReport()
+
+# vim:set ts=2 sw=2 sts=2:
+

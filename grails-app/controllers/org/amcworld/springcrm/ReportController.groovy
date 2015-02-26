@@ -1,7 +1,7 @@
 /*
  * ReportController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,13 +28,11 @@ import static java.util.Calendar.*
  * journals.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 class ReportController {
 
     //-- Public methods -------------------------
-
-    def index() {}
 
     def salesJournal() {
         def cal = Calendar.instance
@@ -68,7 +66,7 @@ class ReportController {
 
         int yearStart = -1
         int yearEnd = -1
-        def l = Invoice.list(sort: 'docDate', max: 1)
+        List<InvoicingTransaction> l = Invoice.list(sort: 'docDate', max: 1)
         if (!l.empty) yearStart = l[0].docDate[YEAR]
         l = Invoice.list(sort: 'docDate', order: 'desc', max: 1)
         if (!l.empty) yearEnd = l[0].docDate[YEAR]

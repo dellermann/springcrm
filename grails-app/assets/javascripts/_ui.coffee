@@ -314,6 +314,7 @@ class Page
       )
       .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
       .on('click', '#spinner', -> $(this).fadeOut())
+      .on('click', '.btn-print', -> win.print())
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
       )
@@ -589,8 +590,6 @@ SPRINGCRM.page = (->
           height: $jsCalcContainer.height() + 65
           width: $jsCalcContainer.width() + 30
       false
-
-    $('#main-container').on('click', '#print-btn', -> win.print())
 
 #    $('.date-input-time').autocomplete
 #        select: onSelectTimeValue

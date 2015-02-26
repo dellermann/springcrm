@@ -323,9 +323,16 @@ String::ucFirst = ->
 
 # Handles HTTP and HTTPS URLs including parsing and building.
 #
-# @since  1.4
+# @author   Daniel Ellermann
+# @version  2.0
+# @since    1.4
 #
 class HttpUrl
+
+  #-- Internal variables ------------------------
+
+  $ = jq = jQuery
+
   REGEXP = /// ^
     (?:(https?)://)?      # scheme, e. g. http, ftp, etc.
     (?:(\w+)(?::(.+))?@)? # user name and optional password
@@ -336,6 +343,9 @@ class HttpUrl
     (?:#(.+))?            # fragment identifier
     $
   ///
+
+
+  #-- Instance variables ------------------------
 
   # @property [String] the URL scheme
   scheme: 'http'
@@ -355,12 +365,14 @@ class HttpUrl
   # @property [String] the path to the resource; if any
   path: undefined
 
-  # @property [Object] any query parameters
+  # @property [Object] any query parameters; each value can be either a string which will be URI encoded or a function returning a value which won't be URI encoded
   query: {}
 
   # @property [String] the fragment identifier, if any
   fragmentIdentifier: undefined
 
+
+  #-- Constructor -------------------------------
 
   # Creates either an empty or a parsed HTTP URL.
   #
@@ -369,6 +381,9 @@ class HttpUrl
   constructor: (url = null) ->
     @_parse url if url
 
+
+  #-- Public methods ----------------------------
+
   # Overwrites the query parameters in this URL with the given query string or
   # query data.
   #
@@ -376,10 +391,11 @@ class HttpUrl
   # @return [HttpUrl]             this object
   #
   overwriteQuery: (query) ->
-    if $.type(query) is 'string'
-      query = @_parseQueryString query
+    $ = jq
 
+    query = @_parseQueryString query if $.type(query) is 'string'
     $.extend @query, query
+
     this
 
   # Builds a string representation of this URL from the internal data.
@@ -404,15 +420,21 @@ class HttpUrl
     s += "##{@fragmentIdentifier}" if @fragmentIdentifier
     s
 
+
+  #-- Non-public methods ------------------------
+
   # Builds a query string from the given data.
   #
   # @param [Object] query the query data
   # @return [String]      the built query string
   #
   _buildQueryString: (query) ->
+    $ = jq
+
     parts = []
     for key, value of query
-      parts.push "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}"
+      value = if $.isFunction value then value.call @ else encodeURIComponent value
+      parts.push "#{encodeURIComponent(key)}=#{value}"
     parts.join '&'
 
   # Parses the given URL and stores the components in this object.
@@ -446,6 +468,7 @@ class HttpUrl
       [key, value] = part.split '='
       res[decodeURIComponent(key)] =
         decodeURIComponent(value).replace /\+/, ' '
+
     res
 
 window.HttpUrl = HttpUrl

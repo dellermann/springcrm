@@ -33,7 +33,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <asset:stylesheet src="${pageProperty(name: 'meta.stylesheet') ?: 'application'}" />
-    <asset:stylesheet src="print" media="print" />
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <asset:link rel="shortcut icon" href="favicon.png" type="image/png" />
     <asset:link rel="icon" href="favicon.ico" type="image/x-icon" />

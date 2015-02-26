@@ -1,47 +1,54 @@
-/*
- * report.less
- *
- * Copyright (c) 2011-2014, Daniel Ellermann
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+//
+// _report.less
+//
+// Copyright (c) 2011-2015, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 
 @import "application";
 
 
-.report tfoot td {
-  font-weight: bold;
-}
-.filter-bar {
-  margin-bottom: 2em;
-}
-#month-selector {
-  float: left;
-  margin: 0;
-  width: 75%;
+.month-year-selector {
+  margin: @line-height-computed 0;
 
-  li {
-    height: 2.2em;
-    padding: 0 .1em;
-    vertical-align: middle;
+  .btn {
+    margin-bottom: (@line-height-computed / 2);
+  }
+  > .btn-group .dropdown-menu {
+    right: 0;
+  }
+
+  @media (min-width: @screen-sm-min) {
+    .btn-group-justified();
+    margin-bottom: (2 * @line-height-computed);
+
+    .btn {
+      margin-bottom: 0;
+    }
+    > .btn-whole-year {
+      width: 2%;
+    }
   }
 }
-#year-selector {
-  float: left;
-  margin-left: 2em;
-  margin-top: .3em;
-  min-width: 10em;
+.report {
+  > tbody > .row-divider > td {
+    border-top: 2px solid @spring-gray;
+  }
+
 }
+
+// vim:set ts=2 sw=2 sts=2:
 
