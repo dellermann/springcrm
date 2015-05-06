@@ -26,6 +26,8 @@
 #= require bootstrap/modal
 #= require _bootstrap-datepicker
 #= require _selectize
+#= require _selectize-no-delete
+#= require _selectize-disable-options
 #= require _handlebars-ext
 #= require templates/tools/js-calc
 #= require _js-calc
@@ -309,7 +311,7 @@ class Page
     $(win.document)
       .on('click', '.go-top-btn', (event) ->
         $ = jQuery
-        $('html').scrollTo $(event.currentTarget).attr 'href'
+        $('html, body').scrollTo $(event.currentTarget).attr 'href'
         false
       )
       .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
@@ -355,10 +357,16 @@ class Page
   _initSelect: (index, element) ->
     $element = $(element)
 
+    plugins =
+      disable_options:
+        disableOptions: []
+    plugins['no-delete'] = {} if $element.attr 'required'
+
     opts =
       onInitialize: ->
         id = @$input.attr 'id'
         @$control_input.attr 'id', id.replace(/-select$/, '') if id
+      plugins: plugins
 
     url = $element.data 'find-url'
     if url

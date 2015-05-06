@@ -3,8 +3,8 @@
     <div class="col-xs-6 col-sm-12 col-md-6">
       <div class="input-group">
         <f:input bean="${bean}" property="${property}"
+          value="${formatCurrency(number: value, displayZero: true, external: true)}"
           cssClass="form-control form-control-number form-control-currency"
-          displayZero="true" external="true"
           aria-describedby="payment-amount-currency" />
         <span id="payment-amount-currency" class="input-group-addon"
           ><g:currency

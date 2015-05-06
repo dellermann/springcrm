@@ -71,7 +71,7 @@ class InvoicingItems
     @subtotalGross = 0.0
     @total = 0.0
 
-    @form = $element.parents('form')[0]
+    @form = $element.closest('form')[0]
     $element
       .on('click', '.up-btn', (event) => @_onClickMoveItem event, -1)
       .on('click', '.down-btn', (event) => @_onClickMoveItem event, 1)
@@ -325,6 +325,7 @@ class InvoicingItems
   # Initialize the autocomplete fields for units.
   #
   # @param [jQuery] $input  a selector representing the input fields that should be initialized; if not defined, all unit input fields are initialized
+  # @private
   #
   _initUnitTypeahead: ($input = $('.col-unit input')) ->
     units = @units
@@ -375,7 +376,7 @@ class InvoicingItems
         if name is "unitPrice"
           unitPrice = input.value.parseNumber()
           qty = @_getInput(index, 'quantity').value.parseNumber()
-        $(input).parents('tr')
+        $(input).closest('tr')
           .find('.col-total-price input')
             .val (qty * unitPrice).formatCurrencyValue()
 
@@ -389,7 +390,7 @@ class InvoicingItems
   # @private
   #
   _onClickMoveItem: (event, dir) ->
-    $tr = $(event.currentTarget).parents 'tr'
+    $tr = $(event.currentTarget).closest 'tr'
 
     # swap current row with previous or next row
     pos = @_getRowPosition $tr
@@ -415,7 +416,7 @@ class InvoicingItems
   #
   _onClickRemoveItem: (event) ->
     if @_getNumRows() > 1
-      @_removeRow $(event.currentTarget).parents 'tr'
+      @_removeRow $(event.currentTarget).closest 'tr'
       @_computeFooterValues()
 
     return
@@ -435,7 +436,7 @@ class InvoicingItems
     opts = @options
     url ?= opts["#{type}ListUrl"]
     if url
-      pos = @_getRowPosition $target.parents 'tr'
+      pos = @_getRowPosition $target.closest 'tr'
       @_loadSalesItemSelector type, pos, url
 
     return

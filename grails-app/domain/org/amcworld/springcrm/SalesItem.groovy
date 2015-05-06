@@ -1,7 +1,7 @@
 /*
  * SalesItem.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code SalesItem} acts as a base class for products and services.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.3
  */
 class SalesItem {
@@ -106,7 +106,7 @@ class SalesItem {
     double getUnitPrice() {
         if (pricing) {
             double qty = (unit == pricing.unit) ? pricing.quantity : quantity
-            this.unitPrice = qty ? pricing.step2Total / qty : 0.0d
+            this.unitPrice = qty ? pricing.step2TotalUnitPrice / qty : 0.0d
         }
         this.unitPrice
     }

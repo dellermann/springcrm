@@ -8,7 +8,6 @@ encoding//grails-app/views/calendarEvent/calendar.gsp=UTF-8
 encoding//grails-app/views/invoice/_form.gsp=UTF-8
 encoding//grails-app/views/invoice/show.gsp=UTF-8
 encoding//grails-app/views/product/_form.gsp=UTF-8
-encoding//grails-app/views/product/list.gsp=UTF-8
 encoding//grails-app/views/product/show.gsp=UTF-8
 encoding//grails-app/views/purchaseInvoice/_form.gsp=UTF-8
 encoding//grails-app/views/purchaseInvoice/show.gsp=UTF-8
