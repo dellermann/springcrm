@@ -128,7 +128,7 @@ grails.project.dependency.resolution = {
             ':coffee-asset-pipeline:1.9.0',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-			':handlebars-asset-pipeline:1.3.0.3',
+            ':handlebars-asset-pipeline:1.3.0.3',
             ':i18n-asset-pipeline:0.9.2',
             ':less-asset-pipeline:1.10.0',
             ':mail:1.0.6',
