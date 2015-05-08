@@ -26,14 +26,15 @@
     "bootstrap-datepicker": "~1.4.0",
     "bootstrap-fileinput": "~4.1.6",
     "font-awesome": "~4.2.0",
-    "fullcalendar": "~2.2.6",
+    "fullcalendar": "~2.2.7",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.4",
-    "jquery-autosize": "~1.18.17",
+    "jquery-autosize": "~1.18.18",
     "jquery-file-upload": "~9.8.0",
     "jquery-mockjax": "1.6.1",
     "js-calc": "~0.9.8",
     "qunit": "~1.17.1",
+    "selectize": "~0.12.1",
     "typeahead.js": "~0.10.5"
   }
 }

@@ -69,7 +69,9 @@
 @import "_bootstrap-fileinput.css";
 
 // Selectize
-@import "_selectize";
+@import "selectize/selectize.bootstrap3";
+@import "selectize/selectize-disable-options";
+@import "selectize/selectize-redefinitions";
 
 // Application variables and mixins
 @import "_variables";
@@ -231,35 +233,6 @@ h2 {
 
 .fa {
   transform: translate(0, 0); // ensures no half-pixel rendering in firefox
-}
-
-// Selectize redefinitions
-.selectize-input {
-  padding: @padding-base-vertical @padding-base-horizontal;
-}
-.selectize-control.single .selectize-input:after {
-  transform: scale(.9999);
-}
-.selectize-dropdown {
-  .selectize-box-shadow(0 3px 3px rgba(0, 0, 0, .3));
-
-  [data-selectable] {
-    padding-left: @padding-base-horizontal;
-    padding-right: @padding-base-horizontal;
-
-    &:last-child {
-      .selectize-border-radius(
-          0 0 @selectize-border-radius @selectize-border-radius
-        );
-    }
-  }
-  .selected {
-    background: lighten(@spring-green-base, 20%);
-
-    &:hover, &:active, &:focus {
-      background: @selectize-color-dropdown-item-active;
-    }
-  }
 }
 
 // Bootstrap file input redefinitions

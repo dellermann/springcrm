@@ -1,7 +1,7 @@
 /*
  * BuildConfig.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 
-def gebVersion = '0.9.3'
+def gebVersion = '0.10.0'
 
 grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
@@ -127,11 +127,11 @@ grails.project.dependency.resolution = {
 //            ':codenarc:0.21',
             ':coffee-asset-pipeline:2.0.7',
             ':dbunit-operator:1.7',
-            ':fields:1.3',
+            ':fields:1.4',
             ':handlebars-asset-pipeline:2.0.0.2',
             ':i18n-asset-pipeline:1.0.2',
             ':less-asset-pipeline:2.0.8',
-            ':mail:1.0.6',
+            ':mail:1.0.7',
             ':markdown:1.1.1',
             ':scaffolding:2.1.2',
             ':searchable:0.6.9'

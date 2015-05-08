@@ -90,11 +90,11 @@ grails.web.url.converter = 'hyphenated'
 
 //== Views ======================================
 
-grails.assets.less.compiler = 'standard'
 grails.assets.excludes = [
     'bootstrap/**/*.less', 'font-awesome/**/*.less', 'bootstrap/*.js',
-    'widgets/**/*.js', 'js-calc/**/*.less'
+    'widgets/**/*.js', 'js-calc/**/*.less', 'selectize/**/*.less'
 ]
+//grails.assets.less.compiler = 'standard'
 
 /* Enable Sitemesh preprocessing of GSP pages */
 grails.views.gsp.sitemesh.preprocess = true

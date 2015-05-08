@@ -181,6 +181,18 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
             src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
           ,
+            cwd: '<%= dirs.bower.selectize %>/dist/less/'
+            dest: '<%= dirs.src.stylesheets %>/selectize/'
+            expand: true
+            src: [
+              'plugins/**'
+              'selectize.bootstrap3.less'
+              'selectize.less'
+            ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/_selectize.js'
+            src: '<%= dirs.bower.selectize %>/dist/js/standalone/selectize.js'
+          ,
             dest: '<%= dirs.src.javascripts %>/_typeahead.js'
             src: '<%= dirs.bower.typeahead %>/typeahead.bundle.js'
         ]
@@ -257,6 +269,7 @@ module.exports = (grunt) ->
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         moment: '<%= dirs.bower.base %>/moment'
         qunit: '<%= dirs.bower.base %>/qunit'
+        selectize: '<%= dirs.bower.base %>/selectize'
         typeahead: '<%= dirs.bower.base %>/typeahead.js'
       src:
         assets: '<%= dirs.src.grailsApp %>/assets'
