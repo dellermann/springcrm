@@ -169,17 +169,17 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
-          ,
-            cwd: '<%= dirs.bower.jsCalc %>/less/'
-            dest: '<%= dirs.src.stylesheets %>/js-calc/'
-            expand: true
-            src: [
-              'core.less'
-              'variables.less'
-            ]
-          ,
-            dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
-            src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
+#          ,
+#            cwd: '<%= dirs.bower.jsCalc %>/less/'
+#            dest: '<%= dirs.src.stylesheets %>/js-calc/'
+#            expand: true
+#            src: [
+#              'core.less'
+#              'variables.less'
+#            ]
+#          ,
+#            dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
+#            src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
           ,
             cwd: '<%= dirs.bower.selectize %>/dist/less/'
             dest: '<%= dirs.src.stylesheets %>/selectize/'
