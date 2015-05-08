@@ -123,14 +123,14 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile(
-            ':asset-pipeline:1.9.9',
+            ':asset-pipeline:2.1.5',
 //            ':codenarc:0.21',
-            ':coffee-asset-pipeline:1.9.0',
+            ':coffee-asset-pipeline:2.0.7',
             ':dbunit-operator:1.7',
             ':fields:1.3',
-            ':handlebars-asset-pipeline:1.3.0.3',
-            ':i18n-asset-pipeline:0.9.2',
-            ':less-asset-pipeline:1.10.0',
+            ':handlebars-asset-pipeline:2.0.0.2',
+            ':i18n-asset-pipeline:1.0.2',
+            ':less-asset-pipeline:2.0.8',
             ':mail:1.0.6',
             ':markdown:1.1.1',
             ':scaffolding:2.1.2',
