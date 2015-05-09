@@ -1,7 +1,7 @@
 /*
  * ServiceController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,16 @@
 
 package org.amcworld.springcrm
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+
 import grails.converters.JSON
-import javax.servlet.http.HttpServletResponse
 
 
 /**
  * The class {@code ServiceController} contains actions which manage services.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class ServiceController {
 
@@ -45,33 +46,38 @@ class ServiceController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
             int num = Service.countByNameLessThan(params.letter)
             params.sort = 'name'
             params.offset = Math.floor(num / params.max) * params.max
         }
-        [serviceInstanceList: Service.list(params), serviceInstanceTotal: Service.count()]
+
+        [
+            serviceInstanceList: Service.list(params),
+            serviceInstanceTotal: Service.count()
+        ]
     }
 
     def selectorList() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        String searchFilter = params.search ? "%${params.search}%".toString() : ''
+        String searchFilter =
+            params.search ? "%${params.search}%".toString() : ''
         if (params.letter) {
             int num
             if (params.search) {
-                num = Service.countByNameLessThanAndNameLike(params.letter, searchFilter)
+                num = Service.countByNameLessThanAndNameLike(
+                    params.letter, searchFilter
+                )
             } else {
                 num = Service.countByNameLessThan(params.letter)
             }
             params.sort = 'name'
             params.offset = Math.floor(num / params.max) * params.max
         }
-        def list, count
+
+        List<Service> list
+        int count
         if (params.search) {
             list = Service.findAllByNameLike(searchFilter, params)
             count = Service.countByNameLike(searchFilter)
@@ -79,20 +85,25 @@ class ServiceController {
             list = Service.list(params)
             count = Service.count()
         }
+
         [serviceInstanceList: list, serviceInstanceTotal: count]
     }
 
     def create() {
         def serviceInstance = new Service()
         serviceInstance.properties = params
+
         [serviceInstance: serviceInstance]
     }
 
     def copy(Long id) {
         def serviceInstance = Service.get(id)
         if (!serviceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'service.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -108,7 +119,11 @@ class ServiceController {
         }
 
         request.serviceInstance = serviceInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'service.label'), serviceInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -119,8 +134,11 @@ class ServiceController {
     def show(Long id) {
         def serviceInstance = Service.get(id)
         if (!serviceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'service.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -130,8 +148,11 @@ class ServiceController {
     def edit(Long id) {
         def serviceInstance = Service.get(id)
         if (!serviceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'service.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -141,15 +162,22 @@ class ServiceController {
     def update(Long id) {
         def serviceInstance = Service.get(id)
         if (!serviceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'service.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (serviceInstance.version > version) {
-                serviceInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'service.label', default: 'Service')] as Object[], 'Another user has updated this Service while you were editing')
+                serviceInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'service.label')] as Object[],
+                    'Another user has updated this Service while you were editing'
+                )
                 render view: 'edit', model: [serviceInstance: serviceInstance]
                 return
             }
@@ -161,7 +189,11 @@ class ServiceController {
         }
 
         request.serviceInstance = serviceInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'service.label', default: 'Service'), serviceInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'service.label'), serviceInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -172,11 +204,15 @@ class ServiceController {
     def delete(Long id) {
         def serviceInstance = Service.get(id)
         if (!serviceInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'service.label', default: 'Service'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'service.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
@@ -186,14 +222,21 @@ class ServiceController {
                 serviceInstance.pricing.delete flush: true
             }
             serviceInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'service.label', default: 'Service')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'service.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'service.label', default: 'Service')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'service.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -201,7 +244,7 @@ class ServiceController {
     def get(Long id) {
         def serviceInstance = Service.read(id)
         if (!serviceInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
             return
         }
 
