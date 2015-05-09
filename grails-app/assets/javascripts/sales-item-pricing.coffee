@@ -19,7 +19,6 @@
 #= require application
 #= require _handlebars-ext
 #= require _typeahead
-#= require _selectize
 
 
 $ = jQuery
@@ -573,18 +572,22 @@ class SalesItemPricing
   # @since  1.3
   #
   _onClickRemovePricing: ->
-    if @_initialPricingEnabled
-      ok = $.confirm $L('salesItem.pricing.removePricing.confirm')
-      return false unless ok
+    deferred = $.Deferred()
+    promise = deferred.promise()
+    if @initialPricingEnabled
+      promise = deferred.then ->
+        $.confirm $L('salesItem.pricing.removePricing.confirm')
 
-    @$pricingEnabled.val ''
-    @_toggleVisibility()
+    promise.done =>
+      @$pricingEnabled.val ''
+      @_toggleVisibility()
 
-    $('#quantity').val $('#step3-quantity').val()
-    $('#unit').val $('#step3-unit').val()
-    val = $('#step3-unit-price').val().parseNumber()
-    $('#unitPrice').val val.formatCurrencyValue() unless isNaN val
+      $('#quantity').val $('#step3-quantity').val()
+      $('#unit').val $('#step3-unit').val()
+      val = $('#step3-unit-price').val().parseNumber()
+      $('#unitPrice').val val.formatCurrencyValue() unless isNaN val
 
+    deferred.resolve()
     return
 
   # Called when the button to start pricing has been clicked.
