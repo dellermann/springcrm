@@ -58,6 +58,7 @@ class SalesItemPricing
   constructor: ($element, options) ->
     $ = jq
 
+    @page = SPRINGCRM.page
     @$element = $element
     @options = options = $.extend {}, SalesItemPricing.DEFAULTS, options
     @_inputRegExp = new RegExp '^' +
@@ -124,7 +125,7 @@ class SalesItemPricing
       zero: (0).formatCurrencyValue()
 
     $row = $(s)
-    @_getField($row, 'type').selectize()
+    @page.initSelect @_getField $row, 'type'
     @_initItemCtrls $row
     @$step1Table.find('> .items')
       .append $row
@@ -371,9 +372,14 @@ class SalesItemPricing
 
   # Gets the labels of the selected items.
   #
+  # @param [jQuery] $select the given select control
+  # @return [Array]         the labels of the selected items
+  # @private
+  #
   _getSelLabels: ($select) ->
     selectize = $select[0].selectize
     labels = (selectize.getItem(item).text() for item in selectize.items)
+
     if labels.length is 1 then labels[0] else labels
 
   # Initializes the given item by enabling or disabling the input controls
@@ -847,9 +853,12 @@ class SalesItemPricing
     $('#step2-quantity, #step2-total-quantity').val quantityFmt
     unit = @_getSelLabels $('#step1-pricing-unit-select')
     $('#step2-unit, #step2-total-unit').val unit
-    if quantity and unit
+    if quantity and unit.length
       $('#step1-total-price-quantity').text "(#{quantityFmt} #{unit})"
       $('#step1-unit-price-quantity').text "(1 #{unit})"
+    else
+      $('#step1-total-price-quantity').text ''
+      $('#step1-unit-price-quantity').text ''
     unitPrice = sum / quantity
     $('#step1-unit-price, #step2-unit-price').val(
       if isNaN unitPrice then '---' else unitPrice.formatCurrencyValue()

@@ -332,7 +332,7 @@ class Page
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
-    $('select').each (index, element) => @_initSelect index, element
+    $('select').each (_, element) => @initSelect $(element)
     $('textarea').autosize()
       .each ->
         $(this).wrap("""<div class="textarea-container"/>""")
@@ -344,23 +344,19 @@ class Page
     $('.auto-number').trigger 'change'
 
 
-  #-- Non-public methods ------------------------
-  
+  #-- Public methods ----------------------------
+
   # Initializes the given select control using Selectize.  Depending on
   # attribute data-find-url the control is initialized to load the options from
   # the given URL.
   #
-  # @param [Number] index
-  # @param [Element] element  the given select control
-  # @private
+  # @param [jQuery] $select the given select control
   #
-  _initSelect: (index, element) ->
-    $element = $(element)
-
+  initSelect: ($select) ->
     plugins =
       disable_options:
         disableOptions: []
-    plugins['no-delete'] = {} if $element.attr 'required'
+    plugins['no-delete'] = {} if $select.attr 'required'
 
     opts =
       onInitialize: ->
@@ -368,10 +364,10 @@ class Page
         @$control_input.attr 'id', id.replace(/-select$/, '') if id
       plugins: plugins
 
-    url = $element.data 'find-url'
+    url = $select.data 'find-url'
     if url
-      $organization = $($element.data 'filter-organization')
-      $resetOnChange = $($element.data 'reset-on-change')
+      $organization = $($select.data 'filter-organization')
+      $resetOnChange = $($select.data 'reset-on-change')
       $.extend opts,
         labelField: 'name'
         load: (query, callback) ->
@@ -395,8 +391,11 @@ class Page
         sortField: 'name'
         valueField: 'id'
 
-    $element.selectize opts
+    $select.selectize opts
     return
+
+
+  #-- Non-public methods ------------------------
 
   # Initializes the title/toolbar that it may be treated as fixed when
   # scrolling.
@@ -569,14 +568,14 @@ class Page
 
 #== Main ========================================
 
-new Page()
+window.SPRINGCRM.page = new Page()
 
 
 
 
 #============== TODO ============================
 
-SPRINGCRM.page = (->
+oldpage = (->
   $ = jQuery
   win = window
   doc = win.document
