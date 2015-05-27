@@ -31,12 +31,6 @@
   [data-selectable] {
     padding-left: @padding-base-horizontal;
     padding-right: @padding-base-horizontal;
-
-    &:last-child {
-      .selectize-border-radius(
-          0 0 @selectize-border-radius @selectize-border-radius
-        );
-    }
   }
   .selected {
     background: lighten(@spring-green-base, 20%);
@@ -45,9 +39,6 @@
       background: @selectize-color-dropdown-item-active;
     }
   }
-}
-.selectize-dropdown-content {
-  padding: 0;
 }
 
 // vim:set ts=2 sw=2 sts=2:

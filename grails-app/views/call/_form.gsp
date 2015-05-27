@@ -1,28 +1,30 @@
-<fieldset>
-  <header><h3><g:message code="call.fieldset.general.label" /></h3></header>
-  <div class="multicol-content">
-    <div class="col col-l">
-      <div class="form">
-        <f:field bean="${callInstance}" property="subject" />
-        <f:field bean="${callInstance}" property="start" precision="minute" />
-      </div>
+<section>
+  <header>
+    <h3><g:message code="call.fieldset.general.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${callInstance}" property="subject" />
+      <f:field bean="${callInstance}" property="start" precision="minute" />
     </div>
-    <div class="col col-r">
-      <div class="form">
-        <g:ifModuleAllowed modules="contact">
-        <f:field bean="${callInstance}" property="organization" />
-        <f:field bean="${callInstance}" property="person" />
-        </g:ifModuleAllowed>
-        <f:field bean="${callInstance}" property="phone" />
-        <f:field bean="${callInstance}" property="type" />
-        <f:field bean="${callInstance}" property="status" />
-      </div>
+    <div class="column">
+      <g:ifModuleAllowed modules="contact">
+      <f:field bean="${callInstance}" property="organization" />
+      <f:field bean="${callInstance}" property="person" />
+      </g:ifModuleAllowed>
+      <f:field bean="${callInstance}" property="phone" />
+      <f:field bean="${callInstance}" property="type" />
+      <f:field bean="${callInstance}" property="status" />
     </div>
   </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="call.fieldset.notes.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${callInstance}" property="notes" />
+</section>
+<section>
+  <header>
+    <h3><g:message code="call.fieldset.notes.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${callInstance}" property="notes" rows="5" />
+    </div>
   </div>
-</fieldset>
+</section>

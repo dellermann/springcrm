@@ -66,9 +66,10 @@ class PersonController {
     }
 
     def listEmbedded(Long organization) {
-        def l
-        def count
-        def linkParams
+        List<Person> l
+        int count
+        Map<String, Object> linkParams
+
         if (organization) {
             def organizationInstance = Organization.get(organization)
             if (organizationInstance) {
@@ -244,16 +245,18 @@ class PersonController {
         }
 
         def phoneNumbers = [
-            personInstance.phone,
-            personInstance.phoneHome,
-            personInstance.mobile,
-            personInstance.fax,
-            personInstance.phoneAssistant,
-            personInstance.phoneOther,
-            personInstance.organization.phone,
-            personInstance.organization.phoneOther,
-            personInstance.organization.fax
-        ]
+                personInstance.phone,
+                personInstance.phoneHome,
+                personInstance.mobile,
+                personInstance.fax,
+                personInstance.phoneAssistant,
+                personInstance.phoneOther,
+                personInstance.organization.phone,
+                personInstance.organization.phoneOther,
+                personInstance.organization.fax
+            ]
+            .findAll({ it != '' })
+            .unique()
         render phoneNumbers as JSON
     }
 

@@ -325,21 +325,23 @@ class ViewTagLib {
   value="${c ? formatDate(date: c, formatName: formatName) : ''}" />
 """
         if (useTime) {
-            out << '<span class="date-time-control-group">'
+            out << '<div class="input-group date-time-control">'
         }
         out << """\
 <input type="text" id="${id}-date" name="${name}_date"
   value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
-  class="form-control date-input-control date-input-date-control" />
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
 """
 
         if (useTime) {
             out << """\
 <input type="text" id="${id}-time" name="${name}_time"
   value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
-  class="form-control date-input-control date-input-time-control" />
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
 """
-            out << '</span>'
         }
     }
 

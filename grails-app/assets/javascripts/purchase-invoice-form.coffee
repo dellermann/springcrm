@@ -121,15 +121,17 @@ class PurchaseInvoice
     $vendor = $('#vendor')
     $vendorName = $('#vendorName')
 
-    url = new HttpUrl($vendorName.data 'load-url')
-    url.query.name = -> '%QUERY'
-    url = url.toString()
-
     vendors = new Bloodhound
       datumTokenizer: (datum) -> datum.name
       queryTokenizer: Bloodhound.tokenizers.whitespace
       remote:
-        url: url
+        prepare: (query, settings) ->
+          url = new HttpUrl(settings.url)
+          url.query.name = query
+          settings.url = url.toString()
+          
+          settings
+        url: $vendorName.data 'load-url'
     vendors.initialize()
 
     $vendorName.typeahead(

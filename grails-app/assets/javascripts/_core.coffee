@@ -229,6 +229,40 @@ RegExp.escape = (s) ->
 String::compare = (s) ->
   (if s < this then 1 else (if s > this then -1 else 0))
 
+# Pads this string with the given character on the left side.  If the length of
+# this string is greater than or equal to the given length no padding is
+# performed.
+#
+# @param [Number] length    the required minimum length
+# @param [String] char      the padding character
+# @return [String]          the string padded to the given minimum length
+# @since                    2.0
+#
+String::padLeft = (length, char = ' ') ->
+  s = this
+
+  i = s.length
+  s = char + s while i++ < length
+
+  s
+
+# Pads this string with the given character on the right side.  If the length
+# of this string is greater than or equal to the given length no padding is
+# performed.
+#
+# @param [Number] length    the required minimum length
+# @param [String] char      the padding character
+# @return [String]          the string padded to the given minimum length
+# @since                    2.0
+#
+String::padRight = (length, char = ' ') ->
+  s = this
+
+  i = s.length
+  s += char while i++ < length
+
+  s
+
 # Parses this string as a date and/or time value in either the given
 # user-defined format or the localized date and time format as specified
 # in the messages `dateFormat` and `timeFormat`.  If using a user-defined

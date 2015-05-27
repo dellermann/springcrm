@@ -195,6 +195,9 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/_typeahead.js'
             src: '<%= dirs.bower.typeahead %>/typeahead.bundle.js'
+          ,
+            dest: '<%= dirs.src.stylesheets %>/_typeahead.less'
+            src: '<%= dirs.bower.typeaheadBootstrap %>/typeahead.less'
         ]
         options:
           encoding: null
@@ -205,10 +208,15 @@ module.exports = (grunt) ->
             file = g.file
 
             jc = conf.get 'dirs.bower.jsCalc'
+            tb = conf.get 'dirs.bower.typeaheadBootstrap'
             if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
               contents = String(contents)
               contents = contents.replace /@import\s+"variables";/,
                 '@import "_variables";'
+            else if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
+              contents = String(contents)
+              contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
+
             contents
       test:
         files: [
@@ -271,6 +279,8 @@ module.exports = (grunt) ->
         qunit: '<%= dirs.bower.base %>/qunit'
         selectize: '<%= dirs.bower.base %>/selectize'
         typeahead: '<%= dirs.bower.base %>/typeahead.js'
+        typeaheadBootstrap:
+          '<%= dirs.bower.base %>/typeahead.js-bootstrap3.less'
       src:
         assets: '<%= dirs.src.grailsApp %>/assets'
         base: '.'

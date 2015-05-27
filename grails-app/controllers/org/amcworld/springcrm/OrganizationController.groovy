@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
  * The class {@code OrganizationController} contains actions which manage
  * organizations.
  *
- * @author	Daniel Ellermann
+ * @author  Daniel Ellermann
  * @version 2.0
  */
 class OrganizationController {
@@ -282,10 +282,12 @@ class OrganizationController {
         }
 
         def phoneNumbers = [
-            organizationInstance.phone,
-            organizationInstance.phoneOther,
-            organizationInstance.fax
-        ]
+                organizationInstance.phone,
+                organizationInstance.phoneOther,
+                organizationInstance.fax
+            ]
+            .findAll({ it != '' })
+            .unique()
         render phoneNumbers as JSON
     }
 }

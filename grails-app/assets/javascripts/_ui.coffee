@@ -329,6 +329,9 @@ class Page
       .on('change', '.date-input-control', (event) =>
         @_onChangeDateInput event
       )
+      .on('change', '.date-input-time-control', (event) =>
+        @_onChangeTimeInput event
+      )
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
@@ -448,6 +451,32 @@ class Page
         val += input.value
 
       elements[baseId].value = val
+
+  # Called if the time value has been changed.  The method parses and formats
+  # particular time values.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onChangeTimeInput: (event) ->
+    $target = $(event.currentTarget)
+
+    val = $target.val()
+    if val.match /^\d$/
+      val = "0#{val}:00"
+    else if val.match /^\d\d$/
+      val = "#{val}:00"
+    else if val.match /^(\d)(\d\d)$/
+      val = "0#{RegExp.$1}:#{RegExp.$2}"
+    else if val.match /^(\d\d)(\d\d)$/
+      val = "#{RegExp.$1}:#{RegExp.$2}"
+    else if val.match /^(\d{1,2})\D(\d{0,2})$/
+      hour = RegExp.$1.padLeft 2, '0'
+      minute = RegExp.$2.padLeft 2, '0'
+      val = "#{hour}:#{minute}"
+
+    $target.val val
+    return
 
   # Called if the user clicks on a link to delete a record.  This method
   # displays a deletion confirmation dialog.  If the user confirms the link is
@@ -569,61 +598,6 @@ class Page
 #== Main ========================================
 
 window.SPRINGCRM.page = new Page()
-
-
-
-
-#============== TODO ============================
-
-oldpage = (->
-  $ = jQuery
-  win = window
-  doc = win.document
-  $document = $(doc)
-
-  # Initializes the page and their elements.
-  #
-  init = ->
-    $ = jQuery
-
-    $('#calculator-button').on 'click', ->
-      $dlg = $('.calculator-dialog')
-      $calculator = $dlg.find('.calculator')
-        .jscalc(point: $('html').data('decimal-separator'))
-      $jsCalcContainer = $calculator.find '.jscalc-calculator-container'
-      $dlg.dialog(
-          resizable: false
-        ).dialog 'option',
-          height: $jsCalcContainer.height() + 65
-          width: $jsCalcContainer.width() + 30
-      false
-
-#    $('.date-input-time').autocomplete
-#        select: onSelectTimeValue
-#        source: timeValues
-
-  # Called if the user selects a time from the autocomplete list.
-  #
-  # @param [Object] event the event data
-  # @param [Object] ui    information about the selected item
-  #
-  onSelectTimeValue = (event, ui) ->
-    $this = $(this)
-    item = ui.item
-    $this.val item.value if item
-    $this.trigger 'change'
-
-  timeValues = do ->
-    res = []
-    for h in [0..23]
-      hh = h.toString()
-      hh = "0#{hh}" if hh.length < 2
-      res.push "#{hh}:00"
-      res.push "#{hh}:30"
-    res
-
-  init()
-)()
 
 # vim:set ts=2 sw=2 sts=2:
 
