@@ -209,6 +209,8 @@ module.exports = (grunt) ->
 
             jc = conf.get 'dirs.bower.jsCalc'
             tb = conf.get 'dirs.bower.typeaheadBootstrap'
+            fa = conf.get 'dirs.bower.fontAwesome'
+
             if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
               contents = String(contents)
               contents = contents.replace /@import\s+"variables";/,
@@ -216,6 +218,10 @@ module.exports = (grunt) ->
             else if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
               contents = String(contents)
               contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
+            else if file.doesPathContain "#{fa}/less", srcPath
+              grunt.log.writeln "processing #{srcPath}"
+              contents = String(contents)
+              contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
 
             contents
       test:
