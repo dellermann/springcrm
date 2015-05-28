@@ -19,40 +19,37 @@
 
 
 @import "application";
-@import (less) "_jquery-fileupload.css";
-@import (less) "_jquery-fileupload-ui.css";
 
 
 .document-list-breadcrumbs {
-  margin-bottom: 1.5em;
+  margin: @line-height-computed 0;
 
   strong:after {
     content: ":";
   }
   ul {
     display: inline;
-    margin: 0;
+    list-style: none;
+    margin-bottom: 0;
     padding-left: 1em;
   }
   li {
-    color: @color-link;
+    color: @link-color;
     cursor: pointer;
     display: inline;
-    list-style: none;
-    margin-bottom: 0;
 
     &:before {
-      .fa;
-      color: @color-default;
+      .fa();
+      color: @text-color;
       cursor: auto;
       content: @fa-var-angle-right;
-      padding: 0 1ex;
+      padding: 0 1ex 0 .7ex;
     }
     &:first-child:before {
       content: none;
     }
     &:hover {
-      color: @color-link-hover;
+      color: @link-hover-color;
     }
   }
 }
@@ -63,12 +60,12 @@
 }
 .document-list-container {
   display: table;
-  margin: 0;
+  list-style: none;
+  padding: 0;
+  width: 100%;
 
   li {
     display: table-row;
-    list-style: none;
-    margin-bottom: 0;
 
     &:first-child {
       > i, span {
@@ -76,20 +73,21 @@
       }
     }
     &:hover {
-      background: lighten(@color-link, 65%);
+      background: lighten(@link-color, 65%);
     }
 
     > i {
       .fa();
-      border-top: 1px solid #DDD;
-      color: @color-link;
+      border-top: 1px solid @spring-gray;
+      color: @link-color;
       cursor: pointer;
       display: table-cell;
       font-size: 153.9%;
       padding: .3em .5em .3em 0;
+      width: 1%;
     }
     span {
-      border-top: 1px solid #DDD;
+      border-top: 1px solid @spring-gray;
       display: table-cell;
       padding: .3em 0;
     }
@@ -103,12 +101,16 @@
   .size {
     padding-left: 1em;
     text-align: right;
+    white-space: nowrap;
+    width: 1%;
   }
   .permissions {
     padding-left: 1em;
+    white-space: nowrap;
+    width: 1%;
 
     strong {
-      color: @color-link;
+      color: @link-color;
       display: inline-block;
       min-width: 1em;
     }
@@ -116,12 +118,14 @@
   .action-buttons {
     font-size: 131%;
     padding-left: 1em;
+    white-space: nowrap;
+    width: 1%;
 
     i {
       cursor: pointer;
     }
     .fa-trash {
-      color: @color-error;
+      color: @state-danger-text;
     }
   }
 
@@ -166,33 +170,6 @@
     content: @fa-var-file-video-o;
   }
 }
-.lg .document-list-container .name {
-  width: 500px;
-}
-.md .document-list-container .name {
-  width: 300px;
-}
-.sm .document-list-container .name {
-  width: 200px;
-}
 
-.document-upload-filelist {
-  display: none;
-}
-.fileinput-button {
-  .box-sizing(border-box);
-  -moz-user-select: none;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-// overwrite image pathes from jquery-fileupload-ui.css
-.progress-animated {
-  .progress-bar, .bar {
-    background-image: url("../images/progressbar.gif") !important;
-  }
-}
-.fileupload-processing .fileupload-process, .files .processing .preview {
-  background-image: url("../images/loading.gif");
-}
+// vim:set ts=2 sw=2 sts=2:
 

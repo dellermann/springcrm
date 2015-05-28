@@ -1,3 +1,23 @@
+#
+# Gruntfile.coffee
+#
+# Copyright (c) 2011-2015, Daniel Ellermann
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
 module.exports = (grunt) ->
   grunt.initConfig
     bower:
@@ -54,19 +74,6 @@ module.exports = (grunt) ->
     copy:
       publish:
         files: [
-            cwd: '<%= dirs.bower.blueimpLoadImage %>/js/'
-            dest: '<%= dirs.src.javascripts %>/'
-            expand: true
-            rename: (dest, src) -> "#{dest}_#{src}"
-            src: [
-              'load-image-exif.js'
-              'load-image-exif-map.js'
-              'load-image-ios.js'
-              'load-image-meta.js'
-              'load-image-orientation.js'
-              'load-image.js'
-            ]
-          ,
             cwd: '<%= dirs.bower.bootstrap %>/less/'
             dest: '<%= dirs.src.stylesheets %>/bootstrap/'
             expand: true
@@ -137,36 +144,6 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/_jquery-autosize.js'
             src: '<%= dirs.bower.jqueryAutosize %>/jquery.autosize.js'
           ,
-            cwd: '<%= dirs.bower.jqueryFileUpload %>/css/'
-            dest: '<%= dirs.src.stylesheets %>/'
-            expand: true
-            rename: (dest, src) ->
-              "#{dest}_#{src.replace(/jquery\./, 'jquery-')}"
-            src: [
-              'jquery.fileupload.css'
-              'jquery.fileupload-ui.css'
-            ]
-          ,
-            cwd: '<%= dirs.bower.jqueryFileUpload %>/js/'
-            dest: '<%= dirs.src.javascripts %>/'
-            expand: true
-            rename: (dest, src) ->
-              "#{dest}_#{src.replace(/jquery\./, 'jquery-')}"
-            src: [
-              'jquery.fileupload.js'
-              'jquery.fileupload-audio.js'
-              'jquery.fileupload-image.js'
-              'jquery.fileupload-process.js'
-              'jquery.fileupload-ui.js'
-              'jquery.fileupload-validate.js'
-              'jquery.fileupload-video.js'
-            ]
-          ,
-            cwd: '<%= dirs.bower.jqueryFileUpload %>/img/'
-            dest: '<%= dirs.src.assets %>/images/'
-            expand: true
-            src: ['*']
-          ,
             dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
 #          ,
@@ -219,7 +196,6 @@ module.exports = (grunt) ->
               contents = String(contents)
               contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
             else if file.doesPathContain "#{fa}/less", srcPath
-              grunt.log.writeln "processing #{srcPath}"
               contents = String(contents)
               contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
 
@@ -268,7 +244,6 @@ module.exports = (grunt) ->
     dirs:
       bower:
         base: '<%= dirs.src.base %>/bower_components'
-        blueimpLoadImage: '<%= dirs.bower.base %>/blueimp-load-image'
         bootstrap: '<%= dirs.bower.base %>/bootstrap'
         bootstrapDatepicker: '<%= dirs.bower.base %>/bootstrap-datepicker'
         bootstrapFileinput: '<%= dirs.bower.base %>/bootstrap-fileinput'
@@ -277,7 +252,6 @@ module.exports = (grunt) ->
         handlebars: '<%= dirs.bower.base %>/handlebars'
         jquery: '<%= dirs.bower.base %>/jquery'
         jqueryAutosize: '<%= dirs.bower.base %>/jquery-autosize'
-        jqueryFileUpload: '<%= dirs.bower.base %>/jquery-file-upload'
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
         jsCalc: '<%= dirs.bower.base %>/js-calc'

@@ -1,7 +1,7 @@
 #
 # _document-list.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ class DocumentList
 
   #-- Private variables -------------------------
 
-  $ = jQuery
+  $ = jq = jQuery
 
 
   #-- Class variables ---------------------------
@@ -81,7 +81,7 @@ class DocumentList
   # @param [Object] options   any options that overwrite the default options
   #
   constructor: (element, options = {}) ->
-    $ = jQuery
+    $ = jq
 
     @$element = $el = $(element)
     @options = options = $.extend {}, DEFAULT_OPTIONS, options
@@ -97,7 +97,8 @@ class DocumentList
     @selectedPath = null
     @selectedPaths = []
 
-    @loadDocumentList().done -> options.init.fireWith $el
+    path = $el.data 'initial-path'
+    @loadDocumentList(path).done -> options.init.fireWith $el
 
 
   #-- Public methods ----------------------------
@@ -108,7 +109,7 @@ class DocumentList
   # @return [jQuery]      this object
   #
   addFile: (file) ->
-    $ = jQuery
+    $ = jq
 
     $(this).each ->
       $(this).data('bs.documentlist')._addFile file
@@ -119,7 +120,7 @@ class DocumentList
   # @return [jQuery]        this object
   #
   addFolder: (folder) ->
-    $ = jQuery
+    $ = jq
 
     $(this).each ->
       $(this).data('bs.documentlist')._addFolder folder
@@ -155,7 +156,7 @@ class DocumentList
   # @return [String, Array, jQuery]   either a single path (in single selection mode) or an array of paths (in multiple selection mode); this object if the selection has been set
   #
   selection: (selection) ->
-    $ = jQuery
+    $ = jq
     options = @options
 
     if selection?
@@ -184,7 +185,7 @@ class DocumentList
   # @private
   #
   _addFile: (file) ->
-    $ = jQuery
+    $ = jq
     name = file.name
     $ul = @$element.find('.document-list-container')
 
@@ -210,7 +211,7 @@ class DocumentList
   # @private
   #
   _addFolder: (folder) ->
-    $ = jQuery
+    $ = jq
     name = folder.name
     $ul = @$element.find('.document-list-container')
 
@@ -230,7 +231,12 @@ class DocumentList
     else if $item
       $item.after $li
     else
-      $li.prependTo $ul
+      $backLink = $ul.children '.back-link'
+      if $backLink.length
+        $backLink.after $li
+      else
+        $li.prependTo $ul
+
     return
 
   # Downloads the file with the given absolute path in an internal `<iframe>`.
@@ -240,7 +246,7 @@ class DocumentList
   # @private
   #
   _downloadFile: (absPath) ->
-    $ = jQuery
+    $ = jq
 
     $iframe = $("##{@IFRAME_ID}")
     unless $iframe.length
@@ -322,29 +328,25 @@ class DocumentList
   # @private
   #
   _removeDocument: ($li) ->
-    $ = jQuery
+    $ = jq
 
-    deferred = $.Deferred()
-    promise = deferred.then( (li) ->
-        path = @_getAbsolutePath $(li)
+    $.Deferred()
+      .resolve()
+      .then( -> $.confirm $L('default.delete.confirm.msg'))
+      .then( =>
+        path = @_getAbsolutePath $li
         $.ajax
           context: this
           data:
+            confirmed: true
             path: path
           url: @$element.data('delete-url')
       )
-      .done( ->
+      .done( =>
         $li.remove()
         @options.removeSuccess.fire @$element
       )
-      .fail( ->
-        @options.removeFailed.fire @$element
-      )
-
-    if $.confirm $L('default.delete.confirm.msg')
-      deferred.resolveWith this, $li
-    else
-      deferred.rejectWith this
+      .fail( => @options.removeFailed.fire @$element)
 
     return
 
@@ -356,7 +358,7 @@ class DocumentList
   # @private
   #
   _renderDocumentList: (path, data) ->
-    $ = jQuery
+    $ = jq
     options = @options
     selectedPaths = @selectedPaths
 
@@ -417,6 +419,8 @@ class DocumentList
   # @private
   #
   _renderTemplate: (data) ->
+    $ = jq
+
     data.files = $.map data.files ? [], (file) ->
       file.fileType = $.filetype file.ext
       file.sizeFormatted = file.size.formatSize()
@@ -457,7 +461,7 @@ class DocumentList
   # @private
   #
   _setSelection: ->
-    $ = jQuery
+    $ = jq
     that = this
     paths = @selectedPaths
 
@@ -531,3 +535,6 @@ $.fn.documentlist.noConflict = ->
 $(window).on 'load', ->
   $('[data-list="document"]').each ->
     Plugin.call $(this)
+
+# vim:set ts=2 sw=2 sts=2:
+

@@ -95,7 +95,10 @@ class PersonController {
     def copy(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
             redirect action: 'index'
             return
         }
@@ -119,7 +122,10 @@ class PersonController {
             ldapService.save personInstance
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'person.label'), personInstance.toString()]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -130,7 +136,10 @@ class PersonController {
     def show(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
             redirect action: 'index'
             return
         }
@@ -141,7 +150,10 @@ class PersonController {
     def edit(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
             redirect action: 'index'
             return
         }
@@ -152,7 +164,10 @@ class PersonController {
     def update(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
             redirect action: 'index'
             return
         }
@@ -160,7 +175,11 @@ class PersonController {
         if (params.version) {
             def version = params.version.toLong()
             if (personInstance.version > version) {
-                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
+                personInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'person.label')] as Object[],
+                    'Another user has updated this Person while you were editing'
+                )
                 render view: 'edit', model: [personInstance: personInstance]
                 return
             }
@@ -186,7 +205,10 @@ class PersonController {
             ldapService.save personInstance
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'person.label'), personInstance.toString()]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -197,7 +219,11 @@ class PersonController {
     def delete(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
@@ -212,14 +238,21 @@ class PersonController {
                 ldapService.delete personInstance
             }
 
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'person.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
                 redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'person.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -231,7 +264,8 @@ class PersonController {
             return
         }
 
-        response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
+        response.contentType =
+            Magic.getMagicMatch(personInstance.picture).mimeType
         response.contentLength = personInstance.picture.length
         response.outputStream << personInstance.picture
         null
@@ -285,8 +319,12 @@ class PersonController {
     def gdatasync() {
         if (googleContactSyncService) {
             googleContactSyncService.sync()
-            flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
+            flash.message = message(
+                code: 'default.gdata.allsync.success',
+                args: [message(code: 'person.plural')]
+            )
         }
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -300,9 +338,18 @@ class PersonController {
                 def personInstance = Person.get(id)
                 if (personInstance) {
                     ldapService.save personInstance
-                    flash.message = message(code: 'default.ldap.export.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+                    flash.message = message(
+                        code: 'default.ldap.export.success',
+                        args: [
+                            message(code: 'person.label'),
+                            personInstance.toString()
+                        ]
+                    )
                 } else {
-                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+                    flash.message = message(
+                        code: 'default.not.found.message',
+                        args: [message(code: 'person.label'), id]
+                    )
                 }
                 redirect action: 'show', id: id
                 return
@@ -310,8 +357,12 @@ class PersonController {
 
             def personInstanceList = Person.list()
             personInstanceList.each { ldapService.save it }
-            flash.message = message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])
+            flash.message = message(
+                code: 'default.ldap.allexport.success',
+                args: [message(code: 'person.plural')]
+            )
         }
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
