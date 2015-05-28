@@ -1,7 +1,7 @@
 /*
  * NoteController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ package org.amcworld.springcrm
 /**
  * The class {@code NoteController} contains actions which manage notes.
  *
- * @author	Daniel Ellermann
- * @version 1.3
+ * @author  Daniel Ellermann
+ * @version 2.0
  */
 class NoteController {
 
@@ -37,10 +37,6 @@ class NoteController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
         if (params.letter) {
@@ -50,7 +46,8 @@ class NoteController {
             params.search = null
         }
 
-        def list, count
+        List<Note> list
+        int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
             list = Note.findAllByTitleLike(searchFilter, params)
@@ -64,35 +61,41 @@ class NoteController {
     }
 
     def listEmbedded(Long organization, Long person) {
-        def l
-        def count
-        def linkParams
+        List<Note> l
+        int count
+        Map<String, Object> linkParams
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
-            def organizationInstance = Organization.get(organization)
+            Organization organizationInstance = Organization.get(organization)
             l = Note.findAllByOrganization(organizationInstance, params)
             count = Note.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
-            def personInstance = Person.get(person)
+            Person personInstance = Person.get(person)
             l = Note.findAllByPerson(personInstance, params)
             count = Note.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
+
         [noteInstanceList: l, noteInstanceTotal: count, linkParams: linkParams]
     }
 
     def create() {
         def noteInstance = new Note()
         noteInstance.properties = params
+
         [noteInstance: noteInstance]
     }
 
     def copy(Long id) {
         def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'note.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -108,7 +111,11 @@ class NoteController {
         }
 
         request.noteInstance = noteInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'note.label'), noteInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -119,8 +126,11 @@ class NoteController {
     def show(Long id) {
         def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'note.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -130,8 +140,11 @@ class NoteController {
     def edit(Long id) {
         def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'note.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -141,15 +154,22 @@ class NoteController {
     def update(Long id) {
         def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'note.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (noteInstance.version > version) {
-                noteInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'note.label', default: 'Note')] as Object[], "Another user has updated this Note while you were editing")
+                noteInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'note.label')] as Object[],
+                    'Another user has updated this Note while you were editing'
+                )
                 render view: 'edit', model: [noteInstance: noteInstance]
                 return
             }
@@ -164,7 +184,11 @@ class NoteController {
         }
 
         request.noteInstance = noteInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'note.label', default: 'Note'), noteInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'note.label'), noteInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -175,25 +199,36 @@ class NoteController {
     def delete(Long id) {
         def noteInstance = Note.get(id)
         if (!noteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'note.label', default: 'Note'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'note.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             noteInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'note.label', default: 'Note')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'note.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'note.label', default: 'Note')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'note.label')]
+            )
             redirect action: 'show', id: id
         }
     }

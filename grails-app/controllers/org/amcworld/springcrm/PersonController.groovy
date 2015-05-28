@@ -89,6 +89,7 @@ class PersonController {
     def create() {
         def personInstance = new Person()
         personInstance.properties = params
+
         [personInstance: personInstance]
     }
 
