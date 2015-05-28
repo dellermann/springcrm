@@ -47,8 +47,10 @@
     </span>
     {{#unless ../options.hideActions}}
     <span class="action-buttons">
+      {{#if writeable}}
       <i class="fa fa-trash delete-btn"
         title="{{message 'default.btn.remove'}}"></i>
+      {{/if}}
     </span>
     {{/unless}}
   </li>
@@ -77,8 +79,10 @@
     </span>
     {{#unless ../options.hideActions}}
     <span class="action-buttons">
+      {{#if writeable}}
       <i class="fa fa-trash delete-btn"
         title="{{message 'default.btn.remove'}}"></i>
+      {{/if}}
     </span>
     {{/unless}}
   </li>

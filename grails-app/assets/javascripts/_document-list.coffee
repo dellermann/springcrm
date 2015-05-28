@@ -21,6 +21,7 @@
 #= require _filetype
 #= require _ui
 #= require _handlebars-ext
+#= require _jquery-storage-api
 #= require templates/document/document-list
 
 
@@ -33,7 +34,7 @@ $ = jQuery
 # files.
 #
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 # @since    1.4
 #
 class DocumentList
@@ -54,7 +55,7 @@ class DocumentList
 
   # The version of this widget.
   #
-  @VERSION: '1.4.10'
+  @VERSION: '2.0.0'
 
 
   #-- Instance variables ------------------------
@@ -98,6 +99,10 @@ class DocumentList
     @selectedPaths = []
 
     path = $el.data 'initial-path'
+    unless path
+      storage = $.localStorage
+      if storage.isSet 'document-list.path'
+        path = storage.get 'document-list.path'
     @loadDocumentList(path).done -> options.init.fireWith $el
 
 
@@ -136,6 +141,7 @@ class DocumentList
 
     @_getLoadDocumentListPromise(options.listUrl, path).done (data) ->
       @currentPath = path
+      $.localStorage.set 'document-list.path', path
       @_renderDocumentList path, data
       options.pathChanged.fireWith $el, [path]
 
