@@ -21,7 +21,7 @@
 @import "application";
 
 
-@project-status-colors: #B7FF1D #FF1E02 #FFEE1C #FFBE1C #808080 #000718;
+@project-status-colors: #77B753 #E85752 #FFEB55 #F29B68 #555 #000718;
 @project-status-start-id: 2600;
 @project-status-end-id: (
     @project-status-start-id + length(@project-status-colors) - 1
@@ -34,9 +34,15 @@
   @selectize-option:
     ~".project-status .selectize-dropdown .option[data-value='@{id}']";
   @index: @id - @project-status-start-id + 1;
+  @bg-color: extract(@project-status-colors, @index);
+
+  .change-color() when (luma(@bg-color) < 10%) {
+    color: #FFF;
+  }
 
   @{status-item} {
-    background: fade(extract(@project-status-colors, @index), 60%);
+    .change-color();
+    background: fade(@bg-color, 60%);
   }
   @{selectize-item} {
     border-left: @project-status-indicator-width solid
@@ -55,6 +61,10 @@
 }
 
 .loop-project-status(@project-status-end-id);
+
+.project-phase {
+  text-align: center;
+}
 
 // vim:set ts=2 sw=2 sts=2:
 

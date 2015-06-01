@@ -1,25 +1,27 @@
-<fieldset>
-  <header><h3><g:message code="project.fieldset.general.label" /></h3></header>
-  <div class="multicol-content">
-    <div class="col col-l">
-      <div class="form">
-        <f:field bean="${projectInstance}" property="number" />
-        <f:field bean="${projectInstance}" property="title" />
-        <f:field bean="${projectInstance}" property="phase" />
-        <f:field bean="${projectInstance}" property="status" />
-      </div>
+<section>
+  <header>
+    <h3><g:message code="project.fieldset.general.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${projectInstance}" property="number" />
+      <f:field bean="${projectInstance}" property="title" />
+      <f:field bean="${projectInstance}" property="phase" />
+      <f:field bean="${projectInstance}" property="status" />
     </div>
-    <div class="col col-r">
-      <div class="form">
-        <f:field bean="${projectInstance}" property="organization" />
-        <f:field bean="${projectInstance}" property="person" />
-      </div>
+    <div class="column">
+      <f:field bean="${projectInstance}" property="organization" />
+      <f:field bean="${projectInstance}" property="person" />
     </div>
   </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="project.fieldset.description.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${projectInstance}" property="description" />
+</section>
+<section>
+  <header>
+    <h3><g:message code="project.fieldset.description.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${projectInstance}" property="description" />
+    </div>
   </div>
-</fieldset>
+</section>
