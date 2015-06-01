@@ -1,7 +1,7 @@
 /*
  * ProjectController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * The class {@code ProjectController} handles actions concerning projects and
  * project management.
  *
- * @author	Daniel Ellermann
- * @version 1.4
+ * @author  Daniel Ellermann
+ * @version 2.0
  */
 class ProjectController {
 
@@ -49,31 +49,36 @@ class ProjectController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [projectInstanceList: Project.list(params), projectInstanceTotal: Project.count()]
+
+        [
+            projectInstanceList: Project.list(params),
+            projectInstanceTotal: Project.count()
+        ]
     }
 
     def listEmbedded(Long organization, Long person) {
-        def l
-        def count
-        def linkParams
+        List<Project> l
+        int count
+        Map<String, Object> linkParams
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
-            def organizationInstance = Organization.get(organization)
+            Organization organizationInstance = Organization.get(organization)
             l = Project.findAllByOrganization(organizationInstance, params)
             count = Project.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
-            def personInstance = Person.get(person)
+            Person personInstance = Person.get(person)
             l = Project.findAllByPerson(personInstance, params)
             count = Project.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
-        [projectInstanceList: l, projectInstanceTotal: count, linkParams: linkParams]
+
+        [
+            projectInstanceList: l, projectInstanceTotal: count,
+            linkParams: linkParams
+        ]
     }
 
     def create() {
@@ -83,8 +88,11 @@ class ProjectController {
     def copy(Long id) {
         def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'project.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -100,7 +108,11 @@ class ProjectController {
         }
 
         request.projectInstance = projectInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'project.label'), projectInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -111,8 +123,11 @@ class ProjectController {
     def show(Long id) {
         def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'project.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -150,14 +165,20 @@ class ProjectController {
             docs << it
         }
 
-        [projectInstance: projectInstance, projectItems: projectItems, projectDocuments: projectDocuments]
+        [
+            projectInstance: projectInstance, projectItems: projectItems,
+            projectDocuments: projectDocuments
+        ]
     }
 
     def edit(Long id) {
         def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'project.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -167,15 +188,22 @@ class ProjectController {
     def update(Long id) {
         def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'project.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (projectInstance.version > version) {
-                projectInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'project.label', default: 'Project')] as Object[], 'Another user has updated this Project while you were editing')
+                projectInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'project.label')] as Object[],
+                    'Another user has updated this Project while you were editing'
+                )
                 render view: 'edit', model: [projectInstance: projectInstance]
                 return
             }
@@ -190,7 +218,11 @@ class ProjectController {
         }
 
         request.projectInstance = projectInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'project.label', default: 'Project'), projectInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'project.label'), projectInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -201,25 +233,36 @@ class ProjectController {
     def delete(Long id) {
         def projectInstance = Project.get(id)
         if (!projectInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'project.label', default: 'Project'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'project.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             projectInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'project.label', default: 'Project')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'project.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'project.label', default: 'Project')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'project.label')]
+            )
             redirect action: 'show', id: id
         }
     }

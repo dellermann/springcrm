@@ -114,7 +114,10 @@ class ViewFilters {
             }
         }
 
-        selectorView(controller: 'product|service', action: 'index') {
+        selectorView(
+            controller: 'quote|salesOrder|invoice|creditMemo|dunning|purchaseInvoice|calendarEvent|call|note|product|service',
+            action: 'index'
+        ) {
             after = { model ->
                 String view = (params.view == 'selector') ? 'selectorList' : 'index'
                 render view: "/${controllerName}/${view}", model: model

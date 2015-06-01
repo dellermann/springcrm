@@ -19,6 +19,7 @@
 
 
 @import "application";
+@import "_data-type-list";
 
 
 .overview-panel-defaults() {
@@ -123,22 +124,22 @@
         &:hover {
           background: #EEE;
         }
-        > .fa, > .text, > .buttons {
+        > .data-type-icon, > .text, > .buttons {
           border-top: 1px solid @list-group-border;
           display: table-cell;
           padding: 10px 0;
         }
         &:first-child {
-          > .fa, > .text, > .buttons {
+          > .data-type-icon, > .text, > .buttons {
             border-top: none;
           }
         }
-        > .fa {
+        > .data-type-icon {
           font-size: @font-size-large;
           line-height: @line-height-base;
           padding-left: 15px;
           padding-right: 15px;
-          width: 2em;
+          width: 1px;     // make column as small as possible
         }
         > .buttons {
           padding-left: 15px;

@@ -264,9 +264,9 @@ class ViewTagLib {
     def dataTypeIcon = { attrs, body ->
         String controller = attrs.controller
         String icon = CONTROLLER_ICON_MAPPING[controller]
-        out << "<i class='fa fa-fw fa-" << icon << "'"
-        out << " title='" << message(code: "${controller}.label") << "'"
-        out << "></i> "
+        out << '<i class="fa fa-fw fa-' << icon << ' data-type-icon"'
+        out << ' title="' << message(code: "${controller}.label") << '"'
+        out << '></i> '
     }
 
     /**

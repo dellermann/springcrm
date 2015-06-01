@@ -1,45 +1,10 @@
-<%@ page import="org.amcworld.springcrm.Service" %>
+<g:applyLayout name="selectorList"
+  model="[list: serviceInstanceList, total: serviceInstanceTotal]">
+  <content tag="selectorListHeader">
+    <g:render template="/layouts/salesItemSelectorListHeader"
+      model="[type: org.amcworld.springcrm.Service]" />
+  </content>
 
-<nav class="row">
-  <div class="col-xs-12 col-sm-8 col-md-9">
-    <div class="visible-xs visible-sm">
-      <g:letterBar clazz="${Service}" property="name" numLetters="5"
-        separator="-" />
-    </div>
-    <div class="hidden-xs hidden-sm">
-      <g:letterBar clazz="${Service}" property="name" numLetters="3"
-        separator="-" />
-    </div>
-  </div>
-  <div class="col-xs-12 col-sm-4 col-md-3 text-right">
-    <%--
-      XXX leave the </form> tag alone because it prevents the following
-      <form> tag from being stripped by the jQuery $.load function.  It's not
-      a problem of the load function rather than the called innerHTML function
-      which strips form tags in most of the browsers.
-    --%>
-    </form>
-    <g:form action="selectorList" class="search-form">
-      <div class="input-group">
-        <g:textField type="search" name="search" class="form-control"
-          value="${params.search}"
-          placeholder="${message(code: 'default.search.label')}" />
-        <span class="input-group-btn">
-          <button type="submit" class="btn btn-default search-btn"
-            title="${message(code: 'default.search.button.label')}"
-            ><i class="fa fa-search"></i
-            ><span class="sr-only"
-              ><g:message code="default.search.button.label"
-            /></span
-          ></button>
-        </span>
-      </div>
-    </g:form>
-  </div>
-</nav>
-
-<g:if test="${serviceInstanceList}">
-<div class="table-responsive">
   <table class="table data-table">
     <thead>
       <tr>
@@ -64,20 +29,4 @@
     </g:each>
     </tbody>
   </table>
-</div>
-
-<nav class="text-center">
-  <div class="visible-xs">
-    <g:paginate total="${serviceInstanceTotal}" maxsteps="3"
-      class="pagination-sm" />
-  </div>
-  <div class="hidden-xs">
-    <g:paginate total="${serviceInstanceTotal}" />
-  </div>
-</nav>
-</g:if>
-<g:else>
-<div class="well well-lg empty-list">
-  <p><g:message code="default.list.empty" /></p>
-</div>
-</g:else>
+</g:applyLayout>

@@ -231,8 +231,15 @@ h2 {
   }
 }
 
-.fa {
-  transform: translate(0, 0); // ensures no half-pixel rendering in firefox
+// removed since version 2.0.5 because it offsets the icon 1-2 pixels down
+//.fa {
+//  transform: translate(0, 0); // ensures no half-pixel rendering in firefox
+//}
+
+// dialogs
+.modal-body header {
+  background: transparent;    // reset background in data-forms
+  font-weight: normal;
 }
 
 // Bootstrap file input redefinitions

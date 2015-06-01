@@ -388,6 +388,7 @@ class Page
           $otherSel = $resetOnChange
           if $otherSel.length
             $otherSel.each -> @selectize.clearOptions()
+
           return
         preload: 'focus'
         searchField: ['name']

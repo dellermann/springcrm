@@ -30,7 +30,9 @@
       <input type="file" id="upload-file" name="file" multiple="multiple" />
     </form>
 
-    <div id="create-folder-dialog" class="modal fade">
+    <div id="create-folder-dialog" class="modal fade" tabindex="-1"
+      role="dialog" aria-labelledby="create-folder-dialog-title"
+      aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -38,7 +40,7 @@
               aria-label="${message(code: 'default.btn.close')}"
               ><span aria-hidden="true">×</span
             ></button>
-            <h4 class="modal-title"
+            <h4 id="create-folder-dialog-title" class="modal-title"
               ><g:message code="document.createFolder.title"
             /></h4>
           </div>
