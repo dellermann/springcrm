@@ -18,8 +18,8 @@
     {{/if}}
     <i></i>
     <span class="name">{{message 'document.back.label'}}</span>
-    <span class="size"></span>
-    <span class="permissions"></span>
+    <span class="size hidden-xs"></span>
+    <span class="permissions hidden-xs"></span>
     {{#unless options.hideActions}}
     <span class="action-buttons"></span>
     {{/unless}}
@@ -32,8 +32,8 @@
     {{/if}}
     <i></i>
     <span class="name">{{name}}</span>
-    <span class="size"></span>
-    <span class="permissions">
+    <span class="size hidden-xs"></span>
+    <span class="permissions hidden-xs">
       {{#if readable}}
       <strong title="{{message 'document.permissions.read.title'}}">{{message 'document.permissions.read'}}</strong>
       {{^}}
@@ -64,8 +64,8 @@
     {{/if}}
     <i></i>
     <span class="name">{{name}}</span>
-    <span class="size" title="{{size}} B">{{sizeFormatted}}</span>
-    <span class="permissions">
+    <span class="size hidden-xs" title="{{size}} B">{{sizeFormatted}}</span>
+    <span class="permissions hidden-xs">
       {{#if readable}}
       <strong title="{{message 'document.permissions.read.title'}}">{{message 'document.permissions.read'}}</strong>
       {{^}}

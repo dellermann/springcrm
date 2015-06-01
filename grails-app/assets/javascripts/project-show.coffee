@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _jquery-ui-selectboxit
 #= require _document-list
 
 
@@ -125,7 +124,7 @@ class ProjectPhases
 
     options.$output.text $target.text()
 
-    $section = $target.parents('.project-phases > section')
+    $section = $target.closest '.project-phases > section'
     $section.addClass('active')
       .siblings()
         .removeClass 'active'
@@ -265,8 +264,7 @@ class ProjectSelectItemDlg
     itemListSel = '#select-project-item-list'
     @$itemList = $elem.find itemListSel
     @$searchField = $elem.find '#selector-search'
-
-    @$searchArea = $elem.find '.search-field'
+    @$searchForm = $elem.find '.selector-search-form'
     @$documentList = $elem.find '#select-project-document-list'
 
     $elem
@@ -358,6 +356,7 @@ class ProjectSelectItemDlg
 
     changeVisibility = (itemListVisible) =>
       @_changeVisibility @$itemList, itemListVisible
+      @_changeVisibility @$searchForm, itemListVisible
       @_changeVisibility @$documentList, not itemListVisible
 
     @$header.text option.text
@@ -440,8 +439,9 @@ class ProjectSelectItemDlg
   # Called after the item selected from the item selector dialog has been
   # submitted to the server.
   #
-  _onSubmittedSelectedItems: ->
-    window.location.reload true
+  # @private
+  #
+  _onSubmittedSelectedItems: -> window.location.reload true
 
   # Shows the selector to select documents.
   #
@@ -459,12 +459,16 @@ class ProjectSelectItemDlg
         init: doneFunc
         listUrl: url
         multiSelect: true
+        selected: (data) =>
+          selection = data.selection
+          @_submitSelectedDocuments selection if selection.length
         scrollable: true
 
   # Submits the selected documents to the server to associate them to the
   # current project.
   #
   # @param [Array] documents  the paths of the selected documents
+  # @private
   #
   _submitSelectedDocuments: (documents) ->
     @_submitData
@@ -476,6 +480,7 @@ class ProjectSelectItemDlg
   # project.
   #
   # @param [Array] ids  the IDs of the selected items
+  # @private
   #
   _submitSelectedItems: (ids) ->
     @_submitData

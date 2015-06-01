@@ -21,7 +21,7 @@
 
 @import "_data-type-list";
 @import "project";
-//@import "document";
+@import "document";
 
 
 .project-phases {
@@ -100,7 +100,6 @@
     margin-bottom: .2em;
   }
 }
-
 #select-project-item-dialog {
   .type-selector-form {
     display: table;
@@ -128,15 +127,6 @@
       margin-bottom: @form-group-margin-bottom;
     }
   }
-}
-#select-project-content {
-  margin-top: .5em;
-}
-#select-project-item-list .content-table a {
-  color: @link-color;
-}
-#select-project-document-list {
-  width: 100%;
 }
 
 @media (max-width: @screen-xs-max) {
@@ -182,3 +172,4 @@
 }
 
 // vim:set ts=2 sw=2 sts=2:
+

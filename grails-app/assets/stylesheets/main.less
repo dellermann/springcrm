@@ -18,6 +18,7 @@
  */
 
 
+/* Uncomment and revise when migrating to new design!
 @import "_reset";
 @import "_definitions";
 @import "_mixins";
@@ -36,7 +37,7 @@
  *
  * Font settings (from YUI)
  *
- *---------------------------------*/
+ *---------------------------------* /
 
 body {
   font: 11px/1.231 @font-default;
@@ -57,14 +58,14 @@ table {
  *
  * General settings
  *
- *---------------------------------*/
+ *---------------------------------* /
 
-/* general body settings */
+/* general body settings * /
 html {
   color: @color-default;
 }
 
-/* default links */
+/* default links * /
 a {
   color: @color-link;
   text-decoration: none;
@@ -77,12 +78,12 @@ a {
   }
 }
 
-/* default definition term */
+/* default definition term * /
 dt {
   font-weight: bold;
 }
 
-/* default headers */
+/* default headers * /
 h1 {
   font: bold 138.5% @font-header;
   margin: 0;
@@ -108,7 +109,7 @@ h6 {
   margin: .5em 0;
 }
 
-/* default rulers */
+/* default rulers * /
 hr {
   background: @color-default-border-1;
   border-style: solid;
@@ -116,17 +117,17 @@ hr {
   height: 1px;
 }
 
-/* default block elements */
+/* default block elements * /
 fieldset, p, pre, table {
   margin-bottom: 1em;
 }
 
-/* default paragraphs */
+/* default paragraphs * /
 p {
   line-height: 150%;
 }
 
-/* default lists */
+/* default lists * /
 dd, dt, li {
   line-height: 150%;
   margin-bottom: .5em;
@@ -150,7 +151,7 @@ dl dd {
   margin-left: 1em;
 }
 
-/* default inline stuff */
+/* default inline stuff * /
 abbr, acronym {
   border-bottom: 1px dotted @color-default-border-1;
   cursor: help;
@@ -171,7 +172,7 @@ sup {
   vertical-align: super;
 }
 
-/* default table stuff */
+/* default table stuff * /
 caption {
   caption-side: bottom;
   font-size: 11px;
@@ -192,9 +193,9 @@ th {
  *
  * Page elements
  *
- *---------------------------------*/
+ *---------------------------------* /
 
-/* the outer frame */
+/* the outer frame * /
 body {
   left: 0;
   margin: 0 auto;
@@ -203,7 +204,7 @@ body {
   width: 1000px;
 }
 
-/* the top area */
+/* the top area * /
 #top-area {
   font-size: 93%;
   position: absolute;
@@ -227,7 +228,7 @@ body {
   }
 }
 
-/* the logo */
+/* the logo * /
 #logo {
   background: url("../images/logo.png") no-repeat;
   display: block;
@@ -245,7 +246,7 @@ body {
   }
 }
 
-/* the main menu */
+/* the main menu * /
 #main-menu {
   .linear-gradient(@color-gradient-panel-0; @color-gradient-panel-1; #80A322);
   left: 0;
@@ -315,7 +316,7 @@ body {
   }
 }
 
-/* the main container */
+/* the main container * /
 #main-container {
   .linear-gradient(
     @color-gradient-gray-1; @color-gradient-gray-2; @color-gradient-gray-1
@@ -374,7 +375,7 @@ body {
   }
 }
 
-/* the main content */
+/* the main content * /
 #content h2 {
   color: @color-default-border-2;
 }
@@ -421,7 +422,7 @@ body {
   }
 }
 
-/* the footer */
+/* the footer * /
 footer {
   border-top: 1px solid @color-default-border-2;
   font-size: 93%;
@@ -475,9 +476,9 @@ footer {
  *
  * Content elements
  *
- *---------------------------------*/
+ *---------------------------------* /
 
-/* general styles */
+/* general styles * /
 .align-left {
   text-align: left;
 }
@@ -491,7 +492,7 @@ footer {
   display: none !important;
 }
 
-/* headers */
+/* headers * /
 .header-with-menu {
   .box-sizing(border-box);
   background: @color-default-bg-3;
@@ -516,7 +517,7 @@ footer {
   }
 }
 
-/* links */
+/* links * /
 .button {
   .border-radius(.5em);
   .box-shadow(0; 1px; 2px; rgba(0, 0, 0, .2));
@@ -622,7 +623,7 @@ footer {
   }
 }
 
-/* colored buttons */
+/* colored buttons * /
 .white {
   .linear-gradient(
     @color-gradient-gray-1; @color-gradient-gray-1; @color-gradient-gray-2
@@ -721,7 +722,7 @@ footer {
   }
 }
 
-/* page layout */
+/* page layout * /
 .multicol-content {
   display: table;
 }
@@ -731,7 +732,7 @@ footer {
   width: 50%;
 }
 
-/* lists */
+/* lists * /
 .compact-list {
   margin-top: 0;
 
@@ -741,7 +742,7 @@ footer {
   }
 }
 
-/* form layout */
+/* form layout * /
 .data-sheet, .form, .form-fragment {
   .box-sizing();
   display: table;
@@ -896,7 +897,7 @@ fieldset, .fieldset {
   text-align: center;
 }
 
-/* icons */
+/* icons * /
 .button-icon-group {
   display: inline-block;
 
@@ -923,7 +924,7 @@ fieldset, .fieldset {
   }
 }
 
-/* form controls */
+/* form controls * /
 button, input[type=button], input[type=date], input[type=datetime],
   input[type=datetime-local], input[type=email], input[type=file],
   input[type=month], input[type=number], input[type=password],
@@ -1086,7 +1087,7 @@ input.number {
   }
 }
 
-/* tables */
+/* tables * /
 tbody tr th:first-child {
   text-align: left;
 }
@@ -1253,7 +1254,7 @@ tbody tr th:first-child {
   text-align: right;
 }
 
-/* dialogs, windows, boxes */
+/* dialogs, windows, boxes * /
 .flash-message {
   .border-radius(.3em);
   .box-shadow(0; 1px; 2px; rgba(0, 0, 0, .5));
@@ -1319,7 +1320,7 @@ tbody tr th:first-child {
   }
 }
 
-/* paragraphs */
+/* paragraphs * /
 p:last-child {
   margin-bottom: 0;
 }
@@ -1328,7 +1329,7 @@ p:last-child {
   font-style: italic;
 }
 
-/* lists */
+/* lists * /
 .letter-bar {
   display: table;
   margin: .5em auto 1em;
@@ -1387,7 +1388,7 @@ p:last-child {
   }
 }
 
-/* frames */
+/* frames * /
 .selector-toolbar {
   display: table;
   margin-bottom: .5em;
@@ -1420,7 +1421,7 @@ p:last-child {
   }
 }
 
-/* embedded HTML content (from Markdown or RTE) */
+/* embedded HTML content (from Markdown or RTE) * /
 #main-container .html-content {
   h1 {
     font-size: 123.1%;
@@ -1449,7 +1450,7 @@ p:last-child {
   }
 }
 
-/* Markdown cheat sheet */
+/* Markdown cheat sheet * /
 .textarea-container {
   position: relative;
 
@@ -1491,7 +1492,7 @@ p:last-child {
   }
 }
 
-/* type icons */
+/* type icons * /
 .data-type-list {
   i {
     color: @color-default;
@@ -1509,7 +1510,7 @@ p:last-child {
   padding-left: 22px;
 }
 
-/* inline action buttons for list items */
+/* inline action buttons for list items * /
 .item-actions {
   opacity: 0;
   padding-left: 1.5ex;
@@ -1525,7 +1526,7 @@ li:hover .item-actions {
   opacity: 1;
 }
 
-/* search results */
+/* search results * /
 .search-results-number {
   margin-bottom: 2em;
 }
@@ -1579,14 +1580,14 @@ li:hover .item-actions {
  *
  * Miscellaneous
  *
- *---------------------------------*/
+ *---------------------------------* /
 
-/* clickable items */
+/* clickable items * /
 .clickable {
   cursor: pointer;
 }
 
-/* the spinner */
+/* the spinner * /
 .spinner {
   .border-radius(.5em);
   .box-shadow(5px; 5px; 5px; rgba(64, 64, 64, .6));
@@ -1599,7 +1600,7 @@ li:hover .item-actions {
   top: 50%;
 }
 
-/* clearance */
+/* clearance * /
 body > header, #main-menu, #main-container, .multicol-content, .letter-bar,
   .sel-values-list li, #panel-list ol, .filter-bar, footer, .checkbox-area,
   #install-progress
@@ -1612,5 +1613,6 @@ body > header, #main-menu, #main-container, .multicol-content, .letter-bar,
     visibility: hidden;
   }
 }
+*/
 
 /* vim:set ts=2 sw=2 sts=2: */

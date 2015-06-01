@@ -191,30 +191,33 @@
                         </g:each>
                         <option
                           value="${createLink(controller: 'document', action: 'dir')}"
-                          data-controller="document"
+                          data-data='{"controller": "document"}'
                           ><g:message code="document.plural"
                         /></option>
                       </select>
                     </div>
                   </div>
                 </div>
-                <div class="col-xs-12 col-sm-4 col-md-4 selector-search-form">
-                  <label for="selector-search" class="sr-only"
-                    ><g:message code="default.search.label"
-                  /></label>
-                  <div class="input-group">
-                    <input type="search" id="selector-search"
-                      class="form-control"
-                      placeholder="${message(code: 'default.search.label')}" />
-                    <span class="input-group-btn">
-                      <button type="button" class="btn btn-default search-btn"
-                        title="${message(code: 'default.search.button.label')}"
-                        ><i class="fa fa-search"></i
-                        ><span class="sr-only"
-                          ><g:message code="default.search.button.label"
-                        /></span
-                      ></button>
-                    </span>
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                  <div class="selector-search-form">
+                    <label for="selector-search" class="sr-only"
+                      ><g:message code="default.search.label"
+                    /></label>
+                    <div class="input-group">
+                      <input type="search" id="selector-search"
+                        class="form-control"
+                        placeholder="${message(code: 'default.search.label')}" />
+                      <span class="input-group-btn">
+                        <button type="button"
+                          class="btn btn-default search-btn"
+                          title="${message(code: 'default.search.button.label')}"
+                          ><i class="fa fa-search"></i
+                          ><span class="sr-only"
+                            ><g:message code="default.search.button.label"
+                          /></span
+                        ></button>
+                      </span>
+                    </div>
                   </div>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4">

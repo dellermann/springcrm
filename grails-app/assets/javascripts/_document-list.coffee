@@ -87,7 +87,7 @@ class DocumentList
     @$element = $el = $(element)
     @options = options = $.extend {}, DEFAULT_OPTIONS, options
     options.listUrl = options.listUrl ? $el.data('list-url')
-    options.selectionMode = true if options.selected
+    options.selectionMode = true if options.selected or options.multiSelect
 
     @_initCallback 'init'
     @_initCallback 'pathChanged'
