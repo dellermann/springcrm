@@ -1,7 +1,7 @@
 /*
  * User.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class User implements Cloneable {
 
@@ -43,6 +43,7 @@ class User implements Cloneable {
         email blank: false, email: true
         admin()
         allowedModules nullable: true
+        allowedModulesAsList()
         dateCreated()
         lastUpdated()
     }
@@ -93,7 +94,7 @@ class User implements Cloneable {
     }
 
     List<String> getAllowedModulesAsList() {
-        allowedModules ? allowedModules.split(',') : []
+        allowedModules ? allowedModules.split(',') as List<String> : []
     }
 
     String getFullName() {

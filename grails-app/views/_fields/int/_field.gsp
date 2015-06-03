@@ -1,5 +1,5 @@
 <g:applyLayout name="field">
-  <g:if test="${constraints.widget == 'autonumber'}">
+  <g:if test="${constraints?.widget == 'autonumber'}">
   <g:autoNumber prefix="${seqNumberPrefix}" suffix="${seqNumberSuffix}"
     value="${value}" />
   </g:if>

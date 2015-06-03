@@ -1,15 +1,22 @@
-<div class="row">
-  <div class="label">
-    <label for="password"><g:message code="user.password.label" default="Password" /></label>
-  </div>
-  <div class="field${hasErrors(bean: userInstance, field: 'password', ' error')}">
-    <g:passwordField name="password" size="40" />
-    <g:if test="${actionName == 'create'}">
-    <ul class="field-msgs">
-      <li class="info-msg"><g:message code="default.required" default="required" /></li></g:if>
-      <g:eachError bean="${userInstance}" field="password">
-      <li class="error-msg"><g:message error="${it}" /></li>
-      </g:eachError>
-    </ul>
+<g:applyLayout name="field">
+  <input type="password" id="${property}" name="${property}"
+    class="form-control"
+    ${actionName == 'create' ? ' required="required"' : ''} />
+</g:applyLayout>
+<div class="form-group">
+  <label for="password-repeat" class="control-label">
+    <g:message code="user.passwordRepeat.label" />
+  </label>
+  <div class="control-container">
+    <input type="password" id="password-repeat" name="passwordRepeat"
+      class="form-control" />
+    <ul class="control-messages"
+      ><g:if test="${actionName == 'create'}"
+      ><li class="control-message-info"
+        ><g:message code="default.required"
+      /></li
+      ></g:if
+    ></ul>
   </div>
 </div>
+

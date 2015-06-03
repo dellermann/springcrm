@@ -1,5 +1,5 @@
 <g:applyLayout name="field">
-  <g:if test="${constraints.widget == 'currency'}">
+  <g:if test="${constraints?.widget == 'currency'}">
     <div class="field-text">
       <span class="input">
         <f:input bean="${bean}" property="${property}"
@@ -9,7 +9,7 @@
       <span class="currency-symbol"><g:currency /></span>
     </div>
   </g:if>
-  <g:elseif test="${constraints.widget == 'percent'}">
+  <g:elseif test="${constraints?.widget == 'percent'}">
     <div class="field-text">
       <span class="input">
         <f:input bean="${bean}" property="${property}"
