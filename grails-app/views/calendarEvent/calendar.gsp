@@ -1,3 +1,29 @@
+<html>
+  <head>
+    <meta name="layout" content="main" />
+    <meta name="stylesheet" content="calendar" />
+  </head>
+
+  <body>
+    <div id="calendar"></div>
+    <content tag="scripts">
+      <asset:javascript src="calendar" />
+      <%--
+      <asset:javascript src="lang/fullcalendar/${(org.springframework.web.servlet.support.RequestContextUtils.getLocale(org.codehaus.groovy.grails.web.util.WebUtils.retrieveGrailsWebRequest().currentRequest) ?: Locale.default).language}" />
+      <asset:javascript src="calendar-view" />
+      --%>
+      <script type="text/javascript">
+          var calendar = $("#calendar").calendar(
+              {
+                  tmpl_path: "/tmpls/",
+                  events_source: function () { return []; }
+              });
+      </script>
+    </content>
+  </body>
+</html>
+
+<%--
 <%@ page import="org.amcworld.springcrm.CalendarEvent" %>
 <html>
 <head>
@@ -47,3 +73,4 @@
   </content>
 </body>
 </html>
+--%>

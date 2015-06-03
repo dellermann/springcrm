@@ -1,6 +1,6 @@
 {
   "name": "springcrm",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "homepage": "https://github.com/dellermann/springcrm",
   "authors": [
     "Daniel Ellermann <d.ellermann@amc-world.de>"
@@ -26,7 +26,6 @@
     "bootstrap-datepicker": "~1.4.0",
     "bootstrap-fileinput": "~4.2.0",
     "font-awesome": "~4.2.0",
-    "fullcalendar": "~2.2.7",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.4",
     "jquery-autosize": "~1.18.18",
@@ -38,6 +37,7 @@
   },
   "resolutions": {
     "bootstrap": "~3.3.4",
+    "jquery": "2.1.4",
     "typeahead.js": "~0.11.1"
   }
 }

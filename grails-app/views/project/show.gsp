@@ -125,7 +125,7 @@
 
       <g:set var="controllers" value="[
           'quote', 'salesOrder', 'invoice', 'creditMemo', 'dunning',
-          'purchaseInvoice', 'calendarEvent', 'call', 'note'
+          'purchaseInvoice', 'call', 'note'
         ]" />
       <div id="create-project-item-dialog" class="modal fade" tabindex="-1"
         role="dialog" aria-labelledby="create-project-item-dialog-title"

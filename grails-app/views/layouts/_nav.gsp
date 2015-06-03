@@ -88,7 +88,9 @@
             <g:ifControllerAllowed controllers="note"><li role="menuitem"><g:link controller="note"><g:message code="note.plural" /></g:link></li></g:ifControllerAllowed>
             <li class="divider" role="presentation"></li>
             <g:ifControllerAllowed controllers="project"><li role="menuitem"><g:link controller="project"><g:message code="project.plural" /></g:link></li></g:ifControllerAllowed>
+            <%--
             <g:ifControllerAllowed controllers="calendar"><li role="menuitem"><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label" /></g:link></li></g:ifControllerAllowed>
+            --%>
           </ul>
         </li>
         </g:ifControllerAllowed>

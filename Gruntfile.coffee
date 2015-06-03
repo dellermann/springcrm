@@ -127,17 +127,6 @@ module.exports = (grunt) ->
             expand: true
             src: ['*']
           ,
-            dest: '<%= dirs.src.stylesheets %>/_fullcalendar.css'
-            src: '<%= dirs.bower.fullCalendar %>/dist/fullcalendar.css'
-          ,
-            dest: '<%= dirs.src.javascripts %>/_fullcalendar.js'
-            src: '<%= dirs.bower.fullCalendar %>/dist/fullcalendar.js'
-          ,
-            cwd: '<%= dirs.bower.fullCalendar %>/dist/lang/'
-            dest: '<%= dirs.src.javascripts %>/lang/fullcalendar/'
-            expand: true
-            src: ['*.js']
-          ,
             dest: '<%= dirs.src.javascripts %>/_jquery.js'
             src: '<%= dirs.bower.jquery %>/dist/jquery.js'
           ,
@@ -248,14 +237,12 @@ module.exports = (grunt) ->
         bootstrapDatepicker: '<%= dirs.bower.base %>/bootstrap-datepicker'
         bootstrapFileinput: '<%= dirs.bower.base %>/bootstrap-fileinput'
         fontAwesome: '<%= dirs.bower.base %>/font-awesome'
-        fullCalendar: '<%= dirs.bower.base %>/fullcalendar'
         handlebars: '<%= dirs.bower.base %>/handlebars'
         jquery: '<%= dirs.bower.base %>/jquery'
         jqueryAutosize: '<%= dirs.bower.base %>/jquery-autosize'
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
         jsCalc: '<%= dirs.bower.base %>/js-calc'
-        moment: '<%= dirs.bower.base %>/moment'
         qunit: '<%= dirs.bower.base %>/qunit'
         selectize: '<%= dirs.bower.base %>/selectize'
         typeahead: '<%= dirs.bower.base %>/typeahead.js'
