@@ -1,7 +1,7 @@
 /*
  * HelpdeskController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -40,11 +41,8 @@ class HelpdeskController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
         [
             helpdeskInstanceList: Helpdesk.list(params),
             helpdeskInstanceTotal: Helpdesk.count(),
@@ -57,10 +55,13 @@ class HelpdeskController {
     }
 
     def copy(Long id) {
-        def helpdeskInstance = Helpdesk.get(id)
+        Helpdesk helpdeskInstance = Helpdesk.get(id)
         if (!helpdeskInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), id])
-            redirect action: 'show', id: id
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'helpdesk.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -69,14 +70,19 @@ class HelpdeskController {
     }
 
     def save() {
-        def helpdeskInstance = new Helpdesk()
+        Helpdesk helpdeskInstance = new Helpdesk()
         if (!helpdeskService.saveHelpdesk(helpdeskInstance, params)) {
             render view: 'create', model: [helpdeskInstance: helpdeskInstance]
             return
         }
 
         request.helpdeskInstance = helpdeskInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), helpdeskInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [
+                message(code: 'helpdesk.label'), helpdeskInstance.toString()
+            ]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -85,10 +91,13 @@ class HelpdeskController {
     }
 
     def show(Long id) {
-        def helpdeskInstance = Helpdesk.get(id)
+        Helpdesk helpdeskInstance = Helpdesk.get(id)
         if (!helpdeskInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'helpdesk.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -96,10 +105,13 @@ class HelpdeskController {
     }
 
     def edit(Long id) {
-        def helpdeskInstance = Helpdesk.get(id)
+        Helpdesk helpdeskInstance = Helpdesk.get(id)
         if (!helpdeskInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'helpdesk.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -107,17 +119,24 @@ class HelpdeskController {
     }
 
     def update(Long id) {
-        def helpdeskInstance = Helpdesk.get(id)
+        Helpdesk helpdeskInstance = Helpdesk.get(id)
         if (!helpdeskInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'helpdesk.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (helpdeskInstance.version > version) {
-                helpdeskInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'helpdesk.label', default: 'Helpdesk')] as Object[], 'Another user has updated this Helpdesk while you were editing')
+                helpdeskInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'helpdesk.label')] as Object[],
+                    'Another user has updated this Helpdesk while you were editing'
+                )
                 render view: 'edit', model: [helpdeskInstance: helpdeskInstance]
                 return
             }
@@ -129,7 +148,13 @@ class HelpdeskController {
         }
 
         request.helpdeskInstance = helpdeskInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), helpdeskInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [
+                message(code: 'helpdesk.label'), helpdeskInstance.toString()
+            ]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -138,27 +163,38 @@ class HelpdeskController {
     }
 
     def delete(Long id) {
-        def helpdeskInstance = Helpdesk.get(id)
+        Helpdesk helpdeskInstance = Helpdesk.get(id)
         if (!helpdeskInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'helpdesk.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             helpdeskInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'helpdesk.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'helpdesk.label', default: 'Helpdesk')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'helpdesk.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -166,7 +202,7 @@ class HelpdeskController {
     def frontendIndex(String urlName, String accessCode) {
         Helpdesk helpdeskInstance = Helpdesk.findByUrlName(urlName)
         if (!helpdeskInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
             return
         }
 
