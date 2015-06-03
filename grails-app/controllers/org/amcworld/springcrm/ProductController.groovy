@@ -91,10 +91,7 @@ class ProductController {
     }
 
     def create() {
-        Product productInstance = new Product()
-        productInstance.properties = params
-
-        [productInstance: productInstance]
+        [productInstance: new Product(params)]
     }
 
     def copy(Long id) {

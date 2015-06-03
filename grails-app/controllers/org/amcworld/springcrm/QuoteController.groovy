@@ -86,8 +86,7 @@ class QuoteController {
     }
 
     def create() {
-        Quote quoteInstance = new Quote()
-        quoteInstance.properties = params
+        Quote quoteInstance = new Quote(params)
         quoteInstance.copyAddressesFromOrganization()
 
         [quoteInstance: quoteInstance]

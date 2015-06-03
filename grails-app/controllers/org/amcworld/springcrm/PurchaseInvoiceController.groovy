@@ -83,10 +83,7 @@ class PurchaseInvoiceController {
     }
 
     def create() {
-        PurchaseInvoice purchaseInvoiceInstance = new PurchaseInvoice()
-        purchaseInvoiceInstance.properties = params
-
-        [purchaseInvoiceInstance: purchaseInvoiceInstance]
+        [purchaseInvoiceInstance: new PurchaseInvoice(params)]
     }
 
     def copy(Long id) {

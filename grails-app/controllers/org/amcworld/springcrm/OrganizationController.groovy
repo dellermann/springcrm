@@ -71,10 +71,7 @@ class OrganizationController {
     }
 
     def create() {
-        Organization organizationInstance = new Organization()
-        organizationInstance.properties = params
-
-        [organizationInstance: organizationInstance]
+        [organizationInstance: new Organization(params)]
     }
 
     def copy(Long id) {

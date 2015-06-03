@@ -82,10 +82,7 @@ class NoteController {
     }
 
     def create() {
-        def noteInstance = new Note()
-        noteInstance.properties = params
-
-        [noteInstance: noteInstance]
+        [noteInstance: new Note(params)]
     }
 
     def copy(Long id) {

@@ -87,10 +87,7 @@ class PersonController {
     }
 
     def create() {
-        def personInstance = new Person()
-        personInstance.properties = params
-
-        [personInstance: personInstance]
+        [personInstance: new Person(params)]
     }
 
     def copy(Long id) {

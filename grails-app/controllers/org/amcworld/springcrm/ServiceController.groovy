@@ -90,10 +90,7 @@ class ServiceController {
     }
 
     def create() {
-        def serviceInstance = new Service()
-        serviceInstance.properties = params
-
-        [serviceInstance: serviceInstance]
+        [serviceInstance: new Service(params)]
     }
 
     def copy(Long id) {

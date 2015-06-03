@@ -114,8 +114,7 @@ class CreditMemoController {
             def dunningInstance = Dunning.get(params.dunning)
             creditMemoInstance = new CreditMemo(dunningInstance)
         } else {
-            creditMemoInstance = new CreditMemo()
-            creditMemoInstance.properties = params
+            creditMemoInstance = new CreditMemo(params)
         }
 
         creditMemoInstance.copyAddressesFromOrganization()

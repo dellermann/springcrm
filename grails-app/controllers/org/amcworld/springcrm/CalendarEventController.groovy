@@ -165,8 +165,7 @@ class CalendarEventController {
     }
 
     def create() {
-        CalendarEvent calendarEventInstance = new CalendarEvent()
-        calendarEventInstance.properties = params
+        CalendarEvent calendarEventInstance = new CalendarEvent(params)
         if (calendarEventInstance.organization) {
             calendarEventInstance.location =
                 calendarEventInstance.organization.shippingAddr

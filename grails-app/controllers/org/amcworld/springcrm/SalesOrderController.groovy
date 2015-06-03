@@ -94,11 +94,10 @@ class SalesOrderController {
     def create() {
         SalesOrder salesOrderInstance
         if (params.quote) {
-            def quoteInstance = Quote.get(params.quote)
+            Quote quoteInstance = Quote.get(params.quote)
             salesOrderInstance = new SalesOrder(quoteInstance)
         } else {
-            salesOrderInstance = new SalesOrder()
-            salesOrderInstance.properties = params
+            salesOrderInstance = new SalesOrder(params)
         }
 
         salesOrderInstance.copyAddressesFromOrganization()

@@ -88,9 +88,7 @@ class CallController {
     }
 
     def create() {
-        Call callInstance = new Call()
-        callInstance.properties = params
-
+        Call callInstance = new Call(params)
         if (callInstance.person) {
             callInstance.phone = callInstance.person.phone
             callInstance.organization = callInstance.person.organization

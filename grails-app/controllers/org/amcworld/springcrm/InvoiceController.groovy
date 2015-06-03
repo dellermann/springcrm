@@ -108,8 +108,7 @@ class InvoiceController {
             invoiceInstance = new Invoice(salesOrderInstance)
             invoiceInstance.quote = salesOrderInstance.quote
         } else {
-            invoiceInstance = new Invoice()
-            invoiceInstance.properties = params
+            invoiceInstance = new Invoice(params)
         }
 
         invoiceInstance.copyAddressesFromOrganization()
