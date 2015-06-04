@@ -165,10 +165,18 @@ h2 {
 }
 
 // dropdowns
+.dropdown-menu {
+  > .item-separated {
+    margin-top: (@line-height-computed / 2);
+  }
+  .fa {
+    width: 1.5em;
+  }
+}
 .dropdown-header {
   border-bottom: 1px solid @gray-lighter;
   font-size: @font-size-base;
-  margin-top: @line-height-computed;
+  margin-top: (@line-height-computed / 2);
   padding-bottom: @padding-small-vertical;
 
   &:first-child {
@@ -228,6 +236,13 @@ h2 {
 
   pre {
     margin: 0;
+  }
+}
+.html-content {
+  dl, ol, ul, p {
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 

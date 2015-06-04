@@ -1,7 +1,7 @@
 #
 # helpdesk-form.coffee
 #
-# Copyright (c) 2011-2013, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ $generateAccessCodeBtn = $("#generate-access-code")
 
 # Generates an access code of the given length.
 #
-# @param {Number} length  the length of the generated access code
-# @return {String}        the generated access code
+# @param [Number] length  the length of the generated access code
+# @return [String]        the generated access code
 #
 generateAccessCode = (length = 6) ->
   s = ""
@@ -42,10 +42,11 @@ generateAccessCode = (length = 6) ->
   s
 
 
-$("#organization").autocompleteex
-  select: (event, ui) ->
-    $name = $("#name")
-    $name.val ui.item.label unless $name.val()
-$generateAccessCodeBtn.on "click", ->
-    $accessCodeInput.val generateAccessCode()
-$generateAccessCodeBtn.triggerHandler("click") unless $accessCodeInput.val()
+$('#organization-select').on 'change', ->
+  organizationName = $(this).find(':selected').text()
+  $name = $("#name")
+  $name.val organizationName unless $name.val()
+
+$generateAccessCodeBtn.on 'click', -> $accessCodeInput.val generateAccessCode()
+$generateAccessCodeBtn.triggerHandler 'click' unless $accessCodeInput.val()
+

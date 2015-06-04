@@ -1,5 +1,6 @@
 <g:set var="address" value="${bean[property]}" />
 <div class="column">
+  <g:unless test="${suppressHeader}">
   <header>
     <h3>${title}</h3>
     <div class="buttons">
@@ -11,6 +12,7 @@
       </g:if>
     </div>
   </header>
+  </g:unless>
   <div class="column-content">
     <f:display bean="${address}" property="street" />
     <f:display bean="${address}" property="poBox" />

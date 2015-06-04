@@ -15,7 +15,7 @@
           </g:link>
         </li>
         <li role="menuitem">
-          <g:link controller="ticket" action="list"
+          <g:link controller="ticket" action="index"
             params="[helpdesk: helpdeskInstance.id]">
             <i class="fa fa-ticket"></i>
             <g:message code="helpdesk.button.showTickets" />

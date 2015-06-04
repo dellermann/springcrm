@@ -44,6 +44,7 @@
 .toolbar {
   display: table-cell;
   padding-right: (@grid-gutter-width / 2);
+  position: relative;
   text-align: right;
   vertical-align: middle;
 
@@ -89,6 +90,9 @@
           @padding-base-vertical; @padding-xs-horizontal; @font-size-base;
           @line-height-base; @border-radius-base
         );
+    }
+    .dropdown-menu {
+      right: (@grid-gutter-width / 2 - 1px);
     }
   }
 }

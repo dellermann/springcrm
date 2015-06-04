@@ -62,8 +62,13 @@
   .desc:after {
     content: @fa-var-caret-down;
   }
-  .col-type-row-selector, .col-type-id, .col-type-date, .col-type-status {
+  .col-type-row-selector, .col-type-id, .col-type-status {
     text-align: center;
+    width: 1%;    // shrink to fit
+  }
+  .col-type-date {
+    text-align: center;
+    white-space: nowrap;
     width: 1%;    // shrink to fit
   }
   .col-type-number, .col-type-currency {
