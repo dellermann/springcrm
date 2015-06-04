@@ -9,7 +9,7 @@
   ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]
 }">
 <li role="menuitem">
-  <g:link action="takeOn" id="${ticketInstance?.id}" elementId="take-on-btn">
+  <g:link action="takeOn" id="${ticketInstance?.id}" class="take-on-link">
     <i class="fa fa-check"></i>
     <g:message code="ticket.takeOn.label" />
   </g:link>
@@ -31,7 +31,7 @@
 }">
 <li role="menuitem">
   <g:link action="changeStage" id="${ticketInstance?.id}"
-    params="[stage: TicketStage.closed]" elementId="close-ticket-btn">
+    params="[stage: TicketStage.closed]" class="close-ticket-link">
     <i class="fa fa-check-circle-o"></i>
     <g:message code="ticket.changeStage.closed" />
   </g:link>
@@ -58,7 +58,7 @@
   ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])
 }">
 <li role="menuitem">
-  <a href="#" id="send-message-to-customer-btn"
+  <a href="#" class="send-message-to-customer-link"
     data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
     data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}">
     <g:message code="ticket.sendMessage.toCustomer.label" />
@@ -67,7 +67,7 @@
 </g:if>
 <g:each in="${otherUsers}">
 <li role="menuitem">
-  <a href="#" data-user-id="${it.id}"
+  <a href="#" class="send-message-to-user-link" data-user-id="${it.id}"
     data-title="${message(code: 'ticket.sendMessage.toUser.title')}"
     data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
     >${it.toString()}</a
@@ -87,7 +87,7 @@
 <g:each in="${user.admin ? users : otherUsers}">
 <li>
   <g:link action="assignToUser" id="${ticketInstance.id}"
-    params="[user: it.id]"
+    params="[user: it.id]" class="assign-user-link"
     >${it.toString()}</g:link>
 </li>
 </g:each>
@@ -98,7 +98,7 @@
   ticketInstance.stage == TicketStage.assigned
 }">
 <li role="menuitem" class="item-separated">
-  <a href="#" id="create-note-btn"
+  <a href="#" class="create-note-link"
     data-title="${message(code: 'ticket.createNote.title')}"
     data-submit-url="${createLink(action: 'createNote', id: ticketInstance.id)}">
     <i class="fa fa-pencil"></i>

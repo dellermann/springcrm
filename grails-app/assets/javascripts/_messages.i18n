@@ -108,6 +108,8 @@ purchaseInvoice.documentFile.select
 salesItem.pricing.error.notMovable.refBeforeReferee
 salesItem.pricing.error.notRemovable
 salesItem.pricing.removePricing.confirm
+ticket.attachment.delete
+ticket.attachment.select
 ticket.changeStage.assign.confirm
 ticket.changeStage.closed.confirm
 ticket.takeOn.confirm

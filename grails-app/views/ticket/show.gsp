@@ -74,6 +74,57 @@
           </div>
         </div>
       </section>
+
+      <div id="send-message-dialog" class="modal fade" tabindex="-1"
+        role="dialog" aria-labelledby="send-message-dialog-title"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"
+                aria-label="${message(code: 'default.btn.close')}"
+                ><span aria-hidden="true">×</span
+              ></button>
+              <h4 id="send-message-dialog-title" class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                <g:uploadForm action="sendMessage" id="${ticketInstance.id}"
+                  method="post">
+                  <g:hiddenField name="recipient" value="" />
+                  <div class="form-group">
+                    <label for="messageText"
+                      ><g:message code="ticket.messageText.label"
+                    /></label>
+                    <g:textArea name="messageText" class="form-control"
+                      rows="10" required="required" />
+                    <ul class="control-messages"
+                      ><li class="control-message-info"
+                        ><g:message code="default.required"
+                      /></li
+                    ></ul>
+                  </div>
+                  <div class="form-group">
+                    <label for="attachment"
+                      ><g:message code="ticket.attachment.label"
+                    /></label>
+                    <input type="file" id="attachment" name="attachment" />
+                  </div>
+                </g:uploadForm>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary send-btn"
+                ><g:message code="default.button.send.label"
+              /></button>
+              <button type="button" class="btn btn-default"
+                data-dismiss="modal"
+                ><g:message code="default.button.cancel.label"
+              /></button>
+            </div>
+          </div>
+        </div>
+      </div>
     </g:applyLayout>
 
     <content tag="scripts">
@@ -81,31 +132,3 @@
     </content>
   </body>
 </html>
-<%--
-  <div id="send-message-dialog" style="display: none;">
-    <g:uploadForm action="sendMessage" id="${ticketInstance.id}" method="post">
-      <g:hiddenField name="recipient" value="" />
-      <div class="form">
-        <div class="row">
-          <div class="label">
-            <label for="messageText"><g:message code="ticket.messageText.label" /></label>
-          </div>
-          <div class="field">
-            <g:textArea name="messageText" cols="40" rows="10" required="required" /><br />
-            <ul class="field-msgs">
-              <li class="info-msg"><g:message code="default.required" default="required" /></li>
-            </ul>
-          </div>
-        </div>
-        <div class="row">
-          <div class="label">
-            <label for="attachment"><g:message code="ticket.attachment.label" /></label>
-          </div>
-          <div class="field">
-            <input type="file" id="attachment" name="attachment" />
-          </div>
-        </div>
-      </div>
-    </g:uploadForm>
-  </div>
---%>

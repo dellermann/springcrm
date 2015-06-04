@@ -14,7 +14,7 @@
       ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])
     }">
     <li role="menuitem">
-      <a href="#" id="send-message-to-customer-btn"
+      <a href="#" class="send-message-to-customer-link"
         data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
         data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}">
         <g:message code="ticket.sendMessage.toCustomer.label" />
@@ -27,7 +27,7 @@
     </li>
     <g:each in="${otherUsers}">
     <li role="menuitem">
-      <a href="#" data-user-id="${it.id}"
+      <a href="#" class="send-message-to-user-link" data-user-id="${it.id}"
         data-title="${message(code: 'ticket.sendMessage.toUser.title')}"
         data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
         >${it.toString()}</a>
@@ -53,7 +53,7 @@
     <g:each in="${user.admin ? users : otherUsers}">
     <li>
       <g:link action="assignToUser" id="${ticketInstance.id}"
-        params="[user: it.id]"
+        params="[user: it.id]" class="assign-user-link"
         >${it.toString()}</g:link>
     </li>
     </g:each>

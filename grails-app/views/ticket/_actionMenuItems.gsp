@@ -9,7 +9,7 @@
   ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]
 }">
 <li role="menuitem">
-  <g:link action="takeOn" id="${ticketInstance?.id}" elementId="take-on-btn">
+  <g:link action="takeOn" id="${ticketInstance?.id}" class="take-on-link">
     <i class="fa fa-check"></i>
     <g:message code="ticket.takeOn.label" />
   </g:link>
@@ -33,7 +33,7 @@
 }">
 <li role="menuitem">
   <g:link action="changeStage" id="${ticketInstance?.id}"
-    params="[stage: TicketStage.closed]" elementId="close-ticket-btn">
+    params="[stage: TicketStage.closed]" class="close-ticket-link">
     <i class="fa fa-check-circle-o"></i>
     <g:message code="ticket.changeStage.closed" />
   </g:link>
@@ -61,7 +61,7 @@
 <g:each in="${user.admin ? users : otherUsers}">
 <li class="hidden-lg">
   <g:link action="assignToUser" id="${ticketInstance.id}"
-    params="[user: it.id]">
+    params="[user: it.id]" class="assign-user-link">
     <i class="fa fa-user"></i>
     ${it.toString()}
   </g:link>
@@ -74,7 +74,7 @@
   ticketInstance.stage == TicketStage.assigned
 }">
 <li role="menuitem" class="item-separated">
-  <a href="#" id="create-note-btn"
+  <a href="#" class="create-note-link"
     data-title="${message(code: 'ticket.createNote.title')}"
     data-submit-url="${createLink(action: 'createNote', id: ticketInstance.id)}">
     <i class="fa fa-pencil"></i>

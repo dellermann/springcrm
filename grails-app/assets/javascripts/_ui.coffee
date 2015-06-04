@@ -164,6 +164,29 @@ $.extend JQueryUiStaticExt
 #
 JQueryUiExt =
 
+  # Follows the URL in the `href` attribute of the jQuery object if the user
+  # confirms a dialog.
+  #
+  # For more information about the available options refer to
+  # `JQueryUiStaticExt.confirm`.
+  #
+  # @param [String] msg                   the message (prompt) to be displayed
+  # @param [String] title                 an optional title of the modal
+  # @param [Object] options               any options which are used in the modal and the deferred object; see function description for more information
+  # @return [Boolean]                     always `false` to prevent event bubbling
+  # @see JQueryUiStaticExt.html#confirm-  JQueryUiStaticExt.confirm
+  # @since                                2.0
+  #
+  confirmLink: (msg, title, options) ->
+    $ = jQuery
+
+    $.Deferred()
+      .resolve()
+      .then( -> $.confirm msg, title, options)
+      .done( => window.location.href = $(this).attr 'href')
+
+    false
+
   # Disables the elements in the jQuery object.
   #
   # @param [boolean] disable  if `true` the elements are disabled; otherwise they are enabled.  This parameter is used to change the disable state by a boolean value.
