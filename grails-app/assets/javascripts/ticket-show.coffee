@@ -1,5 +1,5 @@
 #
-# ticket.coffee
+# ticket-show.coffee
 #
 # Copyright (c) 2011-2015, Daniel Ellermann
 #

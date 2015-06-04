@@ -90,7 +90,7 @@ class TicketController {
         if (!ticketInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'ticket.label', id)]
+                args: [message(code: 'ticket.label'), id]
             )
             redirect action: 'index'
             return
@@ -108,7 +108,9 @@ class TicketController {
 
         if (!ticketInstance.validate() || !messageText) {
             if (!messageText) {
-                ticketInstance.errors.rejectValue 'messageText', 'default.blank.message'
+                ticketInstance.errors.rejectValue(
+                    'messageText', 'default.blank.message'
+                )
             }
             render view: 'create', model: [
                 ticketInstance: ticketInstance,
@@ -131,7 +133,7 @@ class TicketController {
         request.ticketInstance = ticketInstance
         flash.message = message(
             code: 'default.created.message',
-            args: [message(code: 'ticket.label', ticketInstance.toString())]
+            args: [message(code: 'ticket.label'), ticketInstance.toString()]
         )
 
         if (params.returnUrl) {
@@ -204,7 +206,7 @@ class TicketController {
         request.ticketInstance = ticketInstance
         flash.message = message(
             code: 'default.updated.message',
-            args: [message(code: 'ticket.label', ticketInstance.toString())]
+            args: [message(code: 'ticket.label'), ticketInstance.toString()]
         )
 
         if (params.returnUrl) {
@@ -278,9 +280,9 @@ class TicketController {
         if (message) {
             Ticket ticketInstance = Ticket.get(id)
             if (!ticketInstance) {
-                flash.message = message(
+                flash.message = g.message(
                     code: 'default.not.found.message',
-                    args: [message(code: 'ticket.label'), id]
+                    args: [g.message(code: 'ticket.label'), id]
                 )
                 redirect action: 'index'
                 return
@@ -308,9 +310,9 @@ class TicketController {
         if (message) {
             Ticket ticketInstance = Ticket.get(id)
             if (!ticketInstance) {
-                flash.message = message(
+                flash.message = g.message(
                     code: 'default.not.found.message',
-                    args: [message(code: 'ticket.label'), id]
+                    args: [g.message(code: 'ticket.label'), id]
                 )
                 redirect action: 'index'
                 return
@@ -430,7 +432,7 @@ class TicketController {
 
         flash.message = message(
             code: 'default.created.message',
-            args: [message(code: 'ticket.label', ticketInstance.toString())]
+            args: [message(code: 'ticket.label'), ticketInstance.toString()]
         )
         redirectToHelpdeskFrontend helpdeskInstance
     }

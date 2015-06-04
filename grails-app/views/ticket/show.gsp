@@ -128,7 +128,7 @@
     </g:applyLayout>
 
     <content tag="scripts">
-      <asset:javascript src="ticket" />
+      <asset:javascript src="ticket-show" />
     </content>
   </body>
 </html>
