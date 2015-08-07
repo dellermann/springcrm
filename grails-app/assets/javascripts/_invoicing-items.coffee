@@ -1,7 +1,7 @@
 #
 # invoicing-items.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ $ = jQuery
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  1.5
 #
 InvoicingItemsWidget =
 
@@ -466,7 +466,8 @@ InvoicingItemsWidget =
         total = (qty * unitPrice).formatCurrencyValue()
         $(unitPriceInput).parents("tr")
           .find(".total-price output").text total
-        els[prefix + "tax"].value = (item.taxRate.taxValue * 100.0).format(1)
+        taxValue = if item.taxRate then item.taxRate.taxValue else 0
+        els[prefix + "tax"].value = (taxValue * 100.0).format(1)
         @_computeFooterValues()
         $("#inventory-selector-" + type).dialog "close"
 
