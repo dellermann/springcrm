@@ -56,6 +56,9 @@ class LruFilters {
                 if (!instance?.ident()) {
                     return
                 }
+                if (instance?.hasErrors()) {
+                    return
+                }
 
                 lruService.recordItem controllerName, instance
             }
