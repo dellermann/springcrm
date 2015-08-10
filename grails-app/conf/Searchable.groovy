@@ -47,19 +47,19 @@
  */
 searchable {
 
-    StringBuilder path = new StringBuilder()
-    String s = System.properties[appName + '.dir.base']
-    if (s) {
-        path << s
-    } else {
-        s = System.getenv('SPRINGCRM_HOME')
-        if (s) {
-            path << s
-        } else {
-            path << userHome << '/.' << appName
-        }
-    }
-    path << '/searchable-index'
+//    StringBuilder path = new StringBuilder()
+//    String s = System.properties[appName + '.dir.base']
+//    if (s) {
+//        path << s
+//    } else {
+//        s = System.getenv('SPRINGCRM_HOME')
+//        if (s) {
+//            path << s
+//        } else {
+//            path << userHome << '/.' << appName
+//        }
+//    }
+//    path << '/searchable-index'
 
     /**
      * The location of the Compass index
@@ -69,7 +69,7 @@ searchable {
      *
      * The default is "${userHome}/.grails/projects/${appName}/searchable-index/${grailsEnv}"
      */
-    compassConnection = new File(path.toString()).absolutePath
+    compassConnection = "${userHome}/.grails/projects/${appName}/searchable-index/${grailsEnv}" //new File(path.toString()).absolutePath
 
     /**
      * Any settings you wish to pass to Compass
@@ -203,6 +203,7 @@ environments {
     development {
         searchable {
             bulkIndexOnStartup = false
+            compassConnection = 'ram://dev-index'
         }
     }
 

@@ -25,7 +25,8 @@ package org.amcworld.springcrm
  * The class {@code Person} represents a person of an organization.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @author 	Philip Drozd
+ * @version 2.0
  */
 class Person {
 
@@ -135,7 +136,15 @@ class Person {
     //-- Properties -----------------------------
 
     String getFullName() {
-        "${firstName} ${lastName}"
+		String firstName = this.firstName?.trim()?:''
+		String lastName = this.lastName?.trim()?:''
+		
+		StringBuilder buf = new StringBuilder (firstName)
+		if(firstName && lastName) {
+			buf << ' '
+		}
+		buf << lastName
+		buf.toString()
     }
 
     String getFullNumber() {
