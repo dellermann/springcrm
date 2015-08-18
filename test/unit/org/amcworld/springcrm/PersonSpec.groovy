@@ -24,7 +24,6 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-
 @TestFor(Person)
 @Mock([Person])
 class PersonSpec extends Specification {
@@ -246,11 +245,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a title and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo', 
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  title: title, firstName: 'John', lastName: 'Doe', 
-						  mailingAddr: new Address(), otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			title: title, firstName: 'John', lastName: 'Doe', 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -274,11 +275,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a first name and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo', 
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: firstName, lastName: 'Doe', 
-						  mailingAddr: new Address(), otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: firstName, lastName: 'Doe', 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then: 
@@ -304,11 +307,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a last name and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: lastName,
-						  mailingAddr: new Address(), otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: lastName, 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -334,11 +339,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a phone number and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe', phone: phone,
-						  mailingAddr: new Address(), otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', phone: phone,
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then: 
@@ -364,11 +371,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a fax number and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe', fax: fax,
-						  mailingAddr: new Address(), otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', fax: fax,
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -394,12 +403,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a phone assistant number and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe', 
-						  phoneAssistant: phoneAssistant, 
-						  mailingAddr: new Address(), otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', phoneAssistant: phoneAssistant, 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -425,12 +435,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with an other phone number and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  phoneOther: phoneOther, mailingAddr: new Address(), 
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', phoneOther: phoneOther,
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -456,12 +467,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with an email1 and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  email1: email, mailingAddr: new Address(),
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', email1: email,
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then: 
@@ -488,12 +500,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with an email2 and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  email2: email, mailingAddr: new Address(),
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', email2: email, 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -520,12 +533,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a job title and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  jobTitle: jobTitle, mailingAddr: new Address(), 
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', jobTitle: jobTitle, 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -549,12 +563,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with a department and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  department: department, mailingAddr: new Address(), 
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', department: department,
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -578,12 +593,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with an assistant and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  assistant: assistant, mailingAddr: new Address(),
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', assistant: assistant, 
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:
@@ -607,12 +623,13 @@ class PersonSpec extends Specification {
 		
 		when: 'I create a person with an assistant and validate it'
 		def p = new Person(
-			organization: new Organization(recType: 1, name: 'foo',
-										   billingAddr: new Address(),
-										   shippingAddr: new Address()),
-						  firstName: 'John', lastName: 'Doe',
-						  notes: notes, mailingAddr: new Address(),
-						  otherAddr: new Address())
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			firstName: 'John', lastName: 'Doe', notes: notes,
+			mailingAddr: new Address(), otherAddr: new Address()
+		)
 		p.validate()
 		
 		then:

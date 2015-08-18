@@ -25,6 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Note} represents a note.
  *
  * @author	Daniel Ellermann
+ * @author	Philip Drozd
  * @version 1.3
  */
 class Note {
@@ -90,12 +91,12 @@ class Note {
 
     @Override
     public int hashCode() {
-        return id as int
+        (id ?: 0i) as int
     }
 
     @Override
 	String toString() {
-		return title ?: ''
+		title ?: ''
 	}
 
 	def beforeInsert() {
