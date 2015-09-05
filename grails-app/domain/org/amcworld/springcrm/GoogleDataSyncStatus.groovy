@@ -52,7 +52,7 @@ class GoogleDataSyncStatus {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Call) {
+        if (obj instanceof GoogleDataSyncStatus) {
             return obj.user == user && obj.type == type && obj.itemId == itemId
         } else {
             return false

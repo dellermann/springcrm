@@ -25,7 +25,7 @@ import grails.test.mixin.Mock
 import spock.lang.Specification
 
 @TestFor(SalesItem)
-@Mock([SalesItem])
+@Mock([SalesItem, SalesItemPricing])
 
 class SalesItemSpec extends Specification {
 	
@@ -82,8 +82,82 @@ class SalesItemSpec extends Specification {
 		'O-11332' == s.fullNumber
 	}
 	
-	def 'Get the unit price'() {
-		//TODO
+	def 'Get the unit price with different units'() {
+		given: 'some units'
+		def unit1 = new Unit(name: 'Stück')
+		unit1.id = 1
+		def unit2 = new Unit(name: 'm')
+		unit2.id = 2
+		
+		and: 'a sales item'
+		def s = new SalesItem(
+			number: 1991,
+			type: 'type',
+			name: 'John',
+			quantity: 1,
+			unit: unit1,
+			unitPrice: 199,
+			taxRate: new TaxRate(),
+			purchasePrice: 12,
+			salesStart: new Date(),
+			salesEnd: new Date(),
+			description: 'description',
+			pricing: new SalesItemPricing(
+				quantity: 100,
+				unit: unit2,
+				discountPercent: 0,
+				adjustment: 0,
+				items: [
+					new SalesItemPricingItem(
+						quantity: 100,
+						unitPrice: 1.2
+					)
+				]
+			),
+			dateCreated: new Date(),
+			lastUpdated: new Date()
+		)
+		
+		expect:
+		1.2 == s.unitPrice
+	}
+	
+	def 'Get the unit price with same units'() {
+		given: 'some units'
+		def unit = new Unit(name: 'm')
+		unit.id = 1
+	
+		and: 'a sales item'
+		def s = new SalesItem(
+			number: 1991,
+			type: 'type',
+			name: 'John',
+			quantity: 10,
+			unit: unit,
+			unitPrice: 199,
+			taxRate: new TaxRate(),
+			purchasePrice: 12,
+			salesStart: new Date(),
+			salesEnd: new Date(),
+			description: 'description',
+			pricing: new SalesItemPricing(
+				quantity: 100,
+				unit: unit,
+				discountPercent: 0,
+				adjustment: 0,
+				items: [
+			        new SalesItemPricingItem(
+		        		quantity: 100,
+		        		unitPrice: 1.2
+	        		)
+				]
+			),
+			dateCreated: new Date(),
+			lastUpdated: new Date()
+		)
+	
+		expect:
+		12 == s.unitPrice
 	}
 	
 	def 'Get the total price'() {
@@ -312,8 +386,8 @@ class SalesItemSpec extends Specification {
 		100D			| true
 		100.0d			| true
 		1e2d			| true
-//		'String'		| false
-//		'String 1003'	| false
+		-50.0d			| false
+		-19442			| false
 	}
 	
 	def 'Unit constraints'() {
@@ -368,8 +442,8 @@ class SalesItemSpec extends Specification {
 		100D			| true
 		100.0d			| true
 		1e2d			| true
-//		'String'		| false
-//		'String 1003'	| false
+		-50.0d			| false
+		-19442			| false
 	}
 	
 	def 'Tax rate constraints'() {
@@ -386,7 +460,6 @@ class SalesItemSpec extends Specification {
 		
 		then:
 		!valid == s.hasErrors()
-		println s.errors.dump()
 		
 		where:
 		taxRate			| valid
@@ -423,8 +496,8 @@ class SalesItemSpec extends Specification {
 		100D			| true
 		100.0d			| true
 		1e2d			| true
-//		'String'		| false
-//		'String 1003'	| false
+		-50.0d			| false
+		-19442			| false
 	}
 	
 	def 'Description constraints'() {
@@ -455,25 +528,68 @@ class SalesItemSpec extends Specification {
 	def 'Pricing constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
-		when: 'I create a sales item with a pricing and validate it'
 		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
-			dateCreated: new Date(), lastUpdated: new Date(),
-			pricing: pricing
+			type: 'P', name: 'name', quantity: 12, unit: new Unit(),
+			unitPrice: 130, dateCreated: new Date(), lastUpdated: new Date()
+		)
+		
+		when: 'I set a pricing and validate it'
+		s.pricing = new SalesItemPricing(
+			quantity: 40.0d, unit: new Unit(), discountPercent: 12.0d,
+			adjustment: 14.5d,
+			items:new SalesItemPricingItem(
+	            quantity: 4, unit: 'pcs.',
+	            name: 'books', type: 'P', relToPos: 2,
+				unitPercent: 10.0d, unitPrice: 44.99
+            )
 		)
 		s.validate()
 		
 		then:
-		!valid == s.hasErrors()
+		!s.hasErrors()
+	}
+	
+	def 'Sales start constraints'() {
+		setup:
+		mockForConstraintsTests(SalesItem)
 		
-		where:
-		pricing			| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'String'		| true
-		'String 1003'	| true
+		when: 'I create a sales item with a date for sales start and validate it'
+		def s = new SalesItem(
+			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
+			dateCreated: new Date(), lastUpdated: new Date(),
+			salesStart: new Date()
+		)
+		s.validate()
+		
+		then:
+		!s.hasErrors()
+		
+		when:
+		s.salesStart = null
+		
+		then:
+		!s.hasErrors()
+	}
+	
+	def 'Sales end constraints'() {
+		setup:
+		mockForConstraintsTests(SalesItem)
+		
+		when: 'I create a sales item with a date for sales end and validate it'
+		def s = new SalesItem(
+			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
+			dateCreated: new Date(), lastUpdated: new Date(),
+			salesEnd: new Date()
+		)
+		s.validate()
+		
+		then:
+		!s.hasErrors()
+		
+		when:
+		s.salesEnd = null
+		
+		then:
+		!s.hasErrors()
 	}
 }

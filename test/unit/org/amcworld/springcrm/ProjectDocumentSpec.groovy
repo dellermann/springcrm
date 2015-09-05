@@ -25,7 +25,7 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 @TestFor(ProjectDocument)
-@Mock([ProjectDocument])
+@Mock([ProjectDocument, Project])
 
 class ProjectDocumentSpec extends Specification {
 	
@@ -69,12 +69,34 @@ class ProjectDocumentSpec extends Specification {
 	
 	def 'Compute hash code'() {
 		when:
-		def p = new ProjectDocument(phase: ProjectPhase.planning, path: 'path')
-		def project = new Project(id: 1003)
+		def project = new Project(
+			id: 160,
+			title: 'title',
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			status: new ProjectStatus(name: 'in progress')
+		)
+		def p1 = new ProjectDocument(
+			phase: ProjectPhase.planning, path: 'path',
+			project: project
+		)
+		def p2 = new ProjectDocument(
+			phase: ProjectPhase.planning, path: 'path',
+			project: project
+		)
 		
 		then: 
-		project.hashCode() == project.id+'-'+p.phase+'-'+p.path.hashCode()
-		//TODO
+		p1.hashCode() == p2.hashCode()
+		
+		when:
+		int h = p1.hashCode()
+		
+		then:
+		for (int i = 0; i < 1000; i++) {
+			h == p1.hashCode()
+		}
 	}
 	
 	def 'Convert to string'() {
@@ -91,9 +113,18 @@ class ProjectDocumentSpec extends Specification {
 		setup:
 		mockForConstraintsTests(ProjectDocument)
 		
-		when: 'I create a project document with a path and validate it'
+		when: 'I create a project and a project document with a path and validate it'
+		def project = new Project(
+			title: 'title',
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			status: new ProjectStatus(name: 'in progress')
+		)
 		def p = new ProjectDocument(
-			phase: ProjectPhase.acceptance, path: path, title: 'title'
+			phase: ProjectPhase.planning, path: path, title: 'title',
+			project: project
 		)
 		p.validate()
 		
@@ -116,12 +147,20 @@ class ProjectDocumentSpec extends Specification {
 		setup:
 		mockForConstraintsTests(ProjectDocument)
 		
-		when: 'I create a project document with a title and validate it'
+		when: 'I create a project and a project document with a title and validate it'
+		def project = new Project(
+			title: 'title',
+			organization: new Organization(
+				recType: 1, name: 'foo', billingAddr: new Address(),
+				shippingAddr: new Address()
+			),
+			status: new ProjectStatus(name: 'in progress')
+		)
 		def p = new ProjectDocument(
-			phase: ProjectPhase.planning, path: 'path', title: title
+			phase: ProjectPhase.planning, path: 'path', title: title,
+			project: project
 		)
 		p.validate()
-		println p.errors.dump()
 		
 		then:
 		!valid == p.hasErrors()

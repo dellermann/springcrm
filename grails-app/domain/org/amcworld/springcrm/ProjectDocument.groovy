@@ -50,7 +50,6 @@ class ProjectDocument {
     String path
     String title
 
-
     //-- Public methods -------------------------
 
     boolean equals(Object o) {

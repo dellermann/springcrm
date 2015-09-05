@@ -133,7 +133,7 @@ class PurchaseInvoice {
 
     /**
      * Gets the name of a color indicating the status of the balance of this
-     * purchase invoice.  This property is usually use to compute CSS classes
+     * purchase invoice.  This property is usually used to compute CSS classes
      * in the views.
      *
      * @return  the indicator color
@@ -148,7 +148,7 @@ class PurchaseInvoice {
         }
         color
     }
-
+	
     /**
      * Gets the discount amount which is granted when the user specifies a
      * discount percentage value. The percentage value is related to the
@@ -163,7 +163,7 @@ class PurchaseInvoice {
 
     /**
      * Gets the name of a color indicating the payment state of this purchase
-     * invoice.  This property is usually use to compute CSS classes in the
+     * invoice.  This property is usually used to compute CSS classes in the
      * views.
      *
      * @return  the indicator color

@@ -53,7 +53,6 @@ class CreditMemo extends InvoicingTransaction {
         'paymentStateColor'
     ]
 
-
     //-- Instance variables ---------------------
 
     def userService

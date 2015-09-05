@@ -43,7 +43,7 @@ class NoteSpec extends Specification {
 		when: 'I copy the object'
 		def n2 = new Note(n1)
 		
-		then: 'the properties should be the same'
+		then: 'some properties are the same'
 		n2.title == n1.title
 		n2.content == n1.content
 		
@@ -147,7 +147,7 @@ class NoteSpec extends Specification {
 		92283 == n.number
 	}
 	
-	def 'title constraints'() {
+	def 'Title constraints'() {
 		setup:
 		mockForConstraintsTests(Note)
 		
@@ -174,7 +174,7 @@ class NoteSpec extends Specification {
 		'a'*1000		| false
 	}
 	
-	def 'content constraints'() {
+	def 'Content constraints'() {
 		setup:
 		mockForConstraintsTests(Note)
 		

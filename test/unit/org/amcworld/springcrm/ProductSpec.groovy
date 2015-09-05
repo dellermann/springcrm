@@ -136,5 +136,7 @@ class ProductSpec extends Specification {
 		100D			| true
 		100.0d			| true
 		1e2d			| true
+		-5				| false
+		-14001.5d		| false
 	}
 }
