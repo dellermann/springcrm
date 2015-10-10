@@ -133,14 +133,14 @@ grails.project.dependency.resolution = {
             ':less-asset-pipeline:2.0.8',
             ':mail:1.0.7',
             ':markdown:1.1.1',
-            ':scaffolding:2.1.2',
-            ':searchable:0.6.9'
+            ':scaffolding:2.1.2'
         )
         build(
             ':tomcat:7.0.54'
         )
         runtime(
             ':database-migration:1.4.0',
+//            ':elasticsearch:0.0.4.6',
             ':hibernate:3.6.10.17'
         )
         test(

@@ -1,7 +1,7 @@
 /*
  * Ticket.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Ticket} represents a ticket of a particular helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class Ticket {
@@ -65,7 +65,6 @@ class Ticket {
     }
     static embedded = ['address']
     static hasMany = [logEntries: TicketLogEntry]
-    static searchable = [except: 'initialMessage']
     static transients = [
         'customerName', 'fullName', 'fullNumber', 'initialMessage',
         'messageText'

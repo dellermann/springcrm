@@ -67,7 +67,6 @@ class Organization {
         notes type: 'text'
         recType index: 'rec_type'
     }
-    static searchable = true
     static transients = ['fullNumber', 'shortName', 'customer', 'vendor']
 
 

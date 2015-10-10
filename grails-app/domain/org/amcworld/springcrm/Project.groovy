@@ -1,7 +1,7 @@
 /*
  * Project.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ package org.amcworld.springcrm
  * documents etc.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.0
  */
 class Project {
@@ -51,7 +51,6 @@ class Project {
         sort 'title'
         description type: 'text'
     }
-    static searchable = true
     static transients = ['fullNumber']
 
 

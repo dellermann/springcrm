@@ -61,9 +61,6 @@ class PurchaseInvoice {
         notes type: 'text'
         subject index: 'subject'
     }
-    static searchable = [
-        except: ['balance', 'balanceColor', 'paymentStateColor']
-    ]
     static transients = [
         'balance', 'balanceColor', 'discountPercentAmount',
         'paymentStateColor', 'subtotalNet', 'subtotalGross', 'taxRateSums'
@@ -148,7 +145,7 @@ class PurchaseInvoice {
         }
         color
     }
-	
+
     /**
      * Gets the discount amount which is granted when the user specifies a
      * discount percentage value. The percentage value is related to the

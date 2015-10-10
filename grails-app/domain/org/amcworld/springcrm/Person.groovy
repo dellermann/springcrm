@@ -1,7 +1,7 @@
 /*
  * Person.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,6 @@ class Person {
         notes type: 'text'
         sort 'lastName'
     }
-    static searchable = true
     static transients = ['fullNumber', 'fullName']
 
 
@@ -138,7 +137,7 @@ class Person {
     String getFullName() {
 		String firstName = this.firstName?.trim()?:''
 		String lastName = this.lastName?.trim()?:''
-		
+
 		StringBuilder buf = new StringBuilder (firstName)
 		if(firstName && lastName) {
 			buf << ' '

@@ -1,7 +1,7 @@
 /*
  * CalendarEvent.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.springframework.context.MessageSourceResolvable
  * is, an appointment.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @see     Reminder
  */
 class CalendarEvent {
@@ -60,7 +60,6 @@ class CalendarEvent {
         start column: 'start_time', index: 'start_time'
         subject index: 'subject'
     }
-    static searchable = true
     static transients = ['synthetic']
 
 
