@@ -1,12 +1,12 @@
 <html>
 <head>
   <meta name="layout" content="main" />
-  <title><g:message code="config.pathes.title" default="Pathes" /></title>
+  <title><g:message code="config.paths.title" default="Pathes" /></title>
 </head>
 
 <body>
   <header>
-    <h1><g:message code="config.pathes.title" default="Pathes" /></h1>
+    <h1><g:message code="config.paths.title" default="Pathes" /></h1>
     <nav id="toolbar-container">
       <ul id="toolbar">
         <li><g:button color="green" class="submit-btn" icon="floppy-o"
@@ -22,12 +22,12 @@
     </g:if>
     <g:form name="config-form" action="save" params="[returnUrl: params.returnUrl]">
       <fieldset>
-        <header><h3><g:message code="config.fieldset.pathes.documents.label" default="Document pathes" /></h3></header>
+        <header><h3><g:message code="config.fieldset.paths.documents.label" default="Document paths" /></h3></header>
         <div>
-          <p><g:message code="config.pathes.documents.description" args="${[grailsApplication.config.springcrm.dir.documents]}" /></p>
+          <p><g:message code="config.paths.documents.description" args="${[grailsApplication.config.springcrm.dir.documents]}" /></p>
           <div class="row">
             <div class="label">
-              <label for="number"><g:message code="config.pathes.documents.label" default="Path to documents" /></label>
+              <label for="number"><g:message code="config.paths.documents.label" default="Path to documents" /></label>
             </div>
             <div class="field${hasErrors(bean: configData, field: 'pathDocumentByOrg', ' error')}">
               <g:textField name="config.pathDocumentByOrg" value="${configData.pathDocumentByOrg ?: '%o'}" size="70" />

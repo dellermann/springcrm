@@ -1,7 +1,7 @@
 /*
  * config.less
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,56 +21,48 @@
 @import "application";
 
 
-/* Uncomment and revise when migrating to new design!
 .configuration-overview {
-  dl {
-    background-repeat: no-repeat;
-    margin-bottom: 1.5em;
-    min-height: 64px;
-    padding-left: 80px;
-  }
-  dt {
-    font-size: 108%;
-    margin-bottom: .5em;
-    padding-top: .5em;
-  }
-  dd {
-    margin-left: 0;
+  margin-top: @line-height-computed;
+
+  ul {
+    padding-left: 0;
+
+    li {
+      .clearfix();
+      list-style: none;
+      margin-bottom: @line-height-computed;
+    }
   }
 }
-#configuration-client {
-  background-image: url("../images/configuration/client.png");
+.configuration-icon {
+  border: @configuration-icon-border-width solid @gray-light;
+  border-radius: @border-radius-small;
+  float: left;
+  font-size: @configuration-icon-font-size;
+  margin-right: @configuration-icon-padding;
+  padding: @configuration-icon-padding;
+  text-align: center;
+  vertical-align: top;
+  width: (
+      @configuration-icon-inner-width + 2 * @configuration-icon-padding +
+      2 * @configuration-icon-border-width
+    );
+
+  &:hover {
+    background: #DDD;
+    border-color: @gray;
+    text-decoration: none;
+  }
 }
-#configuration-currency {
-  background-image: url("../images/configuration/currency.png");
+.configuration-title {
+  display: block;
+  font-size: @font-size-large;
+  margin-bottom: (@line-height-computed / 4);
 }
-#configuration-google-auth {
-  background-image: url("../images/configuration/google-auth.png");
-}
-#configuration-language {
-  background-image: url("../images/configuration/language.png");
-}
-#configuration-ldap {
-  background-image: url("../images/configuration/network.png");
-}
-#configuration-mail {
-  background-image: url("../images/configuration/mail.png");
-}
-#configuration-pathes {
-  background-image: url("../images/configuration/pathes.png");
-}
-#configuration-sel-values {
-  background-image: url("../images/configuration/list.png");
-}
-#configuration-seq-numbers {
-  background-image: url("../images/configuration/numbers.png");
-}
-#configuration-sync {
-  background-image: url("../images/configuration/sync.png");
-}
-#configuration-tax-rates {
-  background-image: url("../images/configuration/tax-rates.png");
-}
+
+
+
+/* Uncomment and revise when migrating to new design!
 .sel-values-list {
   margin-bottom: 2em;
   min-width: 25em;
@@ -141,4 +133,3 @@
   }
 }
 */
-

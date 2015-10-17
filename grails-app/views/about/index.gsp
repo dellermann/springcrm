@@ -40,7 +40,6 @@
 
         <h3><g:message code="about.furtherLicenses" /></h3>
         <p><g:message code="about.furtherLicenses.logo" /></p>
-        <p><g:message code="about.furtherLicenses.configuration" /></p>
         <p><g:message code="about.furtherLicenses.gpl2" /></p>
         <p><g:message code="about.furtherLicenses.mit" /></p>
         <p><g:message code="about.furtherLicenses.sil" /></p>

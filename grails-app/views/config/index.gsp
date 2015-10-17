@@ -1,60 +1,138 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="config.title" default="System settings" /></title>
-  <meta name="stylesheet" content="config" />
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <meta name="stylesheet" content="config" />
+    <meta name="caption" content="${message(code: 'config.title')}" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="config.title" default="System settings" /></h1>
-  </header>
-  <div id="content">
+  <body>
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
-    <div class="multicol-content configuration-overview">
-      <div class="col col-l">
-        <dl id="configuration-client">
-          <dt><g:link action="loadClient"><g:message code="config.client.title" default="Client data" /></g:link></dt>
-          <dd><g:message code="config.client.description" /></dd>
-        </dl>
-        <dl id="configuration-currency">
-          <dt><g:link action="currency"><g:message code="config.currency.title" default="Currency" /></g:link></dt>
-          <dd><g:message code="config.currency.description" /></dd>
-        </dl>
-        <dl id="configuration-tax-rates">
-          <dt><g:link action="show" params="[page: 'taxRates']"><g:message code="config.taxRates.title" default="Tax rates"/></g:link></dt>
-          <dd><g:message code="config.taxRates.description" /></dd>
-        </dl>
-        <dl id="configuration-mail">
-          <dt><g:link action="show" params="[page: 'mail']"><g:message code="config.mail.title" default="Mail settings"/></g:link></dt>
-          <dd><g:message code="config.mail.description" /></dd>
-        </dl>
-        <dl id="configuration-sync">
-          <dt><g:link action="show" params="[page: 'sync']"><g:message code="config.sync.title" default="Google synchronization"/></g:link></dt>
-          <dd><g:message code="config.sync.description" /></dd>
-        </dl>
+
+    <div class="row configuration-overview">
+      <div class="col-xs-12 col-sm-6">
+        <ul>
+          <li>
+            <g:link action="loadClient" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-institution"></i>
+            </g:link>
+            <g:link action="loadClient" class="configuration-title">
+              <g:message code="config.client.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.client.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="currency" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-euro"></i>
+            </g:link>
+            <g:link action="currency" class="configuration-title">
+              <g:message code="config.currency.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.currency.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="show" params="[page: 'taxRates']"
+              class="configuration-icon" role="presentation">
+              <i class="fa fa-money"></i>
+            </g:link>
+            <g:link action="show" params="[page: 'taxRates']"
+              class="configuration-title">
+              <g:message code="config.taxRates.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.taxRates.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="show" params="[page: 'mail']"
+              class="configuration-icon" role="presentation">
+              <i class="fa fa-envelope"></i>
+            </g:link>
+            <g:link action="show" params="[page: 'mail']"
+              class="configuration-title">
+              <g:message code="config.mail.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.mail.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="show" params="[page: 'sync']"
+              class="configuration-icon" role="presentation">
+              <i class="fa fa-google"></i>
+            </g:link>
+            <g:link action="show" params="[page: 'sync']"
+              class="configuration-title">
+              <g:message code="config.sync.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.sync.description" />
+            </p>
+          </li>
+        </ul>
       </div>
-      <div class="col col-r">
-        <dl id="configuration-ldap">
-          <dt><g:link action="show" params="[page: 'ldap']"><g:message code="config.ldap.title" default="LDAP server" /></g:link></dt>
-          <dd><g:message code="config.ldap.description" /></dd>
-        </dl>
-        <dl id="configuration-sel-values">
-          <dt><g:link action="show" params="[page: 'selValues']"><g:message code="config.selValues.title" default="Editor for selector values" /></g:link></dt>
-          <dd><g:message code="config.selValues.description" /></dd>
-        </dl>
-        <dl id="configuration-seq-numbers">
-          <dt><g:link action="loadSeqNumbers"><g:message code="config.seqNumbers.title" default="Sequence numbers" /></g:link></dt>
-          <dd><g:message code="config.seqNumbers.description" /></dd>
-        </dl>
-        <dl id="configuration-pathes">
-          <dt><g:link action="show" params="[page: 'pathes']"><g:message code="config.pathes.title" default="Pathes" /></g:link></dt>
-          <dd><g:message code="config.pathes.description" /></dd>
-        </dl>
+      <div class="col-xs-12 col-sm-6">
+        <ul>
+          <li>
+            <g:link action="show" params="[page: 'ldap']"
+              class="configuration-icon" role="presentation">
+              <i class="fa fa-cubes"></i>
+            </g:link>
+            <g:link action="show" params="[page: 'ldap']"
+              class="configuration-title">
+              <g:message code="config.ldap.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.ldap.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="show" params="[page: 'selValues']"
+              class="configuration-icon" role="presentation">
+              <i class="fa fa-list"></i>
+            </g:link>
+            <g:link action="show" params="[page: 'selValues']"
+              class="configuration-title">
+              <g:message code="config.selValues.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.selValues.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="loadSeqNumbers" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-sort-numeric-asc"></i>
+            </g:link>
+            <g:link action="loadSeqNumbers" class="configuration-title">
+              <g:message code="config.seqNumbers.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.seqNumbers.description" />
+            </p>
+          </li>
+          <li>
+            <g:link action="show" params="[page: 'paths']"
+              class="configuration-icon" role="presentation">
+              <i class="fa fa-folder-o"></i>
+            </g:link>
+            <g:link action="show" params="[page: 'paths']"
+              class="configuration-title">
+              <g:message code="config.paths.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="config.paths.description" />
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

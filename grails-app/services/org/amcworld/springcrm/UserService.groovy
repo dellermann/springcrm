@@ -1,7 +1,7 @@
 /*
  * UserService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * user settings.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.3
  */
 class UserService {
@@ -164,7 +164,7 @@ class UserService {
      */
     int getNumFractionDigits() {
         Integer numFractionDigits =
-            ConfigHolder.instance['numFractionDigits'] as Integer
+            ConfigHolder.instance['numFractionDigits']?.toType(Integer)
         try {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
@@ -184,7 +184,7 @@ class UserService {
      */
     int getNumFractionDigitsExt() {
         Integer numFractionDigits =
-            ConfigHolder.instance['numFractionDigitsExt'] as Integer
+            ConfigHolder.instance['numFractionDigitsExt']?.toType(Integer)
         try {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
