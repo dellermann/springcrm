@@ -103,7 +103,8 @@ grails.project.dependency.resolution = {
         runtime(
             'com.google.guava:guava:17.0',
             'mysql:mysql-connector-java:5.1.27',
-            'net.sf.offo:fop-hyph:1.2'
+            'net.sf.offo:fop-hyph:1.2',
+            'org.grails:grails-datastore-gorm:3.1.5.RELEASE'    // change version after updating Grails
         )
 
         /*

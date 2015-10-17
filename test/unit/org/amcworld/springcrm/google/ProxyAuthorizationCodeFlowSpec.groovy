@@ -1,7 +1,7 @@
 /*
  * ProxyAuthorizationCodeFlowSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
             ]
         ]
 
-        User.metaClass.getSettings = { ->
-            delegate.settings = new UserSettings(delegate)
-        }
+        User.metaClass.getSettings = { -> new UserSettings(delegate) }
     }
 
 
@@ -194,27 +192,26 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
     }
 
     def 'Obtain credential from proxy and store it'() {
-        given: 'a mocked proxy response'
-        String content = '''200 OK
-tokenResponse={"access_token":"access4040-Token-4711","expires_in":3600,"refresh_token":"refresh8403%Token-2041","scope":"fooBarScope","token_type":"bearer"}
-'''
-        def response = new MockLowLevelHttpResponse()
-            .setContent(content)
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(response)
-            .build()
-
-        and: 'an interceptor to verify the request URL'
-        def requestUrl = null
-        def originalReqMethod = ProxyRequest.metaClass.getMetaMethod(
-            'getHttpRequest', [GenericUrl] as Class[]
-        )
-        ProxyRequest.metaClass.getHttpRequest = { GenericUrl url ->
-            requestUrl = url
-            originalReqMethod.invoke delegate, [url] as Object[]
+        given: 'a mocked execution method'
+        def urlParams = null
+        ProxyRequest.metaClass.execute = { ->
+            urlParams = delegate
+            new ProxyResponse(
+                code: 'abc', 'message': '',
+                tokenResponse: new TokenResponse(
+                    accessToken: 'access4040-Token-4711',
+                    expiresInSeconds: 3600,
+                    refreshToken: 'refresh8403%Token-2041',
+                    scope: 'fooBarScope',
+                    tokenType: 'bearer',
+                )
+            )
         }
 
         and: 'an authorization code flow instance'
+        def transport = new MockHttpTransport.Builder()
+            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
+            .build()
         def jsonFactory = GoogleService.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
@@ -227,8 +224,9 @@ tokenResponse={"access_token":"access4040-Token-4711","expires_in":3600,"refresh
             'jsmith', 'A450-8201'
         )
 
-        then: 'the request was properly made to the AMC World proxy'
-        'http://www.amc-world.de/oauth-proxy/index.php?action=getToken&clientId=A450-8201' == requestUrl.toURI().toString()
+        then: 'the request was executed with the correct parameters'
+        null != urlParams
+        'A450-8201' == urlParams.get('clientId')
 
         and: 'I get a valid credential'
         null != credential
@@ -248,27 +246,17 @@ tokenResponse={"access_token":"access4040-Token-4711","expires_in":3600,"refresh
     }
 
     def 'Register application instance at proxy'() {
-        given: 'a mocked proxy response'
-        String content = '''200 OK
-url=http://www.google.com/login
-'''
-        def response = new MockLowLevelHttpResponse()
-            .setContent(content)
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(response)
-            .build()
-
-        and: 'an interceptor to verify the request URL'
-        def requestUrl = null
-        def originalReqMethod = ProxyRequest.metaClass.getMetaMethod(
-            'getHttpRequest', [GenericUrl] as Class[]
-        )
-        ProxyRequest.metaClass.getHttpRequest = { GenericUrl url ->
-            requestUrl = url
-            originalReqMethod.invoke delegate, [url] as Object[]
+        given: 'a mocked execution method'
+        def urlParams = null
+        ProxyRequest.metaClass.execute = { ->
+            urlParams = delegate
+            new ProxyResponse(url: 'http://www.google.com/login')
         }
 
         and: 'an authorization code flow instance'
+        def transport = new MockHttpTransport.Builder()
+            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
+            .build()
         def jsonFactory = GoogleService.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
@@ -278,116 +266,97 @@ url=http://www.google.com/login
             'http://localhost:8080/springcrm'
         )
 
-        then: 'the request was properly made to the AMC World proxy'
-        'http://www.amc-world.de/oauth-proxy/index.php?action=register&redirectUrl=http://localhost:8080/springcrm' == requestUrl.toURI().toString()
+        then: 'the request was executed with the correct parameters'
+        null != urlParams
+        'http://localhost:8080/springcrm' == urlParams.get('redirectUrl')
 
         and: 'I get a valid credential'
         'http://www.google.com/login' == url
     }
 
     def 'Revoke a credential of existing user'() {
-        given: 'a stored credential'
-        prepareCredentialUserSetting()
-
-        and: 'a mocked proxy response'
-        def response = new MockLowLevelHttpResponse()
-            .setContent('200 OK')
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(response)
-            .build()
-
-        and: 'an interceptor to verify the request URL'
-        def requestUrl = null
-        def originalReqMethod = ProxyRequest.metaClass.getMetaMethod(
-            'getHttpRequest', [GenericUrl] as Class[]
-        )
-        ProxyRequest.metaClass.getHttpRequest = { GenericUrl url ->
-            requestUrl = url
-            originalReqMethod.invoke delegate, [url] as Object[]
+        given: 'a mocked execution method'
+        def urlParams = null
+        ProxyRequest.metaClass.execute = { ->
+            urlParams = delegate
+            new ProxyResponse()
         }
 
         and: 'an authorization code flow instance'
+        def transport = new MockHttpTransport.Builder()
+            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
+            .build()
         def jsonFactory = GoogleService.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
+        and: 'a stored credential'
+        prepareCredentialUserSetting()
+
         when: 'I obtain the credential from proxy and store it'
         authorizationCodeFlow.revoke 'jsmith'
 
-        then: 'the request was properly made to the AMC World proxy'
-        'http://www.amc-world.de/oauth-proxy/index.php?action=revoke&token=access4040-Token-4711' == requestUrl.toURI().toString()
+        then: 'the request was executed with the correct parameters'
+        null != urlParams
+        'access4040-Token-4711' == urlParams.get('token')
 
         and: 'there are no UserSetting objects'
         0 == UserSetting.count()
     }
 
     def 'Revoke a credential of non-existing user'() {
-        given: 'a stored credential'
-        prepareCredentialUserSetting()
-
-        and: 'a mocked proxy response'
-        def response = new MockLowLevelHttpResponse()
-            .setContent('200 OK')
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(response)
-            .build()
-
-        and: 'an interceptor to verify the request URL'
-        def requestUrl = null
-        def originalReqMethod = ProxyRequest.metaClass.getMetaMethod(
-            'getHttpRequest', [GenericUrl] as Class[]
-        )
-        ProxyRequest.metaClass.getHttpRequest = { GenericUrl url ->
-            requestUrl = url
-            originalReqMethod.invoke delegate, [url] as Object[]
+        given: 'a mocked execution method'
+        def requestExecuted = false
+        ProxyRequest.metaClass.execute = { ->
+            requestExecuted = true
+            new ProxyResponse()
         }
 
         and: 'an authorization code flow instance'
+        def transport = new MockHttpTransport.Builder()
+            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
+            .build()
         def jsonFactory = GoogleService.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
+        and: 'a stored credential'
+        prepareCredentialUserSetting()
+
         when: 'I obtain the credential from proxy and store it'
         authorizationCodeFlow.revoke 'jdoe'
 
-        then: 'the request was properly made to the AMC World proxy'
-        null == requestUrl
+        then: 'no request was sent to the AMC World proxy'
+        !requestExecuted
 
         and: 'there is still one UserSetting object'
         1 == UserSetting.count()
     }
 
     def 'Revoke a non-existing credential of existing user'() {
-        given: 'a stored credential'
-        prepareCredentialUserSetting()
-
-        and: 'a mocked proxy response'
-        def response = new MockLowLevelHttpResponse()
-            .setContent('200 OK')
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(response)
-            .build()
-
-        and: 'an interceptor to verify the request URL'
-        def requestUrl = null
-        def originalReqMethod = ProxyRequest.metaClass.getMetaMethod(
-            'getHttpRequest', [GenericUrl] as Class[]
-        )
-        ProxyRequest.metaClass.getHttpRequest = { GenericUrl url ->
-            requestUrl = url
-            originalReqMethod.invoke delegate, [url] as Object[]
+        given: 'a mocked execution method'
+        def requestExecuted = false
+        ProxyRequest.metaClass.execute = { ->
+            requestExecuted = true
+            new ProxyResponse()
         }
 
         and: 'an authorization code flow instance'
+        def transport = new MockHttpTransport.Builder()
+            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
+            .build()
         def jsonFactory = GoogleService.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
+        and: 'a stored credential'
+        prepareCredentialUserSetting()
+
         when: 'I obtain the credential from proxy and store it'
         authorizationCodeFlow.revoke 'bwayne'
 
-        then: 'the request was properly made to the AMC World proxy'
-        null == requestUrl
+        then: 'no request was sent to the AMC World proxy'
+        !requestExecuted
 
         and: 'there is still one UserSetting object'
         1 == UserSetting.count()

@@ -1,7 +1,7 @@
 /*
- * Service.groovy
+ * ServiceSpec.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,36 +23,36 @@ import grails.test.mixin.TestFor
 import grails.test.mixin.Mock
 import spock.lang.Specification
 
-@TestFor(Service)
-@Mock([Service])
 
+//@TestFor(Service)
+//@Mock([Service])
 class ServiceSpec extends Specification {
-	
+
 	//-- Feature Methods --------------------
-	
-	// TODO 
+
+	// TODO
 	//Cannot add Service class [class org.amcworld.springcrm.Service].
 	//It is not a Service!
 
 	def 'Copy using constructor'() {
-		given: 
+		given:
 		def s1 = new Service(category: new ServiceCategory())
-		
+
 		when:
 		def s2 = new Service(s1)
-		
-		then: 
+
+		then:
 		s2.category == s1.category
 	}
-	
-	def 'Category Constraint'() {
+
+	def 'Category constraint'() {
 		setup:
 		mockForConstraintsTests(Service)
-		
+
 		when:
 		def s = new Service(category: null)
-		
-		then: 
+
+		then:
 		!s.hasErrors()
 	}
 }

@@ -17,20 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- 
+
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
 import grails.test.mixin.Mock
 import spock.lang.Specification
 
+
 @TestFor(SalesItem)
 @Mock([SalesItem, SalesItemPricing])
-
 class SalesItemSpec extends Specification {
-	
+
 	//-- Feature Methods --------------------
-	
+
 	def 'Copy using constructor'() {
 		given:
 		def s1 = new SalesItem(
@@ -49,11 +49,11 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-		
-		when: 
+
+		when:
 		def s2 = new SalesItem(s1)
-		
-		then: 
+
+		then:
 		s1.name == s2.name
 		s1.quantity == s2.quantity
 		s1.unit == s2.unit
@@ -63,7 +63,7 @@ class SalesItemSpec extends Specification {
 		s1.salesStart == s2.salesStart
 		s1.salesEnd == s2.salesEnd
 		s1.description == s2.description
-		
+
 		and:
 		0 == s2.number
 		null == s2.dateCreated
@@ -71,24 +71,24 @@ class SalesItemSpec extends Specification {
 		null == s2.pricing
 		null == s2.type
 	}
-	
+
 	def 'Get the full number'() {
 		given: 'a sales item with mocked sequence number service'
 		def s = new SalesItem()
 		s.seqNumberService = Mock(SeqNumberService)
 		s.seqNumberService.format(_, _) >> 'O-11332'
-		
+
 		expect:
 		'O-11332' == s.fullNumber
 	}
-	
+
 	def 'Get the unit price with different units'() {
 		given: 'some units'
 		def unit1 = new Unit(name: 'Stück')
 		unit1.id = 1
 		def unit2 = new Unit(name: 'm')
 		unit2.id = 2
-		
+
 		and: 'a sales item'
 		def s = new SalesItem(
 			number: 1991,
@@ -117,16 +117,16 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-		
+
 		expect:
 		1.2 == s.unitPrice
 	}
-	
+
 	def 'Get the unit price with same units'() {
 		given: 'some units'
 		def unit = new Unit(name: 'm')
 		unit.id = 1
-	
+
 		and: 'a sales item'
 		def s = new SalesItem(
 			number: 1991,
@@ -155,11 +155,11 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-	
+
 		expect:
-		12 == s.unitPrice
+		0.012 == s.unitPrice
 	}
-	
+
 	def 'Get the total price'() {
 		when: 'I create a sales item with quantity and unit price'
 		def s = new SalesItem(
@@ -170,10 +170,10 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-		
+
 		then: 'the method will calculate the total price'
 		total == s.getTotal()
-		
+
 		where:
 		unitPrice		|	total
 		1				|	5
@@ -183,7 +183,7 @@ class SalesItemSpec extends Specification {
 		103.6			|	518
 		0				|	0
 	}
-	
+
 	def 'Simulate the save method in insert mode and check number'() {
 		given: 'a sales item without number'
 		def s = new SalesItem()
@@ -196,7 +196,7 @@ class SalesItemSpec extends Specification {
 		then: 'the sequence number must be set'
 		92283 == s.number
 	}
-	
+
 	def 'Check for equality'() {
 		given: 'two objects with different properties'
 		def s1 = new SalesItem(
@@ -211,16 +211,16 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-		
+
 		and: 'the same IDs'
 		s1.id = 10010
 		s2.id = 10010
-		
+
 		expect: 'both sales items to be equal'
 		s1 == s2
-		s2 == s1 
+		s2 == s1
 	}
-	
+
 	def 'Check for inequality'() {
 		given: 'two objects with same properties'
 		def s1 = new SalesItem(
@@ -235,33 +235,33 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-		
+
 		and: 'different IDs'
 		s1.id = 944
 		s2.id = 1003
-		
+
 		when: 'I compare both these sales items'
 		boolean b1 = (s1 != s2)
 		boolean b2 = (s2 != s1)
-		
+
 		then: 'they should not be equal'
 		b1
 		b2
-		
+
 		when:  'I compare with null'
 		s2 = null
-		
+
 		then: 'they are not equal'
 		s1 != s2
 		s2 != s1
-		
+
 		when: 'I compare to another type'
 		int i = 3
-		
+
 		then: 'they are not equal'
 		s1 != i
 	}
-	
+
 	def 'Compute hash code'() {
 		when: 'I create a sales item with no ID'
 		def s = new SalesItem()
@@ -285,7 +285,7 @@ class SalesItemSpec extends Specification {
 			 12344 	| 	   12344
 		1023991929	| 1023991929
 	}
-	
+
 	def 'Convert to string'() {
 		given: 'a sales item with a name'
 		def s = new SalesItem(
@@ -294,37 +294,37 @@ class SalesItemSpec extends Specification {
 			dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
-		
+
 		expect:
 		s.name == s.toString()
-		
+
 		when:
 		s.name = ''
-		
-		then: 
+
+		then:
 		'' == s.toString()
-		
+
 		when:
 		s.name = null
-		
+
 		then:
 		'' == s.toString()
 	}
-	
+
 	def 'Type constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a type and validate it'
 		def s = new SalesItem(
 			type: type, name: 'name', quantity: 4, unitPrice: 130,
 			dateCreated: new Date(), lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		type			| valid
 		null			| false
@@ -336,21 +336,21 @@ class SalesItemSpec extends Specification {
 		1				| true
 		'P'				| true
 	}
-	
+
 	def 'Name constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a name and validate it'
 		def s = new SalesItem(
-			type: 'P', name: name, quantity: 4, 
+			type: 'P', name: name, quantity: 4,
 			dateCreated: new Date(), lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		name			| valid
 		null			| false
@@ -362,21 +362,21 @@ class SalesItemSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'Quantity constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a quantity and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'name', quantity: quantity, unitPrice: 130d,
 			dateCreated: new Date(), lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		quantity		| valid
 		''				| true
@@ -389,21 +389,21 @@ class SalesItemSpec extends Specification {
 		-50.0d			| false
 		-19442			| false
 	}
-	
+
 	def 'Unit constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with an unit and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'Test', quantity: 0.0d, unit: unit,
 			dateCreated: new Date(), lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		unit			| valid
 		null			| true
@@ -417,21 +417,21 @@ class SalesItemSpec extends Specification {
 		'String'		| true
 		'String 1003'	| true
 	}
-	
+
 	def 'Unit price constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with an unit price and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'Test', quantity: 0.0d, unitPrice: unitPrice,
 			dateCreated: new Date(), lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		unitPrice		| valid
 		null			| true
@@ -445,11 +445,11 @@ class SalesItemSpec extends Specification {
 		-50.0d			| false
 		-19442			| false
 	}
-	
+
 	def 'Tax rate constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a tax rate and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'Test', quantity: 0.0d,
@@ -457,10 +457,10 @@ class SalesItemSpec extends Specification {
 			lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		taxRate			| valid
 		null			| true
@@ -471,22 +471,22 @@ class SalesItemSpec extends Specification {
 		1e2d			| true
 		100.12			| true
 	}
-	
+
 	def 'Purchase price constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a purchase price and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'name', quantity: 12, unitPrice: 13,
-			purchasePrice: purchasePrice, dateCreated: new Date(), 
+			purchasePrice: purchasePrice, dateCreated: new Date(),
 			lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		purchasePrice	| valid
 		''				| true
@@ -499,11 +499,11 @@ class SalesItemSpec extends Specification {
 		-50.0d			| false
 		-19442			| false
 	}
-	
+
 	def 'Description constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a description and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
@@ -511,10 +511,10 @@ class SalesItemSpec extends Specification {
 			lastUpdated: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!valid == s.hasErrors()
-		
+
 		where:
 		description		| valid
 		null			| true
@@ -524,7 +524,7 @@ class SalesItemSpec extends Specification {
 		'String'		| true
 		'String 1003'	| true
 	}
-	
+
 	def 'Pricing constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
@@ -532,7 +532,7 @@ class SalesItemSpec extends Specification {
 			type: 'P', name: 'name', quantity: 12, unit: new Unit(),
 			unitPrice: 130, dateCreated: new Date(), lastUpdated: new Date()
 		)
-		
+
 		when: 'I set a pricing and validate it'
 		s.pricing = new SalesItemPricing(
 			quantity: 40.0d, unit: new Unit(), discountPercent: 12.0d,
@@ -544,15 +544,15 @@ class SalesItemSpec extends Specification {
             )
 		)
 		s.validate()
-		
+
 		then:
 		!s.hasErrors()
 	}
-	
+
 	def 'Sales start constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a date for sales start and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
@@ -560,21 +560,21 @@ class SalesItemSpec extends Specification {
 			salesStart: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!s.hasErrors()
-		
+
 		when:
 		s.salesStart = null
-		
+
 		then:
 		!s.hasErrors()
 	}
-	
+
 	def 'Sales end constraints'() {
 		setup:
 		mockForConstraintsTests(SalesItem)
-		
+
 		when: 'I create a sales item with a date for sales end and validate it'
 		def s = new SalesItem(
 			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
@@ -582,13 +582,13 @@ class SalesItemSpec extends Specification {
 			salesEnd: new Date()
 		)
 		s.validate()
-		
+
 		then:
 		!s.hasErrors()
-		
+
 		when:
 		s.salesEnd = null
-		
+
 		then:
 		!s.hasErrors()
 	}

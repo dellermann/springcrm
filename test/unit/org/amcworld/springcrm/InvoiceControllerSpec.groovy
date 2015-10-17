@@ -1,7 +1,7 @@
 /*
  * InvoiceControllerSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import java.util.Map;
+
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import grails.test.mixin.domain.DomainClassUnitTestMixin
@@ -35,13 +37,13 @@ class InvoiceControllerSpec extends Specification {
 
     def 'Index action without parameters'() {
         when:
-        controller.index()
+        def model = controller.index()
 
         then:
-        '/invoice/list' == response.redirectedUrl
+        matchEmptyList model
     }
 
-    def 'ListUnpaidBills'() {
+    def 'List unpaid bills'() {
         given: 'some invoices'
         makeInvoicesFixture()
 
@@ -240,6 +242,12 @@ class InvoiceControllerSpec extends Specification {
         ]
     }
 
+    protected void matchEmptyList(Map model) {
+        assert null != model.invoiceInstanceList
+        assert 0 == model.invoiceInstanceList.size()
+        assert 0 == model.invoiceInstanceTotal
+    }
+
 
 //  private static final String ERROR_MSG = 'error message'
 //
@@ -265,11 +273,6 @@ class InvoiceControllerSpec extends Specification {
 //
 //    protected void tearDown() {
 //        super.tearDown()
-//    }
-//
-//    void testIndex() {
-//    controller.index()
-//    assertEquals 'list', controller.redirectArgs['action']
 //    }
 //
 //  void testList() {

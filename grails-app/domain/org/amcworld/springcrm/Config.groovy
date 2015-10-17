@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Config} represents a system configuration information.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class Config {
 
@@ -47,17 +47,6 @@ class Config {
 
 
     //-- Public methods -------------------------
-
-    /**
-     * Converts this configuration object to the specified type.
-     *
-     * @param type  the given type
-     * @return      the converted object
-     * @see         #toType(Class)
-     */
-    Object asType(Class type) {
-        toType type
-    }
 
     @Override
     boolean equals(Object obj) {
@@ -84,7 +73,7 @@ class Config {
      * @return      the converted object
      * @see         #asType(Class)
      */
-    Object toType(Class type) {
+    def toType(Class type) {
         switch (type) {
         case Date:
             return value ? Date.parseToStringDate(value) : null

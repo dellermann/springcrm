@@ -23,13 +23,13 @@ import grails.test.mixin.TestFor
 import grails.test.mixin.Mock
 import spock.lang.Specification
 
+
 @TestFor(Product)
 @Mock([Product])
-
 class ProductSpec extends Specification {
-	
+
 	//-- Feature Methods ---------------------
-	
+
 	def 'Copy using constructor'() {
 		given: 'a product with different properties'
 		def p1 = new Product(
@@ -40,21 +40,21 @@ class ProductSpec extends Specification {
 		)
 		when:
 		def p2 = new Product(p1)
-		
+
 		then:
 		p2.category == p1.category
 		p2.manufacturer == p1.manufacturer
 		p2.retailer == p1.retailer
 		p2.weight == p1.weight
-		
+
 		and:
 		p2.type == 'P'
 	}
-	
+
 	def 'Manufacturer constraints'() {
 		setup:
 		mockForConstraintsTests(Product)
-		
+
 		when: 'I create a product with a manufacturer and validate it'
 		def p = new Product(
 			name: 'name',
@@ -64,10 +64,10 @@ class ProductSpec extends Specification {
 			weight: 115
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		manufacturer	| valid
 		null			| true
@@ -79,11 +79,11 @@ class ProductSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'retailer constraints'() {
 		setup:
 		mockForConstraintsTests(Product)
-		
+
 		when: 'I create a product with a retailer and validate it'
 		def p = new Product(
 			name: 'name',
@@ -93,10 +93,10 @@ class ProductSpec extends Specification {
 			weight: 115
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		retailer		| valid
 		null			| true
@@ -108,11 +108,11 @@ class ProductSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'weight constraints'() {
 		setup:
 		mockForConstraintsTests(Product)
-		
+
 		when: 'I create a product with a weight and validate it'
 		def p = new Product(
 			name: 'name',
@@ -122,10 +122,10 @@ class ProductSpec extends Specification {
 			weight: weight
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		weight			| valid
 		null			| true

@@ -1,7 +1,7 @@
 /*
  * InstallService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext
  * reasons or obtaining the available base data packages.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class InstallService {
 
@@ -67,8 +67,8 @@ class InstallService {
      */
     void applyAllDiffSets(Connection connection, int upToVersion) {
         ConfigHolder configHolder = ConfigHolder.instance
-        String lang = (configHolder['baseDataLocale'] as String) ?: 'de-DE'
-        int fromVersion = (configHolder['dbVersion'] as Integer) ?: 0i
+        String lang = configHolder['baseDataLocale']?.toString() ?: 'de-DE'
+        int fromVersion = configHolder['dbVersion']?.toType(Integer) ?: 0i
         for (int i = fromVersion + 1; i <= upToVersion; i++) {
             applyDiffSet connection, i, lang
         }
@@ -264,7 +264,7 @@ class InstallService {
      */
     protected void migratePurchaseInvoiceDocuments(Connection connection) {
         ConfigHolder configHolder = ConfigHolder.instance
-        String stage = configHolder['purchaseInvoiceMigrationStage'] as String
+        String stage = configHolder['purchaseInvoiceMigrationStage']?.toString()
         if (stage == '1') {
             log.info 'Performing migration of purchase invoice documents…'
 

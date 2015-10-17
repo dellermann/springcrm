@@ -106,7 +106,7 @@ class CallController {
                 code: 'default.not.found.message',
                 args: [message(code: 'call.label'), id]
             )
-            redirect action: 'index', id: id
+            redirect action: 'index'
             return
         }
 
@@ -141,7 +141,7 @@ class CallController {
                 code: 'default.not.found.message',
                 args: [message(code: 'call.label'), id]
             )
-            redirect action: 'index', id: id
+            redirect action: 'index'
             return
         }
 
@@ -155,7 +155,7 @@ class CallController {
                 code: 'default.not.found.message',
                 args: [message(code: 'call.label'), id]
             )
-            redirect action: 'index', id: id
+            redirect action: 'index'
             return
         }
 

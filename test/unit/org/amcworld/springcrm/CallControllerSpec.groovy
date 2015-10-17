@@ -1,7 +1,7 @@
 /*
  * CallControllerSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,77 +36,59 @@ class CallControllerSpec extends Specification {
 
     def 'Index action without parameters'() {
         when:
-        controller.index()
-
-        then:
-        '/call/list' == response.redirectedUrl
-    }
-
-    def 'Index action with parameters'() {
-        when:
-        params.max = 30
-        params.offset = 60
-        controller.index()
-
-        then:
-        '/call/list?max=30&offset=60' == response.redirectedUrl
-    }
-
-    def 'List action with empty content'() {
-        when:
-        def model = controller.list()
+        def model = controller.index()
 
         then:
         matchEmptyList model
     }
 
-    def 'List action with content'() {
+    def 'Index action with content'() {
         given: 'a phone call'
         def d = new Date()
         makeCallFixture d
 
         when: 'I call the list action'
-        def model = controller.list()
+        def model = controller.index()
 
         then: 'I get a list of phone calls with one correct entry'
         matchCallInList model, d
     }
 
-    def 'List action with a letter'() {
+    def 'Index action with a letter'() {
         given: 'a phone call'
         def d = new Date()
         makeCallFixture d
 
         when: 'I call the list action with a letter of an existing subject'
         params.letter = 'T'
-        def model = controller.list()
+        def model = controller.index()
 
         then: 'I get one correct entry in the list'
         matchCallInList model, d
 
         when: 'I call the list action with another letter'
         params.letter = 'S'
-        model = controller.list()
+        model = controller.index()
 
         then: 'I get also one correct entry in the list'
         matchCallInList model, d
 
         when: 'I call the list action with just another letter'
         params.letter = 'U'
-        model = controller.list()
+        model = controller.index()
 
         then: 'I get also one correct entry in the list'
         matchCallInList model, d
     }
 
-    def 'List action with search term'() {
+    def 'Index action with search term'() {
         given: 'a phone call'
         def d = new Date()
         makeCallFixture d
 
         when: 'I call the list action with an existing search term'
         params.search = term
-        def model = controller.list()
+        def model = controller.index()
 
         then: 'I get or not one correct entry in the list'
         if (matches) matchCallInList model, d
@@ -296,7 +278,7 @@ class CallControllerSpec extends Specification {
         controller.copy()
 
         then: 'I are redirected to an error page'
-        '/call/show/1' == response.redirectedUrl
+        '/call/index' == response.redirectedUrl
         'default.not.found.message' == flash.message
     }
 
@@ -333,6 +315,7 @@ class CallControllerSpec extends Specification {
         params.start = d
         params.type = CallType.incoming
         params.status = CallStatus.completed
+        request.method = 'POST'
         controller.save()
 
         then: 'I am redirected to the show view'
@@ -356,6 +339,7 @@ class CallControllerSpec extends Specification {
 
         when: 'I send an quite empty form to the save action'
         params.subject = 'Test'
+        request.method = 'POST'
         controller.save()
 
         then: 'I get the create form again'
@@ -383,6 +367,7 @@ class CallControllerSpec extends Specification {
         params.type = CallType.incoming
         params.status = CallStatus.completed
         params.returnUrl = '/organization/show/5'
+        request.method = 'POST'
         controller.save()
 
         then: 'I am redirected to the requested URL'
@@ -403,7 +388,7 @@ class CallControllerSpec extends Specification {
         controller.show()
 
         then: 'I am redirected to the list view'
-        '/call/list' == response.redirectedUrl
+        '/call/index' == response.redirectedUrl
         'default.not.found.message' == flash.message
     }
 
@@ -427,7 +412,7 @@ class CallControllerSpec extends Specification {
         controller.edit()
 
         then: 'I am redirected to the list view'
-        '/call/list' == response.redirectedUrl
+        '/call/index' == response.redirectedUrl
         'default.not.found.message' == flash.message
     }
 
@@ -451,7 +436,7 @@ class CallControllerSpec extends Specification {
         controller.edit()
 
         then: 'I am redirected to the list view'
-        '/call/list' == response.redirectedUrl
+        '/call/index' == response.redirectedUrl
         'default.not.found.message' == flash.message
     }
 
@@ -463,6 +448,7 @@ class CallControllerSpec extends Specification {
         when: 'I send a form to the update action'
         params.id = 1
         params.subject = 'Another test'
+        request.method = 'POST'
         controller.update()
 
         then: 'I am redirected to the show view'
@@ -486,6 +472,7 @@ class CallControllerSpec extends Specification {
         when: 'I send a form with invalid content to the update action'
         params.id = 1
         params.subject = ''
+        request.method = 'POST'
         controller.update()
 
         then: 'I am redirected to the edit view'
@@ -509,6 +496,7 @@ class CallControllerSpec extends Specification {
         params.id = 1
         params.subject = 'Another test'
         params.returnUrl = '/organization/show/5'
+        request.method = 'POST'
         controller.update()
 
         then: 'I am redirected to the requested URL'
@@ -530,7 +518,7 @@ class CallControllerSpec extends Specification {
         controller.delete()
 
         then: 'I am redirected to the list view'
-        '/call/list' == response.redirectedUrl
+        '/call/index' == response.redirectedUrl
         'default.not.found.message' == flash.message
     }
 
@@ -543,7 +531,7 @@ class CallControllerSpec extends Specification {
         controller.delete()
 
         then: 'I am redirected to the list view'
-        '/call/list' == response.redirectedUrl
+        '/call/index' == response.redirectedUrl
         'default.deleted.message' == flash.message
 
         and: 'the phone call has been deleted'
@@ -639,6 +627,6 @@ class CallControllerSpec extends Specification {
 
     protected void matchNullList(Map model) {
         assert null == model.callInstanceList
-        assert null == model.callInstanceTotal
+        assert 0 == model.callInstanceTotal
     }
 }

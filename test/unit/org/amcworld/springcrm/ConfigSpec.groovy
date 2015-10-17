@@ -1,7 +1,7 @@
 /*
  * ConfigSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,26 +49,26 @@ class ConfigSpec extends Specification {
         c.value = d.toString()
 
         then: 'I can convert it to a Date object'
-        d == c as Date
+        d == c.toType(Date)
 
         when: 'I set a valid date string'
         c.value = 'Thu Jan 09 10:52:34 CET 2014'
 
         then: 'I can convert it to a Date object'
         def cal = new GregorianCalendar(2014, Calendar.JANUARY, 9, 10, 52, 34)
-        cal.time == c as Date
+        cal.time == c.toType(Date)
 
         when: 'I set an empty string'
         c.value = ''
 
         then: 'I get a null value'
-        null == c as Date
+        null == c.toType(Date)
 
         when: 'I unset the value'
         c.value = null
 
         then: 'I get a null value'
-        null == c as Date
+        null == c.toType(Date)
     }
 
     def 'Convert to Calendar'() {
@@ -88,25 +88,25 @@ class ConfigSpec extends Specification {
         c.value = cal.time.toString()
 
         then: 'I can convert it to a Calendar object'
-        cal == c as Calendar
+        cal == c.toType(Calendar)
 
         when: 'I set a valid date string'
         c.value = 'Thu Jan 09 10:52:34 CET 2014'
 
         then: 'I can convert it to a Calendar object'
-        new GregorianCalendar(2014, Calendar.JANUARY, 9, 10, 52, 34) == c as Calendar
+        new GregorianCalendar(2014, Calendar.JANUARY, 9, 10, 52, 34) == c.toType(Calendar)
 
         when: 'I set an empty string'
         c.value = ''
 
         then: 'I get a null value'
-        null == c as Calendar
+        null == c.toType(Calendar)
 
         when: 'I unset the value'
         c.value = null
 
         then: 'I get a null value'
-        null == c as Calendar
+        null == c.toType(Calendar)
     }
 
     def 'Convert to Boolean'() {
@@ -117,7 +117,7 @@ class ConfigSpec extends Specification {
         c.value = v
 
         then:
-        b == c as Boolean
+        b == c.toType(Boolean)
 
         where:
         v       | b
@@ -140,9 +140,9 @@ class ConfigSpec extends Specification {
         c.value = v
 
         then: 'I can convert it to an integer type'
-        i == c as Integer
-        i == c as Long
-        i == c as BigInteger
+        i == c.toType(Integer)
+        i == c.toType(Long)
+        i == c.toType(BigInteger)
 
         where:
         v       | i
@@ -160,35 +160,35 @@ class ConfigSpec extends Specification {
 
         when: 'I set an empty string and convert it'
         c.value = ''
-        c as Integer
+        c.toType(Integer)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set an blank string and convert it'
         c.value = '  '
-        c as Integer
+        c.toType(Integer)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set a numeric but decimal string and convert it'
         c.value = '1.5'
-        c as Integer
+        c.toType(Integer)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set a non-numeric string and convert it'
         c.value = 'abc'
-        c as Integer
+        c.toType(Integer)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set a partially numeric string and convert it'
         c.value = '1ab'
-        c as Integer
+        c.toType(Integer)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
@@ -202,9 +202,9 @@ class ConfigSpec extends Specification {
         c.value = v
 
         then: 'I can convert it to an integer type'
-        ((Float) d) == c as Float
-        ((Double) d) == c as Double
-        d == c as BigDecimal
+        ((Float) d) == c.toType(Float)
+        ((Double) d) == c.toType(Double)
+        d == c.toType(BigDecimal)
 
         where:
         v       | d
@@ -226,35 +226,35 @@ class ConfigSpec extends Specification {
 
         when: 'I set an empty string and convert it'
         c.value = ''
-        c as Double
+        c.toType(Double)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set an blank string and convert it'
         c.value = '  '
-        c as Double
+        c.toType(Double)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set a numeric string with wrong notation and convert it'
         c.value = '1,5'
-        c as Double
+        c.toType(Double)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set a non-numeric string and convert it'
         c.value = 'abc'
-        c as Double
+        c.toType(Double)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
 
         when: 'I set a partially numeric string and convert it'
         c.value = '1ab'
-        c as Double
+        c.toType(Double)
 
         then: 'I get a NumberFormatException'
         thrown(NumberFormatException)
@@ -268,7 +268,7 @@ class ConfigSpec extends Specification {
         c.value = v
 
         then: 'I can convert it to a string'
-        s == c as String
+        s == c.toString()
 
         where:
         v           | s

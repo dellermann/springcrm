@@ -133,11 +133,11 @@ class ViewTagLib {
      * specified, a link is generated.  You may either specify the text of the
      * button in the body or use the message attribute.
      *
-     * @attr color      the color of the button, e. g. white, green, blue
-     * @attr size       the size of the button, e. g. small, medium
+     * @attr color      the color of the button, e. g. success, primary, danger
+     * @attr size       the size of the button, e. g. lg, sm or xs
      * @attr icon       the icon which should be used, e. g. floppy-o, trash-o
      * @attr class      further CSS classes to apply
-     * @attr message    a message code which is used to render the buttont text; if specified, the body will not be evaluated
+     * @attr message    a message code which is used to render the button text; if specified, the body will not be evaluated
      * @attr action     the name of the action to use in the link, if not specified the default action will be linked
      * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
      * @attr id         the id to use in the link
@@ -505,7 +505,7 @@ class ViewTagLib {
 
     /**
      * Creates a menu button with optional icon either as link or a
-     * <code>&lt;span></code> element.  If any of the link attributes are
+     * <code>&lt;button></code> element.  If any of the link attributes are
      * specified, a link is generated.  The menu items <code>&lt;li></code>
      * must be specified in the body of the tag.
      *

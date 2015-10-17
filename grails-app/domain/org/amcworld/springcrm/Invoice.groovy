@@ -174,12 +174,13 @@ class Invoice extends InvoicingTransaction {
             color = 'purple'
             break
         case 903:                       // paid
-            color = (closingBalance >= 0.0d) ? 'green' : colorIndicatorByDate()
+            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
             break
         case 902:                       // delivered
             color = colorIndicatorByDate()
             break
         }
+
         color
     }
 

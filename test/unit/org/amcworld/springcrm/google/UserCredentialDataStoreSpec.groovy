@@ -1,7 +1,7 @@
 /*
  * UserCredentialDataStoreSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,7 @@ class UserCredentialDataStoreSpec extends Specification {
             ]
         ]
 
-        User.metaClass.getSettings = { ->
-            delegate.settings = new UserSettings(delegate)
-        }
+        User.metaClass.getSettings = { -> new UserSettings(delegate) }
     }
 
 
@@ -240,13 +238,27 @@ class UserCredentialDataStoreSpec extends Specification {
             ]
         ]
 
+        and: 'reset to original method'
+        User.metaClass.getSettings = null
+
+        and: 'two expected credentials'
+        def p1 = prepareCredential(1)
+        def p2 = prepareCredential(2)
+
         when: 'I obtain credentials'
         Collection<StoredCredential> credentials = dataStore.values()
 
         then: 'I get two credentials'
         2 == credentials.size()
-        def expectedCredentials = [prepareCredential(1), prepareCredential(2)]
-        2 == credentials.intersect(expectedCredentials).size()
+
+        and: 'they are the same as the expected ones'
+        if (credentials[0] == p1) {
+            assert credentials[1] == p2
+        } else if (credentials[0] == p2) {
+            assert credentials[1] == p1
+        } else {
+            assert false
+        }
 
         when: 'I try to change the collection'
         credentials << new StoredCredential()

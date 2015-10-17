@@ -1,7 +1,7 @@
 /*
  * GoogleSyncFactorySpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,46 +20,15 @@
 
 package org.amcworld.springcrm.google
 
-import grails.spring.BeanBuilder
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import grails.util.Holders
-import org.amcworld.springcrm.GoogleOAuthService
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
 
 @TestMixin(GrailsUnitTestMixin)
 class GoogleSyncFactorySpec extends Specification {
-
-    //-- Instance variables ---------------------
-
-    def grailsApplication = Holders.grailsApplication
-
-
-    //-- Fixture methods ------------------------
-
-    def setup() {
-        def builder = new BeanBuilder(grailsApplication.mainContext)
-        builder.beans {
-            googleOAuthService(GoogleOAuthService)
-            googleSyncFactory(GoogleSyncFactory) { bean ->
-                bean.factoryMethod = 'getDefaultInstance'
-                grailsApplication = ref('grailsApplication')
-            }
-            "${GoogleSyncType.CONTACT.beanName}"(GoogleContactSync) { bean ->
-                bean.singleton = false
-                googleOAuthService = ref('googleOAuthService')
-                messageSource = ref('messageSource')
-            }
-            "${GoogleSyncType.CALENDAR.beanName}"(GoogleCalendarSync) { bean ->
-                bean.singleton = false
-                googleOAuthService = ref('googleOAuthService')
-                messageSource = ref('messageSource')
-            }
-        }
-        grailsApplication.mainContext = builder.createApplicationContext()
-    }
-
 
     //-- Feature methods ------------------------
 
@@ -78,80 +47,151 @@ class GoogleSyncFactorySpec extends Specification {
     }
 
     def 'Obtain a contact sync instance'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(_) >> new GoogleContactSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain a sync instance'
         def sync = factory.getSyncInstance(GoogleSyncType.CONTACT, 'jsmith')
 
-        then:
+        then: 'I get the correct instance'
         sync instanceof GoogleContactSync
         'jsmith' == sync.userName
     }
 
     def 'Obtain a calendar sync instance'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(_) >> new GoogleCalendarSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain a sync instance'
         def sync = factory.getSyncInstance(GoogleSyncType.CALENDAR, 'jsmith')
 
-        then:
+        then: 'I get the correct instance'
         sync instanceof GoogleCalendarSync
         'jsmith' == sync.userName
     }
 
     def 'There is only one contact sync instance per user'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(_) >> new GoogleContactSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain two sync instances'
         def sync1 = factory.getSyncInstance(GoogleSyncType.CONTACT, 'jsmith')
         def sync2 = factory.getSyncInstance(GoogleSyncType.CONTACT, 'jsmith')
 
-        then:
+        then: 'I get the same instance'
         sync1.is sync2
     }
 
     def 'There is only one calendar sync instance per user'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(_) >> new GoogleCalendarSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain two sync instances'
         def sync1 = factory.getSyncInstance(GoogleSyncType.CALENDAR, 'jsmith')
         def sync2 = factory.getSyncInstance(GoogleSyncType.CALENDAR, 'jsmith')
 
-        then:
+        then: 'I get the same instance'
         sync1.is sync2
     }
 
     def 'There are different contact sync instances for different users'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(_) >> new GoogleContactSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain two sync instances'
         def sync1 = factory.getSyncInstance(GoogleSyncType.CONTACT, 'jsmith')
         def sync2 = factory.getSyncInstance(GoogleSyncType.CONTACT, 'jdoe')
 
-        then:
+        then: 'I get different instances'
         !sync1.is(sync2)
         'jsmith' == sync1.userName
         'jdoe' == sync2.userName
     }
 
     def 'There are different calendar sync instances for different users'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(_) >> new GoogleCalendarSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain two sync instances'
         def sync1 = factory.getSyncInstance(GoogleSyncType.CALENDAR, 'jsmith')
         def sync2 = factory.getSyncInstance(GoogleSyncType.CALENDAR, 'jdoe')
 
-        then:
+        then: 'I get different instances'
         !sync1.is(sync2)
         'jsmith' == sync1.userName
         'jdoe' == sync2.userName
     }
 
     def 'There are different sync instances for different data types'() {
-        when:
+        given: 'a factory'
+        def factory = GoogleSyncFactory.defaultInstance
+
+        and: 'a mocked application context'
+        def context = Mock(ApplicationContext)
+        context.getBean(GoogleSyncType.CONTACT.beanName) >> new GoogleContactSync()
+        context.getBean(GoogleSyncType.CALENDAR.beanName) >> new GoogleCalendarSync()
+
+        and: 'a mocked Grails application'
+        factory.grailsApplication = Mock(GrailsApplication)
+        factory.grailsApplication.getMainContext() >> context
+
+        when: 'I obtain two different types of sync instances'
         def sync1 = factory.getSyncInstance(GoogleSyncType.CONTACT, 'jsmith')
         def sync2 = factory.getSyncInstance(GoogleSyncType.CALENDAR, 'jsmith')
 
-        then:
+        then: 'I get different instances'
         !sync1.is(sync2)
         sync1 instanceof GoogleContactSync
         sync2 instanceof GoogleCalendarSync
         'jsmith' == sync1.userName
         'jsmith' == sync2.userName
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    protected GoogleSyncFactory getFactory() {
-        grailsApplication.mainContext.getBean('googleSyncFactory')
     }
 }

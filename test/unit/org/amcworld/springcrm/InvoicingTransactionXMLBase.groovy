@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXMLBase.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import spock.lang.Specification
  * transactions.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class InvoicingTransactionXMLBase extends Specification {
@@ -245,7 +245,6 @@ class InvoicingTransactionXMLBase extends Specification {
     protected void matchItems(entry) {
         assert 3 == entry.invoicingItem.size()
         def item = entry.invoicingItem[0]
-        assert 'P-10000' == item.number.text()
         assert '4.0' == item.quantity.text()
         assert 'pcs.' == item.unit.text()
         assert 'books' == item.name.text()
