@@ -1,46 +1,68 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="user.settings.googleAuth.title" default="Authorize at Google" /></title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="user.settings.googleAuth.title" /> -
+    <g:message code="user.settings.title" /></title>
+    <meta name="caption" content="${message(code: 'user.settings.googleAuth.title')}" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="user.settings.googleAuth.title" default="Authorize at Google" /></h1>
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
+  <body>
+    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/errorMessage" />
+
     <g:if test="${authorized}">
-      <p><g:message code="user.settings.googleAuth.alreadyAuthorized" /></p>
+      <div class="alert alert-info" role="alert">
+        <g:message code="user.settings.googleAuth.alreadyAuthorized" />
+      </div>
     </g:if>
     <g:else>
       <p><g:message code="user.settings.googleAuth.hints" /></p>
     </g:else>
-    <p>
-      <g:button action="settingsGoogleAuthRequest" color="green"
+
+    <div>
+      <g:button action="settingsGoogleAuthRequest" color="success"
         icon="sign-in" message="user.settings.googleAuth.authorize" />
       <g:if test="${authorized}">
-      <g:button elementId="google-auth-revoke" color="red" icon="sign-out"
+      <g:button elementId="google-auth-revoke" color="danger" icon="sign-out"
         message="user.settings.googleAuth.revoke" />
       </g:if>
-      <g:button action="settingsIndex" color="white" icon="times-circle-o"
+      <g:button action="settingsIndex" color="default" icon="close"
         message="default.btn.cancel" />
-    </p>
-    <div id="dialog-confirm" class="dialog"
-      title="${message(code: 'user.settings.googleAuth.revoke.confirm.title')}"
+    </div>
+
+    <div id="modal-confirm" class="modal fade" tabindex="-1" role="dialog"
+      aria-labelledby="modal-confirm-title"
       data-submit-url="${createLink(action: 'settingsGoogleAuthRevoke')}">
-      <div class="dialog-with-icon">
-        <i class="fa fa-exclamation-triangle"></i>
-        <div>
-          <p><g:message code="user.settings.googleAuth.revoke.confirm.message" /></p>
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+              aria-label="${message(code: 'default.btn.close')}">
+              <span aria-hidden="true">×</span>
+            </button>
+            <h4 id="modal-confirm-title" class="modal-title">
+              <g:message code="user.settings.googleAuth.revoke.confirm.title" />
+            </h4>
+          </div>
+          <div class="modal-body">
+            <p><g:message code="user.settings.googleAuth.revoke.confirm.message" /></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger disconnect-btn"
+              ><i class="fa fa-sign-out"></i>
+              <g:message code="user.settings.googleAuth.revoke.confirm.disconnect"
+            /></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"
+              ><i class="fa fa-close"></i>
+              <g:message code="default.button.cancel.label"
+            /></button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <content tag="scripts">
-    <asset:javascript src="settings-google-auth" />
-  </content>
-</body>
+
+    <content tag="scripts">
+      <asset:javascript src="settings-google-auth" />
+    </content>
+  </body>
 </html>

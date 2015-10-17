@@ -7,9 +7,8 @@
   </head>
 
   <body>
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
+    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/errorMessage" />
 
     <div class="row configuration-overview">
       <div class="col-xs-12 col-sm-6">

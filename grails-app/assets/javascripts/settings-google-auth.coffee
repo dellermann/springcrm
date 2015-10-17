@@ -1,7 +1,7 @@
 #
 # settings-google-auth.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# 
+#
 #=require application
 
 
@@ -23,18 +23,9 @@ $ = jQuery
 
 
 $('#google-auth-revoke').on 'click', ->
-  $('#dialog-confirm').dialog
-    buttons: [
-        class: 'red'
-        click: ->
-          $this = $(this)
-          $this.dialog 'close'
-          window.location.href = $this.data 'submit-url'
-        text: $L('user.settings.googleAuth.revoke.confirm.disconnect')
-      ,
-        click: -> $(this).dialog 'close'
-        text: $L('default.button.cancel.label')
-    ]
-    modal: true
-    resizable: false
-
+  $('#modal-confirm')
+    .modal()
+    .on('click', '.disconnect-btn', (event) ->
+      $modal = $(event.delegateTarget)
+      window.location.href = $modal.data 'submit-url'
+    )

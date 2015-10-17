@@ -11,9 +11,8 @@
       <g:render template="/layouts/toolbarSettings" />
     </content>
 
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
+    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/errorMessage" />
 
     <g:form action="settingsLanguageSave" elementId="config-form" method="post"
       class="form-horizontal data-form form-view">
