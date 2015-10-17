@@ -1,46 +1,41 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="user.settings.language.title" default="Language" /></title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="user.settings.language.title" /> -
+    <g:message code="user.settings.title" /></title>
+    <meta name="caption" content="${message(code: 'user.settings.language.title')}" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="user.settings.language.title" default="Language" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button color="green" class="submit-btn" icon="floppy-o"
-          data-form="config-form" message="default.button.save.label" /></li>
-        <li><g:button action="settingsIndex" back="true" color="red"
-          icon="times-circle-o" message="default.button.cancel.label" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content">
+  <body>
+    <content tag="toolbar">
+      <g:render template="/layouts/toolbarSettings" />
+    </content>
+
     <g:if test="${flash.message}">
     <div class="flash-message message" role="status">${raw(flash.message)}</div>
     </g:if>
-    <g:form name="config-form" action="settingsLanguageSave">
-      <fieldset>
-        <header><h3><g:message code="user.settings.language.fieldset.language.label" default="Language settings" /></h3></header>
-        <div class="multicol-content">
-          <div class="col col-l">
-            <div class="form">
-              <div class="row">
-                <div class="label">
-                  <label for="locale"><g:message code="user.settings.language.language.label" default="Language" /></label>
-                </div>
-                <div class="field">
-                  <g:select name="locale" from="${locales}"
-                    value="${currentLocale}" optionKey="key"
-                    optionValue="value" />
-                </div>
+
+    <g:form action="settingsLanguageSave" elementId="config-form" method="post"
+      class="form-horizontal data-form form-view">
+      <section>
+        <header>
+          <h3><g:message code="user.settings.language.fieldset.language.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <div class="form-group">
+              <label for="locale" class="control-label">
+                <g:message code="user.settings.language.language.label" />
+              </label>
+              <div class="control-container">
+                <g:select name="locale" elementId="locale-select"
+                  from="${locales}" value="${currentLocale}" optionKey="key"
+                  optionValue="value" />
               </div>
             </div>
           </div>
         </div>
-      </fieldset>
+      </section>
     </g:form>
-  </div>
-</body>
+  </body>
 </html>
