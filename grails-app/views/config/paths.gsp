@@ -1,46 +1,52 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="config.paths.title" default="Pathes" /></title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="config.paths.title" /> -
+    <g:message code="config.title" /></title>
+    <meta name="caption" content="${message(code: 'config.title')}" />
+    <meta name="subcaption" content="${message(code: 'config.paths.title')}" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="config.paths.title" default="Pathes" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button color="green" class="submit-btn" icon="floppy-o"
-          data-form="config-form" message="default.button.save.label" /></li>
-        <li><g:button action="index" back="true" color="red"
-          icon="times-circle-o" message="default.button.cancel.label" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
-    <g:form name="config-form" action="save" params="[returnUrl: params.returnUrl]">
-      <fieldset>
-        <header><h3><g:message code="config.fieldset.paths.documents.label" default="Document paths" /></h3></header>
-        <div>
-          <p><g:message code="config.paths.documents.description" args="${[grailsApplication.config.springcrm.dir.documents]}" /></p>
-          <div class="row">
-            <div class="label">
-              <label for="number"><g:message code="config.paths.documents.label" default="Path to documents" /></label>
-            </div>
-            <div class="field${hasErrors(bean: configData, field: 'pathDocumentByOrg', ' error')}">
-              <g:textField name="config.pathDocumentByOrg" value="${configData.pathDocumentByOrg ?: '%o'}" size="70" />
-              <ul class="field-msgs">
-                <g:eachError bean="${configData}" field="pathDocumentByOrg">
-                <li class="error-msg"><g:message error="${it}" /></li>
-                </g:eachError>
-              </ul>
+  <body>
+    <content tag="toolbar">
+      <g:render template="/layouts/toolbarForm" model="[formName: 'config']" />
+    </content>
+
+    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/errorMessage" />
+
+    <g:form action="save" elementId="config-form"
+      params="[returnUrl: params.returnUrl]" method="post"
+      class="form-horizontal data-form form-view">
+      <section>
+        <header>
+          <h3><g:message code="config.fieldset.paths.documents.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <p>
+              <g:message code="config.paths.documents.description"
+                args="${[grailsApplication.config.springcrm.dir.documents]}"
+                />
+            </p>
+            <div class="form-group">
+              <label for="pathDocumentByOrg" class="control-label">
+                <g:message code="config.paths.documents.label" />
+              </label>
+              <div class="control-container">
+                <g:textField name="config.pathDocumentByOrg"
+                  value="${configData.pathDocumentByOrg ?: '%o'}"
+                  class="form-control" />
+                <ul class="control-messages"
+                  ><g:eachError bean="${configData}" field="pathDocumentByOrg"
+                  ><li class="control-message-error"><g:message error="${it}" /></li
+                  ></g:eachError
+                ></ul>
+              </div>
             </div>
           </div>
         </div>
-      </fieldset>
+      </section>
     </g:form>
-  </div>
-</body>
+  </body>
 </html>
