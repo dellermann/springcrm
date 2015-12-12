@@ -30,9 +30,9 @@
                 <g:message code="user.settings.language.language.label" />
               </label>
               <div class="control-container">
-                <g:select name="locale" elementId="locale-select"
-                  from="${locales}" value="${currentLocale}" optionKey="key"
-                  optionValue="value" />
+                <g:select name="locale" id="locale-select" from="${locales}"
+                  value="${currentLocale}" optionKey="key" optionValue="value"
+                  />
               </div>
             </div>
           </div>
