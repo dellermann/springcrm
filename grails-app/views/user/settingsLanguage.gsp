@@ -3,7 +3,10 @@
     <meta name="layout" content="main" />
     <title><g:message code="user.settings.language.title" /> -
     <g:message code="user.settings.title" /></title>
-    <meta name="caption" content="${message(code: 'user.settings.language.title')}" />
+    <meta name="caption" content="${message(code: 'user.settings.title')}" />
+    <meta name="subcaption"
+      content="${message(code: 'user.settings.language.title')}" />
+    <meta name="backLinkUrl" content="${createLink(action: 'settingsIndex')}" />
   </head>
 
   <body>

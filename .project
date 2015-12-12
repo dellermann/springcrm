@@ -26,7 +26,7 @@
 		<link>
 			<name>.link_to_grails_plugins</name>
 			<type>2</type>
-			<locationURI>GRAILS_ROOT/2.4.3/projects/springcrm/plugins</locationURI>
+			<locationURI>GRAILS_ROOT/2.5.3/projects/springcrm/plugins</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

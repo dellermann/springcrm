@@ -2,15 +2,16 @@
 <g:pageProperty name="page.backLink" />
 </g:if>
 <g:else>
+<g:set var="isIndex"
+  value="${actionName == 'index' || actionName == 'settingsIndex'}" />
 <a href="${
     pageProperty(name: 'meta.backLinkUrl') ?: (
-        actionName == 'index' ? createLink(uri: '/')
-            : createLink(action: 'index')
+        isIndex ? createLink(uri: '/') : createLink(action: 'index')
     )}"
   class="navbar-back-link visible-xs"
-  ><i class="fa fa-${actionName == 'index' ? 'home' : 'arrow-left'}"></i>
+  ><i class="fa fa-${isIndex ? 'home' : 'arrow-left'}"></i>
   <span class="sr-only"
-    ><g:if test="${actionName == 'index'}"
+    ><g:if test="${isIndex}"
     ><g:message code="default.button.home.label"
     /></g:if
     ><g:else
