@@ -210,18 +210,14 @@ class ConfigController {
         def ch = ConfigHolder.instance
         Long serviceIdDunningCharge =
             ch['serviceIdDunningCharge']?.toType(Long)
-        Service s = Service.read(serviceIdDunningCharge)
-        String serviceDunningCharge = s ? s.name : ''
+        Service serviceDunningCharge = Service.read(serviceIdDunningCharge)
         Long serviceIdDefaultInterest =
             ch['serviceIdDefaultInterest']?.toType(Long)
-        s = Service.read(serviceIdDefaultInterest)
-        String serviceDefaultInterest = s ? s.name : ''
+        Service serviceDefaultInterest = Service.read(serviceIdDefaultInterest)
 
         render view: 'seqNumbers', model: [
             seqNumberList: list,
-            serviceIdDunningCharge: serviceIdDunningCharge,
             serviceDunningCharge: serviceDunningCharge,
-            serviceIdDefaultInterest: serviceIdDefaultInterest,
             serviceDefaultInterest: serviceDefaultInterest
         ]
     }

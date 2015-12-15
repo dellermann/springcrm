@@ -60,6 +60,19 @@
   margin-bottom: (@line-height-computed / 4);
 }
 
+.sequence-number-table {
+  td:first-child label {
+    padding-left: 0;
+    padding-right: 0;
+    width: auto;
+  }
+  @media (max-width: @screen-xs-max) {
+    input[type=number] {
+      width: 12ch;
+    }
+  }
+}
+
 
 
 /* Uncomment and revise when migrating to new design!
@@ -112,24 +125,5 @@
 }
 #tax-rates-list ul span:after {
   content: " %";
-}
-#seq-numbers-header-name {
-  width: 13em;
-}
-#seq-numbers-header-prefix, #seq-numbers-header-suffix {
-  width: 6em;
-}
-#seq-numbers-header-start-value, #seq-numbers-header-end-value {
-  width: 9em;
-}
-#seq-numbers td {
-  vertical-align: middle;
-
-  &:first-child, &:last-child {
-    padding-top: .8em;
-  }
-  &:nth-child(2), &:nth-child(3), &:nth-child(4), &:nth-child(5) {
-    text-align: center;
-  }
 }
 */

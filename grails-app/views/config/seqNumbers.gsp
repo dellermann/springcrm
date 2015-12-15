@@ -1,111 +1,150 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="config.seqNumbers.title" default="Sequence numbers" /></title>
-  <meta name="stylesheet" content="config" />
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="config.seqNumbers.title" /> -
+    <g:message code="config.title" /></title>
+    <meta name="caption" content="${message(code: 'config.title')}" />
+    <meta name="subcaption" content="${message(code: 'config.seqNumbers.title')}" />
+    <meta name="stylesheet" content="config" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="config.seqNumbers.title" default="Sequence numbers" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button color="green" class="submit-btn" icon="floppy-o"
-          data-form="config-form" message="default.button.save.label" /></li>
-        <li><g:button action="index" back="true" color="red"
-          icon="times-circle-o" message="default.button.cancel.label" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
+  <body>
+    <content tag="toolbar">
+      <g:render template="/layouts/toolbarForm" model="[formName: 'config']" />
+    </content>
+
+    <g:render template="/layouts/flashMessage" />
     <g:if test="${seqNumberList.any { it.hasErrors() }}">
-    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
+    <div class="alert alert-danger" role="alert">
+      <g:message code="default.form.errorHint" />
+    </div>
     </g:if>
-    <g:form name="config-form" action="saveSeqNumbers" params="[returnUrl: params.returnUrl]">
-      <fieldset>
-        <header><h3><g:message code="config.fieldset.seqNumbers.label" default="Sequence numbers" /></h3></header>
-        <div>
-          <table id="seq-numbers">
-            <thead>
-              <tr>
-                <th scope="col" style="width: 11.5em;"></th>
-                <th scope="col"><g:message code="config.seqNumbers.prefix.label" default="Prefix" /></th>
-                <th scope="col"><g:message code="config.seqNumbers.startValue.label" default="Start value" /></th>
-                <th scope="col"><g:message code="config.seqNumbers.endValue.label" default="End value" /></th>
-                <th scope="col"><g:message code="config.seqNumbers.suffix.label" default="Suffix" /></th>
-                <th scope="col"><g:message code="config.seqNumbers.example.label" default="Example" /></th>
-              </tr>
-            </thead>
-            <tbody>
-            <g:each in="${seqNumberList}" var="seqNumber">
-              <tr data-controller-name="${seqNumber.controllerName}">
-                <td><g:message code="${seqNumber.controllerName}.plural" default="${seqNumber.controllerName}s" /></td>
-                <td>
-                  <input type="text" name="seqNumbers.${seqNumber.ident()}.prefix" size="5" maxlength="5" value="${seqNumber.prefix}" />
-                  <g:hasErrors bean="${seqNumber}" field="prefix">
-                    <span class="error-msg"><g:eachError bean="${seqNumber}" field="prefix"><g:message error="${it}" /> </g:eachError></span>
-                  </g:hasErrors>
-                </td>
-                <td>
-                  <input type="number" name="seqNumbers.${seqNumber.ident()}.startValue" size="13" value="${seqNumber.startValue}" /><br />
-                  <g:hasErrors bean="${seqNumber}" field="startValue">
-                    <span class="error-msg"><g:eachError bean="${seqNumber}" field="startValue"><g:message error="${it}" /> </g:eachError></span>
-                  </g:hasErrors>
-                </td>
-                <td>
-                  <input type="number" name="seqNumbers.${seqNumber.ident()}.endValue" size="13" value="${seqNumber.endValue}" /><br />
-                  <g:hasErrors bean="${seqNumber}" field="endValue">
-                    <span class="error-msg"><g:eachError bean="${seqNumber}" field="endValue"><g:message error="${it}" /> </g:eachError></span>
-                  </g:hasErrors>
-                </td>
-                <td><input type="text" name="seqNumbers.${seqNumber.ident()}.suffix" size="5" maxlength="5" value="${seqNumber.suffix}" /></td>
-                <td></td>
-              </tr>
-            </g:each>
-            </tbody>
-          </table>
-        </div>
-      </fieldset>
 
-      <fieldset>
-        <header><h3><g:message code="config.fieldset.specialServices.label" /></h3></header>
-        <div>
-          <p><g:message code="config.fieldset.specialServices.description" /></p>
-          <div class="row">
-            <div class="label">
-              <label for="serviceDunningCharge"><g:message code="config.serviceIdDunningCharge.label" /></label>
-            </div>
-            <div class="field">
-              <g:textField name="serviceDunningCharge"
-                value="${serviceDunningCharge}" id="serviceDunningCharge"
-                class="service-selector" size="60"
-                data-find-url="${createLink(controller: 'service', action: 'find')}" />
-              <g:hiddenField name="serviceIdDunningCharge"
-                value="${serviceIdDunningCharge}"/>
-            </div>
-          </div>
-          <div class="row">
-            <div class="label">
-              <label for="serviceDefaultInterest"><g:message code="config.serviceIdDefaultInterest.label" /></label>
-            </div>
-            <div class="field">
-              <g:textField name="serviceDefaultInterest"
-                value="${serviceDefaultInterest}" id="serviceDefaultInterest"
-                class="service-selector" size="60"
-                data-find-url="${createLink(controller: 'service', action: 'find')}" />
-              <g:hiddenField name="serviceIdDefaultInterest"
-                value="${serviceIdDefaultInterest}"/>
+    <g:form action="saveSeqNumbers" elementId="config-form"
+      params="[returnUrl: params.returnUrl]" method="post"
+      class="form-horizontal data-form form-view">
+      <section>
+        <header>
+          <h3><g:message code="config.fieldset.seqNumbers.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <div class="table-responsive">
+              <table id="seq-numbers"
+                class="table table-striped table-hover sequence-number-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th><g:message code="config.seqNumbers.prefix.label" /></th>
+                    <th><g:message code="config.seqNumbers.startValue.label" /></th>
+                    <th><g:message code="config.seqNumbers.endValue.label" /></th>
+                    <th><g:message code="config.seqNumbers.suffix.label" /></th>
+                    <th><g:message code="config.seqNumbers.example.label" /></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <g:each in="${seqNumberList}" var="seqNumber">
+                  <tr data-controller-name="${seqNumber.controllerName}">
+                    <td>
+                      <label for="seqnumber-${seqNumber.ident()}-prefix"
+                        class="control-label">
+                        <g:message code="${seqNumber.controllerName}.plural" />
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text"
+                        id="seqnumber-${seqNumber.ident()}-prefix"
+                        name="seqNumbers.${seqNumber.ident()}.prefix"
+                        value="${seqNumber.prefix}" class="form-control"
+                        maxlength="5" />
+                      <ul class="control-messages"
+                        ><g:eachError bean="${seqNumber}" field="prefix"
+                        ><li class="control-message-error"><g:message error="${it}" /></li
+                        ></g:eachError
+                      ></ul>
+                    </td>
+                    <td>
+                      <input type="number"
+                        name="seqNumbers.${seqNumber.ident()}.startValue"
+                        value="${seqNumber.startValue}" class="form-control"
+                        min="0" />
+                      <ul class="control-messages"
+                        ><g:eachError bean="${seqNumber}" field="startValue"
+                        ><li class="control-message-error"><g:message error="${it}" /></li
+                        ></g:eachError
+                      ></ul>
+                    </td>
+                    <td>
+                      <input type="number"
+                        name="seqNumbers.${seqNumber.ident()}.endValue"
+                        value="${seqNumber.endValue}" class="form-control"
+                        min="0" />
+                      <ul class="control-messages"
+                        ><g:eachError bean="${seqNumber}" field="endValue"
+                        ><li class="control-message-error"><g:message error="${it}" /></li
+                        ></g:eachError
+                      ></ul>
+                    </td>
+                    <td>
+                      <input type="text"
+                        name="seqNumbers.${seqNumber.ident()}.suffix"
+                        value="${seqNumber.suffix}" class="form-control"
+                        maxlength="5" />
+                    </td>
+                    <td class="seq-number-example">
+                     <output class="form-static-control"></output>
+                    </td>
+                  </tr>
+                  </g:each>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </fieldset>
+      </section>
+
+      <section>
+        <header>
+          <h3><g:message code="config.fieldset.specialServices.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <p><g:message code="config.fieldset.specialServices.description" /></p>
+            <div class="form-group">
+              <label for="serviceDunningCharge" class="control-label">
+                <g:message code="config.serviceIdDunningCharge.label" />
+              </label>
+              <div class="control-container">
+                <select id="serviceDunningCharge-select"
+                  name="serviceIdDunningCharge"
+                  data-find-url="${createLink(controller: 'service', action: 'find')}">
+                  <g:if test="${serviceDunningCharge}">
+                  <option value="${serviceDunningCharge.id}">${serviceDunningCharge}</option>
+                  </g:if>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="serviceDefaultInterest" class="control-label">
+                <g:message code="config.serviceIdDefaultInterest.label" />
+              </label>
+              <div class="control-container">
+                <select id="serviceDefaultInterest-select"
+                  name="serviceIdDefaultInterest"
+                  data-find-url="${createLink(controller: 'service', action: 'find')}">
+                  <g:if test="${serviceDefaultInterest}">
+                  <option value="${serviceDefaultInterest.id}">${serviceDefaultInterest}</option>
+                  </g:if>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </g:form>
-  </div>
-  <content tag="scripts">
-    <asset:javascript src="config-seq-numbers" />
-  </content>
-</body>
+
+    <content tag="scripts">
+      <asset:javascript src="config-seq-numbers" />
+    </content>
+  </body>
 </html>
