@@ -1,7 +1,7 @@
 #
 # _core.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -228,6 +228,17 @@ RegExp.escape = (s) ->
 #
 String::compare = (s) ->
   (if s < this then 1 else (if s > this then -1 else 0))
+
+# Compares this string to the given one ignoring case.
+#
+# @param [String] s the string to compare
+# @return [Number]  -1 if this string is less than the given one; 1 if this string is greater than the given one; 0 if both the strings are equal
+# @since            2.0
+#
+String::compareIgnoreCase = (s) ->
+  s1 = @toLowerCase()
+  s2 = s.toLowerCase()
+  (if s2 < s1 then 1 else (if s2 > s1 then -1 else 0))
 
 # Pads this string with the given character on the left side.  If the length of
 # this string is greater than or equal to the given length no padding is
@@ -506,4 +517,3 @@ class HttpUrl
     res
 
 window.HttpUrl = HttpUrl
-

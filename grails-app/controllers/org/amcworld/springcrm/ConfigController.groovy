@@ -139,6 +139,10 @@ class ConfigController {
 
     def saveSelValues() {
         for (Map.Entry entry in params.selValues?.entrySet()) {
+            if (!entry.value) {
+                continue
+            }
+
             int orderId = 10
             Class<?> cls = getTypeClass(entry.key)
             def list = JSON.parse(entry.value)

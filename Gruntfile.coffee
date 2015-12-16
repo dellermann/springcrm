@@ -31,6 +31,7 @@ module.exports = (grunt) ->
         '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.fonts %>/'
         '<%= dirs.src.stylesheets %>/js-calc/'
+        '<%= dirs.src.javascripts %>/jqueryui/'
         '<%= dirs.src.javascripts %>/lang/fullcalendar/'
       ]
       test: ['<%= dirs.target.test.base %>']
@@ -135,6 +136,16 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
+          ,
+            cwd: '<%= dirs.bower.jqueryui %>/ui/'
+            dest: '<%= dirs.src.javascripts %>/jqueryui/'
+            expand: true
+            src: [
+              'core.js'
+              'mouse.js'
+              'sortable.js'
+              'widget.js'
+            ]
 #          ,
 #            cwd: '<%= dirs.bower.jsCalc %>/less/'
 #            dest: '<%= dirs.src.stylesheets %>/js-calc/'
@@ -242,6 +253,7 @@ module.exports = (grunt) ->
         jqueryAutosize: '<%= dirs.bower.base %>/jquery-autosize'
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
+        jqueryui: '<%= dirs.bower.base %>/jqueryui'
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         qunit: '<%= dirs.bower.base %>/qunit'
         selectize: '<%= dirs.bower.base %>/selectize'
@@ -327,4 +339,3 @@ module.exports = (grunt) ->
   ]
 
 # vim:set ts=2 sw=2 sts=2:
-

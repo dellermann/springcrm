@@ -60,6 +60,55 @@
   margin-bottom: (@line-height-computed / 4);
 }
 
+.sel-values-list {
+  .scroll-pane {
+    margin-bottom: (@line-height-computed / 4);
+    max-height: (
+        @config-sel-value-list-item-number * (
+          floor(@font-size-base * @line-height-base) +
+          2 * @config-sel-value-list-item-padding-vertical +
+          2 * 1px
+        ) +
+        (@config-sel-value-list-item-number - 1) *
+          @config-sel-value-list-item-margin-bottom
+      );
+    overflow-y: scroll;
+  }
+  ul {
+    list-style: none;
+    margin-bottom: 0;
+    padding-left: 0;
+  }
+  .panel {
+    margin-bottom: @config-sel-value-list-item-margin-bottom;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .panel-body {
+    padding: @config-sel-value-list-item-padding-vertical
+      @config-sel-value-list-item-padding-horizontal;
+  }
+  .action-buttons {
+    float: right;
+    white-space: nowrap;
+
+    > .fa {
+      cursor: pointer;
+      font-size: (@font-size-base + 1px);
+      padding-left: 1ex;
+      vertical-align: middle;
+    }
+    > .move-btn {
+      cursor: move;
+    }
+    > .delete-btn {
+      color: @brand-danger;
+    }
+  }
+}
+
 .sequence-number-table {
   td:first-child label {
     padding-left: 0;
@@ -80,10 +129,6 @@
   margin-bottom: 2em;
   min-width: 25em;
 
-  .scroll-pane {
-    max-height: 20em;
-    overflow-y: scroll;
-  }
   ul {
     margin: 0 .5em 0 0;
   }

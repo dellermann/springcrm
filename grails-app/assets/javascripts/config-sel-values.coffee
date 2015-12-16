@@ -1,7 +1,7 @@
 #
 # config-sel-values.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,239 +18,316 @@
 #
 #= require application
 #= require _jquery-json
+#= require jqueryui/core
+#= require jqueryui/widget
+#= require jqueryui/mouse
+#= require jqueryui/sortable
 #= require _handlebars-ext
+#= require templates/config/sel-value-input
 #= require templates/config/sel-values
 
 
 $ = jQuery
 
 
-#-- Classes -------------------------------------
+#== Classes =====================================
 
 # Renders a widget to manage a particular list of select values.
 #
-# @mixin
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
+# @since    1.4
 #
-ConfigSelValuesWidget =
+class ConfigSelValuesWidget
 
-  # The items which are marked for deletion.
-  #
-  _itemsToRemove: []
+  #-- Internal variables ------------------------
 
-  # Called if this widget should be initialized.
+  $ = jq = jQuery
+
+
+  #-- Constructor -------------------------------
+
+  # Creates a new widget to handle selection values.
   #
-  _create: ->
-    @element.on('click', '.edit-btn', (event) => @_onClickEditBtn event)
+  # @param [jQuery] $elem the element containing the selection values
+  #
+  constructor: ($elem) ->
+    @itemsToRemove = []
+    @dirty = false
+
+    @$element = $elem
+      .on('click', '.value', (event) => @_onClickValue event)
+      .on('click', '.accept-btn', (event) => @_onClickAcceptBtn event)
+      .on('click', '.cancel-btn', (event) => @_onClickCancelBtn event)
       .on('click', '.delete-btn', (event) => @_onClickDeleteBtn event)
       .on('click', '.add-btn', => @_onClickAddBtn())
-      .on('click', '.restore-btn', => @restore())
+      .on('click', '.restore-btn', => @_onClickRestoreBtn())
       .on('click', '.sort-btn', => @_onClickSortBtn())
-      .on('dblclick', 'li', (event) => @_onDblClickItemList event)
-      .on('blur', 'input', (event, cancel) => @_onBlurItemInput event, cancel)
       .on('keypress', 'input', (event) => @_onKeyPressItem event)
+
     @restore()
 
-  # Called if the input control to edit the value has lost its focus.
-  #
-  # @param {Object} event   the event data
-  # @param {Boolean} cancel if `true` editing the value has been cancelled explicitely; `false` otherwise
-  # @return {Boolean}       `false` to prevent event bubbling
-  #
-  _onBlurItemInput: (event, cancel) ->
-    return false if @removingRow
 
-    $input = $(event.currentTarget)
-    val = $input.val()
-    $li = $input.parents 'li'
+  #-- Public methods ----------------------------
 
-    # look for other occurrences of this value
-    unless cancel
-      $li.siblings().each ->
-        if $(this).find('.value').text() is val
-          cancel = true
-          val = ''
-          return false
-        true
-
-    if val is ''
-
-      # XXX the blur event is triggered again when removing the <li> so we
-      # need to set a variable which prevents recursive handling
-      @removingRow = true
-      $li.remove()
-      @removingRow = false
-    else
-      $span = $li.find('.value').show()
-      $span.text val unless cancel
-      $li.find('i').fadeIn()
-      $input.parent().remove()
-    false
-
-  # Called if the add button has been clicked.
-  #
-  # @return {Boolean} `false` to prevent event bubbling
-  #
-  _onClickAddBtn: ->
-    s = @_renderTemplate items: [id: -1]
-    $li = $(s).find 'li'
-
-    @element.find('ul')
-      .data('dirty', true)
-      .append $li
-    @_showEditField $li.find('.value')
-    false
-
-  # Called if the delete button of an item has been clicked.
-  #
-  # @param {Object} event the event data
-  # @return {Boolean}     `false` to prevent event bubbling
-  #
-  _onClickDeleteBtn: (event) ->
-    $li = $(event.currentTarget).parents('li')
-    id = $li.data('item-id')
-    @_itemsToRemove.push parseInt(id, 10) if id and (id isnt '-1')
-    $li.parent()
-        .data('dirty', true)
-      .end()
-      .remove()
-    false
-
-  # Called if the edit button of an item has been clicked.
-  #
-  # @param {Object} event the event data
-  # @return {Boolean}     `false` to prevent event bubbling
-  #
-  _onClickEditBtn: (event) ->
-    @_showEditField($(event.currentTarget).prevAll('.value'))
-      .parents('ul')
-        .data('dirty', true)
-    false
-
-  # Called if the sort button has been clicked.
-  #
-  # @return {Boolean} `false` to prevent event bubbling
-  #
-  _onClickSortBtn: ->
-    $ = jQuery
-    @element.find('li')
-      .sortElements (li1, li2) -> $(li1).text().compare $(li2).text()
-    false
-
-  # Called if an item has been double clicked.
-  #
-  # @param {Object} event the event data
-  #
-  _onDblClickItemList: (event) ->
-    $li = $(event.currentTarget)
-    if $li.find('input').length is 0 and not $li.data('item-disabled')
-      @_showEditField($li.find('.value'))
-        .parents('ul')
-          .data('dirty', true)
-
-  # Called if a key in the input control has been pressed.
-  #
-  # @param {Object} event the event data
-  # @return {Boolean}     whether or not the event should bubble
-  #
-  _onKeyPressItem: (event) ->
-    $input = $(event.currentTarget)
-    switch event.keyCode
-      when 13 # Enter/Return
-        $input.trigger 'blur'
-        return false
-      when 27 # Esc
-        $input.trigger 'blur', [true]
-        return false
-    true
-
-  # Called if the select values have been loaded from server.
-  #
-  # @param {Array} data the loaded data
-  #
-  _onLoaded: (data) ->
-    s = @_renderTemplate items: data
-
-    @element.html(s)
-      .find('ul')
-        .data('dirty', false)
-        .sortable
-          change: (event) => $(event.currentTarget).data 'dirty', true
-          forcePlaceholderSize: true
-          placeholder: 'ui-state-highlight'
-
-  # Creates a hidden input control and stores the values of this list as JSON.
-  # The method only works if the list is marked as dirty.
+  # Populates the hidden input control with the values of this list converted
+  # to JSON if the list is marked as dirty.
   #
   prepareSubmit: ->
-    $ = jQuery
+    $elem = @$element
 
-    el = @element
-    $ul = el.find('ul')
-    if $ul.data 'dirty'
-      data = []
-      $ul.children('li')
-        .each ->
-          $this = $(this)
-          item = id: parseInt $this.data('item-id'), 10
-          unless $this.data 'item-disabled'
-            item.name = $this.find('.value').text()
-          data.push item
+    if @dirty
+      data = @_gatherData $elem.find 'ul'
+      $elem.find('input:hidden')
+        .val $.toJSON data
+      @dirty = false
 
-      data.push id: id, remove: true for id in @_itemsToRemove
-
-      $("""<input type="hidden"/>""")
-        .attr('name', "selValues.#{el.data "list-type"}")
-        .val($.toJSON data)
-        .appendTo el
-      $ul.data 'dirty', false
-
-  # Renders the Handlebars template with the given data.
-  #
-  # @param [Object] data    the given data
-  # @return [String]        the HTML code of the rendered template
-  # @private
-  #
-  _renderTemplate: (data) ->
-    Handlebars.templates['config/sel-values'] data
+    return
 
   # Restores the whole list by loading the previous select values from server.
   #
   restore: ->
-    $.getJSON @element.data('load-url'), (data) =>
-      @_onLoaded data
+    $.ajax(dataType: 'json', url: @$element.data('load-url'))
+      .then (data) => @_onLoaded data
+
+    return
+
+
+  #-- Non-public methods ------------------------
+
+  # Finishs editing the input in the given item.  The method hides the input
+  # control and shows the value as well as the action buttons.
+  #
+  # @param [jQuery] $li the item that input control should be affected
+  # @param [String] val the value to be set; if `undefined` the old value remains unchanged
+  # @return [jQuery]    the item
+  # @private
+  #
+  _finishInput: ($li, val) ->
+    $li
+      .find('.input-group')
+        .remove()
+      .end()
+      .find('.value')
+        .show()
+        .text(if val then val else `undefined`)
+      .end()
+      .find('.action-buttons')
+        .show()
+      .end()
+
+  # Gathers all data of the given list.
+  #
+  # @param [jQuery] $ul the given list
+  # @return [Array]     the gathered data; one item for each entry
+  # @private
+  # @since 2.0
+  #
+  _gatherData: ($ul) ->
+    $ = jq
+    data = []
+
+    $ul.children('li')
+      .each ->
+        $this = $(this)
+        item = id: parseInt $this.data('item-id'), 10
+        unless $this.data 'item-disabled'
+          item.name = $.trim $this.find('.value').text()
+        data.push item
+
+    data.push id: id, remove: true for id in @itemsToRemove
+
+    data
+
+  # Called when the button to accept the input has been clicked.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickAcceptBtn: (event) ->
+    $ = jq
+    $li = $(event.currentTarget).closest 'li'
+    $input = $li.find 'input'
+    val = $.trim $input.val()
+
+    # look for other occurrences of this value
+    $li.siblings()
+      .each ->
+        if $.trim($(this).find('.value').text()) is val
+          val = ''        # causes item to be deleted
+          return false
+
+        true
+
+    if val is ''
+      $li.remove()
+    else
+      @_finishInput $li, val
+    @dirty = true
+
+    return
+
+  # Called when the add button has been clicked.
+  #
+  # @private
+  #
+  _onClickAddBtn: ->
+    html = @_renderTemplate items: [id: -1]
+    $li = $(html).find 'li'
+
+    @$element.find('ul')
+      .append $li
+    @_showInputControl $li.find '.value'
+
+    return
+
+  # Called when the button to cancel the input has been clicked.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickCancelBtn: (event) ->
+    $li = $(event.currentTarget).closest 'li'
+    unless $.trim $li.find('.value').text()
+      $li.remove()    # should only happen after add and succeeding cancel
+      return
+
+    @_finishInput $li
+
+    return
+
+  # Called when the delete button of an item has been clicked.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickDeleteBtn: (event) ->
+    $li = $(event.currentTarget).closest 'li'
+    id = $li.data 'item-id'
+    @itemsToRemove.push parseInt(id, 10) if id and (id isnt '-1')
+
+    $li.remove()
+    @dirty = true
+
+    return
+
+  # Called when the restore button has been clicked.
+  #
+  # @private
+  #
+  _onClickRestoreBtn: -> @restore()
+
+  # Called when the sort button has been clicked.
+  #
+  # @private
+  #
+  _onClickSortBtn: ->
+    $ = jq
+
+    @$element
+      .find('li')
+        .sortElements (li1, li2) ->
+          $(li1).text().compareIgnoreCase $(li2).text()
+    @dirty = true
+
+    return
+
+  # Called when the value of an item has been clicked in order to edit it.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickValue: (event) ->
+    $value = $(event.currentTarget)
+
+    @_showInputControl $value unless $value.closest('li').data 'item-disabled'
+
+    return
+
+  # Called if a key in the input control has been pressed.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     whether or not the event should bubble
+  # @private
+  #
+  _onKeyPressItem: (event) ->
+    $input = $(event.currentTarget)
+    $inputGroup = $input.closest '.input-group'
+
+    switch event.keyCode
+      when 13 # Enter/Return
+        $inputGroup.find('.accept-btn')
+          .trigger 'click'
+        return false
+      when 27 # Esc
+        $inputGroup.find('.cancel-btn')
+          .trigger 'click'
+        return false
+
+    true
+
+  # Called when the select values have been loaded from server.
+  #
+  # @param [Array] data any data loaded from server
+  # @private
+  #
+  _onLoaded: (data) ->
+    html = @_renderTemplate items: data
+
+    @$element
+      .find('.sel-values-list')
+        .html(html)
+        .find('ul')
+          .sortable
+            change: (event) => @dirty = true
+            forcePlaceholderSize: true
+            handle: '.move-btn'
+    @dirty = false
+
+    return
+
+  # Renders the Handlebars template with the given data.
+  #
+  # @param [Object] data  the given data
+  # @return [String]      the HTML code of the rendered template
+  # @private
+  #
+  _renderTemplate: (data) ->
+    ConfigSelValuesWidget.selValuesTemplate data
 
   # Displays an input control to edit the value represented by the given
   # `<span>` element.
   #
-  # @param {jQuery} $elem the given `<span>` element representing the value
-  # @return {jQuery}      the given `<span>` element
+  # @param [jQuery] $elem the given `<span>` element representing the value
+  # @return [jQuery]      the given `<span>` element
+  # @private
   #
-  _showEditField: ($elem) ->
-    $ = jQuery
+  _showInputControl: ($elem) ->
+    html = ConfigSelValuesWidget.selValueInputTemplate
+      value: $elem.text()
 
-    $span = $("""<span class="input"/>""").insertAfter $elem
-    $('<input/>',
-        type: 'text'
-        value: $elem.text()
-      )
-      .appendTo($span)
-      .focus()
-    $elem.hide()
-      .nextAll('i')
-        .fadeOut()
+    $elem
+      .hide()
+      .after(html)
+      .nextAll('.action-buttons')
+        .hide()
+      .end()
+      .closest('li')
+        .find('.form-control')
+          .focus()
+        .end()
       .end()
 
-$.widget 'springcrm.configSelValues', ConfigSelValuesWidget
+ConfigSelValuesWidget.selValueInputTemplate = Handlebars.templates['config/sel-value-input']
+ConfigSelValuesWidget.selValuesTemplate = Handlebars.templates['config/sel-values']
 
 
-#-- Main ----------------------------------------
+#== Main ========================================
 
-$lists = $('.sel-values-list')
-$lists.configSelValues()
-  .parents('form')
-    .on 'submit', ->
-      $lists.each -> $(this).configSelValues 'prepareSubmit'
-      true
+widgets = []
+$('.sel-values-list-container').each ->
+  widgets.push new ConfigSelValuesWidget $(this)
+$('#config-form').on 'submit', ->
+  widget.prepareSubmit() for widget in widgets
 
+  true

@@ -34,6 +34,7 @@ default.btn.add.short
 default.btn.cancel
 default.btn.down
 default.btn.edit
+default.btn.move
 default.btn.remove
 default.btn.sort.short
 default.btn.up
