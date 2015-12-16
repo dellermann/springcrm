@@ -22,6 +22,7 @@
 #= require jqueryui/widget
 #= require jqueryui/mouse
 #= require jqueryui/sortable
+#= require jqueryui/touch-punch
 #= require _handlebars-ext
 #= require templates/config/sel-value-input
 #= require templates/config/sel-values

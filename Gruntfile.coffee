@@ -146,6 +146,9 @@ module.exports = (grunt) ->
               'sortable.js'
               'widget.js'
             ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/jqueryui/touch-punch.js'
+            src: '<%= dirs.bower.jqueryuiTouchPunch %>/jquery.ui.touch-punch.js'
 #          ,
 #            cwd: '<%= dirs.bower.jsCalc %>/less/'
 #            dest: '<%= dirs.src.stylesheets %>/js-calc/'
@@ -254,6 +257,7 @@ module.exports = (grunt) ->
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
         jqueryui: '<%= dirs.bower.base %>/jqueryui'
+        jqueryuiTouchPunch: '<%= dirs.bower.base %>/jqueryui-touch-punch'
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         qunit: '<%= dirs.bower.base %>/qunit'
         selectize: '<%= dirs.bower.base %>/selectize'
