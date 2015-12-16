@@ -29,7 +29,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 1.5
+ * @version 2.0
  */
 class ConfigController {
 
@@ -183,7 +183,7 @@ class ConfigController {
     }
 
     def saveTaxRates() {
-        String taxRates = params.selValues?.taxRates
+        String taxRates = params.taxRates
         if (taxRates) {
             int orderId = 10
             def list = JSON.parse(taxRates)
