@@ -4,7 +4,7 @@
     rows="${rows ?: 5}"${required ? ' required="required"' : ''}>${value}</textarea>
   </g:if>
   <g:else>
-  <f:input type="${constraints?.widget ?: 'text'}" bean="${bean}"
+  <f:widget type="${constraints?.widget ?: 'text'}" bean="${bean}"
     property="${property}" class="form-control" />
   </g:else>
 </g:applyLayout>

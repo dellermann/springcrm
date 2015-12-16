@@ -124,14 +124,14 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile(
-            ':asset-pipeline:2.2.3',
-//            ':codenarc:0.21',
-            ':coffee-asset-pipeline:2.0.7',
+            ':asset-pipeline:2.6.10',
+//            ':codenarc:0.24.1',
+            ':coffee-asset-pipeline:2.6.7',
             ':dbunit-operator:1.7',
-            ':fields:1.4',
-            ':handlebars-asset-pipeline:2.1.4',
-            ':i18n-asset-pipeline:1.0.2',
-            ':less-asset-pipeline:2.0.8',
+            ':fields:1.5.1',
+            ':handlebars-asset-pipeline:2.6.7',
+            ':i18n-asset-pipeline:1.0.5',
+            ':less-asset-pipeline:2.6.7',
             ':mail:1.0.7',
             ':markdown:1.1.1',
             ':scaffolding:2.1.2'
@@ -140,7 +140,7 @@ grails.project.dependency.resolution = {
             ':tomcat:7.0.54'
         )
         runtime(
-            ':database-migration:1.4.0',
+            ':database-migration:1.4.1',
 //            ':elasticsearch:0.0.4.6',
             ':hibernate:3.6.10.17'
         )

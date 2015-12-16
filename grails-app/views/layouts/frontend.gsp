@@ -9,7 +9,7 @@
   <head>
     <meta charset="utf-8" />
     <title><g:layoutTitle default="SpringCRM" /></title>
-    <asset:stylesheet src="${pageProperty(name: 'meta.stylesheet') ?: 'frontend'}" />
+    <asset:stylesheet src="${(pageProperty(name: 'meta.stylesheet') ?: 'frontend').toString()}" />
     <asset:stylesheet src="print" media="print" />
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <asset:link rel="shortcut icon" href="favicon.png" type="image/png" />

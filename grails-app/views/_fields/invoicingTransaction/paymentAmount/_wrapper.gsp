@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-xs-6 col-sm-12 col-md-6">
       <div class="input-group">
-        <f:input bean="${bean}" property="${property}"
+        <f:widget bean="${bean}" property="${property}"
           value="${formatCurrency(number: value, displayZero: true, external: true)}"
           cssClass="form-control form-control-number form-control-currency"
           aria-describedby="payment-amount-currency" />
@@ -13,7 +13,7 @@
     </div>
     <div class="col-xs-6 col-sm-12 col-md-6" style="padding-left: 0;">
       <button type="button" id="still-unpaid" class="btn btn-link still-unpaid"
-        data-modified-closing-balance="0">
+        data-modified-closing-balance="${bean.modifiedClosingBalance}">
         <g:message code="invoice.stillUnpaid.label" />:
         <output></output>
         <g:currency />

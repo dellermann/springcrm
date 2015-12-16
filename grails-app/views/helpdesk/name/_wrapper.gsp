@@ -3,7 +3,7 @@
     <g:message code="helpdesk.name.label" />
   </label>
   <div class="control-container">
-    <f:input bean="${bean}" property="${property}" class="form-control" />
+    <f:widget bean="${bean}" property="${property}" class="form-control" />
     <ul class="control-messages"
       ><li class="control-message-info"
         ><g:message code="default.required"

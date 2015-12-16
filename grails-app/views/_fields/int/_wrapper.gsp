@@ -4,6 +4,6 @@
     value="${value}" />
   </g:if>
   <g:else>
-  <f:input bean="${bean}" property="${property}" size="${size}" />
+  <f:widget bean="${bean}" property="${property}" size="${size}" />
   </g:else>
 </g:applyLayout>

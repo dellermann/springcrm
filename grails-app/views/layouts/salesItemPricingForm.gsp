@@ -348,7 +348,7 @@
                     ></ul>
                   </td>
                   <td class="col-type-string col-unit">
-                    <f:input bean="${salesItem}" property="unit"
+                    <f:widget bean="${salesItem}" property="unit"
                       id="step3-unit" class="form-control" />
                     <ul class="control-messages"
                       ><g:eachError bean="${salesItem}" field="${unit}"

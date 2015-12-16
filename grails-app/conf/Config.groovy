@@ -88,13 +88,24 @@ grails.databinding.convertEmptyStringsToNull = false
 grails.web.url.converter = 'hyphenated'
 
 
-//== Views ======================================
+//== Resources ==================================
 
 grails.assets.excludes = [
-    'bootstrap/**.less', 'font-awesome/**.less', 'bootstrap/*.js',
-    'widgets/**', 'js-calc/**.less', 'selectize/**.less'
+    // stylesheets
+    'bootstrap/**.less',
+    'font-awesome/**.less',
+    'js-calc/**.less',
+    'selectize/**.less',
+
+    // scripts
+    'bootstrap/*.js',
+    'jqueryui/*.js',
+    'widgets/**'
 ]
 grails.assets.less.compiler = 'standard'
+
+
+//== Views ======================================
 
 /* Enable Sitemesh preprocessing of GSP pages */
 grails.views.gsp.sitemesh.preprocess = true
