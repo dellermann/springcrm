@@ -1,66 +1,61 @@
 <html>
-<head>
-  <meta name="layout" content="install" />
-  <title><g:message code="install.title" /></title>
-</head>
+  <head>
+    <meta name="layout" content="install" />
+    <title><g:message code="install.createAdmin.title" /></title>
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="install.createAdmin.title" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button action="clientData" color="white" icon="arrow-left"
-          message="install.btn.previous.label" /></li>
-        <li><g:button color="green" class="submit-btn" icon="arrow-right"
-          message="install.btn.next.label" data-form="user-form" /></li>
-      </ul>
-    </nav>
-  </header>
-  <section id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
+  <body>
+    <content tag="toolbar">
+      <g:button action="clientData" color="default" icon="arrow-left"
+        class="hidden-xs" message="install.btn.previous.label" />
+      <button type="submit" form="user-form" class="btn btn-success">
+        <i class="fa fa-arrow-right"></i>
+        <g:message code="install.btn.next.label" />
+      </button>
+      <g:button action="finish" color="info" icon="share"
+        class="hidden-xs" message="install.btn.skip.label" />
+    </content>
+
     <div class="install-description">
       <p><g:message code="install.createAdmin.description" /></p>
     </div>
-    <g:hasErrors bean="${userInstance}">
-    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
-    </g:hasErrors>
-    <g:form name="user-form" action="createAdminSave">
-      <fieldset>
-        <header><h3><g:message code="install.createAdmin.fieldset.general.label" /></h3></header>
-        <div class="multicol-content">
-          <div class="col col-l">
-            <div class="form">
-              <f:field bean="${userInstance}" property="userName" />
-              <f:field bean="${userInstance}" property="password" />
-              <div class="row">
-                <div class="label">
-                  <label for="password-repeat"><g:message code="user.passwordRepeat.label" default="Repeat password" /></label>
-                </div>
-                <div class="field">
-                  <g:passwordField name="passwordRepeat" />
-                  <ul class="field-msgs">
-                    <li class="info-msg"><g:message code="default.required" default="required" /></li>
-                  </ul>
-                </div>
+    <g:form action="createAdminSave" method="post"
+      elementId="user-form" name="user-form"
+      class="form-horizontal data-form form-view">
+      <section>
+        <header>
+          <h3><g:message code="install.createAdmin.fieldset.general.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <f:field bean="${userInstance}" property="userName" />
+            <f:field bean="${userInstance}" property="password" />
+            <div class="form-group">
+              <label for="password-repeat" class="control-label">
+                <g:message code="user.passwordRepeat.label" />
+              </label>
+              <div class="control-container">
+                <g:passwordField id="password-repeat" name="passwordRepeat"
+                  class="form-control" />
+                <ul class="control-messages"
+                  ><li class="control-message-info"
+                    ><g:message code="default.required"
+                  /></li
+                ></ul>
               </div>
-              <f:field bean="${userInstance}" property="firstName" />
-              <f:field bean="${userInstance}" property="lastName" />
             </div>
+            <f:field bean="${userInstance}" property="firstName" />
+            <f:field bean="${userInstance}" property="lastName" />
           </div>
-          <div class="col col-r">
-            <div class="form">
-              <f:field bean="${userInstance}" property="phone" />
-              <f:field bean="${userInstance}" property="phoneHome" />
-              <f:field bean="${userInstance}" property="mobile" />
-              <f:field bean="${userInstance}" property="fax" />
-              <f:field bean="${userInstance}" property="email" />
-            </div>
+          <div class="column">
+            <f:field bean="${userInstance}" property="phone" />
+            <f:field bean="${userInstance}" property="phoneHome" />
+            <f:field bean="${userInstance}" property="mobile" />
+            <f:field bean="${userInstance}" property="fax" />
+            <f:field bean="${userInstance}" property="email" />
           </div>
         </div>
-      </fieldset>
+      </section>
     </g:form>
-  </section>
-</body>
+  </body>
 </html>

@@ -497,7 +497,7 @@ class ViewTagLib {
         int step = attrs.step as int
         int current = (attrs.current ?: 0i) as int
         if (step == current) {
-            buf << ' class="current"'
+            buf << ' class="active"'
         }
         buf << '>' << body() << '</li>'
         out << buf.toString()

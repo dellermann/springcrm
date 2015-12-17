@@ -1,7 +1,7 @@
 /*
  * installer.less
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,52 +21,101 @@
 @import "application";
 
 
-#install-progress {
-  .linear-gradient(@color-gradient-panel-0; @color-gradient-panel-1; #80A322);
-  left: 0;
-  margin: 2em 0 0;
-  position: relative;
-  top: 0;
+body > .container > header {
+  margin-bottom: 0;
+}
 
-  li {
-    float: left;
+@media (max-width: @screen-xs-max) {
+  h1 {
+    font-size: @font-size-h2;
+  }
+}
+
+.install-progress {
+  margin: @line-height-computed (-@grid-gutter-width / 2) 0;
+
+  ol {
+    .clearfix();
+    background: @install-progress-bg;
     list-style: none;
     margin-bottom: 0;
-  
-    &.current {
-      .linear-gradient(
-        @color-gradient-hover-0; @color-gradient-hover-1; #597F12
-      );
+    padding-left: 0;
+  }
+  li {
+    float: left;
+    height: @install-progress-height;
+
+    &:hover, &.active {
+      + li a:after {
+        border-left-color: @navbar-default-sm-link-active-bg;
+      }
     }
-    &:after {
-      color: #FFF;
-      content: "\F054";
-      display: inline-block;
-      font-family: FontAwesome;
-      margin-right: -.3em;
-      position: relative;
-      z-index: 1;
-    }
-    &:last-child:after {
-      content: "";
-      margin-right: 0;
+    &.active a {
+      background: @navbar-default-sm-link-active-bg;
     }
   }
   a {
     color: #FFF;
-    display: inline-block;
-    font-weight: bold;
-    padding: .6em 1.9em .6em 1.5em;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
+    display: block;
+    height: @navbar-height;
+    line-height: @navbar-height;
+    padding-left: (@install-progress-height / 4 + @grid-gutter-width / 4 + 1px);
+    padding-right: (@grid-gutter-width / 4);
+    position: relative;
+    text-align: center;
+
+    &:focus, &:active {
+      text-decoration: none;
+    }
+    &:hover {
+      background: @navbar-default-sm-link-active-bg;
+      text-decoration: none;
+    }
+    &:before {
+      border-bottom: (@install-progress-height / 2) solid transparent;
+      border-left: (@install-progress-height / 4) solid #FFF;
+      border-top: (@install-progress-height / 2) solid transparent;
+      content: "";
+      height: 0;
+      left: 1px;
+      position: absolute;
+      top: 0;
+    }
+    &:after {
+      border-bottom: (@install-progress-height / 2) solid transparent;
+      border-left: (@install-progress-height / 4) solid @install-progress-bg;
+      border-top: (@install-progress-height / 2) solid transparent;
+      content: "";
+      float: right;
+      height: 0;
+      left: 0;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  @media (min-width: @screen-md-min) {
+    a {
+      padding-left:
+        (@install-progress-height / 2 + @grid-gutter-width / 2 + 1px);
+      padding-right: (@grid-gutter-width / 2);
+
+      &:before {
+        border-left-width: (@install-progress-height / 2);
+      }
+      &:after {
+        border-left-width: (@install-progress-height / 2);
+      }
+    }
   }
 }
-#main-container h1 ~ nav {
-  width: 25%;
+@media (min-width: @screen-sm-min) {
+  .install-description {
+    width: 75%;
+  }
 }
-.install-description {
-  margin-bottom: 2em;
-  width: 75%;
-}
+
+/**
 .warning {
   -khtml-border-radius: .3em;
   -moz-border-radius: .3em;
@@ -79,4 +128,4 @@
   padding: 1em;
   width: 75%;
 }
-
+*/

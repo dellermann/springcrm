@@ -79,20 +79,17 @@ grails.project.dependency.resolution = {
     dependencies {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-        compile(
-            'com.google.apis:google-api-services-calendar:v3-rev85-1.18.0-rc',
-            'com.google.http-client:google-http-client-jackson2:1.18.0-rc',
-            'commons-fileupload:commons-fileupload:1.3.1',
-            'commons-io:commons-io:2.4',
-            'jmimemagic:jmimemagic:0.1.2',
-            //'org.apache.xmlgraphics:fop:1.0',
-            'org.apache.commons:commons-vfs2:2.0',
-            'org.apache.httpcomponents:httpclient:4.3.2'
-        )
+        compile 'com.google.apis:google-api-services-calendar:v3-rev85-1.18.0-rc'
+        compile 'com.google.http-client:google-http-client-jackson2:1.18.0-rc'
+        compile 'commons-fileupload:commons-fileupload:1.3.1'
+        compile 'commons-io:commons-io:2.4'
+        compile 'jmimemagic:jmimemagic:0.1.2'
+        compile 'org.apache.commons:commons-vfs2:2.0'
+        compile 'org.apache.httpcomponents:httpclient:4.3.2'
 
         /*
          * XXX Including FOP dependencies does not work because the xml-apis
-         * are loaded twice.
+         * are loaded twice.  FOP 2.0 seems to work, however.
          *
         compile('org.apache.xmlgraphics:fop:1.0') {
 //            transitive = false
@@ -100,12 +97,11 @@ grails.project.dependency.resolution = {
 //            excludes([group: 'xml-apis', name: 'xml-apis'], [group: 'xml-resolver', name: 'xml-resolver'])
         }
         */
-        runtime(
-            'com.google.guava:guava:17.0',
-            'mysql:mysql-connector-java:5.1.27',
-            'net.sf.offo:fop-hyph:1.2',
-            'org.grails:grails-datastore-gorm:3.1.5.RELEASE'    // change version after updating Grails
-        )
+
+        runtime 'com.google.guava:guava:17.0'
+        runtime 'mysql:mysql-connector-java:5.1.27'
+        runtime 'net.sf.offo:fop-hyph:1.2'
+        runtime 'org.grails:grails-datastore-gorm:3.1.5.RELEASE'    // change version after updating Grails
 
         /*
          * XXX Same dependency problem as above at FOP
@@ -115,11 +111,10 @@ grails.project.dependency.resolution = {
         }
         */
 
-        test(
-            'junit:junit:4.11',
-            "org.gebish:geb-spock:${gebVersion}",
-            'org.seleniumhq.selenium:selenium-java:2.43.1'
-        )
+        test 'junit:junit:4.11'
+        test "org.gebish:geb-spock:${gebVersion}"
+        test 'org.seleniumhq.selenium:selenium-java:2.43.1'
+        test 'xalan:xalan:2.7.2'        // fix XSLT bug in test reports
     }
 
     plugins {
