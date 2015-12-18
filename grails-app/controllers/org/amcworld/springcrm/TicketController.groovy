@@ -388,6 +388,16 @@ class TicketController {
         redirect action: 'show', id: id
     }
 
+    def frontendCreate() {
+        Helpdesk helpdeskInstance = Helpdesk.get(params.helpdesk)
+        if (!helpdeskInstance) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+            return
+        }
+
+        [helpdeskInstance: helpdeskInstance, ticketInstance: new Ticket()]
+    }
+
     def frontendSave() {
         Helpdesk helpdeskInstance = Helpdesk.get(params.helpdesk)
         if (!helpdeskInstance) {
@@ -438,7 +448,12 @@ class TicketController {
     }
 
     def frontendShow(Long id) {
-        [ticketInstance: Ticket.read(id)]
+        Ticket ticketInstance = Ticket.read(id)
+
+        [
+            ticketInstance: ticketInstance,
+            helpdeskInstance: ticketInstance.helpdesk
+        ]
     }
 
     def frontendSendMessage(Long id) {

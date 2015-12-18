@@ -2,80 +2,87 @@
 <%@ page import="org.amcworld.springcrm.Ticket" %>
 <%@ page import="org.amcworld.springcrm.TicketLogAction" %>
 <%@ page import="org.amcworld.springcrm.TicketStage" %>
-<html>
-<head>
-  <meta name="layout" content="frontend" />
-  <g:set var="entityName" value="${message(code: 'ticket.label')}" />
-  <g:set var="helpdeskInstance" value="${ticketInstance.helpdesk}" />
-  <title><g:fieldValue bean="${helpdeskInstance}" field="name" /> –
-  <g:message code="helpdesk.frontend.title" /></title>
-  <meta name="stylesheet" content="helpdesk-frontend" />
-</head>
 
-<body>
-  <content tag="title">
-    <h1><g:message code="helpdesk.label" />
-    <g:fieldValue bean="${helpdeskInstance}" field="name" /></h1>
-  </content>
-  <content tag="toolbar">
-    <li><g:button mapping="helpdeskFrontend"
-      params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
-      color="white" icon="arrow-left"
-      message="default.button.back.label" /></li>
-  </content>
-  <aside id="action-bar">
-    <h3><g:message code="default.actions" /></h3>
-    <ul>
-      <li>
-        <g:button elementId="send-message-btn"
-          color="white" size="medium" icon="envelope-o"
-          message="ticket.sendMessage.label"
-          data-title="${message(code: 'ticket.sendMessage.toCustomer.title')}"
-          data-submit-url="${createLink(action: 'sendMessage', id: ticketInstance.id)}"
-          />
+<html>
+  <head>
+    <meta name="layout" content="frontend" />
+    <title>${ticketInstance}</title>
+    <meta name="stylesheet" content="helpdesk-frontend" />
+    <g:set var="entityName" value="${message(code: 'ticket.label')}" />
+  </head>
+
+  <body>
+    <content tag="toolbar">
+      <g:button mapping="helpdeskFrontend"
+        params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
+        color="default" class="hidden-xs" icon="arrow-left"
+        message="default.button.back.label" />
+      <button type="button"
+        class="btn btn-default hidden-xs hidden-sm send-message-link">
+        <i class="fa fa-envelope-o"></i>
+        <g:message code="ticket.sendMessage.title" />
+      </button>
+    </content>
+    <g:if test="${
+      ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess, TicketStage.closed]
+    }">
+    <content tag="actionMenu">
+      <li class="visible-xs visible-sm" role="menuitem">
+        <a href="#" class="send-message-link">
+          <i class="fa fa-envelope-o"></i>
+          <g:message code="ticket.sendMessage.title" />
+        </a>
       </li>
-      <g:if test="${ticketInstance.stage != TicketStage.closed}">
-      <li><g:button controller="ticket" action="frontendCloseTicket"
-        id="${ticketInstance.id}"
-        params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-        color="red" size="medium" class="close-btn" icon="check"
-        message="ticket.close.label" /></li>
+      <g:if test="${
+        ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]
+      }">
+      <li role="menuitem">
+        <g:link action="frontendCloseTicket" id="${ticketInstance.id}"
+          params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
+          class="close-ticket-link">
+          <i class="fa fa-check-circle-o"></i>
+          <g:message code="ticket.close.label" />
+        </g:link>
+      </li>
       </g:if>
       <g:if test="${ticketInstance.stage == TicketStage.closed}">
-      <li><g:button controller="ticket" action="frontendResubmitTicket"
-        id="${ticketInstance.id}"
-        params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]"
-        color="orange" size="medium" icon="share-square-o"
-        message="ticket.resubmission.label" /></li>
+      <li>
+        <g:link action="frontendResubmitTicket" id="${ticketInstance.id}"
+          params="[helpdesk: helpdeskInstance.id, accessCode: helpdeskInstance.accessCode]">
+          <i class="fa fa-share-square-o"></i>
+          <g:message code="ticket.resubmission.label" />
+        </g:link>
+      </li>
       </g:if>
-    </ul>
-  </aside>
-  <div id="content">
-    <h2>${entityName}
-    <g:fieldValue bean="${ticketInstance}" field="fullNumber" /> –
-    <g:fieldValue bean="${ticketInstance}" field="subject" /></h2>
-    <div class="data-sheet">
-      <section class="fieldset">
-        <header><h3><g:message code="ticket.fieldset.general.label" /></h3></header>
-        <div class="multicol-content">
-          <div class="col col-l">
+    </content>
+    </g:if>
+
+    <div class="form-horizontal data-form detail-view">
+      <section>
+        <header>
+          <h3><g:message code="ticket.fieldset.general.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
             <f:display bean="${ticketInstance}" property="number">
               <g:fieldValue bean="${ticketInstance}" field="fullNumber" />
             </f:display>
             <f:display bean="${ticketInstance}" property="subject" />
-          </div>
-          <div class="col col-r">
             <f:display bean="${ticketInstance}" property="stage" />
+          </div>
+          <div class="column">
             <f:display bean="${ticketInstance}" property="priority" />
             <f:display bean="${ticketInstance}" property="creator" />
             <f:display bean="${ticketInstance}" property="assignedUser" />
           </div>
         </div>
       </section>
-      <section class="fieldset">
-        <header><h3><g:message code="ticket.fieldset.customerData.label" /></h3></header>
-        <div class="multicol-content">
-          <div class="col col-l">
+      <section>
+        <header>
+          <h3><g:message code="ticket.fieldset.customerData.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
             <f:display bean="${ticketInstance}" property="salutation" />
             <f:display bean="${ticketInstance}" property="firstName" />
             <f:display bean="${ticketInstance}" property="lastName" />
@@ -86,53 +93,82 @@
             <f:display bean="${ticketInstance}" property="email1" />
             <f:display bean="${ticketInstance}" property="email2" />
           </div>
-          <div class="col col-r">
-            <f:display bean="${ticketInstance}" property="address" />
-          </div>
+          <f:display bean="${ticketInstance}" property="address"
+            suppressHeader="true" />
         </div>
       </section>
-
-      <section class="fieldset">
-        <header><h3><g:message code="ticket.fieldset.history.label" /></h3></header>
-        <div>
-          <g:render template="logEntries/logEntry"
-            collection="${ticketInstance.logEntries.reverse().findAll { !it.internal && it.action != TicketLogAction.note } }" />
+      <section>
+        <header>
+          <h3><g:message code="ticket.fieldset.history.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <g:render template="logEntries/logEntry"
+              collection="${ticketInstance.logEntries.reverse()}" />
+          </div>
         </div>
       </section>
     </div>
-  </div>
 
-  <div id="send-message-dialog" style="display: none;">
-    <g:uploadForm action="frontendSendMessage" id="${ticketInstance.id}">
-      <g:hiddenField name="helpdesk" value="${helpdeskInstance.id}" />
-      <g:hiddenField name="accessCode"
-        value="${helpdeskInstance.accessCode}" />
-      <g:hiddenField name="returnUrl" value="${url()}" />
-      <div class="form">
-        <div class="row">
-          <div class="label">
-            <label for="messageText"><g:message code="ticket.messageText.label" /></label>
+    <div id="send-message-dialog" class="modal fade" tabindex="-1"
+      role="dialog" aria-labelledby="send-message-dialog-title"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+              aria-label="${message(code: 'default.btn.close')}"
+              ><span aria-hidden="true">×</span
+            ></button>
+            <h4 id="send-message-dialog-title" class="modal-title"
+              ><g:message code="ticket.sendMessage.title"
+            /></h4>
           </div>
-          <div class="field">
-            <g:textArea name="messageText" cols="40" rows="10" required="required" /><br />
-            <ul class="field-msgs">
-              <li class="info-msg"><g:message code="default.required" default="required" /></li>
-            </ul>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <g:uploadForm action="frontendSendMessage"
+                id="${ticketInstance.id}" method="post">
+                <g:hiddenField name="helpdesk"
+                  value="${helpdeskInstance.id}" />
+                <g:hiddenField name="accessCode"
+                  value="${helpdeskInstance.accessCode}" />
+                <g:hiddenField name="returnUrl" value="${url()}" />
+                <div class="form-group">
+                  <label for="messageText"
+                    ><g:message code="ticket.messageText.label"
+                  /></label>
+                  <g:textArea name="messageText" class="form-control"
+                    rows="10" required="required" />
+                  <ul class="control-messages"
+                    ><li class="control-message-info"
+                      ><g:message code="default.required"
+                    /></li
+                  ></ul>
+                </div>
+                <div class="form-group">
+                  <label for="attachment"
+                    ><g:message code="ticket.attachment.label"
+                  /></label>
+                  <input type="file" id="attachment" name="attachment" />
+                </div>
+              </g:uploadForm>
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="label">
-            <label for="attachment"><g:message code="ticket.attachment.label" /></label>
-          </div>
-          <div class="field">
-            <input type="file" id="attachment" name="attachment" />
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary send-btn"
+              ><g:message code="default.button.send.label"
+            /></button>
+            <button type="button" class="btn btn-default"
+              data-dismiss="modal"
+              ><g:message code="default.button.cancel.label"
+            /></button>
           </div>
         </div>
       </div>
-    </g:uploadForm>
-  </div>
-  <content tag="scripts">
-    <asset:javascript src="helpdesk-frontend" />
-  </content>
-</body>
+    </div>
+
+    <content tag="scripts">
+      <asset:javascript src="helpdesk-frontend" />
+    </content>
+  </body>
 </html>

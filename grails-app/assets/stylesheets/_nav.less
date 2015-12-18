@@ -40,6 +40,10 @@
     line-height: @line-height-computed;
     padding: @navbar-padding-vertical (@grid-gutter-width / 2)
       @navbar-padding-vertical 0;
+
+    &:active, &:focus, &:hover {
+      text-decoration: none;
+    }
   }
   .navbar-title {
     float: left;
@@ -126,4 +130,3 @@
 }
 
 // vim:set ts=2 sw=2 sts=2:
-

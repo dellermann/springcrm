@@ -1,7 +1,7 @@
 /*
  * helpdesk-frontend.less
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,3 +21,18 @@
 
 @import "helpdesk";
 @import "frontend";
+
+
+// list view styles
+.ticket-stage-created, .ticket-stage-resubmitted {
+  background: fade(#FFEB55, 60%);
+}
+.ticket-stage-assigned {
+  background: fade(#2C72C7, 60%);
+}
+.ticket-stage-inProcess {
+  background: fade(#77B753, 60%);
+}
+.ticket-stage-closed {
+  background: fade(#E85752, 60%);
+}

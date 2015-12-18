@@ -206,6 +206,12 @@ class HelpdeskController {
             return
         }
 
-        [helpdeskInstance: helpdeskInstance, ticketInstance: new Ticket()]
+        def ticketInstanceList =
+            Ticket.findAllByHelpdesk(helpdeskInstance, params)
+
+        [
+            helpdeskInstance: helpdeskInstance,
+            ticketInstanceList: ticketInstanceList
+        ]
     }
 }

@@ -1,7 +1,7 @@
 #
 # ticket-frontend.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,85 +17,98 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require frontend
-#= require ticket
+#= require _fileinput-builder
+#= require _handlebars-ext
+#= require templates/widgets/file-upload-document
 
 
+#== Classes =====================================
+
+# Class `HelpdeskFrontend` represents handling of the helpdesk frontend.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
 class HelpdeskFrontend
 
-  #-- Instance variables ------------------------
+  #-- Internal variables ------------------------
 
-  $createTicketForm: $("#create-ticket-form")
-  $sendMessageForm: $("#send-message-form")
+  # @nodoc
+  $ = jq = jQuery
+
+  # @nodoc
+  $LANG = $L
 
 
   #-- Constructor -------------------------------
 
-  constructor: ->
-    @$sendMessageForm.on "click", ".cancel-btn", => @_onCloseSendMessageForm()
-    $(".create-ticket-btn").on "click", => @_onClickCreateTicketBtn()
-    $("#main-container")
-      .on("click", ".send-btn", (event) => @_onClickSendBtn event)
-      .on("click", ".close-btn", => @_onCloseTicket())
-    $("#send-message-btn").on "click", => @_onOpenSendMessageDlg()
+  # Initializes the helpdesk frontend using the given container.
+  #
+  # @param [jQuery, Element, String] element  a jQuery object, an element or a jQuery selector representing the base element containing the whole show view
+  #
+  constructor: (element) ->
+    $L = $LANG
+
+    $elem = $(element)
+      .on('click', '.send-message-link', => @_onClickSendMessageLink())
+      .on(
+        'click', '.close-ticket-link',
+        (event) => @_onClickCloseTicketLink event
+      )
+
+    tmpl = Handlebars.templates['widgets/file-upload-document']
+
+    builder = new SPRINGCRM.FileinputBuilder
+      browseIcon: '<i class="fa fa-file-o"></i> '
+      browseLabel: $L('ticket.attachment.select')
+      layoutTemplates:
+        main1: tmpl section: 'main1'
+      removeClass: 'btn btn-danger btn-sm'
+      removeIcon: '<i class="fa fa-trash-o"></i> '
+      removeLabel: $L('ticket.attachment.delete')
+      showPreview: false
+      showRemove: true
+
+    builder.build $elem.find('#attachment')
 
 
   #-- Non-public methods ------------------------
 
-  _onClickCreateTicketBtn: ->
-    $ = jQuery
+  # Called when the link to close the ticket has been clicked.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickCloseTicketLink: (event) ->
+    $(event.currentTarget).confirmLink $L('ticket.changeStage.closed.confirm')
 
-    $form = @$createTicketForm
-    $form.slideUp() unless $form.css("display") is "none"
-    $form.slideDown()
-    @$sendMessageForm.slideUp()
-    $(".content-table tr").removeClass "active"
-    $(".flash-message").remove()
+  # Called when a the link to send a message has been clicked.
+  #
+  # @return [Boolean] always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickSendMessageLink: ->
+    @_showMessageDialog()
 
-  _onClickSendBtn: (event) ->
-    $form = @$sendMessageForm
-    $form.slideUp() unless $form.css("display") is "none"
-    $tr = $(event.currentTarget).parents("tr")
-      .addClass("active")
-      .siblings()
-        .removeClass("active")
-      .end()
-    @$createTicketForm.slideUp()
-    $form.slideDown()
-      .find("input[name=id]")
-        .val $tr.data("ticket-id")
     false
 
-  _onCloseSendMessageForm: ->
-    $ = jQuery
+  # Shows the dialog to send messages or create notes.
+  #
+  # @private
+  #
+  _showMessageDialog: ->
+    $('#send-message-dialog')
+      .on(
+        'click', '.send-btn', (event) ->
+          $(event.delegateTarget).find('form')
+            .submit()
+      )
+      .modal('show')
 
-    @$createTicketForm.slideDown()
-    @$sendMessageForm.slideUp()
-    $(".content-table tr").removeClass "active"
-    $(".flash-message").remove()
-
-  _onCloseTicket: ->
-    $.confirm $L("ticket.changeStage.closed.confirm")
-
-  _onOpenSendMessageDlg: ->
-    $ = jQuery
-
-    $("#send-message-dialog").dialog
-      buttons: [
-          click: ->
-            $(this).find("form").submit()
-          text: $L("default.button.send.label")
-        ,
-          class: "red"
-          click: ->
-            $(this).dialog("close")
-          text: $L("default.button.cancel.label")
-      ]
-      minHeight: "15em"
-      modal: true
-      width: "40em"
-    false
+    return
 
 
-new HelpdeskFrontend()
+#== Main ========================================
 
+new HelpdeskFrontend $('#frontend-container')

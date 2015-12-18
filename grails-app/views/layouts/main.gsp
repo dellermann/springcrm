@@ -29,7 +29,7 @@
   data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">
   <head>
     <meta charset="utf-8" />
-    <title><g:title /> - <g:message code="default.appName" /></title>
+    <title><g:title /> – <g:message code="default.appName" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <asset:stylesheet src="${(pageProperty(name: 'meta.stylesheet') ?: 'application').toString()}" />
