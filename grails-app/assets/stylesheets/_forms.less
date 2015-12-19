@@ -182,6 +182,30 @@
     width: 34%;
   }
 }
+.datepicker {
+  table tr {
+    td {
+      &.highlighted {
+        background: transparent;
+        border-radius: 4px;
+        color: @brand-danger;
+      }
+      &.focused {
+        &, &.highlighted {
+          background: @spring-green-light;
+        }
+        &:hover {
+          background: @spring-green-dark;
+        }
+      }
+      &.today {
+        .button-variant(
+          @btn-warning-color, @btn-warning-bg, @btn-warning-border
+        );
+      }
+    }
+  }
+}
 .control-messages {
   list-style: none;
   margin: @padding-small-vertical 0 0;
