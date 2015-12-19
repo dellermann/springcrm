@@ -1,9 +1,16 @@
 {
   "name": "springcrm",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "homepage": "https://github.com/dellermann/springcrm",
   "authors": [
-    "Daniel Ellermann <d.ellermann@amc-world.de>"
+    {
+      "name": "Daniel Ellermann",
+      "email": "d.ellermann@amc-world.de"
+    },
+    {
+      "name": "Philip Drozd",
+      "email": "p.drozd@amc-world.de"
+    }
   ],
   "description": "An open-source customer relationship management (CRM) software.",
   "keywords": [
@@ -22,10 +29,10 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.4",
-    "bootstrap-datepicker": "~1.4.0",
-    "bootstrap-fileinput": "~4.2.0",
-    "font-awesome": "~4.2.0",
+    "bootstrap": "~3.3.6",
+    "bootstrap-datepicker": "~1.5.0",
+    "bootstrap-fileinput": "~4.2.8",
+    "font-awesome": "~4.5.0",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.4",
     "jquery-autosize": "~1.18.18",

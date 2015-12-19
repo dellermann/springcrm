@@ -117,6 +117,12 @@ grails.project.dependency.resolution = {
         test 'xalan:xalan:2.7.2'        // fix XSLT bug in test reports
     }
 
+    /*
+     * All plugins except the following are available in Grails 3.x:
+     *
+     * - dbunit-operator
+     * - elasticsearch
+     */
     plugins {
         compile(
             ':asset-pipeline:2.6.10',

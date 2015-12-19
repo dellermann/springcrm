@@ -19,6 +19,8 @@
 
 
 module.exports = (grunt) ->
+  require('load-grunt-tasks') grunt
+
   grunt.initConfig
     bower:
       install:
@@ -113,13 +115,13 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
             expand: true
             src: [
+              'animated.less'
               'core.less'
               'fixed-width.less'
               'icons.less'
               'larger.less'
               'mixins.less'
               'path.less'
-              'spinning.less'
               'variables.less'
             ]
           ,
@@ -198,9 +200,9 @@ module.exports = (grunt) ->
             else if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
               contents = String(contents)
               contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
-            else if file.doesPathContain "#{fa}/less", srcPath
-              contents = String(contents)
-              contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
+            # else if file.doesPathContain "#{fa}/less", srcPath
+            #   contents = String(contents)
+            #   contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
 
             contents
       test:
@@ -321,16 +323,6 @@ module.exports = (grunt) ->
       testCases:
         files: ['<%= dirs.src.test.base %>/*.html']
         tasks: ['copy:test']
-
-  grunt.loadNpmTasks 'grunt-bower-task'
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-handlebars'
-  grunt.loadNpmTasks 'grunt-contrib-less'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-codo'
 
   grunt.registerTask 'default', [
     'clean:test', 'less:test', 'coffee:test', 'handlebars:test', 'copy:test'
