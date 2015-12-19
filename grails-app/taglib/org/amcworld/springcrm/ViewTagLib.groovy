@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.util.GrailsNameUtils
+import java.text.DateFormatSymbols
 import java.util.regex.Pattern
 import org.codehaus.groovy.grails.web.mapping.UrlMapping
 import org.springframework.validation.FieldError
@@ -577,6 +578,52 @@ class ViewTagLib {
         out << '<i class="fa fa-caret-down"></i></span>'
         out << '<ul class="dropdown-menu">' << body() << '</ul>'
         out << '</div>'
+    }
+
+    /**
+     * Renders the name of the given month and the given year.
+     *
+     * @attr month  the one-based index of the month
+     * @attr year   the year
+     * @since 2.0
+     */
+    def month = { attrs, body ->
+        DateFormatSymbols dfs = DateFormatSymbols.getInstance(
+            userService.currentLocale
+        )
+
+        out << dfs.months[attrs.month - 1] << ' ' << attrs.year
+    }
+
+    /**
+     * Renders a list of links containing the short names of the months of a
+     * year.
+     *
+     * @attr action         the action the link should contain
+     * @attr activeMonth    the one-based index of the month to mark as active
+     * @since 2.0
+     */
+    def monthBar = { attrs, body ->
+        String action = attrs.action
+        int activeMonth = attrs.activeMonth
+
+        DateFormatSymbols dfs = DateFormatSymbols.getInstance(
+            userService.currentLocale
+        )
+        String [] monthNames = dfs.shortMonths
+
+        for (int i = 1; i <= 12; i++) {
+            StringBuilder buf = new StringBuilder('btn btn-default')
+            if (i == activeMonth) {
+                buf << ' active'
+            }
+            buf << ' btn-month'
+            String cssClass = buf.toString()
+
+            out << link(action: action, class: cssClass, 'data-month': i) {
+                monthNames[i - 1]
+            }
+        }
     }
 
     /**

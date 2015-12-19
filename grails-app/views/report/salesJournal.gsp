@@ -1,5 +1,4 @@
 <%@ page import="grails.util.GrailsNameUtils" %>
-<%@ page import="java.text.DateFormatSymbols" %>
 
 <html>
   <head>
@@ -31,17 +30,9 @@
     </content>
 
     <g:render template="/layouts/flashMessage" />
-    <g:set var="monthNames" value="${DateFormatSymbols.instance.months}" />
-    <g:set var="shortMonthNames"
-      value="${DateFormatSymbols.instance.shortMonths}" />
     <div class="btn-group month-year-selector" role="group"
       aria-label="${message(code: 'report.salesJournal.monthYearSelector.label')}">
-      <g:each var="i" in="${(1..12)}">
-      <g:link action="salesJournal"
-        class="btn btn-default${(currentMonth == i) ? ' active' : ''} btn-month"
-        data-month="${i}"
-        >${shortMonthNames[i - 1]}</g:link>
-      </g:each>
+      <g:monthBar action="salesJournal" activeMonth="${currentMonth}" />
       <g:link action="salesJournal"
         class="btn btn-default${(currentMonth == 0) ? ' active' : ''} btn-month btn-whole-year"
         data-month="0"
@@ -56,7 +47,7 @@
         </button>
         <ul class="dropdown-menu year-selector"
           data-current-year="${currentYear}" role="menu" aria-expanded="false">
-          <g:each var="year" in="${(yearStart..yearEnd)}">
+          <g:each var="year" in="${(yearEnd..yearStart)}">
           <li><a href="#">${year}</a></li>
           </g:each>
         </ul>
@@ -64,7 +55,7 @@
     </div>
     <h2>
       <g:if test="${currentMonth}">
-      ${monthNames[currentMonth - 1]} ${currentYear}
+      <g:month month="${currentMonth}" year="${currentYear}" />
       </g:if>
       <g:else>
       <g:message code="report.salesJournal.yearlyOverview.label"
