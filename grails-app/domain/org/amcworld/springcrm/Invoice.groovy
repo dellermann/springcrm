@@ -43,6 +43,7 @@ class Invoice extends InvoicingTransaction {
     static belongsTo = [quote: Quote, salesOrder: SalesOrder]
     static hasMany = [creditMemos: CreditMemo, dunnings: Dunning]
     static mapping = {
+        creditMemos lazy: false
         stage column: 'invoice_stage_id'
     }
     static transients = [

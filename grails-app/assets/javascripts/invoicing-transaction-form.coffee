@@ -355,7 +355,7 @@ class InvoicingTransaction
   # transactions for non-admin users.
   #
   # @param [Event] event  any event data
-  # @return [Boolean]     always `false` to prevent the form from being submitted
+  # @return [Boolean]     whether or not the form should be submitted
   # @private
   #
   _onSubmitForm: (event) ->
@@ -363,7 +363,7 @@ class InvoicingTransaction
 
     $oldStage = $('#stage-old')
     if $oldStage.length
-      oldVal = $oldStage.val()
+      oldVal = parseInt $oldStage.val(), 10
       if oldVal > 0
         newVal = $form.find('#stage').val()
         shippingStageValue = @options.stageValues.shipping
@@ -372,8 +372,9 @@ class InvoicingTransaction
             .done ->
               $form.off('submit')
                 .submit()
+          return false
 
-    false
+    true
 
 SPRINGCRM.InvoicingTransaction = InvoicingTransaction
 

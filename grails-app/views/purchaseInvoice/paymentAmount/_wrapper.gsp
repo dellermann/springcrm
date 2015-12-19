@@ -3,7 +3,7 @@
     <div class="col-xs-6 col-sm-12 col-md-6">
       <div class="input-group">
         <f:widget bean="${bean}" property="${property}"
-          value="${formatCurrency(number: value, displayZero: true, external: true)}"
+          value="${formatCurrency(number: value, displayZero: true, external: true, numberOnly: true)}"
           cssClass="form-control form-control-number form-control-currency"
           aria-describedby="payment-amount-currency" />
         <span id="payment-amount-currency" class="input-group-addon"

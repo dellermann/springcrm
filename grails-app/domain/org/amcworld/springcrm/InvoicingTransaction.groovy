@@ -67,6 +67,7 @@ class InvoicingTransaction {
         notes type: 'text'
         sort 'number'
         subject index: 'subject'
+        termsAndConditions lazy: false
         order 'desc'
     }
     static transients = [
