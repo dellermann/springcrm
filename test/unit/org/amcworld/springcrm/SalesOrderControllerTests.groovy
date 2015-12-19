@@ -18,8 +18,6 @@ class SalesOrderControllerTests extends ControllerUnitTestCase {
 		def q1 = new SalesOrder(number:10000, subject:'Sales order 1')
 		def q2 = new SalesOrder(number:10001, subject:'Sales order 2')
 		mockDomain(SalesOrder, [q1, q2])
-		SalesOrder.metaClass.index = { -> }
-		SalesOrder.metaClass.reindex = { -> }
 
 //		def seqNumber = new SeqNumber(controllerName:'salesOrder', nextNumber:10002, prefix:'S', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])

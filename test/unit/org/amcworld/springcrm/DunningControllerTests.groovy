@@ -1,7 +1,7 @@
 /*
  * DunningControllerTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import grails.test.mixin.TestFor
  * {@code DunningController}.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 @TestFor(DunningController)
 @Mock([Dunning, Organization, Person, InvoicingItem, Invoice, DunningStage, SeqNumberService])
@@ -43,9 +43,6 @@ class DunningControllerTests {
         grails.converters.XML.metaClass.static.toString = { -> '' }
         ConfigHolder.metaClass.getConfig = { String name -> null }
 
-        Dunning.metaClass.index = { -> }
-        Dunning.metaClass.reindex = { -> }
-        Invoice.metaClass.reindex = { -> }
         session.user = new User(userName: 'dellermann')
     }
 

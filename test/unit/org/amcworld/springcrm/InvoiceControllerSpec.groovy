@@ -20,10 +20,9 @@
 
 package org.amcworld.springcrm
 
-import java.util.Map;
-
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Specification
 
@@ -262,8 +261,6 @@ class InvoiceControllerSpec extends Specification {
 //    def q1 = new Invoice(number:10000, subject:'Invoice 1')
 //    def q2 = new Invoice(number:10001, subject:'Invoice 2')
 //    mockDomain(Invoice, [q1, q2])
-//    Invoice.metaClass.index = { -> }
-//    Invoice.metaClass.reindex = { -> }
 //
 ////    def seqNumber = new SeqNumber(controllerName:'invoice', nextNumber:10002, prefix:'I', suffix:'')
 ////    mockDomain(SeqNumber, [seqNumber])

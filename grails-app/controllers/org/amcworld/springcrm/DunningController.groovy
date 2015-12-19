@@ -156,7 +156,6 @@ class DunningController {
         Invoice invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)
         invoiceInstance.save flush: true
-        invoiceInstance.reindex()
 
         flash.message = message(
             code: 'default.created.message',
@@ -254,7 +253,6 @@ class DunningController {
         Invoice invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)
         invoiceInstance.save flush: true
-        invoiceInstance.reindex()
 
         flash.message = message(
             code: 'default.updated.message',

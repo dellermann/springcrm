@@ -151,13 +151,11 @@ class CreditMemoController {
         if (invoiceInstance) {
             invoiceInstance.stage = InvoiceStage.get(907)
             invoiceInstance.save flush: true
-            invoiceInstance.reindex()
         }
         Dunning dunningInstance = creditMemoInstance.dunning
         if (dunningInstance) {
             dunningInstance.stage = DunningStage.get(2206)
             dunningInstance.save flush: true
-            dunningInstance.reindex()
         }
 
         flash.message = message(
@@ -264,13 +262,11 @@ class CreditMemoController {
         if (invoiceInstance) {
             invoiceInstance.stage = InvoiceStage.get(907)
             invoiceInstance.save flush: true
-            invoiceInstance.reindex()
         }
         Dunning dunningInstance = creditMemoInstance.dunning
         if (dunningInstance) {
             dunningInstance.stage = DunningStage.get(2206)
             dunningInstance.save flush: true
-            dunningInstance.reindex()
         }
 
         flash.message = message(

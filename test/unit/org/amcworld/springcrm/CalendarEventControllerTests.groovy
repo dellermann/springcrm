@@ -1,7 +1,7 @@
 /*
  * CalendarEventControllerTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import grails.test.mixin.TestFor
  * for {@code CalendarEventController}.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 @TestFor(CalendarEventController)
 @Mock([CalendarEvent, RecurrenceData, Reminder, Organization, User])
@@ -43,8 +43,6 @@ class CalendarEventControllerTests {
         ]
         CalendarEvent.metaClass.static.createCriteria = { crit }
         Reminder.metaClass.static.createCriteria = { crit }
-        CalendarEvent.metaClass.index = { -> }
-        CalendarEvent.metaClass.reindex = { -> }
         session.user = new User(userName: 'dellermann')
     }
 
