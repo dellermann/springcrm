@@ -1,6 +1,6 @@
 {
   "name": "springcrm",
-  "version": "2.0.11",
+  "version": "2.0.12",
   "homepage": "https://github.com/dellermann/springcrm",
   "authors": [
     {
@@ -40,10 +40,12 @@
     "jquery-mockjax": "1.6.1",
     "jqueryui": "~1.11.4",
     "jqueryui-touch-punch": "",
+    "js-calc": "~0.9.8",
     "qunit": "~1.18.0",
     "selectize": "~0.12.1",
     "typeahead.js": "~0.11.1",
-    "typeahead.js-bootstrap3.less": "~0.2.3"
+    "typeahead.js-bootstrap3.less": "~0.2.3",
+    "vat-calc": "~0.9.1"
   },
   "resolutions": {
     "bootstrap": "~3.3.6",

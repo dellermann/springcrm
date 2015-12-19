@@ -18,6 +18,10 @@
 #
 #= require jquery/jquery
 #= require jquery/autosize
+#= require jqueryui/core
+#= require jqueryui/widget
+#= require jqueryui/mouse
+#= require jqueryui/draggable
 #= require _core
 #= require bootstrap/transition
 #= require bootstrap/alert
@@ -321,12 +325,18 @@ $.fn.extend JQueryUiExt
 #
 class Page
 
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
+
   #-- Constructor -------------------------------
 
   # Initializes a page in this application.
   #
   constructor: ->
-    $ = jQuery
+    $ = jq
     win = window
     $spinner = $('#spinner')
 
@@ -368,6 +378,14 @@ class Page
         @_onChangeAutoNumberCheckbox event
       )
     $('.auto-number').trigger 'change'
+    $('#calculator')
+      .draggable()
+      .parent()
+        .on('show.bs.dropdown', -> $('#calculator > div').jscalc('enable'))
+        .on('hide.bs.dropdown', -> $('#calculator > div').jscalc('disable'))
+      .end()
+      .find('> div')
+        .jscalc(point: ',')
 
 
   #-- Public methods ----------------------------
@@ -379,6 +397,8 @@ class Page
   # @param [jQuery] $select the given select control
   #
   initSelect: ($select) ->
+    $ = jq
+
     plugins =
       disable_options:
         disableOptions: []
@@ -511,7 +531,7 @@ class Page
   # @private
   #
   _onClickDeleteBtn: (event) ->
-    $ = jQuery
+    $ = jq
     $LANG = $L
 
     $target = $(event.currentTarget)
@@ -536,7 +556,7 @@ class Page
   # @private
   #
   _onClickMarkdownHelpBtn: ->
-    $ = jQuery
+    $ = jq
 
     $markdownHelp = $('#markdown-help')
     if $markdownHelp.length
@@ -594,6 +614,8 @@ class Page
   # @private
   #
   _onLoadWindow: (event) ->
+    $ = jq
+
     @_initToolbar()
     $(event.target).on('scroll', (event) => @_onScrollWindow event)
       .triggerHandler 'scroll'

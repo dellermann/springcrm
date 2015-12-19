@@ -73,6 +73,10 @@
 @import "selectize/selectize-disable-options";
 @import "selectize/selectize-redefinitions";
 
+// Tools
+@import "js-calc/variables";
+@import "js-calc/core";
+
 // Application variables and mixins
 @import "_variables";
 @import "_mixins";
@@ -302,6 +306,13 @@ h2 {
 }
 .fileinput-remove {
   margin-top: 10px;
+}
+
+@media (max-width: @screen-sm-max) {
+  .navbar-default .navbar-nav > li > .calculator-popup {
+    left: auto;
+    right: 0;
+  }
 }
 
 // vim:set ts=2 sw=2 sts=2:

@@ -119,15 +119,21 @@
             <g:ifAdmin><li role="menuitem"><g:link controller="config"><g:message code="config.title" /></g:link></li></g:ifAdmin>
           </ul>
         </li>
-<%--
-        <li>
-          <a href="#" id="calculator-button"
-            title="${message(code: 'calculator.button.label')}"><i class="fa fa-calculator"></i></a>
-          <div class="calculator-dialog" title="${message(code: 'calculator.title')}">
-            <div class="calculator"></div>
+        <li class="hidden-xs">
+          <a href="#" class="dropdown-toggle"
+            title="${message(code: 'calculator.button.label')}"
+            data-toggle="dropdown" role="menuitem" aria-haspopup="true"
+            aria-owns="calculator"
+            ><i class="fa fa-calculator"></i>
+            <span class="sr-only"
+              ><g:message code="calculator.button.label"
+            /></span
+          ></a>
+          <div id="calculator" class="dropdown-menu calculator-popup"
+            role="grid" aria-expanded="false">
+            <div></div>
           </div>
         </li>
---%>
         <li class="visible-xs">
           <g:link controller="user" action="logout"
             class="btn btn-warning navbar-btn" role="button">

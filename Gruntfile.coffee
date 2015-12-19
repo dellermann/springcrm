@@ -31,6 +31,8 @@ module.exports = (grunt) ->
         '<%= dirs.src.javascripts %>/jqueryui/'
         '<%= dirs.src.javascripts %>/lang/bootstrap-datepicker/'
         '<%= dirs.src.javascripts %>/selectize/selectize.js'
+        '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
+        '<%= dirs.src.javascripts %>/_js-calc.coffee'
         '<%= dirs.src.javascripts %>/_typeahead.js'
         '<%= dirs.src.stylesheets %>/bootstrap/'
         '<%= dirs.src.stylesheets %>/font-awesome/'
@@ -150,6 +152,7 @@ module.exports = (grunt) ->
             expand: true
             src: [
               'core.js'
+              'draggable.js'
               'mouse.js'
               'sortable.js'
               'widget.js'
@@ -157,17 +160,17 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/jqueryui/touch-punch.js'
             src: '<%= dirs.bower.jqueryuiTouchPunch %>/jquery.ui.touch-punch.js'
-#          ,
-#            cwd: '<%= dirs.bower.jsCalc %>/less/'
-#            dest: '<%= dirs.src.stylesheets %>/js-calc/'
-#            expand: true
-#            src: [
-#              'core.less'
-#              'variables.less'
-#            ]
-#          ,
-#            dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
-#            src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
+          ,
+            cwd: '<%= dirs.bower.jsCalc %>/less/'
+            dest: '<%= dirs.src.stylesheets %>/js-calc/'
+            expand: true
+            src: [
+              'core.less'
+              'variables.less'
+            ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
+            src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
           ,
             cwd: '<%= dirs.bower.selectize %>/dist/less/'
             dest: '<%= dirs.src.stylesheets %>/selectize/'
@@ -199,10 +202,9 @@ module.exports = (grunt) ->
             tb = conf.get 'dirs.bower.typeaheadBootstrap'
             fa = conf.get 'dirs.bower.fontAwesome'
 
-            if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
+            if file.arePathsEquivalent srcPath, "#{jc}/less/core.less"
               contents = String(contents)
-              contents = contents.replace /@import\s+"variables";/,
-                '@import "_variables";'
+              contents = contents.replace /@\{prefix\}/g, 'jscalc'
             else if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
               contents = String(contents)
               contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
