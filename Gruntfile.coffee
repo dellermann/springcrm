@@ -133,8 +133,8 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/_jquery.js'
             src: '<%= dirs.bower.jquery %>/dist/jquery.js'
           ,
-            dest: '<%= dirs.src.javascripts %>/_jquery-autosize.js'
-            src: '<%= dirs.bower.jqueryAutosize %>/jquery.autosize.js'
+            dest: '<%= dirs.src.javascripts %>/jquery/autosize.js'
+            src: '<%= dirs.bower.jqueryAutosize %>/autosize.js'
           ,
             dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'

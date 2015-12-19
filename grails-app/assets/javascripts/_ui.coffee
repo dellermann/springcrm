@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require _jquery
-#= require _jquery-autosize
+#= require jquery/autosize
 #= require _core
 #= require bootstrap/transition
 #= require bootstrap/alert
@@ -359,10 +359,10 @@ class Page
       .ajaxComplete( -> $spinner.fadeOut())
 
     $('select').each (_, element) => @initSelect $(element)
-    $('textarea').autosize()
-      .each ->
-        $(this).wrap("""<div class="textarea-container"/>""")
-          .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
+    autosize $('textarea')
+    $('textarea').each ->
+      $(this).wrap("""<div class="textarea-container"/>""")
+        .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
 
     $('.data-form').on('change', '.auto-number input:checkbox', (event) =>
         @_onChangeAutoNumberCheckbox event
@@ -624,4 +624,3 @@ class Page
 window.SPRINGCRM.page = new Page()
 
 # vim:set ts=2 sw=2 sts=2:
-

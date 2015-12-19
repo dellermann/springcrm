@@ -34,8 +34,8 @@
     "bootstrap-fileinput": "~4.2.8",
     "font-awesome": "~4.5.0",
     "handlebars": "~3.0.3",
-    "jQuery-Storage-API": "~1.7.4",
-    "jquery-autosize": "~1.18.18",
+    "jQuery-Storage-API": "~1.7.5",
+    "jquery-autosize": "~3.0.14",
     "jquery-mockjax": "1.6.1",
     "jqueryui": "~1.11.4",
     "jqueryui-touch-punch": "",
@@ -45,7 +45,7 @@
     "typeahead.js-bootstrap3.less": "~0.2.3"
   },
   "resolutions": {
-    "bootstrap": "~3.3.4",
+    "bootstrap": "~3.3.6",
     "jquery": "2.1.4",
     "typeahead.js": "~0.11.1"
   }
