@@ -22,19 +22,22 @@ module.exports = (grunt) ->
   require('load-grunt-tasks') grunt
 
   grunt.initConfig
-    bower:
-      install:
-        options:
-          targetDir: '<%= dirs.bower.base %>/'
     clean:
       documentation: ['<%= dirs.target.documentation %>']
       publish: [
+        '<%= dirs.src.fonts %>/'
+        '<%= dirs.src.javascripts %>/bootstrap/'
+        '<%= dirs.src.javascripts %>/jquery/'
+        '<%= dirs.src.javascripts %>/jqueryui/'
+        '<%= dirs.src.javascripts %>/lang/bootstrap-datepicker/'
+        '<%= dirs.src.javascripts %>/selectize/selectize.js'
+        '<%= dirs.src.javascripts %>/_typeahead.js'
         '<%= dirs.src.stylesheets %>/bootstrap/'
         '<%= dirs.src.stylesheets %>/font-awesome/'
-        '<%= dirs.src.fonts %>/'
         '<%= dirs.src.stylesheets %>/js-calc/'
-        '<%= dirs.src.javascripts %>/jqueryui/'
-        '<%= dirs.src.javascripts %>/lang/fullcalendar/'
+        '<%= dirs.src.stylesheets %>/selectize/plugins/'
+        '<%= dirs.src.stylesheets %>/selectize/selectize.bootstrap3.less'
+        '<%= dirs.src.stylesheets %>/selectize/selectize.less'
       ]
       test: ['<%= dirs.target.test.base %>']
     codo:
@@ -93,10 +96,10 @@ module.exports = (grunt) ->
               'transition.js'
             ]
           ,
-            dest: '<%= dirs.src.stylesheets %>/_bootstrap-datepicker.less'
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/datepicker.less'
             src: '<%= dirs.bower.bootstrapDatepicker %>/less/datepicker3.less'
           ,
-            dest: '<%= dirs.src.javascripts %>/_bootstrap-datepicker.js'
+            dest: '<%= dirs.src.javascripts %>/bootstrap/datepicker.js'
             src:
               '<%= dirs.bower.bootstrapDatepicker %>/js/bootstrap-datepicker.js'
           ,
@@ -105,10 +108,10 @@ module.exports = (grunt) ->
             expand: true
             src: ['*.js']
           ,
-            dest: '<%= dirs.src.stylesheets %>/_bootstrap-fileinput.css'
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/fileinput.css'
             src: '<%= dirs.bower.bootstrapFileinput %>/css/fileinput.css'
           ,
-            dest: '<%= dirs.src.javascripts %>/_bootstrap-fileinput.js'
+            dest: '<%= dirs.src.javascripts %>/bootstrap/fileinput.js'
             src: '<%= dirs.bower.bootstrapFileinput %>/js/fileinput.js'
           ,
             cwd: '<%= dirs.bower.fontAwesome %>/less/'
@@ -130,13 +133,16 @@ module.exports = (grunt) ->
             expand: true
             src: ['*']
           ,
-            dest: '<%= dirs.src.javascripts %>/_jquery.js'
+            dest: '<%= dirs.src.javascripts %>/jquery/jquery.js'
             src: '<%= dirs.bower.jquery %>/dist/jquery.js'
           ,
             dest: '<%= dirs.src.javascripts %>/jquery/autosize.js'
             src: '<%= dirs.bower.jqueryAutosize %>/autosize.js'
           ,
-            dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
+            dest: '<%= dirs.src.javascripts %>/jquery/json.js'
+            src: '<%= dirs.bower.jqueryJson %>/src/jquery.json.js'
+          ,
+            dest: '<%= dirs.src.javascripts %>/jquery/storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
           ,
             cwd: '<%= dirs.bower.jqueryui %>/ui/'
@@ -172,7 +178,7 @@ module.exports = (grunt) ->
               'selectize.less'
             ]
           ,
-            dest: '<%= dirs.src.javascripts %>/_selectize.js'
+            dest: '<%= dirs.src.javascripts %>/selectize/selectize.js'
             src: '<%= dirs.bower.selectize %>/dist/js/standalone/selectize.js'
           ,
             dest: '<%= dirs.src.javascripts %>/_typeahead.js'
@@ -256,6 +262,7 @@ module.exports = (grunt) ->
         handlebars: '<%= dirs.bower.base %>/handlebars'
         jquery: '<%= dirs.bower.base %>/jquery'
         jqueryAutosize: '<%= dirs.bower.base %>/jquery-autosize'
+        jqueryJson: '<%= dirs.bower.base %>/jquery-json'
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
         jqueryui: '<%= dirs.bower.base %>/jqueryui'
@@ -331,7 +338,7 @@ module.exports = (grunt) ->
     'clean:documentation', 'codo:documentation'
   ]
   grunt.registerTask 'publish', [
-    'bower:install', 'clean:publish', 'copy:publish', 'concat:publish'
+    'clean:publish', 'copy:publish', 'concat:publish'
   ]
 
 # vim:set ts=2 sw=2 sts=2:

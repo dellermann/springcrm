@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require _core
-#= require _bootstrap-fileinput
+#= require bootstrap/fileinput
 
 
 $LANG = $L
@@ -116,4 +116,3 @@ class FileinputBuilder
 SPRINGCRM.FileinputBuilder = FileinputBuilder
 
 # vim:set ts=2 sw=2 sts=2:
-

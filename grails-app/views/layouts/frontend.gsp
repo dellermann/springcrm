@@ -34,7 +34,6 @@
     <g:message code="helpdesk.frontend.title" /> –
     <g:message code="default.appName" /></title>
     <asset:stylesheet src="${(pageProperty(name: 'meta.stylesheet') ?: 'frontend').toString()}" />
-    <asset:stylesheet src="print" media="print" />
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <asset:link rel="shortcut icon" href="favicon.png" type="image/png" />
     <asset:link rel="icon" href="favicon.ico" type="image/x-icon" />

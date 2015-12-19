@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _jquery
+#= require jquery/jquery
 #= require bootstrap/transition
 #= require bootstrap/modal
 #= require _handlebars-ext
@@ -97,4 +97,3 @@ $.fn.lightbox.noConflict = ->
 $('*[data-toggle="lightbox"]').each -> $(this).lightbox()
 
 # vim:set ts=2 sw=2 sts=2:
-

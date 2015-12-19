@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _jquery-json
+#= require jquery/json
 #= require jqueryui/core
 #= require jqueryui/widget
 #= require jqueryui/mouse

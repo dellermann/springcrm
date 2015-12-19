@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _jquery
+#= require jquery/jquery
 #= require _core
 
 
@@ -173,7 +173,7 @@ class AddrFields
 
       for own key, value of data
         $to.find(".column-content :input[name='#{prfx}.#{key}']").val value
-  
+
   # Loads data of an organization.  The method returns a `Promise` object in
   # state resolved when a URL and ID is available and loading an organization
   # using this data succeeded.  Otherwise the promise is in state rejected.
@@ -308,4 +308,3 @@ $.fn.addrfields.noConflict = ->
   this
 
 # vim:set ts=2 sw=2 sts=2:
-

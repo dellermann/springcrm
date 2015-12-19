@@ -16,12 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _jquery
+#= require jquery/jquery
 #= require _core
 #= require _filetype
 #= require _ui
 #= require _handlebars-ext
-#= require _jquery-storage-api
+#= require jquery/storage-api
 #= require templates/document/document-list
 
 
@@ -543,4 +543,3 @@ $(window).on 'load', ->
     Plugin.call $(this)
 
 # vim:set ts=2 sw=2 sts=2:
-

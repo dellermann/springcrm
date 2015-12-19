@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _jquery
+#= require jquery/jquery
 #= require jquery/autosize
 #= require _core
 #= require bootstrap/transition
@@ -24,10 +24,10 @@
 #= require bootstrap/collapse
 #= require bootstrap/dropdown
 #= require bootstrap/modal
-#= require _bootstrap-datepicker
-#= require _selectize
-#= require _selectize-no-delete
-#= require _selectize-disable-options
+#= require bootstrap/datepicker
+#= require selectize/selectize
+#= require selectize/plugin-no-delete
+#= require selectize/plugin-disable-options
 #= require _handlebars-ext
 #= require templates/tools/js-calc
 #= require _js-calc

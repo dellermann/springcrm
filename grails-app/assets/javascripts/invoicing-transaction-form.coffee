@@ -18,7 +18,7 @@
 #
 #= require application
 #= require widgets/addr-fields
-#= require _selectize
+#= require selectize/selectize
 #= require _invoicing-items
 
 
@@ -33,7 +33,7 @@
 class InvoicingTransaction
 
   #-- Internal variables ------------------------
-  
+
   # @nodoc
   $ = jq = jQuery
 
@@ -162,7 +162,7 @@ class InvoicingTransaction
             text: $L('invoicingTransaction.addr.fromOrgShippingAddr')
         ]
       organizationId: @options.organizationId
-    
+
     return
 
   # Initializes the selectors for dependent invoicing transactions which
@@ -378,4 +378,3 @@ class InvoicingTransaction
 SPRINGCRM.InvoicingTransaction = InvoicingTransaction
 
 # vim:set ts=2 sw=2 sts=2:
-
