@@ -142,22 +142,6 @@ class ViewFilters {
             }
         }
 
-        searchIndexSave(controller: '*', action: 'save',
-                        controllerExclude: 'helpdesk|user')
-        {
-            after = { model ->
-                request["${controllerName}Instance"]?.index()
-            }
-        }
-
-        searchIndexUpdate(controller: '*', action: 'update|updatePayment',
-                          controllerExclude: 'helpdesk|user')
-        {
-            after = { model ->
-                request["${controllerName}Instance"]?.reindex()
-            }
-        }
-
         invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice|product|service',
                        action: 'create|edit|copy|save|update')
         {

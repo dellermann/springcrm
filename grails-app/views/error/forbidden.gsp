@@ -1,18 +1,15 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="error.forbidden.title" /></title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="error.forbidden.title" /></title>
+    <meta name="caption" content="${message(code: 'error.forbidden.title')}" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="error.forbidden.title" /></h1>
-  </header>
-  <div id="content">
+  <body>
     <p><g:message code="error.forbidden.description" /></p>
     <div class="buttons">
-      <g:button uri="/" color="white" icon="home" message="module.menu.home" />
+      <g:button uri="/" color="default" icon="home"
+        message="module.menu.home" />
     </div>
-  </div>
-</body>
+  </body>
 </html>
