@@ -96,10 +96,13 @@ grails.assets.excludes = [
     'font-awesome/**.less',
     'js-calc/**.less',
     'selectize/**.less',
+    'vat-calc/**.less',
 
     // scripts
     'bootstrap/*.js',
+    'jquery/*.js',
     'jqueryui/*.js',
+    'selectize/*.js',
     'widgets/**'
 ]
 grails.assets.less.compiler = 'standard'
