@@ -129,7 +129,24 @@
               ><g:message code="calculator.button.label"
             /></span
           ></a>
-          <div id="calculator" class="dropdown-menu calculator-popup"
+          <div id="calculator"
+            class="dropdown-menu tool-popup calculator-popup"
+            role="grid" aria-expanded="false">
+            <div></div>
+          </div>
+        </li>
+        <li class="hidden-xs">
+          <a href="#" class="dropdown-toggle"
+            title="${message(code: 'vatCalculator.button.label')}"
+            data-toggle="dropdown" role="menuitem" aria-haspopup="true"
+            aria-owns="vat-calculator"
+            ><i class="fa fa-money"></i>
+            <span class="sr-only"
+              ><g:message code="vatCalculator.button.label"
+            /></span
+          ></a>
+          <div id="vat-calculator"
+            class="dropdown-menu tool-popup vat-calculator-popup"
             role="grid" aria-expanded="false">
             <div></div>
           </div>
@@ -140,6 +157,7 @@
             <i class="fa fa-sign-out"></i> <g:message code="default.logout" />
           </g:link>
         </li>
+        <%--
         <li class="visible-xs">
           <form role="search">
             <div class="input-group">
@@ -156,6 +174,7 @@
             </div>
           </form>
         </li>
+        --%>
       </ul>
     </div>
   </div>

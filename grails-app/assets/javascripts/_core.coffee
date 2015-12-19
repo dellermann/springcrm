@@ -41,7 +41,9 @@ window.$I = do ->
   groupingSeparator: $html.data('grouping-separator') or '.'
   numFractions: $html.data('num-fraction-digits') or 2
   numFractionsExt: $html.data('num-fraction-digits-ext') or 2
-
+  taxRates: do ->
+    s = $html.data('tax-rates').split ','
+    parseFloat r for r in s
 
 # Formats this date with either the given user-defined format or the localized
 # date and time format as specified in the messages `dateFormat` and

@@ -76,6 +76,8 @@
 // Tools
 @import "js-calc/variables";
 @import "js-calc/core";
+@import "vat-calc/variables";
+@import "vat-calc/core";
 
 // Application variables and mixins
 @import "_variables";
@@ -308,11 +310,23 @@ h2 {
   margin-top: 10px;
 }
 
+// tools
 @media (max-width: @screen-sm-max) {
-  .navbar-default .navbar-nav > li > .calculator-popup {
+  .navbar-default .navbar-nav > li > .tool-popup {
     left: auto;
     right: 0;
   }
+}
+@media (max-width: @screen-md-max) {
+  .navbar-default .navbar-nav > li > .vat-calculator-popup {
+    left: auto;
+    right: 0;
+  }
+}
+.vatcalc-calculator-container {
+  display: block;
+  padding: 5px (@grid-gutter-width / 2);
+  width: 420px;
 }
 
 // vim:set ts=2 sw=2 sts=2:

@@ -34,7 +34,9 @@
 #= require selectize/plugin-disable-options
 #= require _handlebars-ext
 #= require templates/tools/js-calc
+#= require templates/tools/vat-calc
 #= require _js-calc
+#= require _vat-calc
 
 
 $ = jQuery
@@ -330,6 +332,12 @@ class Page
   # @nodoc
   $ = jq = jQuery
 
+  # @nodoc
+  $I18N = $I
+
+  # @nodoc
+  $LANG = $L
+
 
   #-- Constructor -------------------------------
 
@@ -337,6 +345,7 @@ class Page
   #
   constructor: ->
     $ = jq
+    $I = $I18N
     win = window
     $spinner = $('#spinner')
 
@@ -378,14 +387,8 @@ class Page
         @_onChangeAutoNumberCheckbox event
       )
     $('.auto-number').trigger 'change'
-    $('#calculator')
-      .draggable()
-      .parent()
-        .on('show.bs.dropdown', -> $('#calculator > div').jscalc('enable'))
-        .on('hide.bs.dropdown', -> $('#calculator > div').jscalc('disable'))
-      .end()
-      .find('> div')
-        .jscalc(point: ',')
+
+    @_initTools()
 
 
   #-- Public methods ----------------------------
@@ -453,6 +456,49 @@ class Page
     @$titleToolbar = $titleToolbar = $('.title-toolbar')
     @yToolbar = $titleToolbar.offset().top
     $titleToolbar.parent().height $titleToolbar.innerHeight()
+
+  # Initializes the tools such as the calculators.
+  #
+  # @private
+  # @since 2.0
+  #
+  _initTools: ->
+    $ = jq
+    $I = $I18N
+    $L = $LANG
+
+    $('#calculator')
+      .draggable()
+      .parent()
+        .on('show.bs.dropdown', -> $('#calculator > div').jscalc('enable'))
+        .on('hide.bs.dropdown', -> $('#calculator > div').jscalc('disable'))
+      .end()
+      .find('> div')
+        .jscalc point: $I.decimalSeparator
+
+    taxRates = $.each $I.taxRates, -> "#{this} %"
+    $('#vat-calculator')
+      .draggable()
+      .find('> div')
+        .vatcalc(
+          accessKeys:
+            calculate: $L('vatCalculator.calculate.hotkey')
+            gross: $L('vatCalculator.gross.hotkey')
+            input: $L('vatCalculator.input.hotkey')
+            net: $L('vatCalculator.net.hotkey')
+            vatRate: $L('vatCalculator.vatRate.hotkey')
+          currency: $I.currency
+          labels:
+            calculate: $L('vatCalculator.calculate.label')
+            gross: $L('vatCalculator.gross.label')
+            net: $L('vatCalculator.net.label')
+            vat: $L('vatCalculator.vat.label')
+            vatRate: $L('vatCalculator.vatRate.label')
+          point: $I.decimalSeparator
+          taxRates: taxRates
+        )
+
+    return
 
   # Called if the state of the checkbox at auto number fields has been changed.
   # The method toggles the disabled state of the auto number input field.

@@ -1,0 +1,94 @@
+{{!--
+
+  vat-calc.hbs
+
+  Copyright (c) 2014, Daniel Ellermann
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+--}}
+
+<div class="vatcalc-calculator">
+  <div class="vatcalc-calculator-container form-horizontal">
+    <div class="form-group">
+      <label for="vatcalc-input" class="col-xs-2 control-label"
+        accesskey="{{options.accessKeys.input}}">{{options.currency}}</label>
+      <div class="col-xs-5">
+        <input type="number" id="vatcalc-input"
+          class="form-control vatcalc-input" autofocus="autofocus"
+          step="0.1" />
+      </div>
+      <div class="col-xs-5 form-inline">
+        <label for="vatcalc-net-gross-switch"
+          class="control-label" accesskey="{{options.accessKeys.net}}"
+          >{{options.labels.net}}</label>
+        <label class="toggle-switch form-control">
+          <input type="checkbox" id="vatcalc-net-gross-switch"
+            class="vatcalc-net-gross-switch"
+            {{#if options.gross}}checked="checked"{{/if}} />
+          <span class="toggle"></span>
+        </label>
+        <label for="vatcalc-net-gross-switch"
+          class="control-label" accesskey="{{options.accessKeys.gross}}"
+          >{{options.labels.gross}}</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="vatcalc-vat-rates" class="col-xs-2 control-label"
+        accesskey="{{options.accessKeys.vatRate}}"
+        >{{options.labels.vatRate}}</label>
+      <div class="col-xs-5">
+        <select id="vatcalc-vat-rates" class="form-control vatcalc-vat-rates">
+        {{#each options.taxRates}}
+          <option value="{{this}}">{{this}}&nbsp;%</option>
+        {{/each}}
+        </select>
+      </div>
+      <div class="col-xs-5">
+        <button type="submit" class="btn btn-primary btn-block"
+          accesskey="{{options.accessKeys.calculate}}"
+          >{{options.labels.calculate}}</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-xs-2 control-label">{{options.labels.vat}}</label>
+      <div class="col-xs-10">
+        <div class="input-group">
+          <input type="text" class="form-control vatcalc-vat"
+            value="" disabled="disabled" />
+          <span class="input-group-addon">{{options.currency}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-xs-2 control-label vatcalc-net-gross-label">
+        {{#if options.gross}}{{options.labels.net}}{{else}}{{options.labels.gross}}{{/if}}
+      </label>
+      <div class="col-xs-10">
+        <div class="input-group">
+          <input type="text" class="form-control vatcalc-result"
+            value="" disabled="disabled" />
+          <span class="input-group-addon">{{options.currency}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- vim:set ft=html: --}}

@@ -115,3 +115,14 @@ ticket.changeStage.assign.confirm
 ticket.changeStage.closed.confirm
 ticket.takeOn.confirm
 user.settings.googleAuth.revoke.confirm.disconnect
+vatCalculator.button.label
+vatCalculator.calculate.hotkey
+vatCalculator.calculate.label
+vatCalculator.gross.hotkey
+vatCalculator.gross.label
+vatCalculator.input.hotkey
+vatCalculator.net.hotkey
+vatCalculator.net.label
+vatCalculator.vat.label
+vatCalculator.vatRate.hotkey
+vatCalculator.vatRate.label

@@ -189,6 +189,20 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.stylesheets %>/_typeahead.less'
             src: '<%= dirs.bower.typeaheadBootstrap %>/typeahead.less'
+          ,
+            cwd: '<%= dirs.bower.vatCalc %>/less/'
+            dest: '<%= dirs.src.stylesheets %>/vat-calc/'
+            expand: true
+            src: [
+              'core.less'
+              'variables.less'
+            ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/_vat-calc.coffee'
+            src: '<%= dirs.bower.vatCalc %>/coffee/vat-calc.coffee'
+          ,
+            dest: '<%= dirs.src.javascripts %>/templates/tools/vat-calc.hbs'
+            src: '<%= dirs.bower.vatCalc %>/templates/vat-calc.hbs'
         ]
         options:
           encoding: null
@@ -201,16 +215,23 @@ module.exports = (grunt) ->
             jc = conf.get 'dirs.bower.jsCalc'
             tb = conf.get 'dirs.bower.typeaheadBootstrap'
             fa = conf.get 'dirs.bower.fontAwesome'
+            vc = conf.get 'dirs.bower.vatCalc'
 
+            # if file.doesPathContain "#{fa}/less", srcPath
+            #   contents = String(contents)
+            #   contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
             if file.arePathsEquivalent srcPath, "#{jc}/less/core.less"
               contents = String(contents)
               contents = contents.replace /@\{prefix\}/g, 'jscalc'
-            else if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
+            if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
               contents = String(contents)
               contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
-            # else if file.doesPathContain "#{fa}/less", srcPath
-            #   contents = String(contents)
-            #   contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
+            if file.arePathsEquivalent srcPath, "#{vc}/less/core.less"
+              contents = String(contents)
+              contents = contents.replace /@\{prefix\}/g, 'vatcalc'
+            if file.arePathsEquivalent srcPath, "#{vc}/coffee/vat-calc.coffee"
+              contents = String(contents)
+              contents = contents.replace /Handlebars.templates\['vat-calc'\]/g, '''Handlebars.templates['tools/vat-calc']'''
 
             contents
       test:
@@ -275,6 +296,7 @@ module.exports = (grunt) ->
         typeahead: '<%= dirs.bower.base %>/typeahead.js'
         typeaheadBootstrap:
           '<%= dirs.bower.base %>/typeahead.js-bootstrap3.less'
+        vatCalc: '<%= dirs.bower.base %>/vat-calc'
       src:
         assets: '<%= dirs.src.grailsApp %>/assets'
         base: '.'

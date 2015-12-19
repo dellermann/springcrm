@@ -64,22 +64,24 @@ class Calculator
     @opStack = new Stack()
     @error = false
     @memory = 0
-    @disabled = false
+    @enabled = false
 
     @_renderTemplate()
 
+
+  #-- Public methods ----------------------------
 
   # Disables the calculator.  If disabled all key events are not handled.
   #
   # @since 0.9
   #
-  disable: -> @disabled = true
+  disable: -> @enabled = false
 
   # Enables the calculator.  If enabled all key events are handled.
   #
   # @since 0.9
   #
-  enable: -> @disabled = false
+  enable: -> @enabled = true
 
 
   #-- Non-public methods ------------------------
@@ -397,7 +399,7 @@ class Calculator
   # @private
   #
   _onKeyDown: (event) ->
-    return true if @disabled
+    return true unless @enabled
 
     code = event.which
     if code is 46
@@ -415,7 +417,7 @@ class Calculator
   # @private
   #
   _onKeyPress: (event) ->
-    return true if @disabled
+    return true unless @enabled
 
     keyCode = null
     code = String.fromCharCode event.which
@@ -456,7 +458,7 @@ class Calculator
   # @private
   #
   _onKeyUp: ->
-    return true if @disabled
+    return true unless @enabled
 
     @$element.find(".jscalc-key")
       .removeClass('active')

@@ -62,6 +62,9 @@ class ViewFilters {
                     model.numFractionDigitsExt = userService.numFractionDigitsExt
                     model.decimalSeparator = userService.decimalSeparator
                     model.groupingSeparator = userService.groupingSeparator
+
+                    List<TaxRate> taxRates = TaxRate.list(sort: 'orderId')
+                    model.taxRates = taxRates.collect { (it.taxValue * 100d).round(2) }.join ','
                 }
             }
         }
