@@ -1,7 +1,7 @@
 /*
  * Note.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@ package org.amcworld.springcrm
  * The class {@code Note} represents a note.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @author	Philip Drozd
+ * @version 2.0
  */
 class Note {
 
@@ -46,7 +47,6 @@ class Note {
 		content type: 'text'
         title index: 'title'
 	}
-	static searchable = true
 	static transients = [ 'fullNumber' ]
 
 
@@ -90,12 +90,12 @@ class Note {
 
     @Override
     public int hashCode() {
-        return id as int
+        (id ?: 0i) as int
     }
 
     @Override
 	String toString() {
-		return title ?: ''
+		title ?: ''
 	}
 
 	def beforeInsert() {

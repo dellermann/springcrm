@@ -1,7 +1,7 @@
 /*
  * DocumentControllerSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -409,37 +409,37 @@ function helloWorld() {
     }
 
 	def 'Upload empty file'() {
-		when: 'I upload an empty file'
-		def file = new GrailsMockMultipartFile(
-			'file', 'foo.dat', 'application/octet-stream', new byte[0]
-		)
+        given: 'an empty file'
+        def file = new GrailsMockMultipartFile(
+            'file', 'foo.dat', 'application/octet-stream', new byte[0]
+        )
+
+		when: 'I upload this file'
 		request.addFile file
 		controller.upload ''
 
-		then: 'I get a success code'
-        SC_OK == response.status
+		then: 'I am redirected to the list and get a success message'
+        '/document/index?path=' == response.redirectedUrl
+        'document.upload.success' == flash.message
 
-		and: 'no file has been created'
-		!root.resolveFile('foo.dat').exists()
+		and: 'the file has been created'
+		root.resolveFile('foo.dat').exists()
 	}
 
-	def 'Upload non-empty file'() {
-		given: 'an example file content'
+	def 'Upload non-empty file to base folder'() {
+		given: 'a non-empty file'
 		String data = 'Example file for upload'
-
-		when: 'I upload a file'
 		def file = new GrailsMockMultipartFile(
-			'file', 'foo.txt', 'text/plain', data.bytes
-		)
+	        'file', 'foo.txt', 'text/plain', data.bytes
+        )
+
+		when: 'I upload this file'
 		request.addFile file
 		controller.upload ''
 
-		then: 'I get information about the uploaded file'
-		'foo.txt' == response.json.name
-		'txt' == response.json.ext
-		data.length() == response.json.size
-		response.json.readable
-		response.json.writeable
+        then: 'I am redirected to the list and get a success message'
+        '/document/index?path=' == response.redirectedUrl
+        'document.upload.success' == flash.message
 
 		and: 'a file has been created'
 		def f1 = root.resolveFile('foo.txt')
@@ -447,37 +447,44 @@ function helloWorld() {
 		data.length() == f1.content.size
 		data == f1.content.inputStream.text
 
-		when: 'I upload a file to a subdirectory'
-		request.addFile file
-		controller.upload 'bar'
-
-		then: 'I get information about the uploaded file'
-		'foo.txt' == response.json.name
-		'txt' == response.json.ext
-		data.length() == response.json.size
-		response.json.readable
-		response.json.writeable
-
-		and: 'a file has been created'
-		def f2 = root.resolveFile('bar/foo.txt')
-		f2.exists()
-		data.length() == f2.content.size
-		data == f2.content.inputStream.text
 	}
 
-	def 'Upload file to invalid folder'() {
-		given: 'an example file content'
-		String data = 'Example file for upload'
+    def 'Upload non-empty file to subdirectory'() {
+        given: 'a non-empty file'
+        String data = 'Example file for upload'
+        def file = new GrailsMockMultipartFile(
+            'file', 'foo.txt', 'text/plain', data.bytes
+        )
 
-		when: 'I upload a file'
-		def file = new GrailsMockMultipartFile(
-			'file', 'foo.txt', 'text/plain', data.bytes
-		)
+        when: 'I upload this file to a subdirectory'
+        request.addFile file
+        controller.upload 'bar'
+
+        then: 'I am redirected to the list and get a success message'
+        '/document/index?path=bar' == response.redirectedUrl
+        'document.upload.success' == flash.message
+
+        and: 'a file has been created'
+        def f2 = root.resolveFile('bar/foo.txt')
+        f2.exists()
+        data.length() == f2.content.size
+        data == f2.content.inputStream.text
+    }
+
+	def 'Upload file to invalid folder'() {
+        given: 'a non-empty file'
+        String data = 'Example file for upload'
+        def file = new GrailsMockMultipartFile(
+            'file', 'foo.txt', 'text/plain', data.bytes
+        )
+
+		when: 'I upload this file to an invalid folder'
 		request.addFile file
 		controller.upload '..'
 
-		then: 'I get an error'
-        SC_NOT_FOUND == response.status
+        then: 'I am redirected to the list and get an error message'
+        '/document/index?path=..' == response.redirectedUrl
+        'document.upload.error' == flash.message
 
 		and: 'no file has been created'
 		!root.resolveFile('foo.dat').exists()
@@ -726,9 +733,9 @@ function helloWorld() {
 	            phone: '3030303',
 	            fax: '703037494',
 	            phoneOther: '73903037',
-	            email1: 'info@yourorganization.example',
-	            email2: 'office@yourorganization.example',
-	            website: 'www.yourorganization.example',
+	            email1: 'info@yourorganization.de',
+	            email2: 'office@yourorganization.de',
+	            website: 'www.yourorganization.de',
 	            legalForm: 'Ltd.',
 	            type: new OrgType(name: 'foo'),
 	            industry: new Industry(name: 'bar'),

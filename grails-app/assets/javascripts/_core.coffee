@@ -1,7 +1,7 @@
 #
 # _core.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _jquery
+#= require jquery/jquery
 
 
 $ = jQuery
 
-window.SPRINGCRM = window.SPRINGCRM ? {}
+window.SPRINGCRM ?= {}
 
 
 # Contains variables with default values for i18n and computing.  The object
@@ -35,11 +35,15 @@ window.SPRINGCRM = window.SPRINGCRM ? {}
 window.$I = do ->
   $html = $('html')
 
+  lang: $html.attr('lang') or 'en'
+  currencySymbol: $html.data('currency-symbol') or '€'
   decimalSeparator: $html.data('decimal-separator') or ','
   groupingSeparator: $html.data('grouping-separator') or '.'
   numFractions: $html.data('num-fraction-digits') or 2
   numFractionsExt: $html.data('num-fraction-digits-ext') or 2
-
+  taxRates: do ->
+    s = $html.data('tax-rates').split ','
+    parseFloat r for r in s
 
 # Formats this date with either the given user-defined format or the localized
 # date and time format as specified in the messages `dateFormat` and
@@ -119,32 +123,38 @@ Date::format = (format = 'datetime') ->
 # are not set, a dot (.) is used as decimal separator and a comma (,) as
 # grouping separator.
 #
-# @param [Number] n the precision; if not set or `null` the precision remains unchanged
-# @return [String]  the formatted number
+# @param [Number] n                     the precision; if not set or `null` the precision remains unchanged
+# @param [Boolean] useGroupingSeparator if `true` the grouping separator is used; `false` otherwise
+# @return [String]                      the formatted number
 # @since            1.3
 #
-Number::format = (n = null) ->
-  gs = $I.groupingSeparator
+Number::format = (n = null, useGroupingSeparator = true) ->
+  gs = if useGroupingSeparator then $I.groupingSeparator else ''
 
   num = this
-  if isNaN(num) or not isFinite(num)
-    return '---'
-  numSgn = (if (n is null) then num else num.round(n))
-  sgn = (if numSgn < 0 then '-' else '')
-  n = (if (n is null) then undefined else Math.abs(n))
+  return '---' if isNaN(num) or not isFinite(num)
+
+  numSgn = if n is null then num else num.round(n)
+  sgn = if numSgn < 0 then '-' else ''
+  n = if n is null then undefined else Math.abs(n)
   num = Math.abs(+num or 0)
   int = String(parseInt(
-    num = (if isNaN(n) then num.toString() else num.toFixed(n)), 10
+    num = (if isNaN n then num.toString() else num.toFixed n), 10
   ))
-  pos = (if (pos = int.length) > 3 then pos % 3 else 0)
+  pos = if (pos = int.length) > 3 then pos % 3 else 0
 
   frac = ''
   if n isnt 0
-    dotPos = num.indexOf('.')
+    dotPos = num.indexOf '.'
     if dotPos >= 0
-      frac = Math.abs(num.substring(dotPos))
-      frac = (if isNaN(n) then frac.toString() else frac.toFixed(n))
-      frac = $I.decimalSeparator + frac.substring(2)
+      frac = Math.abs num.substring dotPos
+      if isNaN n
+        frac = frac.toString()
+        frac = '' if frac.match /[Ee]-/
+      else
+        frac = frac.toFixed n
+      frac = $I.decimalSeparator + frac.substring(2) if frac
+
   sgn + ((if pos then int.substr(0, pos) + gs else '')) +
     int.substr(pos).replace(/(\d{3})(?=\d)/g, '$1' + gs) + frac
 
@@ -220,6 +230,51 @@ RegExp.escape = (s) ->
 #
 String::compare = (s) ->
   (if s < this then 1 else (if s > this then -1 else 0))
+
+# Compares this string to the given one ignoring case.
+#
+# @param [String] s the string to compare
+# @return [Number]  -1 if this string is less than the given one; 1 if this string is greater than the given one; 0 if both the strings are equal
+# @since            2.0
+#
+String::compareIgnoreCase = (s) ->
+  s1 = @toLowerCase()
+  s2 = s.toLowerCase()
+  (if s2 < s1 then 1 else (if s2 > s1 then -1 else 0))
+
+# Pads this string with the given character on the left side.  If the length of
+# this string is greater than or equal to the given length no padding is
+# performed.
+#
+# @param [Number] length    the required minimum length
+# @param [String] char      the padding character
+# @return [String]          the string padded to the given minimum length
+# @since                    2.0
+#
+String::padLeft = (length, char = ' ') ->
+  s = this
+
+  i = s.length
+  s = char + s while i++ < length
+
+  s
+
+# Pads this string with the given character on the right side.  If the length
+# of this string is greater than or equal to the given length no padding is
+# performed.
+#
+# @param [Number] length    the required minimum length
+# @param [String] char      the padding character
+# @return [String]          the string padded to the given minimum length
+# @since                    2.0
+#
+String::padRight = (length, char = ' ') ->
+  s = this
+
+  i = s.length
+  s += char while i++ < length
+
+  s
 
 # Parses this string as a date and/or time value in either the given
 # user-defined format or the localized date and time format as specified
@@ -304,12 +359,27 @@ String::parseNumber = ->
   s = this.toString()
   (if (s is '') then 0 else parseFloat(s.replace(reG, '').replace(reD, '.')))
 
+# Changes the first character of this string to upper case.
+#
+# @return [String]  the changed string
+# @since            2.0
+#
+String::ucFirst = ->
+  this.charAt(0).toUpperCase() + this.substring(1)
+
 
 # Handles HTTP and HTTPS URLs including parsing and building.
 #
-# @since  1.4
+# @author   Daniel Ellermann
+# @version  2.0
+# @since    1.4
 #
 class HttpUrl
+
+  #-- Internal variables ------------------------
+
+  $ = jq = jQuery
+
   REGEXP = /// ^
     (?:(https?)://)?      # scheme, e. g. http, ftp, etc.
     (?:(\w+)(?::(.+))?@)? # user name and optional password
@@ -320,6 +390,9 @@ class HttpUrl
     (?:#(.+))?            # fragment identifier
     $
   ///
+
+
+  #-- Instance variables ------------------------
 
   # @property [String] the URL scheme
   scheme: 'http'
@@ -339,12 +412,14 @@ class HttpUrl
   # @property [String] the path to the resource; if any
   path: undefined
 
-  # @property [Object] any query parameters
+  # @property [Object] any query parameters; each value can be either a string which will be URI encoded or a function returning a value which won't be URI encoded
   query: {}
 
   # @property [String] the fragment identifier, if any
   fragmentIdentifier: undefined
 
+
+  #-- Constructor -------------------------------
 
   # Creates either an empty or a parsed HTTP URL.
   #
@@ -353,6 +428,9 @@ class HttpUrl
   constructor: (url = null) ->
     @_parse url if url
 
+
+  #-- Public methods ----------------------------
+
   # Overwrites the query parameters in this URL with the given query string or
   # query data.
   #
@@ -360,10 +438,11 @@ class HttpUrl
   # @return [HttpUrl]             this object
   #
   overwriteQuery: (query) ->
-    if $.type(query) is 'string'
-      query = @_parseQueryString query
+    $ = jq
 
+    query = @_parseQueryString query if $.type(query) is 'string'
     $.extend @query, query
+
     this
 
   # Builds a string representation of this URL from the internal data.
@@ -388,15 +467,21 @@ class HttpUrl
     s += "##{@fragmentIdentifier}" if @fragmentIdentifier
     s
 
+
+  #-- Non-public methods ------------------------
+
   # Builds a query string from the given data.
   #
   # @param [Object] query the query data
   # @return [String]      the built query string
   #
   _buildQueryString: (query) ->
+    $ = jq
+
     parts = []
     for key, value of query
-      parts.push "#{encodeURIComponent(key)}=#{encodeURIComponent(value)}"
+      value = if $.isFunction value then value.call @ else encodeURIComponent value
+      parts.push "#{encodeURIComponent(key)}=#{value}"
     parts.join '&'
 
   # Parses the given URL and stores the components in this object.
@@ -430,7 +515,7 @@ class HttpUrl
       [key, value] = part.split '='
       res[decodeURIComponent(key)] =
         decodeURIComponent(value).replace /\+/, ' '
+
     res
 
 window.HttpUrl = HttpUrl
-

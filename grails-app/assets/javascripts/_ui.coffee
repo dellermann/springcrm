@@ -1,7 +1,7 @@
 #
 # _ui.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,45 +16,148 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#= require _jquery
-#= require _jquery-ui
-#= require _jquery-ui-datepicker-de
-#= require _jquery-autosize
+#= require jquery/jquery
+#= require jquery/autosize
+#= require jqueryui/core
+#= require jqueryui/widget
+#= require jqueryui/mouse
+#= require jqueryui/draggable
 #= require _core
+#= require bootstrap/transition
+#= require bootstrap/alert
+#= require bootstrap/collapse
+#= require bootstrap/dropdown
+#= require bootstrap/modal
+#= require bootstrap/datepicker
+#= require selectize/selectize
+#= require selectize/plugin-no-delete
+#= require selectize/plugin-disable-options
 #= require _handlebars-ext
 #= require templates/tools/js-calc
+#= require templates/tools/vat-calc
 #= require _js-calc
+#= require _vat-calc
 
 
 $ = jQuery
 
 
+#== Classes =====================================
+
 # This mixin contains various static extensions for jQuery UI.
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 #
 JQueryUiStaticExt =
 
-  # Displays an alert message to the user.  The method is used to  abstract the
-  # access to the actual alert dialog.
+  # Displays an alert message in a modal to the user.  The method is used to
+  # abstract the access to the actual alert modal.
   #
-  # @param [String] msg the message (prompt) to be displayed
-  # @return [jQuery]    this jQuery object
+  # @param [String] msg   the message (prompt) to be displayed
+  # @param [String] title an optional title of the modal
+  # @return [jQuery]      this jQuery object
   #
-  alert: (msg) ->
-    window.alert msg
+  alert: (msg, title) ->
+    $dlg = $('#alert-modal')
+    $dlg.find('.modal-title').text title if title
+
+    btnOpts = options.okBtn
+    if btnOpts
+      $btn = $dlg.find '.btn-ok'
+      s = btnOpts.color
+      $btn.removeClass('btn-default').addClass "btn-#{s}" if s
+      s = btnOpts.label
+      $btn.find('span').text s if s
+      s = btnOpts.icon
+      $btn.find('i').attr 'class', "fa fa-#{s}" if s
+
+    $dlg.find('.model-body p')
+        .text(msg)
+      .end()
+      .modal()
+
     this
 
   # Displays a confirmation message to the user.  The method is used to
   # abstract the access to the actual confirmation dialog.
   #
-  # @param [String] msg the message (prompt) to be displayed
-  # @return [Boolean]   `true` if the user has confirmed; `false` otherwise
+  # The function accepts the following options:
   #
-  confirm: (msg) ->
-    window.confirm msg
+  # #### Dialog options
+  #
+  # * `okBtn`.  Options concerning the OK button
+  #
+  #   - `color`.  The color of the button.
+  #
+  #   - `label`.  The label of the button.
+  #
+  #   - `icon`.  The icon to display without the `fa-` prefix.
+  #
+  # * `cancelBtn`.  Options concerning the cancel button
+  #
+  #   - `color`.  The color of the button.
+  #
+  #   - `label`.  The label of the button.
+  #
+  #   - `icon`.  The icon to display without the `fa-` prefix.
+  #
+  # #### Options for deferred object
+  #
+  # * `context`.  The context object to set when resolving or rejecting the
+  #   returned deferred object.
+  # * `arguments`.  Any arguments to pass to the deferred object when
+  #   resolving or rejecting the returned deferred object.
+  #
+  # @param [String] msg     the message (prompt) to be displayed
+  # @param [String] title   an optional title of the modal
+  # @param [Object] options any options which are used in the modal and the deferred object; see function description for more information
+  # @return [Promise]       a deferred object which is resolved if the user confirms; otherwise it is rejected
+  #
+  confirm: (msg, title, options) ->
+    $ = jQuery
+    unless $.type(title) is 'string'
+      options = title
+      title = null
+    options ?= {}
+
+    $.Deferred((d) ->
+        opts = options
+
+        $dlg = $('#confirm-modal')
+        $dlg.find('.modal-title').text title if title
+
+        btnOpts = opts.okBtn
+        if btnOpts
+          $btn = $dlg.find '.btn-ok'
+          s = btnOpts.color
+          $btn.removeClass('btn-success').addClass "btn-#{s}" if s
+          s = btnOpts.label
+          $btn.find('span').text s if s
+          s = btnOpts.icon
+          $btn.find('i').attr 'class', "fa fa-#{s}" if s
+
+        btnOpts = opts.cancelBtn
+        if btnOpts
+          $btn = $dlg.find '.btn-cancel'
+          s = btnOpts.color
+          $btn.removeClass('btn-default').addClass "btn-#{s}" if s
+          s = btnOpts.label
+          $btn.find('span').text s if s
+          s = btnOpts.icon
+          $btn.find('i').attr 'class', "fa fa-#{s}" if s
+
+        method = 'rejectWith'
+        $dlg.find('.modal-body p')
+            .text(msg)
+          .end()
+          .on('click', '.btn-ok', -> method = 'resolveWith')
+          .on('hidden.bs.modal', ->
+            d[method].apply d, [opts.context ? $dlg, opts.arguments ? []]
+          )
+          .modal()
+      ).promise()
 
 $.extend JQueryUiStaticExt
 
@@ -63,54 +166,56 @@ $.extend JQueryUiStaticExt
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  1.3
+# @version  2.0
 #
 JQueryUiExt =
 
-  # Registers a click handler for each element in this jQuery object which
-  # displays a deletion confirmation dialog.  If the user confirms the link is
-  # rewritten and followed to allow deletion on the server.
+  # Follows the URL in the `href` attribute of the jQuery object if the user
+  # confirms a dialog.
   #
-  deleteConfirm: ->
-    @filter('[href]')
-      .on('click', ->
-        res = $.confirm $L('default.delete.confirm.msg')
-        if res
-          $this = $(this)
-          url = $this.attr('href')
-          url += (if url.indexOf('?') < 0 then '?' else '&') + 'confirmed=1'
-          $this.attr 'href', url
-        res
-      )
-    .end()
+  # For more information about the available options refer to
+  # `JQueryUiStaticExt.confirm`.
+  #
+  # @param [String] msg                   the message (prompt) to be displayed
+  # @param [String] title                 an optional title of the modal
+  # @param [Object] options               any options which are used in the modal and the deferred object; see function description for more information
+  # @return [Boolean]                     always `false` to prevent event bubbling
+  # @see JQueryUiStaticExt.html#confirm-  JQueryUiStaticExt.confirm
+  # @since                                2.0
+  #
+  confirmLink: (msg, title, options) ->
+    $ = jQuery
+
+    $.Deferred()
+      .resolve()
+      .then( -> $.confirm msg, title, options)
+      .done( => window.location.href = $(this).attr 'href')
+
+    false
 
   # Disables the elements in the jQuery object.
   #
-  # @param [boolean] disable  if true the elements are disabled; otherwise they are enabled.  This parameter is used to change the disable state by a boolean value.
+  # @param [boolean] disable  if `true` the elements are disabled; otherwise they are enabled.  This parameter is used to change the disable state by a boolean value.
   # @return [jQuery]          this jQuery object
   #
   disable: (disable = true) ->
     $ = jQuery
 
     if disable
-      @each ->
-        $(this).attr('disabled', 'disabled')
-          .addClass 'disabled'
+      @each -> $(this).attr 'disabled', 'disabled'
     else
       @enable()
 
   # Enables the elements in the jQuery object.
   #
-  # @param [boolean] enable if true the elements are enabled; otherwise they are disabled.  This parameter is used to change the enable state by a boolean value.
+  # @param [boolean] enable if `true` the elements are enabled; otherwise they are disabled.  This parameter is used to change the enable state by a boolean value.
   # @return [jQuery]        this jQuery object
   #
   enable: (enable = true) ->
     $ = jQuery
 
     if enable
-      @each ->
-        $(this).removeAttr('disabled')
-          .removeClass 'disabled'
+      @each -> $(this).removeAttr 'disabled'
     else
       @disable()
 
@@ -120,6 +225,45 @@ JQueryUiExt =
   # @since            1.3
   #
   reverse: [].reverse
+
+  # Scrolls this jQuery object to a particular target or offset.
+  #
+  # @param [Number, String, jQuery] target  either a target or a numeric offset
+  # @param [Object] options                 any options (see below)
+  # @option options [Number] duration       the duration for scroll animation
+  # @option options [String] easing         the easing type of scroll animation
+  # @param [Function] callback              an optional callback function which is executed after scrolling
+  # @return [jQuery]                        this jQuery object
+  # @since 2.0
+  #
+  scrollTo: (target, options, callback) ->
+    $ = jQ = jQuery
+
+    if $.isFunction options and arguments.length is 2
+      callback = options
+      options = target
+
+    settings = $.extend
+        duration: 500
+        easing: 'swing'
+        scrollTarget: target
+      , options
+
+    @each ->
+      $ = jQ
+      $scrollPane = $(this)
+
+      if $.isNumeric settings.scrollTarget
+        scrollTarget = settings.scrollTarget
+        scrollY = scrollTarget
+      else
+        scrollTarget = $(settings.scrollTarget)
+        scrollY = scrollTarget.offset().top
+
+      $scrollPane.animate { scrollTop: scrollY },
+        parseInt(settings.duration, 10),
+        settings.easing,
+        -> if $.isFunction callback then callback.call this
 
   # Sorts the jQuery elements or the elements which are returned by the given
   # `getSortable` function.
@@ -140,7 +284,9 @@ JQueryUiExt =
       # Since the element itself will change position, we have to have some way
       # of storing its original position in the DOM. The easiest way is to have
       # a 'flag' node:
-      nextSibling = parentNode.insertBefore(document.createTextNode(''), sortElement.nextSibling)
+      nextSibling = parentNode.insertBefore(
+        document.createTextNode(''), sortElement.nextSibling
+      )
 
       ->
         if parentNode is this
@@ -162,707 +308,388 @@ JQueryUiExt =
   # Enables or disables the elements in the jQuery object depending on the
   # given state.
   #
-  # @param [Boolean|String|jQuery] enable either a boolean value indicating whether or not to enable the elements, a string representing a selector of a check box, or a jQuery object representing a check box which checked state is obtained
-  # @return [jQuery]                      this jQuery object
+  # @param [Boolean, String, jQuery] enable either a boolean value indicating whether or not to enable the elements, a string representing a selector of a checkbox, or a jQuery object representing a checkbox which checked state is obtained
+  # @param [Boolean] [invert]               if `true` the enabled stated is inverted
+  # @return [jQuery]                        this jQuery object
   #
-  toggleEnable: (enable) ->
-    b = if $.type(enable) is 'boolean' then enable else $(enable).is(':checked')
+  toggleEnable: (enable, invert = false) ->
+    b = if $.type(enable) is 'boolean' then enable else $(enable).is ':checked'
+    b = not b if invert
     (if b then @enable() else @disable())
 
 $.fn.extend JQueryUiExt
 
 
-
-# Displays a selector for font sizes and scales the whole appearance of the
-# page.
+# Class `Page` handles default components of pages in this application.
 #
-# @mixin
 # @author   Daniel Ellermann
-# @version  1.4
-# @since    1.3
+# @version  2.0
 #
-FontSizeWidget =
-  options:
-    change: null
-    currentSize: '11px'
-    numItems: 5
-    url: null
+class Page
 
-  # Initializes this widget.
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
+  # @nodoc
+  $I18N = $I
+
+  # @nodoc
+  $LANG = $L
+
+
+  #-- Constructor -------------------------------
+
+  # Initializes a page in this application.
   #
-  _create: ->
-    DEF_SIZE = 11
-    $ = jQuery
-
-    baseClass = @widgetFullName
-    $ul = $('<ul/>')
-      .addClass("#{baseClass}-selector")
-      .click((event) => @_onChangeFontSize(event))
-      .appendTo(@element)
-
-    opts = @options
-    currentSize = opts.currentSize
-    currentSize = if currentSize then parseInt(opts.currentSize, 10) else DEF_SIZE
-    $('body').css 'font-size', "#{currentSize}px"
-    n = opts.numItems
-    offset = Math.floor(n / 2)
-    clsCurrent = "#{baseClass}-current"
-    for i in [0..n]
-      size = DEF_SIZE - offset + i
-      $('<li/>',
-          class: (if (size is currentSize) then clsCurrent else null)
-          style: "font-size: #{size}px;"
-          text: 'A'
-        )
-        .appendTo $ul
-
-  # Called if this widget is destroyed.
-  #
-  _destroy: ->
-    @element.remove 'ul'
-
-  # Called if the user changes the font size.  The method submits the new font
-  # size to the server.
-  #
-  # @param [Object] event the event data
-  #
-  _onChangeFontSize: (event) ->
-    $ = jQuery
-
-    $target = $(event.target)
-    fontSize = $target.css('font-size')
-    $('body').css 'font-size', fontSize
-    clsCurrent = "#{@widgetFullName}-current"
-    $target.addClass(clsCurrent)
-      .siblings(".#{clsCurrent}")
-        .removeClass clsCurrent
-
-    url = @options.url
-    if url
-      $.get url,
-        key: 'fontSize'
-        value: fontSize
-
-    @_trigger 'change', event, fontSize
-
-$.widget 'springcrm.fontsize', FontSizeWidget
-
-
-# Renders an autocomplete input field with extended functionality.  The
-# `autocompleteex` widget forces the user to select a value.  If not, the input
-# field is reset to its old content.
-#
-# @mixin
-# @author   Daniel Ellermann
-# @version  1.3
-#
-AutoCompleteExWidget =
-  options:
-    combobox: true
-    labelProp: 'name'
-    loadParameters: {}
-    lookupUrl: null
-    noSelectValue: 'null'
-    url: null
-    valueInput: null
-    valueProp: 'id'
-
-  # Initializes this widget.
-  #
-  _create: ->
-    $ = jQuery
-
-    parentOpts = {}
-    @_prepareOptions()
-    opts = @options
-    $.extend parentOpts, opts
-
-    el = @element
-    el.autocomplete(parentOpts)
-      .wrap("<span class='#{@widgetFullName}-combobox'/>")
-      .focus(=> @_onFocus())
-      .blur => @_onBlur()
-
-    @valueInput = @_getValueInput()
-    if opts.combobox
-      el.after $('<a/>',
-          click: (event) => @_onClickComboboxBtn event
-          html: '<i class="fa fa-caret-down"></i>'
-        )
-
-  _getValueInput: ->
-    $ = jQuery
-
-    valueInput = null
-    v = @options.valueInput
-    if v
-      switch $.type(v)
-        when 'string' then valueInput = $(v)
-        when 'function' then valueInput = v.call(this)
-    else
-      el = @element
-      name = el.attr('name')
-      if name
-        valueInput = $(":input[name=#{name}.id]")
-      else
-        name = el.attr('id')
-        if name
-          valueInput = $("##{name}\\.id")
-          valueInput = $("##{name}-id") unless valueInput.length
-    valueInput
-
-  _load: (request, response) ->
-    opts = @options
-    url = opts.url
-    if url
-      $ = jQuery
-
-      p = opts.loadParameters
-      params = {}
-      params = (if $.isFunction(p) then p.call(this) else p) if p
-      params.name = request.term
-
-      $.getJSON url, params, (data) =>
-        opts = @options
-        labelProp = opts.labelProp
-        valueProp = opts.valueProp
-        response $.map(data, (item) ->
-          label: item[labelProp]
-          value: item[valueProp]
-        )
-
-  _onBlur: ->
-    el = @element
-    val = el.val()
-    valueInput = @valueInput
-    if val is ''
-      valueInput.val @options.noSelectValue
-    else
-      valueInput.val @oldValue
-      el.val @oldLabel
-
-  _onClickComboboxBtn: (event) ->
-    el = @element
-    if el.autocomplete('widget').is ':visible'
-      el.autocomplete 'close'
-      return
-
-    # work around a bug (likely same cause as #5265)
-    $(event.target).blur()
-
-    # pass wildcard as value to search for, displaying all results
-    el.autocomplete 'search', '%'
-    el.focus()
-
-  _onFocus: ->
-    @oldValue = @valueInput.val()
-    @oldLabel = @element.val()
-
-  _onFocusItem: (event, ui) ->
-    $(event.target).val ui.item.label
-
-  _onSelect: (event, ui) ->
-    item = ui.item
-    s = item.label
-    @oldLabel = s
-    @element.val s
-
-    s = item.value
-    @oldValue = s
-    @valueInput.val s
-
-  _prepareOptions: ->
-    el = @element
-    self = this
-
-    opts = @options
-    unless opts.source
-      url = opts.url or el.data('find-url')
-      if url
-        opts.url = url
-        opts.source = (request, response) => @_load(request, response)
-
-    select = opts.select
-    opts.select = =>
-      @_onSelect.apply this, arguments
-      select.apply this, arguments if select
-      false
-
-    focus = opts.focus
-    opts.focus = =>
-      @_onFocusItem.apply this, arguments
-      focus.apply this, arguments if focus
-      false
-    this
-
-$.widget 'springcrm.autocompleteex', $.ui.autocomplete, AutoCompleteExWidget
-
-
-# Handles actions in address fields which allow copying data from left to right
-# side and vice versa.
-#
-# @mixin
-# @author   Daniel Ellermann
-# @version  1.3
-#
-AddrFieldsWidget =
-  ADDRESS_FIELDS: [
-    'street', 'poBox', 'postalCode', 'location', 'state', 'country'
-  ]
-
-  options:
-    confirm: (msg) ->
-      $.confirm msg
-
-    leftMenuSelector: '.left-address .dropdown-menu'
-    leftPrefix: 'billingAddr'
-    loadOrganizationUrl: null
-    menuItems: []
-    organizationId: null
-    rightMenuSelector: '.right-address .dropdown-menu'
-    rightPrefix: 'shippingAddr'
-
-  # Adds a menu item to clear data of the given side.
-  #
-  # @param [String] side  the side where the menu item should be added; must be either `left` or `right`
-  # @param [String] text  the menu item text
-  # @since                1.4
-  #
-  addMenuItemClear: (side, text) ->
-    f = (if (side is 'left') then @clearLeft else @clearRight)
-    $('<span/>',
-        click: => f.call this
-        text: text
-      )
-      .wrap('<li/>')
-      .appendTo @_getMenu(side)
-
-  # Adds a menu item to copy data from the one side to the other.
-  #
-  # @param [String] side  the side where the menu item should be added; must be either `left` or `right`
-  # @param [String] text  the menu item text
-  #
-  addMenuItemCopy: (side, text) ->
-    f = (if (side is 'left') then @copyToLeft else @copyToRight)
-    $('<span/>',
-        click: => f.call this
-        text: text
-      )
-      .wrap('<li/>')
-      .appendTo @_getMenu(side)
-
-  # Adds a menu item to load an address from organization.
-  #
-  # @param [String] side        the side where the menu item should be added; must be either `left` or `right`
-  # @param [String] text        the menu item text
-  # @param [String] propPrefix  the prefix used for the field names
-  #
-  addMenuItemLoadFromOrganization: (side, text, propPrefix) ->
-    f = (if (side is 'left') then @loadFromOrganizationToLeft else @loadFromOrganizationToRight)
-    $('<span/>',
-        click: => f.call this, propPrefix
-        text: text
-      )
-      .wrap('<li/>')
-      .appendTo @_getMenu(side)
-
-  # Clears the address data on the left side.
-  #
-  # @since 1.4
-  #
-  clearLeft: ->
-    @_clear @options.leftPrefix
-
-  # Clears the address data on the right side.
-  #
-  # @since 1.4
-  #
-  clearRight: ->
-    @_clear @options.rightPrefix
-
-  # Copies the address from the right side to the left side.
-  #
-  copyToLeft: ->
-    opts = @options
-    @_copyAddress opts.rightPrefix, opts.leftPrefix
-
-  # Copies the address from the left side to the right side.
-  #
-  copyToRight: ->
-    opts = @options
-    @_copyAddress opts.leftPrefix, opts.rightPrefix
-
-  # Loads the address of the organization to the left side.
-  #
-  # @param [String] propPrefix  the prefix used for the field names
-  #
-  loadFromOrganizationToLeft: (propPrefix) ->
-    @_loadFromOrganization @options.leftPrefix, propPrefix
-
-  # Loads the address of the organization to the right side.
-  #
-  # @param [String] propPrefix  the prefix used for the field names
-  #
-  loadFromOrganizationToRight: (propPrefix) ->
-    @_loadFromOrganization @options.rightPrefix, propPrefix
-
-  # Clears the address fields with the given prefix.
-  #
-# @param [String] prefix  the prefix of the fields that should be cleared
-  #
-  _clear: (prefix) ->
-    addrFields = @ADDRESS_FIELDS
-    gaf = @_getField
-    gaf(prefix, f).val '' for f in addrFields
-    this
-
-  # Copies the address from one side to the other using the given field name
-  # prefixes.
-  #
-  # @param [String] fromPrefix  the field name prefix of the source fields
-  # @param [String] toPrefix    the field name prefix of the destination fields
-  # @return [jQuery]            this object
-  #
-  _copyAddress: (fromPrefix, toPrefix) ->
-    addrFields = @ADDRESS_FIELDS
-    msg = $L("default.copyAddressWarning.#{toPrefix}")
-    gaf = @_getField
-    gaf(toPrefix, f).val gaf(fromPrefix, f).val() for f in addrFields if not @_doesExist(toPrefix) or @options.confirm(msg)
-    this
-
-  # Initializes this widget.
-  #
-  _create: ->
-    el = @element
-    opts = @options
-    @leftMenu = el.find(opts.leftMenuSelector)
-    @rightMenu = el.find(opts.rightMenuSelector)
-    opts.loadOrganizationUrl = el.data('load-organization-url') unless opts.loadOrganizationUrl
-    loadOrganizationUrl = opts.loadOrganizationUrl
-    orgId = opts.organizationId
-
-    menuItems = opts.menuItems
-    for menuItem in menuItems
-      switch menuItem.action
-        when 'clear'
-          @addMenuItemClear menuItem.side, menuItem.text
-        when 'copy'
-          @addMenuItemCopy menuItem.side, menuItem.text
-        when 'loadFromOrganization'
-          @addMenuItemLoadFromOrganization menuItem.side, menuItem.text, menuItem.propPrefix if loadOrganizationUrl and orgId
-
-  # Checks whether or not the fields with the given prefix are filled.
-  #
-  # @param [String] prefix  the given field name prefix
-  # @return [Boolean]       `true` if any field with the given prefix is filled; `false` otherwise
-  #
-  _doesExist: (prefix) ->
-    addrFields = @ADDRESS_FIELDS
-    gf = @_getField
-
-    res = false
-    res = res or gf(prefix, addrField).val() for addrField in addrFields
-    res
-
-  # Fills address data obtained from server into the fields with the given
-  # prefix.
-  #
-  # @param [String] prefix      the given field name prefix
-  # @param [String] propPrefix  the prefix of the properties in the given data object which are to set into the fields
-  # @param [Object] data        the given data
-  # @return [jQuery]            this object
-  #
-  _fillAddress: (prefix, propPrefix, data) ->
-    addrFields = @ADDRESS_FIELDS
-
-    msg = $L("default.copyAddressWarning.#{prefix}")
-    gf = @_getField
-    addr = data[propPrefix]
-    gf(prefix, f).val addr[f] for f in addrFields if not @_doesExist(prefix) or @options.confirm(msg)
-    this
-
-  # Gets the input field which name is composed by the given prefix and name.
-  #
-  # @param [String] prefix  the given prefix
-  # @param [String] name    the given field name
-  # @return [jQuery]        the input field
-  #
-  _getField: (prefix, name) ->
-    $ "##{prefix}\\.#{name}"
-
-  # Gets the menu of the given side of the address fields.  If no such menu
-  # exists, it is created.
-  #
-  # @param [String] side  the given side; must be either `left` or `right`
-  # @return [jQuery]      the menu
-  #
-  _getMenu: (side) ->
-    (if side is 'left' then @leftMenu else @rightMenu)
-
-  # Loads address data from the organization stored on the server.
-  #
-  # @param [String] prefix      the given field name prefix
-  # @param [String] propPrefix  the prefix of the properties in the given data object which are to set into the fields
-  # @return [jQuery]            this object
-  #
-  _loadFromOrganization: (prefix, propPrefix) ->
-    self = this
-
-    opts = @options
-    organizationId = opts.organizationId
-    url = opts.loadOrganizationUrl
-    if url and organizationId
-      $ = jQuery
-      id = null
-      if $.isFunction organizationId
-        id = organizationId.call(this)
-      else if $.type(organizationId) is 'string'
-        id = $(organizationId).val()
-      else if $.type(organizationId) is 'number'
-        id = organizationId
-
-      unless id is null
-        $.getJSON url, { id: id }, (data) =>
-          @_fillAddress prefix, propPrefix, data
-    this
-
-$.widget 'springcrm.addrfields', AddrFieldsWidget
-
-
-RemoteListWidget =
-  options:
-    container: '> div'
-    returnUrl: null
-
-  # Computes the URL to load the remote data either from the given URL or the
-  # data attributes.  If attribute `data-load-params` is specified the
-  # parameters given there are added to the URL.
-  #
-  # @param [String] url the given URL to use; if not specified the URL is obtained from attribute `data-load-url`
-  # @return [String]    the computed URL
-  #
-  _computeUrl: (url) ->
-    el = @element
-    url = new HttpUrl(url or el.data('load-url'))
-    params = el.data('load-params')
-    url.overwriteQuery params if params
-    url.toString()
-
-  # Initializes this widget.
-  #
-  _create: ->
-    url = @element.data('load-url')
-    @_loadContent @_computeUrl(url) if url
-
-  # Loads the content of the given URL.
-  #
-  # @param [String] url         the given URL
-  # @return [RemoteListWidget]  this object
-  #
-  _loadContent: (url) ->
-    el = @element
-    opts = @options
-    el.find(opts.container).load url, =>
-      $ = jQuery
-      element = el
-
-      element.find('thead a, .paginator a')
-        .click (event) =>
-          @_loadContent @_computeUrl($(event.currentTarget).attr('href'))
-          false
-
-      returnUrl = opts.returnUrl
-      if returnUrl
-        element.find('tbody .button')
-          .each ->
-            $this = $(this)
-            url = $this.attr('href')
-            url += (if url.indexOf('?') < 0 then '?' else '&')
-            url += "returnUrl=#{returnUrl}"
-            $this.attr 'href', url
-
-      element.find('.delete-btn').deleteConfirm()
-    this
-
-$.widget 'springcrm.remotelist', RemoteListWidget
-
-
-SPRINGCRM.page = (->
-  $ = jQuery
-  win = window
-  doc = win.document
-  $document = $(doc)
-
-  $spinner = $('#spinner')
-  $toolbar = $('#toolbar-container')
-  toolbarOffset = (if $toolbar.length then $toolbar.offset().top else 0)
-
-  # Initializes the page and their elements.
-  #
-  init = ->
-    $ = jQuery
-
-    $document.scroll onScrollDocument if $toolbar.length
-    $('#search-area span').on 'click', ->
-      $(this).parent().get(0).submit()
-      false
-    $('#quick-access').change onChangeQuickAccess
-    $('#calculator-button').on 'click', ->
-      $dlg = $('.calculator-dialog')
-      $calculator = $dlg.find('.calculator')
-        .jscalc(point: $('html').data('decimal-separator'))
-      $jsCalcContainer = $calculator.find '.jscalc-calculator-container'
-      $dlg.dialog(
-          resizable: false
-        ).dialog 'option',
-          height: $jsCalcContainer.height() + 65
-          width: $jsCalcContainer.width() + 30
-      false
-
-    $('#main-container').on('focusin', '.currency :input, :input.currency', ->
-        $this = $(this)
-        val = $this.val().parseNumber()
-        $this.val (if val then val.format() else '')
-      )
-      .on('focusout', '.currency :input, :input.currency', ->
-        $this = $(this)
-        val = $this.val().parseNumber()
-        $this.val if $this.is '.currency-ext' then val.formatCurrencyValueExt() else val.formatCurrencyValue()
-      )
-      .on('click', '.button-group .dropdown', ->
-        $btnGroup = $(this).parents('.button-group')
-        unless $btnGroup.is '.open'
-          $('.button-group.open').removeClass 'open'
-        $btnGroup.toggleClass 'open'
-        $document.one 'click', ->
-          $btnGroup.removeClass 'open'
-          true
-        false
-      )
-      .on('click', '.submit-btn', ->
+  constructor: ->
+    $ = jq
+    $I = $I18N
+    win = window
+    $spinner = $('#spinner')
+
+    $(win).on('load', (event) => @_onLoadWindow event)
+    $(win.document)
+      .on('click', '.go-top-btn', (event) ->
         $ = jQuery
-
-        $("##{$(this).data("form")}").submit()
+        $('html, body').scrollTo $(event.currentTarget).attr 'href'
         false
       )
-      .on('click', '#print-btn', -> win.print())
-      .on('change', '.date-input-date, .date-input-time', onChangeDateInput)
-      .on('click', '.markdown-help-btn', ->
-        $ = jQuery
-
-        $markdownHelp = $('#markdown-help')
-        if $markdownHelp.length
-          $markdownHelp.dialog 'open'
-        else
-          $('<div id="markdown-help"/>').appendTo('body')
-            .load $('html').data('load-markdown-help-url'), ->
-              $(this).dialog
-                title: $L('help.markdown.title')
-                width: '35em'
-        false
+      .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
+      .on('click', '#spinner', -> $(this).fadeOut())
+      .on('click', '.btn-print', -> win.print())
+      .on('click', '.btn-action-delete[href]', (event) =>
+        @_onClickDeleteBtn event
       )
-      .on('change', '#autoNumber', ->
-        $('#number').toggleEnable not @checked
+      .on('focusin', '.form-control-number', (event) =>
+        @_onFocusInNumberControl event
       )
-      .on('click', '#spinner', ->
-        $(this).css 'display', 'none'
+      .on('focusout', '.form-control-number', (event) =>
+        @_onFocusOutNumberControl event
       )
-      .find('#autoNumber')
-        .trigger('change')
+      .on('change', '.date-input-control', (event) =>
+        @_onChangeDateInput event
+      )
+      .on('change', '.date-input-time-control', (event) =>
+        @_onChangeTimeInput event
+      )
+      .ajaxSend( -> $spinner.fadeIn())
+      .ajaxComplete( -> $spinner.fadeOut())
 
-    $('.delete-btn').deleteConfirm()
-    $('.date-input-date').datepicker
-        changeMonth: true
-        changeYear: true
-        gotoCurrent: true
-        selectOtherMonths: true
-        showButtonPanel: true
-        showOtherMonths: true
-    $('.date-input-time').autocomplete
-        select: onSelectTimeValue
-        source: timeValues
-    $('textarea').autosize()
-      .each ->
-        $html = $('html')
-        $(this).wrap("""<div class="textarea-container"/>""")
-          .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
-    initAjaxEvents()
+    $('select').each (_, element) => @initSelect $(element)
+    autosize $('textarea')
+    $('textarea').each ->
+      $(this).wrap("""<div class="textarea-container"/>""")
+        .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
 
-  # Initializes the handling of AJAX requests. The method cares about display
-  # of a spinner view while loading data.
+    $('.data-form').on('change', '.auto-number input:checkbox', (event) =>
+        @_onChangeAutoNumberCheckbox event
+      )
+    $('.auto-number').trigger 'change'
+
+    @_initTools()
+
+
+  #-- Public methods ----------------------------
+
+  # Initializes the given select control using Selectize.  Depending on
+  # attribute data-find-url the control is initialized to load the options from
+  # the given URL.
   #
-  initAjaxEvents = ->
-    $ = jQuery
+  # @param [jQuery] $select the given select control
+  #
+  initSelect: ($select) ->
+    $ = jq
 
-    $spinner.ajaxSend(->
-        $(this).show()
-      ).ajaxComplete(->
-        $(this).hide()
-      )
+    plugins =
+      disable_options:
+        disableOptions: []
+    plugins['no-delete'] = {} if $select.attr 'required'
 
-  # Called if either the date or time part of a date/time input field has
+    opts =
+      onInitialize: ->
+        id = @$input.attr 'id'
+        @$control_input.attr 'id', id.replace(/-select$/, '') if id
+      plugins: plugins
+
+    url = $select.data 'find-url'
+    if url
+      $organization = $($select.data 'filter-organization')
+      $resetOnChange = $($select.data 'reset-on-change')
+      $.extend opts,
+        labelField: 'name'
+        load: (query, callback) ->
+          $org = $organization
+
+          data = name: query
+          data.organization = $org.val() if $org.length
+
+          $.getJSON(url, data)
+            .done((data) -> callback data)
+            .fail(-> callback())
+
+          return
+        onItemAdd: ->
+          $otherSel = $resetOnChange
+          if $otherSel.length
+            $otherSel.each -> @selectize.clearOptions()
+
+          return
+        preload: 'focus'
+        searchField: ['name']
+        sortField: 'name'
+        valueField: 'id'
+
+    $select.selectize opts
+    return
+
+
+  #-- Non-public methods ------------------------
+
+  # Initializes the title/toolbar that it may be treated as fixed when
+  # scrolling.
+  #
+  # @private
+  #
+  _initToolbar: ->
+    @$titleToolbar = $titleToolbar = $('.title-toolbar')
+    @yToolbar = $titleToolbar.offset().top
+    $titleToolbar.parent().height $titleToolbar.innerHeight()
+
+  # Initializes the tools such as the calculators.
+  #
+  # @private
+  # @since 2.0
+  #
+  _initTools: ->
+    $ = jq
+    $I = $I18N
+    $L = $LANG
+
+    $('#calculator')
+      .draggable()
+      .parent()
+        .on('show.bs.dropdown', -> $('#calculator > div').jscalc('enable'))
+        .on('hide.bs.dropdown', -> $('#calculator > div').jscalc('disable'))
+      .end()
+      .find('> div')
+        .jscalc point: $I.decimalSeparator
+
+    taxRates = $.each $I.taxRates, -> "#{this} %"
+    $('#vat-calculator')
+      .draggable()
+      .find('> div')
+        .vatcalc(
+          accessKeys:
+            calculate: $L('vatCalculator.calculate.hotkey')
+            gross: $L('vatCalculator.gross.hotkey')
+            input: $L('vatCalculator.input.hotkey')
+            net: $L('vatCalculator.net.hotkey')
+            vatRate: $L('vatCalculator.vatRate.hotkey')
+          currency: $I.currency
+          labels:
+            calculate: $L('vatCalculator.calculate.label')
+            gross: $L('vatCalculator.gross.label')
+            net: $L('vatCalculator.net.label')
+            vat: $L('vatCalculator.vat.label')
+            vatRate: $L('vatCalculator.vatRate.label')
+          point: $I.decimalSeparator
+          taxRates: taxRates
+        )
+
+    return
+
+  # Called if the state of the checkbox at auto number fields has been changed.
+  # The method toggles the disabled state of the auto number input field.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onChangeAutoNumberCheckbox: (event) ->
+    $target = $(event.currentTarget)
+    $target.closest('.control-container')
+      .find('.input-group input')
+        .toggleEnable $target, true
+
+  # Called if either the date or time part of a date/time input field has been
   # changed. The method computes a formatted composed value in a hidden
   # date/time field.
   #
-  onChangeDateInput = ->
-    if @id.match /^([\w\-.]+)-(date|time)$/
-      els = @form.elements
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onChangeDateInput: (event) ->
+    $target = $(event.currentTarget)
+
+    if $target.attr('id').match /^([\w\-.]+)-(date|time)$/
       baseId = RegExp.$1
-      partId = RegExp.$2
-      otherPartField = els["#{baseId}_" + (if (partId is 'date') then 'time' else 'date')]
+      type = RegExp.$2
 
-      type = ''
+      input = $target[0]
+      elements = input.form.elements
+
+      otherPartField =
+        elements["#{baseId}_#{if (type is 'date') then 'time' else 'date'}"]
+
       val = ''
-      if partId is 'date'
-        val += @value
-        type = 'date'
-        if otherPartField
-          val += " #{otherPartField.value}"
-          type += 'time'
+      if type is 'date'
+        val += input.value
+        val += " #{otherPartField.value}" if otherPartField
       else
-        if otherPartField
-          val += "#{otherPartField.value} "
-          type = 'date'
-        val += @value
-        type += 'time'
-      els[baseId].value = val
+        val += "#{otherPartField.value} " if otherPartField
+        val += input.value
 
-  # Called if an item of the quick access selector was selected. The method
-  # calls the associated URL.
-  #
-  onChangeQuickAccess = ->
-    $this = $(this)
-    val = $this.val()
-    $this.val ''
-    win.location.href = val if val
+      elements[baseId].value = val
 
-  # Called if the document is scrolled.
+  # Called if the time value has been changed.  The method parses and formats
+  # particular time values.
   #
-  onScrollDocument = ->
-    if $document.scrollTop() >= toolbarOffset
-      $toolbar.addClass 'fixed'
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onChangeTimeInput: (event) ->
+    $target = $(event.currentTarget)
+
+    val = $target.val()
+    if val.match /^\d$/
+      val = "0#{val}:00"
+    else if val.match /^\d\d$/
+      val = "#{val}:00"
+    else if val.match /^(\d)(\d\d)$/
+      val = "0#{RegExp.$1}:#{RegExp.$2}"
+    else if val.match /^(\d\d)(\d\d)$/
+      val = "#{RegExp.$1}:#{RegExp.$2}"
+    else if val.match /^(\d{1,2})\D(\d{0,2})$/
+      hour = RegExp.$1.padLeft 2, '0'
+      minute = RegExp.$2.padLeft 2, '0'
+      val = "#{hour}:#{minute}"
+
+    $target.val val
+    return
+
+  # Called if the user clicks on a link to delete a record.  This method
+  # displays a deletion confirmation dialog.  If the user confirms the link is
+  # loaded to the current window.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  #
+  _onClickDeleteBtn: (event) ->
+    $ = jq
+    $LANG = $L
+
+    $target = $(event.currentTarget)
+    $.confirm(
+        $LANG('default.delete.confirm.msg'),
+        $LANG('default.delete.confirm.title'),
+        okBtn:
+          color: 'danger'
+          icon: 'trash'
+          label: $LANG('default.button.delete.label')
+      )
+      .done( ->
+        url = $target.attr 'href'
+        url += (if url.indexOf('?') < 0 then '?' else '&') + 'confirmed=1'
+        window.location.assign url
+      )
+
+    false
+
+  # Called if the user clicks on the icon to display the Markdown help.
+  #
+  # @private
+  #
+  _onClickMarkdownHelpBtn: ->
+    $ = jq
+
+    $markdownHelp = $('#markdown-help')
+    if $markdownHelp.length
+      $markdownHelp.modal 'show'
     else
-      $toolbar.removeClass 'fixed'
+      html = '''\
+<div id="markdown-help" class="modal fade" tabindex="-1" role="dialog"
+  aria-hidden="true"/>
+'''
+      $(html).appendTo('body')
+        .load $('html').data('load-markdown-help-url'), ->
+          $(this).modal()
 
-  # Called if the user selects a time from the autocomplete list.
+    return
+
+  # Called if a number control gets the focus.  The method removes all zeros
+  # after the decimal point.
   #
-  # @param [Object] event the event data
-  # @param [Object] ui    information about the selected item
+  # @param [Event] event  any event data
+  # @private
   #
-  onSelectTimeValue = (event, ui) ->
-    $this = $(this)
-    item = ui.item
-    $this.val item.value if item
-    $this.trigger 'change'
+  _onFocusInNumberControl: (event) ->
+    $target = $(event.currentTarget)
 
-  timeValues = do ->
-    res = []
-    for h in [0..23]
-      hh = h.toString()
-      hh = "0#{hh}" if hh.length < 2
-      res.push "#{hh}:00"
-      res.push "#{hh}:30"
-    res
+    val = $target.val().parseNumber()
+    $target.val (if val then val.format(null, false) else '')
 
-  init()
-)()
+    return
+
+  # Called if a number control looses the focus.  The method formats the
+  # number depending on the type of number control (currency, percentage
+  # etc.).
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onFocusOutNumberControl: (event) ->
+    $target = $(event.currentTarget)
+
+    numDigits = $I.numFractions
+    if $target.hasClass 'form-control-currency-ext'
+      numDigits = $I.numFractionsExt
+    else if $target.hasClass 'form-control-percentage'
+      numDigits = 1
+    d = $target.data('num-fraction-digits')
+    numDigits = parseInt d, 10 if d?
+    numDigits = null if $target.data 'suppress-reformat'
+
+    val = $target.val().parseNumber()
+    $target.val val.format numDigits
+
+  # Called if the window has been finished loading and rendering.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onLoadWindow: (event) ->
+    $ = jq
+
+    @_initToolbar()
+    $(event.target).on('scroll', (event) => @_onScrollWindow event)
+      .triggerHandler 'scroll'
+
+    # I initialize the Bootstrap datepicker widget here because before, the
+    # l18n file in lang/bootstrap-datepicker hasn't been loaded yet.
+    datePickerDefaults =
+      #autoclose: true
+      clearBtn: true
+      daysOfWeekHighlighted: '0'
+      language: $I.lang.split('-')[0]
+      todayBtn: true
+      todayHighlight: true
+    $.extend $.fn.datepicker.defaults, datePickerDefaults
+    $('.date-input-date-control').datepicker()
+
+  # Called if the window is scrolling.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onScrollWindow: (event) ->
+    $target = $(event.target)
+    @$titleToolbar.toggleClass 'fixed', $target.scrollTop() >= @yToolbar
+
+
+#== Main ========================================
+
+window.SPRINGCRM.page = new Page()
+
+# vim:set ts=2 sw=2 sts=2:

@@ -1,0 +1,146 @@
+/*
+ * sales-item-pricing.less
+ *
+ * Copyright (c) 2011-2015, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "invoicing-transaction";
+
+
+.sales-item-pricing {
+  > section {
+    padding-bottom: (@grid-gutter-width / 2);
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+  .form-inline {
+    .control-label {
+      font-weight: normal;
+      width: auto !important;
+    }
+    .selectize-control {
+      display: inline-block;
+    }
+    .selectize-input {
+      display: inline-block;
+      min-width: 150px;
+      vertical-align: middle;
+    }
+  }
+  #step1-pricing-quantity {
+    display: inline-block;
+    vertical-align: middle;
+    width: auto;
+  }
+  #step1-pricing-items {
+    margin-top: @line-height-computed;
+
+    .row-selectable > td {
+      background: #B1D28F;
+
+      &, * {
+        cursor: crosshair !important;
+      }
+    }
+    .row-non-selectable > td {
+      background: #FFBF80;
+
+      &, * {
+        cursor: not-allowed !important;
+      }
+    }
+    .row-non-removable > .col-actions > .remove-btn {
+      color: @gray;
+    }
+    .col-type .selectize-input {
+      min-width: 200px;
+    }
+  }
+  #step3 .col-unit {
+    width: auto;
+  }
+  .col-relative-to-pos {
+    white-space: nowrap;
+
+    i {
+      cursor: pointer;
+    }
+    strong {
+      padding-left: 1ex;
+    
+      &:not(:empty):after {
+        content: ".";
+      }
+    }
+  }
+  .col-unit-price-label {
+    text-align: center;
+  }
+  .empty-list {
+    margin-top: @line-height-computed;
+  }
+
+  @media (min-width: @screen-md-min) {
+    .table-responsive {
+      overflow-x: visible;
+    }
+  }
+}
+
+//#step1-calculation-base {
+//  display: table;
+//  margin-bottom: 1em;
+//
+//  .field-text, .field-msgs {
+//    display: table-row;
+//  }
+//  .input {
+//    padding-left: 1ex;
+//  }
+//  li {
+//    display: table-cell;
+//    padding: .2em 1ex;
+//  }
+//}
+//#step1-pricing-items {
+//  td {
+//    vertical-align: middle;
+//  }
+//  .step1-unit-price {
+//    font-weight: bold;
+//  }
+//  .not-removable .remove-btn {
+//    color: @color-fg-gray;
+//    cursor: default;
+//  }
+//}
+//#step2, #step3 {
+//  td {
+//    vertical-align: middle;
+//  }
+//  .quantity, .unit, .percentage {
+//    width: 7.5em;
+//  }
+//  .unit-price-label {
+//    text-align: right;
+//  }
+//}
+
+// vim:set ts=2 sw=2 sts=2:
+

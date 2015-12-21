@@ -1,7 +1,7 @@
 /*
  * config.less
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,62 +22,113 @@
 
 
 .configuration-overview {
-  dl {
-    background-repeat: no-repeat;
-    margin-bottom: 1.5em;
-    min-height: 64px;
-    padding-left: 80px;
-  }
-  dt {
-    font-size: 108%;
-    margin-bottom: .5em;
-    padding-top: .5em;
-  }
-  dd {
-    margin-left: 0;
+  margin-top: @line-height-computed;
+
+  ul {
+    padding-left: 0;
+
+    li {
+      .clearfix();
+      list-style: none;
+      margin-bottom: @line-height-computed;
+    }
   }
 }
-#configuration-client {
-  background-image: url("../images/configuration/client.png");
+.configuration-icon {
+  border: @configuration-icon-border-width solid @gray-light;
+  border-radius: @border-radius-small;
+  float: left;
+  font-size: @configuration-icon-font-size;
+  margin-right: @configuration-icon-padding;
+  padding: @configuration-icon-padding;
+  text-align: center;
+  vertical-align: top;
+  width: (
+      @configuration-icon-inner-width + 2 * @configuration-icon-padding +
+      2 * @configuration-icon-border-width
+    );
+
+  &:hover {
+    background: #DDD;
+    border-color: @gray;
+    text-decoration: none;
+  }
 }
-#configuration-currency {
-  background-image: url("../images/configuration/currency.png");
+.configuration-title {
+  display: block;
+  font-size: @font-size-large;
+  margin-bottom: (@line-height-computed / 4);
 }
-#configuration-google-auth {
-  background-image: url("../images/configuration/google-auth.png");
+
+.sel-values-list {
+  .scroll-pane {
+    margin-bottom: (@line-height-computed / 4);
+    max-height: (
+        @config-sel-value-list-item-number * (
+          floor(@font-size-base * @line-height-base) +
+          2 * @config-sel-value-list-item-padding-vertical +
+          2 * 1px
+        ) +
+        (@config-sel-value-list-item-number - 1) *
+          @config-sel-value-list-item-margin-bottom
+      );
+    overflow-y: scroll;
+  }
+  ul {
+    list-style: none;
+    margin-bottom: 0;
+    padding-left: 0;
+  }
+  .panel {
+    margin-bottom: @config-sel-value-list-item-margin-bottom;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .panel-body {
+    padding: @config-sel-value-list-item-padding-vertical
+      @config-sel-value-list-item-padding-horizontal;
+  }
+  .action-buttons {
+    float: right;
+    white-space: nowrap;
+
+    > .fa {
+      cursor: pointer;
+      font-size: (@font-size-base + 1px);
+      padding-left: 1ex;
+      vertical-align: middle;
+    }
+    > .move-btn {
+      cursor: move;
+    }
+    > .delete-btn {
+      color: @brand-danger;
+    }
+  }
 }
-#configuration-language {
-  background-image: url("../images/configuration/language.png");
+
+.sequence-number-table {
+  td:first-child label {
+    padding-left: 0;
+    padding-right: 0;
+    width: auto;
+  }
+  @media (max-width: @screen-xs-max) {
+    input[type=number] {
+      width: 12ch;
+    }
+  }
 }
-#configuration-ldap {
-  background-image: url("../images/configuration/network.png");
-}
-#configuration-mail {
-  background-image: url("../images/configuration/mail.png");
-}
-#configuration-pathes {
-  background-image: url("../images/configuration/pathes.png");
-}
-#configuration-sel-values {
-  background-image: url("../images/configuration/list.png");
-}
-#configuration-seq-numbers {
-  background-image: url("../images/configuration/numbers.png");
-}
-#configuration-sync {
-  background-image: url("../images/configuration/sync.png");
-}
-#configuration-tax-rates {
-  background-image: url("../images/configuration/tax-rates.png");
-}
+
+
+
+/* Uncomment and revise when migrating to new design!
 .sel-values-list {
   margin-bottom: 2em;
   min-width: 25em;
 
-  .scroll-pane {
-    max-height: 20em;
-    overflow-y: scroll;
-  }
   ul {
     margin: 0 .5em 0 0;
   }
@@ -120,23 +171,4 @@
 #tax-rates-list ul span:after {
   content: " %";
 }
-#seq-numbers-header-name {
-  width: 13em;
-}
-#seq-numbers-header-prefix, #seq-numbers-header-suffix {
-  width: 6em;
-}
-#seq-numbers-header-start-value, #seq-numbers-header-end-value {
-  width: 9em;
-}
-#seq-numbers td {
-  vertical-align: middle;
-
-  &:first-child, &:last-child {
-    padding-top: .8em;
-  }
-  &:nth-child(2), &:nth-child(3), &:nth-child(4), &:nth-child(5) {
-    text-align: center;
-  }
-}
-
+*/

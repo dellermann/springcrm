@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Quote} represents a quote.
  *
  * @author  Daniel Ellermann
- * @version 1.5
+ * @version 2.0
  */
 class Quote extends InvoicingTransaction {
 
@@ -39,7 +39,6 @@ class Quote extends InvoicingTransaction {
     static mapping = {
         stage column: 'quote_stage_id'
     }
-    static searchable = true
 
 
     //-- Instance variables ---------------------

@@ -1,45 +1,37 @@
-<g:if test="${creditMemoInstanceList}">
-<table class="content-table">
-  <thead>
-    <tr>
-      <th scope="col"><input type="checkbox" id="credit-memo-row-selector" /></th>
-      <g:sortableColumn scope="col" property="number" title="${message(code: 'invoicingTransaction.number.label', default: 'Number')}" />
-      <g:sortableColumn scope="col" property="subject" title="${message(code: 'invoicingTransaction.subject.label', default: 'Subject')}" />
-      <g:sortableColumn scope="col" property="stage" title="${message(code: 'creditMemo.stage.label.short', default: 'Stage')}" />
-      <g:sortableColumn scope="col" property="docDate" title="${message(code: 'creditMemo.docDate.label.short', default: 'Date')}" />
-      <g:sortableColumn scope="col" property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label', default: 'Payment date')}" />
-      <g:sortableColumn scope="col" property="total" title="${message(code: 'creditMemo.total.label.short', default: 'Total')}" />
-      <th scope="col"><g:message code="invoicingTransaction.closingBalance.label" /></th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-  <g:each in="${creditMemoInstanceList}" status="i" var="creditMemoInstance">
-    <tr>
-      <td class="row-selector"><input type="checkbox" id="credit-memo-row-selector-${creditMemoInstance.id}" data-id="${creditMemoInstance.id}" /></td>
-      <td class="id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="fullNumber" /></g:link></td>
-      <td class="string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:nl2br value="${creditMemoInstance.subject}" /></g:link></td>
-      <td class="status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}"><g:fieldValue bean="${creditMemoInstance}" field="stage" /></td>
-      <td class="date credit-memo-doc-date"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
-      <td class="date credit-memo-payment-date"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>
-      <td class="currency credit-memo-total"><g:formatCurrency number="${creditMemoInstance?.total}" displayZero="true" external="true" /></td>
-      <td class="currency credit-memo-closing-balance balance-state balance-state-${creditMemoInstance?.balanceColor}"><g:formatCurrency number="${creditMemoInstance?.closingBalance}" displayZero="true" external="true" /></td>
-      <td class="action-buttons">
-        <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
-        <g:link controller="creditMemo" action="edit" id="${creditMemoInstance.id}" class="button small green"><g:message code="default.button.edit.label" /></g:link>
-        <g:link controller="creditMemo" action="delete" id="${creditMemoInstance.id}" class="button small red delete-btn"><g:message code="default.button.delete.label" /></g:link>
-        </g:if>
-      </td>
-    </tr>
-  </g:each>
-  </tbody>
-</table>
-<div class="paginator">
-  <g:paginate total="${creditMemoInstanceTotal}" params="${linkParams}" />
-</div>
-</g:if>
-<g:else>
-  <div class="empty-list-inline">
-    <p><g:message code="default.list.empty" /></p>
-  </div>
-</g:else>
+<g:applyLayout name="listEmbedded"
+  model="[list: creditMemoInstanceList, total: creditMemoInstanceTotal]">
+  <table class="table data-table">
+    <thead>
+      <tr>
+        <g:sortableColumn property="number" title="${message(code: 'invoicingTransaction.number.label')}" />
+        <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label')}" />
+        <g:sortableColumn property="stage" title="${message(code: 'creditMemo.stage.label.short')}" />
+        <g:sortableColumn property="docDate" title="${message(code: 'creditMemo.docDate.label.short')}" />
+        <g:sortableColumn property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label')}" />
+        <g:sortableColumn property="total" title="${message(code: 'creditMemo.total.label.short')}" />
+        <th><g:message code="invoicingTransaction.closingBalance.label" /></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    <g:each in="${creditMemoInstanceList}" status="i" var="creditMemoInstance">
+      <tr>
+        <td class="col-type-id credit-memo-number"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:fieldValue bean="${creditMemoInstance}" field="fullNumber" /></g:link></td>
+        <td class="col-type-string credit-memo-subject"><g:link controller="creditMemo" action="show" id="${creditMemoInstance.id}"><g:nl2br value="${creditMemoInstance.subject}" /></g:link></td>
+        <td class="col-type-status credit-memo-stage payment-state payment-state-${creditMemoInstance?.paymentStateColor}"><g:fieldValue bean="${creditMemoInstance}" field="stage" /></td>
+        <td class="col-type-date credit-memo-doc-date"><g:formatDate date="${creditMemoInstance?.docDate}" formatName="default.format.date" /></td>
+        <td class="col-type-date credit-memo-payment-date"><g:formatDate date="${creditMemoInstance?.paymentDate}" formatName="default.format.date" /></td>
+        <td class="col-type-currency credit-memo-total"><g:formatCurrency number="${creditMemoInstance?.total}" displayZero="true" external="true" /></td>
+        <td class="col-type-currency credit-memo-closing-balance balance-state balance-state-${creditMemoInstance?.balanceColor}"><g:formatCurrency number="${creditMemoInstance?.closingBalance}" displayZero="true" external="true" /></td>
+        <td class="col-actions">
+          <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
+          <g:button controller="creditMemo" action="edit"
+            id="${creditMemoInstance.id}" color="success" size="xs"
+            icon="pencil-square-o" message="default.button.edit.label" />
+          </g:if>
+        </td>
+      </tr>
+    </g:each>
+    </tbody>
+  </table>
+</g:applyLayout>

@@ -1,9 +1,16 @@
 {
   "name": "springcrm",
-  "version": "1.5.0",
+  "version": "2.0.12",
   "homepage": "https://github.com/dellermann/springcrm",
   "authors": [
-    "Daniel Ellermann <d.ellermann@amc-world.de>"
+    {
+      "name": "Daniel Ellermann",
+      "email": "d.ellermann@amc-world.de"
+    },
+    {
+      "name": "Philip Drozd",
+      "email": "p.drozd@amc-world.de"
+    }
   ],
   "description": "An open-source customer relationship management (CRM) software.",
   "keywords": [
@@ -22,16 +29,27 @@
     "tests"
   ],
   "dependencies": {
-    "font-awesome": "~4.2.0",
-    "fullcalendar": "~2.1.1",
-    "handlebars": "~2.0.0",
-    "jQuery-Storage-API": "~1.7.3",
-    "jquery-autosize": "~1.18.9",
-    "jquery-file-upload": "~9.8.0",
+    "bootstrap": "~3.3.6",
+    "bootstrap-datepicker": "~1.5.0",
+    "bootstrap-fileinput": "~4.2.8",
+    "font-awesome": "~4.5.0",
+    "handlebars": "~3.0.3",
+    "jQuery-Storage-API": "~1.7.5",
+    "jquery-autosize": "~3.0.14",
+    "jquery-json": "~2.5.1",
     "jquery-mockjax": "1.6.1",
-    "jquery-ui": "~1.11.1",
+    "jqueryui": "~1.11.4",
+    "jqueryui-touch-punch": "",
     "js-calc": "~0.9.8",
-    "lightbox": "~2.7.1",
-    "qunit": "~1.15.0"
+    "qunit": "~1.18.0",
+    "selectize": "~0.12.1",
+    "typeahead.js": "~0.11.1",
+    "typeahead.js-bootstrap3.less": "~0.2.3",
+    "vat-calc": "~0.9.1"
+  },
+  "resolutions": {
+    "bootstrap": "~3.3.6",
+    "jquery": "2.1.4",
+    "typeahead.js": "~0.11.1"
   }
 }

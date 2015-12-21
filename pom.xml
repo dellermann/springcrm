@@ -231,13 +231,6 @@
     </dependency>
     <dependency>
       <groupId>org.grails.plugins</groupId>
-      <artifactId>searchable</artifactId>
-      <version>0.6.3</version>
-      <scope>compile</scope>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.grails.plugins</groupId>
       <artifactId>fields</artifactId>
       <version>1.2</version>
       <scope>compile</scope>

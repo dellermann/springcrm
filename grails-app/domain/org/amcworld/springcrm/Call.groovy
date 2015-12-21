@@ -1,7 +1,7 @@
 /*
  * Call.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Call} represents a phone call.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class Call {
 
@@ -50,7 +50,6 @@ class Call {
         notes type: 'text'
         subject index: 'subject'
     }
-    static searchable = true
 
 
     //-- Instance variables ---------------------

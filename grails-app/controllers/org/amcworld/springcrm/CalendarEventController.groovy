@@ -1,7 +1,7 @@
 /*
  * CalendarEventController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,15 @@ import javax.servlet.http.HttpServletResponse
 import org.grails.databinding.converters.ValueConverter
 
 
-
 /**
  * The class {@code CalendarEventController} contains actions which manage
  * calendar events and reminders.
+ * <p>
+ * As of 2.0, the calendar event controller will not be used as long as there
+ * is no Bootstrap compatible full calendar available.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class CalendarEventController {
 
@@ -51,13 +53,10 @@ class CalendarEventController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        def list, count
+        List<CalendarEvent> list
+        int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
             list = CalendarEvent.findAllBySubjectLike(searchFilter, params)
@@ -77,19 +76,26 @@ class CalendarEventController {
     }
 
     def listEmbedded(Long organization) {
-        def l
-        def count
-        def linkParams
+        List<CalendarEvent> l
+        int count
+        Map<String, Object> linkParams
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
             def organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-                l = CalendarEvent.findAllByOrganization(organizationInstance, params)
+                l = CalendarEvent.findAllByOrganization(
+                    organizationInstance, params
+                )
                 count = CalendarEvent.countByOrganization(organizationInstance)
                 linkParams = [organization: organizationInstance.id]
             }
         }
-        [calendarEventInstanceList: l, calendarEventInstanceTotal: count, linkParams: linkParams]
+
+        [
+            calendarEventInstanceList: l, calendarEventInstanceTotal: count,
+            linkParams: linkParams
+        ]
     }
 
     /**
@@ -159,24 +165,28 @@ class CalendarEventController {
     }
 
     def create() {
-        def calendarEventInstance = new CalendarEvent()
-        calendarEventInstance.properties = params
+        CalendarEvent calendarEventInstance = new CalendarEvent(params)
         if (calendarEventInstance.organization) {
-            calendarEventInstance.location = calendarEventInstance.organization.shippingAddr
+            calendarEventInstance.location =
+                calendarEventInstance.organization.shippingAddr
         }
         if (params.start) {
             def c = calendarEventInstance.start.toCalendar()
             c.add Calendar.HOUR_OF_DAY, 1
             calendarEventInstance.end = c.time
         }
+
         [calendarEventInstance: calendarEventInstance]
     }
 
     def copy(Long id) {
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calenderEvent.label', default: 'Calendar event'), id])
-            redirect action: 'show', id: id
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'calenderEvent.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -185,7 +195,7 @@ class CalendarEventController {
     }
 
     def save() {
-        def calendarEventInstance = new CalendarEvent(params)
+        CalendarEvent calendarEventInstance = new CalendarEvent(params)
         calendarEventInstance.owner = session.user
         if (!calendarEventInstance.validate()) {
             render view: 'create', model: [calendarEventInstance: calendarEventInstance]
@@ -198,7 +208,14 @@ class CalendarEventController {
         calendarEventService.saveReminders params.reminders.split(), calendarEventInstance
 
         request.calendarEventInstance = calendarEventInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [
+                message(code: 'calendarEvent.label'),
+                calendarEventInstance.toString()
+            ]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -209,39 +226,60 @@ class CalendarEventController {
     def show(Long id) {
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'calenderEvent.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
-        List<Reminder> reminderInstanceList = calendarEventService.loadReminders(calendarEventInstance)
-        [calendarEventInstance: calendarEventInstance, reminderInstanceList: reminderInstanceList]
+        List<Reminder> reminderInstanceList =
+            calendarEventService.loadReminders(calendarEventInstance)
+        [
+            calendarEventInstance: calendarEventInstance,
+            reminderInstanceList: reminderInstanceList
+        ]
     }
 
     def edit(Long id) {
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'calenderEvent.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
-        List<String> reminderRules = calendarEventService.loadReminderRules(calendarEventInstance)
-        [calendarEventInstance: calendarEventInstance, reminderRules: reminderRules.join(' ')]
+        List<String> reminderRules =
+            calendarEventService.loadReminderRules(calendarEventInstance)
+        [
+            calendarEventInstance: calendarEventInstance,
+            reminderRules: reminderRules.join(' ')
+        ]
     }
 
     def update(Long id) {
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'calenderEvent.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (calendarEventInstance.version > version) {
-                calendarEventInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'calendarEvent.label', default: 'CalendarEvent')] as Object[], "Another user has updated this CalendarEvent while you were editing")
+                calendarEventInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'calendarEvent.label')] as Object[],
+                    'Another user has updated this CalendarEvent while you were editing'
+                )
                 render view: 'edit', model: [calendarEventInstance: calendarEventInstance]
                 return
             }
@@ -258,7 +296,13 @@ class CalendarEventController {
         calendarEventService.saveReminders params.reminders.split(), calendarEventInstance, session.user
 
         request.calendarEventInstance = calendarEventInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), calendarEventInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [
+                message(code: 'calendarEvent.label'),
+                calendarEventInstance.toString()
+            ]
+        )
 
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -302,25 +346,36 @@ class CalendarEventController {
     def delete(Long id) {
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'calenderEvent.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: calendarEventService.currentCalendarView ?: 'list'
+                redirect action: calendarEventService.currentCalendarView ?: 'index'
             }
             return
         }
 
         try {
             calendarEventInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'calendarEvent.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: calendarEventService.currentCalendarView ?: 'list'
+                redirect action: calendarEventService.currentCalendarView ?: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'calendarEvent.label', default: 'CalendarEvent')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'calendarEvent.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -352,7 +407,16 @@ class CalendarEventController {
         render(contentType: 'text/json') {
             array {
                 for (Reminder r in list) {
-                    reminder title: r.calendarEvent.subject, allDay: r.calendarEvent.allDay, start: r.calendarEvent.start, end: r.calendarEvent.end, url: createLink(controller: 'calendarEvent', action: 'show', id: r.calendarEvent.id)
+                    reminder(
+                        title: r.calendarEvent.subject,
+                        allDay: r.calendarEvent.allDay,
+                        start: r.calendarEvent.start,
+                        end: r.calendarEvent.end,
+                        url: createLink(
+                            controller: 'calendarEvent', action: 'show',
+                            id: r.calendarEvent.id
+                        )
+                    )
                 }
             }
         }

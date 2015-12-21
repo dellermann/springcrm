@@ -1,7 +1,7 @@
 /*
  * CallController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * associated to an organization or person.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 class CallController {
 
@@ -38,20 +38,18 @@ class CallController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
         if (params.letter) {
             int num = Call.countBySubjectLessThan(params.letter)
             params.sort = 'subject'
-            params.offset = (Math.floor(num / params.max) * params.max) as Integer
+            params.offset =
+                (Math.floor(num / params.max) * params.max) as Integer
             params.search = null
         }
 
-        def list, count
+        List<Call> list
+        int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
             list = Call.findAllBySubjectLike(searchFilter, params)
@@ -65,9 +63,10 @@ class CallController {
     }
 
     def listEmbedded(Long organization, Long person) {
-        def l
-        def count
-        def linkParams
+        List<Call> l
+        int count
+        Map<String, Object> linkParams
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
             def organizationInstance = Organization.get(organization)
@@ -84,26 +83,30 @@ class CallController {
                 linkParams = [person: personInstance.id]
             }
         }
+
         [callInstanceList: l, callInstanceTotal: count, linkParams: linkParams]
     }
 
     def create() {
-        def callInstance = new Call()
-        callInstance.properties = params
+        Call callInstance = new Call(params)
         if (callInstance.person) {
             callInstance.phone = callInstance.person.phone
             callInstance.organization = callInstance.person.organization
         } else if (callInstance.organization) {
             callInstance.phone = callInstance.organization.phone
         }
+
         [callInstance: callInstance]
     }
 
     def copy(Long id) {
-        def callInstance = Call.get(id)
+        Call callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
-            redirect action: 'show', id: id
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'call.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -112,14 +115,18 @@ class CallController {
     }
 
     def save() {
-        def callInstance = new Call(params)
+        Call callInstance = new Call(params)
         if (!callInstance.save(flush: true)) {
             render view: 'create', model: [callInstance: callInstance]
             return
         }
 
         request.callInstance = callInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'call.label'), callInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -128,10 +135,13 @@ class CallController {
     }
 
     def show(Long id) {
-        def callInstance = Call.get(id)
+        Call callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'call.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -139,10 +149,13 @@ class CallController {
     }
 
     def edit(Long id) {
-        def callInstance = Call.get(id)
+        Call callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'call.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -150,17 +163,24 @@ class CallController {
     }
 
     def update(Long id) {
-        def callInstance = Call.get(id)
+        Call callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'call.label'), id]
+            )
+            redirect action: 'index', id: id
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (callInstance.version > version) {
-                callInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'call.label', default: 'Call')] as Object[], 'Another user has updated this Call while you were editing')
+                callInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'call.label', default: 'Call')] as Object[],
+                    'Another user has updated this Call while you were editing'
+                )
                 render view: 'edit', model: [callInstance: callInstance]
                 return
             }
@@ -172,7 +192,10 @@ class CallController {
         }
 
         request.callInstance = callInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'call.label', default: 'Call'), callInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'call.label'), callInstance.toString()]
+        )
 
         if (params.returnUrl) {
             redirect url: params.returnUrl
@@ -184,25 +207,36 @@ class CallController {
     def delete(Long id) {
         def callInstance = Call.get(id)
         if (!callInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'call.label', default: 'Call'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'call.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             callInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'call.label', default: 'Call')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'call.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'call.label', default: 'Call')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'call.label')]
+            )
             redirect action: 'show', id: id
         }
     }

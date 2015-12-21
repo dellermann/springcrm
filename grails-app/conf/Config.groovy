@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,9 +88,27 @@ grails.databinding.convertEmptyStringsToNull = false
 grails.web.url.converter = 'hyphenated'
 
 
-//== Views ======================================
+//== Resources ==================================
 
-grails.assets.less.compiler = 'less4j'
+grails.assets.excludes = [
+    // stylesheets
+    'bootstrap/**.less',
+    'font-awesome/**.less',
+    'js-calc/**.less',
+    'selectize/**.less',
+    'vat-calc/**.less',
+
+    // scripts
+    'bootstrap/*.js',
+    'jquery/*.js',
+    'jqueryui/*.js',
+    'selectize/*.js',
+    'widgets/**'
+]
+grails.assets.less.compiler = 'standard'
+
+
+//== Views ======================================
 
 /* Enable Sitemesh preprocessing of GSP pages */
 grails.views.gsp.sitemesh.preprocess = true

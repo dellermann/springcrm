@@ -1,7 +1,7 @@
 /*
  * PersonController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import net.sf.jmimemagic.Magic
  * that belong to an organization.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class PersonController {
 
@@ -52,10 +52,6 @@ class PersonController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
             int num = Person.countByLastNameLessThan(params.letter)
@@ -70,9 +66,10 @@ class PersonController {
     }
 
     def listEmbedded(Long organization) {
-        def l
-        def count
-        def linkParams
+        List<Person> l
+        int count
+        Map<String, Object> linkParams
+
         if (organization) {
             def organizationInstance = Organization.get(organization)
             if (organizationInstance) {
@@ -90,16 +87,17 @@ class PersonController {
     }
 
     def create() {
-        def personInstance = new Person()
-        personInstance.properties = params
-        [personInstance: personInstance]
+        [personInstance: new Person(params)]
     }
 
     def copy(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -122,7 +120,10 @@ class PersonController {
             ldapService.save personInstance
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'person.label'), personInstance.toString()]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -133,8 +134,11 @@ class PersonController {
     def show(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -144,8 +148,11 @@ class PersonController {
     def edit(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -155,15 +162,22 @@ class PersonController {
     def update(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (personInstance.version > version) {
-                personInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'person.label', default: 'Person')] as Object[], 'Another user has updated this Person while you were editing')
+                personInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'person.label')] as Object[],
+                    'Another user has updated this Person while you were editing'
+                )
                 render view: 'edit', model: [personInstance: personInstance]
                 return
             }
@@ -189,7 +203,10 @@ class PersonController {
             ldapService.save personInstance
         }
 
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'person.label'), personInstance.toString()]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -200,11 +217,15 @@ class PersonController {
     def delete(Long id) {
         def personInstance = Person.get(id)
         if (!personInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'person.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
@@ -215,14 +236,21 @@ class PersonController {
                 ldapService.delete personInstance
             }
 
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label', default: 'Person')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'person.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label', default: 'Person')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'person.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -234,7 +262,8 @@ class PersonController {
             return
         }
 
-        response.contentType = Magic.getMagicMatch(personInstance.picture).mimeType
+        response.contentType =
+            Magic.getMagicMatch(personInstance.picture).mimeType
         response.contentLength = personInstance.picture.length
         response.outputStream << personInstance.picture
         null
@@ -248,16 +277,18 @@ class PersonController {
         }
 
         def phoneNumbers = [
-            personInstance.phone,
-            personInstance.phoneHome,
-            personInstance.mobile,
-            personInstance.fax,
-            personInstance.phoneAssistant,
-            personInstance.phoneOther,
-            personInstance.organization.phone,
-            personInstance.organization.phoneOther,
-            personInstance.organization.fax
-        ]
+                personInstance.phone,
+                personInstance.phoneHome,
+                personInstance.mobile,
+                personInstance.fax,
+                personInstance.phoneAssistant,
+                personInstance.phoneOther,
+                personInstance.organization.phone,
+                personInstance.organization.phoneOther,
+                personInstance.organization.fax
+            ]
+            .findAll({ it != '' })
+            .unique()
         render phoneNumbers as JSON
     }
 
@@ -286,12 +317,16 @@ class PersonController {
     def gdatasync() {
         if (googleContactSyncService) {
             googleContactSyncService.sync()
-            flash.message = message(code: 'default.gdata.allsync.success', args: [message(code: 'person.plural', default: 'persons')])
+            flash.message = message(
+                code: 'default.gdata.allsync.success',
+                args: [message(code: 'person.plural')]
+            )
         }
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
-            redirect action: 'list'
+            redirect action: 'index'
         }
     }
 
@@ -301,9 +336,18 @@ class PersonController {
                 def personInstance = Person.get(id)
                 if (personInstance) {
                     ldapService.save personInstance
-                    flash.message = message(code: 'default.ldap.export.success', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
+                    flash.message = message(
+                        code: 'default.ldap.export.success',
+                        args: [
+                            message(code: 'person.label'),
+                            personInstance.toString()
+                        ]
+                    )
                 } else {
-                    flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), id])
+                    flash.message = message(
+                        code: 'default.not.found.message',
+                        args: [message(code: 'person.label'), id]
+                    )
                 }
                 redirect action: 'show', id: id
                 return
@@ -311,12 +355,16 @@ class PersonController {
 
             def personInstanceList = Person.list()
             personInstanceList.each { ldapService.save it }
-            flash.message = message(code: 'default.ldap.allexport.success', args: [message(code: 'person.plural', default: 'persons')])
+            flash.message = message(
+                code: 'default.ldap.allexport.success',
+                args: [message(code: 'person.plural')]
+            )
         }
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
-            redirect action: 'list'
+            redirect action: 'index'
         }
     }
 
@@ -327,7 +375,7 @@ class PersonController {
                 ldapService.delete personInstance
             }
         }
-        redirect action: 'list'
+        redirect action: 'index'
     }
 
     def handleAuthenticationException(AuthenticationException e) {

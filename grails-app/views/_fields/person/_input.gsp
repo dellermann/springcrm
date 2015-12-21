@@ -1,2 +1,0 @@
-<input type="text" id="person" value="${bean?.person?.fullName}" size="35" data-find-url="${createLink(controller: 'person', action: 'find')}" />
-<input type="hidden" name="person.id" id="person.id" value="${bean?.person?.id}" />

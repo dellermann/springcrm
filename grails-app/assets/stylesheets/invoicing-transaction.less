@@ -1,7 +1,7 @@
 /*
  * invoicing-transaction.less
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,166 +19,218 @@
 
 
 @import "application";
+@import "_typeahead";
 
 
-/* price tables */
+// control styles
+.invoicing-transaction-selector .number {
+  color: @gray-light;
+  padding-right: .5em;
+}
+
+// price tables (forms)
 .price-table {
+  .row-subtotal-net {
+    border-top: 1px double @spring-gray;        // displayed as 1px solid
+  }
+  .row-subtotal-gross {
+    border-bottom: 1px double @spring-gray;     // displayed as 1px solid
+  }
+  .row-total {
+    border-bottom: 3px double @spring-gray;
+    //border-top: 1px double @spring-gray;      // displayed as 1px solid
+    border-top: 2px solid @spring-gray;
+  }
   td {
     vertical-align: top;
   }
-  .item-number, .type {
-    text-align: center;
-  }
-  &.read-only .type {
-    text-align: left;
-  }
-  .pos, .label, .number input {
-    text-align: right;
-  }
-  .number .field-text {
+  .input-group {
     margin-left: auto;
+    width: 1%;
   }
-  .button-icon-group {
-    margin-left: 1em;
+  .form-control {
+    padding-left: @padding-xs-horizontal;
+    padding-right: @padding-xs-horizontal;
   }
-  .name textarea {
-    margin-top: .5em;
+  .col-type-label, .col-pos {
+    > span {
+      display: block;
+      height: @input-height-base;
+      line-height: @input-height-base;
+    }
   }
+  .col-type-number {
+    .form-control {
+      text-align: right;
+      width: auto;
+
+      &:focus {
+        text-align: left;
+      }
+    }
+    .tt-hint {
+      text-align: left;
+    }
+  }
+  .col-unit {
+    width: 1%;    // shrink to fit
+
+    .form-control {
+      width: auto;
+    }
+  }
+  .col-name {
+    width: 100%;
+
+    .input-group {
+      width: 100%;
+    }
+    textarea {
+      margin-top: 5px;
+    }
+  }
+  .col-actions {
+    width: 1%;    // shrink to fit
+
+    .btn {
+      color: @brand-primary;
+      display: block;
+      font-size: @font-size-large;
+      height: @input-height-base;
+      padding: 0;
+      text-align: center;
+    }
+    .remove-btn {
+      color: @brand-danger;
+    }
+  }
+  > tbody > tr:first-child .col-actions .up-btn,
+    > tbody > tr:last-child .col-actions .down-btn,
+    > tbody > tr:only-child .col-actions .remove-btn
+  {
+    display: none;
+  }
+  output {
+    color: @text-color;
+    display: inline;
+    padding-top: 0;
+  }
+
+  @media (max-width: @screen-sm-max) {
+    .col-name .col-content {
+      width: 200px;
+    }
+  }
+}
+.price-table-buttons {
+  margin-top: @line-height-computed;
+  text-align: right;
+}
+.inventory-selector {
+  .letter-bar, .search-form {
+    margin-bottom: (@line-height-computed / 2);
+  }
+  .search-form {
+    width: auto;
+  }
+  .pagination {
+    margin-bottom: 0;
+    margin-top: (@line-height-computed / 2);
+  }
+}
+
+// price tables (detail view)
+.detail-view .price-table {
   .item-name {
     font-weight: bold;
   }
   .item-description {
-    margin-top: .5em;
+    margin-top: @margin-small-vertical;
 
     li {
-      margin-bottom: .3em;
+      margin-bottom: @margin-xs-vertical;
     }
     ol, ul {
-      margin-bottom: .5em;
-      margin-top: .5em;
+      margin-bottom: @margin-small-vertical;
+      margin-top: @margin-small-vertical;
     }
     p {
-      margin-bottom: .5em;
+      margin-bottom: @margin-small-vertical;
 
       &:last-child {
         margin-bottom: 0;
       }
     }
   }
-  .field-text span {
-    padding-right: .7ex;
-  }
-  .currency, .percentage {
-    line-height: 1.4em;
-  }
-  .currency {
-    width: 7.5em;
-  }
-  .action-buttons {
-    width: 4em;
-
-    i {
-      cursor: pointer;
-      display: inline-block;
-      font-size: 123.1%;
-      padding-left: .3em;
-
-      &:first-child {
-        padding-left: 0;
-      }
-    }
-    .up-btn {
-      color: @color-icon-1;
-    }
-    .down-btn {
-      color: @color-icon-2;
-    }
-    .remove-btn {
-      color: @color-warning;
-    }
-  }
-  tr:first-child .up-btn, tr:last-child .down-btn,
-    tr:first-child:last-child .remove-btn
-  {
-    display: none;
-  }
-  .items {
-    .pos, .total-price {
-      padding-top: @padding-table-v + @padding-input-v + .1em;
-    }
-  }
-  #discount-from-percent {
-    padding-top: @padding-input-v + .1em;
-  }
-  .label {
-    vertical-align: middle;
-  }
-  label {
-    padding: 0;
-
-    &:after {
-      content: "";
-    }
-  }
-  output:empty {            // bugfix for Chrome
-    content: "\00A0";
-    display: inline-block;
-  }
-  .total, .subtotal {
+  .row-total, .row-subtotal {
     font-weight: bold;
   }
 }
 
-/* balance markers */
+// balance markers
 .balance-state-green {
-  color: #080;
+  color: @state-success-text;
 }
 .balance-state-red {
-  color: #800;
+  color: @state-danger-text;
 }
 
-/* payment markers */
+// payment markers
 .payment-state-green {
-  .background-alpha(rgba(183, 255, 29, .6));
+  background: fade(#77B753, 60%);
 }
 .payment-state-yellow {
-  .background-alpha(rgba(255, 238, 28, .6));
+  background: fade(#FFEB55, 60%);
 }
 .payment-state-orange {
-  .background-alpha(rgba(255, 190, 28, .6));
+  background: fade(#F29B68, 60%);
 }
 .payment-state-red {
-  .background-alpha(rgba(255, 30, 2, .6));
+  background: fade(#E85752, 60%);
 }
 .payment-state-purple {
-  .background-alpha(rgba(145, 0, 245, .6));
-  color: white;
+  background: fade(#C080FF, 60%);
 }
 .payment-state-blue {
-  .background-alpha(rgba(38, 125, 254, .6));
+  background: fade(#2C72C7, 60%);
 }
 .payment-state-black {
-  .background-alpha(rgba(0, 7, 24, .6));
-  color: white;
+  background: fade(#555, 60%);
+  color: #FFF;
 }
 
-/* markers for still unpaid text */
-#still-unpaid {
-  padding-left: 1ex;
+// markers for still unpaid text
+.still-unpaid {
+  color: @text-color;
+  cursor: pointer;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: left;
 
   &:hover {
-    cursor: pointer;
     text-decoration: underline;
   }
+  output {
+    display: inline;
+    font-weight: bold;
+  }
 }
-.still-unpaid-unpaid, .still-unpaid-unpaid:hover {
-  color: #800;
+.still-unpaid-unpaid {
+  &, &:hover, &:active, &:focus, output {
+    color: @state-danger-text;
+  }
 }
-.still-unpaid-paid, .still-unpaid-paid:hover {
-  color: #080;
+.still-unpaid-paid {
+  &, &:hover, &:active, &:focus, output {
+    color: @state-success-text;
+  }
 }
-.still-unpaid-too-much, .still-unpaid-too-much:hover {
-  color: #880;
-  cursor: default;
+.still-unpaid-too-much {
+  &, &:hover, &:active, &:focus, output {
+    color: @state-warning-text;
+    cursor: default;
+  }
 }
+
+// vim:set ts=2 sw=2 sts=2:
 

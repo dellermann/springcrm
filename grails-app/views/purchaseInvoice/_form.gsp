@@ -1,46 +1,53 @@
-<fieldset>
-  <header><h3><g:message code="purchaseInvoice.fieldset.general.label" /></h3></header>
-  <div class="multicol-content">
-    <div class="col col-l">
-      <div class="form">
-        <f:field bean="${purchaseInvoiceInstance}" property="number" />
-        <f:field bean="${purchaseInvoiceInstance}" property="subject" />
-        <g:ifModuleAllowed modules="contact">
-        <f:field bean="${purchaseInvoiceInstance}" property="vendor" />
-        </g:ifModuleAllowed>
-        <f:field bean="${purchaseInvoiceInstance}" property="documentFile" />
-        <f:field bean="${purchaseInvoiceInstance}" property="stage" />
-      </div>
+<section>
+  <header>
+    <h3><g:message code="purchaseInvoice.fieldset.general.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${purchaseInvoiceInstance}" property="number" />
+      <f:field bean="${purchaseInvoiceInstance}" property="subject" />
+      <g:ifModuleAllowed modules="contact">
+      <f:field bean="${purchaseInvoiceInstance}" property="vendorName" />
+      </g:ifModuleAllowed>
+      <f:field bean="${purchaseInvoiceInstance}" property="documentFile" />
+      <f:field bean="${purchaseInvoiceInstance}" property="stage" />
     </div>
-    <div class="col col-r">
-      <div class="form">
-        <f:field bean="${purchaseInvoiceInstance}" property="docDate" />
-        <f:field bean="${purchaseInvoiceInstance}" property="dueDate" />
-        <f:field bean="${purchaseInvoiceInstance}" property="paymentDate" />
-        <f:field bean="${purchaseInvoiceInstance}" property="paymentAmount" />
-        <f:field bean="${purchaseInvoiceInstance}" property="paymentMethod" />
-      </div>
+    <div class="column">
+      <f:field bean="${purchaseInvoiceInstance}" property="docDate" />
+      <f:field bean="${purchaseInvoiceInstance}" property="dueDate" />
+      <f:field bean="${purchaseInvoiceInstance}" property="paymentDate" />
+      <f:field bean="${purchaseInvoiceInstance}" property="paymentAmount" />
+      <f:field bean="${purchaseInvoiceInstance}" property="paymentMethod" />
     </div>
   </div>
-</fieldset>
-<fieldset>
+</section>
+<section>
   <header>
     <h3><g:message code="purchaseInvoice.fieldset.items.label" /></h3>
     <div class="buttons">
-      <g:button color="green" size="small" class="add-invoicing-item-btn"
-        icon="plus" message="invoicingTransaction.button.addRow.label" />
+      <div class="btn-group">
+        <g:button type="button" color="success" size="xs"
+          class="add-invoicing-item-btn" icon="plus-circle"
+          message="invoicingTransaction.button.addRow.label" />
+      </div>
     </div>
   </header>
-  <div>
-    <g:set var="invoicingTransaction" value="${purchaseInvoiceInstance}" />
-    <g:applyLayout name="invoicingItemsForm"
-      params="[tableId: 'purchaseInvoice-items', className: 'purchaseInvoice']" />
+  <div class="column-group">
+    <div class="column">
+      <g:set var="invoicingTransaction" value="${purchaseInvoiceInstance}" />
+      <g:applyLayout name="invoicingItemsForm" params="[
+          tableId: 'purchaseInvoice-items', className: 'purchaseInvoice'
+        ]" />
+    </div>
   </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="purchaseInvoice.fieldset.notes.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${purchaseInvoiceInstance}" property="notes" cols="80"
-      rows="3" />
+</section>
+<section>
+  <header>
+    <h3><g:message code="purchaseInvoice.fieldset.notes.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${purchaseInvoiceInstance}" property="notes" rows="5" />
+    </div>
   </div>
-</fieldset>
+</section>

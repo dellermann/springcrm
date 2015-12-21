@@ -1,7 +1,7 @@
 /*
  * SalesItemPricingItem.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * a sales item.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  * @since   1.3
  */
 class SalesItemPricingItem {
@@ -49,7 +49,6 @@ class SalesItemPricingItem {
         unitPercent scale: 2, min: 0.0d, widget: 'percent'
         unitPrice widget: 'currency'
     }
-    static searchable = [only: ['name']]
 
 
     //-- Instance variables ---------------------

@@ -1,47 +1,76 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <meta name="stylesheet" content="overview" />
-  <title>SpringCRM</title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <meta name="stylesheet" content="overview" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="overview.title" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button action="listAvailablePanels" color="white" icon="plus"
-          elementId="add-panel" message="overview.addPanel.label" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content" style="left: 0; position: relative; top: 0;">
-    <div id="panel-list"></div>
-    <div class="overview-columns"
+  <body>
+    <content tag="backLink">
+      <g:link uri="/" class="navbar-brand visible-xs" role="button"
+        ><g:message code="default.appName"
+      /></g:link>
+    </content>
+    <content tag="toolbar">
+      <button type="button" class="btn btn-success add-panel-btn"
+        disabled="disabled">
+        <i class="fa fa-plus-circle"></i>
+        <g:message code="overview.addPanel.label" />
+      </button>
+    </content>
+
+    <div class="panel available-panels" style="display: none;"
+      data-load-available-panels-url="${createLink(action: 'listAvailablePanels')}"
+      role="grid" aria-readonly="true"
+      aria-label="${message(code: 'overview.availablePanels.label')}"
+    ></div>
+    <div class="overview-panels"
       data-add-panel-url="${createLink(action: 'addPanel')}"
       data-move-panel-url="${createLink(action: 'movePanel')}"
-      data-remove-panel-url="${createLink(action: 'removePanel')}">
-    <g:each in="${(0..2)}" var="i">
-      <section id="col-${i}" class="overview-column">
+      data-close-panel-url="${createLink(action: 'removePanel')}">
+      <g:each in="${panels}" var="panel">
       <g:set var="locale" value="${org.springframework.context.i18n.LocaleContextHolder.locale}" />
-      <g:each in="${panels[i]}" var="panel">
-        <g:set var="panelDef" value="${panel.panelDef}" />
-        <div id="${panel.panelId}" class="springcrm-overviewpanels-panel"
-          data-panel-url="${createLink(controller: panelDef.controller, action: panelDef.action)}">
-          <header>
-            <h3>${panelDef.getTitle(locale)}</h3>
-            <g:link controller="overview" action="removePanel"><i class="fa fa-times fa-lg"></i></g:link>
-          </header>
-          <div style="${panelDef.style}"></div>
+      <g:set var="panelDef" value="${panel.panelDef}" />
+      <%--
+          ATTENTION! Don't forget to change
+          grails-assets/javascripts/templates/overview/panel.hbs if you
+          change here.
+      --%>
+      <div id="${panel.panelId}"
+        class="panel panel-default panel-type-${panel.panelId}"
+        style="${panelDef.style}"
+        data-panel-url="${createLink(controller: panelDef.controller, action: panelDef.action)}"
+        role="region" aria-labelledby="${panel.panelId}-title">
+        <div class="panel-heading">
+          <h3 id="${panel.panelId}-title">${panelDef.getTitle(locale)}</h3>
+          <div class="buttons" role="toolbar"
+            aria-label="${message(code: 'overview.buttons.label')}">
+            <button type="button" class="up-btn"
+              title="${message(code: 'default.btn.up')}"
+              ><i class="fa fa-caret-up"></i
+              ><span class="sr-only"><g:message code="default.btn.up"
+              /></span
+            ></button>
+            <button type="button" class="down-btn"
+              title="${message(code: 'default.btn.down')}"
+              ><i class="fa fa-caret-down"></i
+              ><span class="sr-only"><g:message code="default.btn.down"
+              /></span
+            ></button>
+            <g:link action="removePanel" class="close-btn"
+              title="${message(code: 'overview.closePanel.label')}"
+              ><span aria-hidden="true">×</span
+              ><span class="sr-only"
+                ><g:message code="overview.closePanel.label"
+              /></span
+            ></g:link>
+          </div>
         </div>
+      </div>
       </g:each>
-      </section>
-    </g:each>
     </div>
-  </div>
-  <content tag="scripts">
-    <asset:javascript src="overview" />
-    <asset:script>$(".overview-columns").overviewpanels();</asset:script>
-  </content>
-</body>
+
+    <content tag="scripts">
+      <asset:javascript src="overview" />
+    </content>
+  </body>
 </html>

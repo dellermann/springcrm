@@ -1,382 +1,413 @@
 <%@page import="org.amcworld.springcrm.SalesItem"%>
-<%@page import="org.amcworld.springcrm.PricingItemType"%>
-<fieldset>
-  <input type="hidden" name="pricingEnabled"
-    value="${salesItem.pricing ? '1' : ''}" />
+
+<section>
   <header>
     <h3><g:message code="salesItem.fieldset.pricing.step1.label" /></h3>
-    <div class="buttons toggle-visibility hidden">
-      <g:button color="green" size="small" class="add-pricing-item-btn"
-        icon="plus" message="salesItem.pricing.button.addRow.label" />
+    <div class="buttons">
+      <div class="btn-group">
+        <button type="button"
+          class="btn btn-success btn-xs btn-add-pricing-item toggle-visibility hidden">
+          <i class="fa fa-plus-circle"></i>
+          <g:message code="salesItem.pricing.button.addRow.label" />
+        </button>
+      </div>
     </div>
   </header>
-  <div class="toggle-visibility hidden">
-    <div id="step1-calculation-base">
-      <div class="field-text">
-        <span>
-          <g:message code="salesItem.pricing.step1.tableDescription" />
-        </span>
-        <span class="input${hasErrors(bean: salesItem.pricing, field: 'quantity', ' error')}">
-          <input id="step1-pricing-quantity" type="text"
-            name="pricing.quantity" size="6"
-            value="${formatNumber(number: salesItem.pricing?.quantity, maxFractionDigits: 3)}"
-            placeholder="${message(code: 'salesItem.quantity.label', default: 'Quantity')}" />
-        </span>
-        <span class="input${hasErrors(bean: salesItem.pricing, field: 'unit', ' error')}">
-          <g:select id="step1-pricing-unit" from="${units}" optionKey="id"
-            optionValue="name" name="pricing.unit.id"
-            value="${salesItem.pricing?.unit?.id}" noSelection="[null: '']" />
-        </span>
-        <span>:</span>
-      </div>
-      <g:if test="${salesItem.pricing?.errors?.hasFieldErrors('quantity') || salesItem.pricing?.errors?.hasFieldErrors('unit')}">
-      <ul class="field-msgs">
-        <li class="empty"></li>
-        <li class="error-msg">
-        <g:eachError bean="${salesItem.pricing}" field="quantity">
-          <g:message error="${it}" />
-        </g:eachError>
-        </li>
-        <li class="error-msg">
-        <g:eachError bean="${salesItem.pricing}" field="unit">
-          <g:message error="${it}" />
-        </g:eachError>
-        </li>
-      </ul>
-      </g:if>
-    </div>
-    <table id="step1-pricing-items" class="content-table price-table"
-      data-units="${units*.name.join(',')}">
-      <thead>
-        <tr>
-          <th scope="col"><g:message code="salesItem.pricing.pos.label" default="Pos." /></th>
-          <th scope="col"><g:message code="salesItem.pricing.quantity.label" default="Qty" /></th>
-          <th scope="col"><g:message code="salesItem.pricing.unit.label" default="Unit" /></th>
-          <th scope="col"><g:message code="salesItem.pricing.name.label" default="Name" /></th>
-          <th scope="col"><g:message code="salesItem.pricing.type.label" default="Type" /></th>
-          <th scope="col"><g:message code="salesItem.pricing.relToPos.label" default="To pos." /></th>
-          <th scope="col"><g:message code="salesItem.pricing.unitPercent.label" default="%" /></th>
-          <th scope="col"><g:message code="salesItem.pricing.unitPrice.label" default="Unit price" /></th>
-          <th scope="col"><g:message code="salesItem.pricing.total.label" default="Total" /></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tfoot>
-        <tr>
-          <td class="label" colspan="7">
-            <g:message code="salesItem.pricing.step1.total.label" default="Total price" />
-            <span id="step1-total-price-quantity"></span>
-          </td>
-          <td></td>
-          <td class="currency number">
-            <output id="step1-total-price"><g:formatCurrency
-              number="${salesItem.pricing?.step1TotalPrice}"
-              numberOnly="true" displayZero="true" /></output>
-            <g:currency />
-          </td>
-          <td></td>
-        </tr>
-        <tr class="step1-unit-price">
-          <td class="label" colspan="7">
-            <g:message code="salesItem.pricing.calculatedUnitPrice.label" default="Calculated unit price" />
-            <span id="step1-unit-price-quantity"></span>
-          </td>
-          <td></td>
-          <td class="currency number">
-            <output id="step1-unit-price"><g:formatCurrency
-              number="${salesItem.pricing?.step1UnitPrice}"
-              numberOnly="true" displayZero="true" /></output>
-            <g:currency />
-          </td>
-          <td></td>
-        </tr>
-      </tfoot>
-      <tbody class="items">
-        <g:each in="${salesItem.pricing?.items}" status="i" var="item">
-        <tr>
-          <td class="pos number">${i + 1}.</td>
-          <td class="quantity number">
-            <input type="text" name="pricing.items[${i}].quantity" size="6"
-              value="${formatNumber(number: item.quantity, maxFractionDigits: 3)}" />
-          </td>
-          <td class="unit">
-            <input type="text" name="pricing.items[${i}].unit" size="8"
-              value="${item.unit}" />
-          </td>
-          <td class="name">
-            <input type="text" name="pricing.items[${i}].name" size="30"
-              value="${item.name}" />
-          </td>
-          <td class="type">
-            <g:select id="" name="pricing.items[${i}].type"
-              from="${PricingItemType.values()}" value="${item.type}"
-              valueMessagePrefix="salesItem.pricing.type" />
-          </td>
-          <td class="relative-to-pos">
-            <input type="hidden" name="pricing.items[${i}].relToPos"
-              value="${item.relToPos ?: ''}" />
-            <span style="display: ${item.type == PricingItemType.relativeToPos ? 'block' : 'none'};">
-              <i class="fa fa-anchor bubbling-icon"
-                title="${message(code: 'salesItem.pricing.relativeToPos.finder', default: 'Select reference row')}"></i>
-              <strong>${item.relToPos ? item.relToPos + 1 : ''}</strong>
-            </span>
-          </td>
-          <td class="unit-percent percentage number">
-            <input type="text" name="pricing.items[${i}].unitPercent" size="5"
-              value="${formatNumber(number: item.unitPercent, minFractionDigits: 2)}"
-              class="number percent" />
-          </td>
-          <td class="unit-price currency number">
-            <div class="field-text">
-              <span class="input">
-                <input type="text" name="pricing.items[${i}].unitPrice"
-                  size="8"
-                  value="${formatCurrency(number: salesItem.pricing?.computeUnitPriceOfItem(i), numberOnly: true, displayZero: true)}" />
-              </span>
-              <span class="currency-symbol"><g:currency /></span>
+  <div class="column-content">
+    <input type="hidden" id="pricing-enabled" name="pricingEnabled"
+      value="${salesItem.pricing ? '1' : ''}" />
+    <div id="pricing-step1-content" class="toggle-visibility hidden">
+      <div id="step1-calculation-base" class="column-group">
+        <div class="column">
+          <div class="form-inline">
+            <div class="form-group">
+              <label for="step1-pricing-quantity" class="control-label"
+                ><g:message code="salesItem.pricing.step1.tableDescription"
+              /></label>
+              <div class="control-container">
+                <input type="text" id="step1-pricing-quantity"
+                  name="pricing.quantity"
+                  class="form-control form-control-number" size="6"
+                  value="${formatNumber(
+                      number: salesItem.pricing?.quantity, maxFractionDigits: 3
+                    )}"
+                  placeholder="${message(code: 'salesItem.quantity.label')}" />
+                <g:select id="step1-pricing-unit-select" name="pricing.unit.id"
+                  from="${units}" optionKey="id" optionValue="name"
+                  value="${salesItem.pricing?.unit?.id}" noSelection="['': '']"
+                  placeholder="${message(code: 'salesItem.pricing.unit.label')}" />
+              </div>
             </div>
-          </td>
-          <td class="total-price currency number">
-            <output><g:formatCurrency
-              number="${salesItem.pricing?.computeTotalOfItem(i)}"
-              numberOnly="true" displayZero="true" /></output>
-            <g:currency />
-          </td>
-          <td class="action-buttons">
-            <i class="fa fa-arrow-up bubbling-icon up-btn"
-              title="${message(code: 'default.btn.up')}"></i>
-            <i class="fa fa-arrow-down bubbling-icon down-btn" title="${message(code: 'default.btn.down')}"></i>
-            <i class="fa fa-trash-o bubbling-icon remove-btn" title="${message(code: 'default.btn.remove')}"></i>
-          </td>
-        </tr>
-        </g:each>
-      </tbody>
-    </table>
-    <ul class="field-msgs">
-    <g:renderItemErrors bean="${salesItem.pricing}" prefix="salesItem.pricing">
-      <li class="error-msg">${it}</li>
-    </g:renderItemErrors>
-    </ul>
-  </div>
-  <div class="empty-list toggle-visibility">
-    <p><g:message code="salesItem.pricing.empty" /></p>
-    <div class="buttons">
-      <g:button elementId="start-pricing" color="green" icon="plus"
-        message="salesItem.pricing.startPricing" />
+          </div>
+          <ul class="control-messages">
+            <g:eachError bean="${salesItem.pricing}" field="quantity">
+            <li class="control-message-error"><g:message error="${it}" /></li>
+            </g:eachError>
+            <g:eachError bean="${salesItem.pricing}" field="unit">
+            <li class="control-message-error"><g:message error="${it}" /></li>
+            </g:eachError>
+          </ul>
+
+          <g:render template="/layouts/salesItemPricingItems" />
+          <ul class="control-messages">
+            <g:renderItemErrors bean="${salesItem.pricing}"
+              prefix="salesItem.pricing"
+              ><li class="control-message-error">${it}</li
+            ></g:renderItemErrors
+          ></ul>
+        </div>
+      </div>
+    </div>
+    <div class="well well-lg empty-list toggle-visibility">
+      <p><g:message code="salesItem.pricing.empty" /></p>
+      <div class="buttons">
+        <button type="button" class="btn btn-primary btn-start-pricing"
+          aria-haspopup="true" aria-owns="pricing-step1-content">
+          <i class="fa fa-cubes"></i>
+          <g:message code="salesItem.pricing.startPricing" />
+        </button>
+      </div>
     </div>
   </div>
-</fieldset>
-<fieldset class="toggle-visibility hidden">
-  <header><h3><g:message code="salesItem.fieldset.pricing.step2.label" /></h3></header>
-  <table id="step2" class="content-table price-table">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col"><g:message code="salesItem.pricing.quantity.label" default="Qty" /></th>
-        <th scope="col"><g:message code="salesItem.pricing.unit.label" default="Unit" /></th>
-        <th scope="col"><g:message code="salesItem.pricing.unitPercent.label" default="%" /></th>
-        <th scope="col"></th>
-        <th scope="col"><g:message code="salesItem.pricing.unitPrice.label" default="Unit price" /></th>
-        <th scope="col"><g:message code="salesItem.pricing.total.label" default="Total" /></th>
-      </tr>
-    </thead>
-    <tfoot>
-      <tr class="total">
-        <td><g:message code="salesItem.pricing.step2.salesPrice" /></td>
-        <td class="quantity number"><output id="step2-total-quantity"><g:formatNumber number="${salesItem.pricing?.quantity}" maxFractionDigits="3" /></output></td>
-        <td class="unit"><output id="step2-total-unit"><g:fieldValue bean="${salesItem}" field="pricing.unit" /></output></td>
-        <td></td>
-        <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
-        <td class="unit-price currency number">
-          <output id="step2-total-unit-price"><g:formatCurrency
-            number="${salesItem.pricing?.step2TotalUnitPrice}"
-            numberOnly="true" displayZero="true" /></output>
-          <g:currency />
-        </td>
-        <td class="total-price currency number">
-          <output id="step2-total"><g:formatCurrency
-            number="${salesItem.pricing?.step2Total}"
-            numberOnly="true" displayZero="true" /></output>
-          <g:currency />
-        </td>
-      </tr>
-    </tfoot>
-    <tbody>
-      <tr>
-        <td><g:message code="salesItem.pricing.step2.calculatedTotalPrice" /></td>
-        <td class="quantity number">
-          <output id="step2-quantity"><g:formatNumber number="${salesItem.pricing?.quantity}" maxFractionDigits="3" /></output>
-        </td>
-        <td class="unit">
-          <output id="step2-unit"><g:fieldValue bean="${salesItem}" field="pricing.unit" /></output>
-        </td>
-        <td></td>
-        <td class="unit-price-label">
-          <g:message code="salesItem.pricing.per.label" />
-        </td>
-        <td class="unit-price currency number">
-          <output id="step2-unit-price"><g:formatCurrency
-            number="${salesItem.pricing?.step1UnitPrice}"
-            numberOnly="true" displayZero="true" /></output>
-          <g:currency />
-        </td>
-        <td class="total-price currency number">
-          <output id="step2-total-price"><g:formatCurrency
-            number="${salesItem.pricing?.step1TotalPrice}"
-            numberOnly="true" displayZero="true" /></output>
-          <g:currency />
-        </td>
-      </tr>
-      <tr>
-        <td><g:message code="salesItem.pricing.step2.discount" /></td>
-        <td></td>
-        <td></td>
-        <td class="percentage number${hasErrors(bean: salesItem.pricing, field: 'discountPercent', ' error')}">
-          <input id="step2-discount-percent" type="text"
-            name="pricing.discountPercent" size="5"
-            value="${formatNumber(number: salesItem.pricing?.discountPercent, minFractionDigits: 2)}"
-            class="percent" />
-          <ul class="field-msgs">
-          <g:eachError bean="${salesItem.pricing}" field="discountPercent">
-            <li class="error-msg"><g:message error="${it}" /></li>
-          </g:eachError>
-          </ul>
-        </td>
-        <td></td>
-        <td></td>
-        <td class="total-price currency number">
-          <output id="step2-discount-percent-amount"><g:formatCurrency
-            number="${salesItem.pricing?.discountPercentAmount}"
-            numberOnly="true" displayZero="true" /></output>
-          <g:currency />
-        </td>
-      </tr>
-      <tr>
-        <td><g:message code="salesItem.pricing.step2.adjustment" /></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="currency number${hasErrors(bean: salesItem.pricing, field: 'adjustment', ' error')}">
-          <div class="field-text">
-            <span class="input">
-              <input id="step2-adjustment" type="text"
-                name="pricing.adjustment" size="8"
-                value="${formatCurrency(number: salesItem.pricing?.adjustment, numberOnly: true, displayZero: true)}" />
-            </span>
-            <span class="currency-symbol"><g:currency /></span>
+</section>
+
+<section class="toggle-visibility hidden">
+  <header>
+    <h3><g:message code="salesItem.fieldset.pricing.step2.label" /></h3>
+  </header>
+  <div class="column-content">
+    <div class="toggle-visibility hidden">
+      <div class="column-group">
+        <div class="column">
+          <div class="table-responsive">
+            <table id="step2" class="table data-table price-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th><g:message code="salesItem.pricing.quantity.label" /></th>
+                  <th><g:message code="salesItem.pricing.unit.label" /></th>
+                  <th><g:message code="salesItem.pricing.unitPercent.label" /></th>
+                  <th></th>
+                  <th><g:message code="salesItem.pricing.unitPrice.label" /></th>
+                  <th><g:message code="salesItem.pricing.total.label" /></th>
+                </tr>
+              </thead>
+              <tfoot>
+                <tr class="total">
+                  <td class="col-type-label col-row-header">
+                    <span
+                      ><g:message code="salesItem.pricing.step2.salesPrice"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-quantity">
+                    <input type="text" id="step2-total-quantity"
+                      class="form-control form-control-number form-control-currency disabled-always"
+                      value="${formatNumber(
+                        type: 'number', number: salesItem.pricing?.quantity,
+                        maxFractionDigits: 3, groupingUsed: true
+                      )}"
+                      size="8" disabled="disabled" />
+                  </td>
+                  <td class="col-type-string col-unit">
+                    <input type="text" id="step2-total-unit"
+                      class="form-control disabled-always"
+                      value="${salesItem.unit}" disabled="disabled" />
+                  </td>
+                  <td class="col-type-number col-type-percentage col-percent"
+                  ></td>
+                  <td class="col-type-label col-unit-price-label">
+                    <span
+                      ><g:message code="salesItem.pricing.per.label"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-type-currency col-unit-price">
+                    <div class="input-group">
+                      <input type="text" id="step2-total-unit-price"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.pricing?.step2Total,
+                          numberOnly: true, displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step2-total-unit-price-currency" />
+                      <span id="step2-total-unit-price-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                  <td class="col-type-number col-type-currency col-total-price">
+                    <div class="input-group">
+                      <input type="text" id="step2-total"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.pricing?.step1TotalPrice,
+                          numberOnly: true, displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step2-total-currency" />
+                      <span id="step2-total-currency" class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+              <tbody>
+                <tr>
+                  <td class="col-type-label col-row-header">
+                    <span
+                      ><g:message code="salesItem.pricing.step2.calculatedTotalPrice"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-quantity">
+                    <input type="text" id="step2-quantity"
+                      class="form-control form-control-number disabled-always"
+                      value="${formatNumber(
+                        type: 'number', number: salesItem.pricing?.quantity,
+                        maxFractionDigits: 3, groupingUsed: true
+                      )}"
+                      size="8" disabled="disabled" />
+                  </td>
+                  <td class="col-type-string col-unit">
+                    <input type="text" id="step2-unit"
+                      class="form-control disabled-always"
+                      value="${salesItem.pricing?.unit}" disabled="disabled" />
+                  </td>
+                  <td class="col-type-number col-type-percentage col-percent"
+                  ></td>
+                  <td class="col-type-label col-unit-price-label">
+                    <span
+                      ><g:message code="salesItem.pricing.per.label"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-type-currency col-unit-price">
+                    <div class="input-group">
+                      <input type="text" id="step2-unit-price"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.pricing?.step1UnitPrice,
+                          numberOnly: true, displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step2-unit-price-currency" />
+                      <span id="step2-unit-price-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                  <td class="col-type-number col-type-currency col-total-price">
+                    <div class="input-group">
+                      <input type="text" id="step2-total-price"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.pricing?.step1TotalPrice,
+                          numberOnly: true, displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step2-total-price-currency" />
+                      <span id="step2-total-price-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-type-label col-row-header">
+                    <span
+                      ><g:message code="salesItem.pricing.step2.discount"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-quantity"></td>
+                  <td class="col-type-string col-unit"></td>
+                  <td class="col-type-number col-type-percentage col-percent">
+                    <input type="text" id="step2-discount-percent"
+                      class="form-control form-control-number form-control-percentage"
+                      name="pricing.discountPercent" size="5"
+                      value="${formatNumber(number: salesItem.pricing?.discountPercent, minFractionDigits: 2)}" />
+                    <ul class="control-messages"
+                      ><g:eachError bean="${salesItem.pricing}"
+                        field="${discountPercent}"
+                      ><li class="control-message-error"
+                        ><g:message error="${it}"
+                      /></li
+                      ></g:eachError
+                    ></ul>
+                  </td>
+                  <td class="col-type-label col-unit-price-label"></td>
+                  <td class="col-type-number col-type-currency col-unit-price"
+                  ></td>
+                  <td class="col-type-number col-type-currency col-total-price">
+                    <div class="input-group">
+                      <input type="text" id="step2-discount-percent-amount"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.pricing?.discountPercentAmount,
+                          numberOnly: true, displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step2-discount-percent-amount-currency" />
+                      <span id="step2-discount-percent-amount-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-type-label col-row-header">
+                    <span
+                      ><g:message code="salesItem.pricing.step2.adjustment"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-quantity"></td>
+                  <td class="col-type-string col-unit"></td>
+                  <td class="col-type-number col-type-percentage col-percent"
+                  ></td>
+                  <td class="col-type-label col-unit-price-label"></td>
+                  <td class="col-type-number col-type-currency col-unit-price"
+                  ></td>
+                  <td class="col-type-number col-type-currency col-total-price">
+                    <div class="input-group">
+                      <input type="text" id="step2-adjustment"
+                        name="pricing.adjustment"
+                        class="form-control form-control-number form-control-currency"
+                        value="${formatCurrency(
+                          number: salesItem.pricing?.adjustment,
+                          numberOnly: true, displayZero: true
+                        )}"
+                        size="8"
+                        aria-describedby="step2-adjustment-currency" />
+                      <span id="step2-adjustment-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                    <ul class="control-messages"
+                      ><g:eachError bean="${salesItem.pricing}"
+                        field="${adjustment}"
+                      ><li class="control-message-error"
+                        ><g:message error="${it}"
+                      /></li
+                      ></g:eachError
+                    ></ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <ul class="field-msgs">
-          <g:eachError bean="${salesItem.pricing}" field="adjustment">
-            <li class="error-msg"><g:message error="${it}" /></li>
-          </g:eachError>
-          </ul>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</fieldset>
-<fieldset class="toggle-visibility hidden">
-  <header><h3><g:message code="salesItem.fieldset.pricing.step3.label" /></h3></header>
-  <table id="step3" class="content-table price-table">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col"><g:message code="salesItem.pricing.quantity.label" default="Qty" /></th>
-        <th scope="col"><g:message code="salesItem.pricing.unit.label" default="Unit" /></th>
-        <th scope="col"></th>
-        <th scope="col"><g:message code="salesItem.pricing.unitPrice.label" default="Unit price" /></th>
-        <th scope="col"><g:message code="salesItem.pricing.total.label" default="Total" /></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><g:message code="salesItem.pricing.step3.soldAs" /></td>
-        <td class="quantity number${hasErrors(bean: salesItem, field: 'quantity', ' error')}">
-          <input id="step3-quantity" type="text" name="quantity" size="6"
-            value="${formatNumber(number: salesItem.quantity, maxFractionDigits: 3)}" />
-          <ul class="field-msgs">
-          <g:eachError bean="${salesItem}" field="quantity">
-            <li class="error-msg"><g:message error="${it}" /></li>
-          </g:eachError>
-          </ul>
-        </td>
-        <td class="unit${hasErrors(bean: salesItem, field: 'unit', ' error')}">
-          <f:input bean="${salesItem}" property="unit" id="step3-unit" />
-          <ul class="field-msgs">
-          <g:eachError bean="${salesItem}" field="unit">
-            <li class="error-msg"><g:message error="${it}" /></li>
-          </g:eachError>
-          </ul>
-        </td>
-        <td class="unit-price-label"><g:message code="salesItem.pricing.per.label" /></td>
-        <td class="unit-price currency number">
-          <output id="step3-unit-price"><g:formatCurrency
-            number="${salesItem.unitPrice}" numberOnly="true"
-            displayZero="true" /></output>
-          <g:currency />
-        </td>
-        <td class="total-price currency number">
-          <output id="step3-total-price"><g:formatCurrency
-            number="${salesItem.total}" numberOnly="true"
-            displayZero="true" /></output>
-          <g:currency />
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</fieldset>
-<div class="table-actions toggle-visibility hidden">
-  <g:button elementId="remove-pricing" color="red" size="medium" icon="times"
-    message="salesItem.pricing.removePricing" />
-</div>
-<script id="add-pricing-item-template" type="text/x-handlebars-template">
-  <tr>
-    <td class="pos number">{{pos}}.</td>
-    <td class="quantity number">
-      <input type="text" name="pricing.items[{{index}}].quantity" size="6" />
-    </td>
-    <td class="unit">
-      <input type="text" name="pricing.items[{{index}}].unit" size="8" />
-    </td>
-    <td class="name">
-      <input type="text" name="pricing.items[{{index}}].name" size="30" />
-    </td>
-    <td class="type">
-      <g:select id="" name="pricing.items[{{index}}].type"
-        from="${PricingItemType.values()}"
-        valueMessagePrefix="salesItem.pricing.type" />
-    </td>
-    <td class="relative-to-pos">
-      <input type="hidden" name="pricing.items[{{index}}].relToPos" />
-      <span style="display: none;">
-        <i class="fa fa-anchor bubbling-icon"
-          title="${message(code: 'salesItem.pricing.relativeToPos.finder', default: 'Select reference row')}"></i>
-        <strong></strong>
-      </span>
-    </td>
-    <td class="unit-percent percentage number">
-      <input type="text" name="pricing.items[{{index}}].unitPercent" size="5"
-        class="number percent" />
-    </td>
-    <td class="unit-price currency number">
-      <div class="field-text">
-        <span class="input">
-          <input type="text" name="pricing.items[{{index}}].unitPrice"
-            size="8" />
-        </span>
-        <span class="currency-symbol"><g:currency /></span>
+        </div>
       </div>
-    </td>
-    <td class="total-price currency number">
-      <output>{{zero}}</output> <g:currency />
-    </td>
-    <td class="action-buttons">
-      <i class="fa fa-arrow-up bubbling-icon up-btn"
-        title="${message(code: 'default.btn.up')}"></i>
-      <i class="fa fa-arrow-down bubbling-icon down-btn" title="${message(code: 'default.btn.down')}"></i>
-      <i class="fa fa-trash-o bubbling-icon remove-btn" title="${message(code: 'default.btn.remove')}"></i>
-    </td>
-  </tr>
-</script>
+    </div>
+  </div>
+</section>
+
+<section class="toggle-visibility hidden">
+  <header>
+    <h3><g:message code="salesItem.fieldset.pricing.step3.label" /></h3>
+  </header>
+  <div class="column-content">
+    <div class="toggle-visibility hidden">
+      <div class="column-group">
+        <div class="column">
+          <div class="table-responsive">
+            <table id="step3" class="table data-table price-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th><g:message code="salesItem.pricing.quantity.label" /></th>
+                  <th><g:message code="salesItem.pricing.unit.label" /></th>
+                  <th></th>
+                  <th><g:message code="salesItem.pricing.unitPrice.label" /></th>
+                  <th><g:message code="salesItem.pricing.total.label" /></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="col-type-label col-row-header">
+                    <span
+                      ><g:message code="salesItem.pricing.step3.soldAs"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-quantity">
+                    <input type="text" id="step3-quantity" name="quantity"
+                      class="form-control form-control-number"
+                      value="${formatNumber(
+                        type: 'number', number: salesItem.quantity,
+                        maxFractionDigits: 3, groupingUsed: true
+                      )}"
+                      size="8" />
+                    <ul class="control-messages"
+                      ><g:eachError bean="${salesItem}" field="${quantity}"
+                      ><li class="control-message-error"
+                        ><g:message error="${it}"
+                      /></li
+                      ></g:eachError
+                    ></ul>
+                  </td>
+                  <td class="col-type-string col-unit">
+                    <f:widget bean="${salesItem}" property="unit"
+                      id="step3-unit" class="form-control" />
+                    <ul class="control-messages"
+                      ><g:eachError bean="${salesItem}" field="${unit}"
+                      ><li class="control-message-error"
+                        ><g:message error="${it}"
+                      /></li
+                      ></g:eachError
+                    ></ul>
+                  </td>
+                  <td class="col-type-label col-unit-price-label">
+                    <span
+                      ><g:message code="salesItem.pricing.per.label"
+                    /></span>
+                  </td>
+                  <td class="col-type-number col-type-currency col-unit-price">
+                    <div class="input-group">
+                      <input type="text" id="step3-unit-price"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.unitPrice, numberOnly: true,
+                          displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step3-unit-price-currency" />
+                      <span id="step3-unit-price-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                  <td class="col-type-number col-type-currency col-total-price">
+                    <div class="input-group">
+                      <input type="text" id="step3-total-price"
+                        class="form-control form-control-number form-control-currency disabled-always"
+                        value="${formatCurrency(
+                          number: salesItem.total, numberOnly: true,
+                          displayZero: true
+                        )}"
+                        size="8" disabled="disabled"
+                        aria-describedby="step3-total-price-currency" />
+                      <span id="step3-total-price-currency"
+                        class="input-group-addon"
+                        ><g:currency
+                      /></span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="toggle-visibility hidden text-right">
+  <button type="button" class="btn btn-warning btn-remove-pricing">
+    <i class="fa fa-close"></i>
+    <g:message code="salesItem.pricing.removePricing" />
+  </button>
+</section>

@@ -325,7 +325,7 @@ abstract class GoogleSync<E, G> implements GoogleService {
                                              boolean defaultValue = false)
     {
         Config config = getSystemConfig(key)
-        (config == null) ? defaultValue : (config as Boolean)
+        (config == null) ? defaultValue : config.toType(Boolean)
     }
 
     /**

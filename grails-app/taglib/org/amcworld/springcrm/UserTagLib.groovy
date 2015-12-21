@@ -1,7 +1,7 @@
 /*
  * UserTagLib.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code UserTagLib} represents tags for login.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 class UserTagLib {
 
@@ -35,12 +35,17 @@ class UserTagLib {
      * Renders an area to display the currently logged in user.
      */
     def loginControl = {
-        if (request.getSession(false) && session.user) {
-            out << message(
-                code: 'default.welcome', args: [session.user.fullName]
-            )
-            out << link(controller: 'user', action: 'logout') {
-                '<i class="fa fa-power-off"></i> ' + message(code: 'default.logout')
+        User user = session.user
+        if (request.getSession(false) && user) {
+            out << '<small>' << user.fullName << ' [' <<
+                user.userName << ']</small>'
+            out << link(
+                controller: 'user', action: 'logout',
+                'class': 'btn btn-warning btn-xs',
+                'role': 'button'
+            ) {
+                '<i class="fa fa-sign-out"></i> ' +
+                    message(code: 'default.logout')
             }
         }
     }

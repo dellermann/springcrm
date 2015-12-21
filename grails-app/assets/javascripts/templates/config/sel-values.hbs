@@ -1,25 +1,38 @@
 <div class="scroll-pane">
   <ul>
     {{#each items}}
-    <li class="ui-state-default" data-item-id="{{id}}"
+    <li class="panel panel-default" data-item-id="{{id}}"
       data-item-disabled="{{disabled}}">
-      <span class="value">{{name}}</span>
-      {{#unless disabled}}
-        <i class="fa fa-trash-o delete-btn"
-          title="{{message 'default.btn.remove'}}"></i>
-        <i class="fa fa-pencil-square-o edit-btn"
-          title="{{message 'default.btn.edit'}}"></i>
-      {{/unless}}
+      <div class="panel-body">
+        <span class="value">{{name}}</span>
+        {{#unless disabled}}
+        <div class="action-buttons">
+          <i class="fa fa-bars move-btn"
+            title="{{message 'default.btn.move'}}"
+            ><span class="sr-only">{{message 'default.btn.move'}}</span
+          ></i>
+          <i class="fa fa-trash-o delete-btn"
+            title="{{message 'default.btn.remove'}}"
+            ><span class="sr-only">{{message 'default.btn.remove'}}</span
+          ></i>
+        </div>
+        {{/unless}}
+      </div>
     </li>
     {{/each}}
   </ul>
 </div>
 <div class="buttons">
-  <span class="button green medium add-btn"><i class="fa fa-plus"></i>
-  {{message 'default.btn.add.short'}}</span>
-  <span class="button orange medium restore-btn"><i class="fa fa-undo"></i>
-  {{message 'config.restoreList.label'}}</span>
-  <span class="button white medium sort-btn"><i class="fa fa-sort"></i>
-  {{message 'default.btn.sort.short'}}
-  </span>
+  <button type="button" class="btn btn-success btn-xs add-btn">
+    <i class="fa fa-plus"></i>
+    <span class="hidden-sm">{{message 'default.btn.add.short'}}</span>
+  </button>
+  <button type="button" class="btn btn-warning btn-xs restore-btn">
+    <i class="fa fa-undo"></i>
+    <span class="hidden-sm">{{message 'config.restoreList.label'}}</span>
+  </button>
+  <button type="button" class="btn btn-default btn-xs sort-btn">
+    <i class="fa fa-sort"></i>
+    <span class="hidden-sm">{{message 'default.btn.sort.short'}}</span>
+  </button>
 </div>

@@ -1,17 +1,45 @@
+#
+# Gruntfile.coffee
+#
+# Copyright (c) 2011-2015, Daniel Ellermann
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
 module.exports = (grunt) ->
+  require('load-grunt-tasks') grunt
+
   grunt.initConfig
-    bower:
-      install:
-        options:
-          targetDir: '<%= dirs.bower.base %>/'
     clean:
       documentation: ['<%= dirs.target.documentation %>']
       publish: [
-        '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.fonts %>/'
-        '<%= dirs.src.images %>/lightbox/'
+        '<%= dirs.src.javascripts %>/bootstrap/'
+        '<%= dirs.src.javascripts %>/jquery/'
+        '<%= dirs.src.javascripts %>/jqueryui/'
+        '<%= dirs.src.javascripts %>/lang/bootstrap-datepicker/'
+        '<%= dirs.src.javascripts %>/selectize/selectize.js'
+        '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
+        '<%= dirs.src.javascripts %>/_js-calc.coffee'
+        '<%= dirs.src.javascripts %>/_typeahead.js'
+        '<%= dirs.src.stylesheets %>/bootstrap/'
+        '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.stylesheets %>/js-calc/'
-        '<%= dirs.src.javascripts %>/lang/fullcalendar/'
+        '<%= dirs.src.stylesheets %>/selectize/plugins/'
+        '<%= dirs.src.stylesheets %>/selectize/selectize.bootstrap3.less'
+        '<%= dirs.src.stylesheets %>/selectize/selectize.less'
       ]
       test: ['<%= dirs.target.test.base %>']
     codo:
@@ -21,7 +49,7 @@ module.exports = (grunt) ->
           name: 'SpringCRM'
           private: true
           title: 'SpringCRM CoffeeScript documentation'
-        src: ['<%= dirs.src.coffee %>']
+        src: ['<%= dirs.src.javascripts %>']
     coffee:
       test:
         files: [
@@ -54,24 +82,45 @@ module.exports = (grunt) ->
     copy:
       publish:
         files: [
-            cwd: '<%= dirs.bower.blueimpLoadImage %>/js/'
-            dest: '<%= dirs.src.javascripts %>/'
+            cwd: '<%= dirs.bower.bootstrap %>/less/'
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/'
             expand: true
-            rename: (dest, src) -> "#{dest}_#{src}"
+            src: ['**/*.less']
+          ,
+            cwd: '<%= dirs.bower.bootstrap %>/js/'
+            dest: '<%= dirs.src.javascripts %>/bootstrap/'
+            expand: true
             src: [
-              'load-image-exif.js'
-              'load-image-exif-map.js'
-              'load-image-ios.js'
-              'load-image-meta.js'
-              'load-image-orientation.js'
-              'load-image.js'
+              'alert.js'
+              'collapse.js'
+              'dropdown.js'
+              'modal.js'
+              'transition.js'
             ]
+          ,
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/datepicker.less'
+            src: '<%= dirs.bower.bootstrapDatepicker %>/less/datepicker3.less'
+          ,
+            dest: '<%= dirs.src.javascripts %>/bootstrap/datepicker.js'
+            src:
+              '<%= dirs.bower.bootstrapDatepicker %>/js/bootstrap-datepicker.js'
+          ,
+            cwd: '<%= dirs.bower.bootstrapDatepicker %>/js/locales/'
+            dest: '<%= dirs.src.javascripts %>/lang/bootstrap-datepicker/'
+            expand: true
+            src: ['*.js']
+          ,
+            dest: '<%= dirs.src.stylesheets %>/bootstrap/fileinput.css'
+            src: '<%= dirs.bower.bootstrapFileinput %>/css/fileinput.css'
+          ,
+            dest: '<%= dirs.src.javascripts %>/bootstrap/fileinput.js'
+            src: '<%= dirs.bower.bootstrapFileinput %>/js/fileinput.js'
           ,
             cwd: '<%= dirs.bower.fontAwesome %>/less/'
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
             expand: true
-            rename: (dest, src) -> "#{dest}_#{src}"
             src: [
+              'animated.less'
               'core.less'
               'fixed-width.less'
               'icons.less'
@@ -86,63 +135,35 @@ module.exports = (grunt) ->
             expand: true
             src: ['*']
           ,
-            dest: '<%= dirs.src.stylesheets %>/_fullcalendar.css'
-            src: '<%= dirs.bower.fullCalendar %>/dist/fullcalendar.css'
-          ,
-            dest: '<%= dirs.src.javascripts %>/_fullcalendar.js'
-            src: '<%= dirs.bower.fullCalendar %>/dist/fullcalendar.js'
-          ,
-            cwd: '<%= dirs.bower.fullCalendar %>/dist/lang/'
-            dest: '<%= dirs.src.javascripts %>/lang/fullcalendar/'
-            expand: true
-            src: ['*.js']
-          ,
-            dest: '<%= dirs.src.javascripts %>/_jquery.js'
+            dest: '<%= dirs.src.javascripts %>/jquery/jquery.js'
             src: '<%= dirs.bower.jquery %>/dist/jquery.js'
           ,
-            dest: '<%= dirs.src.javascripts %>/_jquery-autosize.js'
-            src: '<%= dirs.bower.jqueryAutosize %>/jquery.autosize.js'
+            dest: '<%= dirs.src.javascripts %>/jquery/autosize.js'
+            src: '<%= dirs.bower.jqueryAutosize %>/autosize.js'
           ,
-            cwd: '<%= dirs.bower.jqueryFileUpload %>/css/'
-            dest: '<%= dirs.src.stylesheets %>/'
-            expand: true
-            rename: (dest, src) ->
-              "#{dest}_#{src.replace(/jquery\./, 'jquery-')}"
-            src: [
-              'jquery.fileupload.css'
-              'jquery.fileupload-ui.css'
-            ]
+            dest: '<%= dirs.src.javascripts %>/jquery/json.js'
+            src: '<%= dirs.bower.jqueryJson %>/src/jquery.json.js'
           ,
-            cwd: '<%= dirs.bower.jqueryFileUpload %>/js/'
-            dest: '<%= dirs.src.javascripts %>/'
-            expand: true
-            rename: (dest, src) ->
-              "#{dest}_#{src.replace(/jquery\./, 'jquery-')}"
-            src: [
-              'jquery.fileupload.js'
-              'jquery.fileupload-audio.js'
-              'jquery.fileupload-image.js'
-              'jquery.fileupload-process.js'
-              'jquery.fileupload-ui.js'
-              'jquery.fileupload-validate.js'
-              'jquery.fileupload-video.js'
-            ]
-          ,
-            cwd: '<%= dirs.bower.jqueryFileUpload %>/img/'
-            dest: '<%= dirs.src.assets %>/images/'
-            expand: true
-            src: ['*']
-          ,
-            dest: '<%= dirs.src.javascripts %>/_jquery-storage-api.js'
+            dest: '<%= dirs.src.javascripts %>/jquery/storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
           ,
-            dest: '<%= dirs.src.javascripts %>/_jquery-ui.js'
-            src: '<%= dirs.bower.jqueryUi %>/jquery/jquery-ui.js'
+            cwd: '<%= dirs.bower.jqueryui %>/ui/'
+            dest: '<%= dirs.src.javascripts %>/jqueryui/'
+            expand: true
+            src: [
+              'core.js'
+              'draggable.js'
+              'mouse.js'
+              'sortable.js'
+              'widget.js'
+            ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/jqueryui/touch-punch.js'
+            src: '<%= dirs.bower.jqueryuiTouchPunch %>/jquery.ui.touch-punch.js'
           ,
             cwd: '<%= dirs.bower.jsCalc %>/less/'
             dest: '<%= dirs.src.stylesheets %>/js-calc/'
             expand: true
-            rename: (dest, src) -> "#{dest}_#{src}"
             src: [
               'core.less'
               'variables.less'
@@ -151,27 +172,37 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
             src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
           ,
-            dest: '<%= dirs.src.javascripts %>/_lightbox.js'
-            src: '<%= dirs.bower.lightbox %>/js/lightbox.js'
-          ,
-            dest: '<%= dirs.src.stylesheets %>/_lightbox.css'
-            src: '<%= dirs.bower.lightbox %>/css/lightbox.css'
-          ,
-            dest: '<%= dirs.src.javascripts %>/_lightbox.js'
-            src: '<%= dirs.bower.lightbox %>/js/lightbox.js'
-          ,
-            cwd: '<%= dirs.bower.lightbox %>/img/'
-            dest: '<%= dirs.src.images %>/lightbox/'
+            cwd: '<%= dirs.bower.selectize %>/dist/less/'
+            dest: '<%= dirs.src.stylesheets %>/selectize/'
             expand: true
             src: [
-              'close.png'
-              'loading.gif'
-              'next.png'
-              'prev.png'
+              'plugins/**'
+              'selectize.bootstrap3.less'
+              'selectize.less'
             ]
           ,
-            dest: '<%= dirs.src.javascripts %>/_moment.js'
-            src: '<%= dirs.bower.moment %>/moment.js'
+            dest: '<%= dirs.src.javascripts %>/selectize/selectize.js'
+            src: '<%= dirs.bower.selectize %>/dist/js/standalone/selectize.js'
+          ,
+            dest: '<%= dirs.src.javascripts %>/_typeahead.js'
+            src: '<%= dirs.bower.typeahead %>/typeahead.bundle.js'
+          ,
+            dest: '<%= dirs.src.stylesheets %>/_typeahead.less'
+            src: '<%= dirs.bower.typeaheadBootstrap %>/typeahead.less'
+          ,
+            cwd: '<%= dirs.bower.vatCalc %>/less/'
+            dest: '<%= dirs.src.stylesheets %>/vat-calc/'
+            expand: true
+            src: [
+              'core.less'
+              'variables.less'
+            ]
+          ,
+            dest: '<%= dirs.src.javascripts %>/_vat-calc.coffee'
+            src: '<%= dirs.bower.vatCalc %>/coffee/vat-calc.coffee'
+          ,
+            dest: '<%= dirs.src.javascripts %>/templates/tools/vat-calc.hbs'
+            src: '<%= dirs.bower.vatCalc %>/templates/vat-calc.hbs'
         ]
         options:
           encoding: null
@@ -181,19 +212,27 @@ module.exports = (grunt) ->
             conf = g.config
             file = g.file
 
-            lb = conf.get 'dirs.bower.lightbox'
-            fa = conf.get 'dirs.bower.fontAwesome'
             jc = conf.get 'dirs.bower.jsCalc'
-            if file.arePathsEquivalent srcPath, "#{lb}/css/lightbox.css"
+            tb = conf.get 'dirs.bower.typeaheadBootstrap'
+            fa = conf.get 'dirs.bower.fontAwesome'
+            vc = conf.get 'dirs.bower.vatCalc'
+
+            # if file.doesPathContain "#{fa}/less", srcPath
+            #   contents = String(contents)
+            #   contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
+            if file.arePathsEquivalent srcPath, "#{jc}/less/core.less"
               contents = String(contents)
-              contents = contents.replace /\.\.\/img\//g, '../images/lightbox/'
-            else if file.arePathsEquivalent srcPath, "#{fa}/less/core.less"
+              contents = contents.replace /@\{prefix\}/g, 'jscalc'
+            if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
               contents = String(contents)
-              contents = contents.replace /\.@\{fa-css-prefix\}/, '.fa'
-            else if file.arePathsEquivalent srcPath, "#{jc}/less/js-calc.less"
+              contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
+            if file.arePathsEquivalent srcPath, "#{vc}/less/core.less"
               contents = String(contents)
-              contents = contents.replace /@import\s+"variables";/,
-                '@import "_variables";'
+              contents = contents.replace /@\{prefix\}/g, 'vatcalc'
+            if file.arePathsEquivalent srcPath, "#{vc}/coffee/vat-calc.coffee"
+              contents = String(contents)
+              contents = contents.replace /Handlebars.templates\['vat-calc'\]/g, '''Handlebars.templates['tools/vat-calc']'''
+
             contents
       test:
         files: [
@@ -239,22 +278,25 @@ module.exports = (grunt) ->
     dirs:
       bower:
         base: '<%= dirs.src.base %>/bower_components'
-        blueimpLoadImage: '<%= dirs.bower.base %>/blueimp-load-image'
+        bootstrap: '<%= dirs.bower.base %>/bootstrap'
+        bootstrapDatepicker: '<%= dirs.bower.base %>/bootstrap-datepicker'
+        bootstrapFileinput: '<%= dirs.bower.base %>/bootstrap-fileinput'
         fontAwesome: '<%= dirs.bower.base %>/font-awesome'
-        fullCalendar: '<%= dirs.bower.base %>/fullcalendar'
         handlebars: '<%= dirs.bower.base %>/handlebars'
         jquery: '<%= dirs.bower.base %>/jquery'
         jqueryAutosize: '<%= dirs.bower.base %>/jquery-autosize'
-        jqueryFileUpload: '<%= dirs.bower.base %>/jquery-file-upload'
+        jqueryJson: '<%= dirs.bower.base %>/jquery-json'
         jqueryMockjax: '<%= dirs.bower.base %>/jquery-mockjax'
         jqueryStorageAPI: '<%= dirs.bower.base %>/jQuery-Storage-API'
-        jqueryUi: '<%= dirs.bower.base %>/jquery-ui'
-        jqueryUiTouchPunch:
-          '<%= dirs.bower.base %>/jquery-ui-touch-punch-working'
+        jqueryui: '<%= dirs.bower.base %>/jqueryui'
+        jqueryuiTouchPunch: '<%= dirs.bower.base %>/jqueryui-touch-punch'
         jsCalc: '<%= dirs.bower.base %>/js-calc'
-        lightbox: '<%= dirs.bower.base %>/lightbox'
-        moment: '<%= dirs.bower.base %>/moment'
         qunit: '<%= dirs.bower.base %>/qunit'
+        selectize: '<%= dirs.bower.base %>/selectize'
+        typeahead: '<%= dirs.bower.base %>/typeahead.js'
+        typeaheadBootstrap:
+          '<%= dirs.bower.base %>/typeahead.js-bootstrap3.less'
+        vatCalc: '<%= dirs.bower.base %>/vat-calc'
       src:
         assets: '<%= dirs.src.grailsApp %>/assets'
         base: '.'
@@ -313,34 +355,14 @@ module.exports = (grunt) ->
         files: ['<%= dirs.src.test.base %>/*.html']
         tasks: ['copy:test']
 
-  grunt.loadNpmTasks 'grunt-bower-task'
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-handlebars'
-  grunt.loadNpmTasks 'grunt-contrib-less'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-codo'
-
   grunt.registerTask 'default', [
     'clean:test', 'less:test', 'coffee:test', 'handlebars:test', 'copy:test'
   ]
   grunt.registerTask 'documentation', [
     'clean:documentation', 'codo:documentation'
   ]
-  grunt.registerTask 'publish', 'Copy library code to project.', ->
-    g = grunt
-
-    g.task.run [
-      'bower:install'
-      'clean:publish'
-      'copy:publish'
-      'concat:publish'
-    ]
-    g.log.writelns '!!'.blue, 'Don\'t forget to change',
-      (g.config.get('dirs.src.stylesheets') + '/_jquery-ui.css').green,
-      'after installing a new version of jQueryUI.'
+  grunt.registerTask 'publish', [
+    'clean:publish', 'copy:publish', 'concat:publish'
+  ]
 
 # vim:set ts=2 sw=2 sts=2:
-

@@ -1,7 +1,7 @@
 /*
  * DataFileController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 
 /**
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
  * to data files.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class DataFileController {
@@ -41,13 +41,39 @@ class DataFileController {
     //-- Public methods -------------------------
 
     /**
-     * Loads the data file with the given type and ID.
+     * Loads the data file with the given type and ID from frontend.
+     *
+     * @param type  the type of data file; must be a name defined by the
+     *              enumeration {@link DataFileType}
+     * @param id    the ID of the {@link DataFile} instance to retrieve
+     */
+    def frontendLoadFile(String type, Long id) {
+        commonLoadFile type, id
+    }
+
+    /**
+     * Loads the data file with the given type and ID from backend.
      *
      * @param type  the type of data file; must be a name defined by the
      *              enumeration {@link DataFileType}
      * @param id    the ID of the {@link DataFile} instance to retrieve
      */
     def loadFile(String type, Long id) {
+        commonLoadFile type, id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Loads the data file with the given type and ID.  This is a common method
+     * for various actions.
+     *
+     * @param type  the type of data file; must be a name defined by the
+     *              enumeration {@link DataFileType}
+     * @param id    the ID of the {@link DataFile} instance to retrieve
+     */
+    private def commonLoadFile(String type, Long id) {
         def dataFileInstance = DataFile.get(id)
         if (dataFileInstance) {
             File f = dataFileService.retrieveFile(
@@ -65,6 +91,6 @@ class DataFileController {
             }
         }
 
-        render status: HttpServletResponse.SC_NOT_FOUND
+        render status: SC_NOT_FOUND
     }
 }

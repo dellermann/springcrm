@@ -1,7 +1,7 @@
 /*
  * CreditMemoControllerTests.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import grails.test.mixin.TestFor
  * for {@code CreditMemoController}.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 @TestFor(CreditMemoController)
 @Mock([CreditMemo, Organization, Person, InvoicingItem, Invoice, Dunning, InvoiceStage, SeqNumberService])
@@ -47,10 +47,6 @@ class CreditMemoControllerTests {
         Client.metaClass.static.loadAsMap = { -> [: ] }
         grails.converters.XML.metaClass.static.toString = { -> '' }
 
-        CreditMemo.metaClass.index = { -> }
-        CreditMemo.metaClass.reindex = { -> }
-        Invoice.metaClass.reindex = { -> }
-        Dunning.metaClass.reindex = { -> }
         session.user = new User(userName: 'dellermann')
     }
 

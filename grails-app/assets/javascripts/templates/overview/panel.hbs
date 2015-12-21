@@ -1,0 +1,24 @@
+<div id="{{id}}" class="panel panel-default panel-type-{{id}}"
+  style="{{panel.style}}" data-panel-url="{{panel.url}}"
+  role="region" aria-labelledby="{{id}}-title">
+  <div class="panel-heading">
+    <h3 id="{{id}}-title">{{panel.title}}</h3>
+    <div class="buttons" role="toolbar"
+      aria-label="{{message 'overview.buttons.label'}}">
+      <button type="button" class="up-btn" title="{{message 'default.btn.up'}}"
+        ><i class="fa fa-caret-up"></i
+        ><span class="sr-only">{{message 'default.btn.up'}}</span
+      ></button>
+      <button type="button" class="down-btn"
+        title="{{message 'default.btn.down'}}"
+        ><i class="fa fa-caret-down"></i
+        ><span class="sr-only">{{message 'default.btn.down'}}</span
+      ></button>
+      <a href="{{closeUrl}}" class="close-btn"
+        title="{{message 'overview.closePanel.label'}}"
+        ><span aria-hidden="true">&times;</span
+        ><span class="sr-only">{{message 'overview.closePanel.label'}}</span
+      ></a>
+    </div>
+  </div>
+</div>

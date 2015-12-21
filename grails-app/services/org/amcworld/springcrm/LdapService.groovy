@@ -1,7 +1,7 @@
 /*
  * LdapService.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.apache.directory.groovyldap.LDAP
  * server and store person data.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class LdapService {
 
@@ -86,7 +86,7 @@ class LdapService {
                 if (i > 1) {
                     dn << ' ' << i
                 }
-                dn << ',' << (config['ldapContactDn'] as String)
+                dn << ',' << config['ldapContactDn']?.toString()
                 try {
                     log.debug "Trying to save DN ${dn} to LDAP..."
                     ldap.add dn.toString(), attrs
@@ -227,17 +227,17 @@ class LdapService {
      */
     protected LDAP getLdap() {
         LDAP ldap = null
-        String host = config['ldapHost'] as String
+        String host = config['ldapHost']?.toString()
         if (host) {
             StringBuilder buf = new StringBuilder('ldap://')
             buf << host
-            Integer port = config['ldapPort'] as Integer
+            Integer port = config['ldapPort']?.toType(Integer)
             if (port) {
                 buf << ':' << port
             }
             ldap = LDAP.newInstance(
-                buf.toString(), config['ldapBindDn'] as String,
-                config['ldapBindPasswd'] as String
+                buf.toString(), config['ldapBindDn']?.toString(),
+                config['ldapBindPasswd']?.toString()
             )
         }
         ldap

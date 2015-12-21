@@ -19,8 +19,6 @@ class QuoteControllerTests extends ControllerUnitTestCase {
 		def q1 = new Quote(number:10000, subject:'Quote 1')
 		def q2 = new Quote(number:10001, subject:'Quote 2')
 		mockDomain(Quote, [q1, q2])
-		Quote.metaClass.index = { -> }
-		Quote.metaClass.reindex = { -> }
 
 //		def seqNumber = new SeqNumber(controllerName:'quote', nextNumber:10002, prefix:'Q', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])

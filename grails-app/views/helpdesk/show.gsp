@@ -1,66 +1,66 @@
-<%@ page import="org.amcworld.springcrm.Helpdesk" %>
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <g:set var="entityName" value="${message(code: 'helpdesk.label', default: 'Helpdesk')}" />
-  <g:set var="entitiesName" value="${message(code: 'helpdesk.plural', default: 'Helpdesks')}" />
-  <title><g:message code="default.show.label" args="[entityName]" /></title>
-</head>
+  <head>
+    <meta name="layout" content="main" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="${entitiesName}" /></h1>
-    <g:render template="/layouts/toolbarShow"
-      model="[instance: helpdeskInstance]" />
-  </header>
-  <aside id="action-bar">
-    <h3><g:message code="default.actions" /></h3>
-    <ul>
-      <li><g:button mapping="helpdeskFrontend"
-        params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
-        color="white" size="medium" target="_blank"
-        message="helpdesk.button.callFrontend" /></li>
-      <li><g:button controller="ticket" action="list"
-        params="[helpdesk: helpdeskInstance.id]" color="white" size="medium"
-        message="helpdesk.button.showTickets" /></li>
-    </ul>
-  </aside>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
-    <h2>${helpdeskInstance?.toString()}</h2>
-    <div class="data-sheet">
-      <section class="fieldset">
-        <header><h3><g:message code="helpdesk.fieldset.general.label" /></h3></header>
-        <div class="multicol-content">
-          <div class="col col-l">
+  <body>
+    <g:applyLayout name="show" model="[instance: helpdeskInstance]">
+      <content tag="actionMenu">
+        <li role="menuitem">
+          <g:link mapping="helpdeskFrontend"
+            params="[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]"
+            target="_blank">
+            <i class="fa fa-eye"></i>
+            <g:message code="helpdesk.button.callFrontend" />
+          </g:link>
+        </li>
+        <li role="menuitem">
+          <g:link controller="ticket" action="index"
+            params="[helpdesk: helpdeskInstance.id]">
+            <i class="fa fa-ticket"></i>
+            <g:message code="helpdesk.button.showTickets" />
+          </g:link>
+        </li>
+      </content>
+
+      <section>
+        <header>
+          <h3><g:message code="helpdesk.fieldset.general.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
             <f:display bean="${helpdeskInstance}" property="organization" />
           </div>
-          <div class="col col-r">
+          <div class="column">
             <f:display bean="${helpdeskInstance}" property="name" />
             <f:display bean="${helpdeskInstance}" property="accessCode" />
-
-            <div class="row">
-              <div class="label"><g:message code="helpdesk.feUrl.label" /></div>
-              <div class="field">
-                <g:link mapping="helpdeskFrontend" params="${[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]}" target="_blank"><g:createLink mapping="helpdeskFrontend" params="${[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]}" absolute="true" /></g:link>
+            <div class="form-group">
+              <label class="control-label"
+                ><g:message code="helpdesk.feUrl.label"
+              /></label>
+              <div class="control-container">
+                <g:link mapping="helpdeskFrontend"
+                  params="${[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]}"
+                  target="_blank"
+                  ><g:createLink mapping="helpdeskFrontend"
+                    params="${[urlName: helpdeskInstance.urlName, accessCode: helpdeskInstance.accessCode]}"
+                    absolute="true"
+                /></g:link>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <section class="fieldset">
-        <header><h3><g:message code="helpdesk.fieldset.users.label" /></h3></header>
-        <div>
-          <f:display bean="${helpdeskInstance}" property="users" />
+      <section>
+        <header>
+          <h3><g:message code="helpdesk.fieldset.users.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <f:display bean="${helpdeskInstance}" property="users" />
+          </div>
         </div>
       </section>
-    </div>
-
-    <p class="record-timestamps">
-      <g:message code="default.recordTimestamps" args="[formatDate(date: helpdeskInstance?.dateCreated, style: 'SHORT'), formatDate(date: helpdeskInstance?.lastUpdated, style: 'SHORT')]" />
-    </p>
-  </div>
-</body>
+    </g:applyLayout>
+  </body>
 </html>

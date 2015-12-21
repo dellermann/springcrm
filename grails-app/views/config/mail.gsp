@@ -1,218 +1,205 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="config.mail.title" default="Mail settings" /></title>
-  <meta name="stylesheet" content="config" />
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="config.mail.title" /> -
+    <g:message code="config.title" /></title>
+    <meta name="caption" content="${message(code: 'config.title')}" />
+    <meta name="subcaption" content="${message(code: 'config.mail.title')}" />
+    <meta name="stylesheet" content="config" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="config.mail.title" default="Mail settings" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button color="green" class="submit-btn" icon="floppy-o"
-          data-form="config-form" message="default.button.save.label" /></li>
-        <li><g:button action="index" back="true" color="red"
-          icon="times-circle-o" message="default.button.cancel.label" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
-    <g:form name="config-form" action="save" params="[returnUrl: params.returnUrl]">
-      <div class="multicol-content">
-        <div class="col col-l">
-          <fieldset>
-            <header><h3><g:message code="config.fieldset.mail.activation.label" /></h3></header>
-            <div>
-              <div class="row">
-                <div class="label">
-                  <label for="mail-use-config-user"><g:message code="config.mail.activation.label" /></label>
+  <body>
+    <content tag="toolbar">
+      <g:render template="/layouts/toolbarForm" model="[formName: 'config']" />
+    </content>
+
+    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/errorMessage" />
+
+    <g:form action="save" elementId="config-form"
+      params="[returnUrl: params.returnUrl]" method="post"
+      class="form-horizontal data-form form-view">
+      <section class="column-group">
+        <div class="column">
+          <header>
+            <h3><g:message code="config.fieldset.mail.activation.label" /></h3>
+          </header>
+          <div class="column-content">
+            <div class="form-group">
+              <label for="mail-use-config-user" class="control-label">
+                <g:message code="config.mail.activation.label" />
+              </label>
+              <div class="control-container">
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-use-config-none"
+                      name="config.mailUseConfig" value="null"
+                      checked="${configData.mailUseConfig == null}" />
+                    <g:message code="config.mail.activation.none" />
+                  </label>
                 </div>
-                <div class="field${hasErrors(bean: configData, field: 'mailUseConfig', ' error')}">
-                  <dl class="checkbox-area">
-                    <dt>
-                      <g:radio id="mail-use-config-none" name="config.mailUseConfig"
-                        value="null" checked="${configData.mailUseConfig == null}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-use-config-none"><g:message code="config.mail.activation.none" /></label></span>
-                      </div>
-                    </dd>
-                    <dt>
-                      <g:radio id="mail-use-config-system"
-                        name="config.mailUseConfig" value="false"
-                        checked="${configData.mailUseConfig == 'false'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-use-config-system"><g:message code="config.mail.activation.system" /></label></span>
-                      </div>
-                    </dd>
-                    <dt>
-                      <g:radio id="mail-use-config-user" name="config.mailUseConfig"
-                        value="true" checked="${configData.mailUseConfig == 'true'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-use-config-user"><g:message code="config.mail.activation.user" /></label></span>
-                      </div>
-                    </dd>
-                  </dl>
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-use-config-system"
+                      name="config.mailUseConfig" value="false"
+                      checked="${configData.mailUseConfig == 'false'}" />
+                    <g:message code="config.mail.activation.system" />
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-use-config-user"
+                      name="config.mailUseConfig" value="true"
+                      checked="${configData.mailUseConfig == 'true'}" />
+                    <g:message code="config.mail.activation.user" />
+                  </label>
                 </div>
               </div>
             </div>
-          </fieldset>
+          </div>
         </div>
-        <div class="col col-r">
-          <fieldset>
-            <header><h3><g:message code="config.fieldset.mail.host.label" /></h3></header>
-            <div>
-              <div class="row">
-                <div class="label">
-                  <label for="host"><g:message code="config.mail.host.label" /></label>
-                </div>
-                <div class="field${hasErrors(bean: configData, field: 'mailHost', ' error')}">
-                  <g:textField id="host" name="config.mailHost" value="${configData.mailHost}" size="50" />
-                  <ul class="field-msgs">
-                    <g:eachError bean="${configData}" field="mailHost">
-                    <li class="error-msg"><g:message error="${it}" /></li>
-                    </g:eachError>
-                  </ul>
-                </div>
+        <div class="column">
+          <header>
+            <h3><g:message code="config.fieldset.mail.host.label" /></h3>
+          </header>
+          <div class="column-content">
+            <div class="form-group">
+              <label for="host" class="control-label">
+                <g:message code="config.mail.host.label" />
+              </label>
+              <div class="control-container">
+                <g:textField id="host" name="config.mailHost"
+                  value="${configData.mailHost}" class="form-control" />
+                <ul class="control-messages"
+                  ><g:eachError bean="${configData}" field="mailHost"
+                  ><li class="control-message-error"><g:message error="${it}" /></li
+                  ></g:eachError
+                ></ul>
               </div>
-              <div class="row">
-                <div class="label">
-                  <label for="port"><g:message code="config.mail.port.label" /></label>
+            </div>
+            <div class="form-group">
+              <label for="port" class="control-label">
+                <g:message code="config.mail.port.label" />
+              </label>
+              <div class="control-container">
+                <input type="number" id="port" name="config.mailPort"
+                  value="${configData.mailPort ?: 587}" class="form-control"
+                  maxlength="5" min="0" max="65535" />
+                <p class="form-control-static">
+                  <small>(<g:message code="config.mail.port.default" />)</small>
+                </p>
+                <ul class="control-messages"
+                  ><g:eachError bean="${configData}" field="mailPort"
+                  ><li class="control-message-error"><g:message error="${it}" /></li
+                  ></g:eachError
+                ></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="column-group">
+        <div class="column">
+          <header>
+            <h3><g:message code="config.fieldset.mail.auth.label" /></h3>
+          </header>
+          <div class="column-content">
+            <div class="form-group">
+              <label for="mail-auth-true" class="control-label">
+                <g:message code="config.mail.auth.label" />
+              </label>
+              <div class="control-container">
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-auth-false" name="config.mailAuth"
+                      value="false"
+                      checked="${configData.mailAuth != 'true'}" />
+                    <g:message code="config.mail.auth.false" />
+                  </label>
                 </div>
-                <div class="field${hasErrors(bean: configData, field: 'mailPort', ' error')}">
-                  <div class="field-text">
-                    <span class="input"><g:textField id="port" name="config.mailPort" value="${configData.mailPort ?: 587}" size="5" /></span>
-                    <span class="hint">(<g:message code="config.mail.port.default" />)</span>
-                  </div>
-                  <ul class="field-msgs">
-                    <g:eachError bean="${configData}" field="mailPort">
-                    <li class="error-msg"><g:message error="${it}" /></li>
-                    </g:eachError>
-                  </ul>
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-auth-true" name="config.mailAuth"
+                      value="true"
+                      checked="${configData.mailAuth == 'true'}" />
+                    <g:message code="config.mail.auth.true" />
+                  </label>
                 </div>
               </div>
             </div>
-          </fieldset>
+            <div class="form-group">
+              <label for="user-name" class="control-label">
+                <g:message code="config.mail.userName.label" />
+              </label>
+              <div class="control-container">
+                <g:textField id="user-name" name="config.mailUserName"
+                  value="${configData.mailUserName}" class="form-control" />
+                <ul class="control-messages"
+                  ><g:eachError bean="${configData}" field="mailUserName"
+                  ><li class="control-message-error"><g:message error="${it}" /></li
+                  ></g:eachError
+                ></ul>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password" class="control-label">
+                <g:message code="config.mail.password.label" />
+              </label>
+              <div class="control-container">
+                <g:passwordField id="password" name="config.mailPassword"
+                  class="form-control" />
+                <ul class="control-messages"
+                  ><g:eachError bean="${configData}" field="mailPassword"
+                  ><li class="control-message-error"><g:message error="${it}" /></li
+                  ></g:eachError
+                ></ul>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="multicol-content">
-        <div class="col col-l">
-          <fieldset>
-            <header><h3><g:message code="config.fieldset.mail.auth.label" /></h3></header>
-            <div>
-              <div class="row">
-                <div class="label">
-                  <label for="mail-auth-true"><g:message code="config.mail.auth.label" /></label>
+        <div class="column">
+          <header>
+            <h3><g:message code="config.fieldset.mail.security.label" /></h3>
+          </header>
+          <div class="column-content">
+            <div class="form-group">
+              <label for="mail-encryption-starttls" class="control-label">
+                <g:message code="config.mail.encryption.label" />
+              </label>
+              <div class="control-container">
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-encryption-none" name="config.mailEncryption"
+                      value="none"
+                      checked="${(configData.mailEncryption ?: 'none') == 'none'}" />
+                    <g:message code="config.mail.encryption.none" />
+                  </label>
                 </div>
-                <div class="field${hasErrors(bean: configData, field: 'mailAuth', ' error')}">
-                  <dl class="checkbox-area">
-                    <dt>
-                      <g:radio id="mail-auth-false" name="config.mailAuth"
-                        value="false" checked="${configData.mailAuth != 'true'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-auth-false"><g:message code="config.mail.auth.false" /></label></span>
-                      </div>
-                    </dd>
-                    <dt>
-                      <g:radio id="mail-auth-true" name="config.mailAuth"
-                        value="true" checked="${configData.mailAuth == 'true'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-auth-true"><g:message code="config.mail.auth.true" /></label></span>
-                      </div>
-                    </dd>
-                  </dl>
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-encryption-ssl" name="config.mailEncryption"
+                      value="ssl"
+                      checked="${configData.mailEncryption == 'ssl'}" />
+                    <g:message code="config.mail.encryption.ssl" />
+                  </label>
                 </div>
-              </div>
-              <div class="row">
-                <div class="label">
-                  <label for="user-name"><g:message code="config.mail.userName.label" /></label>
-                </div>
-                <div class="field${hasErrors(bean: configData, field: 'mailUserName', ' error')}">
-                  <g:textField id="user-name" name="config.mailUserName" value="${configData.mailUserName}" size="50" />
-                  <ul class="field-msgs">
-                    <g:eachError bean="${configData}" field="mailUserName">
-                    <li class="error-msg"><g:message error="${it}" /></li>
-                    </g:eachError>
-                  </ul>
-                </div>
-              </div>
-              <div class="row">
-                <div class="label">
-                  <label for="password"><g:message code="config.mail.password.label" /></label>
-                </div>
-                <div class="field${hasErrors(bean: configData, field: 'mailPassword', ' error')}">
-                  <g:passwordField id="password" name="config.mailPassword" size="50" />
-                  <ul class="field-msgs">
-                    <g:eachError bean="${configData}" field="mailPassword">
-                    <li class="error-msg"><g:message error="${it}" /></li>
-                    </g:eachError>
-                  </ul>
+                <div class="radio">
+                  <label>
+                    <g:radio id="mail-encryption-starttls" name="config.mailEncryption"
+                      value="starttls"
+                      checked="${configData.mailEncryption == 'starttls'}" />
+                    <g:message code="config.mail.encryption.starttls" />
+                  </label>
                 </div>
               </div>
             </div>
-          </fieldset>
+          </div>
         </div>
-        <div class="col col-r">
-          <fieldset>
-            <header><h3><g:message code="config.fieldset.mail.security.label" /></h3></header>
-            <div>
-              <div class="row">
-                <div class="label">
-                  <label for="mail-encryption-starttls"><g:message code="config.mail.encryption.label" /></label>
-                </div>
-                <div class="field">
-                  <dl class="checkbox-area">
-                    <dt>
-                      <g:radio id="mail-encryption-none" name="config.mailEncryption"
-                        value="none" checked="${(configData.mailEncryption ?: 'none') == 'none'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-encryption-none"><g:message code="config.mail.encryption.none" /></label></span>
-                      </div>
-                    </dd>
-                    <dt>
-                      <g:radio id="mail-encryption-ssl" name="config.mailEncryption"
-                        value="ssl" checked="${configData.mailEncryption == 'ssl'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-encryption-ssl"><g:message code="config.mail.encryption.ssl" /></label></span>
-                      </div>
-                    </dd>
-                    <dt>
-                      <g:radio id="mail-encryption-starttls" name="config.mailEncryption"
-                        value="starttls" checked="${configData.mailEncryption == 'starttls'}" />
-                    </dt>
-                    <dd>
-                      <div class="field-text">
-                        <span class="label"><label for="mail-encryption-starttls"><g:message code="config.mail.encryption.starttls" /></label></span>
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </fieldset>
-        </div>
-      </div>
+      </section>
     </g:form>
-  </div>
-  <content tag="scripts">
-    <asset:javascript src="config-mail" />
-  </content>
-</body>
+
+    <content tag="scripts">
+      <asset:javascript src="config-mail" />
+    </content>
+  </body>
 </html>

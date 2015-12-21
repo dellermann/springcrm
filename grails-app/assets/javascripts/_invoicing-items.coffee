@@ -1,5 +1,5 @@
 #
-# invoicing-items.coffee
+# _invoicing-items.coffee
 #
 # Copyright (c) 2011-2015, Daniel Ellermann
 #
@@ -18,35 +18,98 @@
 #
 #= require application
 #= require _handlebars-ext
+#= require _typeahead
 
 
 $ = jQuery
 
 
-# Defines a jQuery widget which handles the items in an invoicing transaction
-# such as quotes, invoices, dunnings etc.
+# Class `InvoicingItems` defines a widget which handles the items in an
+# invoicing transaction such as quotes, invoices, dunnings etc.
 #
-# @mixin
 # @author   Daniel Ellermann
-# @version  1.5
+# @version  2.0
 #
-InvoicingItemsWidget =
+class InvoicingItems
 
-  INPUT_FIELD_NAMES: [
-    "number", "quantity", "unit", "name", "description", "unitPrice", "tax"
+  #-- Class variables ---------------------------
+
+  @DEFAULTS =
+    currency: $I.currencySymbol
+    fieldNamePrefix: 'items'
+    productListUrl: $('.price-table').data('product-list-url')
+    serviceListUrl: $('.price-table').data('service-list-url')
+    taxes: $('.price-table').data('tax-items')?.split(',') ? []
+    units: $('.price-table').data('units')?.split(',') ? []
+
+  @INPUT_FIELD_NAMES = [
+    'quantity'
+    'unit'
+    'salesItem.id'
+    'name'
+    'description'
+    'unitPrice'
+    'tax'
   ]
 
-  options:
-    currency: $("html").data("currency-symbol") or "€"
-    fieldNamePrefix: "items"
-    productListUrl: $(".price-table").data("product-list-url")
-    serviceListUrl: $(".price-table").data("service-list-url")
-    taxes: $(".price-table").data("tax-items").split(",")
-    units: $(".price-table").data("units").split(",")
+
+  #-- Constructor -------------------------------
+
+  # Creates a new widget instance to handle invoicing transaction items within
+  # the given element.
+  #
+  # @param [jQuery] $element  the given element
+  # @param [Object] options   any options
+  #
+  constructor: ($element, options) ->
+    $ = jQuery
+    @$element = $element
+    @options = options = $.extend {}, InvoicingItems.DEFAULTS, options
+
+    @subtotalNet = 0.0
+    @taxTotal = 0.0
+    @subtotalGross = 0.0
+    @total = 0.0
+
+    @form = $element.closest('form')[0]
+    $element
+      .on('click', '.up-btn', (event) => @_onClickMoveItem event, -1)
+      .on('click', '.down-btn', (event) => @_onClickMoveItem event, 1)
+      .on('click', '.remove-btn', (event) => @_onClickRemoveItem event)
+      .on('click', '.btn-select-sales-item', (event) =>
+        @_onClickSelectSalesItem event
+      )
+      .on('change', (event) => @_onChange event)
+
+    @units = options.units
+    @taxes = @_prepareTaxes options.taxes
+    @inputRegExp = /// ^
+        #{options.fieldNamePrefix}      # the prefix
+        \[(\d+)\]                       # the numerical index
+        \.                              # followed by a dot
+        (\w+)                           # the name of the field
+        $
+      ///
+
+    $('.add-invoicing-item-btn').on 'click', =>
+      @_addItem true
+      false
+
+    numItems = $element.find('.items tr').length
+    if numItems is 0
+      @_addItem false
+    else
+      @_initUnitTypeahead()
+      @_initTaxTypeahead()
+    @_computeFooterValues()
+
+
+  #-- Non-public methods ------------------------
 
   # Adds a new row with empty input fields to the end of the items table.
   #
-  # @param {Boolean} jumpToNewRow if `true` the view is scrolled to the new row
+  # @param [Boolean] jumpToNewRow if `true` the view is scrolled to the new row
+  # @private
   #
   _addItem: (jumpToNewRow) ->
     $ = jQuery
@@ -54,7 +117,7 @@ InvoicingItemsWidget =
     # prepare Handlebars template
     template = @addItemTemplate
     unless template
-      template = Handlebars.compile $("#add-item-template").html()
+      template = Handlebars.compile $('#add-item-template').html()
       @addItemTemplate = template
 
     index = @_getNumRows()
@@ -63,21 +126,26 @@ InvoicingItemsWidget =
       pos: index + 1
       zero: (0).formatCurrencyValue()
     $row = $(s)
-    @element.find(".items").append $row
+    @$element.find('.items').append $row
 
-    @_initUnitAutocomplete $row.find(".unit input")
-    @_initTaxAutocomplete $row.find(".tax input")
-    $row.find("textarea")
+    @_initUnitTypeahead $row.find '.col-unit input'
+    @_initTaxTypeahead $row.find '.col-tax input'
+    $row.find('textarea')
       .autosize()
     if jumpToNewRow
-      $("html").scrollTop $row.position().top - $("#toolbar").outerHeight()
+      $('html').scrollTop(
+          $row.position().top - $('.title-toolbar').outerHeight()
+        )
+
+    return
 
   # Adds a new tax rate and the associated tax value to the given array of tax
   # rates.
   #
-  # @param {Array<Number>} taxRates an array containing the tax rates to add to
-  # @param {Number} taxRate         the given tax rate
-  # @param {Number} tax             the given tax value
+  # @param [Array] taxRates an array containing the tax rates to add to
+  # @param [Number] taxRate the given tax rate
+  # @param [Number] tax     the given tax value
+  # @private
   #
   _addTaxRate: (taxRates, taxRate, tax) ->
     found = false
@@ -87,53 +155,56 @@ InvoicingItemsWidget =
         found = true
         break
 
-    unless found
-      taxRates.push
-        taxRate: taxRate
-        tax: tax
+    taxRates.push taxRate: taxRate, tax: tax unless found
+    return
 
   # Computes the values in the footer of the price table, such as subtotal,
   # tax rates, total etc.
+  #
+  # @private
   #
   _computeFooterValues: ->
     $ = jQuery
 
     subtotalNet = 0
-    @element.find(".items .total-price output").each ->
-      subtotalNet += $(this).text().parseNumber()
+    @$element.find('.items .col-total-price input').each ->
+      subtotalNet += $(this).val().parseNumber()
 
-    shippingCosts = $("#shippingCosts").val().parseNumber()
+    shippingCosts = $('#shippingCosts').val().parseNumber()
     subtotalNet += shippingCosts
     @subtotalNet = subtotalNet
-    $("#subtotal-net").text subtotalNet.formatCurrencyValue()
+    $('#subtotal-net').val subtotalNet.formatCurrencyValue()
     @_computeTaxValues()
     subtotalGross = @subtotalGross
-    discountPercent = $("#discountPercent").val().parseNumber()
+    discountPercent = $('#discountPercent').val().parseNumber()
     discount = subtotalGross * discountPercent / 100
-    $("#discount-from-percent").text discount.formatCurrencyValue()
-    discount += $("#discountAmount").val().parseNumber()
-    adjustment = $("#adjustment").val().parseNumber()
+    $('#discount-from-percent').val discount.formatCurrencyValue()
+    discount += $('#discountAmount').val().parseNumber()
+    adjustment = $('#adjustment').val().parseNumber()
     @total = total = subtotalGross - discount + adjustment
-    $("#total-price").text total.formatCurrencyValue()
-    $("#paymentAmount").trigger "change"
+    $('#total-price').val total.formatCurrencyValue()
+    $('#paymentAmount').trigger 'change'
+
+    return
 
   # Computes a list of tax values from the tax rates the user specified in the
   # input fields.  After that, the list of tax rates is displayed ordered in
   # the footer of the price table.
   #
-  # @return {Number}  the computed subtotal gross value
+  # @return [Number]  the computed subtotal gross value
+  # @private
   #
   _computeTaxValues: ->
     $ = jQuery
 
     # compute a map of tax rates
     taxRates = []
-    @element.find("input:text[name$='.tax']")
-      .each (index, elem) =>
+    @$element.find('input[name$=".tax"]')
+      .each (_, elem) =>
         els = @form.elements
-        name = elem.name.replace /\.tax$/, ".quantity"
+        name = elem.name.replace /\.tax$/, '.quantity'
         qty = els[name].value.parseNumber()
-        name = elem.name.replace /\.tax$/, ".unitPrice"
+        name = elem.name.replace /\.tax$/, '.unitPrice'
         unitPrice = els[name].value.parseNumber()
 
         taxRate = elem.value.parseNumber()
@@ -142,182 +213,188 @@ InvoicingItemsWidget =
           @_addTaxRate taxRates, taxRate, tax
 
     # add the shipping tax to the tax rate map
-    shippingCosts = $("#shippingCosts").val().parseNumber()
-    shippingTax = $("#shippingTax").val().parseNumber()
+    shippingCosts = $('#shippingCosts').val().parseNumber()
+    shippingTax = $('#shippingTax').val().parseNumber()
     if shippingCosts isnt 0 and shippingTax isnt 0
       @_addTaxRate taxRates, shippingTax, shippingCosts * shippingTax / 100.0
-    taxRates.sort (a, b) ->
-      a.taxRate - b.taxRate
+    taxRates.sort (a, b) -> a.taxRate - b.taxRate
 
     # prepare Handlebars template
     template = @taxRateSumTemplate
     unless template
-      template = Handlebars.compile $("#tax-rate-sum-template").html()
+      template = Handlebars.compile $('#tax-rate-sum-template').html()
       @taxRateSumTemplate = template
 
     # display the tax rates
     currency = @options.currency
     taxTotal = 0
     s = ""
-    for tr in taxRates
+    for tr, i in taxRates
       t = tr.tax
       taxTotal += t
-      label = $L("invoicingTransaction.taxRate.label").replace /\{0\}/, tr.taxRate.format(1)
+      label = $L('invoicingTransaction.taxRate.label')
+        .replace /\{0\}/, tr.taxRate.format(1)
       s += template
+        i: i
         label: label
         value: t.formatCurrencyValue()
-    $(".tax-rate-sum").remove()
-    $("tfoot tr:first").after s
+    $('.row-tax-rate-sum').remove()
+    $('tfoot tr:first').after s
 
     # compute values
     @taxTotal = taxTotal
     @subtotalGross = subtotalGross = @subtotalNet + taxTotal
-    $("#subtotal-gross").text subtotalGross.formatCurrencyValue()
+    $('#subtotal-gross').val subtotalGross.formatCurrencyValue()
+
     subtotalGross
-
-  # Initializes this widget.
-  #
-  _create: ->
-    $ = jQuery
-    el = @element
-    @form = el.parents("form")
-      .get(0)
-
-    @subtotalNet = 0.0
-    @taxTotal = 0.0
-    @subtotalGross = 0.0
-    @total = 0.0
-
-    opts = @options
-    @units = opts.units
-    @taxes = @_prepareTaxes opts.taxes
-    @inputRegExp = new RegExp("^#{opts.fieldNamePrefix}\\[(\\d+)\\]\\.(\\w+)$")
-
-    el.on("click", ".up-btn", (event) =>
-        @_moveItem $(event.currentTarget), -1
-        false
-      )
-      .on("click", ".down-btn", (event) =>
-        @_moveItem $(event.currentTarget), 1
-        false
-      )
-      .on("click", ".remove-btn", (event) =>
-        @_removeItem $(event.currentTarget)
-        false
-      )
-      .on("click", ".select-btn-products", (event) =>
-        @_showSalesItemSelector $(event.currentTarget), "products"
-        false
-      )
-      .on("click", ".select-btn-services", (event) =>
-        @_showSalesItemSelector $(event.currentTarget), "services"
-        false
-      )
-      .on("change", (event) => @_onChange(event))
-    $(".add-invoicing-item-btn").click =>
-      @_addItem true
-      false
-
-    numItems = el.find(".items tr").length
-    if numItems is 0
-      @_addItem false
-    else
-      @_initUnitAutocomplete()
-      @_initTaxAutocomplete()
-    @_computeFooterValues()
 
   # Gets the input field with the given position, name, and an optional suffix.
   #
-  # @param {Number} pos     the given zero-based position
-  # @param {String} name    the name of the input control
-  # @param {String} suffix  an optional suffix which is added to the field name prefix
-  # @return {String}        the input field; `null` if no field with the computed name exists
+  # @param [Number] pos     the given zero-based position
+  # @param [String] name    the name of the input control
+  # @param [String] suffix  an optional suffix which is added to the field name prefix
+  # @return [String]        the input field; `null` if no field with the computed name exists
+  # @private
   #
-  _getInput: (pos, name = "", suffix = "") ->
+  _getInput: (pos, name = '', suffix = '') ->
     @form.elements[@_getInputName pos, name, suffix]
 
   # Gets the name of the input field with the given index, name, and an
   # optional suffix.
   #
-  # @param {Number} index   the given zero-based index
-  # @param {String} name    the name of the input control
-  # @param {String} suffix  an optional suffix which is added to the field name prefix
-  # @returns {String}       the computed input field name
+  # @param [Number] index   the given zero-based index
+  # @param [String] name    the name of the input control
+  # @param [String] suffix  an optional suffix which is added to the field name prefix
+  # @returns [String]       the computed input field name
+  # @private
   #
-  _getInputName: (index, name = "", suffix = "") ->
+  _getInputName: (index, name = '', suffix = '') ->
     "#{@options.fieldNamePrefix}#{suffix}[#{index}].#{name}"
-
-  # Gets the number of item rows in the price table.
-  #
-  # @returns {Number} the number of rows
-  #
-  _getNumRows: ->
-    @element.find(".items tr").length
 
   # Gets the position and name of the given input field.
   #
-  # @param {Object} input the given input field
-  # @returns {Array}      an array containing the zero-based position as first and the name as second element
+  # @param [Object] input the given input field
+  # @returns [Array]      an array containing the zero-based position as first and the name as second element
+  # @private
   #
   _getInputPosAndName: (input) ->
-    parts = input.name.match(@inputRegExp)
+    parts = input.name.match @inputRegExp
     if parts
       parts.shift()
       parts
     else
       null
 
+  # Gets the number of item rows in the price table.
+  #
+  # @returns [Number] the number of rows
+  # @private
+  #
+  _getNumRows: -> @$element.find('.items tr').length
+
   # Gets the position of the given price table row.  The position is the
   # zero-based sequence number of the row in the table.
   #
-  # @param {jQuery} $tr the given row
-  # @returns {Number}   the zero-based position of the given row
+  # @param [jQuery] $tr the given row
+  # @returns [Number]   the zero-based position of the given row
+  # @private
   #
-  _getRowPosition: ($tr) ->
-    $tr.index()
+  _getRowPosition: ($tr) -> $tr.index()
 
   # Initialize the autocomplete fields for tax rates.
   #
-  # @param {jQuery} $input  a selector which input fields are to initialize; if not defined, all tax input fields are initialized
+  # @param [jQuery] $input  a selector representing the input fields that should be initialized; if not defined, all tax input fields are initialized
+  # @private
   #
-  _initTaxAutocomplete: ($input) ->
+  _initTaxTypeahead: ($input = $('.col-tax input')) ->
     taxes = @taxes
     if taxes
-      $input = $(".tax input") unless $input
-      $input.autocomplete source: taxes
+      $input.typeahead
+          highlight: true
+          hint: true
+          minLength: 1
+        ,
+          displayKey: 'value'
+          name: 'taxes'
+          source: (q, cb) ->
+            matches = []
+            re = new RegExp(RegExp.escape(q), 'i')
+            $.each taxes, (_, t) -> matches.push value: t if re.test String(t)
+            cb matches
 
   # Initialize the autocomplete fields for units.
   #
-  # @param {jQuery} $input  a selector which input fields are to initialize; if not defined, all unit input fields are initialized
+  # @param [jQuery] $input  a selector representing the input fields that should be initialized; if not defined, all unit input fields are initialized
+  # @private
   #
-  _initUnitAutocomplete: ($input) ->
+  _initUnitTypeahead: ($input = $('.col-unit input')) ->
     units = @units
     if units
-      $input = $(".unit input") unless $input
-      $input.autocomplete source: units
+      $input.typeahead
+          highlight: true
+          hint: true
+          minLength: 1
+        ,
+          displayKey: 'value'
+          name: 'units'
+          source: (q, cb) ->
+            matches = []
+            re = new RegExp("^#{RegExp.escape(q)}", 'i')
+            $.each units, (_, t) -> matches.push value: t if re.test t
+            cb matches
 
   # Loads the content of the sales item selector via AJAX.
   #
-  # @param {String} type  the type of sales items which are to retrieve; may be either `products` or `services`
-  # @param {String} url   the URL called to load the sales items via AJAX; if not specified the URL is obtained from the options
-  # @param {Number} pos   the zero-based position of the row in the price table to fill
-  # @param {Array} params any parameters which are to send (optional)
+  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `service`
+  # @param [Number] pos     the zero-based position of the row that should be filled in the price table
+  # @param [String] url     the URL which is called to load the sales items via AJAX
+  # @param [Object] params  any parameters which are to send (optional)
+  # @private
   #
-  _loadSalesItemSelector: (type, url, pos, params) ->
-    $dialog = $("#inventory-selector-#{type}")
-    $dialog.load url, params, =>
-      @_onLoadSalesItemSelector $dialog, type, pos
+  _loadSalesItemSelector: (type, pos, url, params) ->
+    $modal = $("#inventory-selector-#{type}")
+    $modal.find('.modal-body')
+      .load url, params, =>
+        @_onLoadedSalesItemSelector $modal, type, pos
 
-  # Moves a row in the price table up- or downwards.
+  # Called if an input field is changed.  The method re-computes the total
+  # value if either the quantity or the unit prices has been changed.  In each
+  # case the footer values are re-computed.
   #
-  # @param {jQuery} $icon the symbol which was clicked to move the row
-  # @param {Number} dir   a negative value moves the row upwards; otherwise it moves it downwards
-  _moveItem: ($icon, dir) ->
-    $tr = $icon.parents("tr")
+  # @param [Event] event any event data
+  # @private
+  #
+  _onChange: (event) ->
+    input = event.target
+    parts = @_getInputPosAndName input
+    if parts
+      [index, name] = parts
+      if name is 'quantity' or name is 'unitPrice'
+        if name is 'quantity'
+          qty = input.value.parseNumber()
+          unitPrice = @_getInput(index, 'unitPrice').value.parseNumber()
+        if name is "unitPrice"
+          unitPrice = input.value.parseNumber()
+          qty = @_getInput(index, 'quantity').value.parseNumber()
+        $(input).closest('tr')
+          .find('.col-total-price input')
+            .val (qty * unitPrice).formatCurrencyValue()
+
+    @_computeFooterValues()
+
+  # Called if a button to moves a row in the price table up- or downwards has
+  # been clicked.
+  #
+  # @param [Event] event  any event data
+  # @param [Number] dir   a negative value moves the row upwards; otherwise it moves it downwards
+  # @private
+  #
+  _onClickMoveItem: (event, dir) ->
+    $tr = $(event.currentTarget).closest 'tr'
 
     # swap current row with previous or next row
-    pos = @_getRowPosition($tr)
-    if (dir < 0) and (pos > 0)
+    pos = @_getRowPosition $tr
+    if dir < 0 and pos > 0
       $destTr = $tr.prev()
       $destTr.before $tr
     else if pos < @_getNumRows() - 1
@@ -329,87 +406,94 @@ InvoicingItemsWidget =
       @_swapInputItemPos $tr, $destTr
       @_swapItemPos $tr, $destTr
 
-  # Called if an input field is changed.  The method re-computes the total
-  # value if either the quantity or the unit prices has been changed.  In each
-  # case the footer values are re-computed.
+    return
+
+  # Called if the button has been clicked to remove a row in the pricing
+  # table.
   #
-  # @param {Object} event the event data
+  # @param [Event] event  any event data
+  # @private
   #
-  _onChange: (event) ->
-    input = event.target
-    parts = @_getInputPosAndName input
-    if parts
-      [index, name] = parts
-      if name is "quantity" or name is "unitPrice"
-        if name is "quantity"
-          qty = input.value.parseNumber()
-          unitPrice = @_getInput(index, "unitPrice").value.parseNumber()
-        if name is "unitPrice"
-          unitPrice = input.value.parseNumber()
-          qty = @_getInput(index, "quantity").value.parseNumber()
-        $(input).parents("tr")
-          .find(".total-price output")
-            .text (qty * unitPrice).formatCurrencyValue()
-    @_computeFooterValues()
+  _onClickRemoveItem: (event) ->
+    if @_getNumRows() > 1
+      @_removeRow $(event.currentTarget).closest 'tr'
+      @_computeFooterValues()
+
+    return
+
+  # Called if a button has been clicked to display the sales item selector of
+  # the given type and loads its content
+  # via AJAX.
+  #
+  # @param [Event] event  any event data
+  # @param [String] url   an optional URL which is called to load the sales items via AJAX; if not specified the URL is obtained from the options
+  # @private
+  #
+  _onClickSelectSalesItem: (event, url) ->
+    $target = $(event.currentTarget)
+    type = $target.data 'type'
+
+    opts = @options
+    url ?= opts["#{type}ListUrl"]
+    if url
+      pos = @_getRowPosition $target.closest 'tr'
+      @_loadSalesItemSelector type, pos, url
+
+    return
 
   # Called if the the content of the sales item selector has been successfully
   # loaded via AJAX.
   #
-  # @param {jQuery} $dialog the dialog where the selector content has been loaded
-  # @param {String} type    the type of sales items which are to retrieve; may be either `products` or `services`
-  # @param {Number} pos     the zero-based position of the row in the price table to fill
+  # @param [jQuery] $modal  the modal where the selector content has been loaded
+  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `service`
+  # @param [Number] pos     the zero-based position of the row that should be filled in the price table
+  # @private
   #
-  _onLoadSalesItemSelector: ($dialog, type, pos) ->
+  _onLoadedSalesItemSelector: ($modal, type, pos) ->
     $ = jQuery
 
     getData = ->
-      search = $dialog.find("[name=search]").val()
-      if search is "" then null else search: search
+      search = $modal.find('[name=search]').val()
+      if search is '' then null else search: search
 
-    $dialog.off("click")
-      .on("click", "a.select-link", (event) =>
-        @_retrieveSalesItem type, $(event.currentTarget).attr("href"), pos
+    $modal
+      .off('click')
+      .on('click', '.modal-header .close', (event) -> $modal.modal 'hide')
+      .on('click', '.modal-body a.select-link', (event) =>
+        @_retrieveSalesItem $modal, pos, $(event.currentTarget).attr('href')
         false
       )
-      .on("click", "a:not(.select-link)", (event) =>
-        @_loadSalesItemSelector type, $(event.currentTarget).attr("href"), pos, getData()
+      .on('click', '.modal-body a:not(.select-link)', (event) =>
+        @_loadSalesItemSelector type, pos,
+          $(event.currentTarget).attr('href'), getData()
         false
       )
-      .find("form")
-        .submit((event) =>
-          @_loadSalesItemSelector type, event.target.action, pos, getData()
+      .find('form')
+        .on('submit', (event) =>
+          @_loadSalesItemSelector type, pos, event.target.action, getData()
           false
         )
       .end()
-      .dialog(
-        minWidth: 700
-        minHeight: 400
-        modal: true
-      )
+      .modal()
 
   # Converts all tax rates in the given array to formatted strings.
   #
-  # @param {Array} taxes  the given tax rates as percentage values
-  # @returns {Array}      an array of strings containing the formatted tax rates
+  # @param [Array] taxes  the given tax rates as percentage values
+  # @returns [Array]      an array of strings containing the formatted tax rates
+  # @private
   #
   _prepareTaxes: (taxes) ->
+    $ = jQuery
+
     if taxes
-      (tax * 100).format() for tax in taxes when typeof tax is "number"
+      (tax * 100).format() for tax in taxes when $.isNumeric tax
     else
       null
 
-  # Removes the row in the pricing table that remove symbol was clicked.
-  #
-  # @param {jQuery} $icon the clicked remove symbol
-  #
-  _removeItem: ($icon) ->
-    if @_getNumRows() > 1
-      @_removeRow $icon.parents("tr")
-      @_computeFooterValues()
-
   # Removes the given row from the pricing table.
   #
-  # @param {jQuery} $tr the given table row
+  # @param [jQuery] $tr the given table row
+  # @private
   #
   _removeRow: ($tr) ->
     $ = jQuery
@@ -439,84 +523,82 @@ InvoicingItemsWidget =
   # Retrieves the sales item of the given type and URL and fills in the input
   # fields of the price table row with the given position.
   #
-  # @param {String} type  the type of sales item which is to retrieve; may be either `products` or `services`
-  # @param {String} url   the URL used to retrieve the sales item data from the server
-  # @param {Number} pos   the zero-based position of the row in the pricing table which is to fill with the retrieved data
+  # @param [jQuery] $modal  the modal where the selector content has been loaded
+  # @param [Number] pos     the zero-based position of the row that should be filled in the price table
+  # @param [String] url     the URL used to retrieve the sales item data from the server
+  # @return [Promise]       a promise representing the state of loading data
+  # @private
   #
-  _retrieveSalesItem: (type, url, pos) ->
-    self = this
-    $.ajax
-      url: url
-      dataType: "json"
-      success: (data) =>
+  _retrieveSalesItem: ($modal, pos, url) ->
+    $.ajax(
+        context: this
+        dataType: 'json'
+        url: url
+      )
+      .done (data) =>
         prefix = @_getInputName pos
         els = @form.elements
-        els[prefix + "number"].value = data.fullNumber
+
         item = data.inventoryItem
         qty = item.quantity
-        els[prefix + "quantity"].value = qty.format()
-        els[prefix + "unit"].value = item.unit.name
-        els[prefix + "name"].value = item.name
-        textArea = els[prefix + "description"]
+        els[prefix + 'quantity'].value = qty.format()
+        els[prefix + 'unit'].value = item.unit.name
+        els[prefix + 'salesItem.id'].value = item.id
+        els[prefix + 'name'].value = item.name
+        textArea = els[prefix + 'description']
         textArea.value = item.description
-        $(textArea).trigger 'autosize.resize'
+        $textArea = $(textArea).trigger 'autosize.resize'
         unitPrice = item.unitPrice
-        unitPriceInput = els[prefix + "unitPrice"]
+        unitPriceInput = els[prefix + 'unitPrice']
         unitPriceInput.value = unitPrice.formatCurrencyValue()
         total = (qty * unitPrice).formatCurrencyValue()
-        $(unitPriceInput).parents("tr")
-          .find(".total-price output").text total
-        taxValue = if item.taxRate then item.taxRate.taxValue else 0
-        els[prefix + "tax"].value = (taxValue * 100.0).format(1)
-        @_computeFooterValues()
-        $("#inventory-selector-" + type).dialog "close"
+        $textArea.closest('tr')
+          .find('.col-total-price input').val total
+        els[prefix + 'tax'].value = (item.taxRate.taxValue * 100.0).format(1)
 
-  # Displays the sales item selector of the given type and loads its content
-  # via AJAX.
-  #
-  # @param {jQuery} $icon the selector symbol which was clicked
-  # @param {String} type  the type of sales items which are to retrieve; may be either `products` or `services`
-  # @param {String} url   the URL called to load the sales items via AJAX; if not specified the URL is obtained from the options
-  #
-  _showSalesItemSelector: ($icon, type, url) ->
-    opts = @options
-    unless url
-      url = (if (type is "products") then opts.productListUrl else opts.serviceListUrl)
-    if url
-      pos = @_getRowPosition $icon.parents("tr")
-      @_loadSalesItemSelector type, url, pos
+        @_computeFooterValues()
+        $modal.modal 'hide'
 
   # Swaps the positions in the input field names for both the given rows.
   #
-  # @param {jQuery} $tr     the given row
-  # @param {jQuery} $destTr the other row
+  # @param [jQuery] $tr     the given row
+  # @param [jQuery] $destTr the other row
+  # @private
   #
   _swapInputItemPos: ($tr, $destTr) ->
-    fieldNames = @INPUT_FIELD_NAMES
+    fieldNames = InvoicingItems.INPUT_FIELD_NAMES
     form = @form
-    f = (name, newName) ->
+
+    swap = (name, newName) ->
       elems = form.elements
       for fieldName in fieldNames
         el = elems[name + fieldName]
         el.name = newName + fieldName
 
-    pos = @_getRowPosition($tr)
-    destPos = @_getRowPosition($destTr)
-    f @_getInputName(pos), @_getInputName(destPos, "", "-dest")
-    f @_getInputName(destPos), @_getInputName(pos)
-    f @_getInputName(destPos, "", "-dest"), @_getInputName(destPos)
+    pos = @_getRowPosition $tr
+    destPos = @_getRowPosition $destTr
+    swap @_getInputName(pos), @_getInputName(destPos, '', '-dest')
+    swap @_getInputName(destPos), @_getInputName(pos)
+    swap @_getInputName(destPos, '', '-dest'), @_getInputName(destPos)
+
+    return
 
   # Swaps the position number in the first cell of both the given rows.
   #
-  # @param {jQuery} $tr     the given row
-  # @param {jQuery} $destTr the other row
+  # @param [jQuery] $tr     the given row
+  # @param [jQuery] $destTr the other row
+  # @private
   #
   _swapItemPos: ($tr, $destTr) ->
-    $td = $tr.find("td:first-child")
-    $destTd = $destTr.find("td:first-child")
+    $td = $tr.find 'td:first-child'
+    $destTd = $destTr.find 'td:first-child'
 
     s = $td.text()
     $td.text $destTd.text()
     $destTd.text s
 
-$.widget "springcrm.invoicingitems", InvoicingItemsWidget
+    return
+
+SPRINGCRM.InvoicingItems = InvoicingItems
+
+# vim:set ts=2 sw=2 sts=2:

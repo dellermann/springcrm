@@ -1,7 +1,7 @@
 /*
  * Invoice.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Invoice} represents an invoice.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class Invoice extends InvoicingTransaction {
 
@@ -43,13 +43,9 @@ class Invoice extends InvoicingTransaction {
     static belongsTo = [quote: Quote, salesOrder: SalesOrder]
     static hasMany = [creditMemos: CreditMemo, dunnings: Dunning]
     static mapping = {
+        creditMemos lazy: false
         stage column: 'invoice_stage_id'
     }
-    static searchable = [
-        except: [
-            'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
-        ]
-    ]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'
@@ -179,12 +175,13 @@ class Invoice extends InvoicingTransaction {
             color = 'purple'
             break
         case 903:                       // paid
-            color = (closingBalance >= 0.0d) ? 'green' : colorIndicatorByDate()
+            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
             break
         case 902:                       // delivered
             color = colorIndicatorByDate()
             break
         }
+
         color
     }
 

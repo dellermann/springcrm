@@ -1,7 +1,7 @@
 /*
  * UserController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import org.apache.commons.lang.LocaleUtils
  * the application.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 class UserController {
 
@@ -50,23 +50,18 @@ class UserController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
             int num = User.countByUserNameLessThan(params.letter)
             params.sort = 'userName'
             params.offset = Math.floor(num / params.max) * params.max
         }
+
         [userInstanceList: User.list(params), userInstanceTotal: User.count()]
     }
 
     def create() {
-        def userInstance = new User()
-        userInstance.properties = params
-        [userInstance: userInstance]
+        [userInstance: new User(params)]
     }
 
     def save() {
@@ -74,7 +69,9 @@ class UserController {
         boolean passwordMismatch =
             params.password != securityService.encryptPassword(params.passwordRepeat)
         if (passwordMismatch) {
-            userInstance.errors.rejectValue('password', 'user.password.doesNotMatch')
+            userInstance.errors.rejectValue(
+                'password', 'user.password.doesNotMatch'
+            )
         }
         if (passwordMismatch || !userInstance.save(flush: true)) {
             render view: 'create', model: [userInstance: userInstance]
@@ -82,7 +79,11 @@ class UserController {
         }
 
         request.userInstance = userInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'user.label'), userInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -91,10 +92,13 @@ class UserController {
     }
 
     def show(Long id) {
-        def userInstance = User.get(id)
+        User userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'user.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -102,10 +106,13 @@ class UserController {
     }
 
     def edit(Long id) {
-        def userInstance = User.get(id)
+        User userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'user.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -113,17 +120,24 @@ class UserController {
     }
 
     def update(Long id) {
-        def userInstance = User.get(id)
+        User userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'user.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (userInstance.version > version) {
-                userInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'user.label', default: 'User')] as Object[], 'Another user has updated this User while you were editing')
+                userInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'user.label')] as Object[],
+                    'Another user has updated this User while you were editing'
+                )
                 render view: 'edit', model: [userInstance: userInstance]
                 return
             }
@@ -146,7 +160,10 @@ class UserController {
         }
 
         request.userInstance = userInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'user.label', default: 'User'), userInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'user.label'), userInstance.toString()]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -155,27 +172,38 @@ class UserController {
     }
 
     def delete(Long id) {
-        def userInstance = User.get(id)
+        User userInstance = User.get(id)
         if (!userInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'user.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             userInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'user.label', default: 'User')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'user.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'user.label', default: 'User')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'user.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -183,9 +211,10 @@ class UserController {
     def login() {}
 
     def authenticate() {
-        def userInstance = User.findByUserNameAndPassword(params.userName, params.password)
+        User userInstance =
+            User.findByUserNameAndPassword(params.userName, params.password)
         if (!userInstance) {
-            flash.message = message(code: 'user.authenticate.failed.message', default: 'Invalid user name or password. Please retry.')
+            flash.message = message(code: 'user.authenticate.failed.message')
             redirect action: 'login'
             return
         }
@@ -196,7 +225,7 @@ class UserController {
     }
 
     def logout() {
-        flash.message = message(code: 'user.logout.message', default: 'You were logged out.')
+        flash.message = message(code: 'user.logout.message')
         session.user = null
         session.invalidate()
         redirect action: 'login'
@@ -227,10 +256,15 @@ class UserController {
 
     def settingsGoogleAuthRequest() {
         String uri = googleOAuthService.registerAtProxy(
-            createLink(controller: controllerName, action: 'settingsGoogleAuthResponse', absolute: true)
+            createLink(
+                controller: controllerName,
+                action: 'settingsGoogleAuthResponse', absolute: true
+            )
         )
         if (uri == null) {
-            flash.message = message(code: 'user.settings.googleAuth.failed.message')
+            flash.message = message(
+                code: 'user.settings.googleAuth.failed.message'
+            )
             redirect action: 'settingsIndex'
             return
         }
@@ -240,25 +274,33 @@ class UserController {
 
     def settingsGoogleAuthResponse() {
         if (params.success != '200') {
-            flash.message = message(code: 'user.settings.googleAuth.failed.message')
+            flash.message = message(
+                code: 'user.settings.googleAuth.failed.message'
+            )
             redirect action: 'settingsGoogleAuth'
             return
         }
 
         if (!googleOAuthService.obtainAndStoreCredential(params.clientId)) {
-            flash.message = message(code: 'user.settings.googleAuth.failed.message')
+            flash.message = message(
+                code: 'user.settings.googleAuth.failed.message'
+            )
             redirect action: 'settingsGoogleAuth'
             return
         }
 
-        flash.message = message(code: 'user.settings.googleAuth.succeeded.message')
+        flash.message = message(
+            code: 'user.settings.googleAuth.succeeded.message'
+        )
         redirect action: 'settingsIndex'
     }
 
     def settingsGoogleAuthRevoke() {
         googleOAuthService.revokeAtProxy()
 
-        flash.message = message(code: 'user.settings.googleAuth.revoked.message')
+        flash.message = message(
+            code: 'user.settings.googleAuth.revoked.message'
+        )
         redirect action: 'settingsIndex'
     }
 
@@ -276,3 +318,4 @@ class UserController {
         }
     }
 }
+

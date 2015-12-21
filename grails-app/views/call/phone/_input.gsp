@@ -1,1 +1,0 @@
-<g:textField name="phone" value="${callInstance?.phone}" size="40" data-load-person-phone-numbers-url="${createLink(controller: 'person', action: 'getPhoneNumbers')}" data-load-organization-phone-numbers-url="${createLink(controller: 'organization', action: 'getPhoneNumbers')}" />

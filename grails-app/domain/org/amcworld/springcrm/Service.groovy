@@ -1,7 +1,7 @@
 /*
  * Service.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Service} represents a service from the service catalog.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  * @see     Product
  */
 class Service extends SalesItem {
@@ -35,7 +35,6 @@ class Service extends SalesItem {
     static constraints = {
 		category(nullable: true)
     }
-	static searchable = true
 
 
     //-- Instance variables ---------------------

@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoiceItem.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * invoice.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class PurchaseInvoiceItem {
 
@@ -34,7 +34,6 @@ class PurchaseInvoiceItem {
 
     static belongsTo = [invoice: PurchaseInvoice]
     static constraints = {
-        number()
         quantity min: 0.0d
         unit()
         name blank: false
@@ -50,7 +49,6 @@ class PurchaseInvoiceItem {
 
     //-- Instance variables ---------------------
 
-    String number
     double quantity
     String unit
     String name
@@ -64,7 +62,6 @@ class PurchaseInvoiceItem {
     PurchaseInvoiceItem() {}
 
     PurchaseInvoiceItem(PurchaseInvoiceItem i) {
-        number = i.number
         quantity = i.quantity
         unit = i.unit
         name = i.name
@@ -95,3 +92,4 @@ class PurchaseInvoiceItem {
         name
     }
 }
+

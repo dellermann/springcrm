@@ -1,0 +1,39 @@
+{{#section "preview"}}
+<div class="file-preview {class}">
+  <div class="{dropClass}">
+    <div class="file-preview-thumbnails"></div>
+    <div class="file-preview-status text-center text-success"></div>
+    <div class="kv-fileinput-error"></div>
+  </div>
+  <button type="button"
+    class="btn btn-danger btn-xs btn-block fileinput-remove">
+    <i class="fa fa-trash"></i> {{message 'person.picture.delete'}}
+  </button>
+</div>
+{{/section}}
+{{#section "preview-generic"}}
+<div id="{previewId}" class="file-preview-frame file-preview-frame-image"
+  data-fileindex="{fileindex}">
+  {content}
+  {footer}
+</div>
+{{/section}}
+{{#section "preview-image"}}
+<div id="{previewId}"
+  class="file-preview-frame file-preview-frame-image{frameClass}"
+  data-fileindex="{fileindex}">
+  <img src="{data}" class="file-preview-image img-responsive" alt="{caption}"
+    title="{caption}" />
+  {footer}
+</div>
+{{/section}}
+{{#section "preview-other"}}
+<div id="{previewId}" class="file-preview-frame file-preview-frame-image"
+  title="{caption}" data-fileindex="{fileindex}">
+  <div class="file-preview-other"><i class="fa fa-file-o"></i></div>
+  {footer}
+</div>
+{{/section}}
+
+{{! vim:set ft=html ts=2 sw=2 sts=2: }}
+

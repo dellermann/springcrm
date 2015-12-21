@@ -1,7 +1,7 @@
 /*
  * DocumentServiceSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -829,9 +829,9 @@ class DocumentServiceSpec extends Specification {
 	            phone: '3030303',
 	            fax: '703037494',
 	            phoneOther: '73903037',
-	            email1: 'info@yourorganization.example',
-	            email2: 'office@yourorganization.example',
-	            website: 'www.yourorganization.example',
+	            email1: 'info@yourorganization.de',
+	            email2: 'office@yourorganization.de',
+	            website: 'www.yourorganization.de',
 	            legalForm: 'Ltd.',
 	            type: new OrgType(name: 'foo'),
 	            industry: new Industry(name: 'bar'),

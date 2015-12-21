@@ -117,14 +117,14 @@
 
   <xsl:template match="location">
     <fo:block>
-      <xsl:value-of select="preceding-sibling::postalCode"/>
+      <xsl:value-of select="../postalCode"/>
       <xsl:text> </xsl:text>
       <xsl:value-of select="."/>
     </fo:block>
   </xsl:template>
 
   <xsl:template match="country">
-    <xsl:if test="string() != 'Deutschland' or string() != 'D'">
+    <xsl:if test="string() != 'Deutschland' and string() != 'D'">
       <fo:block space-before="{$space.paragraph}mm">
         <xsl:value-of select="."/>
       </fo:block>

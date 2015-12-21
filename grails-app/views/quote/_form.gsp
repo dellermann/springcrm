@@ -1,86 +1,85 @@
-<fieldset>
-  <header><h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3></header>
-  <section class="multicol-content">
-    <div class="col col-l">
-      <div class="form">
-        <f:field bean="${quoteInstance}" property="number" />
-        <f:field bean="${quoteInstance}" property="subject" />
-        <f:field bean="${quoteInstance}" property="organization" />
-        <f:field bean="${quoteInstance}" property="person" />
-        <f:field bean="${quoteInstance}" property="stage" />
-      </div>
+<section>
+  <header>
+    <h3><g:message code="invoicingTransaction.fieldset.general.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${quoteInstance}" property="number" />
+      <f:field bean="${quoteInstance}" property="subject" />
+      <f:field bean="${quoteInstance}" property="organization" />
+      <f:field bean="${quoteInstance}" property="person" />
+      <f:field bean="${quoteInstance}" property="stage" />
     </div>
-    <div class="col col-r">
-      <div class="form">
-        <f:field bean="${quoteInstance}" property="docDate" />
-        <f:field bean="${quoteInstance}" property="validUntil" />
-        <f:field bean="${quoteInstance}" property="shippingDate" />
-        <f:field bean="${quoteInstance}" property="carrier" />
-      </div>
+    <div class="column">
+      <f:field bean="${quoteInstance}" property="docDate" />
+      <f:field bean="${quoteInstance}" property="validUntil" />
+      <f:field bean="${quoteInstance}" property="shippingDate" />
+      <f:field bean="${quoteInstance}" property="carrier" />
     </div>
-  </section>
-</fieldset>
-<section id="addresses" class="multicol-content"
-  data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
-  <div class="col col-l left-address">
-    <fieldset>
-      <header>
-        <h3><g:message code="invoicingTransaction.fieldset.billingAddr.label" /></h3>
-        <div class="buttons">
-          <g:menuButton color="white" size="small" icon="location-arrow"
-            message="default.options.label" />
-        </div>
-      </header>
-      <div class="form-fragment">
-        <f:field bean="${quoteInstance}" property="billingAddr" />
-      </div>
-    </fieldset>
-  </div>
-  <div class="col col-r right-address">
-    <fieldset>
-      <header>
-        <h3><g:message code="invoicingTransaction.fieldset.shippingAddr.label" /></h3>
-        <div class="buttons">
-          <g:menuButton color="white" size="small" icon="location-arrow"
-            message="default.options.label" />
-        </div>
-      </header>
-      <div class="form-fragment">
-        <f:field bean="${quoteInstance}" property="shippingAddr" />
-      </div>
-    </fieldset>
   </div>
 </section>
-<fieldset>
-  <header><h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${quoteInstance}" property="headerText" cols="80" rows="3" />
+<section class="column-group addresses"
+  data-load-organization-url="${createLink(controller: 'organization', action: 'get')}">
+  <g:applyLayout name="formAddrColumn" model="[
+      side: 'left', prefix: 'billingAddr',
+      title: message(code: 'invoicingTransaction.fieldset.billingAddr.label')
+    ]">
+    <f:field bean="${quoteInstance}" property="billingAddr" />
+  </g:applyLayout>
+  <g:applyLayout name="formAddrColumn" model="[
+      side: 'right', prefix: 'shippingAddr',
+      title: message(code: 'invoicingTransaction.fieldset.shippingAddr.label')
+    ]">
+    <f:field bean="${quoteInstance}" property="shippingAddr" />
+  </g:applyLayout>
+</section>
+<section>
+  <header>
+    <h3><g:message code="invoicingTransaction.fieldset.header.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${quoteInstance}" property="headerText" rows="3" />
+    </div>
   </div>
-</fieldset>
-<fieldset>
+</section>
+<section>
   <header>
     <h3><g:message code="quote.fieldset.items.label" /></h3>
     <div class="buttons">
-      <g:button color="green" size="small" class="add-invoicing-item-btn"
-        message="invoicingTransaction.button.addRow.label" />
+      <div class="btn-group">
+        <g:button type="button" color="success" size="xs"
+          class="add-invoicing-item-btn" icon="plus-circle"
+          message="invoicingTransaction.button.addRow.label" />
+      </div>
     </div>
   </header>
-  <div>
-    <g:set var="invoicingTransaction" value="${quoteInstance}" />
-    <g:applyLayout name="invoicingItemsForm"
-      params="[tableId: 'quote-items', className: 'quote']" />
+  <div class="column-group">
+    <div class="column">
+      <g:set var="invoicingTransaction" value="${quoteInstance}" />
+      <g:applyLayout name="invoicingItemsForm"
+        params="[tableId: 'quote-items', className: 'quote']" />
+    </div>
   </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${quoteInstance}" property="footerText" cols="80" rows="3" />
-    <f:field bean="${quoteInstance}" property="termsAndConditions" />
+</section>
+<section>
+  <header>
+    <h3><g:message code="invoicingTransaction.fieldset.footer.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${quoteInstance}" property="footerText" rows="3" />
+      <f:field bean="${quoteInstance}" property="termsAndConditions" />
+    </div>
   </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3></header>
-  <div class="form-fragment">
-    <f:field bean="${quoteInstance}" property="notes" cols="80" rows="5" />
+</section>
+<section>
+  <header>
+    <h3><g:message code="invoicingTransaction.fieldset.notes.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <f:field bean="${quoteInstance}" property="notes" rows="5" />
+    </div>
   </div>
-</fieldset>
+</section>

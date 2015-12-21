@@ -1,0 +1,1 @@
+<g:applyLayout name="fieldDisplay"><output>${value}</output></g:applyLayout>

@@ -1,7 +1,7 @@
 /*
  * HelpdeskFilters.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 
 /**
@@ -28,7 +29,7 @@ import javax.servlet.http.HttpServletResponse
  * to helpdesks.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class HelpdeskFilters {
@@ -41,11 +42,11 @@ class HelpdeskFilters {
                 String urlName = params.urlName
                 Helpdesk helpdeskInstance = Helpdesk.findByUrlName(urlName)
                 if (!helpdeskInstance) {
-                    render status: HttpServletResponse.SC_NOT_FOUND
+                    render status: SC_NOT_FOUND
                     return false
                 }
                 if (helpdeskInstance.accessCode != params.accessCode) {
-                    render status: HttpServletResponse.SC_FORBIDDEN
+                    render status: SC_FORBIDDEN
                     return false
                 }
             }
@@ -55,23 +56,39 @@ class HelpdeskFilters {
             before = {
                 Helpdesk helpdeskInstance = Helpdesk.read(params.helpdesk)
                 if (!helpdeskInstance) {
-                    render status: HttpServletResponse.SC_NOT_FOUND
+                    render status: SC_NOT_FOUND
                     return false
                 }
                 if (helpdeskInstance.accessCode != params.accessCode) {
-                    render status: HttpServletResponse.SC_FORBIDDEN
+                    render status: SC_FORBIDDEN
                     return false
                 }
                 if (params.id) {
                     Ticket ticketInstance = Ticket.read(params.id)
                     if (!ticketInstance) {
-                        render status: HttpServletResponse.SC_NOT_FOUND
+                        render status: SC_NOT_FOUND
                         return false
                     }
                     if (ticketInstance.helpdesk != helpdeskInstance) {
-                        render status: HttpServletResponse.SC_FORBIDDEN
+                        render status: SC_FORBIDDEN
                         return false
                     }
+                }
+            }
+        }
+
+        frontendDataFileSecurity(controller: 'dataFile',
+                                 action: 'frontend-load-file')
+        {
+            before = {
+                Helpdesk helpdeskInstance = Helpdesk.read(params.helpdesk)
+                if (!helpdeskInstance) {
+                    render status: SC_NOT_FOUND
+                    return false
+                }
+                if (helpdeskInstance.accessCode != params.accessCode) {
+                    render status: SC_FORBIDDEN
+                    return false
                 }
             }
         }

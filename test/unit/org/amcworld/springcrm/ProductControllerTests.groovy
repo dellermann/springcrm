@@ -19,8 +19,6 @@ class ProductControllerTests extends ControllerUnitTestCase {
 		def p1 = new Product(number:10000, name:'Product 1')
 		def p2 = new Product(number:10001, name:'Product 2')
 		mockDomain(Product, [p1, p2])
-		Product.metaClass.index = { -> }
-		Product.metaClass.reindex = { -> }
 
 //		def seqNumber = new SeqNumber(controllerName:'product', nextNumber:10002, prefix:'P', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])

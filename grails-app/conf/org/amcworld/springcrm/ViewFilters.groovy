@@ -1,7 +1,7 @@
 /*
  * ViewFilters.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import java.text.DecimalFormatSymbols
 import org.codehaus.groovy.grails.commons.GrailsClass
 
 
@@ -28,13 +27,19 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * The class {@code ViewFilters} contains various filters concerning the view.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class ViewFilters {
 
+    //-- Instance variables ---------------------
+
     def dependsOn = [LoginFilters]
 
+    FopService fopService
     UserService userService
+
+
+    //-- Filters --------------------------------
 
     def filters = {
 
@@ -57,11 +62,14 @@ class ViewFilters {
                     model.numFractionDigitsExt = userService.numFractionDigitsExt
                     model.decimalSeparator = userService.decimalSeparator
                     model.groupingSeparator = userService.groupingSeparator
+
+                    List<TaxRate> taxRates = TaxRate.list(sort: 'orderId')
+                    model.taxRatesString = taxRates.collect { (it.taxValue * 100d).round(2) }.join ','
                 }
             }
         }
 
-        pagination(controller: '*', action: 'list') {
+        pagination(controller: '*', action: 'index') {
             def sessionKey = { String name ->
                 String key = name + controllerName.capitalize()
                 if (params.type) key += params.type
@@ -109,9 +117,12 @@ class ViewFilters {
             }
         }
 
-        selectorView(controller: '*', action: 'list') {
+        selectorView(
+            controller: 'quote|salesOrder|invoice|creditMemo|dunning|purchaseInvoice|calendarEvent|call|note|product|service',
+            action: 'index'
+        ) {
             after = { model ->
-                String view = (params.view == 'selector') ? 'selectorList' : 'list'
+                String view = (params.view == 'selector') ? 'selectorList' : 'index'
                 render view: "/${controllerName}/${view}", model: model
             }
         }
@@ -124,28 +135,13 @@ class ViewFilters {
                  * parameter should be received because the JavaScript does not
                  * send the request if the user has not confirmed the deletion.
                  * However, crafted URLs or programming errors may cause this
-                 * situation happen.  If so, we simply redirect to the list
+                 * situation happen.  If so, we simply redirect to the index
                  * view.
                  */
                 if (!params.confirmed) {
-                    redirect controller: controllerName, action: 'list'
+                    redirect controller: controllerName, action: 'index'
+                    return false
                 }
-            }
-        }
-
-        searchIndexSave(controller: '*', action: 'save',
-                        controllerExclude: 'helpdesk|user')
-        {
-            after = { model ->
-                request["${controllerName}Instance"]?.index()
-            }
-        }
-
-        searchIndexUpdate(controller: '*', action: 'update|updatePayment',
-                          controllerExclude: 'helpdesk|user')
-        {
-            after = { model ->
-                request["${controllerName}Instance"]?.reindex()
             }
         }
 
@@ -156,6 +152,16 @@ class ViewFilters {
                 if (model) {
                     model.units = Unit.list(sort: 'orderId')
                     model.taxRates = TaxRate.list(sort: 'orderId')
+                }
+            }
+        }
+
+        printTemplates(controller: 'quote|salesOrder|invoice|dunning|creditMemo',
+                       action: 'show')
+        {
+            after = { model ->
+                if (model) {
+                    model.printTemplates = fopService.templateNames
                 }
             }
         }

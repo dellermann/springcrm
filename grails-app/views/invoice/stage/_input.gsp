@@ -1,2 +1,0 @@
-<input type="hidden" id="old-stage" value="${session.user.admin ? 0 : bean?.stage?.id}" />
-<g:select name="stage.id" id="stage" from="${org.amcworld.springcrm.InvoiceStage.list()}" optionKey="id" value="${bean?.stage?.id}" />

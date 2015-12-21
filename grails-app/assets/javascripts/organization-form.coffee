@@ -1,7 +1,7 @@
 #
-# organization-form.js
+# organization-form.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,45 +17,52 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require widgets/addr-fields
 
 
 $ = jQuery
-$recType = $("#recType")
+$recType = $('#recType')
+
+
+#== Functions ===================================
 
 initRecTypes = ->
   $this = $(this)
-  $this.attr "checked", true if $recType.val() & $this.val()
+  $this.attr 'checked', true if $recType.val() & $this.val()
 
 onClickRecType = ->
   $rt = $recType
-  $this = $(this)
+  val = $(this).val()
+
   if @checked
-    $rt.val $rt.val() | $this.val()
+    $rt.val $rt.val() | val
   else
-    $rt.val $rt.val() & ~$this.val()
+    $rt.val $rt.val() & val
+
   true
 
-$("#addresses").addrfields
-  leftPrefix: "billingAddr"
-  menuItems: [
-    action: "clear"
-    side: "left"
-    text: $L("organization.billingAddr.clear")
-  ,
-    action: "copy"
-    side: "left"
-    text: $L("organization.billingAddr.copy")
-  ,
-    action: "clear"
-    side: "right"
-    text: $L("organization.shippingAddr.clear")
-  ,
-    action: "copy"
-    side: "right"
-    text: $L("organization.shippingAddr.copy")
-  ]
-  rightPrefix: "shippingAddr"
 
-$(".rec-type").on("click", onClickRecType)
+#== Main ========================================
+
+$('.addresses').addrfields
+  menuItems:
+    left: [
+        action: 'clear'
+        text: $L('organization.billingAddr.clear')
+      ,
+        action: 'copy'
+        text: $L('organization.billingAddr.copy')
+    ]
+    right: [
+        action: 'clear'
+        text: $L('organization.shippingAddr.clear')
+      ,
+        action: 'copy'
+        text: $L('organization.shippingAddr.copy')
+    ]
+
+$('.rec-type').on('click', onClickRecType)
   .each initRecTypes
+
+# vim:set ts=2 sw=2 sts=2:
 

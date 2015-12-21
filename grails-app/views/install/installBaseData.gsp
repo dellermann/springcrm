@@ -1,63 +1,65 @@
 <html>
-<head>
-  <meta name="layout" content="install" />
-  <title><g:message code="install.title" /></title>
-</head>
+  <head>
+    <meta name="layout" content="install" />
+    <title><g:message code="install.installBaseData.title" /></title>
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="install.installBaseData.title" /></h1>
-    <nav id="toolbar-container">
-      <ul id="toolbar">
-        <li><g:button action="index" color="white" icon="arrow-left"
-          message="install.btn.previous.label" /></li>
-        <li><g:button color="green" class="submit-btn" icon="arrow-right"
-          message="install.btn.next.label"
-          data-form="install-base-data-form" /></li>
-      </ul>
-    </nav>
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
+  <body>
+    <content tag="toolbar">
+      <g:button action="index" color="default" icon="arrow-left"
+        class="hidden-xs" message="install.btn.previous.label" />
+      <button type="submit" form="install-base-data-form"
+        class="btn ${existingData ? 'btn-warning' : 'btn-success'}">
+        <i class="fa fa-arrow-right"></i>
+        <g:message code="install.btn.next.label" />
+      </button>
+      <g:if test="${existingData}">
+        <g:button action="client-data" color="info" icon="share"
+          class="hidden-xs" message="install.btn.skip.label" />
+      </g:if>
+    </content>
+
     <div class="install-description">
       <p><g:message code="install.installBaseData.description" /></p>
       <p><g:message code="install.installBaseData.selectPackageHint" /></p>
     </div>
-    <g:form elementId="install-base-data-form" name="install-base-data-form"
-      action="installBaseDataSave">
-      <div class="row">
-        <div class="label">
-          <label for="package"><g:message code="install.installBaseData.package.label" default="Data package" /></label>
-        </div>
-        <div class="field">
-          <g:select name="package" from="${packages}"
+    <g:form action="installBaseDataSave" method="post"
+      elementId="install-base-data-form" name="install-base-data-form"
+      class="form-horizontal data-form form-view">
+      <div class="form-group">
+        <label for="package" class="control-label">
+          <g:message code="install.installBaseData.package.label" />
+        </label>
+        <div class="control-container">
+          <g:select name="package-select" from="${packages}"
             optionValue="${{message(code: 'install.installBaseData.package.' + it.toLowerCase().replace('-', '_'))}}" />
-          <ul class="field-msgs">
-            <li class="info-msg"><g:message code="default.required" default="required" /></li>
-          </ul>
+          <ul class="control-messages"
+            ><li class="control-message-info"
+              ><g:message code="default.required"
+            /></li
+          ></ul>
         </div>
       </div>
       <g:if test="${existingData}">
-      <div class="warning">
-        <p><g:message code="install.installBaseData.warning" /></p>
+      <div class="alert alert-danger">
+        <g:message code="install.installBaseData.warning" />
       </div>
       </g:if>
     </g:form>
-  </div>
-  <g:if test="${existingData}">
-  <content tag="scripts">
-    <asset:javascript src="application" />
-    <asset:script>//<![CDATA[
-    $("#install-base-data-form").on("submit", function () {
-            if ($.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
-                return $.confirm("${message(code: 'install.installBaseData.confirm2')}");
-            }
-            return false;
-        });
-    //]]></asset:script>
-  </content>
-  </g:if>
-</body>
+
+    <g:if test="${existingData}">
+    <content tag="scripts">
+      <asset:javascript src="application" />
+      <asset:script>//<![CDATA[
+      $("#install-base-data-form").on("submit", function () {
+              if ($.confirm("${message(code: 'install.installBaseData.confirm1')}")) {
+                  return $.confirm("${message(code: 'install.installBaseData.confirm2')}");
+              }
+
+              return false;
+          });
+      //]]></asset:script>
+    </content>
+    </g:if>
+  </body>
 </html>

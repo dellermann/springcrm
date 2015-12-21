@@ -1,7 +1,7 @@
 /*
  * BuildConfig.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 
-def gebVersion = '0.9.3'
+def gebVersion = '0.10.0'
 
 grails.project.class.dir = 'target/classes'
 grails.project.test.class.dir = 'target/test-classes'
@@ -79,20 +79,17 @@ grails.project.dependency.resolution = {
     dependencies {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-        compile(
-            'com.google.apis:google-api-services-calendar:v3-rev85-1.18.0-rc',
-            'com.google.http-client:google-http-client-jackson2:1.18.0-rc',
-            'commons-fileupload:commons-fileupload:1.3.1',
-            'commons-io:commons-io:2.4',
-            'jmimemagic:jmimemagic:0.1.2',
-            //'org.apache.xmlgraphics:fop:1.0',
-            'org.apache.commons:commons-vfs2:2.0',
-            'org.apache.httpcomponents:httpclient:4.3.2'
-        )
+        compile 'com.google.apis:google-api-services-calendar:v3-rev85-1.18.0-rc'
+        compile 'com.google.http-client:google-http-client-jackson2:1.18.0-rc'
+        compile 'commons-fileupload:commons-fileupload:1.3.1'
+        compile 'commons-io:commons-io:2.4'
+        compile 'jmimemagic:jmimemagic:0.1.2'
+        compile 'org.apache.commons:commons-vfs2:2.0'
+        compile 'org.apache.httpcomponents:httpclient:4.3.2'
 
         /*
          * XXX Including FOP dependencies does not work because the xml-apis
-         * are loaded twice.
+         * are loaded twice.  FOP 2.0 seems to work, however.
          *
         compile('org.apache.xmlgraphics:fop:1.0') {
 //            transitive = false
@@ -100,11 +97,11 @@ grails.project.dependency.resolution = {
 //            excludes([group: 'xml-apis', name: 'xml-apis'], [group: 'xml-resolver', name: 'xml-resolver'])
         }
         */
-        runtime(
-            'com.google.guava:guava:17.0',
-            'mysql:mysql-connector-java:5.1.27',
-            'net.sf.offo:fop-hyph:1.2'
-        )
+
+        runtime 'com.google.guava:guava:17.0'
+        runtime 'mysql:mysql-connector-java:5.1.27'
+        runtime 'net.sf.offo:fop-hyph:1.2'
+        runtime 'org.grails:grails-datastore-gorm:3.1.5.RELEASE'    // change version after updating Grails
 
         /*
          * XXX Same dependency problem as above at FOP
@@ -114,33 +111,38 @@ grails.project.dependency.resolution = {
         }
         */
 
-        test(
-            'junit:junit:4.11',
-            "org.gebish:geb-spock:${gebVersion}",
-            'org.seleniumhq.selenium:selenium-java:2.43.1'
-        )
+        test 'junit:junit:4.11'
+        test "org.gebish:geb-spock:${gebVersion}"
+        test 'org.seleniumhq.selenium:selenium-java:2.43.1'
+        test 'xalan:xalan:2.7.2'        // fix XSLT bug in test reports
     }
 
+    /*
+     * All plugins except the following are available in Grails 3.x:
+     *
+     * - dbunit-operator
+     * - elasticsearch
+     */
     plugins {
         compile(
-            ':asset-pipeline:1.9.9',
-//            ':codenarc:0.21',
-            ':coffee-asset-pipeline:1.9.0',
+            ':asset-pipeline:2.6.10',
+//            ':codenarc:0.24.1',
+            ':coffee-asset-pipeline:2.6.7',
             ':dbunit-operator:1.7',
-            ':fields:1.3',
-			':handlebars-asset-pipeline:1.3.0.3',
-            ':i18n-asset-pipeline:0.9.2',
-            ':less-asset-pipeline:1.10.0',
-            ':mail:1.0.6',
+            ':fields:1.5.1',
+            ':handlebars-asset-pipeline:2.6.7',
+            ':i18n-asset-pipeline:1.0.5',
+            ':less-asset-pipeline:2.6.7',
+            ':mail:1.0.7',
             ':markdown:1.1.1',
-            ':scaffolding:2.1.2',
-            ':searchable:0.6.9'
+            ':scaffolding:2.1.2'
         )
         build(
             ':tomcat:7.0.54'
         )
         runtime(
-            ':database-migration:1.4.0',
+            ':database-migration:1.4.1',
+//            ':elasticsearch:0.0.4.6',
             ':hibernate:3.6.10.17'
         )
         test(

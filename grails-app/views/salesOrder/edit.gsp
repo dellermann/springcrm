@@ -1,57 +1,31 @@
-<%@ page import="org.amcworld.springcrm.SalesOrder" %>
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <g:set var="entityName" value="${message(code: 'salesOrder.label', default: 'SalesOrder')}" />
-  <g:set var="entitiesName" value="${message(code: 'salesOrder.plural', default: 'SalesOrders')}" />
-  <title><g:message code="invoicingTransaction.edit.label" args="[entityName, salesOrderInstance.fullNumber]" /></title>
-  <meta name="stylesheet" content="invoicing-transaction" />
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title>
+      <g:message code="invoicingTransaction.edit.label"
+        args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]" /> -
+      <g:message code="salesOrder.plural" />
+    </title>
+    <meta name="stylesheet" content="invoicing-transaction" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="${entitiesName}" /></h1>
-    <g:render template="/layouts/toolbarForm"
-      model="[formName: 'sales-order']" />
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
-    <g:hasErrors bean="${salesOrderInstance}">
-    <div class="flash-message form-error-hint"><g:message code="default.form.errorHint" /></div>
-    </g:hasErrors>
-    <h2>${salesOrderInstance?.toString()}</h2>
-    <g:form name="sales-order-form" action="update" method="post"
-      params="[returnUrl: params.returnUrl]">
-      <g:hiddenField name="id" value="${salesOrderInstance?.id}" />
-      <g:hiddenField name="version" value="${salesOrderInstance?.version}" />
-      <g:render template="/salesOrder/form" />
-    </g:form>
-  </div>
-  <content tag="scripts">
-    <asset:javascript src="invoicing-transaction-form" />
-    <asset:script>//<![CDATA[
-      (function ($) {
+  <body>
+    <g:applyLayout name="edit"
+      model="[type: 'salesOrder', instance: salesOrderInstance]" />
 
-          "use strict";
-
-          var params;
-
-          params = $("#sales-order-form").invoicingtransaction({
-                  checkStageTransition: false,
-                  stageValues: {
-                      payment: 803,
-                      shipping: 802
-                  },
-                  type: "S"
-              })
-              .invoicingtransaction("getOrganizationId");
-          $("#quote").autocompleteex({
-                  loadParameters: params
-              });
-      }(jQuery));
-    //]]></asset:script>
-  </content>
-</body>
+    <content tag="scripts">
+      <asset:javascript src="invoicing-transaction-form" />
+      <asset:script>//<![CDATA[
+        new SPRINGCRM.InvoicingTransaction(
+          $("#sales-order-form"), {
+              checkStageTransition: false,
+              stageValues: {
+                  payment: 803,
+                  shipping: 802
+              },
+              type: "S"
+          });
+      //]]></asset:script>
+    </content>
+  </body>
 </html>

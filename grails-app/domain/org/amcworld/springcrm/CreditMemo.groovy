@@ -1,7 +1,7 @@
 /*
  * CreditMemo.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code CreditMemo} represents a credit memo.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class CreditMemo extends InvoicingTransaction {
 
@@ -43,16 +43,10 @@ class CreditMemo extends InvoicingTransaction {
     static mapping = {
         stage column: 'credit_memo_stage_id'
     }
-    static searchable = [
-        except: [
-            'balance', 'balanceColor', 'closingBalance', 'paymentStateColor'
-        ]
-    ]
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'paymentStateColor'
     ]
-
 
     //-- Instance variables ---------------------
 

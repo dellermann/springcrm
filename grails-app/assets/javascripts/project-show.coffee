@@ -1,7 +1,7 @@
 #
 # project-show.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _jquery-ui-selectboxit
 #= require _document-list
 
 
@@ -28,10 +27,16 @@ $ = jQuery
 # all entries within.
 #
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 #
 class ProjectPhases
   
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
+
   #-- Instance variables ------------------------
 
   DEFAULT_OPTIONS =
@@ -51,14 +56,15 @@ class ProjectPhases
   # @param [Object] options       any options that should be set
   #
   constructor: (elem, options = {}) ->
-    $ = jQuery
+    $ = jq
     @$element = $elem = $(elem)
     @options = options = $.extend {}, DEFAULT_OPTIONS, options
 
     @_initCallbacks()
     options.setPhaseUrl ?= $elem.data('set-phase-url')
 
-    $elem.on('click', 'h4', (event) => @_onChange event)
+    $elem
+      .on('click', 'h4', (event) => @_onChange event)
       .on(
         'click', '.project-phase-actions-create', (event) => @_onCreate event
       )
@@ -103,6 +109,8 @@ class ProjectPhases
     callbacks = ['changed', 'create', 'deleted', 'select']
     @_initCallback name for name in callbacks
 
+    return
+
   # Called if the project phase has been changed.
   #
   # @param [Event] event  any event data
@@ -110,24 +118,24 @@ class ProjectPhases
   # @private
   #
   _onChange: (event) ->
-    $ = jQuery
+    $ = jq
     options = @options
     $target = $(event.currentTarget)
 
     options.$output.text $target.text()
 
-    $section = $target.parents('.project-phases > section')
-    $section.addClass('current')
+    $section = $target.closest '.project-phases > section'
+    $section.addClass('active')
       .siblings()
-        .removeClass 'current'
+        .removeClass 'active'
     phaseName = @_getPhaseName($section)
+
     $.ajax(
         data:
           phase: phaseName
         url: options.setPhaseUrl
       )
-      .done =>
-        options.changed.fireWith this, [phaseName]
+      .done => options.changed.fireWith this, [phaseName]
 
     false
 
@@ -139,6 +147,7 @@ class ProjectPhases
   #
   _onCreate: (event) ->
     @options.create.fireWith this, [@_getPhaseName $(event.currentTarget)]
+
     false
 
   # Called if a project item should be deleted.  The function displays a
@@ -149,16 +158,19 @@ class ProjectPhases
   # @private
   #
   _onDelete: (event) ->
-    $ = jQuery
-    that = this
+    $ = jq
     $target = $(event.currentTarget)
 
-    if $.confirm $L('default.delete.confirm.msg')
-      $.ajax(url: $target.attr('href'))
-        .done ->
-          $target.closest('li')
-            .remove()
-          that.options.deleted.fireWith that
+    $.Deferred()
+      .resolve()
+      .then( -> $.confirm $L('project.removeItem.confirm.msg'))
+      .done( -> $.ajax url: $target.attr('href'))
+      .done( =>
+        $target.closest('li')
+          .remove()
+        @options.deleted.fireWith this
+      )
+
     false
 
   # Called if a project item should be selected from a list.
@@ -172,65 +184,112 @@ class ProjectPhases
     false
 
 
+# Class `ProjectCreateItemDlg` represents a dialog which is displayed to create
+# a new project item.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
 class ProjectCreateItemDlg
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
 
   #-- Constructor -------------------------------
 
-  constructor: (elem, phaseName) ->
-    $(elem).dialog(modal: true)
-      .find('a')
-        .on 'click', ->
-          window.location.href =
-            "#{$(this).attr('href')}&projectPhase=#{phaseName}"
-          false
+  # Creates and shows the dialog to create a new project item and sets the
+  # current phase.
+  #
+  # @param [Element, String, jQuery] elem either an element, a jQuery selector or a jQuery object representing the dialog
+  #
+  constructor: (elem) ->
+    @$element = $(elem)
+      .on('click', '.modal-body .btn', (event) => @_onClickItemBtn event)
+
+
+  #-- Public methods ----------------------------
+
+  # Initializes the dialog with the given phase name and shows it.
+  #
+  # @param [String] phaseName the name of the currently active phase
+  #
+  show: (@phaseName) -> @$element.modal 'show'
+
+
+  #-- Non-public methods ------------------------
+
+  # Called if a button has been clicked to create a new project item.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `true` to prevent event bubbling
+  # @private
+  #
+  _onClickItemBtn: (event) ->
+    url = new HttpUrl $(event.currentTarget).attr('href')
+    url.query.projectPhase = @phaseName
+    window.location.href = url.toString()
+
+    false
 
 
 # The class `ProjectSelectItemDlg` represents a dialog that allows the user to
 # select an existing content item.
 #
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 #
 class ProjectSelectItemDlg
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
 
   #-- Constructor -------------------------------
 
   # Creates and opens a new dialog on the given element using the stated phase.
   #
-  # @param [String, jQuery] elem  the given element
-  # @param [String] phaseName     the name of the current phase
+  # @param [Element, String, jQuery] elem either an element, a jQuery selector or a jQuery object representing the dialog
   #
-  constructor: (elem, phaseName) ->
+  constructor: (elem) ->
+    $ = jq
     @$element = $elem = $(elem)
-    @$typeSelector = $('#select-project-item-type-selector')
+    typeSelectorSel = '#select-project-item-type-selector'
+    @$typeSelector = $(typeSelectorSel)
     @$header = $elem.find 'h2'
-    @$filler = $elem.find '.filler'
-    @$searchArea = $elem.find '.search-field'
+    itemListSel = '#select-project-item-list'
+    @$itemList = $elem.find itemListSel
     @$searchField = $elem.find '#selector-search'
-    @$itemList = $itemList = $elem.find '#select-project-item-list'
+    @$searchForm = $elem.find '.selector-search-form'
     @$documentList = $elem.find '#select-project-document-list'
-
-    @phaseName = phaseName
 
     $elem
       .on('click', '.search-btn', => @_loadList())
       .on('click', '#select-project-item-add-btn', => @_onClickAddBtn())
-      .on('change', '#select-project-item-type-selector', => @_onChangeType())
-      .dialog(
-        minWidth: 900
-        minHeight: 520
-        modal: true
-        open: => @_onOpen()
-      )
-    $itemList
+      .on('change', typeSelectorSel, => @_onChangeType())
+      .on('show.bs.modal', => @_onOpen())
       .on(
-        'change', '.content-table th input:checkbox',
+        'change', "#{itemListSel} .data-table th input:checkbox",
         (event) => @_onChangeWholeSelectionCheckbox event
       )
       .on(
-        'click', '.content-table tbody a', (event) => @_onClickSelectItem event
+        'click', "#{itemListSel} .data-table tbody a",
+        (event) => @_onClickSelectItem event
       )
-      .on('click', 'a', (event) => @_onClickLink event)
+      .on('click', "#{itemListSel} a", (event) => @_onClickLink event)
+
+
+  #-- Public methods ----------------------------
+
+  # Initializes the dialog with the given phase name and shows it.
+  #
+  # @param [String] phaseName the name of the currently active phase
+  #
+  show: (@phaseName) -> @$element.modal 'show'
 
 
   #-- Non-public methods ------------------------
@@ -243,22 +302,33 @@ class ProjectSelectItemDlg
   #
   _changeVisibility: ($elem, visible) ->
     $elem[if visible then 'show' else 'hide'].call $elem
+    
+    return
 
   # Gets the name of the controller of the item that are currently displayed.
   #
   # @return [String]  the controller name
   # @private
   #
-  _getController: ->
-    @_getSelectedType().data 'controller'
+  _getController: -> @_getSelectedType().controller
 
   # Gets the selected option type of items that are currently displayed.
   #
-  # @return [jQuery]  the type of item
+  # @return [Object]  information about the selected option or `null` if no option has been selected
   # @private
   #
   _getSelectedType: ->
-    @$typeSelector.find(':selected')
+    selectize = @_getTypeSelector()
+    items = selectize.items
+
+    if items.length then selectize.options[items[0]] else null
+
+  # Gets the selectize widget of the type selector.
+  #
+  # @return [Selectize] the selectize widget
+  # @private
+  #
+  _getTypeSelector: -> @$typeSelector[0].selectize
 
   # Loads the list of items with the given URL into the selector dialog.
   #
@@ -267,33 +337,32 @@ class ProjectSelectItemDlg
   # @private
   #
   _loadList: (url, doneFunc) ->
-    url ?= @_getSelectedType().val()
+    url ?= @_getSelectedType().value
 
     data = view: 'selector'
     search = @$searchField.val()
     data.search = search if search
+
     @$itemList.load url, data, doneFunc
+
+    return
 
   # Called if the type selector has been changed.
   #
   # @private
   #
   _onChangeType: ->
-    $ = jQuery
-    $elem = @$element
-    $selector = @$typeSelector
-
-    $option = $selector.find ':selected'
-    @$header.text $option.text()
+    option = @_getSelectedType()
 
     changeVisibility = (itemListVisible) =>
-      $e = @$itemList.add @$searchArea.contents()
-      @_changeVisibility $e, itemListVisible
-      $e = @$filler.add @$documentList
-      @_changeVisibility $e, not itemListVisible
+      @_changeVisibility @$itemList, itemListVisible
+      @_changeVisibility @$searchForm, itemListVisible
+      @_changeVisibility @$documentList, not itemListVisible
 
-    url = $selector.val()
-    if $option.data('controller') is 'document'
+    @$header.text option.text
+
+    url = option.value
+    if option.controller is 'document'
       @_showDocumentSelector url, -> changeVisibility false
     else
       @$searchField.val ''
@@ -309,9 +378,9 @@ class ProjectSelectItemDlg
   _onChangeWholeSelectionCheckbox: (event) ->
     $target = $(event.currentTarget)
 
-    $target.parents('.content-table')
-      .find('tbody td:first-child input:checkbox')
-        .attr 'checked', $target.is(':checked')
+    $target.closest('.data-table')
+      .find('tbody .col-type-row-selector input:checkbox')
+        .prop 'checked', $target.is(':checked')
 
   # Called if the button to add an item has been clicked.
   #
@@ -319,7 +388,7 @@ class ProjectSelectItemDlg
   # @private
   #
   _onClickAddBtn: ->
-    $ = jQuery
+    $ = jq
 
     if @_getController() is 'document'
       selection = @$documentList.documentlist 'selection'
@@ -327,11 +396,10 @@ class ProjectSelectItemDlg
     else
       ids = []
       @$itemList.find('tbody :checked')
-        .each ->
-          ids.push $(this).parents('tr').data('item-id')
+        .each -> ids.push $(this).closest('tr').data('item-id')
       @_submitSelectedItems ids if ids.length
 
-    @$element.dialog 'close'
+    @$element.modal 'hide'
     false
 
   # Called if any link in the item selector dialog is clicked.  The method loads
@@ -342,7 +410,8 @@ class ProjectSelectItemDlg
   # @private
   #
   _onClickLink: (event) ->
-    @_loadList $(event.target).attr 'href'
+    @_loadList $(event.currentTarget).attr 'href'
+
     false
 
   # Called if an item in the item selector dialog has been clicked and thus the
@@ -354,25 +423,25 @@ class ProjectSelectItemDlg
   #
   _onClickSelectItem: (event) ->
     event.stopImmediatePropagation()
-    itemId = $(event.currentTarget).parents('tr')
+    itemId = $(event.currentTarget).closest('tr')
       .data 'item-id'
     @_submitSelectedItems [itemId]
     @$element.dialog 'close'
+
     false
 
   # Called if the dialog should be displayed.
   #
   # @private
   #
-  _onOpen: ->
-    @$filler.hide()
-    @$typeSelector.trigger 'change'
+  _onOpen: -> @$typeSelector.trigger 'change'
 
   # Called after the item selected from the item selector dialog has been
   # submitted to the server.
   #
-  _onSubmittedSelectedItems: ->
-    window.location.reload true
+  # @private
+  #
+  _onSubmittedSelectedItems: -> window.location.reload true
 
   # Shows the selector to select documents.
   #
@@ -390,12 +459,16 @@ class ProjectSelectItemDlg
         init: doneFunc
         listUrl: url
         multiSelect: true
+        selected: (data) =>
+          selection = data.selection
+          @_submitSelectedDocuments selection if selection.length
         scrollable: true
 
   # Submits the selected documents to the server to associate them to the
   # current project.
   #
   # @param [Array] documents  the paths of the selected documents
+  # @private
   #
   _submitSelectedDocuments: (documents) ->
     @_submitData
@@ -407,12 +480,15 @@ class ProjectSelectItemDlg
   # project.
   #
   # @param [Array] ids  the IDs of the selected items
+  # @private
   #
   _submitSelectedItems: (ids) ->
     @_submitData
       projectPhase: @phaseName
       controllerName: @_getController()
       itemIds: ids.join()
+
+    return
 
   # Submits the given data via AJAX.
   #
@@ -427,29 +503,37 @@ class ProjectSelectItemDlg
       )
       .done => @_onSubmittedSelectedItems()
 
+    return
+
 
 # The class `ProjectShow` represents the whole show view of the project
 # section.  It displays and handles the project phases list and the dialogs
 # to create or select project items.
 #
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 #
-class ProjectShow
+class ProjectShowPage
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
 
   #-- Constructor -------------------------------
 
   # Creates a new handler of the show view of the project section.
   #
   constructor: ->
-    new ProjectPhases '#project-phases',
-      create: (phaseName) ->
-        new ProjectCreateItemDlg('#create-project-item-dialog', phaseName)
-      select: (phaseName) ->
-        new ProjectSelectItemDlg('#select-project-item-dialog', phaseName)
+    createDlg = new ProjectCreateItemDlg '#create-project-item-dialog'
+    selectDlg = new ProjectSelectItemDlg '#select-project-item-dialog'
 
-    $('#project-status').selectBoxIt(theme: 'jqueryui')
-      .on('change', (event) => @_onSelectProjectStatus event)
+    new ProjectPhases '#project-phases',
+      create: (phaseName) -> createDlg.show phaseName
+      select: (phaseName) -> selectDlg.show phaseName
+
+    $('#project-status').on 'change', (event) => @_onSelectProjectStatus event
 
 
   #-- Non-public methods ------------------------
@@ -460,16 +544,18 @@ class ProjectShow
   # @private
   #
   _onSelectProjectStatus: (event) ->
-    $ = jQuery
+    $ = jq
     $target = $(event.currentTarget)
 
     status = $target.val()
     $.get $target.data('submit-url'), status: status
 
-    $('#project-status-indicator')
-      .attr('class', "project-status-#{status}")
-      .text $target.find(':selected').text()
+    return
 
 
-new ProjectShow()
+#== Main ========================================
+
+new ProjectShowPage()
+
+# vim:set ts=2 sw=2 sts=2:
 

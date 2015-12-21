@@ -1,7 +1,7 @@
 #
 # purchase-invoice-form.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,57 +17,140 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require _typeahead
+#= require _fileinput-builder
+#= require _handlebars-ext
+#= require templates/widgets/file-upload-document
 #= require invoicing-transaction-form
+
+
+#== Classes =====================================
+
+# Class `DocumentFileinput` represents a file input widget for setting the
+# document of a purchase invoice.
 #
+# @author   Daniel Ellermann
+# @version  2.0
+#
+class DocumentFileinput
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jQuery
+
+  # @nodoc
+  $LANG = $L
 
 
-$ = jQuery
+  #-- Constructor -------------------------------
 
+  # Creates a new file input widget for setting the document of a purchase
+  # invoice.
+  #
+  # @param [jQuery] $element  the file input control which is augmented as widget
+  #
+  constructor: ($element) ->
+    $L = $LANG
+    tmpl = Handlebars.templates['widgets/file-upload-document']
 
-PurchaseInvoiceWidget =
-  options:
-    loadVendorsUrl: null
+    builder = new SPRINGCRM.FileinputBuilder
+      browseIcon: '<i class="fa fa-file-o"></i> '
+      browseLabel: $L('purchaseInvoice.documentFile.select')
+      layoutTemplates:
+        main1: tmpl section: 'main1'
+      removeClass: 'btn btn-danger btn-sm'
+      removeIcon: '<i class="fa fa-trash-o"></i> '
+      removeLabel: $L('purchaseInvoice.documentFile.delete')
+      showPreview: false
+      showRemove: true
 
-  _create: ->
-    $ = jQuery
-    $.springcrm.invoicingtransaction::_create.call this
-    @element.find(".price-table")
-      .invoicingitems "option",
-        productListUrl: null
-        serviceListUrl: null
-
-    $("#vendorName").autocomplete
-      focus: @_onFocusVendor
-      select: @_onSelectVendor
-      source: (request, response) => @_onLoadVendors request, response
-
-    $(".document-delete").on "click", ->
-      $ = jQuery
-      $("#fileRemove").val 1
-      $(".document-preview").add(".document-preview-links").remove()
-
-  _onFocusVendor: (event, ui) ->
-    $(event.target).val ui.item.label
-    false
-
-  _onLoadVendors: (request, response) ->
-    $ = jQuery
-    url = @options.loadVendorsUrl
+    previewOptions = {}
+    url = $element.data 'initial-file'
     if url
-      $.getJSON url,
-        name: request.term
-      , (data) ->
-        response $.map(data, (item) ->
-          label: item.name
-          value: item.id
-        )
+      previewOptions.initialPreview = [url]
+    builder.addOptions previewOptions
 
-  _onSelectVendor: (event, ui) ->
-    $ = jQuery
-    item = ui.item
-    $("#vendor").val item.label
-    $("#vendor\\.id").val item.value
-    false
+    builder.build $element
 
-$.widget "springcrm.purchaseinvoice", $.springcrm.invoicingtransaction,
-  PurchaseInvoiceWidget
+    $fileRemove = $('#fileRemove')
+    $element
+      .on('filecleared', => $fileRemove.val '1')
+      .on('fileloaded', => $fileRemove.val '0')
+
+
+# Class `PurchaseInvoice` represents a purchase invoice form.
+#
+# @author   Daniel Ellermann
+# @version  2.0
+#
+class PurchaseInvoice
+
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
+
+  #-- Constructor -------------------------------
+
+  # Creates a new widget which handles the actions within a purchase invoice
+  # form.
+  #
+  # @param [jQuery] $element  the element containing the form
+  # @param [Object] [options] any options
+  #
+  constructor: ($element, options = {}) ->
+    $ = jq
+
+    @$element = $element
+
+    @_initVendorTypeahead()
+    $('#file').each -> new DocumentFileinput $(this)
+
+    new SPRINGCRM.InvoicingTransaction $element, options
+
+
+  #-- Non-public methods ------------------------
+
+  # Initialize the typeahead field for vendors.
+  #
+  # @private
+  #
+  _initVendorTypeahead: ->
+    $vendor = $('#vendor')
+    $vendorName = $('#vendorName')
+
+    vendors = new Bloodhound
+      datumTokenizer: (datum) -> datum.name
+      queryTokenizer: Bloodhound.tokenizers.whitespace
+      remote:
+        prepare: (query, settings) ->
+          url = new HttpUrl(settings.url)
+          url.query.name = query
+          settings.url = url.toString()
+          
+          settings
+        url: $vendorName.data 'load-url'
+    vendors.initialize()
+
+    $vendorName.typeahead(
+          highlight: true
+          hint: true
+          minLength: 1
+        ,
+          displayKey: 'name'
+          name: 'vendor'
+          source: vendors.ttAdapter()
+      )
+      .on('typeahead:selected', (event, suggestion) ->
+        $vendor.val suggestion.id
+      )
+
+    return
+
+
+SPRINGCRM.PurchaseInvoice = PurchaseInvoice
+
+# vim:set ts=2 sw=2 sts=2:
+

@@ -1,7 +1,7 @@
 /*
  * Person.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@ package org.amcworld.springcrm
  * The class {@code Person} represents a person of an organization.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @author 	Philip Drozd
+ * @version 2.0
  */
 class Person {
 
@@ -69,7 +70,6 @@ class Person {
         notes type: 'text'
         sort 'lastName'
     }
-    static searchable = true
     static transients = ['fullNumber', 'fullName']
 
 
@@ -135,7 +135,15 @@ class Person {
     //-- Properties -----------------------------
 
     String getFullName() {
-        "${firstName} ${lastName}"
+		String firstName = this.firstName?.trim()?:''
+		String lastName = this.lastName?.trim()?:''
+
+		StringBuilder buf = new StringBuilder (firstName)
+		if(firstName && lastName) {
+			buf << ' '
+		}
+		buf << lastName
+		buf.toString()
     }
 
     String getFullNumber() {

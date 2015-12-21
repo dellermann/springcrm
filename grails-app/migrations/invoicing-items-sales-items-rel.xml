@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20150202-1">
+    <addColumn tableName="invoicing_item">
+      <column name="sales_item_id" type="bigint"/>
+    </addColumn>
+    <createIndex indexName="FKCF5EC58815DA134D" tableName="invoicing_item">
+      <column name="sales_item_id"/>
+    </createIndex>
+    <addForeignKeyConstraint baseColumnNames="sales_item_id"
+      baseTableName="invoicing_item" constraintName="FKCF5EC58815DA134D"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sales_item" referencesUniqueColumn="false"/>
+  </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20150202-2"
+    dbms="h2, mysql">
+    <sql>
+      UPDATE invoicing_item i
+        SET sales_item_id = (
+          SELECT si.id FROM sales_item si
+            WHERE si.number = SUBSTRING(i.number, 3) AND
+              si.type = LEFT(i.number, 1)
+        )
+        WHERE i.number LIKE '_-%'
+    </sql>
+  </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20150202-3">
+    <dropColumn columnName="number" tableName="invoicing_item"/>
+  </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20150225-1">
+    <dropColumn columnName="number" tableName="purchase_invoice_item"/>
+  </changeSet>
+</databaseChangeLog>
+

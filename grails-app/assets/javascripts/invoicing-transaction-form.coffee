@@ -1,7 +1,7 @@
 #
 # invoicing-transaction-form.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,241 +17,336 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require widgets/addr-fields
+#= require selectize/selectize
 #= require _invoicing-items
 
 
-$ = jQuery
+#== Classes =====================================
 
-
-# Defines a jQuery widget which handles invoicing transactions such as quotes,
-# invoices, dunnings etc.
+# Class `InvoicingTransaction` contains the scripting needed for invoicing
+# transaction forms.
 #
-# @mixin
 # @author   Daniel Ellermann
-# @version  1.4
+# @version  2.0
 #
-InvoicingTransactionWidget =
+class InvoicingTransaction
 
-  options:
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
+  # @nodoc
+  $LANG = $L
+
+
+  #-- Class variables ---------------------------
+
+  @DEFAULTS =
     checkStageTransition: true
-    organizationId: "#organization\\.id"
+    handleInvoiceDunningChange: false
+    organizationId: '#organization-select'
+    reducedView: false
     stageValues: null
 
-  # Gets the ID of the selected organization.
-  #
-  # @return {Number}  the ID of the selected organization
-  #
-  getOrganizationId: ->
-    organization: $(@options.organizationId).val()
 
-  # Refreshes the modified closing balance after changing the invoice or
-  # dunning associated with a credit memo.  The method obtains the closing
-  # balance of the invoice or dunning and re-computes the "still unpaid" value.
-  #
-  # @param {Object} data      any data of the changed invoice or dunning
-  # @option {Number} data id  the ID of the selected invoice or dunning
-  # @option {String} data url the URL used to obtain the closing balance from the invoice or dunning
-  #
-  refreshModifiedClosingBalance: (data) ->
-    $.getJSON data.url, { id: data.id }, (d) =>
-      @element
-        .find("#still-unpaid")
-          .data("modified-closing-balance", -d.closingBalance)
-        .end()
-        .find("#paymentAmount")
-          .trigger("change")
+  #-- Constructor -------------------------------
 
-  # Initializes this widget.
+  # Creates a new widget which handles the actions within an invoicing
+  # transaction form.
   #
-  _create: ->
-    @element
-      .on("click", "#still-unpaid", (event) => @_onClickStillUnpaid(event))
-      .on("change", "#paymentAmount", => @_onChangePaymentAmount())
-      .find(".price-table")
-        .invoicingitems()
+  # @param [jQuery] $element  the element containing the form
+  # @param [Object] [options] any options
+  #
+  constructor: ($element, options = {}) ->
+    $ = jq
+
+    @$element = $element
+    @$paymentAmount = $('#paymentAmount')
+    @$stillUnpaid = $('#still-unpaid')
+    @options = opts = $.extend {}, InvoicingTransaction.DEFAULTS, options
+
+    unless options.reducedView
+      new SPRINGCRM.InvoicingItems($element.find '.price-table')
+
+    $element
+      .on('click', '#still-unpaid', (event) => @_onClickStillUnpaid event)
+      .on('change', '#paymentAmount', => @_onChangePaymentAmount())
+      .find('#paymentAmount')
+        .trigger('change')
       .end()
-      .find("#organization")
-        .autocompleteex(
-          select: => @_onSelectOrganization()
-        )
-      .end()
-      .find("#person")
-        .autocompleteex(
-          loadParameters: => @getOrganizationId()
-        )
-      .end()
-      .find("#paymentAmount")
-        .trigger("change")
-      .end()
-      .find("#addresses")
-        .addrfields(
-          leftPrefix: "billingAddr"
-          menuItems: [
-            action: "clear"
-            side: "left"
-            text: $L("invoicingTransaction.billingAddr.clear")
-          ,
-            action: "copy"
-            side: "left"
-            text: $L("invoicingTransaction.billingAddr.copy")
-          ,
-            action: "loadFromOrganization"
-            propPrefix: "billingAddr"
-            side: "left"
-            text: $L("invoicingTransaction.addr.fromOrgBillingAddr")
-          ,
-            action: "clear"
-            side: "right"
-            text: $L("invoicingTransaction.shippingAddr.clear")
-          ,
-            action: "copy"
-            side: "right"
-            text: $L("invoicingTransaction.shippingAddr.copy")
-          ,
-            action: "loadFromOrganization"
-            propPrefix: "shippingAddr"
-            side: "right"
-            text: $L("invoicingTransaction.addr.fromOrgShippingAddr")
-          ]
-          organizationId: @options.organizationId
-          rightPrefix: "shippingAddr"
-        )
+
     @_initStageValues()
+    if opts.handleInvoiceDunningChange
+      $element.on 'change', '#invoice-select, #dunning-select', (event) =>
+        @_onChangeInvoiceDunning event
+
+    $(opts.organizationId).on 'change', => @_onSelectOrganization()
+    $('.invoicing-transaction-selector.selectized').each (_, elem) =>
+      @_initInvoicingTransactionSelector elem
+    @_initAddrFields()
+
+
+  #-- Non-public methods ------------------------
+
+  # Changes the stage to the given value if the current value is below.
+  #
+  # @param [Number] value the value that should be set
+  # @private
+  # @since                2.0
+  #
+  _changeStage: (value) ->
+    $stage = @$element.find '#stage'
+    $stage[0].selectize.addItem value if parseInt($stage.val(), 10) < value
 
   # Gets the modified closing balance of this invoicing transaction used as
   # base for dynamic balance computation.
   #
-  # @param {jQuery} $a  the link which contains the modified closing balance as data attribute
-  # @return {Number}    the modified closing balance
+  # @param [jQuery] $btn  the link which contains the modified closing balance as data attribute
+  # @return [Number]      the modified closing balance
+  # @private
   #
-  _getModifiedClosingBalance: ($a = @element.find("#still-unpaid")) ->
-    parseFloat $a.data("modified-closing-balance")
+  _getModifiedClosingBalance: ($btn = @$stillUnpaid) ->
+    parseFloat $btn.data 'modified-closing-balance'
 
   # Gets the total value of this invoicing transaction.
   #
-  # @return {Number}  the total value
+  # @return [Number]  the total value
+  # @private
   #
   _getTotal: ->
-    $("#total-price").text().parseNumber()
+    $t = $('#total-price')
+    (if $t.is 'output' then $t.text() else $t.val()).parseNumber()
 
   # Gets the unpaid amount of this invoicing transaction considering the
   # already paid amount and any credit memos.
   #
-  # @return {Number}  the unpaid amount
+  # @return [Number]  the unpaid amount
+  # @private
   #
   _getUnpaid: ->
-    paymentAmount = @element.find("#paymentAmount").val().parseNumber()
+    paymentAmount = @$paymentAmount.val().parseNumber()
     unpaid = @_getTotal() - paymentAmount - @_getModifiedClosingBalance()
     unpaid.round $I.numFractionsExt
+
+  # Initializes the address fields of this form.
+  #
+  # @private
+  #
+  _initAddrFields: ->
+    $L = $LANG
+
+    @$addresses = $('.addresses').addrfields
+      menuItems:
+        left: [
+            action: 'clear'
+            text: $L('invoicingTransaction.billingAddr.clear')
+          ,
+            action: 'copy'
+            text: $L('invoicingTransaction.billingAddr.copy')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'billingAddr'
+            text: $L('invoicingTransaction.addr.fromOrgBillingAddr')
+        ]
+        right: [
+            action: 'clear'
+            text: $L('invoicingTransaction.shippingAddr.clear')
+          ,
+            action: 'copy'
+            text: $L('invoicingTransaction.shippingAddr.copy')
+          ,
+            action: 'loadFromOrganization'
+            prefix: 'shippingAddr'
+            text: $L('invoicingTransaction.addr.fromOrgShippingAddr')
+        ]
+      organizationId: @options.organizationId
+
+    return
+
+  # Initializes the selectors for dependent invoicing transactions which
+  # display the transaction number in a special way.
+  #
+  # @param [Element] selector the selector that should be initialized
+  # @private
+  #
+  _initInvoicingTransactionSelector: (selector) ->
+    $ = jq
+
+    selectize = selector.selectize
+    $.extend true, selectize.settings,
+      labelField: 'fullName'
+      searchField: ['name', 'number']
+      sortField:
+        direction: 'desc'
+        field: 'number'
+      render:
+        item: (data, escape) ->
+          """
+<div class="item">
+  <span class="number">#{escape(data.number)}</span>
+  #{escape(data.name)}
+</div>
+"""
+        option: (data, escape) ->
+          """
+<div class="option">
+  <span class="number">#{escape(data.number)}</span>
+  #{escape(data.name)}
+</div>
+"""
+
+    item = $(selector).data 'value'
+    if item
+      selectize.addOption item
+      selectize.addItem item.id
+
+    return
 
   # Initializes the input fields according to the stage values defined in the
   # options.
   #
-  # @return {jQuery}  this widget object
+  # @private
   #
   _initStageValues: ->
-    $ = jQuery
-    el = @element
-
+    $el = @$element
     opts = @options
     stageValues = opts.stageValues
-    if stageValues
-      el.on("change", "#stage", (event) => @_onChangeStage event)
-      if stageValues.shipping
-        el.on(
-            "change", "#shippingDate-date",
-            (event) => @_onChangeShippingDate event
-          )
-        el.on("submit", => @_onSubmitForm()) if opts.checkStageTransition
-      if stageValues.payment
-        el.on(
-            "change", "#paymentDate-date",
-            (event) => @_onChangePaymentDate event
-          )
-    this
 
-  # Called if the payment amount is changed.  The method sets a CSS class to
-  # the unpaid amount link in order to indicate the payment status (unpaid,
+    if stageValues
+      $el.on 'change', '#stage', (event) => @_onChangeStage event
+      if stageValues.shipping
+        $el.on 'change', '#shippingDate-date', (event) =>
+          @_onChangeShippingDate event
+        if opts.checkStageTransition
+          $el.on 'submit', (event) => @_onSubmitForm event
+      if stageValues.payment
+        $el.on 'change', '#paymentDate-date', (event) =>
+          @_onChangePaymentDate event
+
+    return
+
+  # Called if the invoice or dunning has been changed.  The method recomputes
+  # the closing balance of a credit memo.
+  #
+  # @param [Event] event  any event data
+  # @return [Promise]     the status of obtaining the closing balance
+  # @private
+  # @since                2.0
+  #
+  _onChangeInvoiceDunning: (event) ->
+    $ = jq
+    $target = $(event.currentTarget)
+
+    $.ajax(
+        context: this
+        data:
+          id: $target.val()
+        dataType: 'json'
+        url: $target.data 'get-closing-balance-url'
+      )
+      .done (data) ->
+        $ = jq
+
+        @$element
+          .find('#still-unpaid')
+            .each(->
+              $this = $(this)
+              initialBalance = parseFloat $this.data 'initial-balance'
+              val = initialBalance - data.closingBalance
+              $this.data 'modified-closing-balance', val
+            )
+          .end()
+          .find('#paymentAmount')
+            .trigger('change')
+
+  # Called if the payment amount has been changed.  The method sets a CSS class
+  # to the unpaid amount link in order to indicate the payment status (unpaid,
   # paid too much, paid).
+  #
+  # @private
   #
   _onChangePaymentAmount: ->
     val = @_getUnpaid()
     cls = switch
-      when val > 0 then "still-unpaid-unpaid"
-      when val < 0 then "still-unpaid-too-much"
-      else "still-unpaid-paid"
+      when val > 0 then 'still-unpaid-unpaid'
+      when val < 0 then 'still-unpaid-too-much'
+      else 'still-unpaid-paid'
 
-    @element.find("#still-unpaid")
-      .removeClass("still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much")
+    @$stillUnpaid
+      .removeClass(
+        'still-unpaid-unpaid still-unpaid-paid still-unpaid-too-much'
+      )
       .addClass(cls)
-      .find("output")
+      .find('output')
         .text(val.formatCurrencyValueExt())
 
-  # Called if the payment date is changed.  The method also changes the stage
-  # of the invoicing transaction to "payment" if it is below "payment".
+    return
+
+  # Called if the payment date has been changed.  The method also changes the
+  # stage of the invoicing transaction to "payment" if it is below "payment".
   #
-  # @param {Object} event the event data
+  # @param [Event] event  the event data
+  # @private
   #
   _onChangePaymentDate: (event) ->
-    $stage = @element.find("#stage")
-    v = @options.stageValues.payment
-    $stage.val v if $(event.currentTarget).val() isnt "" and $stage.val() < v
+    if $(event.currentTarget).val() isnt ''
+      @_changeStage @options.stageValues.payment
 
-  # Called if the shipping date is changed.  The method also changes the stage
-  # of the invoicing transaction to "shipping" if it is below "shipping".
+  # Called if the shipping date has been changed.  The method also changes the
+  # stage of the invoicing transaction to "shipping" if it is below "shipping".
   #
-  # @param {Object} event the event data
+  # @param [Event] event  the event data
+  # @private
   #
   _onChangeShippingDate: (event) ->
-    $stage = @element.find("#stage")
-    v = @options.stageValues.shipping
-    $stage.val v if $(event.currentTarget).val() isnt "" and $stage.val() < v
+    if $(event.currentTarget).val() isnt ''
+      @_changeStage @options.stageValues.shipping
 
   # Called if the user changes the stage of the invoicing transaction.  The
   # method populates the shipping date or payment date field according to the
   # selection.
   #
-  # @param {Object} event the event data
-  # @return {Boolean}     `true` to allow event bubbling
+  # @param [Event] event  the event data
+  # @return [Boolean]     `true` to allow event bubbling
+  # @private
   #
   _onChangeStage: (event) ->
-    $ = jQuery
+    $ = jq
 
     stageValues = @options.stageValues
-    $input = null
-    switch parseInt $(event.currentTarget).val(), 10
-      when stageValues.shipping then $input = $("#shippingDate-date")
-      when stageValues.payment then $input = $("#paymentDate-date")
-    if $input and not $input.val()
-      $input.datepicker("setDate", new Date()).trigger("change")
+    $input = switch parseInt $(event.currentTarget).val(), 10
+      when stageValues.shipping then $('#shippingDate-date')
+      when stageValues.payment then $('#paymentDate-date')
+      else null
+    $input.datepicker 'update', new Date() if $input and not $input.val()
+
     true
 
-  # Called if the user clicks the link "still unpaid".  The method sets the
+  # Called if the link "still unpaid" has been clicked.  The method sets the
   # payment amount to the balanced value indicating that the invoicing
   # transaction has been paid.  The method considers credit memos.
   #
-  # @param {Object} event the event data
-  # @return {Boolean}     always `false` to prevent event bubbling
+  # @param [Event] event  any event data
+  # @private
   #
   _onClickStillUnpaid: (event) ->
     if @_getUnpaid() > 0
       d = $I.numFractionsExt
-      total = @_getTotal().round(d)
-      bal = @_getModifiedClosingBalance($(event.currentTarget)).round(d)
+      total = @_getTotal().round d
+      bal = @_getModifiedClosingBalance($(event.currentTarget)).round d
       val = total - bal
-      if val
-        @element.find("#paymentAmount")
-          .val(val.formatCurrencyValueExt())
-          .trigger("change")
-    false
+      @$paymentAmount.val(val.formatCurrencyValueExt()).trigger 'change' if val
 
-  # Called if the user selects an organization.  The method fills in the
+    return
+
+  # Called if an organization has been selected.  The method fills in the
   # address fields with the data of the selected organization.
   #
-  _onSelectOrganization: ->
-    @element.find("#addresses")
-      .addrfields("loadFromOrganizationToLeft", "billingAddr")
-      .addrfields("loadFromOrganizationToRight", "shippingAddr")
+  # @private
+  #
+  _onSelectOrganization: -> @$addresses.addrfields 'loadFromOrganization'
 
   # Called if the invoicing transaction form is submitted.  The method checks
   # whether there is a stage transition and asks the user for confirmation if
@@ -259,18 +354,28 @@ InvoicingTransactionWidget =
   # necessary because the application prevents access to shipped invoicing
   # transactions for non-admin users.
   #
-  # @return {Boolean} `true` if the form should be submitted; `false` otherwise
+  # @param [Event] event  any event data
+  # @return [Boolean]     whether or not the form should be submitted
+  # @private
   #
-  _onSubmitForm: ->
-    res = true
-    $oldStage = $("#old-stage")
+  _onSubmitForm: (event) ->
+    $form = $(event.currentTarget)
+
+    $oldStage = $('#stage-old')
     if $oldStage.length
-      oldVal = $oldStage.val()
+      oldVal = parseInt $oldStage.val(), 10
       if oldVal > 0
-        newVal = @element.find("#stage").val()
+        newVal = $form.find('#stage').val()
         shippingStageValue = @options.stageValues.shipping
         if (oldVal < shippingStageValue) and (newVal >= shippingStageValue)
-          res = $.confirm $L("invoicingTransaction.changeState.label")
-    res
+          $.confirm($LANG('invoicingTransaction.changeState.label'))
+            .done ->
+              $form.off('submit')
+                .submit()
+          return false
 
-$.widget "springcrm.invoicingtransaction", InvoicingTransactionWidget
+    true
+
+SPRINGCRM.InvoicingTransaction = InvoicingTransaction
+
+# vim:set ts=2 sw=2 sts=2:

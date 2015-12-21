@@ -1,7 +1,7 @@
 /*
  * InvoicingTransaction.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * transactions such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class InvoicingTransaction {
 
@@ -67,9 +67,9 @@ class InvoicingTransaction {
         notes type: 'text'
         sort 'number'
         subject index: 'subject'
+        termsAndConditions lazy: false
         order 'desc'
     }
-    static searchable = true
     static transients = [
         'discountPercentAmount', 'fullName', 'fullNumber', 'subtotalGross',
         'subtotalNet', 'taxRateSums'

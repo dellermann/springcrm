@@ -1,7 +1,7 @@
 /*
  * DataSource.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ environments {
     development {
         dataSource {
             driverClassName = 'com.mysql.jdbc.Driver'
-            url = "jdbc:mysql://localhost/springcrm?autoreconnect=true"
+            url = 'jdbc:mysql://localhost/springcrm?autoreconnect=true'
 //            logSql = true
         }
     }

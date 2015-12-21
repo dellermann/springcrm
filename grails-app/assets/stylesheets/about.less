@@ -1,7 +1,7 @@
 /*
  * about.less
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,18 @@
 
 
 @import "application";
+@import "bootstrap/wells";
 
 
-.about {
-  width: 75%;
-
-  h3 {
-    margin: 1.5em 0 1em !important;
-  }
+.app-title {
+  color: @spring-green-light;
+  font-size: (2.5 * @font-size-large);
+  margin: @line-height-computed 0;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .8);
 }
-#app-title {
-  color: @color-default-border-2;
-  font-size: 197%;
-  margin-bottom: .7em;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
-}
-.license-text {
-  border: 1px solid @color-default;
-  height: 40em;
+.license-text:extend(.well) {
+  font-size: @font-size-small;
+  max-height: 40em;
   overflow-y: scroll;
-  padding: 1em;
 }
 

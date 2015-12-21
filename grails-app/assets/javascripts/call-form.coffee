@@ -1,7 +1,7 @@
 #
 # call-form.coffee
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,56 +17,96 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require _typeahead
 
 
 $ = jQuery
 
 
-phoneNumbers = null
+#== Classes =====================================
 
-onLoadedPhoneNumbers = (data, term) ->
-  l = []
-  respData = []
-  for d in data
-    if d
-      val = d.toLowerCase()
-      if val
-        l.push val
-        respData.push val if val.indexOf(term) >= 0
-  phoneNumbers = l
-  respData
+class CallFormPage
 
-onLoadPhoneNumbers = (request, response) ->
-  $orgId = $("#organization\\.id")
-  $personId = $("#person\\.id")
-  term = request.term.toLowerCase()
+  #-- Internal variables ------------------------
 
-  data = {}
-  if $personId.val()
-    url = $("#phone").data("load-person-phone-numbers-url")
-    data.id = $personId.val()
-  else if $orgId.val()
-    url = $("#phone").data("load-organization-phone-numbers-url")
-    data.id = $orgId.val()
+  # @nodoc
+  $ = jQuery
 
-  if phoneNumbers
-    response $.grep(phoneNumbers, (val) -> val.indexOf(term) >= 0)
-  else if url
-    $.getJSON url, data, (data) ->
-      response onLoadedPhoneNumbers(data, term)
-      return
-  return
 
-$("#organization").autocompleteex select: ->
-  phoneNumbers = undefined
-  return
+  #-- Constructor -------------------------------
 
-$("#person").autocompleteex
-  loadParameters: ->
-    organization: $("#organization\\.id").val()
+  constructor: ($element) ->
+    @$element = $element
 
-  select: ->
-    phoneNumbers = undefined
+    @$organization = $element.find '#organization-select'
+    @$person = $element.find '#person-select'
+    @$phone = $element.find '#phone'
+
+    $element
+      .on(
+        'change', '#organization-select, #person-select',
+        => @phoneNumbers.clear()
+      )
+
+    @_initPhoneTypeahead()
+
+
+  #-- Non-public methods ------------------------
+
+  # Gets the ID and an URL to obtain phone numbers of either an organization
+  # or person.
+  #
+  # @return [Object]  an object containing the ID in element `id` and the URL in element `url`; returns `null` if neither an organization nor a person has been selected
+  # @private
+  #
+  _getParentIdAndUrl: ->
+    $phone = @$phone
+
+    id = @$person.val()
+    if id
+      return id: id, url: $phone.data 'load-person-phone-numbers-url'
+
+    id = @$organization.val()
+    if id
+      return id: id, url: $phone.data 'load-organization-phone-numbers-url'
+
+    null
+
+  # Initializes the typeahead feature of the phone input control.
+  #
+  # @private
+  #
+  _initPhoneTypeahead: ->
+    @phoneNumbers = phoneNumbers = new Bloodhound
+      datumTokenizer: (datum) -> datum
+      identify: (datum) -> datum.replace /[^0-9+]/, ''
+      queryTokenizer: (str) -> str
+      remote:
+        prepare: (query, settings) =>
+          data = @_getParentIdAndUrl()
+          return settings unless data?
+
+          url = new HttpUrl(data.url)
+          url.query.id = data.id
+          settings.url = url.toString()
+
+          settings
+        url: 'http://'
+    phoneNumbers.initialize()
+
+    @$phone.typeahead
+        highlight: true
+        hint: true
+        minLength: 1
+      ,
+        source: phoneNumbers.ttAdapter()
+
     return
 
-$("#phone").autocomplete source: onLoadPhoneNumbers
+
+#== Main ========================================
+
+new CallFormPage $('#call-form')
+
+# vim:set ts=2 sw=2 sts=2:
+

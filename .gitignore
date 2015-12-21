@@ -1,4 +1,5 @@
 *.swp
+/.asscache
 /bower_components/
 /node_modules
 /target/

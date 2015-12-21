@@ -1,7 +1,7 @@
 /*
  * Panel.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,25 +25,20 @@ package org.amcworld.springcrm
  * The class {@code Panel} contains data about a panel on the overview page.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 class Panel {
-
-    //-- Constants ------------------------------
-
-	public static final int NUM_COLUMNS = 3i
-
 
     //-- Class variables ------------------------
 
     static constraints = {
 		user()
-		col(range: 0..NUM_COLUMNS - 1)
-		pos(min: 0)
-		panelId(blank: false)
+		pos min: 0
+		panelId blank: false
     }
 	static mapping = {
         panelId index: 'panel_id'
+        sort 'pos'
 		version false
 	}
 	static transients = ['panelDef']
@@ -52,7 +47,6 @@ class Panel {
     //-- Instance variables ---------------------
 
 	User user
-	int col
 	int pos
 	String panelId
 	OverviewPanel panelDef
@@ -61,21 +55,18 @@ class Panel {
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Panel) {
-            return obj.user == user && obj.panelId == panelId
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        (obj instanceof Panel) ? obj.user == user && obj.panelId == panelId
+            : false
     }
 
     @Override
-    public int hashCode() {
-        return toString().hashCode()
+    int hashCode() {
+        toString().hashCode()
     }
 
     @Override
 	String toString() {
-		return "${user.userName}-${panelId}"
+		"${user.userName}-${panelId}"
 	}
 }

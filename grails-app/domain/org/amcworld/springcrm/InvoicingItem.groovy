@@ -1,7 +1,7 @@
 /*
  * InvoicingItem.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class InvoicingItem {
 
@@ -34,13 +34,13 @@ class InvoicingItem {
 
     static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
-        number blank: false
         quantity min: 0.0d
         unit blank: false
         name blank: false
         description nullable: true
         unitPrice widget: 'currency'
         tax scale: 1, min: 0.0d, widget: 'percent'
+        salesItem nullable: true
     }
     static mapping = {
         description type: 'text'
@@ -50,13 +50,13 @@ class InvoicingItem {
 
     //-- Instance variables ---------------------
 
-    String number
     double quantity
     String unit
     String name
     String description
     double unitPrice
     double tax
+    SalesItem salesItem
 
 
     //-- Constructors ---------------------------
@@ -64,13 +64,13 @@ class InvoicingItem {
     InvoicingItem() {}
 
     InvoicingItem(InvoicingItem i) {
-        number = i.number
         quantity = i.quantity
         unit = i.unit
         name = i.name
         description = i.description
         unitPrice = i.unitPrice
         tax = i.tax
+        salesItem = i.salesItem
     }
 
 

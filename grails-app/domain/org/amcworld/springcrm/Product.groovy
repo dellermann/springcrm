@@ -1,7 +1,7 @@
 /*
  * Product.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ package org.amcworld.springcrm
  * The class {@code Product} represents a product.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.3
  * @see     Service
  */
@@ -39,7 +39,6 @@ class Product extends SalesItem {
         retailer nullable: true
         weight nullable: true, min: 0.0d
     }
-    static searchable = true
 
 
     //-- Instance variables ---------------------

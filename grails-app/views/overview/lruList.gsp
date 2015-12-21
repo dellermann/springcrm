@@ -1,11 +1,27 @@
-<ol class="simple-ordered-list data-type-list">
-  <g:each var="lruEntry" in="${lruList}">
-  <li>
-    <g:link controller="${lruEntry.controller}" action="show" id="${lruEntry.itemId}"><g:dataTypeIcon controller="${lruEntry.controller}" /> <g:fieldValue bean="${lruEntry}" field="name" /></g:link>
-    (<g:message code="${lruEntry.controller}.label" default="${lruEntry.controller}" />)
-    <span class="item-actions">
-      <g:link controller="${lruEntry.controller}" action="edit" id="${lruEntry.itemId}" params="[returnUrl: createLink(uri: '/', absolute: true)]" class="bubbling-icon"><i class="fa fa-pencil-square-o"></i></g:link>
-    </span>
-  </li>
-  </g:each>
-</ol>
+<div class="panel-body">
+  <ul>
+    <g:each in="${lruList}" var="lruEntry">
+    <li>
+      <g:dataTypeIcon controller="${lruEntry.controller}" />
+      <div class="text">
+        <g:link controller="${lruEntry.controller}" action="show"
+          id="${lruEntry.itemId}">${lruEntry.name}</g:link>
+        (<g:message code="${lruEntry.controller}.label"
+          default="${lruEntry.controller}" />)
+      </div>
+      <div class="buttons">
+        <g:link controller="${lruEntry.controller}" action="edit"
+          id="${lruEntry.itemId}"
+          params="[returnUrl: createLink(uri: '/', absolute: true)]"
+          title="${message(code: 'default.btn.edit')}" role="button"
+          ><i class="fa fa-pencil-square-o"></i
+          ><span class="sr-only"><g:message code="default.btn.edit" /></span
+        ></g:link>
+        <%--
+        <a href="#" class="text-danger" title="Aus Liste entfernen" role="button"><i class="fa fa-close"></i><span class="sr-only">Aus Liste entfernen</span></a>
+        --%>
+      </div>
+    </li>
+    </g:each>
+  </ul>
+</div>

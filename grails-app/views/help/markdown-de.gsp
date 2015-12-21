@@ -1,64 +1,74 @@
-<table>
-  <tbody>
-    <tr>
-      <th>fett/kursiv</th>
-      <td>
-        <pre>**fett** oder __fett__
+<html>
+  <head>
+    <meta name="layout" content="modal" />
+    <title><g:message code="help.markdown.title" /></title>
+  </head>
+
+  <body>
+    <div class="table-responsive">
+      <table class="table table-striped table-condensed markdown-help-text">
+        <tbody>
+          <tr>
+            <th>fett/kursiv</th>
+            <td>
+              <pre>**fett** oder __fett__
 *kursiv* oder _kursiv_</pre>
-      </td>
-    </tr>
-    <tr>
-      <th>Links</th>
-      <td><pre>[Linktext](http://www.example.com)</pre></td>
-    </tr>
-    <tr>
-      <th>Bilder</th>
-      <td><pre>![Bildtext](http://www.example.com/bild.jpg)</pre></td>
-    </tr>
-    <tr>
-      <th>Überschriften</th>
-      <td>
-        <pre># Überschrift 1
+            </td>
+          </tr>
+          <tr>
+            <th>Links</th>
+            <td><pre>[Linktext](http://www.example.com)</pre></td>
+          </tr>
+          <tr>
+            <th>Bilder</th>
+            <td><pre>![Bildtext](http://www.example.com/bild.jpg)</pre></td>
+          </tr>
+          <tr>
+            <th>Überschriften</th>
+            <td>
+              <pre># Überschrift 1
 ## Überschrift 2
 ### Überschrift 3
 #### Überschrift 4
 ##### Überschrift 5
 ###### Überschrift 6</pre>
-      </td>
-    </tr>
-    <tr>
-      <th>Absätze</th>
-      <td>
-        <pre>Das ist ein Absatz.
+            </td>
+          </tr>
+          <tr>
+            <th>Absätze</th>
+            <td>
+              <pre>Das ist ein Absatz.
 
 Das ist ein weiterer Absatz.</pre>
-      </td>
-    </tr>
-    <tr>
-      <th>Listen</th>
-      <td>
-        <pre>* Punkt 1
+            </td>
+          </tr>
+          <tr>
+            <th>Listen</th>
+            <td>
+              <pre>* Punkt 1
 * Punkt 2
 * Punkt 3
 
 1. Punkt 1
 2. Punkt 2
 3. Punkt 3</pre>
-      </td>
-    </tr>
-    <tr>
-      <th>Tabellen</th>
-      <td>
-        <pre>| Kopf 1  | Kopf 2  | Kopf 3  |
+            </td>
+          </tr>
+          <tr>
+            <th>Tabellen</th>
+            <td>
+              <pre>| Kopf 1  | Kopf 2  | Kopf 3  |
 |---------|:-------:|--------:|
 | Text    | Text    | Text    |
 | links   | zentr.  | rechts  |</pre>
-      </td>
-    </tr>
-    <tr>
-      <th>Linie</th>
-      <td><pre>---</pre></td>
-    </tr>
-  </tbody>
-</table>
-
+            </td>
+          </tr>
+          <tr>
+            <th>Linie</th>
+            <td><pre>---</pre></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 
 /**
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class QuoteController {
 
@@ -45,13 +45,10 @@ class QuoteController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        def list, count
+        List<Quote> list
+        int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
             list = Quote.findAllBySubjectLike(searchFilter, params)
@@ -65,10 +62,11 @@ class QuoteController {
     }
 
     def listEmbedded(Long organization, Long person) {
-        def l
-        def count
-        def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+        List<Quote> l
+        int count
+        def linkParams
         if (organization) {
             def organizationInstance = Organization.get(organization)
             l = Quote.findAllByOrganization(organizationInstance, params)
@@ -80,23 +78,28 @@ class QuoteController {
             count = Quote.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
-        [quoteInstanceList: l, quoteInstanceTotal: count, linkParams: linkParams]
+
+        [
+            quoteInstanceList: l, quoteInstanceTotal: count,
+            linkParams: linkParams
+        ]
     }
 
     def create() {
-        def quoteInstance = new Quote()
-        quoteInstance.properties = params
-
+        Quote quoteInstance = new Quote(params)
         quoteInstance.copyAddressesFromOrganization()
 
         [quoteInstance: quoteInstance]
     }
 
     def copy(Long id) {
-        def quoteInstance = Quote.get(id)
+        Quote quoteInstance = Quote.get(id)
         if (!quoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'quote.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -105,14 +108,21 @@ class QuoteController {
     }
 
     def save() {
-        def quoteInstance = new Quote()
-        if (!invoicingTransactionService.saveInvoicingTransaction(quoteInstance, params)) {
+        Quote quoteInstance = new Quote()
+        if (!invoicingTransactionService.save(quoteInstance, params)) {
             render view: 'create', model: [quoteInstance: quoteInstance]
             return
         }
 
         request.quoteInstance = quoteInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [
+                message(code: 'quote.label'),
+                quoteInstance.toString()
+            ]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -121,21 +131,27 @@ class QuoteController {
     }
 
     def show(Long id) {
-        def quoteInstance = Quote.get(id)
+        Quote quoteInstance = Quote.get(id)
         if (!quoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'quote.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
-        [quoteInstance: quoteInstance, printTemplates: fopService.templateNames]
+        [quoteInstance: quoteInstance]
     }
 
     def edit(Long id) {
-        def quoteInstance = Quote.get(id)
+        Quote quoteInstance = Quote.get(id)
         if (!quoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'quote.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -143,29 +159,40 @@ class QuoteController {
     }
 
     def update(Long id) {
-        def quoteInstance = Quote.get(id)
+        Quote quoteInstance = Quote.get(id)
         if (!quoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'quote.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (quoteInstance.version > version) {
-                quoteInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'quote.label', default: 'Quote')] as Object[], 'Another user has updated this Quote while you were editing')
+                quoteInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'quote.label')] as Object[],
+                    'Another user has updated this Quote while you were editing'
+                )
                 render view: 'edit', model: [quoteInstance: quoteInstance]
                 return
             }
         }
 
-        if (!invoicingTransactionService.saveInvoicingTransaction(quoteInstance, params)) {
+        if (!invoicingTransactionService.save(quoteInstance, params)) {
             render view: 'edit', model: [quoteInstance: quoteInstance]
             return
         }
 
         request.quoteInstance = quoteInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'quote.label', default: 'Quote'), quoteInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'quote.label'), quoteInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -174,27 +201,36 @@ class QuoteController {
     }
 
     def delete(Long id) {
-        def quoteInstance = Quote.get(id)
+        Quote quoteInstance = Quote.get(id)
         if (!quoteInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'quote.label', default: 'Quote'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'quote.label'), id]
+            )
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             quoteInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'quote.label')]
+            )
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'quote.label', default: 'Quote')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'quote.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -204,10 +240,12 @@ class QuoteController {
         try {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
-        def organization = params.organization ? Organization.get(params.organization) : null
+        Organization organization = params.organization \
+            ? Organization.get(params.organization) \
+            : null
 
         def c = Quote.createCriteria()
-        def list = c.list {
+        List<Quote> list = c.list {
             or {
                 eq('number', number)
                 ilike('subject', "%${params.name}%")
@@ -220,26 +258,28 @@ class QuoteController {
             order('number', 'desc')
         }
 
-        render(contentType: "text/json") {
+        render(contentType: 'text/json') {
             array {
-                for (q in list) {
-                    quote id: q.id, name: q.fullName
+                for (Quote q in list) {
+                    quote id: q.id, number: q.fullNumber, name: q.subject,
+                        fullName: q.fullName
                 }
             }
         }
     }
 
     def print(Long id, String template) {
-        def quoteInstance = Quote.get(id)
+        Quote quoteInstance = Quote.get(id)
         if (!quoteInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
             return
         }
 
         String xml = invoicingTransactionService.generateXML(
             quoteInstance, session.user, !!params.duplicate
         )
-        GString fileName = "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
+        GString fileName =
+            "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
         if (params.duplicate) {
             fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
         }

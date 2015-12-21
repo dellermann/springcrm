@@ -1,7 +1,7 @@
 /*
  * Organization.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * customer or a vendor.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class Organization {
 
@@ -36,11 +36,11 @@ class Organization {
         number unique: 'recType', widget: 'autonumber'
         recType range: 1..3
         name blank: false, unique: true
-        phone nullable: true, maxSize: 40
-        fax nullable: true, maxSize: 40
-        phoneOther nullable: true, maxSize: 40
-        email1 nullable: true, email: true
-        email2 nullable: true, email: true
+        phone nullable: true, maxSize: 40, widget: 'tel'
+        fax nullable: true, maxSize: 40, widget: 'tel'
+        phoneOther nullable: true, maxSize: 40, widget: 'tel'
+        email1 nullable: true, email: true, widget: 'email'
+        email2 nullable: true, email: true, widget: 'email'
         website nullable: true, widget: 'url'
         legalForm nullable: true
         type nullable: true
@@ -67,7 +67,6 @@ class Organization {
         notes type: 'text'
         recType index: 'rec_type'
     }
-    static searchable = true
     static transients = ['fullNumber', 'shortName', 'customer', 'vendor']
 
 
@@ -120,6 +119,7 @@ class Organization {
         numEmployees = org.numEmployees
         rating = org.rating
         notes = org.notes
+        docPlaceholderValue = org.docPlaceholderValue
     }
 
 

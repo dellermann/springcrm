@@ -19,8 +19,6 @@ class ServiceControllerTests extends ControllerUnitTestCase {
 		def s1 = new Service(number:10000, name:'Service 1')
 		def s2 = new Service(number:10001, name:'Service 2')
 		mockDomain(Service, [s1, s2])
-		Service.metaClass.index = { -> }
-		Service.metaClass.reindex = { -> }
 
 //		def seqNumber = new SeqNumber(controllerName:'service', nextNumber:10002, prefix:'S', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])

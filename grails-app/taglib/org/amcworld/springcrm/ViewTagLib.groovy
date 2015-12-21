@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,11 @@
 package org.amcworld.springcrm
 
 import grails.util.GrailsNameUtils
+import java.text.DateFormatSymbols
 import java.util.regex.Pattern
+import org.codehaus.groovy.grails.web.mapping.UrlMapping
 import org.springframework.validation.FieldError
+import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
 /**
@@ -30,7 +33,7 @@ import org.springframework.validation.FieldError
  * views.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class ViewTagLib {
 
@@ -41,7 +44,7 @@ class ViewTagLib {
         call: 'phone',
         creditMemo: 'money',
         document: 'file-o',
-        dunning: 'suitcase',
+        dunning: 'fire',
         helpdesk: 'question-circle',
         invoice: 'euro',
         note: 'pencil',
@@ -50,8 +53,8 @@ class ViewTagLib {
         product: 'cog',
         project: 'lightbulb-o',
         purchaseInvoice: 'shopping-cart',
-        quote: 'dollar',
-        salesOrder: 'list',
+        quote: 'briefcase',
+        salesOrder: 'bars',
         service: 'laptop',
         ticket: 'ticket',
         user: 'user'
@@ -74,28 +77,34 @@ class ViewTagLib {
      * @attr suffix the suffix to display after the number field
      */
     def autoNumber = { attrs, body ->
-        out << '<span class="auto-number">'
+        boolean checked = true
+        if (params._autoNumber != null) checked = params.autoNumber
+
+        out << '<div class="auto-number"><div class="input-group">'
         if (attrs.prefix) {
-            out << '<span class="prefix">'
+            out << '<span class="input-group-addon">'
             out << attrs.prefix.encodeAsHTML()
             out << '-</span>'
         }
-        out << '<span class="input">'
-        out << textField(name: 'number', value: attrs.value, size: 10)
-        out << '</span>'
+        out << '<input type="number" name="number" id="number" class="form-control" value="'
+        out << attrs.value
+        out << '" size="10"'
+        if (checked) out << ' disabled="disabled"'
+        out << ' />'
         if (attrs.suffix) {
-            out << '<span class="suffix">-'
+            out << '<span class="input-group-addon">-'
             out << attrs.suffix.encodeAsHTML()
             out << '</span>'
         }
-        boolean checked = true
-        if (params._autoNumber != null) checked = params.autoNumber
-        out << '<span class="checkbox">'
-        out << checkBox(name: 'autoNumber', checked: checked)
-        out << '</span><label for="autoNumber">'
+        out << '</div>'
+        out << '<div class="checkbox">'
+        out << '<label class="checkbox-inline">'
+        out << checkBox(
+            name: 'autoNumber', checked: checked, 'aria-controls': 'number'
+        )
         out << message(code: 'default.number.auto.label')
         out << '</label>'
-        out << '</span>'
+        out << '</div></div>'
     }
 
     /**
@@ -125,11 +134,11 @@ class ViewTagLib {
      * specified, a link is generated.  You may either specify the text of the
      * button in the body or use the message attribute.
      *
-     * @attr color      the color of the button, e. g. white, green, blue
-     * @attr size       the size of the button, e. g. small, medium
+     * @attr color      the color of the button, e. g. success, primary, danger
+     * @attr size       the size of the button, e. g. lg, sm or xs
      * @attr icon       the icon which should be used, e. g. floppy-o, trash-o
      * @attr class      further CSS classes to apply
-     * @attr message    a message code which is used to render the buttont text; if specified, the body will not be evaluated
+     * @attr message    a message code which is used to render the button text; if specified, the body will not be evaluated
      * @attr action     the name of the action to use in the link, if not specified the default action will be linked
      * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
      * @attr id         the id to use in the link
@@ -142,14 +151,14 @@ class ViewTagLib {
      * @attr back       if true and a return URL is set in the parameters a back link is generated
      */
     def button = { attrs, body ->
-        StringBuilder buf = new StringBuilder('button')
+        StringBuilder buf = new StringBuilder('btn')
         String s = attrs.remove('color')
         if (s) {
-            buf << ' ' << s
+            buf << ' btn-' << s
         }
         s = attrs.remove('size')
         if (s) {
-            buf << ' ' << s
+            buf << ' btn-' << s
         }
         s = attrs.remove('class')
         if (s) {
@@ -160,7 +169,7 @@ class ViewTagLib {
         buf = new StringBuilder()
         s = attrs.remove('icon')
         if (s) {
-            buf << '<i class="fa fa-' << s << '"></i>'
+            buf << '<i class="fa fa-' << s << '"></i> '
         }
         s = attrs.remove('message')
         if (s) {
@@ -178,10 +187,10 @@ class ViewTagLib {
         if (attrs.action || attrs.controller || attrs.id || attrs.mapping ||
             attrs.params || attrs.uri || attrs.url)
         {
-            def data = attrs + [class: cssClass]
+            def data = attrs + [class: cssClass, role: 'button']
             out << link(data) { content }
         } else {
-            out << '<span class="' << cssClass << '"'
+            out << '<button type="button" class="' << cssClass << '"'
             def id = attrs.remove('elementId')
             if (id) {
                 out << ' id="' << id << '"'
@@ -190,7 +199,7 @@ class ViewTagLib {
             for (key in remainingKeys) {
                 out << ' ' << key << '="' << attrs[key]?.encodeAsHTML() << '"'
             }
-            out << '>' << content << '</span>'
+            out << '>' << content << '</button>'
         }
     }
 
@@ -256,9 +265,9 @@ class ViewTagLib {
     def dataTypeIcon = { attrs, body ->
         String controller = attrs.controller
         String icon = CONTROLLER_ICON_MAPPING[controller]
-        out << "<i class='fa fa-fw fa-" << icon << "'"
-        out << " title='" << message(code: "${controller}.label") << "'"
-        out << "></i> "
+        out << '<i class="fa fa-fw fa-' << icon << ' data-type-icon"'
+        out << ' title="' << message(code: "${controller}.label") << '"'
+        out << '></i> '
     }
 
     /**
@@ -312,20 +321,28 @@ class ViewTagLib {
          * date/time strings we use type "text" here. Maybe in future this will
          * be corrected in the HTML 5 standard.
          */
-        out << """<input type="hidden" name="${name}"
-  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />"""
+        out << """\
+<input type="hidden" name="${name}"
+  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />
+"""
         if (useTime) {
-            out << """<span class="date-time-input">"""
+            out << '<div class="input-group date-time-control">'
         }
-        out << """<input type="text" name="${name}_date" id="${id}-date"
+        out << """\
+<input type="text" id="${id}-date" name="${name}_date"
   value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
-  size="10" class="date-input date-input-date" />"""
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+"""
 
         if (useTime) {
-            out << """<input type="text" name="${name}_time" id="${id}-time"
+            out << """\
+<input type="text" id="${id}-time" name="${name}_time"
   value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
-  size="5" class="date-input date-input-time" />"""
-            out << "</span>"
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+"""
         }
     }
 
@@ -406,6 +423,7 @@ class ViewTagLib {
      * @attr property REQUIRED  the name of the property that values are used to obtain the initial letters
      * @attr controller         the controller which is called when the user clicks a letter; if not specified the current controller name is used
      * @attr action             the action which is called when the user clicks a letter; if not specified the current action name is used
+     * @attr params             a map containing URL query parameters
      * @attr where              an optional HSQL WHERE clause which is used in the SQL query for the initial letters
      * @attr numLetters         the number of letters which are combined to one link; defaults to 1
      * @attr separator          the separator used to represent ranges of letters like A-C; if not specified the letters are not represented as range
@@ -426,26 +444,32 @@ class ViewTagLib {
         List<String> letters = cls.'executeQuery'(sql)
 
         String availableLetters = message(
-            code: 'default.letters', default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            code: 'default.letterBar.letters',
+            default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         )
         int n = availableLetters.size()
-        def items = []
+        List<String> items = []
         for (int i = 0; i < n; i += numLetters) {
             boolean inList = false
             for (int j = 0; j < numLetters && i + j < n; j++) {
                 String letter = availableLetters[i + j]
                 inList |= letter in letters
             }
-            StringBuilder buf = new StringBuilder('<li')
-            buf << (inList ? ' class="available"' : '') << '>'
+            StringBuilder buf = new StringBuilder('<a href="')
             if (inList) {
-                buf << '<a href="'
                 buf << createLink(
                     controller: controller, action: action,
-                    params: [letter: availableLetters[i]]
+                    params:
+                        (attrs.params ?: [: ]) + [letter: availableLetters[i]]
                 )
-                buf << '">'
+            } else {
+                buf << '#'
             }
+            buf << '" class="btn btn-default'
+            if (!inList) buf << ' disabled'
+            buf << '" role="button"'
+            if (!inList) buf << ' aria-disabled="true"'
+            buf << '>'
             if (separator && numLetters > 2) {
                 buf << availableLetters[i] << separator
                 buf << availableLetters[Math.min(n, i + numLetters) - 1]
@@ -454,13 +478,12 @@ class ViewTagLib {
                     buf << availableLetters[i + j]
                 }
             }
-            if (inList) {
-                buf << '</a>'
-            }
-            buf << '</li>'
+            buf << '</a>'
             items << buf.toString()
         }
-        out << '<ul class="letter-bar">' << items.join('') << '</ul>'
+        out << '<div class="btn-group btn-group-justified letter-bar" role="group" aria-label="'
+        out << message(code: 'default.letterBar.label')
+        out << '">' << items.join('') << '</div>'
     }
 
     /**
@@ -475,7 +498,7 @@ class ViewTagLib {
         int step = attrs.step as int
         int current = (attrs.current ?: 0i) as int
         if (step == current) {
-            buf << ' class="current"'
+            buf << ' class="active"'
         }
         buf << '>' << body() << '</li>'
         out << buf.toString()
@@ -483,7 +506,7 @@ class ViewTagLib {
 
     /**
      * Creates a menu button with optional icon either as link or a
-     * <code>&lt;span></code> element.  If any of the link attributes are
+     * <code>&lt;button></code> element.  If any of the link attributes are
      * specified, a link is generated.  The menu items <code>&lt;li></code>
      * must be specified in the body of the tag.
      *
@@ -558,6 +581,52 @@ class ViewTagLib {
     }
 
     /**
+     * Renders the name of the given month and the given year.
+     *
+     * @attr month  the one-based index of the month
+     * @attr year   the year
+     * @since 2.0
+     */
+    def month = { attrs, body ->
+        DateFormatSymbols dfs = DateFormatSymbols.getInstance(
+            userService.currentLocale
+        )
+
+        out << dfs.months[attrs.month - 1] << ' ' << attrs.year
+    }
+
+    /**
+     * Renders a list of links containing the short names of the months of a
+     * year.
+     *
+     * @attr action         the action the link should contain
+     * @attr activeMonth    the one-based index of the month to mark as active
+     * @since 2.0
+     */
+    def monthBar = { attrs, body ->
+        String action = attrs.action
+        int activeMonth = attrs.activeMonth
+
+        DateFormatSymbols dfs = DateFormatSymbols.getInstance(
+            userService.currentLocale
+        )
+        String [] monthNames = dfs.shortMonths
+
+        for (int i = 1; i <= 12; i++) {
+            StringBuilder buf = new StringBuilder('btn btn-default')
+            if (i == activeMonth) {
+                buf << ' active'
+            }
+            buf << ' btn-month'
+            String cssClass = buf.toString()
+
+            out << link(action: action, class: cssClass, 'data-month': i) {
+                monthNames[i - 1]
+            }
+        }
+    }
+
+    /**
      * Converts LF and CR to HTML <br /> tags.
      *
      * @attr value  the value to convert; if not specified the body of the tag is used
@@ -565,6 +634,186 @@ class ViewTagLib {
     def nl2br = { attrs, body ->
         String s = (attrs.value ?: body()) ?: ''
         out << s.replaceAll(/\r\n/, '<br />').replaceAll(/[\r\n]/, '<br />')
+    }
+
+    /**
+     * Creates next/previous links to support pagination for the current controller.<br/>
+     *
+     * &lt;g:paginate total="${Account.count()}" /&gt;<br/>
+     *
+     * @emptyTag
+     *
+     * @attr total REQUIRED The total number of results to paginate
+     * @attr action the name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller the name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr id The id to use in the link
+     * @attr params A map containing request parameters
+     * @attr prev The text to display for the previous link (defaults to "Previous" as defined by default.paginate.prev property in I18n messages.properties)
+     * @attr next The text to display for the next link (defaults to "Next" as defined by default.paginate.next property in I18n messages.properties)
+     * @attr omitPrev Whether to not show the previous link (if set to true, the previous link will not be shown)
+     * @attr omitNext Whether to not show the next link (if set to true, the next link will not be shown)
+     * @attr omitFirst Whether to not show the first link (if set to true, the first link will not be shown)
+     * @attr omitLast Whether to not show the last link (if set to true, the last link will not be shown)
+     * @attr max The number of records displayed per page (defaults to 10). Used ONLY if params.max is empty
+     * @attr maxsteps The number of steps displayed for pagination (defaults to 10). Used ONLY if params.maxsteps is empty
+     * @attr offset Used only if params.offset is empty
+     * @attr mapping The named URL mapping to use to rewrite the link
+     * @attr fragment The link fragment (often called anchor tag) to use
+     * @attr class Any CSS classes that should be added to the pagination container
+     */
+    Closure paginate = { attrs ->
+        def writer = out
+        if (attrs.total == null) {
+            throwTagError("Tag [paginate] is missing required attribute [total]")
+        }
+
+        def messageSource = grailsAttributes.messageSource
+        def locale = RCU.getLocale(request)
+
+        def total = attrs.int('total') ?: 0
+        def offset = params.int('offset') ?: 0
+        def max = params.int('max')
+        def maxsteps = (attrs.int('maxsteps') ?: 10)
+        def cssClass = attrs.remove('class')
+
+        if (!offset) offset = (attrs.int('offset') ?: 0)
+        if (!max) max = (attrs.int('max') ?: 10)
+
+        def linkParams = [:]
+        if (attrs.params) linkParams.putAll(attrs.params)
+        linkParams.offset = offset - max
+        linkParams.max = max
+        if (params.sort) linkParams.sort = params.sort
+        if (params.order) linkParams.order = params.order
+
+        def linkTagAttrs = [:]
+        def action
+        if (attrs.containsKey('mapping')) {
+            linkTagAttrs.mapping = attrs.mapping
+            action = attrs.action
+        } else {
+            action = attrs.action ?: params.action
+        }
+        if (action) {
+            linkTagAttrs.action = action
+        }
+        if (attrs.controller) {
+            linkTagAttrs.controller = attrs.controller
+        }
+        if (attrs.containsKey(UrlMapping.PLUGIN)) {
+            linkTagAttrs.put(UrlMapping.PLUGIN, attrs.get(UrlMapping.PLUGIN))
+        }
+        if (attrs.containsKey(UrlMapping.NAMESPACE)) {
+            linkTagAttrs.put(UrlMapping.NAMESPACE, attrs.get(UrlMapping.NAMESPACE))
+        }
+        if (attrs.id != null) {
+            linkTagAttrs.id = attrs.id
+        }
+        if (attrs.fragment != null) {
+            linkTagAttrs.fragment = attrs.fragment
+        }
+        linkTagAttrs.params = linkParams
+
+        // determine paging variables
+        def steps = maxsteps > 0
+        int currentstep = (offset / max) + 1
+        int firststep = 1
+        int laststep = Math.round(Math.ceil(total / max))
+
+        if (laststep > 1) {
+            writer << '<ul class="pagination'
+            if (cssClass) writer << ' ' << cssClass
+            writer << '" role="group">'
+        }
+
+        // display previous link when not on firststep unless omitPrev is true
+        if (currentstep > firststep && !attrs.boolean('omitPrev')) {
+            linkParams.offset = offset - max
+            writer << '<li role="listitem" aria-label="'
+            writer << messageSource.getMessage('default.paginate.prev', null, 'Previous', locale)
+            writer << '">'
+            writer << link(linkTagAttrs.clone()) {
+                StringBuilder buf = new StringBuilder('<span aria-hidden="true">')
+                buf << (attrs.prev ?: messageSource.getMessage('default.paginate.prev.short', null, '«', locale))
+                buf << '</span>'
+            } << '</li>'
+        }
+
+        // display steps when steps are enabled and laststep is not firststep
+        if (steps && laststep > firststep) {
+
+            // determine begin and endstep paging variables
+            int beginstep = currentstep - Math.round(maxsteps / 2) + (maxsteps % 2)
+            int endstep = currentstep + Math.round(maxsteps / 2) - 1
+
+            if (beginstep < firststep) {
+                beginstep = firststep
+                endstep = maxsteps
+            }
+            if (endstep > laststep) {
+                beginstep = laststep - maxsteps + 1
+                if (beginstep < firststep) {
+                    beginstep = firststep
+                }
+                endstep = laststep
+            }
+
+            // display firststep link when beginstep is not firststep
+            if (beginstep > firststep && !attrs.boolean('omitFirst')) {
+                linkParams.offset = 0
+                writer << '<li role="listitem">' <<
+                    link(linkTagAttrs.clone()) {firststep.toString()} <<
+                    '</li>'
+            }
+            //show a gap if beginstep isn't immediately after firststep, and if were not omitting first or rev
+            if (beginstep > firststep+1 && (!attrs.boolean('omitFirst') || !attrs.boolean('omitPrev')) ) {
+                writer << '<li class="disabled" role="listitem" aria-disabled="true"><a href="#">…</a></li>'
+            }
+
+            // display paginate steps
+            (beginstep..endstep).each { i ->
+                if (currentstep == i) {
+                    writer << """\
+<li class="active" role="listitem">
+  <span>${i} <span class="sr-only">${messageSource.getMessage('default.paginate.current', null, 'current', locale)}</span></span>
+</li>
+"""
+                }
+                else {
+                    linkParams.offset = (i - 1) * max
+                    writer << '<li role="listitem">' <<
+                        link(linkTagAttrs.clone()) {i.toString()} <<
+                        '</li>'
+                }
+            }
+
+            //show a gap if beginstep isn't immediately before firststep, and if were not omitting first or rev
+            if (endstep+1 < laststep && (!attrs.boolean('omitLast') || !attrs.boolean('omitNext'))) {
+                writer << '<li class="disabled" role="listitem" aria-disabled="true"><a href="#">…</a></li>'
+            }
+            // display laststep link when endstep is not laststep
+            if (endstep < laststep && !attrs.boolean('omitLast')) {
+                linkParams.offset = (laststep - 1) * max
+                writer << '<li role="listitem">' <<
+                    link(linkTagAttrs.clone()) { laststep.toString() } <<
+                    '</li>'
+            }
+        }
+
+        // display next link when not on laststep unless omitNext is true
+        if (currentstep < laststep && !attrs.boolean('omitNext')) {
+            linkTagAttrs.class = 'nextLink'
+            linkParams.offset = offset + max
+            writer << '<li role="listitem" aria-label="'
+            writer << messageSource.getMessage('default.paginate.next', null, 'Next', locale)
+            writer << '">' << link(linkTagAttrs.clone()) {
+                StringBuilder buf = new StringBuilder('<span aria-hidden="true">')
+                buf << (attrs.prev ?: messageSource.getMessage('default.paginate.next.short', null, '»', locale))
+                buf << '</span>'
+            } << '</li>'
+        }
+
+        if (laststep > 1) writer << '</ul>'
     }
 
     /**
@@ -621,131 +870,34 @@ class ViewTagLib {
     }
 
     /**
-     * Renders the given search results.
+     * Renders a normalised title for the current page considering controller
+     * and action name.
      *
-     * @attr searchResult REQUIRED  the search results that should be rendered
-     * @attr query                  the search query string
-     * @attr parseException         an exception that occurred while parsing the query string
-     * @since                       1.4
+     * @since 2.0
      */
-    def searchResults = { attrs, body ->
-        String query = attrs.query?.toString()?.trim()
-        def searchResult = attrs.searchResult
-        if (!searchResult) return
-
-        List results = searchResult.results
-        def parseException = attrs.parseException
-        String sort = attrs.sort ?: 'alias'
-
-        StringBuilder buf = new StringBuilder()
-        if (query) {
-            if (results) {
-                buf << '<p class="search-results-number">'
-                buf << message(
-                    code: 'searchable.results.number',
-                    args: [
-                        query, searchResult.total, searchResult.offset + 1,
-                        results.size() + searchResult.offset
-                    ]
-                )
-                buf << '</p>'
-            } else if (!parseException) {
-                buf << '<p class="search-results-number search-results-not-found">'
-                buf << message(
-                    code: 'searchable.results.notFound', args: [query]
-                )
-                buf << '</p>'
-            }
+    def title = { attrs ->
+        if (layoutTitle()) {
+            out << layoutTitle()
+            return
         }
 
-        if (parseException) {
-            buf << '<p class="search-results-error">'
-            buf << message(code: 'searchable.results.error', args: [query])
-            buf << '</p>'
-        }
+        String entityName = message(code: "${controllerName}.label")
 
-        if (results) {
-            buf << '<div class="search-results-results">'
-            if (sort == 'alias') {
-                Class<?> currentClass = results.first().class
-                String className = GrailsNameUtils.getPropertyName(currentClass)
-                buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
-                buf << '<ul>'
-                for (def result in results) {
-                    Class<?> clazz = result.class
-                    className = GrailsNameUtils.getPropertyName(clazz)
-                    if (clazz != currentClass) {
-                        currentClass = clazz
-                        buf << '</ul>'
-                        buf << '<h2>' << message(code: "${className}.plural") << '</h2>'
-                        buf << '<ul>'
-                    }
-                    buf << '<li>'
-                    buf << link(
-                        controller: className, action: 'show', id: result.id
-                    ) {
-                        dataTypeIcon(controller: className) + ' ' + result
-                    }
-                    buf << '<span class="item-actions">'
-                    buf << link(
-                        controller: className, action: 'edit', id: result.id,
-                        params: [returnUrl: url()], 'class': 'bubbling-icon',
-                        title: message(code: 'default.btn.edit')
-                    ) { '<i class="fa fa-pencil-square-o"></i>' }
-                    buf << '</span>'
-                    buf << '</li>'
-                }
-                buf << '</ul>'
-            } else {
-                int i = 0
-                for (def result in results) {
-                    String className = GrailsNameUtils.getPropertyName(result.class)
-                    buf << '<li>'
-                    int score = Math.round(searchResult.scores[i] * 100)
-                    int halfs = Math.ceil(score / 10)
-                    int fulls = Math.floor(halfs / 2)
-                    int empties = Math.floor((10 - halfs) / 2)
-                    buf << '<span class="search-results-score" title="'
-                    buf << score << ' %">'
-                    for (int j = 0; j < fulls; j++) {
-                        buf << '<i class="fa fa-star"></i>'
-                    }
-                    if (fulls * 2 != halfs) {
-                        buf << '<i class="fa fa-star-half-o"></i>'
-                    }
-                    for (int j = 0; j < empties; j++) {
-                        buf << '<i class="fa fa-star-o"></i>'
-                    }
-                    buf << '</span>'
-                    buf << link(
-                        controller: className, action: 'show', id: result.id
-                    ) {
-                        dataTypeIcon(controller: className) + ' ' + result
-                    }
-                    buf << '<span class="search-results-type">('
-                    buf << message(code: "${className}.label")
-                    buf << ')</span>'
-                    buf << '<span class="item-actions">'
-                    buf << link(
-                        controller: className, action: 'edit', id: result.id,
-                        params: [returnUrl: url()], 'class': 'bubbling-icon',
-                        title: message(code: 'default.btn.edit')
-                    ) { '<i class="fa fa-pencil-square-o"></i>' }
-                    buf << '</span>'
-                    buf << '</li>'
-                    i++
-                }
-            }
-            buf << '</div>'
-            buf << '<div class="paginator">'
-            buf << paginate(
-                total: searchResult.total, action: 'index',
-                params: [q: query]
-            )
-            buf << '</div>'
+        switch (actionName) {
+        case 'edit':
+        case 'show':
+            def instance = pageScope."${controllerName}Instance"
+            out << message(
+                code: "default.${actionName}.label",
+                args: [instance?.toString() ?: entityName]
+            ) << ' - '
+            break
+        case 'create':
+            out << message(code: 'default.create.label', args: [entityName])
+            out << ' - '
+            break
         }
-
-        out << buf
+        out << message(code: "${controllerName}.plural", default: entityName)
     }
 
     /**
@@ -757,6 +909,10 @@ class ViewTagLib {
 
 
     //-- Non-public methods ---------------------
+
+    private callLink(Map attrs, Object body) {
+        TagOutput.captureTagOutput(tagLibraryLookup, 'g', 'link', attrs, body, webRequest)
+    }
 
     /**
      * Gets the currently active currency.

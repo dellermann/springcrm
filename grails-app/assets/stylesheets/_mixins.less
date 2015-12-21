@@ -1,118 +1,66 @@
-/*
- * mixins.less
- *
- * Copyright (c) 2011-2013, Daniel Ellermann
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+//
+// _mixins.less
+//
+// Copyright (c) 2011-2015, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 
-.background-alpha(@color-with-alpha) {
-  background-color: rgb(
-    red(@color-with-alpha), green(@color-with-alpha), blue(@color-with-alpha)
-  );
-  background-color: @color-with-alpha;
+// Generates rules to size the labels and control containers for column groups
+// depending on the screen size.
+//
+// @param class the name of the screen size class, e. g. sm, md, or lg
+// @param cols  the number of columns which should be used for the label
+//
+.make-control-sizes(@class, @cols) {
+  @var: "screen-@{class}-min";
+  @d: (2 * @grid-columns);
+
+  @media (min-width: @@var) {
+    .column-group > .column:only-child {
+      .control-label {
+        width: percentage(@cols / @d);
+      }
+      .control-container {
+        width: percentage((@d - @cols) / @d);
+      }
+    }
+    .control-label {
+      width: percentage(@cols / @grid-columns);
+    }
+    .control-container {
+      width: percentage((@grid-columns - @cols) / @grid-columns);
+    }
+  }
 }
 
-.border-radius(@radius) {
-  -khtml-border-radius: @radius;
-  -moz-border-radius: @radius;
-  -webkit-border-radius: @radius;
-  border-radius: @radius;
-}
-.border-radius-bottom(@radius) {
-  -khtml-border-radius-bottomleft: @radius;
-  -khtml-border-radius-bottomright: @radius;
-  -moz-border-radius-bottomleft: @radius;
-  -moz-border-radius-bottomright: @radius;
-  -webkit-border-radius-bottomleft: @radius;
-  -webkit-border-radius-bottomright: @radius;
-  border-bottom-left-radius: @radius;
-  border-bottom-right-radius: @radius;
-}
-.border-radius-left(@radius: 0) {
-  -khtml-border-radius-bottomleft: @radius;
-  -khtml-border-radius-topleft: @radius;
-  -moz-border-radius-bottomleft: @radius;
-  -moz-border-radius-topleft: @radius;
-  -webkit-border-radius-bottomleft: @radius;
-  -webkit-border-radius-topleft: @radius;
-  border-bottom-left-radius: @radius;
-  border-top-left-radius: @radius;
-}
-.border-radius-right(@radius: 0) {
-  -khtml-border-radius-bottomright: @radius;
-  -khtml-border-radius-topright: @radius;
-  -moz-border-radius-bottomright: @radius;
-  -moz-border-radius-topright: @radius;
-  -webkit-border-radius-bottomright: @radius;
-  -webkit-border-radius-topright: @radius;
-  border-bottom-right-radius: @radius;
-  border-top-right-radius: @radius;
-}
-.border-radius-top(@radius: 0) {
-  -khtml-border-radius-topleft: @radius;
-  -khtml-border-radius-topright: @radius;
-  -moz-border-radius-topleft: @radius;
-  -moz-border-radius-topright: @radius;
-  -webkit-border-radius-topleft: @radius;
-  -webkit-border-radius-topright: @radius;
-  border-top-left-radius: @radius;
-  border-top-right-radius: @radius;
+// Generates a rule that specifies the width of the fixed toolbar for the given
+// screen size class.
+//
+// @param class the given screen size class, e. g. "sm", "md" etc.
+//
+.make-fixed-title-toolbar(@class) {
+  @container-var: "container-@{class}";
+  @size-var: "screen-@{class}-min";
+
+  @media (min-width: @@size-var) {
+    .title-toolbar.fixed {
+      margin-left: (-@@container-var / 2);
+      width: @@container-var;
+    }
+  }
 }
 
-.box-shadow(...) {
-  -khtml-box-shadow: @arguments;
-  -moz-box-shadow: @arguments;
-  -webkit-box-shadow: @arguments;
-  box-shadow: @arguments;
-}
-
-.box-sizing(@type: border-box) {
-  -moz-box-sizing: @type;
-  -webkit-box-sizing: @type;
-  box-sizing: @type;
-}
-
-.linear-gradient(@default; @from; @to; @fromX: left; @fromY: top; @toX: left; @toY: bottom) {
-  @fromSideOrCorner: `("@{fromX}" == "@{toX}" ? "@{fromY}" : ("@{fromY}" == "@{toY}" ? "@{fromX}" : "@{fromX} @{fromY}"))`;
-  background: @default;
-  background: -khtml-gradient(
-      linear, @fromX @fromY, @toX @toY, from(@from), to(@to)
-    );
-  background: -ms-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
-  background: -moz-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
-  background: -o-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
-  background: -webkit-gradient(
-      linear, @fromX @fromY, @toX @toY, from(@from), to(@to)
-    );
-  background: -webkit-linear-gradient(~"@{fromSideOrCorner}", @from, @to);
-  background: linear-gradient(~"@{fromSideOrCorner}", @from, @to);
-}
-
-.transform(...) {
-  -ms-transform: @arguments;
-  -moz-transform: @arguments;
-  -o-tranform: @arguments;
-  -webkit-transform: @arguments;
-  transform: @arguments;
-}
-
-.transition(...) {
-  -moz-transition: @arguments;
-  -webkit-transition: @arguments;
-  transition: @arguments;
-}
-
-/* vim:set ts=2 sw=2 sts=2: */
+// vim:set ts=2 sw=2 sts=2:

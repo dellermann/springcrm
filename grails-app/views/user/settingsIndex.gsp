@@ -1,32 +1,48 @@
 <html>
-<head>
-  <meta name="layout" content="main" />
-  <title><g:message code="user.settings.title" default="User settings" /></title>
-  <meta name="stylesheet" content="config" />
-</head>
+  <head>
+    <meta name="layout" content="main" />
+    <title><g:message code="user.settings.title" /></title>
+    <meta name="stylesheet" content="config" />
+    <meta name="caption" content="${message(code: 'user.settings.title')}" />
+  </head>
 
-<body>
-  <header>
-    <h1><g:message code="user.settings.title" default="User settings" /></h1>
-  </header>
-  <div id="content">
-    <g:if test="${flash.message}">
-    <div class="flash-message message" role="status">${raw(flash.message)}</div>
-    </g:if>
-    <div class="multicol-content configuration-overview">
-      <div class="col col-l">
-        <dl id="configuration-language">
-          <dt><g:link action="settingsLanguage"><g:message code="user.settings.language.title" default="Language" /></g:link></dt>
-          <dd><g:message code="user.settings.language.description" /></dd>
-        </dl>
+  <body>
+    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/errorMessage" />
+
+    <div class="row configuration-overview">
+      <div class="col-xs-12 col-sm-6">
+        <ul>
+          <li>
+            <g:link action="settingsLanguage" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-language"></i>
+            </g:link>
+            <g:link action="settingsLanguage" class="configuration-title">
+              <g:message code="user.settings.language.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="user.settings.language.description" />
+            </p>
+          </li>
+        </ul>
       </div>
-      <div class="col col-r">
-        <dl id="configuration-google-auth">
-          <dt><g:link action="settingsGoogleAuth"><g:message code="user.settings.googleAuth.title" default="Authorize at Google" /></g:link></dt>
-          <dd><g:message code="user.settings.googleAuth.description" /></dd>
-        </dl>
+      <div class="col-xs-12 col-sm-6">
+        <ul>
+          <li>
+            <g:link action="settingsGoogleAuth" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-google"></i>
+            </g:link>
+            <g:link action="settingsGoogleAuth" class="configuration-title">
+              <g:message code="user.settings.googleAuth.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="user.settings.googleAuth.description" />
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

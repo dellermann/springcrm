@@ -1,7 +1,7 @@
 /*
  * OrganizationControllerTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@ class OrganizationControllerTests {
 //		def org1 = new Organization(number:10000, recType:1, name:'Organization 1')
 //		def org2 = new Organization(number:10001, recType:1, name:'Organization 2')
 //		mockDomain(Organization, [org1, org2])
-//		Organization.metaClass.index = { -> }
-//		Organization.metaClass.reindex = { -> }
 //
 //		def seqNumber = new SeqNumber(controllerName:'organization', nextNumber:10002, prefix:'O', suffix:'')
 //		mockDomain(SeqNumber, [seqNumber])

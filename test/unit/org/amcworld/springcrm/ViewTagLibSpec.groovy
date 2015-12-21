@@ -1,7 +1,7 @@
 /*
  * ViewTagLibSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,37 +38,37 @@ class ViewTagLibSpec extends Specification {
         String s = applyTemplate('<g:autoNumber />')
 
         then: 'I get an empty autonumber widget'
-        '<span class="auto-number"><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a prefix'
         s = applyTemplate('<g:autoNumber prefix="R" />')
 
         then: 'I get an empty autonumber widget with prefix'
-        '<span class="auto-number"><span class="prefix">R-</span><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a sensitive prefix'
         s = applyTemplate('<g:autoNumber prefix="${prefix}" />', [prefix: 'R&'])
 
         then: 'I get an empty autonumber widget with prefix'
-        '<span class="auto-number"><span class="prefix">R&amp;-</span><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R&amp;-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a suffix'
         s = applyTemplate('<g:autoNumber suffix="M" />')
 
         then: 'I get an empty autonumber widget with suffix'
-        '<span class="auto-number"><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="suffix">-M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a sensitive suffix'
         s = applyTemplate('<g:autoNumber suffix="${suffix}" />', [suffix: '&M'])
 
         then: 'I get an empty autonumber widget with suffix'
-        '<span class="auto-number"><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="suffix">-&amp;M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-&amp;M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a prefix and a suffix'
         s = applyTemplate('<g:autoNumber prefix="R" suffix="M" />')
 
         then: 'I get an empty autonumber widget with prefix and suffix'
-        '<span class="auto-number"><span class="prefix">R-</span><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="suffix">-M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a sensitive prefix and suffix'
         s = applyTemplate(
@@ -77,7 +77,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get an empty autonumber widget with suffix'
-        '<span class="auto-number"><span class="prefix">R&amp;-</span><span class="input"><input type="text" name="number" value="" size="10" id="number" /></span><span class="suffix">-&amp;M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R&amp;-</span><input type="number" name="number" id="number" class="form-control" value="" size="10" disabled="disabled" /><span class="input-group-addon">-&amp;M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
     }
 
     def 'AutoNumber with value'() {
@@ -87,7 +87,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get an autonumber widget with prefix and suffix'
-        '<span class="auto-number"><span class="prefix">R-</span><span class="input"><input type="text" name="number" value="38473" size="10" id="number" /></span><span class="suffix">-M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="38473" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a prefix, a suffix, a value, and the checkbox set'
         params._autoNumber = true
@@ -97,7 +97,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get an autonumber widget with prefix, suffix, and checkbox checked'
-        '<span class="auto-number"><span class="prefix">R-</span><span class="input"><input type="text" name="number" value="38473" size="10" id="number" /></span><span class="suffix">-M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="38473" size="10" disabled="disabled" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" checked="checked" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
 
         when: 'I use the tag with a prefix, a suffix, a value, and the checkbox unset'
         params._autoNumber = true
@@ -107,7 +107,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get an autonumber widget with prefix, suffix, and checkbox unchecked'
-        '<span class="auto-number"><span class="prefix">R-</span><span class="input"><input type="text" name="number" value="38473" size="10" id="number" /></span><span class="suffix">-M</span><span class="checkbox"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" id="autoNumber"  /></span><label for="autoNumber">default.number.auto.label</label></span>' == s
+        '<div class="auto-number"><div class="input-group"><span class="input-group-addon">R-</span><input type="number" name="number" id="number" class="form-control" value="38473" size="10" /><span class="input-group-addon">-M</span></div><div class="checkbox"><label class="checkbox-inline"><input type="hidden" name="_autoNumber" /><input type="checkbox" name="autoNumber" aria-controls="number" id="autoNumber"  />default.number.auto.label</label></div></div>' == s
     }
 
     def 'BackLink'() {
@@ -129,41 +129,41 @@ class ViewTagLibSpec extends Specification {
         '<a href="/organization/show/5">Link</a>' == s
     }
 
-    def 'Button as span element'() {
+    def 'Button as button element'() {
         setup:
         tagLib.metaClass.message = { Map args -> "${args.code}" }
 
         when: 'I use the tag without any attribute'
         String s = applyTemplate('<g:button>Link</g:button>')
 
-        then: 'I get a button as <span> element'
-        '<span class="button">Link</span>' == s
+        then: 'I get a button as <button> element'
+        '<button type="button" class="btn">Link</button>' == s
 
         when: 'I use the tag with a color'
-        s = applyTemplate('<g:button color="green">Link</g:button>')
+        s = applyTemplate('<g:button color="success">Link</g:button>')
 
-        then: 'I get a button as <span> element with color'
-        '<span class="button green">Link</span>' == s
+        then: 'I get a button as <button> element with color'
+        '<button type="button" class="btn btn-success">Link</button>' == s
 
         when: 'I use the tag with a size'
-        s = applyTemplate('<g:button size="medium">Link</g:button>')
+        s = applyTemplate('<g:button size="xs">Link</g:button>')
 
-        then: 'I get a button as <span> element with a particular size'
-        '<span class="button medium">Link</span>' == s
+        then: 'I get a button as <button> element with a particular size'
+        '<button type="button" class="btn btn-xs">Link</button>' == s
 
         when: 'I use the tag with an additional classes'
         s = applyTemplate('<g:button class="important right">Link</g:button>')
 
-        then: 'I get a button as <span> element with the given classes'
-        '<span class="button important right">Link</span>' == s
+        then: 'I get a button as <button> element with the given classes'
+        '<button type="button" class="btn important right">Link</button>' == s
 
         when: 'I use the tag with color, size, and additional classes'
         s = applyTemplate(
-            '<g:button color="blue" size="large" class="important right">Link</g:button>'
+            '<g:button color="primary" size="lg" class="important right">Link</g:button>'
         )
 
         then: 'I get a button as <span> element with these attributes'
-        '<span class="button blue large important right">Link</span>' == s
+        '<button type="button" class="btn btn-primary btn-lg important right">Link</button>' == s
 
         when: 'I use the tag with an ID'
         s = applyTemplate(
@@ -171,7 +171,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <span> element with these attributes'
-        '<span class="button" id="print-btn">Link</span>' == s
+        '<button type="button" class="btn" id="print-btn">Link</button>' == s
 
         when: 'I use the tag with any other attributes'
         s = applyTemplate(
@@ -179,7 +179,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <span> element with these attributes'
-        '<span class="button" style="text-decoration: underline;" onclick="alert(&#39;Help&#39;);">Link</span>' == s
+        '<button type="button" class="btn" style="text-decoration: underline;" onclick="alert(&#39;Help&#39;);">Link</button>' == s
 
         when: 'I use the tag with an icon'
         s = applyTemplate(
@@ -187,7 +187,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <span> element with this icon'
-        '<span class="button"><i class="fa fa-cog"></i>Link</span>' == s
+        '<button type="button" class="btn"><i class="fa fa-cog"></i> Link</button>' == s
 
         when: 'I use the tag with an icon and message key'
         s = applyTemplate(
@@ -195,10 +195,10 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <span> element with this icon'
-        '<span class="button"><i class="fa fa-cog"></i>default.print.btn</span>' == s
+        '<button type="button" class="btn"><i class="fa fa-cog"></i> default.print.btn</button>' == s
     }
 
-    def 'Button as a element'() {
+    def 'Button as anchor element'() {
         setup:
         tagLib.metaClass.message = { Map args -> "${args.code}" }
 
@@ -206,23 +206,23 @@ class ViewTagLibSpec extends Specification {
         String s = applyTemplate('<g:button controller="foo" action="index">Link</g:button>')
 
         then: 'I get a button as <a> element'
-        '<a href="/foo/index" class="button">Link</a>' == s
+        '<a href="/foo/index" class="btn" role="button">Link</a>' == s
 
         when: 'I use the tag with link attributes and color'
         s = applyTemplate(
-            '<g:button controller="foo" action="index" color="green">Link</g:button>'
+            '<g:button controller="foo" action="index" color="success">Link</g:button>'
         )
 
         then: 'I get a button as <a> element'
-        '<a href="/foo/index" class="button green">Link</a>' == s
+        '<a href="/foo/index" class="btn btn-success" role="button">Link</a>' == s
 
         when: 'I use the tag with link attributes and size'
         s = applyTemplate(
-            '<g:button controller="foo" action="index" size="medium">Link</g:button>'
+            '<g:button controller="foo" action="index" size="sm">Link</g:button>'
         )
 
         then: 'I get a button as <a> element'
-        '<a href="/foo/index" class="button medium">Link</a>' == s
+        '<a href="/foo/index" class="btn btn-sm" role="button">Link</a>' == s
 
         when: 'I use the tag with link attributes and additional classes'
         s = applyTemplate(
@@ -230,15 +230,15 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <a> element'
-        '<a href="/foo/index" class="button important right">Link</a>' == s
+        '<a href="/foo/index" class="btn important right" role="button">Link</a>' == s
 
         when: 'I use the tag with link attributes, color, size, and additional classes'
         s = applyTemplate(
-            '<g:button controller="foo" action="index" color="yellow" size="small" class="important right">Link</g:button>'
+            '<g:button controller="foo" action="index" color="danger" size="xs" class="important right">Link</g:button>'
         )
 
         then: 'I get a button as <a> element'
-        '<a href="/foo/index" class="button yellow small important right">Link</a>' == s
+        '<a href="/foo/index" class="btn btn-danger btn-xs important right" role="button">Link</a>' == s
 
         when: 'I use the tag with link attributes and additional attributes'
         s = applyTemplate(
@@ -246,7 +246,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <a> element'
-        '<a href="/foo/index" id="print-btn" style="text-transform: uppercase;" class="button">Link</a>' == s
+        '<a href="/foo/index" id="print-btn" style="text-transform: uppercase;" class="btn" role="button">Link</a>' == s
 
         when: 'I use the tag with link attributes and an icon'
         s = applyTemplate(
@@ -254,7 +254,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <a> element with this icon'
-        '<a href="/foo/index" class="button"><i class="fa fa-cog"></i>Link</a>' == s
+        '<a href="/foo/index" class="btn" role="button"><i class="fa fa-cog"></i> Link</a>' == s
 
         when: 'I use the tag with link attributes, an icon, and message key'
         s = applyTemplate(
@@ -262,7 +262,7 @@ class ViewTagLibSpec extends Specification {
         )
 
         then: 'I get a button as <a> element with this icon'
-        '<a href="/foo/index" class="button"><i class="fa fa-cog"></i>default.print.btn</a>' == s
+        '<a href="/foo/index" class="btn" role="button"><i class="fa fa-cog"></i> default.print.btn</a>' == s
     }
 
     def 'Button as back link'() {
@@ -271,109 +271,109 @@ class ViewTagLibSpec extends Specification {
         String s = applyTemplate('<g:button back="true">Link</g:button>')
 
         then: 'I get a button as <a> element referring this URL'
-        '<a href="/organization/show/5" class="button">Link</a>' == s
+        '<a href="/organization/show/5" class="btn" role="button">Link</a>' == s
 
         when: 'there is, however, no return URL'
         params.returnUrl = null
         s = applyTemplate('<g:button back="true">Link</g:button>')
 
         then: 'I get a button as <span> element'
-        '<span class="button">Link</span>' == s
+        '<button type="button" class="btn">Link</button>' == s
     }
 
-    def 'CalendarViewBackLink'() {
-        setup:
-        tagLib.calendarEventService = Mock(CalendarEventService)
-        tagLib.calendarEventService.getCurrentCalendarView() >>> [
-            'list', 'list', 'month', 'month', 'day', 'day'
-        ]
+//    def 'CalendarViewBackLink'() {
+//        setup:
+//        tagLib.calendarEventService = Mock(CalendarEventService)
+//        tagLib.calendarEventService.getCurrentCalendarView() >>> [
+//            'list', 'list', 'month', 'month', 'day', 'day'
+//        ]
+//
+//        when: 'I use the tag without attributes and there is a return URL'
+//        params.returnUrl = '/organization/show/5'
+//        String s = applyTemplate(
+//            '<g:calendarViewBackLink>Link</g:calendarViewBackLink>'
+//        )
+//
+//        then: 'I get a button referring that URL'
+//        '<a href="/organization/show/5" class="button">Link</a>' == s
+//
+//        when: 'I use the tag without attributes and there is no return URL'
+//        params.returnUrl = null
+//        s = applyTemplate(
+//            '<g:calendarViewBackLink>Link</g:calendarViewBackLink>'
+//        )
+//
+//        then: 'I get a button referring the second calendar view'
+//        '<a href="/calendar-event/list" class="button">Link</a>' == s
+//
+//        when: 'I use the tag with any attributes and there is a return URL'
+//        params.returnUrl = '/organization/show/5'
+//        s = applyTemplate(
+//            '<g:calendarViewBackLink color="red" size="large">Link</g:calendarViewBackLink>'
+//        )
+//
+//        then: 'I get a button referring that URL'
+//        '<a href="/organization/show/5" class="button red large">Link</a>' == s
+//
+//        when: 'I use the tag with any attributes and there is no return URL'
+//        params.returnUrl = null
+//        s = applyTemplate(
+//            '<g:calendarViewBackLink color="red" size="large">Link</g:calendarViewBackLink>'
+//        )
+//
+//        then: 'I get a button referring the 4th calendar view'
+//        '<a href="/calendar-event/month" class="button red large">Link</a>' == s
+//
+//        when: 'I use the tag with protected attributes and there is a return URL'
+//        params.returnUrl = '/organization/show/5'
+//        s = applyTemplate(
+//            '<g:calendarViewBackLink controller="foo" action="bar">Link</g:calendarViewBackLink>'
+//        )
+//
+//        then: 'I get a button referring that URL'
+//        '<a href="/organization/show/5" class="button">Link</a>' == s
+//
+//        when: 'I use the tag with protected attributes and there is no return URL'
+//        params.returnUrl = null
+//        s = applyTemplate(
+//            '<g:calendarViewBackLink controller="foo" action="bar">Link</g:calendarViewBackLink>'
+//        )
+//
+//        then: 'I get a button referring the 6th calendar view'
+//        '<a href="/calendar-event/day" class="button">Link</a>' == s
+//    }
+//
+//    def 'CalendarViewLink'() {
+//        setup:
+//        tagLib.calendarEventService = Mock(CalendarEventService)
+//        tagLib.calendarEventService.getCurrentCalendarView() >>> ['list', 'month']
+//
+//        when: 'I use the tag without attributes'
+//        String s = applyTemplate(
+//            '<g:calendarViewLink>Link</g:calendarViewLink>'
+//        )
+//
+//        then: 'I get a button referring the first calendar view'
+//        '<a href="/calendar-event/list" class="button">Link</a>' == s
+//
+//        when: 'I use the tag with any attributes'
+//        s = applyTemplate(
+//            '<g:calendarViewLink color="red" size="large">Link</g:calendarViewLink>'
+//        )
+//
+//        then: 'I get a button referring the second calendar view'
+//        '<a href="/calendar-event/month" class="button red large">Link</a>' == s
+//
+//        when: 'I use the tag with protected attributes'
+//        s = applyTemplate(
+//            '<g:calendarViewLink controller="foo" action="bar">Link</g:calendarViewLink>'
+//        )
+//
+//        then: 'I get a button referring the second calendar view'
+//        '<a href="/calendar-event/month" class="button">Link</a>' == s
+//    }
 
-        when: 'I use the tag without attributes and there is a return URL'
-        params.returnUrl = '/organization/show/5'
-        String s = applyTemplate(
-            '<g:calendarViewBackLink>Link</g:calendarViewBackLink>'
-        )
-
-        then: 'I get a button referring that URL'
-        '<a href="/organization/show/5" class="button">Link</a>' == s
-
-        when: 'I use the tag without attributes and there is no return URL'
-        params.returnUrl = null
-        s = applyTemplate(
-            '<g:calendarViewBackLink>Link</g:calendarViewBackLink>'
-        )
-
-        then: 'I get a button referring the second calendar view'
-        '<a href="/calendar-event/list" class="button">Link</a>' == s
-
-        when: 'I use the tag with any attributes and there is a return URL'
-        params.returnUrl = '/organization/show/5'
-        s = applyTemplate(
-            '<g:calendarViewBackLink color="red" size="large">Link</g:calendarViewBackLink>'
-        )
-
-        then: 'I get a button referring that URL'
-        '<a href="/organization/show/5" class="button red large">Link</a>' == s
-
-        when: 'I use the tag with any attributes and there is no return URL'
-        params.returnUrl = null
-        s = applyTemplate(
-            '<g:calendarViewBackLink color="red" size="large">Link</g:calendarViewBackLink>'
-        )
-
-        then: 'I get a button referring the 4th calendar view'
-        '<a href="/calendar-event/month" class="button red large">Link</a>' == s
-
-        when: 'I use the tag with protected attributes and there is a return URL'
-        params.returnUrl = '/organization/show/5'
-        s = applyTemplate(
-            '<g:calendarViewBackLink controller="foo" action="bar">Link</g:calendarViewBackLink>'
-        )
-
-        then: 'I get a button referring that URL'
-        '<a href="/organization/show/5" class="button">Link</a>' == s
-
-        when: 'I use the tag with protected attributes and there is no return URL'
-        params.returnUrl = null
-        s = applyTemplate(
-            '<g:calendarViewBackLink controller="foo" action="bar">Link</g:calendarViewBackLink>'
-        )
-
-        then: 'I get a button referring the 6th calendar view'
-        '<a href="/calendar-event/day" class="button">Link</a>' == s
-    }
-
-    def 'CalendarViewLink'() {
-        setup:
-        tagLib.calendarEventService = Mock(CalendarEventService)
-        tagLib.calendarEventService.getCurrentCalendarView() >>> ['list', 'month']
-
-        when: 'I use the tag without attributes'
-        String s = applyTemplate(
-            '<g:calendarViewLink>Link</g:calendarViewLink>'
-        )
-
-        then: 'I get a button referring the first calendar view'
-        '<a href="/calendar-event/list" class="button">Link</a>' == s
-
-        when: 'I use the tag with any attributes'
-        s = applyTemplate(
-            '<g:calendarViewLink color="red" size="large">Link</g:calendarViewLink>'
-        )
-
-        then: 'I get a button referring the second calendar view'
-        '<a href="/calendar-event/month" class="button red large">Link</a>' == s
-
-        when: 'I use the tag with protected attributes'
-        s = applyTemplate(
-            '<g:calendarViewLink controller="foo" action="bar">Link</g:calendarViewLink>'
-        )
-
-        then: 'I get a button referring the second calendar view'
-        '<a href="/calendar-event/month" class="button">Link</a>' == s
-    }
-
-    def 'CreateBackLink'() {
+    def 'Create back link'() {
         when: 'I use the tag and there is a return URL'
         params.returnUrl = '/organization/show/5'
         String s = applyTemplate(
@@ -458,7 +458,7 @@ class ViewTagLibSpec extends Specification {
         'EUR' == applyTemplate('<g:currency />')
     }
 
-    def 'DataTypeIcon'() {
+    def 'Data type icon'() {
         setup:
         tagLib.metaClass.message = { Map args -> "${args.code}" }
 
@@ -466,7 +466,7 @@ class ViewTagLibSpec extends Specification {
         String s = applyTemplate("<g:dataTypeIcon controller='${c}' />")
 
         then: 'I get a <i> element representing the associated icon'
-        "<i class='fa fa-fw fa-${icon}' title='${c}.label'></i> " == s
+        "<i class=\"fa fa-fw fa-${icon} data-type-icon\" title=\"${c}.label\"></i> " == s
 
         where:
         c               | icon
@@ -474,7 +474,7 @@ class ViewTagLibSpec extends Specification {
         'person'        | 'male'
         'note'          | 'pencil'
         'product'       | 'cog'
-        'quote'         | 'dollar'
+        'quote'         | 'briefcase'
         'ticket'        | 'ticket'
         'xyz'           | ''
         ''              | ''
@@ -486,71 +486,104 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get an empty date/time widget'
         '''<input type="hidden" name="start"
-  value="" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value=""
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name and ID attribute'
         s = applyTemplate('<g:dateInput name="start" id="event-start" />')
 
         then: 'I get an empty date/time widget with this ID'
         '''<input type="hidden" name="start"
-  value="" /><span class="date-time-input"><input type="text" name="start_date" id="event-start-date"
+  value="" />
+<div class="input-group date-time-control"><input type="text" id="event-start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="event-start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="event-start-time" name="start_time"
   value=""
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision minute'
         s = applyTemplate('<g:dateInput name="start" precision="minute" />')
 
         then: 'I get an empty date/time widget'
         '''<input type="hidden" name="start"
-  value="" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value=""
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision hour'
         s = applyTemplate('<g:dateInput name="start" precision="hour" />')
 
         then: 'I get an empty date/time widget'
         '''<input type="hidden" name="start"
-  value="" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value=""
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision day'
         s = applyTemplate('<g:dateInput name="start" precision="day" />')
 
         then: 'I get an empty date widget'
         '''<input type="hidden" name="start"
-  value="" /><input type="text" name="start_date" id="start-date"
+  value="" />
+<input type="text" id="start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
 
         when: 'I use the tag with the name attribute and precision month'
         s = applyTemplate('<g:dateInput name="start" precision="month" />')
 
         then: 'I get an empty date widget'
         '''<input type="hidden" name="start"
-  value="" /><input type="text" name="start_date" id="start-date"
+  value="" />
+<input type="text" id="start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
 
         when: 'I use the tag with the name attribute and precision year'
         s = applyTemplate('<g:dateInput name="start" precision="year" />')
 
         then: 'I get an empty date widget'
         '''<input type="hidden" name="start"
-  value="" /><input type="text" name="start_date" id="start-date"
+  value="" />
+<input type="text" id="start-date" name="start_date"
   value=""
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
     }
 
     def 'DateInput with Calendar value'() {
@@ -589,11 +622,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name, value, and ID attribute'
         s = applyTemplate(
@@ -602,11 +641,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget with this ID'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="event-start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="event-start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="event-start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="event-start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name and value attribute and precision minute'
         s = applyTemplate(
@@ -615,11 +660,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision hour'
         s = applyTemplate(
@@ -628,11 +679,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision day'
         s = applyTemplate(
@@ -641,9 +698,12 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014" /><input type="text" name="start_date" id="start-date"
+  value="08.01.2014" />
+<input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
 
         when: 'I use the tag with the name attribute and precision month'
         s = applyTemplate(
@@ -652,9 +712,12 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014" /><input type="text" name="start_date" id="start-date"
+  value="08.01.2014" />
+<input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
 
         when: 'I use the tag with the name attribute and precision year'
         s = applyTemplate(
@@ -663,9 +726,12 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014" /><input type="text" name="start_date" id="start-date"
+  value="08.01.2014" />
+<input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
     }
 
     def 'DateInput with Date value'() {
@@ -706,11 +772,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name, value, and ID attribute'
         s = applyTemplate(
@@ -719,11 +791,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget with this ID'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="event-start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="event-start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="event-start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="event-start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name and value attribute and precision minute'
         s = applyTemplate(
@@ -732,11 +810,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision hour'
         s = applyTemplate(
@@ -745,11 +829,17 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date/time widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014 19:05" /><span class="date-time-input"><input type="text" name="start_date" id="start-date"
+  value="08.01.2014 19:05" />
+<div class="input-group date-time-control"><input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" /><input type="text" name="start_time" id="start-time"
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+<input type="text" id="start-time" name="start_time"
   value="19:05"
-  size="5" class="date-input date-input-time" /></span>''' == s
+  class="form-control date-input-control date-input-time-control"
+  maxlength="5" />
+</div>
+''' == s
 
         when: 'I use the tag with the name attribute and precision day'
         s = applyTemplate(
@@ -758,9 +848,12 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014" /><input type="text" name="start_date" id="start-date"
+  value="08.01.2014" />
+<input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
 
         when: 'I use the tag with the name attribute and precision month'
         s = applyTemplate(
@@ -769,9 +862,12 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014" /><input type="text" name="start_date" id="start-date"
+  value="08.01.2014" />
+<input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
 
         when: 'I use the tag with the name attribute and precision year'
         s = applyTemplate(
@@ -780,9 +876,12 @@ class ViewTagLibSpec extends Specification {
 
         then: 'I get a date widget'
         '''<input type="hidden" name="start"
-  value="08.01.2014" /><input type="text" name="start_date" id="start-date"
+  value="08.01.2014" />
+<input type="text" id="start-date" name="start_date"
   value="08.01.2014"
-  size="10" class="date-input date-input-date" />''' == s
+  class="form-control date-input-control date-input-date-control"
+  maxlength="10" />
+''' == s
     }
 
     def 'FormatCurrency with zero and without displayZero'() {
@@ -1209,8 +1308,6 @@ class ViewTagLibSpec extends Specification {
         2_670_054_036_891   |     '2.43 T'
     }
 
-    // TODO test letterBar
-
     def 'InstallStep'() {
         expect:
         s == applyTemplate(
@@ -1227,6 +1324,7 @@ class ViewTagLibSpec extends Specification {
         4       | '<li><b>Text</b></li>'
     }
 
+    // TODO test letterBar
     // TODO test menuButton
 
     def 'Nl2Br with value'() {
@@ -1301,5 +1399,5 @@ class ViewTagLibSpec extends Specification {
         'foo\rx\nwhee\ry\nbar'  | 'foo<br />x<br />whee<br />y<br />bar'
     }
 
-    // TODO test renderItemErrors, searchResults, and url
+    // TODO test paginate, renderItemErrors, searchResults, title and url
 }

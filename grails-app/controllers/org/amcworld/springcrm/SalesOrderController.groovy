@@ -1,7 +1,7 @@
 /*
  * SalesOrderController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 
 /**
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
  * orders.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class SalesOrderController {
 
@@ -46,13 +46,10 @@ class SalesOrderController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        def list, count
+        List<SalesOrder> list
+        int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
             list = SalesOrder.findAllBySubjectLike(searchFilter, params)
@@ -66,10 +63,11 @@ class SalesOrderController {
     }
 
     def listEmbedded(Long organization, Long person, Long quote) {
-        def l
-        def count
-        def linkParams
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
+
+        List<SalesOrder> l
+        int count
+        def linkParams
         if (organization) {
             def organizationInstance = Organization.get(organization)
             l = SalesOrder.findAllByOrganization(organizationInstance, params)
@@ -86,17 +84,20 @@ class SalesOrderController {
             count = SalesOrder.countByQuote(quoteInstance)
             linkParams = [quote: quoteInstance.id]
         }
-        [salesOrderInstanceList: l, salesOrderInstanceTotal: count, linkParams: linkParams]
+
+        [
+            salesOrderInstanceList: l, salesOrderInstanceTotal: count,
+            linkParams: linkParams
+        ]
     }
 
     def create() {
-        def salesOrderInstance
+        SalesOrder salesOrderInstance
         if (params.quote) {
-            def quoteInstance = Quote.get(params.quote)
+            Quote quoteInstance = Quote.get(params.quote)
             salesOrderInstance = new SalesOrder(quoteInstance)
         } else {
-            salesOrderInstance = new SalesOrder()
-            salesOrderInstance.properties = params
+            salesOrderInstance = new SalesOrder(params)
         }
 
         salesOrderInstance.copyAddressesFromOrganization()
@@ -105,10 +106,13 @@ class SalesOrderController {
     }
 
     def copy(Long id) {
-        def salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'salesOrder.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -117,14 +121,21 @@ class SalesOrderController {
     }
 
     def save() {
-        def salesOrderInstance = new SalesOrder(params)
-        if (!salesOrderInstance.save(flush: true)) {
-            render view: 'create', model: [salesOrderInstance: salesOrderInstance]
+        SalesOrder salesOrderInstance = new SalesOrder(params)
+        if (!invoicingTransactionService.save(salesOrderInstance, params)) {
+            render view: 'create',
+                model: [salesOrderInstance: salesOrderInstance]
             return
         }
 
         request.salesOrderInstance = salesOrderInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [
+                message(code: 'salesOrder.label'),
+                salesOrderInstance.toString()
+            ]
+        )
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -133,21 +144,27 @@ class SalesOrderController {
     }
 
     def show(Long id) {
-        def salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'salesOrder.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
-        [salesOrderInstance: salesOrderInstance, printTemplates: fopService.templateNames]
+        [salesOrderInstance: salesOrderInstance]
     }
 
     def edit(Long id) {
-        def salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'salesOrder.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -155,57 +172,45 @@ class SalesOrderController {
     }
 
     def update(Long id) {
-        def salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'salesOrder.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (salesOrderInstance.version > version) {
-                salesOrderInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'salesOrder.label', default: 'SalesOrder')] as Object[], "Another user has updated this SalesOrder while you were editing")
-                render view: 'edit', model: [salesOrderInstance: salesOrderInstance]
+                salesOrderInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'salesOrder.label')] as Object[],
+                    'Another user has updated this SalesOrder while you were editing'
+                )
+                render view: 'edit',
+                    model: [salesOrderInstance: salesOrderInstance]
                 return
             }
         }
-        if (params.autoNumber) {
-            params.number = salesOrderInstance.number
-        }
 
-        /*
-         * The original implementation which worked in Grails 2.0.0.
-         */
-        salesOrderInstance.properties = params
-//        salesOrderInstance.items?.retainAll { it != null }
-
-        /*
-         * XXX  This code is necessary because the default implementation
-         *      in Grails does not work.  The above lines worked in Grails
-         *      2.0.0.  Now, either data binding or saving does not work
-         *      correctly if items were deleted and gaps in the indices
-         *      occurred (e. g. 0, 1, null, null, 4) or the items were
-         *      re-ordered.  Then I observed cluttering in saved data
-         *      columns.
-         *      The following lines do not make me happy but they work.
-         *      In future, this problem hopefully will be fixed in Grails
-         *      so we can remove these lines.
-         */
-        salesOrderInstance.items?.clear()
-        for (int i = 0; params."items[${i}]"; i++) {
-            if (params."items[${i}]".id != 'null') {
-                salesOrderInstance.addToItems params."items[${i}]"
-            }
-        }
-
-        if (!salesOrderInstance.save(flush: true)) {
-            render view: 'edit', model: [salesOrderInstance: salesOrderInstance]
+        if (!invoicingTransactionService.save(salesOrderInstance, params)) {
+            render view: 'edit',
+                model: [salesOrderInstance: salesOrderInstance]
             return
         }
 
         request.salesOrderInstance = salesOrderInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), salesOrderInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [
+                message(code: 'salesOrder.label'),
+                salesOrderInstance.toString()
+            ]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -214,27 +219,36 @@ class SalesOrderController {
     }
 
     def delete(Long id) {
-        def salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'salesOrder.label'), id]
+            )
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             salesOrderInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'salesOrder.label')]
+            )
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'salesOrder.label', default: 'SalesOrder')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'salesOrder.label')]
+            )
             redirect action: 'show', id: id
         }
     }
@@ -244,10 +258,12 @@ class SalesOrderController {
         try {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
-        def organization = params.organization ? Organization.get(params.organization) : null
+        Organization organization = params.organization \
+            ? Organization.get(params.organization) \
+            : null
 
         def c = SalesOrder.createCriteria()
-        def list = c.list {
+        List<SalesOrder> list = c.list {
             or {
                 eq('number', number)
                 ilike('subject', "%${params.name}%")
@@ -262,24 +278,26 @@ class SalesOrderController {
 
         render(contentType: 'text/json') {
             array {
-                for (so in list) {
-                    salesOrder id: so.id, name: so.fullName
+                for (SalesOrder so in list) {
+                    salesOrder id: so.id, number: so.fullNumber,
+                        name: so.subject, fullName: so.fullName
                 }
             }
         }
     }
 
     def print(Long id, String template) {
-        def salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
         if (!salesOrderInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
             return
         }
 
         String xml = invoicingTransactionService.generateXML(
             salesOrderInstance, session.user, !!params.duplicate
         )
-        GString fileName = "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
+        GString fileName =
+            "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
         if (params.duplicate) {
             fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
         }

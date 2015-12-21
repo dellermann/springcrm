@@ -1,7 +1,7 @@
 /*
  * Helpdesk.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ package org.amcworld.springcrm
  * organization can be submitted.
  *
  * @author  Daniel Ellermann
- * @version 1.4
- * @since   1.4
+ * @version 2.0
+ * @since   2.0
  */
 class Helpdesk {
 
@@ -43,7 +43,7 @@ class Helpdesk {
         lastUpdated()
     }
     static hasMany = [tickets: Ticket]
-    static searchable = [only: ['name']]
+    static transients = ['users']
 
 
     //-- Instance variables ---------------------

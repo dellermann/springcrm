@@ -1,7 +1,7 @@
 #
 # _messages.i18n
 #
-# Copyright (c) 2011-2014, Daniel Ellermann
+# Copyright (c) 2011-2015, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,10 +32,14 @@ calendarEvent.reminder.unit.weeks
 config.restoreList.label
 default.btn.add.short
 default.btn.cancel
+default.btn.down
 default.btn.edit
+default.btn.move
 default.btn.remove
 default.btn.sort.short
+default.btn.up
 default.button.cancel.label
+default.button.delete.label
 default.button.ok.label
 default.button.send.label
 default.copyAddressWarning.billingAddr
@@ -43,6 +47,28 @@ default.copyAddressWarning.mailingAddr
 default.copyAddressWarning.otherAddr
 default.copyAddressWarning.shippingAddr
 default.delete.confirm.msg
+default.delete.confirm.title
+default.fileinput.browse.label
+default.fileinput.indicator.error
+default.fileinput.indicator.loading
+default.fileinput.indicator.new
+default.fileinput.indicator.success
+default.fileinput.msg.fileNotFound
+default.fileinput.msg.fileNotReadable
+default.fileinput.msg.filePreviewAborted
+default.fileinput.msg.filePreviewError
+default.fileinput.msg.filesTooMany
+default.fileinput.msg.invalidFileExtension
+default.fileinput.msg.invalidFileType
+default.fileinput.msg.loading
+default.fileinput.msg.progress
+default.fileinput.msg.selected
+default.fileinput.msg.sizeTooLarge
+default.fileinput.msg.validationError
+default.fileinput.remove.label
+default.fileinput.remove.title
+default.fileinput.upload.label
+default.fileinput.upload.title
 default.format.date
 default.format.time
 document.back.label
@@ -66,16 +92,37 @@ organization.billingAddr.clear
 organization.billingAddr.copy
 organization.shippingAddr.clear
 organization.shippingAddr.copy
+overview.addPanel.label
+overview.buttons.label
+overview.closePanel.label
 person.addr.fromOrgBillingAddr
 person.addr.fromOrgShippingAddr
 person.mailingAddr.clear
 person.mailingAddr.copy
 person.otherAddr.clear
 person.otherAddr.copy
+person.picture.delete
+person.picture.selectButton
+project.removeItem.confirm.msg
+purchaseInvoice.documentFile.delete
+purchaseInvoice.documentFile.select
 salesItem.pricing.error.notMovable.refBeforeReferee
 salesItem.pricing.error.notRemovable
 salesItem.pricing.removePricing.confirm
+ticket.attachment.delete
+ticket.attachment.select
 ticket.changeStage.assign.confirm
 ticket.changeStage.closed.confirm
 ticket.takeOn.confirm
 user.settings.googleAuth.revoke.confirm.disconnect
+vatCalculator.button.label
+vatCalculator.calculate.hotkey
+vatCalculator.calculate.label
+vatCalculator.gross.hotkey
+vatCalculator.gross.label
+vatCalculator.input.hotkey
+vatCalculator.net.hotkey
+vatCalculator.net.label
+vatCalculator.vat.label
+vatCalculator.vatRate.hotkey
+vatCalculator.vatRate.label

@@ -1,7 +1,7 @@
 /*
  * MailSystemService.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import org.springframework.mail.MailMessage
  * The class {@code MailSystemService} contains service methods to send mails.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class MailSystemService {
@@ -68,7 +68,7 @@ class MailSystemService {
      *          underlying system
      */
     boolean isUserConfigured() {
-        Boolean b = config['mailUseConfig'] as Boolean
+        Boolean b = config['mailUseConfig']?.toType(Boolean)
         b != null && b.booleanValue()
     }
 
@@ -228,19 +228,19 @@ class MailSystemService {
     protected ConfigObject getMailConfiguration() {
         ConfigObject configuration = new ConfigObject()
 
-        configuration.host = (config['mailHost'] as String) ?: 'localhost'
-        int port = (config['mailPort'] as Integer) ?: 587
+        configuration.host = (config['mailHost']?.toString()) ?: 'localhost'
+        int port = (config['mailPort']?.toType(Integer)) ?: 587
         configuration.port = port
-        String s = config['mailUserName'] as String
+        String s = config['mailUserName']?.toString()
         if (s) configuration.username = s
-        s = config['mailPassword'] as String
+        s = config['mailPassword']?.toString()
         if (s) configuration.password = s
 
         def props = [: ]
         if (config['mailAuth'] as Boolean) {
             props.'mail.smtp.auth' = true
         }
-        String encryption = (config['mailEncryption'] as String) ?: 'none'
+        String encryption = (config['mailEncryption']?.toString()) ?: 'none'
         if (encryption == 'ssl') {
             props.'mail.smtp.socketFactory.port' = port
             props.'mail.smtp.socketFactory.class' = 'javax.net.ssl.SSLSocketFactory'

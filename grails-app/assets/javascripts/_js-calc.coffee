@@ -1,19 +1,19 @@
 ###
 
   js-calc.coffee
- 
-  Copyright (c) 2014, Daniel Ellermann
- 
+
+  Copyright (c) 2014-2015, Daniel Ellermann
+
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
   in the Software without restriction, including without limitation the rights
   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
   copies of the Software, and to permit persons to whom the Software is
   furnished to do so, subject to the following conditions:
- 
+
   The above copyright notice and this permission notice shall be included in
   all copies or substantial portions of the Software.
- 
+
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,13 +43,13 @@ class Calculator
 
 
   #-- Instance variables ------------------------
-  
+
   DEFAULT_OPTIONS =
     point: '.'
 
 
   #-- Constructor -------------------------------
-  
+
   # Creates a new calculator within the given element.
   #
   # @param [Element] element  the given container element
@@ -64,8 +64,24 @@ class Calculator
     @opStack = new Stack()
     @error = false
     @memory = 0
+    @enabled = false
 
     @_renderTemplate()
+
+
+  #-- Public methods ----------------------------
+
+  # Disables the calculator.  If disabled all key events are not handled.
+  #
+  # @since 0.9
+  #
+  disable: -> @enabled = false
+
+  # Enables the calculator.  If enabled all key events are handled.
+  #
+  # @since 0.9
+  #
+  enable: -> @enabled = true
 
 
   #-- Non-public methods ------------------------
@@ -266,18 +282,18 @@ class Calculator
     @_displayInput()
 
   # Gets the priority of the given binary operator.
-  # 
+  #
   # @param [String] op  the given binary operator
   # @return [Number]    the priority
   # @private
-  # 
+  #
   _getOperatorPriority: (op) ->
     switch op
       when '+', '-' then return 0
       when '*', '/' then return 1
       when '^', 'root' then return 2
       else return `undefined`
-  
+
   # Checks whether the given value represents a calculation error.
   #
   # @param [Number|NaN] value the value that should be checked
@@ -383,6 +399,8 @@ class Calculator
   # @private
   #
   _onKeyDown: (event) ->
+    return true unless @enabled
+
     code = event.which
     if code is 46
       @$element.find(".jscalc-key[data-code='AC']")
@@ -399,6 +417,8 @@ class Calculator
   # @private
   #
   _onKeyPress: (event) ->
+    return true unless @enabled
+
     keyCode = null
     code = String.fromCharCode event.which
     switch code
@@ -428,6 +448,7 @@ class Calculator
         .addClass('active')
         .click()
       event.stopPropagation()
+      event.preventDefault()
 
     true
 
@@ -437,6 +458,8 @@ class Calculator
   # @private
   #
   _onKeyUp: ->
+    return true unless @enabled
+
     @$element.find(".jscalc-key")
       .removeClass('active')
     true
@@ -473,6 +496,7 @@ Plugin = (option) ->
 
     unless data
       $this.data 'bs.jscalc', (data = new Calculator(this, args[0]))
+    data[option]() if typeof option is 'string'
 
 # @nodoc
 old = $.fn.jscalc
@@ -727,4 +751,3 @@ class Input
     value = parseFloat input
     value *= -1 if @negative
     value
-

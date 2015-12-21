@@ -1,28 +1,33 @@
-<fieldset>
-  <header><h3><g:message code="helpdesk.fieldset.general.label" /></h3></header>
-  <div class="multicol-content">
-    <div class="col col-l">
+<section>
+  <header>
+    <h3><g:message code="helpdesk.fieldset.general.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
       <f:field bean="${helpdeskInstance}" property="organization" />
     </div>
-    <div class="col col-r">
+    <div class="column">
       <p><g:message code="helpdesk.name.description" /></p>
       <f:field bean="${helpdeskInstance}" property="name" />
       <f:field bean="${helpdeskInstance}" property="accessCode" />
-      <div class="row">
-        <div class="label"></div>
-        <div class="field">
-          <g:button elementId="generate-access-code" color="green"
-            size="medium" icon="key" message="helpdesk.accessCode.generate" />
+      <div class="form-group">
+        <label class="control-label"></label>
+        <div class="control-container">
+          <g:button elementId="generate-access-code" color="success"
+            icon="key" message="helpdesk.accessCode.generate" />
         </div>
       </div>
     </div>
   </div>
-</fieldset>
-<fieldset>
-  <header><h3><g:message code="helpdesk.fieldset.users.label" /></h3></header>
-  <div>
-    <p><g:message code="helpdesk.users.description" /></p>
-    <f:field bean="${helpdeskInstance}" property="users" size="7"
-      style="min-width: 25em;" />
+</section>
+<section>
+  <header>
+    <h3><g:message code="helpdesk.fieldset.users.label" /></h3>
+  </header>
+  <div class="column-group">
+    <div class="column">
+      <p><g:message code="helpdesk.users.description" /></p>
+      <f:field bean="${helpdeskInstance}" property="users" size="7" />
+    </div>
   </div>
-</fieldset>
+</section>

@@ -1,7 +1,7 @@
 /*
  * TicketController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.springframework.dao.DataIntegrityViolationException
  * helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class TicketController {
@@ -49,24 +49,21 @@ class TicketController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
         List<Ticket> ticketInstanceList = null
         int ticketInstanceTotal = 0
         User user = session.user
+
         if (params.helpdesk) {
-            def helpdesk = Helpdesk.get(params.helpdesk as Long)
+            Helpdesk helpdesk = Helpdesk.get(params.helpdesk as Long)
             ticketInstanceList = Ticket.findAllByHelpdesk(helpdesk)
             ticketInstanceTotal = Ticket.countByHelpdesk(helpdesk)
         } else if (user.admin) {
             ticketInstanceList = Ticket.list(params)
             ticketInstanceTotal = Ticket.count()
         } else {
-            def helpdesks = user.helpdesks
+            List<Helpdesk> helpdesks = user.helpdesks
             if (!helpdesks) {
                 render view: 'noHelpdesks'
                 return
@@ -85,29 +82,35 @@ class TicketController {
     }
 
     def create() {
-        def ticketInstance = new Ticket(params)
-        [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
+        [ticketInstance: new Ticket(params), helpdeskInstanceList: helpdesks]
     }
 
     def copy(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'show', id: id
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         ticketInstance = new Ticket(ticketInstance)
-        render view: 'create', model: [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
+        render view: 'create', model: [
+            ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks
+        ]
     }
 
     def save() {
-        def ticketInstance = new Ticket(params)
+        Ticket ticketInstance = new Ticket(params)
         String messageText = ticketInstance.messageText = params.messageText
 
         if (!ticketInstance.validate() || !messageText) {
             if (!messageText) {
-                ticketInstance.errors.rejectValue 'messageText', 'default.blank.message'
+                ticketInstance.errors.rejectValue(
+                    'messageText', 'default.blank.message'
+                )
             }
             render view: 'create', model: [
                 ticketInstance: ticketInstance,
@@ -128,7 +131,11 @@ class TicketController {
         }
 
         request.ticketInstance = ticketInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'ticket.label', default: 'Ticket'), ticketInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'ticket.label'), ticketInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -137,10 +144,13 @@ class TicketController {
     }
 
     def show(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -148,10 +158,13 @@ class TicketController {
     }
 
     def edit(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -159,17 +172,24 @@ class TicketController {
     }
 
     def update(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (ticketInstance.version > version) {
-                ticketInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'ticket.label', default: 'Ticket')] as Object[], 'Another user has updated this Ticket while you were editing')
+                ticketInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'ticket.label')] as Object[],
+                    'Another user has updated this Ticket while you were editing'
+                )
                 render view: 'edit', model: [ticketInstance: ticketInstance]
                 return
             }
@@ -177,12 +197,18 @@ class TicketController {
 
         ticketInstance.properties = params
         if (!ticketInstance.save(flush: true)) {
-            render view: 'edit', model: [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
+            render view: 'edit', model: [
+                ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks
+            ]
             return
         }
 
         request.ticketInstance = ticketInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'ticket.label', default: 'Ticket'), ticketInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'ticket.label'), ticketInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -191,180 +217,210 @@ class TicketController {
     }
 
     def delete(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
 
         try {
             ticketInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'ticket.label', default: 'Ticket')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'ticket.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'ticket.label', default: 'Ticket')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'ticket.label')]
+            )
             redirect action: 'show', id: id
         }
     }
 
     def takeOn(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
-            return
-        }
-        User user = session.user
-        if (!((user.admin || user in ticketInstance.helpdesk.users) &&
-            ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted]))
-        {
-            redirect action: 'show', id: id
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
-        ticketInstance.stage = TicketStage.assigned
-        ticketService.assignUser ticketInstance, user, user
+        User user = session.user
+        if ((user.admin || user in ticketInstance.helpdesk.users) &&
+            ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted])
+        {
+            ticketInstance.stage = TicketStage.assigned
+            ticketService.assignUser ticketInstance, user, user
+        }
 
         redirect action: 'show', id: id
     }
 
     def sendMessage(Long id) {
         String message = params.messageText
-        if (!message) {
-            redirect action: 'show', id: id
-            return
-        }
+        if (message) {
+            Ticket ticketInstance = Ticket.get(id)
+            if (!ticketInstance) {
+                flash.message = g.message(
+                    code: 'default.not.found.message',
+                    args: [g.message(code: 'ticket.label'), id]
+                )
+                redirect action: 'index'
+                return
+            }
 
-        User recipient = params.recipient ? User.get(params.recipient) : null
-        def ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
-            return
+            User creator = session.user
+            User recipient =
+                params.recipient ? User.get(params.recipient) : null
+            if (recipient || creator.admin ||
+                (creator == ticketInstance.assignedUser &&
+                ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]))
+            {
+                ticketService.sendMessage(
+                    ticketInstance, message, params.attachment, creator,
+                    recipient
+                )
+            }
         }
-        User creator = session.user
-        if (!(recipient || creator.admin ||
-            (creator == ticketInstance.assignedUser &&
-            ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])))
-        {
-            redirect action: 'show', id: id
-            return
-        }
-
-        ticketService.sendMessage ticketInstance, message, params.attachment, creator, recipient
 
         redirect action: 'show', id: id
     }
 
     def createNote(Long id) {
         String message = params.messageText
-        if (!message) {
-            redirect action: 'show', id: id
-            return
+        if (message) {
+            Ticket ticketInstance = Ticket.get(id)
+            if (!ticketInstance) {
+                flash.message = g.message(
+                    code: 'default.not.found.message',
+                    args: [g.message(code: 'ticket.label'), id]
+                )
+                redirect action: 'index'
+                return
+            }
+
+            ticketService.createNote(
+                ticketInstance, message, params.attachment, session.user
+            )
         }
 
-        def ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
-            return
-        }
-
-        ticketService.createNote ticketInstance, message, params.attachment, session.user
         redirect action: 'show', id: id
     }
 
     def changeStage(Long id, String stage) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         User user = session.user
-        if (!user.admin && user != ticketInstance.assignedUser) {
-            redirect action: 'show', id: id
-            return
+        if (user.admin || user == ticketInstance.assignedUser) {
+            EnumSet<TicketStage> allowedStages
+            switch (ticketInstance.stage) {
+            case TicketStage.assigned:
+                allowedStages = EnumSet.of(
+                    TicketStage.inProcess, TicketStage.closed
+                )
+                break
+            case TicketStage.inProcess:
+                allowedStages = EnumSet.of(TicketStage.closed)
+                break
+            case TicketStage.closed:
+                allowedStages = EnumSet.of(TicketStage.resubmitted)
+                break
+            }
+
+            TicketStage requestedStage = TicketStage.valueOf(stage)
+            if (requestedStage in allowedStages) {
+                ticketService.changeStage ticketInstance, requestedStage, user
+            }
         }
 
-        EnumSet<TicketStage> allowedStages
-        switch (ticketInstance.stage) {
-        case TicketStage.assigned:
-            allowedStages = EnumSet.of(TicketStage.inProcess, TicketStage.closed)
-            break
-        case TicketStage.inProcess:
-            allowedStages = EnumSet.of(TicketStage.closed)
-            break
-        case TicketStage.closed:
-            allowedStages = EnumSet.of(TicketStage.resubmitted)
-            break
-        }
-        TicketStage requestedStage = TicketStage.valueOf(stage)
-        if (!(requestedStage in allowedStages)) {
-            redirect action: 'show', id: id
-            return
-        }
-
-        ticketService.changeStage ticketInstance, requestedStage, user
         redirect action: 'show', id: id
     }
 
     def assignToUser(Long id, Long user) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'ticket.label', default: 'Ticket'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'ticket.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         User creator = session.user
         User recipient = User.get(user)
-        if (!recipient || !(recipient in ticketInstance.helpdesk.users) ||
-            creator == recipient)
+        if (recipient &&
+            (recipient in ticketInstance.helpdesk.users) &&
+            creator != recipient &&
+            (creator.admin || creator == ticketInstance.assignedUser) &&
+            ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])
         {
-            redirect action: 'show', id: id
-            return
+            ticketService.assignUser ticketInstance, creator, recipient
         }
-        if (!((creator.admin || creator == ticketInstance.assignedUser) &&
-            ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]))
-        {
-            redirect action: 'show', id: id
-            return
-        }
-
-        ticketService.assignUser ticketInstance, creator, recipient
 
         redirect action: 'show', id: id
     }
 
+    def frontendCreate() {
+        Helpdesk helpdeskInstance = Helpdesk.get(params.helpdesk)
+        if (!helpdeskInstance) {
+            render status: HttpServletResponse.SC_NOT_FOUND
+            return
+        }
+
+        [helpdeskInstance: helpdeskInstance, ticketInstance: new Ticket()]
+    }
+
     def frontendSave() {
-        def helpdeskInstance = Helpdesk.get(params.helpdesk)
+        Helpdesk helpdeskInstance = Helpdesk.get(params.helpdesk)
         if (!helpdeskInstance) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return
         }
         params.helpdesk = helpdeskInstance
 
-        def ticketInstance = new Ticket(params)
+        Ticket ticketInstance = new Ticket(params)
         ticketInstance.stage = TicketStage.created
         ticketInstance.address = new Address()
         String messageText = ticketInstance.messageText = params.messageText
 
         if (!ticketInstance.validate() || !messageText) {
-            log.debug "Ticket validation failed: ${ticketInstance.errors}"
-            if (!messageText) {
-                ticketInstance.errors.rejectValue 'messageText', 'default.blank.message'
+            if (log.debugEnabled) {
+                log.debug "Ticket validation failed: ${ticketInstance.errors}"
             }
+            if (!messageText) {
+                ticketInstance.errors.rejectValue(
+                    'messageText', 'default.blank.message'
+                )
+            }
+
             render view: '/helpdesk/frontendIndex', model: [
                 ticketInstance: ticketInstance,
                 helpdeskInstance: helpdeskInstance
@@ -384,17 +440,24 @@ class TicketController {
             return
         }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'ticket.label', default: 'Ticket'), ticketInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'ticket.label'), ticketInstance.toString()]
+        )
         redirectToHelpdeskFrontend helpdeskInstance
     }
 
     def frontendShow(Long id) {
         Ticket ticketInstance = Ticket.read(id)
-        [ticketInstance: ticketInstance]
+
+        [
+            ticketInstance: ticketInstance,
+            helpdeskInstance: ticketInstance.helpdesk
+        ]
     }
 
     def frontendSendMessage(Long id) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
             redirectToHelpdeskFrontend Helpdesk.read(params.helpdesk)
             return
@@ -431,7 +494,7 @@ class TicketController {
      * @param stage the stage that should be changed to
      */
     protected def frontendChangeStage(Long id, TicketStage stage) {
-        def ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
             redirectToHelpdeskFrontend Helpdesk.read(params.helpdesk)
             return

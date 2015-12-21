@@ -1,7 +1,7 @@
 /*
  * DocumentController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import org.springframework.web.multipart.MultipartFile
  * documents.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.2
  */
 class DocumentController {
@@ -54,7 +54,9 @@ class DocumentController {
 
     //-- Public methods -------------------------
 
-    def index() {}
+    def index() {
+        [path: params.path ?: '']
+    }
 
     def dir(String path) {
         try {
@@ -92,6 +94,7 @@ class DocumentController {
                     }
                 }
             }
+
             null
         } catch (FileSystemException e) {
             render status: SC_NOT_FOUND
@@ -99,27 +102,27 @@ class DocumentController {
     }
 
     def listEmbedded(Long organization) {
-        def organizationInstance = Organization.get(organization)
-		if (!organizationInstance) {
-			render status: SC_NOT_FOUND
-			return
-		}
+        Organization organizationInstance = Organization.get(organization)
+        if (!organizationInstance) {
+            render status: SC_NOT_FOUND
+            return
+        }
 
-		List<FileObject> documents =
-			documentService.getFilesOfOrganization(organizationInstance)
-		int total = documents.size()
+        List<FileObject> documents =
+            documentService.getFilesOfOrganization(organizationInstance)
+        int total = documents.size()
 
         String sort = params.sort
         String order = params.order
         documents.sort { FileObject f1, FileObject f2 ->
             def res
-			switch (sort) {
-			case 'size':
+            switch (sort) {
+            case 'size':
                 res = f1.content.size <=> f2.content.size
-				break
-			case 'lastModified':
+                break
+            case 'lastModified':
                 res = f1.content.lastModifiedTime <=> f2.content.lastModifiedTime
-				break
+                break
             default:
                 res = f1.name.baseName <=> f2.name.baseName
             }
@@ -128,27 +131,28 @@ class DocumentController {
             res
         }
 
-        def offset = (params.offset ?: 0) as Integer
-        def max = (params.max ?: 10) as Integer
-        def list = documents.subList(offset, Math.min(offset + max, total))
+        Integer offset = (params.offset ?: 0) as Integer
+        Integer max = (params.max ?: 10) as Integer
+        List<FileObject> list =
+            documents.subList(offset, Math.min(offset + max, total))
 
-		FileName rootName = documentService.root.name
-		def documentInstanceList = []
-		for (FileObject f in list) {
-			FileName name = f.name
-			FileContent content = f.content
-			documentInstanceList << [
-				path: rootName.getRelativeName(name),
-				name: name.baseName,
-				size: content.size,
-				lastModified: new Date(content.lastModifiedTime)
-			]
-		}
+        FileName rootName = documentService.root.name
+        def documentInstanceList = []
+        for (FileObject f in list) {
+            FileName name = f.name
+            FileContent content = f.content
+            documentInstanceList << [
+                path: rootName.getRelativeName(name),
+                name: name.baseName,
+                size: content.size,
+                lastModified: new Date(content.lastModifiedTime)
+            ]
+        }
 
-    	[
-			documentInstanceList: documentInstanceList,
-			documentInstanceTotal: total
-		]
+        [
+            documentInstanceList: documentInstanceList,
+            documentInstanceTotal: total
+        ]
     }
 
     def download(String path) {
@@ -161,57 +165,59 @@ class DocumentController {
             response.addHeader 'Content-Disposition',
                 "attachment; filename=\"${file.name.baseName}\""
             response.outputStream << content.inputStream
-            return null
+
+            null
         } catch (FileSystemException e) {
             render status: SC_NOT_FOUND
         }
     }
 
     def upload(String path) {
-        MultipartFile file = request.getFile('file')
-        if (file.empty) {
-        	render status: SC_OK
+        List<String> errorneousFiles = []
+        for (MultipartFile file in request.getFiles('file')) {
+            try {
+                documentService.uploadFile(
+                    path, file.originalFilename, file.inputStream
+                )
+            } catch (FileSystemException e) {
+                errorneousFiles << file.originalFilename
+            }
+        }
+
+        if (errorneousFiles.empty) {
+            flash.message = message(code: 'document.upload.success')
         } else {
-			try {
-	            FileObject f = documentService.uploadFile(
-					path, file.originalFilename, file.inputStream
-				)
-	            render(contentType: 'application/json') {
-	                [
-						name: f.name.baseName,
-	                    ext: f.name.extension,
-	                    size: f.content.size,
-	                    readable: f.readable,
-	                    writeable: f.writeable
-					]
-	            }
-	        } catch (FileSystemException e) {
-	            render status: SC_NOT_FOUND
-	        }
+            flash.message = message(
+                code: 'document.upload.error',
+                args: [errorneousFiles.size(), errorneousFiles.join(', ')]
+            )
+        }
+
+        redirect action: 'index', params: [path: path]
+    }
+
+    def createFolder(String path, String name) {
+        try {
+            documentService.createFolder path, name
+            render status: SC_OK
+        } catch (FileSystemException e) {
+            render status: SC_NOT_FOUND
         }
     }
 
-	def createFolder(String path, String name) {
-		try {
-			documentService.createFolder path, name
-        	render status: SC_OK
-		} catch (FileSystemException e) {
-            render status: SC_NOT_FOUND
-		}
-	}
-
-	def delete(String path) {
-		int sc = SC_OK
-		try {
-			documentService.deleteFileObject path
-		} catch (FileSystemException e) {
+    def delete(String path) {
+        int sc = SC_OK
+        try {
+            documentService.deleteFileObject path
+        } catch (FileSystemException e) {
             sc = SC_NOT_FOUND
-		}
+        }
 
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
             render status: sc
         }
-	}
+    }
 }
+

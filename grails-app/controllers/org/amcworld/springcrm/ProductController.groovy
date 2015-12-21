@@ -1,7 +1,7 @@
 /*
  * ProductController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,16 @@
 
 package org.amcworld.springcrm
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+
 import grails.converters.JSON
-import javax.servlet.http.HttpServletResponse
 
 
 /**
  * The class {@code ProductController} contains actions which manage products.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class ProductController {
 
@@ -45,26 +46,30 @@ class ProductController {
     //-- Public methods -------------------------
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
             int num = Product.countByNameLessThan(params.letter)
             params.sort = 'name'
             params.offset = Math.floor(num / params.max) * params.max
         }
-        [productInstanceList: Product.list(params), productInstanceTotal: Product.count()]
+
+        [
+            productInstanceList: Product.list(params),
+            productInstanceTotal: Product.count()
+        ]
     }
 
     def selectorList() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        String searchFilter = params.search ? "%${params.search}%".toString() : ''
+        String searchFilter = params.search \
+            ? "%${params.search}%".toString() \
+            : ''
         if (params.letter) {
             int num
             if (params.search) {
-                num = Product.countByNameLessThanAndNameLike(params.letter, searchFilter)
+                num = Product.countByNameLessThanAndNameLike(
+                    params.letter, searchFilter
+                )
             } else {
                 num = Product.countByNameLessThan(params.letter)
             }
@@ -72,7 +77,8 @@ class ProductController {
             params.offset = Math.floor(num / params.max) * params.max
         }
 
-        def list, count
+        List<Product> list
+        int count
         if (params.search) {
             list = Product.findAllByNameLike(searchFilter, params)
             count = Product.countByNameLike(searchFilter)
@@ -80,20 +86,22 @@ class ProductController {
             list = Product.list(params)
             count = Product.count()
         }
+
         [productInstanceList: list, productInstanceTotal: count]
     }
 
     def create() {
-        def productInstance = new Product()
-        productInstance.properties = params
-        [productInstance: productInstance]
+        [productInstance: new Product(params)]
     }
 
     def copy(Long id) {
-        def productInstance = Product.get(id)
+        Product productInstance = Product.get(id)
         if (!productInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'product.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -102,14 +110,18 @@ class ProductController {
     }
 
     def save() {
-        def productInstance = new Product()
+        Product productInstance = new Product()
         if (!salesItemService.saveSalesItemPricing(productInstance, params)) {
             render view: 'create', model: [productInstance: productInstance]
             return
         }
 
         request.productInstance = productInstance
-        flash.message = message(code: 'default.created.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
+        flash.message = message(
+            code: 'default.created.message',
+            args: [message(code: 'product.label'), productInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -118,10 +130,13 @@ class ProductController {
     }
 
     def show(Long id) {
-        def productInstance = Product.get(id)
+        Product productInstance = Product.get(id)
         if (!productInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'product.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -129,10 +144,13 @@ class ProductController {
     }
 
     def edit(Long id) {
-        def productInstance = Product.get(id)
+        Product productInstance = Product.get(id)
         if (!productInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'product.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
@@ -140,17 +158,24 @@ class ProductController {
     }
 
     def update(Long id) {
-        def productInstance = Product.get(id)
+        Product productInstance = Product.get(id)
         if (!productInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), id])
-            redirect action: 'list'
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'product.label'), id]
+            )
+            redirect action: 'index'
             return
         }
 
         if (params.version) {
             def version = params.version.toLong()
             if (productInstance.version > version) {
-                productInstance.errors.rejectValue('version', 'default.optimistic.locking.failure', [message(code: 'product.label', default: 'Product')] as Object[], 'Another user has updated this Product while you were editing')
+                productInstance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [message(code: 'product.label')] as Object[],
+                    'Another user has updated this Product while you were editing'
+                )
                 render view: 'edit', model: [productInstance: productInstance]
                 return
             }
@@ -162,7 +187,11 @@ class ProductController {
         }
 
         request.productInstance = productInstance
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'product.label', default: 'Product'), productInstance.toString()])
+        flash.message = message(
+            code: 'default.updated.message',
+            args: [message(code: 'product.label'), productInstance.toString()]
+        )
+
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -171,13 +200,16 @@ class ProductController {
     }
 
     def delete(Long id) {
-        def productInstance = Product.get(id)
+        Product productInstance = Product.get(id)
         if (!productInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'product.label', default: 'Product'), id])
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'product.label'), id]
+            )
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
             return
         }
@@ -187,22 +219,29 @@ class ProductController {
                 productInstance.pricing.delete flush: true
             }
             productInstance.delete flush: true
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'product.label', default: 'Product')])
+            flash.message = message(
+                code: 'default.deleted.message',
+                args: [message(code: 'product.label')]
+            )
+
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: 'list'
+                redirect action: 'index'
             }
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'product.label', default: 'Product')])
+            flash.message = message(
+                code: 'default.not.deleted.message',
+                args: [message(code: 'product.label')]
+            )
             redirect action: 'show', id: id
         }
     }
 
     def get(Long id) {
-        def productInstance = Product.read(id)
+        Product productInstance = Product.read(id)
         if (!productInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+            render status: SC_NOT_FOUND
             return
         }
 

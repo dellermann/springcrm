@@ -29,7 +29,7 @@ import org.codehaus.groovy.grails.commons.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 1.5
+ * @version 2.0
  */
 class ConfigController {
 
@@ -139,6 +139,10 @@ class ConfigController {
 
     def saveSelValues() {
         for (Map.Entry entry in params.selValues?.entrySet()) {
+            if (!entry.value) {
+                continue
+            }
+
             int orderId = 10
             Class<?> cls = getTypeClass(entry.key)
             def list = JSON.parse(entry.value)
@@ -179,7 +183,7 @@ class ConfigController {
     }
 
     def saveTaxRates() {
-        String taxRates = params.selValues?.taxRates
+        String taxRates = params.taxRates
         if (taxRates) {
             int orderId = 10
             def list = JSON.parse(taxRates)
@@ -210,18 +214,14 @@ class ConfigController {
         def ch = ConfigHolder.instance
         Long serviceIdDunningCharge =
             ch['serviceIdDunningCharge']?.toType(Long)
-        Service s = Service.read(serviceIdDunningCharge)
-        String serviceDunningCharge = s ? s.name : ''
+        Service serviceDunningCharge = Service.read(serviceIdDunningCharge)
         Long serviceIdDefaultInterest =
             ch['serviceIdDefaultInterest']?.toType(Long)
-        s = Service.read(serviceIdDefaultInterest)
-        String serviceDefaultInterest = s ? s.name : ''
+        Service serviceDefaultInterest = Service.read(serviceIdDefaultInterest)
 
         render view: 'seqNumbers', model: [
             seqNumberList: list,
-            serviceIdDunningCharge: serviceIdDunningCharge,
             serviceDunningCharge: serviceDunningCharge,
-            serviceIdDefaultInterest: serviceIdDefaultInterest,
             serviceDefaultInterest: serviceDefaultInterest
         ]
     }
