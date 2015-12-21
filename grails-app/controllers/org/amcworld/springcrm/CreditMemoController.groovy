@@ -384,7 +384,8 @@ class CreditMemoController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            creditMemoInstance, session.user, !!params.duplicate, [
+            creditMemoInstance, creditMemoInstance.createUser ?: session.user,
+            !!params.duplicate, [
                 invoice: creditMemoInstance.invoice,
                 invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
                 dunning: creditMemoInstance.dunning,

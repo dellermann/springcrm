@@ -374,7 +374,8 @@ class InvoiceController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            invoiceInstance, session.user, !!params.duplicate
+            invoiceInstance, invoiceInstance.createUser ?: session.user,
+            !!params.duplicate
         )
         GString fileName =
             "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"

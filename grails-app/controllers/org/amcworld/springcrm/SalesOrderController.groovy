@@ -294,7 +294,8 @@ class SalesOrderController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            salesOrderInstance, session.user, !!params.duplicate
+            salesOrderInstance, salesOrderInstance.createUser ?: session.user,
+            !!params.duplicate
         )
         GString fileName =
             "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"

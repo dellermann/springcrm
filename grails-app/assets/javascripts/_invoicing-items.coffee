@@ -130,8 +130,7 @@ class InvoicingItems
 
     @_initUnitTypeahead $row.find '.col-unit input'
     @_initTaxTypeahead $row.find '.col-tax input'
-    $row.find('textarea')
-      .autosize()
+    autosize $row.find 'textarea'
     if jumpToNewRow
       $('html').scrollTop(
           $row.position().top - $('.title-toolbar').outerHeight()
@@ -547,12 +546,12 @@ class InvoicingItems
         els[prefix + 'name'].value = item.name
         textArea = els[prefix + 'description']
         textArea.value = item.description
-        $textArea = $(textArea).trigger 'autosize.resize'
+        autosize.update textArea
         unitPrice = item.unitPrice
         unitPriceInput = els[prefix + 'unitPrice']
         unitPriceInput.value = unitPrice.formatCurrencyValue()
         total = (qty * unitPrice).formatCurrencyValue()
-        $textArea.closest('tr')
+        $(textArea).closest('tr')
           .find('.col-total-price input').val total
         els[prefix + 'tax'].value = (item.taxRate.taxValue * 100.0).format(1)
 

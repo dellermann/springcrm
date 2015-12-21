@@ -15,6 +15,7 @@
       <f:field bean="${invoiceInstance}" property="salesOrder" />
       </g:ifModuleAllowed>
       <f:field bean="${invoiceInstance}" property="stage" />
+      <f:field bean="${invoiceInstance}" property="createUser" />
     </div>
     <div class="column">
       <f:field bean="${invoiceInstance}" property="docDate" />

@@ -42,6 +42,7 @@
             <f:display bean="${dunningInstance}" property="invoice" />
             <f:display bean="${dunningInstance}" property="stage" />
             <f:display bean="${dunningInstance}" property="level" />
+            <f:display bean="${dunningInstance}" property="createUser" />
           </div>
           <div class="column">
             <f:display bean="${dunningInstance}" property="docDate" />

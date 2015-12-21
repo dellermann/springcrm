@@ -13,6 +13,7 @@
       </g:ifModuleAllowed>
       <f:field bean="${dunningInstance}" property="stage" />
       <f:field bean="${dunningInstance}" property="level" />
+      <f:field bean="${dunningInstance}" property="createUser" />
     </div>
     <div class="column">
       <f:field bean="${dunningInstance}" property="docDate" />

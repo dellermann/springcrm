@@ -51,6 +51,7 @@ class InvoicingTransaction {
         adjustment widget: 'currency'
         total widget: 'currency'
         notes nullable: true, widget: 'textarea'
+        createUser nullable: true
         dateCreated()
         lastUpdated()
     }
@@ -98,6 +99,7 @@ class InvoicingTransaction {
     double adjustment
     double total
     String notes
+    User createUser
     Date dateCreated
     Date lastUpdated
 

@@ -52,6 +52,7 @@
             <f:display bean="${quoteInstance}" property="organization" />
             <f:display bean="${quoteInstance}" property="person" />
             <f:display bean="${quoteInstance}" property="stage" />
+            <f:display bean="${quoteInstance}" property="createUser" />
           </div>
           <div class="column">
             <f:display bean="${quoteInstance}" property="docDate" />

@@ -145,6 +145,17 @@ class ViewFilters {
             }
         }
 
+        invoicingTransactions(controller: 'quote|salesOrder|invoice|dunning|creditMemo',
+                              action: 'create')
+        {
+            after = { model ->
+                def instance = model?."${controllerName}Instance"
+                if (instance) {
+                    instance.createUser = session.user
+                }
+            }
+        }
+
         invoicingItems(controller: 'quote|salesOrder|invoice|dunning|creditMemo|purchaseInvoice|product|service',
                        action: 'create|edit|copy|save|update')
         {

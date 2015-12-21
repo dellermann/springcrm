@@ -276,7 +276,8 @@ class QuoteController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            quoteInstance, session.user, !!params.duplicate
+            quoteInstance, quoteInstance.createUser ?: session.user,
+            !!params.duplicate
         )
         GString fileName =
             "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"

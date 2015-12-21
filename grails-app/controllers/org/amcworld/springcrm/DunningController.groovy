@@ -396,7 +396,8 @@ class DunningController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            dunningInstance, session.user, !!params.duplicate, [
+            dunningInstance, dunningInstance.createUser ?: session.user,
+            !!params.duplicate, [
                 invoice: dunningInstance.invoice,
                 invoiceFullNumber: dunningInstance.invoice.fullNumber,
             ]

@@ -47,6 +47,7 @@
             <f:display bean="${salesOrderInstance}" property="quote" />
             </g:ifModuleAllowed>
             <f:display bean="${salesOrderInstance}" property="stage" />
+            <f:display bean="${salesOrderInstance}" property="createUser" />
           </div>
           <div class="column">
             <f:display bean="${salesOrderInstance}" property="docDate" />

@@ -54,6 +54,7 @@
             <f:display bean="${invoiceInstance}" property="salesOrder" />
             </g:ifModuleAllowed>
             <f:display bean="${invoiceInstance}" property="stage" />
+            <f:display bean="${invoiceInstance}" property="createUser" />
           </div>
           <div class="column">
             <f:display bean="${invoiceInstance}" property="docDate" />

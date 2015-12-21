@@ -34,6 +34,7 @@
             <f:display bean="${creditMemoInstance}" property="invoice" />
             <f:display bean="${creditMemoInstance}" property="dunning" />
             <f:display bean="${creditMemoInstance}" property="stage" />
+            <f:display bean="${creditMemoInstance}" property="createUser" />
           </div>
           <div class="column">
             <f:display bean="${creditMemoInstance}" property="docDate" />

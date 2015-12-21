@@ -9,6 +9,7 @@
       <f:field bean="${quoteInstance}" property="organization" />
       <f:field bean="${quoteInstance}" property="person" />
       <f:field bean="${quoteInstance}" property="stage" />
+      <f:field bean="${quoteInstance}" property="createUser" />
     </div>
     <div class="column">
       <f:field bean="${quoteInstance}" property="docDate" />

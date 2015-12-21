@@ -17,6 +17,7 @@
       <f:field bean="${creditMemoInstance}" property="dunning" />
       </g:ifModuleAllowed>
       <f:field bean="${creditMemoInstance}" property="stage" />
+      <f:field bean="${creditMemoInstance}" property="createUser" />
     </div>
     <div class="column">
       <f:field bean="${creditMemoInstance}" property="docDate" />

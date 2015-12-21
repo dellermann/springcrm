@@ -4,21 +4,22 @@
   </header>
   <div class="column-group">
     <div class="column">
-        <f:field bean="${salesOrderInstance}" property="number" />
-        <f:field bean="${salesOrderInstance}" property="subject" />
-        <f:field bean="${salesOrderInstance}" property="organization" />
-        <f:field bean="${salesOrderInstance}" property="person" />
-        <g:ifModuleAllowed modules="quote">
-        <f:field bean="${salesOrderInstance}" property="quote" />
-        </g:ifModuleAllowed>
-        <f:field bean="${salesOrderInstance}" property="stage" />
+      <f:field bean="${salesOrderInstance}" property="number" />
+      <f:field bean="${salesOrderInstance}" property="subject" />
+      <f:field bean="${salesOrderInstance}" property="organization" />
+      <f:field bean="${salesOrderInstance}" property="person" />
+      <g:ifModuleAllowed modules="quote">
+      <f:field bean="${salesOrderInstance}" property="quote" />
+      </g:ifModuleAllowed>
+      <f:field bean="${salesOrderInstance}" property="stage" />
+      <f:field bean="${salesOrderInstance}" property="createUser" />
     </div>
     <div class="column">
-        <f:field bean="${salesOrderInstance}" property="docDate" />
-        <f:field bean="${salesOrderInstance}" property="dueDate" />
-        <f:field bean="${salesOrderInstance}" property="shippingDate" />
-        <f:field bean="${salesOrderInstance}" property="carrier" />
-        <f:field bean="${salesOrderInstance}" property="deliveryDate" />
+      <f:field bean="${salesOrderInstance}" property="docDate" />
+      <f:field bean="${salesOrderInstance}" property="dueDate" />
+      <f:field bean="${salesOrderInstance}" property="shippingDate" />
+      <f:field bean="${salesOrderInstance}" property="carrier" />
+      <f:field bean="${salesOrderInstance}" property="deliveryDate" />
     </div>
   </div>
 </section>
