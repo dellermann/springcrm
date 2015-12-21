@@ -16,7 +16,7 @@
     <div id="main-nav" class="collapse navbar-collapse">
       <ul class="nav navbar-nav" role="menubar">
         <li>
-          <g:link uri="/" role="menuitem"
+          <g:link controller="overview" action="index" role="menuitem"
             ><i class="fa fa-home"></i>
             <g:message code="menu.home"
           /></g:link>

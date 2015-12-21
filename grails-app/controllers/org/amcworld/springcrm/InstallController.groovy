@@ -1,7 +1,7 @@
 /*
  * InstallController.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ package org.amcworld.springcrm
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class InstallController {
 
@@ -96,6 +96,6 @@ class InstallController {
         installService.disableInstaller()
         Config installStatus = new Config(name: 'installStatus', value: 1)
         installStatus.save flush: true
-        redirect uri: '/'
+        redirect controller: 'overview', action: 'index'
     }
 }

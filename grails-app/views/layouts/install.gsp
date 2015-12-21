@@ -38,7 +38,8 @@
     <div class="container">
       <header role="banner">
         <div>
-          <g:link uri="/" elementId="application-title" class="brand"
+          <g:link controller="install" action="index"
+            elementId="application-title" class="brand"
             ><g:message code="default.appName"
           /></g:link>
         </div>

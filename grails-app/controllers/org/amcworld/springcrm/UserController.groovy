@@ -221,7 +221,7 @@ class UserController {
 
         session.user = userInstance
         setUserLocale()
-        redirect uri: '/'
+        redirect controller: 'overview', action: 'index'
     }
 
     def logout() {

@@ -32,7 +32,7 @@
     </div>
     <div class="buttons">
       <g:link controller="invoice" action="edit" id="${invoiceInstance.id}"
-        params="[returnUrl: createLink(uri: '/')]"
+        params="[returnUrl: createLink(controller: 'overview', action: 'index')]"
         title="${message(code: 'default.btn.edit')}" role="button"
         ><i class="fa fa-pencil-square-o"></i
         ><span class="sr-only"><g:message code="default.btn.edit" /></span

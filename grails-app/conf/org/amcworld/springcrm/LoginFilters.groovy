@@ -70,7 +70,7 @@ class LoginFilters {
             before = {
                 def installStatus = Config.findByName('installStatus')
                 if (installStatus?.value && installService.installerDisabled) {
-                    redirect uri: '/'
+                    redirect controller: 'overview', action: 'index'
                     return false
                 }
 

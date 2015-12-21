@@ -6,7 +6,8 @@
 
   <body>
     <content tag="backLink">
-      <g:link uri="/" class="navbar-brand visible-xs" role="button"
+      <g:link controller="overview" action="index"
+        class="navbar-brand visible-xs" role="button"
         ><g:message code="default.appName"
       /></g:link>
     </content>

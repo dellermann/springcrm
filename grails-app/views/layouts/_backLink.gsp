@@ -6,7 +6,8 @@
   value="${actionName == 'index' || actionName == 'settingsIndex'}" />
 <a href="${
     pageProperty(name: 'meta.backLinkUrl') ?: (
-        isIndex ? createLink(uri: '/') : createLink(action: 'index')
+        isIndex ? createLink(controller: 'overview', action: 'index')
+            : createLink(action: 'index')
     )}"
   class="navbar-back-link visible-xs"
   ><i class="fa fa-${isIndex ? 'home' : 'arrow-left'}"></i>

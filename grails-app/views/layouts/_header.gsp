@@ -1,6 +1,7 @@
 <header role="banner">
   <div class="header-left">
-    <g:link uri="/" elementId="application-title" class="brand"
+    <g:link controller="overview" action="index" elementId="application-title"
+      class="brand"
       ><g:message code="default.appName"
     /></g:link>
   </div>

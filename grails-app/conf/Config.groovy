@@ -247,7 +247,6 @@ log4j.main = {
 //        'org.amcworld.springcrm.google.GoogleContactSync',
 //        'org.amcworld.springcrm.google.GoogleSync',
     )
-
 }
 
 

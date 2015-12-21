@@ -8,8 +8,8 @@
   <body>
     <p><g:message code="error.notFound.description" /></p>
     <div class="buttons">
-      <g:button uri="/" color="default" icon="home"
-        message="module.menu.home" />
+      <g:button controller="overview" action="index" color="default"
+        icon="home" message="module.menu.home" />
     </div>
   </body>
 </html>

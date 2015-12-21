@@ -9,7 +9,8 @@
 
   <body>
     <content tag="backLink">
-      <g:link uri="/" class="navbar-back-link visible-xs"
+      <g:link controller="overview" action="index"
+        class="navbar-back-link visible-xs"
         ><i class="fa fa-home"></i>
         <span class="sr-only"
           ><g:message code="default.button.home.label"
