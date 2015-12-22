@@ -1,7 +1,7 @@
 /*
  * GoogleCalendarSync.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@
 
 package org.amcworld.springcrm.google
 
+import com.google.api.client.auth.oauth2.Credential
 import com.google.gdata.client.GoogleService
 import com.google.gdata.data.contacts.ContactEntry
+import groovy.transform.CompileStatic
 import org.amcworld.springcrm.CalendarEvent
 
 
@@ -30,15 +32,10 @@ import org.amcworld.springcrm.CalendarEvent
  * Google.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  * @since   1.0
  */
-class GoogleCalendarSync extends GoogleSync<CalendarEvent, ContactEntry> {
-
-    //-- Instance variables ---------------------
-
-    protected com.google.api.services.calendar.Calendar svc
-
+class GoogleCalendarSync extends AbstractGoogleSync<CalendarEvent, ContactEntry> {
 
     //-- Constructors ---------------------------
 
@@ -53,95 +50,108 @@ class GoogleCalendarSync extends GoogleSync<CalendarEvent, ContactEntry> {
     //-- Non-public methods ---------------------
 
     @Override
-    protected ContactEntry convertToGoogle(CalendarEvent item, ContactEntry entry) {
+    @CompileStatic
+    protected ContactEntry convertToGoogle(CalendarEvent item,
+                                           ContactEntry entry)
+    {
         // TODO Auto-generated method stub
         return null
     }
 
     @Override
+    @CompileStatic
     protected ContactEntry convertToGoogle(CalendarEvent item) {
         // TODO Auto-generated method stub
         return null
     }
 
-    /**
-     * Gets access to the underlying Google API service.  The service is fully
-     * authenticated.
-     *
-     * @return  the Google API service instance
-     */
-    protected synchronized GoogleService getService() {
-        if (!svc) {
-            svc = com.google.api.services.calendar.Calendar.builder(
-                    HTTP_TRANSPORT, JSON_FACTORY
-                )
-                .setApplicationName(APPLICATION_NAME)
-                .setHttpRequestInitializer(loadCredential())
-                .build()
-        }
-        return svc
+    @Override
+    @CompileStatic
+    protected synchronized GoogleService getService(Credential credential) {
+        // TODO implement it the right way
+//        new com.google.api.services.calendar.Calendar.Builder(
+//                HTTP_TRANSPORT, JSON_FACTORY, credential
+//            )
+//            .setApplicationName(APPLICATION_NAME)
+//            .build()
+        null
     }
 
     @Override
-    protected CalendarEvent convertToLocal(CalendarEvent localEntry,
-            ContactEntry googleEntry) {
+    @CompileStatic
+    protected CalendarEvent convertToLocal(GoogleService service,
+                                           CalendarEvent localEntry,
+                                           ContactEntry googleEntry)
+    {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @CompileStatic
     protected void deleteGoogleEntry(ContactEntry entry) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
+    @CompileStatic
     protected boolean getAllowLocalCreate() {
-        return getBooleanSystemConfig('syncCalendarEventsOptionsAllowCreate')
+        getBooleanSystemConfig 'syncCalendarEventsOptionsAllowCreate'
     }
 
     @Override
+    @CompileStatic
     protected boolean getAllowLocalDelete() {
-        return getBooleanSystemConfig('syncCalendarEventsOptionsAllowDelete')
+        getBooleanSystemConfig 'syncCalendarEventsOptionsAllowDelete'
     }
 
     @Override
+    @CompileStatic
     protected boolean getAllowLocalModify() {
-        return getBooleanSystemConfig('syncCalendarEventsOptionsAllowModify')
+        getBooleanSystemConfig 'syncCalendarEventsOptionsAllowModify'
     }
 
     @Override
+    @CompileStatic
     protected String getEtag(ContactEntry entry) {
         // TODO Auto-generated method stub
         return null
     }
 
     @Override
+    @CompileStatic
     protected String getUrl(ContactEntry entry) {
         return null
     }
 
     @Override
-    protected ContactEntry insertGoogleEntry(ContactEntry entry) {
+    @CompileStatic
+    protected ContactEntry insertGoogleEntry(GoogleService service,
+                                             ContactEntry entry)
+    {
         // TODO Auto-generated method stub
         return null
     }
 
     @Override
-    protected Map<String, ContactEntry> loadGoogleEntries() {
+    @CompileStatic
+    protected Map<String, ContactEntry> loadGoogleEntries(GoogleService service)
+    {
         // TODO Auto-generated method stub
         return null
     }
 
     @Override
-    protected void updateGoogleEntry(ContactEntry entry) {
+    @CompileStatic
+    protected void updateGoogleEntry(GoogleService service, ContactEntry entry)
+    {
         // TODO Auto-generated method stub
-
     }
 
     @Override
+    @CompileStatic
     protected String googleEntryToString(ContactEntry entry) {
         // TODO Auto-generated method stub
-        return null;
+        return null
     }
 }

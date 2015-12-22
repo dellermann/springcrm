@@ -69,7 +69,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
 
         and: 'an authorization code flow instance'
         def transport = new MockHttpTransport()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -109,7 +109,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
 
         and: 'an authorization code flow instance'
         def transport = new MockHttpTransport()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -141,7 +141,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
 
         and: 'an authorization code flow instance'
         def transport = new MockHttpTransport()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -169,7 +169,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
 
         and: 'an authorization code flow instance'
         def transport = new MockHttpTransport()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -183,7 +183,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
 
         and: 'an authorization code flow instance'
         def transport = new MockHttpTransport()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -212,7 +212,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         def transport = new MockHttpTransport.Builder()
             .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
             .build()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -257,7 +257,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         def transport = new MockHttpTransport.Builder()
             .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
             .build()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -286,7 +286,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         def transport = new MockHttpTransport.Builder()
             .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
             .build()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -316,7 +316,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         def transport = new MockHttpTransport.Builder()
             .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
             .build()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 
@@ -345,7 +345,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         def transport = new MockHttpTransport.Builder()
             .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
             .build()
-        def jsonFactory = GoogleService.JSON_FACTORY
+        def jsonFactory = GoogleSync.JSON_FACTORY
         def authorizationCodeFlow =
             new ProxyAuthorizationCodeFlow(transport, jsonFactory)
 

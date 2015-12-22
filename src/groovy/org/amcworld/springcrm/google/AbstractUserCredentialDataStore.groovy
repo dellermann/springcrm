@@ -1,7 +1,7 @@
 /*
  * AbstractUserCredentialDataStore.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@
 
 package org.amcworld.springcrm.google
 
+import static org.amcworld.springcrm.google.GoogleSync.JSON_FACTORY
+
 import com.google.api.client.auth.oauth2.StoredCredential
-import com.google.api.client.json.JsonFactory
 import com.google.api.client.util.Preconditions
 import com.google.api.client.util.store.AbstractDataStore
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantLock
+import groovy.transform.CompileStatic
 import org.amcworld.springcrm.User
 import org.amcworld.springcrm.UserSetting
 
@@ -37,7 +37,7 @@ import org.amcworld.springcrm.UserSetting
  * to store Google credentials in the {@code UserSetting} domain model.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class AbstractUserCredentialDataStore
@@ -49,20 +49,12 @@ class AbstractUserCredentialDataStore
     public static final String SETTINGS_KEY = 'googleCredential'
 
 
-    //-- Instance variables ---------------------
-
-    /**
-     * Lock on access to the store.
-     */
-    private final Lock lock = new ReentrantLock()
-
-
     //-- Constructors ---------------------------
 
-    protected AbstractUserCredentialDataStore(DataStoreFactory dataStoreFactory,
+    protected AbstractUserCredentialDataStore(DataStoreFactory factory,
                                               String id)
     {
-        super(dataStoreFactory, id)
+        super(factory, id)
     }
 
 
@@ -70,15 +62,10 @@ class AbstractUserCredentialDataStore
 
     @Override
     AbstractUserCredentialDataStore clear() {
-        lock.lock()
-
-        try {
-            List entries = UserSetting.findAllByName(SETTINGS_KEY)
+        UserSetting.withTransaction {
             for (UserSetting entry in entries) {
                 entry.delete flush: true
             }
-        } finally {
-            lock.unlock()
         }
 
         this
@@ -90,17 +77,15 @@ class AbstractUserCredentialDataStore
             return false
         }
 
-        lock.lock()
-        try {
+        boolean res = false
+        UserSetting.withTransaction {
             User user = getUser(key)
-            if (!user) {
-                return false
+            if (user) {
+                res = UserSetting.countByUserAndName(user, SETTINGS_KEY) > 0
             }
-
-            UserSetting.countByUserAndName(user, SETTINGS_KEY) > 0
-        } finally {
-            lock.unlock()
         }
+
+        res
     }
 
     @Override
@@ -109,26 +94,22 @@ class AbstractUserCredentialDataStore
             return false
         }
 
-        lock.lock()
-        try {
+        boolean res
+        UserSetting.withTransaction {
             String json = convertCredentialToJson(credential)
-            UserSetting.countByNameAndValue(SETTINGS_KEY, json) > 0
-        } finally {
-            lock.unlock()
+            res = UserSetting.countByNameAndValue(SETTINGS_KEY, json) > 0
         }
+
+        res
     }
 
     @Override
     AbstractUserCredentialDataStore delete(String key) {
-        lock.lock()
-
-        try {
+        UserSetting.withTransaction {
             User user = getUser(key)
             if (user) {
                 user.settings.remove SETTINGS_KEY
             }
-        } finally {
-            lock.unlock()
         }
 
         this
@@ -140,44 +121,33 @@ class AbstractUserCredentialDataStore
             return null
         }
 
-        lock.lock()
-
-        try {
+        String s = null
+        UserSetting.withTransaction {
             User user = getUser(key)
-            if (!user) {
-                return null
+            if (user) {
+                s = user.settings[SETTINGS_KEY]
             }
-
-            String s = user.settings[SETTINGS_KEY]
-            if (!s) {
-                return null
-            }
-
-            convertJsonToCredential(s)
-        } finally {
-            lock.unlock()
         }
+
+        s ? convertJsonToCredential(s) : null
     }
 
     @Override
+    @CompileStatic
     boolean isEmpty() {
         size() == 0
     }
 
     @Override
     Set<String> keySet() {
-        lock.lock()
-
-        try {
-            Set res = new HashSet()
-            List entries = UserSetting.findAllByName(SETTINGS_KEY)
+        Set<String> res = new HashSet<String>()
+        UserSetting.withTransaction {
             for (UserSetting entry in entries) {
                 res << entry.user.userName
             }
-            res.asImmutable()
-        } finally {
-            lock.unlock()
         }
+
+        res.asImmutable()
     }
 
     @Override
@@ -186,16 +156,12 @@ class AbstractUserCredentialDataStore
         Preconditions.checkNotNull key
         Preconditions.checkNotNull credential
 
-        lock.lock()
-
-        try {
+        UserSetting.withTransaction {
             User user = getUser(key)
             if (user) {
                 user.settings[SETTINGS_KEY] =
                     convertCredentialToJson(credential)
             }
-        } finally {
-            lock.unlock()
         }
 
         this
@@ -203,52 +169,80 @@ class AbstractUserCredentialDataStore
 
     @Override
     int size() {
-        lock.lock()
-
-        try {
-            UserSetting.countByName(SETTINGS_KEY)
-        } finally {
-            lock.unlock()
+        int res
+        UserSetting.withTransaction {
+            res = UserSetting.countByName(SETTINGS_KEY)
         }
+
+        res
     }
 
     @Override
     Collection<StoredCredential> values() {
-        lock.lock()
-
-        try {
-            Collection res = new ArrayList()
-            List entries = UserSetting.findAllByName(SETTINGS_KEY)
+        Collection<StoredCredential> res = new ArrayList<StoredCredential>()
+        UserSetting.withTransaction {
             for (UserSetting entry in entries) {
                 res << convertJsonToCredential(entry.value)
             }
-            res.asImmutable()
-        } finally {
-            lock.unlock()
         }
 
+        res.asImmutable()
     }
 
 
     //-- Non-public methods ---------------------
 
-    protected String convertCredentialToJson(StoredCredential credential) {
-        jsonFactory.toString([
+    /**
+     * Converts the given credential to JSON.
+     *
+     * @param credential    the given credential
+     * @return              the JSON string
+     */
+    @CompileStatic
+    private String convertCredentialToJson(StoredCredential credential) {
+        JSON_FACTORY.toString([
             accessToken: credential.accessToken,
             refreshToken: credential.refreshToken,
             expirationTimeMilliseconds: credential.expirationTimeMilliseconds
         ])
     }
 
-    protected StoredCredential convertJsonToCredential(String json) {
-        new StoredCredential(jsonFactory.fromString(json, HashMap))
+    /**
+     * Converts the given JSON data to a credential.
+     *
+     * @param json  the given JSON data
+     * @return      the stored credential
+     */
+    @CompileStatic
+    private StoredCredential convertJsonToCredential(String json) {
+        HashMap<String, Object> data = JSON_FACTORY.fromString(json, HashMap)
+
+        StoredCredential credential = new StoredCredential()
+        credential.accessToken = (String) data.accessToken
+        credential.refreshToken = (String) data.refreshToken
+        credential.expirationTimeMilliseconds =
+            (Long) data.expirationTimeMilliseconds
+
+        credential
     }
 
-    protected JsonFactory getJsonFactory() {
-        GoogleService.JSON_FACTORY
+    /**
+     * Gets all Google credential entries.
+     *
+     * @return  the credential entries
+     * @since   2.0
+     */
+    private List<UserSetting> getEntries() {
+        UserSetting.findAllByName SETTINGS_KEY
     }
 
-    protected User getUser(String userName) {
+    /**
+     * Gets the user with the given name.
+     *
+     * @param userName  the given user name
+     * @return          the user object
+     */
+    private User getUser(String userName) {
         User.findByUserName userName
     }
 }

@@ -27,6 +27,7 @@ import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
 import javax.servlet.http.HttpServletResponse
 import net.sf.jmimemagic.Magic
+import org.amcworld.springcrm.google.GoogleContactSync
 
 
 /**
@@ -45,7 +46,7 @@ class PersonController {
 
     //-- Instance variables ---------------------
 
-    GoogleContactSyncService googleContactSyncService
+    GoogleContactSync googleContactSync
     LdapService ldapService
 
 
@@ -315,8 +316,8 @@ class PersonController {
     }
 
     def gdatasync() {
-        if (googleContactSyncService) {
-            googleContactSyncService.sync()
+        if (googleContactSync) {
+            googleContactSync.sync session.user
             flash.message = message(
                 code: 'default.gdata.allsync.success',
                 args: [message(code: 'person.plural')]

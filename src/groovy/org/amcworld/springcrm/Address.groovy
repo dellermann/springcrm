@@ -1,7 +1,7 @@
 /*
  * Address.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * invoices etc.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class Address {
@@ -56,8 +56,16 @@ class Address {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty address.
+     */
     Address() {}
 
+    /**
+     * Creates a copy of the given address.
+     *
+     * @param addr  the given address
+     */
     Address(Address addr) {
         street = addr.street
         poBox = addr.poBox
@@ -70,6 +78,11 @@ class Address {
 
     //-- Properties -----------------------------
 
+    /**
+     * Checks whether or not this address is empty.
+     *
+     * @return  {@code true} if this address is empty; {@code false} otherwise
+     */
     boolean isEmpty() {
         !street && !poBox && !postalCode && !location && !state && !country
     }
@@ -77,18 +90,29 @@ class Address {
 
     //-- Public methods -------------------------
 
+    /**
+     * Clears all fields of this address.
+     *
+     * @since 2.0
+     */
+    void clear() {
+        street = ''
+        poBox = ''
+        postalCode = ''
+        location = ''
+        state = ''
+        country = ''
+    }
+
     @Override
     boolean equals(Object obj) {
-        if (obj instanceof Address) {
+        obj instanceof Address &&
             obj.street == street &&
-                obj.poBox == poBox &&
-                obj.postalCode == postalCode &&
-                obj.location == location &&
-                obj.state == state &&
-                obj.country == country
-        } else {
-            false
-        }
+            obj.poBox == poBox &&
+            obj.postalCode == postalCode &&
+            obj.location == location &&
+            obj.state == state &&
+            obj.country == country
     }
 
     @Override
@@ -103,6 +127,7 @@ class Address {
             if (s) s << ' '
             s << location ?: ''
         }
+
         s.toString()
     }
 }

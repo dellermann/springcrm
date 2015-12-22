@@ -29,7 +29,7 @@ class ProxyHttpParserSpec extends Specification {
     //-- Instance variables ---------------------
 
     private ProxyHttpParser parser =
-        new ProxyHttpParser(GoogleService.JSON_FACTORY)
+        new ProxyHttpParser(GoogleSync.JSON_FACTORY)
 
 
     //-- Feature methods ------------------------

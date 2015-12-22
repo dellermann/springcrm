@@ -1,7 +1,7 @@
 /*
  * ProxyCredential.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,11 @@
 package org.amcworld.springcrm.google
 
 import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.auth.oauth2.CredentialRefreshListener
 import com.google.api.client.auth.oauth2.TokenResponse
 import com.google.api.client.auth.oauth2.Credential.AccessMethod
-import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
+import groovy.transform.CompileStatic
 
 
 /**
@@ -35,28 +34,42 @@ import com.google.api.client.json.JsonFactory
  * instead of to the Google server.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.0
  */
+@CompileStatic
 class ProxyCredential extends Credential {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates a new credential for proxy authentication with the data from the
+     * given builder.
+     *
+     * @param builder   the given builder
+     */
     protected ProxyCredential(Builder builder) {
+
+        /*
+         * Implementation notes: constructor should be package private, but
+         * this is not possible in Groovy.
+         */
         super(builder)
     }
 
 
     //-- Non-public methods ---------------------
 
+    @Override
     protected TokenResponse executeRefreshToken() throws IOException {
         if (refreshToken == null) {
             return null
         }
 
-        def req = new ProxyRequest(transport, jsonFactory, 'refresh')
+        ProxyRequest req = new ProxyRequest(transport, jsonFactory, 'refresh')
         req.put 'refreshToken', refreshToken
         ProxyResponse response = req.execute()
+
         response.tokenResponse
     }
 
@@ -67,13 +80,18 @@ class ProxyCredential extends Credential {
      * The class {@code Builder} represents a {@code ProxyCredential} builder.
      *
      * @author  Daniel Ellermann
-     * @version 1.4
+     * @version 2.0
      * @since   1.4
      */
     static class Builder extends Credential.Builder {
 
         //-- Constructors -----------------------
 
+        /**
+         * Creates a new builder using the given access method.
+         *
+         * @param method    the given access method
+         */
         Builder(AccessMethod method) {
             super(method)
         }
@@ -81,6 +99,7 @@ class ProxyCredential extends Credential {
 
         //-- Public methods ---------------------
 
+        @Override
         ProxyCredential build() {
             new ProxyCredential(this)
         }

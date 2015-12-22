@@ -212,41 +212,27 @@ log4j.main = {
         )
     }
 
-    error(
-        'net.sf.ehcache.hibernate',
-        'org.codehaus.groovy.grails.commons',            // core/classloading
-        'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
-        'org.codehaus.groovy.grails.plugins',            // plugins
-        'org.codehaus.groovy.grails.web.mapping',        // URL mapping
-        'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-        'org.codehaus.groovy.grails.web.pages',          // GSP
-        'org.codehaus.groovy.grails.web.servlet',        // controllers
-        'org.codehaus.groovy.grails.web.sitemesh',       // layouts
-        'org.hibernate',
-        'org.springframework'
-    )
+    error 'net.sf.ehcache.hibernate'
+    error 'org.codehaus.groovy.grails.commons'             // core/classloading
+    error 'org.codehaus.groovy.grails.orm.hibernate'       // hibernate integration
+    error 'org.codehaus.groovy.grails.plugins'             // plugins
+    error 'org.codehaus.groovy.grails.web.mapping'         // URL mapping
+    error 'org.codehaus.groovy.grails.web.mapping.filter'  // URL mapping
+    error 'org.codehaus.groovy.grails.web.pages'           // GSP
+    error 'org.codehaus.groovy.grails.web.servlet'         // controllers
+    error 'org.codehaus.groovy.grails.web.sitemesh'        // layouts
+    error 'org.hibernate'
+    error 'org.springframework'
 
-    warn(
-        'org.mortbay.log'
-    )
+    warn 'org.mortbay.log'
 
-    info(
-        'grails.app.services.org.amcworld.springcrm.InstallService',
-        'org.grails.plugins.coffee.compiler'
-    )
+    info 'grails.app.services.org.amcworld.springcrm.InstallService'
+    info 'org.grails.plugins.coffee.compiler'
 
-    debug(
-//        'grails.app.controllers.org.amcworld.springcrm.InvoiceController',
-//        'grails.app.controllers.org.amcworld.springcrm.PurchaseInvoiceController',
-//        'grails.app.controllers.org.amcworld.springcrm.QuoteController',
-//        'grails.app.controllers.org.amcworld.springcrm.SalesOrderController',
-        'grails.app.controllers.org.amcworld.springcrm.TicketController',
-//        'grails.app.jobs.GoogleContactSyncJob',
-//        'grails.app.services.org.amcworld.springcrm.GoogleDataService',
-//        'grails.app.services.org.amcworld.springcrm.GoogleDataContactService',
-//        'org.amcworld.springcrm.google.GoogleContactSync',
-//        'org.amcworld.springcrm.google.GoogleSync',
-    )
+//    debug 'grails.app.controllers.org.amcworld.springcrm.TicketController'
+//    debug 'org.amcworld.springcrm.google.GoogleContactSync'
+//    debug 'org.amcworld.springcrm.google.GoogleContactSyncTask'
+//    debug 'org.amcworld.springcrm.google.AbstractGoogleSync'
 }
 
 

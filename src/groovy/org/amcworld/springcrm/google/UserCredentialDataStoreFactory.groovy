@@ -1,7 +1,7 @@
 /*
  * UserCredentialDataStoreFactory.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm.google
 
 import com.google.api.client.util.store.AbstractDataStoreFactory
 import com.google.api.client.util.store.DataStore
+import groovy.transform.CompileStatic
 
 
 /**
@@ -30,15 +31,18 @@ import com.google.api.client.util.store.DataStore
  * credentials.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
+@CompileStatic
 class UserCredentialDataStoreFactory extends AbstractDataStoreFactory {
 
     //-- Public methods -------------------------
 
     /**
      * Gets a global thread-safe instance of this class.
+     *
+     * @return  the instance of this class
      */
     static UserCredentialDataStoreFactory getDefaultInstance() {
         InstanceHolder.INSTANCE
@@ -57,24 +61,47 @@ class UserCredentialDataStoreFactory extends AbstractDataStoreFactory {
 
     //-- Inner classes --------------------------
 
-    static class InstanceHolder {
+    /**
+     * The inner class {@code InstanceHolder} stores the only instance of the
+     * outer factory class.
+     *
+     * @author	Daniel Ellermann
+     * @version 2.0
+     * @since   1.4
+     */
+    private static class InstanceHolder {
 
-        //-- Class variables --------------------
+        //-- Class fields -----------------------
 
-        static final UserCredentialDataStoreFactory INSTANCE =
+        private static final UserCredentialDataStoreFactory INSTANCE =
             new UserCredentialDataStoreFactory()
     }
 
-    static class UserCredentialDataStore
+    /**
+     * The inner class {@code UserCredentialDataStore} represents a data store
+     * which handles user credentials.
+     *
+     * @author	Daniel Ellermann
+     * @version 2.0
+     * @since   1.4
+     */
+    private static class UserCredentialDataStore
         extends AbstractUserCredentialDataStore
     {
 
         //-- Constructors -----------------------
 
-        UserCredentialDataStore(UserCredentialDataStoreFactory dataStoreFactory,
-                                String id)
-        {
-            super(dataStoreFactory, id)
+        /**
+         * Creates a new user credential data store using the given factory and
+         * ID.
+         *
+         * @param factory   the given factory
+         * @param id        the given ID
+         */
+        protected UserCredentialDataStore(
+            UserCredentialDataStoreFactory factory, String id
+        ) {
+            super(factory, id)
         }
 
         //-- Public methods ---------------------

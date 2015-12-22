@@ -1,7 +1,7 @@
 /*
  * resources.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,22 +56,15 @@ beans = {
     }
 	startupDiffSet4(org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet)
 
-    /* Google synchronization types */
+    /* Google synchronization */
     googleContactSyncTask(GoogleContactSyncTask) {
-        grailsApplication = ref('grailsApplication')
-        googleOAuthService = ref('googleOAuthService')
+        googleContactSync = ref('googleContactSync')
     }
-    googleSyncFactory(GoogleSyncFactory) { bean ->
-        bean.factoryMethod = 'getDefaultInstance'
-        grailsApplication = ref('grailsApplication')
-    }
-    "${GoogleSyncType.CONTACT.beanName}"(GoogleContactSync) { bean ->
-        bean.singleton = false
+    googleContactSync(GoogleContactSync) {
         googleOAuthService = ref('googleOAuthService')
         messageSource = ref('messageSource')
     }
-    "${GoogleSyncType.CALENDAR.beanName}"(GoogleCalendarSync) { bean ->
-        bean.singleton = false
+    googleCalendarSync(GoogleCalendarSync) {
         googleOAuthService = ref('googleOAuthService')
         messageSource = ref('messageSource')
     }

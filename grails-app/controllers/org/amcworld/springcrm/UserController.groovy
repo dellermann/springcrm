@@ -221,6 +221,7 @@ class UserController {
 
         session.user = userInstance
         setUserLocale()
+
         redirect controller: 'overview', action: 'index'
     }
 
@@ -228,11 +229,13 @@ class UserController {
         flash.message = message(code: 'user.logout.message')
         session.user = null
         session.invalidate()
+
         redirect action: 'login'
     }
 
     def storeSetting() {
         session.user.settings[params.key] = params.value
+
         render status: HttpServletResponse.SC_OK
     }
 
@@ -241,16 +244,20 @@ class UserController {
     def settingsLanguage() {
         Map<String, String> locales = userService.availableLocales.collectEntries { [it.toString(), it.displayName] }
         locales = locales.sort { a, b -> a.value <=> b.value }
+
         [locales: locales, currentLocale: userService.currentLocale.toString()]
     }
 
     def settingsLanguageSave(String locale) {
         setUserLocale locale
+
         redirect action: 'settingsIndex'
     }
 
     def settingsGoogleAuth() {
-        Credential cred = googleOAuthService.loadCredential()
+        Credential cred =
+            googleOAuthService.loadCredential(session.user.userName)
+
         [authorized: cred != null]
     }
 
@@ -281,7 +288,10 @@ class UserController {
             return
         }
 
-        if (!googleOAuthService.obtainAndStoreCredential(params.clientId)) {
+        boolean res = googleOAuthService.obtainAndStoreCredential(
+            session.user.userName, params.clientId
+        )
+        if (!res) {
             flash.message = message(
                 code: 'user.settings.googleAuth.failed.message'
             )
@@ -296,7 +306,7 @@ class UserController {
     }
 
     def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy()
+        googleOAuthService.revokeAtProxy(session.user.userName)
 
         flash.message = message(
             code: 'user.settings.googleAuth.revoked.message'
@@ -307,7 +317,7 @@ class UserController {
 
     //-- Non-public methods ---------------------
 
-    protected void setUserLocale(String locale = null) {
+    private void setUserLocale(String locale = null) {
         if (locale) {
             session.user.settings.locale = locale
         } else {

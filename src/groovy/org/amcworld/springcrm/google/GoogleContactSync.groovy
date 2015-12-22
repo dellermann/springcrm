@@ -1,7 +1,7 @@
 /*
  * GoogleContactSync.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm.google
 
+import com.google.api.client.auth.oauth2.Credential
 import com.google.gdata.client.GoogleService
 import com.google.gdata.client.Query
 import com.google.gdata.client.Service.GDataRequest
@@ -33,8 +34,13 @@ import com.google.gdata.util.ContentType
 import com.google.gdata.util.InvalidEntryException
 import com.google.gdata.util.PreconditionFailedException
 import com.google.gdata.util.ResourceNotFoundException
+import com.google.gdata.util.ServiceForbiddenException
+import groovy.transform.CompileStatic
 import net.sf.jmimemagic.Magic
+import org.amcworld.springcrm.Address
+import org.amcworld.springcrm.Organization
 import org.amcworld.springcrm.Person
+import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
@@ -43,22 +49,17 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.0
  */
-class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
+class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
 
     //-- Constants ------------------------------
 
     protected static final URL FEED_URL =
         new URL('https://www.google.com/m8/feeds/contacts/default/full')
 
-    private static final log = LogFactory.getLog(this)
-
-
-    //-- Instance variables ---------------------
-
-    protected GoogleService svc
+    private static final Log log = LogFactory.getLog(this)
 
 
     //-- Constructors ---------------------------
@@ -73,6 +74,26 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
 
     //-- Non-public methods ---------------------
 
+    /**
+     * Converts the given Google address to a local address object.
+     *
+     * @param localAddr the given local address
+     * @param addr      the Google address
+     * @since 2.0
+     */
+    @CompileStatic
+    private void convertToAddress(Address localAddr,
+                                  StructuredPostalAddress addr)
+    {
+        localAddr.street = addr.street?.value
+        localAddr.poBox = addr.pobox?.value
+        localAddr.postalCode = addr.postcode?.value
+        localAddr.location = addr.city?.value
+        localAddr.state = addr.region?.value
+        localAddr.country = addr.country?.value
+    }
+
+    @CompileStatic
     protected ContactEntry convertToGoogle(Person p,
                                            ContactEntry contact = null)
     {
@@ -229,7 +250,8 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
     }
 
     @Override
-    protected Person convertToLocal(Person localEntry, ContactEntry googleEntry)
+    protected Person convertToLocal(GoogleService service, Person localEntry,
+                                    ContactEntry googleEntry)
         throws RecoverableGoogleSyncException
     {
         List<GDataOrg> organizations = googleEntry.organizations
@@ -261,18 +283,16 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             localEntry.title = name.namePrefix.toString()
         }
 
-        localEntry.mailingAddrStreet = null
-        localEntry.mailingAddrPoBox = null
-        localEntry.mailingAddrPostalCode = null
-        localEntry.mailingAddrLocation = null
-        localEntry.mailingAddrState = null
-        localEntry.mailingAddrCountry = null
-        localEntry.otherAddrStreet = null
-        localEntry.otherAddrPoBox = null
-        localEntry.otherAddrPostalCode = null
-        localEntry.otherAddrLocation = null
-        localEntry.otherAddrState = null
-        localEntry.otherAddrCountry = null
+        if (localEntry.mailingAddr == null) {
+            localEntry.mailingAddr = new Address()
+        } else {
+            localEntry.mailingAddr.clear()
+        }
+        if (localEntry.otherAddr == null) {
+            localEntry.otherAddr = new Address()
+        } else {
+            localEntry.otherAddr.clear()
+        }
         boolean mailingAddrSet = false
         boolean otherAddrSet = false
         for (StructuredPostalAddress addr : googleEntry.structuredPostalAddresses)
@@ -280,22 +300,12 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
             if (!mailingAddrSet
                 && (StructuredPostalAddress.Rel.WORK == addr.rel))
             {
-                localEntry.mailingAddrStreet = addr.street?.value
-                localEntry.mailingAddrPoBox = addr.pobox?.value
-                localEntry.mailingAddrPostalCode = addr.postcode?.value
-                localEntry.mailingAddrLocation = addr.city?.value
-                localEntry.mailingAddrState = addr.region?.value
-                localEntry.mailingAddrCountry = addr.country?.value
+                convertToAddress localEntry.mailingAddr, addr
                 mailingAddrSet = true
             } else if (!otherAddrSet
                        && (StructuredPostalAddress.Rel.OTHER == addr.rel))
             {
-                localEntry.otherAddrStreet = addr.street?.value
-                localEntry.otherAddrPoBox = addr.pobox?.value
-                localEntry.otherAddrPostalCode = addr.postcode?.value
-                localEntry.otherAddrLocation = addr.city?.value
-                localEntry.otherAddrState = addr.region?.value
-                localEntry.otherAddrCountry = addr.country?.value
+                convertToAddress localEntry.otherAddr, addr
                 otherAddrSet = true
             }
         }
@@ -352,7 +362,9 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 break
             }
         }
-        localEntry.birthday = googleEntry.hasBirthday() ? Date.parse('yyyy-MM-dd', googleEntry.birthday.value) : null
+        localEntry.birthday = googleEntry.hasBirthday() \
+            ? Date.parse('yyyy-MM-dd', googleEntry.birthday.value)
+            : null
         localEntry.picture = null
         Link photoLink = googleEntry.contactPhotoLink
         if (photoLink && photoLink.etag) {
@@ -372,30 +384,36 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
     }
 
     @Override
+    @CompileStatic
     protected void deleteGoogleEntry(ContactEntry entry) {
         entry.delete()
     }
 
     @Override
+    @CompileStatic
     protected boolean getAllowLocalCreate() {
         getBooleanSystemConfig 'syncContactsOptionsAllowCreate'
     }
 
     @Override
+    @CompileStatic
     protected boolean getAllowLocalDelete() {
         getBooleanSystemConfig 'syncContactsOptionsAllowDelete'
     }
 
     @Override
+    @CompileStatic
     protected boolean getAllowLocalModify() {
         getBooleanSystemConfig 'syncContactsOptionsAllowModify'
     }
 
     @Override
+    @CompileStatic
     protected String getEtag(ContactEntry entry) {
         entry.etag
     }
 
+    @CompileStatic
     private String getOrgOtherRelLabel() {
         messageSource.getMessage(
             'default.google.rel.orgOther', null, 'Company (other)',
@@ -403,32 +421,31 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         )
     }
 
+    @CompileStatic
     private String getOrgRelLabel() {
         messageSource.getMessage(
             'default.google.rel.org', null, 'Company', LCH.getLocale()
         )
     }
 
-    /**
-     * Gets access to the underlying Google API service.  The service is fully
-     * authenticated.
-     *
-     * @return  the Google API service instance
-     */
-    protected synchronized GoogleService getService() {
-        if (!svc) {
-            svc = new ContactsService(APPLICATION_NAME)
-            svc.protocolVersion = ContactsService.Versions.V3
-        }
-        svc.OAuth2Credentials = loadCredential()
+    @Override
+    @CompileStatic
+    protected GoogleService getService(Credential credential) {
+        GoogleService svc = new ContactsService(APPLICATION_NAME)
+        svc.protocolVersion = ContactsService.Versions.V3
+        svc.OAuth2Credentials = credential
+
         svc
     }
 
+    @Override
+    @CompileStatic
     protected String getUrl(ContactEntry entry) {
         entry.selfLink.href
     }
 
     @Override
+    @CompileStatic
     protected String googleEntryToString(ContactEntry entry) {
         StringBuilder res = new StringBuilder()
         Name name = entry?.name
@@ -441,16 +458,22 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 res << name.givenName.value
             }
         }
+
         res.toString()
     }
 
     @Override
-    protected ContactEntry insertGoogleEntry(ContactEntry entry) {
+    @CompileStatic
+    protected ContactEntry insertGoogleEntry(GoogleService service,
+                                             ContactEntry entry)
+    {
         service.insert FEED_URL, entry
     }
 
     @Override
-    protected Map<String, ContactEntry> loadGoogleEntries() {
+    @CompileStatic
+    protected Map<String, ContactEntry> loadGoogleEntries(GoogleService service)
+    {
         Map<String, ContactEntry> res = null
         try {
             ContactFeed feed = service.getFeed(FEED_URL, ContactFeed)
@@ -472,44 +495,49 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         } catch (ResourceNotFoundException ignored) {
             /* already handled -> res = null */
         }
+
         res
     }
 
-    /*
-     * XXX Currently, updating the photo doesn't work.  It deletes all
-     * property values of the Google entry which were created before (using
-     * insertGoogleEntry).  Maybe this is a problem at Google, so we wait some
-     * time and try it later.
-     */
-//    @Override
-//    protected ContactEntry syncInsertGoogle(Person localEntry) {
-//        ContactEntry googleEntry = super.syncInsertGoogle(localEntry)
-//        updatePhoto localEntry, googleEntry
-//        googleEntry
-//    }
+    @Override
+    @CompileStatic
+    protected ContactEntry syncInsertGoogle(GoogleService service,
+                                            Person localEntry)
+    {
+        ContactEntry googleEntry = super.syncInsertGoogle(service, localEntry)
+        updatePhoto service, localEntry, googleEntry
+        googleEntry
+    }
 
     @Override
+    @CompileStatic
     protected Person syncInsertLocal(ContactEntry googleEntry) {
         updateOrganization googleEntry
         super.syncInsertLocal googleEntry
     }
 
     @Override
-    protected void syncUpdateGoogle(Person localEntry, ContactEntry googleEntry)
+    @CompileStatic
+    protected void syncUpdateGoogle(GoogleService service, Person localEntry,
+                                    ContactEntry googleEntry)
     {
-        super.syncUpdateGoogle(localEntry, googleEntry)
-        updatePhoto(localEntry, googleEntry)
+        super.syncUpdateGoogle(service, localEntry, googleEntry)
+        updatePhoto service, localEntry, googleEntry
     }
 
     @Override
-    protected void syncUpdateLocal(Person localEntry, ContactEntry googleEntry)
+    @CompileStatic
+    protected void syncUpdateLocal(GoogleService service, Person localEntry,
+                                   ContactEntry googleEntry)
     {
         updateOrganization googleEntry
-        super.syncUpdateLocal localEntry, googleEntry
+        super.syncUpdateLocal service, localEntry, googleEntry
     }
 
     @Override
-    protected void updateGoogleEntry(ContactEntry entry) {
+    @CompileStatic
+    protected void updateGoogleEntry(GoogleService service, ContactEntry entry)
+    {
         service.update new URL(entry.editLink.href), entry
     }
 
@@ -535,18 +563,17 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
         String orgName = organization.orgName.value
         Organization org = Organization.findByName(orgName)
         if (!org) {
-            org = new Organization(name: orgName, recType: 1)
+            org = new Organization(
+                name: orgName, recType: 1, shippingAddr: new Address()
+            )
             boolean shippingAddrSet = false
-            for (StructuredPostalAddress addr : googleEntry.structuredPostalAddresses) {
+            for (StructuredPostalAddress addr :
+                 googleEntry.structuredPostalAddresses)
+            {
                 if (!shippingAddrSet
                     && (StructuredPostalAddress.Rel.WORK == addr.rel))
                 {
-                    org.shippingAddrStreet = addr.street?.value
-                    org.shippingAddrPoBox = addr.pobox?.value
-                    org.shippingAddrPostalCode = addr.postcode?.value
-                    org.shippingAddrLocation = addr.city?.value
-                    org.shippingAddrState = addr.region?.value
-                    org.shippingAddrCountry = addr.country?.value
+                    convertToAddress org.shippingAddr, addr
                     shippingAddrSet = true
                 }
             }
@@ -589,21 +616,29 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
     /**
      * Updates the photo of the given local person entry at Google.
      *
+     * @param service       the underlying Google service
      * @param localEntry    the given local person entry
      * @param googleEntry   the associated Google entry
      */
-    private void updatePhoto(Person localEntry, ContactEntry googleEntry) {
+    private void updatePhoto(GoogleService service, Person localEntry,
+                             ContactEntry googleEntry)
+    {
         Link photoLink = googleEntry.contactPhotoLink
+        String etag = photoLink.etag
+        String href = photoLink.href
+
         def picture = localEntry.picture
         if (picture) {
             if (log.debugEnabled) {
                 log.debug "Updating photo for ${localEntry}…"
             }
             GDataRequest request = service.createRequest(
-                GDataRequest.RequestType.UPDATE, new URL(photoLink.href),
+                GDataRequest.RequestType.UPDATE, new URL(href),
                 new ContentType(Magic.getMagicMatch(picture).mimeType)
             )
-            request.etag = photoLink.etag
+            if (etag && etag != '*') {
+                request.etag = etag
+            }
             request.requestStream.write picture
             try {
                 request.execute()
@@ -611,14 +646,16 @@ class GoogleContactSync extends GoogleSync<Person, ContactEntry> {
                 log.debug "Photo for ${localEntry} changed by third party."
             } catch (InvalidEntryException e) {
                 log.debug "Cannot update picture for person ${localEntry}: ${e.message}"
+            } catch (ServiceForbiddenException e) {
+                log.warn 'Cannot access update service', e
             } finally {
                 request.end()
             }
-        } else if (photoLink.etag) {
+        } else if (etag) {
             if (log.debugEnabled) {
                 log.debug "Deleting photo of ${localEntry}…"
             }
-            service.delete new URL(photoLink.href), photoLink.etag
+            service.delete new URL(href), etag
         }
     }
 }

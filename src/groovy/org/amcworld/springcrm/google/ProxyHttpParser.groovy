@@ -1,7 +1,7 @@
 /*
  * ProxyHttpParser.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2015, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@ package org.amcworld.springcrm.google
 import com.google.api.client.auth.oauth2.TokenResponse
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.JsonParser
+import com.google.api.client.util.GenericData
 import com.google.api.client.util.ObjectParser
 import com.google.api.client.util.Preconditions
 import com.google.api.client.util.Types
+import groovy.transform.CompileStatic
 import java.lang.reflect.Type
 import java.nio.charset.Charset
 
@@ -38,14 +40,19 @@ import java.nio.charset.Charset
  * pairs in the form {@code key=value}.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.0
  */
-class ProxyHttpParser implements ObjectParser {
+@CompileStatic
+final class ProxyHttpParser implements ObjectParser {
 
     //-- Instance variables ---------------------
 
-    JsonFactory jsonFactory
+    /**
+     * The JSON parser factory used to create JSON parsers for the received
+     * token responses.
+     */
+    final JsonFactory jsonFactory
 
 
     //-- Constructors ---------------------------
@@ -72,18 +79,17 @@ class ProxyHttpParser implements ObjectParser {
     @Override
     Object parseAndClose(Reader reader, Type dataType) throws IOException {
         Preconditions.checkArgument(
-            dataType instanceof Class<Map<String, Object>>,
-            'dataType has to be of type Class<Map<String, Object>>'
+            dataType instanceof Class<GenericData>,
+            'dataType has to be of type Class<GenericData>'
         )
 
-        Map<String, Object> res =
-            Types.newInstance((Class<Map<String, Object>>) dataType)
+        GenericData res = Types.newInstance((Class<GenericData>) dataType)
 
         /* read first line (status code and message) */
         String line = reader.readLine()
         String [] parts = line.split()
-        res.put 'code', parts[0] as Short
-        res.put 'message', parts[1]
+        res.set('code', parts[0] as Short)
+            .set('message', parts[1])
 
         /* read further lines (key/value pairs) */
         while ((line = reader.readLine()) != null) {
@@ -91,16 +97,20 @@ class ProxyHttpParser implements ObjectParser {
             if (parts.length == 2) {
                 String key = parts[0]
                 def value = parts[1]
-                if (key == 'tokenResponse') {
+                switch (key) {
+                case 'tokenResponse':
                     value = parseTokenResponse(value)
+                    break
+                case 'data':
+                    value = jsonFactory.fromString(value, HashMap)
+                    break
                 }
-                res.put key, value
+                res.set key, value
             }
         }
 
         res
     }
-
 
     @Override
     <T> T parseAndClose(InputStream stream, Charset charset,
@@ -115,7 +125,7 @@ class ProxyHttpParser implements ObjectParser {
     Object parseAndClose(InputStream stream, Charset charset, Type dataType)
         throws IOException
     {
-        def reader = new InputStreamReader(stream, charset)
+        InputStreamReader reader = new InputStreamReader(stream, charset)
         parseAndClose reader, dataType
     }
 

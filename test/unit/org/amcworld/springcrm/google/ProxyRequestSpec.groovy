@@ -42,7 +42,7 @@ tokenResponse={"access_token":"access4040$Token-4711","expires_in":3600,"refresh
 
         and: 'a proxy request'
         def req = new ProxyRequest(
-            transport, GoogleService.JSON_FACTORY, 'refreshToken'
+            transport, GoogleSync.JSON_FACTORY, 'refreshToken'
         )
 
         when: 'I execute this request without parsing'
@@ -67,7 +67,7 @@ tokenResponse={"access_token":"access4040$Token-4711","expires_in":3600,"refresh
 
         and: 'a proxy request'
         def req = new ProxyRequest(
-            transport, GoogleService.JSON_FACTORY, 'refreshToken'
+            transport, GoogleSync.JSON_FACTORY, 'refreshToken'
         )
 
         when: 'I execute this request with parsing'

@@ -79,8 +79,7 @@ grails.project.dependency.resolution = {
     dependencies {
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-        compile 'com.google.apis:google-api-services-calendar:v3-rev85-1.18.0-rc'
-        compile 'com.google.http-client:google-http-client-jackson2:1.18.0-rc'
+        compile 'com.google.apis:google-api-services-calendar:v3-rev157-1.21.0'
         compile 'commons-fileupload:commons-fileupload:1.3.1'
         compile 'commons-io:commons-io:2.4'
         compile 'jmimemagic:jmimemagic:0.1.2'
@@ -98,7 +97,6 @@ grails.project.dependency.resolution = {
         }
         */
 
-        runtime 'com.google.guava:guava:17.0'
         runtime 'mysql:mysql-connector-java:5.1.27'
         runtime 'net.sf.offo:fop-hyph:1.2'
         runtime 'org.grails:grails-datastore-gorm:3.1.5.RELEASE'    // change version after updating Grails
@@ -124,30 +122,25 @@ grails.project.dependency.resolution = {
      * - elasticsearch
      */
     plugins {
-        compile(
-            ':asset-pipeline:2.6.10',
-//            ':codenarc:0.24.1',
-            ':coffee-asset-pipeline:2.6.7',
-            ':dbunit-operator:1.7',
-            ':fields:1.5.1',
-            ':handlebars-asset-pipeline:2.6.7',
-            ':i18n-asset-pipeline:1.0.6',
-            ':less-asset-pipeline:2.6.7',
-            ':mail:1.0.7',
-            ':markdown:1.1.1',
-            ':scaffolding:2.1.2'
-        )
-        build(
-            ':tomcat:7.0.54'
-        )
-        runtime(
-            ':database-migration:1.4.1',
-//            ':elasticsearch:0.0.4.6',
-            ':hibernate:3.6.10.17'
-        )
-        test(
-            ":geb:${gebVersion}"
-        )
+        compile ':asset-pipeline:2.6.10'
+//        compile ':codenarc:0.24.1'
+        compile ':coffee-asset-pipeline:2.6.7'
+        compile ':dbunit-operator:1.7'
+        compile ':fields:1.5.1'
+        compile ':handlebars-asset-pipeline:2.6.7'
+        compile ':i18n-asset-pipeline:1.0.6'
+        compile ':less-asset-pipeline:2.6.7'
+        compile ':mail:1.0.7'
+        compile ':markdown:1.1.1'
+        compile ':scaffolding:2.1.2'
+
+        build ':tomcat:7.0.54'
+
+        runtime ':database-migration:1.4.1'
+//        runtime ':elasticsearch:0.0.4.6'
+        runtime ':hibernate:3.6.10.17'
+
+        test ":geb:${gebVersion}"
     }
 }
 
