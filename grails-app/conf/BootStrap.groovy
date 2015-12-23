@@ -21,7 +21,9 @@
 import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.InstallService
+import org.amcworld.springcrm.InstallerDisableTask
 import org.amcworld.springcrm.OverviewPanelRepository
+import org.amcworld.springcrm.google.GoogleContactSyncTask
 import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
@@ -30,7 +32,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  * application.
  *
  * @author  Daniel Ellermann
- * @version 1.5
+ * @version 2.0
  */
 class BootStrap {
 
@@ -43,6 +45,7 @@ class BootStrap {
 
     def dataSource
     def exceptionHandler
+    GoogleContactSyncTask googleContactSyncTask
     GrailsApplication grailsApplication
     InstallService installService
     def springcrmConfig
@@ -79,14 +82,14 @@ class BootStrap {
         installService.migrateData dataSource.connection
 
         /* start tasks */
-        def task = grailsApplication.mainContext.getBean(
-            'googleContactSyncTask'
-        )
         Config config =
             ConfigHolder.instance.getConfig('syncContactsFrequency')
         long interval = (config ? (config.value as Long) : 5L) * 60000L
         Timer timer = new Timer('tasks')
-        timer.schedule task, interval, interval
+        timer.schedule googleContactSyncTask, interval, interval
+        InstallerDisableTask installDisableTask =
+            new InstallerDisableTask(installService: installService)
+        timer.schedule installDisableTask, interval, interval
 
         /* initialize panels on overview page */
         OverviewPanelRepository opr = OverviewPanelRepository.instance

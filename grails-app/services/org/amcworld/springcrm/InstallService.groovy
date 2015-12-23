@@ -45,7 +45,22 @@ class InstallService {
      * The directory containing the packages with base data which are loaded
      * into the database during installation.
      */
-    protected static final String BASE_PACKAGE_DIR = '/WEB-INF/data/install'
+    private static final String BASE_PACKAGE_DIR = '/WEB-INF/data/install'
+
+    /**
+     * The expiration time of the enable file in milliseconds.  After that time
+     * the enable file should be removed.
+     *
+     * @since 2.0
+     */
+    private static final long ENABLE_FILE_EXPIRATION_TIME = 15 * 60000
+
+    /**
+     * The name of the enable file.
+     *
+     * @since 2.0
+     */
+    private static final String ENABLE_FILE_NAME = 'ENABLE_INSTALLER'
 
 
     //-- Instance variables ---------------------
@@ -157,6 +172,19 @@ class InstallService {
     }
 
     /**
+     * Checks whether or not the enable file has been expired.
+     *
+     * @return  {@code true} if the enable file has been expired; {@code false}
+     *          otherwise
+     * @since   2.0
+     */
+    boolean isEnableFileExpired() {
+        long mod = enableFile.lastModified()
+        mod == 0 ? false
+            : System.currentTimeMillis() - mod > ENABLE_FILE_EXPIRATION_TIME
+    }
+
+    /**
      * Checks whether or not the installer is enabled.  The installer is enable
      * if there is a file {@code ENABLE_INSTALLER} in the installer directory
      * as specified in the configuration file in key
@@ -251,7 +279,7 @@ class InstallService {
         if (!dir.exists()) {
             dir.mkdirs()
         }
-        new File(dir, 'ENABLE_INSTALLER')
+        new File(dir, ENABLE_FILE_NAME)
     }
 
     /**
