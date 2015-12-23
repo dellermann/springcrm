@@ -27,9 +27,9 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.0
  */
-class Invoice extends InvoicingTransaction {
+class Invoice extends InvoicingTransaction implements PayableAndDue {
 
-    //-- Class variables ------------------------
+    //-- Static fields --------------------------
 
     static constraints = {
         stage()
@@ -48,11 +48,11 @@ class Invoice extends InvoicingTransaction {
     }
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
-        'paymentStateColor'
+        'payable', 'paymentStateColor'
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     def userService
 
@@ -109,6 +109,25 @@ class Invoice extends InvoicingTransaction {
     }
 
     /**
+     * Gets the name of a color indicating the status of the balance of this
+     * invoice.  This property is usually used to compute CSS classes in the
+     * views.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    String getBalanceColor() {
+        String color = 'default'
+        if (closingBalance < 0.0d) {
+            color = 'red'
+        } else if (closingBalance > 0.0d) {
+            color = 'green'
+        }
+
+        color
+    }
+
+    /**
      * Gets the closing balance of this invoice.  The closing balance is
      * calculated from the invoice balance plus the sum of the balances of
      * all credit memos associated to this invoice.  A negative balance
@@ -124,24 +143,6 @@ class Invoice extends InvoicingTransaction {
     }
 
     /**
-     * Gets the name of a color indicating the status of the balance of this
-     * invoice.  This property is usually use to compute CSS classes in the
-     * views.
-     *
-     * @return  the indicator color
-     * @since   1.0
-     */
-    String getBalanceColor() {
-        String color = 'default'
-        if (closingBalance < 0.0d) {
-            color = 'red'
-        } else if (closingBalance > 0.0d) {
-            color = 'green'
-        }
-        color
-    }
-
-    /**
      * Gets the modified closing balance which is needed in views to compute
      * the still unpaid value dynamically.
      *
@@ -153,8 +154,21 @@ class Invoice extends InvoicingTransaction {
     }
 
     /**
+     * Gets the payable amount of this invoice.  It is calculated from the
+     * total amount minus the sum of the balances of all credit memos
+     * associated to this invoice.  A positive value indicates a claim to the
+     * customer, a positive one indicates a credit of the customer.
+     *
+     * @return  the payable amount
+     * @since   2.0
+     */
+    double getPayable() {
+        (total - (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
+    }
+
+    /**
      * Gets the name of a color indicating the payment state of this invoice.
-     * This property is usually use to compute CSS classes in the views.
+     * This property is usually used to compute CSS classes in the views.
      *
      * @return  the indicator color
      * @since   1.0
@@ -171,7 +185,7 @@ class Invoice extends InvoicingTransaction {
         case 905:                       // cashing
             color = 'blue'
             break
-        case 904:                       // dunned
+        case 904:                       // reminded
             color = 'purple'
             break
         case 903:                       // paid
@@ -195,7 +209,7 @@ class Invoice extends InvoicingTransaction {
      * @return  the indicator color
      * @since   1.0
      */
-    protected String colorIndicatorByDate() {
+    private String colorIndicatorByDate() {
         String color = 'default'
         Date d = new Date()
         if (d >= dueDatePayment - 3) {
@@ -207,6 +221,7 @@ class Invoice extends InvoicingTransaction {
                 color = 'red'
             }
         }
+
         color
     }
 }

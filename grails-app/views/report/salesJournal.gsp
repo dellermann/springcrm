@@ -105,7 +105,7 @@
             <g:if test="${invoicingTransactionInstance.type != group}"
               ><g:set var="group" value="${invoicingTransactionInstance.type}"
             /></g:if>
-            <td class="col-type-date sales-journal-doc-date" style="text-align: center;"><g:formatDate date="${invoicingTransactionInstance?.docDate}" formatName="default.format.date" /></td>
+            <td class="col-type-date sales-journal-doc-date"><g:formatDate date="${invoicingTransactionInstance?.docDate}" formatName="default.format.date" /></td>
             <td class="col-type-id sales-journal-number"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="fullNumber" /></g:link></td>
             <td class="col-type-ref sales-journal-organization"><g:link controller="organization" action="show" id="${invoicingTransactionInstance.organization?.id}"><g:fieldValue bean="${invoicingTransactionInstance}" field="organization" /></g:link></td>
             <td class="col-type-string sales-journal-subject"><g:link controller="${invoicingTransactionInstance.type == 'I' ? 'invoice' : (invoicingTransactionInstance.type == 'D' ? 'dunning' : 'creditMemo')}" action="show" id="${invoicingTransactionInstance.id}">${invoicingTransactionInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>

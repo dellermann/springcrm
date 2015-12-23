@@ -1,5 +1,5 @@
 /*
- * report-sales-journal.less
+ * report-outstanding-items.less
  *
  * Copyright (c) 2011-2015, Daniel Ellermann
  *
@@ -23,9 +23,18 @@
 @import "_report";
 
 
-@media print {
-  @page {
-    size: landscape;
+.outstanding-items-form {
+  display: table;
+  margin-bottom: (2 * @line-height-computed);
+  width: 100%;
+
+  > .form-group {
+    display: table-cell;
+    padding-right: @padding-small-horizontal;
+    width: 100%;
+  }
+  > .btn {
+    display: table-cell;
   }
 }
 

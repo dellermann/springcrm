@@ -22,14 +22,14 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code CreditMemo} represents a credit memo.
+ * The class {@code CreditMemo} represents a credit note.
  *
  * @author  Daniel Ellermann
  * @version 2.0
  */
-class CreditMemo extends InvoicingTransaction {
+class CreditMemo extends InvoicingTransaction implements Payable {
 
-    //-- Class variables ------------------------
+    //-- Static fields --------------------------
 
     static constraints = {
         stage()
@@ -45,10 +45,10 @@ class CreditMemo extends InvoicingTransaction {
     }
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
-        'paymentStateColor'
+        'payable', 'paymentStateColor'
     ]
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     def userService
 
@@ -93,8 +93,8 @@ class CreditMemo extends InvoicingTransaction {
     //-- Properties -----------------------------
 
     /**
-     * Gets the balance of this credit memo, that is the difference between the
-     * credit memo total sum and the payment amount.
+     * Gets the balance of this credit note, that is the difference between the
+     * credit note total sum and the payment amount.
      *
      * @return  the credit memo balance
      * @since   1.0
@@ -106,10 +106,10 @@ class CreditMemo extends InvoicingTransaction {
     }
 
     /**
-     * Gets the closing balance of the invoice or dunning associated to this
-     * credit memo.  The closing balance is calculated from the balance of the
-     * associated invoice or dunning minus the sum of the balances of all its
-     * credit memos.  A negative balance indicates a claim to the customer, a
+     * Gets the closing balance of the invoice or reminder associated to this
+     * credit note.  The closing balance is calculated from the balance of the
+     * associated invoice or reminder minus the sum of the balances of all its
+     * credit notes.  A negative balance indicates a claim to the customer, a
      * positive one indicates a credit of the customer.
      *
      * @return  the closing balance
@@ -124,8 +124,8 @@ class CreditMemo extends InvoicingTransaction {
 
     /**
      * Gets the name of a color indicating the status of the balance of this
-     * invoice.  This property is usually use to compute CSS classes in the
-     * views.
+     * credit note.  This property is usually used to compute CSS classes in
+     * the views.
      *
      * @return  the indicator color
      * @since   1.0
@@ -137,6 +137,7 @@ class CreditMemo extends InvoicingTransaction {
         } else if (closingBalance < 0.0d) {
             color = 'green'
         }
+
         color
     }
 
@@ -152,8 +153,19 @@ class CreditMemo extends InvoicingTransaction {
     }
 
     /**
+     * Gets the payable amount of this credit note.  It is the same as the
+     * total value.
+     *
+     * @return  the payable amount
+     * @since   2.0
+     */
+    double getPayable() {
+        total
+    }
+
+    /**
      * Gets the name of a color indicating the payment state of this credit
-     * memo.
+     * note.
      *
      * @return  the indicator color
      */
@@ -163,6 +175,7 @@ class CreditMemo extends InvoicingTransaction {
         if ((id >= 2502) && (id <= 2504)) {     // cancelled, paid, delivered
             color = (closingBalance >= 0.0d) ? 'green' : 'red'
         }
+
         color
     }
 }

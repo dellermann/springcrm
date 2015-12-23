@@ -45,6 +45,15 @@
               args="[message(code: 'invoice.label')]" />
           </g:link>
         </li>
+        <g:if test="${organizationInstance.customer}">
+        <li role="separator" class="divider"></li>
+        <li role="menuitem">
+          <g:link controller="report" action="outstandingItems"
+            params="['organization.id': organizationInstance.id]">
+            <g:message code="report.outstandingItems.title" />
+          </g:link>
+        </li>
+        </g:if>
         </g:if>
       </content>
 

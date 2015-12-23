@@ -22,14 +22,14 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code Dunning} represents a dunning which belongs to an invoice.
+ * The class {@code Dunning} represents a reminder which belongs to an invoice.
  *
  * @author  Daniel Ellermann
  * @version 2.0
  */
-class Dunning extends InvoicingTransaction {
+class Dunning extends InvoicingTransaction implements PayableAndDue {
 
-    //-- Class variables ------------------------
+    //-- Static fields --------------------------
 
     static constraints = {
         level()
@@ -47,11 +47,11 @@ class Dunning extends InvoicingTransaction {
     }
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
-        'paymentStateColor'
+        'payable', 'paymentStateColor'
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     def userService
 
@@ -93,13 +93,13 @@ class Dunning extends InvoicingTransaction {
     //-- Properties -----------------------------
 
     /**
-     * Gets the balance of this dunning, that is the difference between the
-     * payment amount and the dunning total sum.
+     * Gets the balance of this reminder, that is the difference between the
+     * payment amount and the reminder total sum.
      * <p>
-     * Note that the dunning balance does not take any credit memos into
+     * Note that the reminder balance does not take any credit memos into
      * account.  Use method {@code getClosingBalance} for it.
      *
-     * @return  the dunning balance
+     * @return  the reminder balance
      * @since   1.0
      * @see     #getClosingBalance()
      */
@@ -109,9 +109,9 @@ class Dunning extends InvoicingTransaction {
     }
 
     /**
-     * Gets the closing balance of this dunning.  The closing balance is
-     * calculated from the dunning balance plus the sum of the balances of
-     * all credit memos associated to this dunning.  A negative balance
+     * Gets the closing balance of this reminder.  The closing balance is
+     * calculated from the reminder balance plus the sum of the balances of
+     * all credit memos associated to this reminder.  A negative balance
      * indicates a claim to the customer, a positive one indicates a credit of
      * the customer.
      *
@@ -125,7 +125,7 @@ class Dunning extends InvoicingTransaction {
 
     /**
      * Gets the name of a color indicating the status of the balance of this
-     * dunning.  This property is usually use to compute CSS classes in the
+     * reminder.  This property is usually used to compute CSS classes in the
      * views.
      *
      * @return  the indicator color
@@ -138,6 +138,7 @@ class Dunning extends InvoicingTransaction {
         } else if (closingBalance > 0.0d) {
             color = 'green'
         }
+
         color
     }
 
@@ -153,8 +154,21 @@ class Dunning extends InvoicingTransaction {
     }
 
     /**
-     * Gets the name of a color indicating the payment state of this dunning.
-     * This property is usually use to compute CSS classes in the views.
+     * Gets the payable amount of this reminder.  It is calculated from the
+     * total amount minus the sum of the balances of all credit memos
+     * associated to this reminder.  A positive value indicates a claim to the
+     * customer, a positive one indicates a credit of the customer.
+     *
+     * @return  the payable amount
+     * @since   2.0
+     */
+    double getPayable() {
+        (total - (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
+    }
+
+    /**
+     * Gets the name of a color indicating the payment state of this reminder.
+     * This property is usually used to compute CSS classes in the views.
      *
      * @return  the indicator color
      * @since   1.0
@@ -178,6 +192,7 @@ class Dunning extends InvoicingTransaction {
             color = colorIndicatorByDate()
             break
         }
+
         color
     }
 
@@ -191,7 +206,7 @@ class Dunning extends InvoicingTransaction {
      * @return  the indicator color
      * @since   1.0
      */
-    protected String colorIndicatorByDate() {
+    private String colorIndicatorByDate() {
         String color = 'default'
         Date d = new Date()
         if (d >= dueDatePayment - 3) {
@@ -203,6 +218,7 @@ class Dunning extends InvoicingTransaction {
                 color = 'red'
             }
         }
+
         color
     }
 }

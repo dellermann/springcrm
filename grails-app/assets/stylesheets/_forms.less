@@ -161,8 +161,13 @@
 .form-horizontal .control-label {
   text-align: left;
 }
-.form-inline > .form-group > label {
-  padding-right: 1em;
+.form-inline > .form-group > {
+  label {
+    padding-right: 1em;
+  }
+  .selectize-input {
+    overflow: inherit;
+  }
 }
 .input-group {
   + .checkbox {

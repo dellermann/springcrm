@@ -114,4 +114,26 @@ class ReportController {
             totalPaymentAmount: totalPaymentAmount
         ]
     }
+
+    def outstandingItems(Organization organization) {
+        List<PayableAndDue> l = []
+        double total = 0
+        double totalPaymentAmount = 0
+        if (organization) {
+            l.addAll Invoice.findAllByOrganization(organization, params)
+            l.addAll Dunning.findAllByOrganization(organization, params)
+
+            l = l.findAll { it.closingBalance < 0 }
+            if (l) {
+                total = l*.total.sum()
+                totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
+            }
+        }
+
+        [
+            organizationInstance: organization,
+            invoicingTransactionInstanceList: l,
+            total: total, totalPaymentAmount: totalPaymentAmount
+        ]
+    }
 }
