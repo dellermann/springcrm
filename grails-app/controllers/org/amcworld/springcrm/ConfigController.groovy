@@ -69,13 +69,16 @@ class ConfigController {
                 String sym = it.getSymbol(locale)
                 [cc, cc + ((cc == sym) ? '' : " (${sym})")]
             }
-        String currentCurrency = ConfigHolder.instance['currency'] as String
+        ConfigHolder holder = ConfigHolder.instance
+        String currentCurrency = holder['currency'].toString()
+        int termOfPayment = holder['termOfPayment'].toType(Integer)
 
         [
             currencies: currencies.sort { a, b -> a.key <=> b.key },
             currentCurrency: currentCurrency,
             numFractionDigits: userService.numFractionDigits,
-            numFractionDigitsExt: userService.numFractionDigitsExt
+            numFractionDigitsExt: userService.numFractionDigitsExt,
+            termOfPayment: termOfPayment
         ]
     }
 

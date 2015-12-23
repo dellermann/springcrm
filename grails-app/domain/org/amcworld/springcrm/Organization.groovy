@@ -49,6 +49,7 @@ class Organization {
         numEmployees nullable: true
         rating nullable: true
         notes nullable: true, widget: 'textarea'
+        termOfPayment nullable: true
         docPlaceholderValue nullable: true
         dateCreated()
         lastUpdated()
@@ -92,6 +93,7 @@ class Organization {
     String numEmployees
     Rating rating
     String notes
+    Integer termOfPayment
     String docPlaceholderValue
     Date dateCreated
     Date lastUpdated

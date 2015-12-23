@@ -1,1 +1,3 @@
-<g:applyLayout name="fieldDisplay"><output>${value}</output></g:applyLayout>
+<g:applyLayout name="fieldDisplay">
+  <output><f:displayWidget bean="${bean}" property="${property}" /></output>
+</g:applyLayout>

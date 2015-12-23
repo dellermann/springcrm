@@ -61,6 +61,31 @@
           </div>
         </div>
       </section>
+      <section>
+        <header>
+          <h3><g:message code="config.fieldset.termOfPayment.label" /></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <div class="form-group">
+              <label for="term-of-payment" class="control-label">
+                <g:message code="config.termOfPayment.label" />
+              </label>
+              <div class="control-container">
+                <div class="input-group">
+                  <input type="number" id="term-of-payment"
+                    name="config.termOfPayment" value="${termOfPayment}"
+                    class="form-control" min="0"
+                    aria-describedby="term-of-payment-unit" />
+                  <span id="term-of-payment-unit" class="input-group-addon">
+                    <g:message code="config.termOfPayment.unit" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </g:form>
   </body>
 </html>

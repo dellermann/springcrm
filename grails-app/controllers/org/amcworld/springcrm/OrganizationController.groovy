@@ -287,4 +287,19 @@ class OrganizationController {
             .unique()
         render phoneNumbers as JSON
     }
+
+    def getTermOfPayment(Long id) {
+        int termOfPayment =
+            ConfigHolder.instance['termOfPayment'].toType(Integer) ?: 14
+
+        Organization organizationInstance = Organization.get(id)
+        if (organizationInstance?.termOfPayment != null) {
+            termOfPayment = organizationInstance.termOfPayment
+        }
+
+        render(
+            contentType: 'application/json',
+            text: "{\"termOfPayment\": ${termOfPayment}}"
+        )
+    }
 }

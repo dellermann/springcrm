@@ -82,7 +82,7 @@ class InvoicingTransaction
       $element.on 'change', '#invoice-select, #dunning-select', (event) =>
         @_onChangeInvoiceDunning event
 
-    $(opts.organizationId).on 'change', => @_onSelectOrganization()
+    $(opts.organizationId).on 'change', (event) => @_onSelectOrganization event
     $('.invoicing-transaction-selector.selectized').each (_, elem) =>
       @_initInvoicingTransactionSelector elem
     @_initAddrFields()
@@ -344,9 +344,15 @@ class InvoicingTransaction
   # Called if an organization has been selected.  The method fills in the
   # address fields with the data of the selected organization.
   #
+  # @param [Event] event  any event data
   # @private
   #
-  _onSelectOrganization: -> @$addresses.addrfields 'loadFromOrganization'
+  _onSelectOrganization: (event) ->
+    @$addresses.addrfields 'loadFromOrganization'
+    organization = $(event.currentTarget).val()
+    @_updateDueDate organization if organization
+
+    return
 
   # Called if the invoicing transaction form is submitted.  The method checks
   # whether there is a stage transition and asks the user for confirmation if
@@ -375,6 +381,32 @@ class InvoicingTransaction
           return false
 
     true
+
+  # Updates the due date if the organization changes.  The method obtains the
+  # term of payment and computes the due date.
+  #
+  # @param [Number] organizationId  the ID of the organization
+  # @private
+  # @since 2.0
+  #
+  _updateDueDate: (organizationId) ->
+    $ = jq
+
+    $dueDate = $('#dueDatePayment-date')
+    return unless $dueDate.length
+
+    url = $dueDate.parent().data 'get-organization-url'
+    $.getJSON(url, id: organizationId)
+      .done((data) ->
+        termOfPayment = data.termOfPayment
+        unless termOfPayment is null
+          d = new Date(Date.now() + termOfPayment * 86400000)
+          $dueDate.val d.format 'date' if $dueDate.val() is ''
+
+        return
+      )
+
+    return
 
 SPRINGCRM.InvoicingTransaction = InvoicingTransaction
 

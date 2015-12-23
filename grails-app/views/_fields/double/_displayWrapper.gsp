@@ -3,6 +3,6 @@
   <g:formatCurrency number="${bean?."${property}"}" />
   </g:if>
   <g:else>
-  ${value}
+  <f:displayWidget bean="${bean}" property="${property}" />
   </g:else>
 </g:applyLayout>

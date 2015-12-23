@@ -230,9 +230,9 @@ log4j.main = {
     info 'org.grails.plugins.coffee.compiler'
 
 //    debug 'grails.app.controllers.org.amcworld.springcrm.TicketController'
-    debug 'org.amcworld.springcrm.google.GoogleContactSync'
-    debug 'org.amcworld.springcrm.google.GoogleContactSyncTask'
-    debug 'org.amcworld.springcrm.google.AbstractGoogleSync'
+//    debug 'org.amcworld.springcrm.google.GoogleContactSync'
+//    debug 'org.amcworld.springcrm.google.GoogleContactSyncTask'
+//    debug 'org.amcworld.springcrm.google.AbstractGoogleSync'
 }
 
 

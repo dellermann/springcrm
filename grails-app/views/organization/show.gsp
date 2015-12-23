@@ -110,6 +110,8 @@
         <div class="column-group">
           <div class="column">
             <f:display bean="${organizationInstance}"
+              property="termOfPayment" />
+            <f:display bean="${organizationInstance}"
               property="docPlaceholderValue" />
           </div>
         </div>

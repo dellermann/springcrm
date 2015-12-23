@@ -55,6 +55,7 @@
   </header>
   <div class="column-group">
     <div class="column">
+      <f:field bean="${organizationInstance}" property="termOfPayment" />
       <f:field bean="${organizationInstance}" property="docPlaceholderValue" />
     </div>
   </div>
