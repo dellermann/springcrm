@@ -29,10 +29,14 @@
   data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">
   <head>
     <meta charset="utf-8" />
-    <title><g:layoutTitle /> –
-    <g:fieldValue bean="${helpdeskInstance}" field="name" /> –
-    <g:message code="helpdesk.frontend.title" /> –
-    <g:message code="default.appName" /></title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title
+      ><g:layoutTitle /> –
+      <g:fieldValue bean="${helpdeskInstance}" field="name" /> –
+      <g:message code="helpdesk.frontend.title" /> –
+      <g:message code="default.appName"
+    /></title>
     <asset:stylesheet src="${(pageProperty(name: 'meta.stylesheet') ?: 'frontend').toString()}" />
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <asset:link rel="shortcut icon" href="favicon.png" type="image/png" />

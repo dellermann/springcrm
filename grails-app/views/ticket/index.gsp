@@ -67,9 +67,5 @@
         </div>
       </nav>
     </g:applyLayout>
-
-    <content tag="scripts">
-      <asset:javascript src="ticket" />
-    </content>
   </body>
 </html>
