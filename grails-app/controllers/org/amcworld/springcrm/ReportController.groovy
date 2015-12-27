@@ -34,6 +34,11 @@ class ReportController {
 
     //-- Public methods -------------------------
 
+    /**
+     * Displayes the sales journal for a particular year and optional month.
+     *
+     * @return  the model for the view
+     */
     def salesJournal() {
         def cal = Calendar.instance
         def currentYear = cal[YEAR]
@@ -115,6 +120,15 @@ class ReportController {
         ]
     }
 
+    /**
+     * Displays a list of outstanding items of the given organization.  If no
+     * organization is specified, a general overview page is displayed.
+     *
+     * @param organization  the given organization; {@code null} to display an
+     *                      overview page
+     * @return              the model for the view
+     * @since               2.0
+     */
     def outstandingItems(Organization organization) {
         List<PayableAndDue> l = []
         double total = 0
@@ -125,7 +139,7 @@ class ReportController {
 
             l = l.findAll { it.closingBalance < 0 }
             if (l) {
-                total = l*.total.sum()
+                total = l*.payable.sum()
                 totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
             }
         }
