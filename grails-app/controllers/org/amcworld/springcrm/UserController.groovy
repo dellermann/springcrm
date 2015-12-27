@@ -314,6 +314,22 @@ class UserController {
         redirect action: 'settingsIndex'
     }
 
+    def settingsSync() {
+        List<Long> values = session.user.settings.excludeFromSync?.split(/,/)
+            ?.collect { it as Long }
+
+        [
+            ratings: Rating.list(),
+            excludeFromSync: values
+        ]
+    }
+
+    def settingsSyncSave() {
+        session.user.settings.excludeFromSync = params.excludeFromSync.join ','
+
+        redirect action: 'settingsIndex'
+    }
+
 
     //-- Non-public methods ---------------------
 

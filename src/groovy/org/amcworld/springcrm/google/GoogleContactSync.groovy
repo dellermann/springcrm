@@ -27,9 +27,24 @@ import com.google.gdata.client.Service.GDataRequest
 import com.google.gdata.client.contacts.ContactsService
 import com.google.gdata.data.Link
 import com.google.gdata.data.contacts.*
-import com.google.gdata.data.contacts.ContactEntry
-import com.google.gdata.data.extensions.*
+import com.google.gdata.data.extensions.City
+import com.google.gdata.data.extensions.Country
+import com.google.gdata.data.extensions.Email
+import com.google.gdata.data.extensions.FamilyName
+import com.google.gdata.data.extensions.FullName
+import com.google.gdata.data.extensions.GivenName
+import com.google.gdata.data.extensions.Name
+import com.google.gdata.data.extensions.NamePrefix
+import com.google.gdata.data.extensions.OrgDepartment
+import com.google.gdata.data.extensions.OrgJobDescription
+import com.google.gdata.data.extensions.OrgName
 import com.google.gdata.data.extensions.Organization as GDataOrg
+import com.google.gdata.data.extensions.PhoneNumber
+import com.google.gdata.data.extensions.PoBox
+import com.google.gdata.data.extensions.PostCode
+import com.google.gdata.data.extensions.Region
+import com.google.gdata.data.extensions.Street
+import com.google.gdata.data.extensions.StructuredPostalAddress
 import com.google.gdata.util.ContentType
 import com.google.gdata.util.InvalidEntryException
 import com.google.gdata.util.PreconditionFailedException
@@ -40,6 +55,7 @@ import net.sf.jmimemagic.Magic
 import org.amcworld.springcrm.Address
 import org.amcworld.springcrm.Organization
 import org.amcworld.springcrm.Person
+import org.amcworld.springcrm.User
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.context.i18n.LocaleContextHolder as LCH
@@ -468,6 +484,17 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
                                              ContactEntry entry)
     {
         service.insert FEED_URL, entry
+    }
+
+    @Override
+    protected boolean isExcluded(Person localEntry, User user) {
+        List<Long> ids =
+            user.settings.excludeFromSync?.split(/,/)?.collect { it as Long }
+        if (ids == null) {
+            return false
+        }
+
+        ids.contains localEntry.organization.rating?.id
     }
 
     @Override

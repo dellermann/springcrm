@@ -125,7 +125,7 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
                     E localEntry = localEntries[id]
                     G googleEntry = googleEntries.get(url)
 
-                    if (localEntry) {
+                    if (localEntry && !isExcluded(localEntry, user)) {
                         if (localEntry.lastUpdated > status.lastSync) {
                             if (!googleEntry) {
                                 if (syncSource != LOCAL) {
@@ -475,6 +475,18 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
         )
         status.save flush: true
     }
+
+    /**
+     * Determines whether or not the given local entry should be excluded from
+     * synchronization.
+     *
+     * @param localEntry    the local entry which should be checked
+     * @param user          the user who synchronizes
+     * @return              {@code true} to exclude the local entry from
+     *                      synchronization; {@code false} otherwise
+     * @since               2.0
+     */
+    protected abstract boolean isExcluded(E localEntry, User user)
 
     /**
      * Loads the OAuth2 credential of the given user name.

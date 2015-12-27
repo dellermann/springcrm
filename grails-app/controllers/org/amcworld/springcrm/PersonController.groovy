@@ -117,7 +117,7 @@ class PersonController {
         }
 
         request.personInstance = personInstance
-        if (ldapService) {
+        if (ldapService && !isExcludeFromSync(personInstance)) {
             ldapService.save personInstance
         }
 
@@ -200,7 +200,7 @@ class PersonController {
         }
 
         request.personInstance = personInstance
-        if (ldapService) {
+        if (ldapService && !isExcludeFromSync(personInstance)) {
             ldapService.save personInstance
         }
 
@@ -333,9 +333,12 @@ class PersonController {
 
     def ldapexport(Long id) {
         if (ldapService) {
+            List<Long> excludeIds = excludeFromSyncValues
             if (id) {
                 def personInstance = Person.get(id)
-                if (personInstance) {
+                if (personInstance
+                    && !isExcludeFromSync(personInstance, excludeIds))
+                {
                     ldapService.save personInstance
                     flash.message = message(
                         code: 'default.ldap.export.success',
@@ -354,8 +357,12 @@ class PersonController {
                 return
             }
 
-            def personInstanceList = Person.list()
-            personInstanceList.each { ldapService.save it }
+            List<Person> personInstanceList = Person.list()
+            for (Person personInstance : personInstanceList) {
+                if (!isExcludeFromSync(personInstance, excludeIds)) {
+                    ldapService.save personInstance
+                }
+            }
             flash.message = message(
                 code: 'default.ldap.allexport.success',
                 args: [message(code: 'person.plural')]
@@ -376,6 +383,7 @@ class PersonController {
                 ldapService.delete personInstance
             }
         }
+
         redirect action: 'index'
     }
 
@@ -395,15 +403,48 @@ class PersonController {
     //-- Non-public methods ---------------------
 
     /**
+     * Gets the IDs of the {@code Rating} instances which should be exclude
+     * from synchronization.
+     *
+     * @return  a list of IDs of {@code Rating} instance that should be
+     *          excluded from synchronization
+     * @since   2.0
+     */
+    private List<Long> getExcludeFromSyncValues() {
+        List<Long> ids = session.user.settings.excludeFromSync?.split(/,/)
+            ?.collect { it as Long }
+
+        ids ?: []
+    }
+
+    /**
+     * Checks whether or not the given person should be excluded from
+     * synchronization.
+     *
+     * @param p     the given person
+     * @param ids   a list of IDs of {@code Rating} instance that should be
+     *              excluded from synchronization
+     * @return      {@code true} if the given person should be excluded from
+     *              synchronization; {@code false} otherwise
+     * @since       2.0
+     */
+    private boolean isExcludeFromSync(Person p,
+                                      List<Long> ids = excludeFromSyncValues)
+    {
+        ids.contains p.organization.rating?.id
+    }
+
+    /**
      * Handles the given type of exception that occurred while accessing the
      * LDAP service.  The method collects all necessary information and
      * redirects to an error page.
      *
      * @param type  the type of exception that has been occurred
      */
-    protected def handleLdapException(String type) {
+    private def handleLdapException(String type) {
         def origId = (actionName == 'save') ? request.personInstance.id \
             : params.id
+
         redirect controller: 'error', action: 'ldapPerson', params: [
                 type: type, origAction: actionName, personId: origId
             ]

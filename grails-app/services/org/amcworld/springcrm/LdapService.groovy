@@ -46,7 +46,7 @@ class LdapService {
      * @param p the person to delete
      */
     void delete(Person p) {
-        def ldap = getLdap()
+        LDAP ldap = getLdap()
         if (ldap) {
             LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
             if (status) {
@@ -66,7 +66,7 @@ class LdapService {
      * @param p the person to save
      */
     void save(Person p) {
-        def ldap = getLdap()
+        LDAP ldap = getLdap()
         if (ldap) {
             log.debug "Exporting person ${p} to LDAP..."
             LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
@@ -240,6 +240,7 @@ class LdapService {
                 config['ldapBindPasswd']?.toString()
             )
         }
+
         ldap
     }
 }

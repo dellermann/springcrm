@@ -25,6 +25,18 @@
               <g:message code="user.settings.language.description" />
             </p>
           </li>
+          <li>
+            <g:link action="settingsSync" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-refresh"></i>
+            </g:link>
+            <g:link action="settingsSync" class="configuration-title">
+              <g:message code="user.settings.sync.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="user.settings.sync.description" />
+            </p>
+          </li>
         </ul>
       </div>
       <div class="col-xs-12 col-sm-6">

@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm.google
 
+import org.amcworld.springcrm.User;
+
 import com.google.api.client.auth.oauth2.Credential
 import com.google.gdata.client.GoogleService
 import com.google.gdata.data.contacts.ContactEntry
@@ -131,6 +133,12 @@ class GoogleCalendarSync extends AbstractGoogleSync<CalendarEvent, ContactEntry>
     {
         // TODO Auto-generated method stub
         return null
+    }
+
+    @Override
+    @CompileStatic
+    protected boolean isExcluded(CalendarEvent localEntry, User user) {
+        false
     }
 
     @Override
