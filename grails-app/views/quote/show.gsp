@@ -45,9 +45,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${quoteInstance}" property="number">
-              <g:fieldValue bean="${quoteInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${quoteInstance}" property="number" />
             <f:display bean="${quoteInstance}" property="subject" />
             <f:display bean="${quoteInstance}" property="organization" />
             <f:display bean="${quoteInstance}" property="person" />

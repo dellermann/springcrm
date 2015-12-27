@@ -41,9 +41,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${invoiceInstance}" property="number">
-              <g:fieldValue bean="${invoiceInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${invoiceInstance}" property="number" />
             <f:display bean="${invoiceInstance}" property="subject" />
             <f:display bean="${invoiceInstance}" property="organization" />
             <f:display bean="${invoiceInstance}" property="person" />

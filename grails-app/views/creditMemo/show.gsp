@@ -25,9 +25,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${creditMemoInstance}" property="number">
-              <g:fieldValue bean="${creditMemoInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${creditMemoInstance}" property="number" />
             <f:display bean="${creditMemoInstance}" property="subject" />
             <f:display bean="${creditMemoInstance}" property="organization" />
             <f:display bean="${creditMemoInstance}" property="person" />

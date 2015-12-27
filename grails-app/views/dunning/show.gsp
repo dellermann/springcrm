@@ -33,9 +33,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${dunningInstance}" property="number">
-              <g:fieldValue bean="${dunningInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${dunningInstance}" property="number" />
             <f:display bean="${dunningInstance}" property="subject" />
             <f:display bean="${dunningInstance}" property="organization" />
             <f:display bean="${dunningInstance}" property="person" />

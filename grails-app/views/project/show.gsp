@@ -14,9 +14,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${projectInstance}" property="number">
-              <g:fieldValue bean="${projectInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${projectInstance}" property="number" />
             <f:display bean="${projectInstance}" property="title" />
             <f:display bean="${projectInstance}" property="phase" />
             <f:display bean="${projectInstance}" property="status" />

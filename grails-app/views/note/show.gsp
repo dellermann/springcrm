@@ -11,9 +11,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${noteInstance}" property="number">
-              <g:fieldValue bean="${noteInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${noteInstance}" property="number" />
             <f:display bean="${noteInstance}" property="title" />
           </div>
           <div class="column">

@@ -11,9 +11,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${serviceInstance}" property="number">
-              <g:fieldValue bean="${serviceInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${serviceInstance}" property="number" />
             <f:display bean="${serviceInstance}" property="name" />
             <f:display bean="${serviceInstance}" property="category" />
             <f:display bean="${serviceInstance}" property="quantity" />

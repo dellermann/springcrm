@@ -29,9 +29,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${ticketInstance}" property="number">
-              <g:fieldValue bean="${ticketInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${ticketInstance}" property="number" />
             <f:display bean="${ticketInstance}" property="helpdesk" />
             <f:display bean="${ticketInstance}" property="subject" />
           </div>

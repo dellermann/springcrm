@@ -63,9 +63,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${organizationInstance}" property="number">
-              <g:fieldValue bean="${organizationInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${organizationInstance}" property="number" />
             <f:display bean="${organizationInstance}" property="recType" />
             <f:display bean="${organizationInstance}" property="name" />
             <f:display bean="${organizationInstance}" property="legalForm" />

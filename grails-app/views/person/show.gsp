@@ -42,9 +42,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${personInstance}" property="number">
-              <g:fieldValue bean="${personInstance}" field="fullNumber" />
-            </f:display>
+            <f:display bean="${personInstance}" property="number" />
             <f:display bean="${personInstance}" property="organization" />
             <f:display bean="${personInstance}" property="salutation" />
             <f:display bean="${personInstance}" property="title" />
