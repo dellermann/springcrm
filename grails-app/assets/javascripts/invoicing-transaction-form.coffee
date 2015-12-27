@@ -82,7 +82,10 @@ class InvoicingTransaction
       $element.on 'change', '#invoice-select, #dunning-select', (event) =>
         @_onChangeInvoiceDunning event
 
-    $(opts.organizationId).on 'change', (event) => @_onSelectOrganization event
+    organizationId = $(opts.organizationId)
+      .on('change', (event) => @_onSelectOrganization event)
+      .val()
+    @_updateDueDate organizationId
     $('.invoicing-transaction-selector.selectized').each (_, elem) =>
       @_initInvoicingTransactionSelector elem
     @_initAddrFields()
