@@ -41,8 +41,10 @@
         <h3><g:message code="about.furtherLicenses" /></h3>
         <p><g:message code="about.furtherLicenses.logo" /></p>
         <p><g:message code="about.furtherLicenses.gpl2" /></p>
+        <p><g:message code="about.furtherLicenses.apache" /></p>
         <p><g:message code="about.furtherLicenses.mit" /></p>
         <p><g:message code="about.furtherLicenses.sil" /></p>
+        <p><g:message code="about.furtherLicenses.bsd3" /></p>
         <p><g:message code="about.furtherLicenses.lightbox" /></p>
         <p><g:message code="about.furtherLicenses.handlebars" /></p>
         <pre class="license-text"
@@ -53,6 +55,7 @@
         <ul>
           <li><a href="mailto:d.ellermann@amc-world.de">Daniel
           Ellermann</a></li>
+          <li><a href="mailto:p.drozd@amc-world.de">Philip Drozd</a></li>
         </ul>
       </div>
     </div>

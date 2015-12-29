@@ -34,3 +34,15 @@
   overflow-y: scroll;
 }
 
+.sys-info-list dt {
+  padding-right: 1ex;
+  text-align: left;
+
+  &:after {
+    content: ":";
+  }
+
+  @media (min-width: @screen-sm-min) {
+    width: 250px;
+  }
+}

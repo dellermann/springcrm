@@ -26,60 +26,107 @@
 
     <section>
       <h3><g:message code="about.sysInfo.application" /></h3>
-      <p><g:message code="about.sysInfo.version"
-        args="[meta(name: 'app.version')]" /></p>
-      <p><g:message code="about.sysInfo.build"
-        args="[
-            meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'),
-            meta(name: 'app.buildProfile')
-          ]" /></p>
-      <p><g:message code="about.sysInfo.grailsVersion"
-        args="[meta(name: 'app.grails.version')]" /></p>
+      <dl class="dl-horizontal sys-info-list">
+        <dt><g:message code="about.sysInfo.version" /></dt>
+        <dd><g:meta name="app.version" /></dd>
+        <dt><g:message code="about.sysInfo.build" /></dt>
+        <dd
+          ><g:message code="about.sysInfo.build.value"
+            args="[
+                meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'),
+                meta(name: 'app.buildProfile')
+              ]"
+        /></dd>
+        <dt><g:message code="about.sysInfo.grailsVersion" /></dt>
+        <dd><g:meta name="app.grails.version" /></dd>
+      </dl>
     </section>
 
     <section>
       <h3><g:message code="about.sysInfo.env" /></h3>
-      <p><g:message code="about.sysInfo.java"
-        args="[
-            System.getProperty('java.version'),
-            System.getProperty('java.vendor'),
-            System.getProperty('java.vendor.url')
-          ]" /></p>
-      <p><g:message code="about.sysInfo.os"
-        args="[
-            System.getProperty('os.name'), System.getProperty('os.arch'),
-            System.getProperty('os.version')
-          ]" /></p>
-      <p><g:message code="about.sysInfo.userName"
-        args="[System.getProperty('user.name')]" /></p>
+      <dl class="dl-horizontal sys-info-list">
+        <dt><g:message code="about.sysInfo.java" /></dt>
+        <dd
+          ><g:message code="about.sysInfo.java.value"
+            args="[
+                System.getProperty('java.version'),
+                System.getProperty('java.vendor'),
+                System.getProperty('java.vendor.url')
+              ]"
+        /></dd>
+        <dt><g:message code="about.sysInfo.os" /></dt>
+        <dd
+          ><g:message code="about.sysInfo.os.value"
+            args="[
+                System.getProperty('os.name'), System.getProperty('os.arch'),
+                System.getProperty('os.version')
+              ]"
+        /></dd>
+        <dt><g:message code="about.sysInfo.userName" /></dt>
+        <dd>${System.getProperty('user.name')}</dd>
+      </dl>
     </section>
 
     <section>
       <h3><g:message code="about.sysInfo.sytem" /></h3>
-      <p><g:message code="about.sysInfo.freeMemory"
-        args="[Runtime.runtime.freeMemory()]" /></p>
-      <p><g:message code="about.sysInfo.totalMemory"
-        args="[Runtime.runtime.totalMemory()]" /></p>
-      <p><g:message code="about.sysInfo.maxMemory"
-        args="[Runtime.runtime.maxMemory()]" /></p>
-      <p><g:message code="about.sysInfo.cpus"
-        args="[Runtime.runtime.availableProcessors()]" /></p>
+      <dl class="dl-horizontal sys-info-list">
+        <dt><g:message code="about.sysInfo.freeMemory" /></dt>
+        <dd>
+          <g:formatSize number="${Runtime.runtime.freeMemory()}" />B
+          (<g:message code="about.sysInfo.bytes"
+            args="[Runtime.runtime.freeMemory()]" />)
+        </dd>
+        <dt><g:message code="about.sysInfo.totalMemory" /></dt>
+        <dd>
+          <g:formatSize number="${Runtime.runtime.totalMemory()}" />B
+          (<g:message code="about.sysInfo.bytes"
+            args="[Runtime.runtime.totalMemory()]" />)
+        </dd>
+        <dt><g:message code="about.sysInfo.maxMemory" /></dt>
+        <dd>
+          <g:formatSize number="${Runtime.runtime.maxMemory()}" />B
+          (<g:message code="about.sysInfo.bytes"
+            args="[Runtime.runtime.maxMemory()]" />)
+        </dd>
+        <dt><g:message code="about.sysInfo.cpus" /></dt>
+        <dd>${Runtime.runtime.availableProcessors()}</dd>
+      </dl>
     </section>
 
     <section>
       <h3><g:message code="about.sysInfo.pathes" /></h3>
-      <p><g:message code="about.sysInfo.appHome"
-        args="[grailsApplication.config.springcrm.dir.base]" /></p>
-      <p><g:message code="about.sysInfo.userDir"
-        args="[System.getProperty('user.dir')]" /></p>
-      <p><g:message code="about.sysInfo.userHome"
-        args="[System.getProperty('user.home')]" /></p>
-      <p><g:message code="about.sysInfo.tempDir"
-        args="[System.getProperty('java.io.tmpdir')]" /></p>
-      <p><g:message code="about.sysInfo.classPath"
-        args="[System.getProperty('java.class.path')]" /></p>
-      <p><g:message code="about.sysInfo.libraryPath"
-        args="[System.getProperty('java.library.path')]" /></p>
+      <dl class="dl-horizontal sys-info-list">
+        <dt><g:message code="about.sysInfo.appHome" /></dt>
+        <dd><code>${grailsApplication.config.springcrm.dir.base}</code></dd>
+        <dt><g:message code="about.sysInfo.userDir" /></dt>
+        <dd><code>${System.getProperty('user.dir')}</code></dd>
+        <dt><g:message code="about.sysInfo.userHome" /></dt>
+        <dd><code>${System.getProperty('user.home')}</code></dd>
+        <dt><g:message code="about.sysInfo.tempDir" /></dt>
+        <dd><code>${System.getProperty('java.io.tmpdir')}</code></dd>
+      </dl>
+      <dl>
+        <dt><g:message code="about.sysInfo.classPath" /></dt>
+        <dd>
+          <ol>
+            <g:each in="${System.getProperty('java.class.path').split(System.getProperty('path.separator'))}">
+            <g:if test="${it}">
+            <li><code>${it}</code></li>
+            </g:if>
+            </g:each>
+          </ol>
+        </dd>
+        <dt><g:message code="about.sysInfo.libraryPath" /></dt>
+        <dd>
+          <ol>
+            <g:each in="${System.getProperty('java.library.path').split(System.getProperty('path.separator'))}">
+            <g:if test="${it}">
+            <li><code>${it}</code></li>
+            </g:if>
+            </g:each>
+          </ol>
+        </dd>
+      </dl>
     </section>
   </body>
 </html>
