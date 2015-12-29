@@ -78,7 +78,7 @@
             <tr>
               <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label.short')}" />
               <g:sortableColumn property="number" title="${message(code: 'invoicingTransaction.number.label')}" />
-              <g:sortableColumn property="organization.name" title="${message(code: 'invoicingTransaction.organization.label')}" />
+              <th><g:message code="invoicingTransaction.organization.label" /></th>
               <g:sortableColumn property="subject" title="${message(code: 'invoicingTransaction.subject.label')}" />
               <g:sortableColumn property="dueDatePayment" title="${message(code: 'report.salesJournal.date.label')}" />
               <g:sortableColumn property="total" title="${message(code: 'report.salesJournal.sum.label')}" />

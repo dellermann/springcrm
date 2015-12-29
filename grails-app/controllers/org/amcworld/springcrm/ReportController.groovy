@@ -104,21 +104,26 @@ class ReportController {
         if ((yearStart < 0) || (yearEnd < 0)) {
             l = null
         } else {
+            String sort = params.sort ?: 'number'
+            String order = params.order ?: 'asc'
             def query = Invoice.where {
-                (docDate >= start.time) && (docDate <= end.time)
+                docDate >= start.time && docDate <= end.time
             }
-            l = query.list(sort: 'number')
+            l = query.list(sort: sort, order: order)
             query = Dunning.where {
-                (docDate >= start.time) && (docDate <= end.time)
+                docDate >= start.time && docDate <= end.time
             }
-            l.addAll query.list(sort: 'number')
+            l.addAll query.list(sort: sort, order: order)
             total = l*.total.sum()
             totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
 
-            query = CreditMemo.where {
-                (docDate >= start.time) && (docDate <= end.time)
+            if (sort == 'dueDatePayment') {
+                sort = 'docDate'
             }
-            def creditMemos = query.list(sort: 'number')
+            query = CreditMemo.where {
+                docDate >= start.time && docDate <= end.time
+            }
+            def creditMemos = query.list(sort: sort, order: order)
             if (creditMemos) {
                 l.addAll creditMemos
                 total -= creditMemos*.total.sum()
