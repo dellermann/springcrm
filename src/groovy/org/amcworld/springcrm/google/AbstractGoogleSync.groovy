@@ -234,6 +234,10 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
             /* create new entries */
             log.debug 'Start syncing with Google, part II (L = local entry, G = Google entry)'
             for (E localEntry : localEntries.values()) {
+                if (isExcluded(localEntry, user)) {
+                    continue
+                }
+
                 try {
                     if (log.debugEnabled) {
                         log.debug "L exists, G doesn't exist → create G: L = ${localEntry}"

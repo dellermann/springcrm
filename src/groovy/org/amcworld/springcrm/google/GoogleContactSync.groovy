@@ -526,6 +526,19 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
         res
     }
 
+    /**
+     * Loads the Google contact with the given URL.
+     *
+     * @param service   the Google contact service instance
+     * @param url       the given URL
+     * @return          the loaded Google contact
+     * @since           2.0
+     */
+    @CompileStatic
+    private ContactEntry loadGoogleEntry(GoogleService service, String url) {
+        service.getEntry new URL(url), ContactEntry
+    }
+
     @Override
     @CompileStatic
     protected ContactEntry syncInsertGoogle(GoogleService service,
@@ -533,6 +546,7 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
     {
         ContactEntry googleEntry = super.syncInsertGoogle(service, localEntry)
         updatePhoto service, localEntry, googleEntry
+
         googleEntry
     }
 
@@ -540,6 +554,7 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
     @CompileStatic
     protected Person syncInsertLocal(ContactEntry googleEntry) {
         updateOrganization googleEntry
+
         super.syncInsertLocal googleEntry
     }
 
@@ -549,6 +564,7 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
                                     ContactEntry googleEntry)
     {
         super.syncUpdateGoogle(service, localEntry, googleEntry)
+
         updatePhoto service, localEntry, googleEntry
     }
 
@@ -558,6 +574,7 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
                                    ContactEntry googleEntry)
     {
         updateOrganization googleEntry
+
         super.syncUpdateLocal service, localEntry, googleEntry
     }
 
@@ -678,6 +695,10 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
             } finally {
                 request.end()
             }
+
+            ContactEntry newEntry = loadGoogleEntry(service, getUrl(googleEntry))
+            log.debug "Changing etag from ${googleEntry.etag} to ${newEntry.etag}"
+            googleEntry.etag = newEntry.etag
         } else if (etag) {
             if (log.debugEnabled) {
                 log.debug "Deleting photo of ${localEntry}…"
