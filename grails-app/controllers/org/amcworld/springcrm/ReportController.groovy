@@ -69,6 +69,19 @@ class ReportController {
             end[MONTH] = cal.getActualMaximum(MONTH)
         }
 
+        /*
+         * Issue #77: the selection of records below doesn't work for dates at
+         * 1st of month, e. g. 2015-12-01.  Records with docDate 2015-12-01
+         * 00:00:00 are not selected by criterion docDate >= start.time if
+         * start.time = '2015-12-01 00:00:00'.  Maybe this is a bug in mySQL
+         * java driver.
+         *
+         * For now, we subtract one second from start timestamp which causes
+         * the above criterion to work.
+         */
+        start.add SECOND, -1
+
+        /* find first and last year of all customer accounts */
         int yearStart = -1
         int yearEnd = -1
         List<InvoicingTransaction> l = Invoice.list(sort: 'docDate', max: 1)
@@ -85,6 +98,7 @@ class ReportController {
         if (!l.empty) yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
         yearEnd = Math.max(yearEnd, currentYear)
 
+        /* load customer accounts of the given period */
         def total = 0.0
         def totalPaymentAmount = 0.0
         if ((yearStart < 0) || (yearEnd < 0)) {

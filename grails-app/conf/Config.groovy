@@ -233,6 +233,8 @@ log4j.main = {
 //    debug 'org.amcworld.springcrm.google.GoogleContactSync'
 //    debug 'org.amcworld.springcrm.google.GoogleContactSyncTask'
 //    debug 'org.amcworld.springcrm.google.AbstractGoogleSync'
+
+//    trace 'org.hibernate.type'
 }
 
 
