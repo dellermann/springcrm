@@ -600,29 +600,34 @@ class ViewTagLib {
      * year.
      *
      * @attr action         the action the link should contain
-     * @attr activeMonth    the one-based index of the month to mark as active
+     * @attr activeMonth    the one-based index of the month to mark as active;
+     *                      zero or {@code null} if no month is active
      * @since 2.0
      */
     def monthBar = { attrs, body ->
-        String action = attrs.action
-        int activeMonth = attrs.activeMonth
+        String action = attrs.remove('action')
+        int activeMonth = attrs.remove('activeMonth') ?: 0
+        def linkParams = attrs.remove('params')
 
         DateFormatSymbols dfs = DateFormatSymbols.getInstance(
             userService.currentLocale
         )
         String [] monthNames = dfs.shortMonths
 
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 0; i < 12; i++) {
             StringBuilder buf = new StringBuilder('btn btn-default')
-            if (i == activeMonth) {
+            if (i + 1 == activeMonth) {
                 buf << ' active'
             }
             buf << ' btn-month'
             String cssClass = buf.toString()
 
-            out << link(action: action, class: cssClass, 'data-month': i) {
-                monthNames[i - 1]
-            }
+            out << link(
+                    action: action, params: linkParams, class: cssClass,
+                    'data-month': i + 1
+                ) {
+                    monthNames[i]
+                }
         }
     }
 

@@ -33,9 +33,12 @@
     <g:render template="/layouts/flashMessage" />
     <div class="btn-group month-year-selector" role="group"
       aria-label="${message(code: 'report.salesJournal.monthYearSelector.label')}">
-      <g:monthBar action="salesJournal" activeMonth="${currentMonth}" />
+      <g:monthBar action="salesJournal"
+        params="[sort: params.sort, order: params.order]"
+        activeMonth="${activeMonth}" />
       <g:link action="salesJournal"
-        class="btn btn-default${(currentMonth == 0) ? ' active' : ''} btn-month btn-whole-year"
+        params="[sort: params.sort, order: params.order]"
+        class="btn btn-default${(activeMonth == 0) ? ' active' : ''} btn-month btn-whole-year"
         data-month="0"
         ><g:message code="report.salesJournal.wholeYear.label"
       /></g:link>
@@ -43,24 +46,24 @@
         <button type="button" class="btn btn-default dropdown-toggle"
           data-toggle="dropdown" aria-haspopup="true"
           aria-owns="filter-bar-years">
-          ${currentYear}
+          ${activeYear}
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu year-selector"
-          data-current-year="${currentYear}" role="menu" aria-expanded="false">
+          data-current-year="${activeYear}" role="menu" aria-expanded="false">
           <g:each var="year" in="${(yearEnd..yearStart)}">
-          <li><a href="#">${year}</a></li>
+          <li><a href="#" data-year="${year}">${year}</a></li>
           </g:each>
         </ul>
       </div>
     </div>
     <h2>
-      <g:if test="${currentMonth}">
-      <g:month month="${currentMonth}" year="${currentYear}" />
+      <g:if test="${activeMonth}">
+      <g:month month="${activeMonth}" year="${activeYear}" />
       </g:if>
       <g:else>
       <g:message code="report.salesJournal.yearlyOverview.label"
-        args="${[currentYear]}" />
+        args="${[activeYear]}" />
       </g:else>
     </h2>
 
@@ -129,7 +132,7 @@
     </div>
 
     <content tag="scripts">
-      <asset:javascript src="report-sales-journal" />
+      <asset:javascript src="report-time-span" />
     </content>
   </body>
 </html>

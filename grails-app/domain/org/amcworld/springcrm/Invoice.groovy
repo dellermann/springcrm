@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
+
 
 /**
  * The class {@code Invoice} represents an invoice.
@@ -48,7 +50,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
     }
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
-        'payable', 'paymentStateColor'
+        'payable', 'paymentStateColor', 'turnover', 'turnoverOtherSalesItems',
+        'turnoverProducts', 'turnoverServices'
     ]
 
 
@@ -139,7 +142,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @see     #getBalance()
      */
     double getClosingBalance() {
-        (balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
+        (balance + (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
+            .round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -163,7 +167,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     double getPayable() {
-        (total - (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
+        (total - (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
+            .round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -197,6 +202,63 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
         }
 
         color
+    }
+
+    /**
+     * Gets the turnover of this invoice, that is the total minus the total of
+     * all credit memos associated to this invoice.
+     *
+     * @return  the turnover
+     * @since   2.0
+     */
+    double getTurnover() {
+        turnoverProducts + turnoverServices + turnoverOtherSalesItems
+    }
+
+    /**
+     * Gets the turnover of all items of this invoice which are neither
+     * products nor services.
+     *
+     * @return  the turnover of all other items
+     * @since   2.0
+     */
+    double getTurnoverOtherSalesItems() {
+        double value = itemsOfType(null)*.total.sum 0
+        if (creditMemos) {
+            value -= creditMemos*.turnoverOtherSalesItems.sum 0
+        }
+
+        value
+    }
+
+    /**
+     * Gets the turnover of all products of this invoice.
+     *
+     * @return  the turnover of all products
+     * @since   2.0
+     */
+    double getTurnoverProducts() {
+        double value = itemsOfType('P')*.total.sum 0
+        if (creditMemos) {
+            value -= creditMemos*.turnoverProducts.sum 0
+        }
+
+        value
+    }
+
+    /**
+     * Gets the turnover of all services of this invoice.
+     *
+     * @return  the turnover of all services
+     * @since   2.0
+     */
+    double getTurnoverServices() {
+        double value = itemsOfType('S')*.total.sum 0
+        if (creditMemos) {
+            value -= creditMemos*.turnoverServices.sum 0
+        }
+
+        value
     }
 
 

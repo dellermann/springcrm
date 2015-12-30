@@ -120,7 +120,8 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @see     #getBalance()
      */
     double getClosingBalance() {
-        (balance + (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
+        (balance + (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
+            .round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -163,7 +164,8 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     double getPayable() {
-        (total - (creditMemos ? creditMemos*.balance.sum() : 0.0d)).round(userService.numFractionDigitsExt)
+        (total - (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
+            .round(userService.numFractionDigitsExt)
     }
 
     /**

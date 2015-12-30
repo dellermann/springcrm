@@ -24,13 +24,13 @@ $ = jQuery
 
 #== Classes =====================================
 
-# Class `SalesJournalReport` represents a widget that handles user actions in
-# sales journals.
+# Class `TimeSpanReport` represents a widget that handles user actions in report
+# which display entries of a particular time span.
 #
 # @author   Daniel Ellermann
 # @version  2.0
 #
-class SalesJournalReport
+class TimeSpanReport
 
   #-- Internal variables ------------------------
 
@@ -79,7 +79,7 @@ class SalesJournalReport
 
     $target = $(event.currentTarget)
     $month = $('.month-year-selector .btn-month.active')
-    @_submitFilter $month, $target.text()
+    @_submitFilter $month, $target.data('year')
 
     false
 
@@ -92,15 +92,13 @@ class SalesJournalReport
   #
   _submitFilter: ($aMonth, year) ->
     url = new HttpUrl($aMonth.attr 'href')
-    url.query.month = $aMonth.data 'month'
-    url.query.year = year
+    if year
+      url.query.month = $aMonth.data 'month'
+      url.query.year = year
     window.location.href = url.toString()
 
 
 
 #== Main ========================================
 
-new SalesJournalReport()
-
-# vim:set ts=2 sw=2 sts=2:
-
+new TimeSpanReport()

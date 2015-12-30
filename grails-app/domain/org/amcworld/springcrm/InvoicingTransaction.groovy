@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
+
 
 /**
  * The class {@code InvoicingTransaction} acts as a base class of invoicing
@@ -181,7 +183,7 @@ class InvoicingTransaction {
      * @see     #getSubtotalNet()
      */
     double getSubtotalGross() {
-        subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
+        subtotalNet + (taxRateSums.values().sum(0) ?: 0.0d)
     }
 
     /**
@@ -192,7 +194,7 @@ class InvoicingTransaction {
      * @see     #getSubtotalGross()
      */
     double getSubtotalNet() {
-        items ? (items.total.sum() + shippingCosts) : 0.0d
+        items ? (items.total.sum(0) + shippingCosts) : 0.0d
     }
 
     /**
@@ -288,5 +290,33 @@ class InvoicingTransaction {
     @Override
     String toString() {
         subject ?: ''
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets all items of this customer account which is associated to a sales
+     * item of the given type.
+     *
+     * @param type  the given sales item type; {@code null} to select all items
+     *              not associated to any sales item
+     * @return      the items of this customer account associated to the given
+     *              sales item type
+     * @since       2.0
+     */
+    @CompileStatic
+    protected List<InvoicingItem> itemsOfType(String type) {
+        List<InvoicingItem> res = new ArrayList<InvoicingItem>()
+        if (items != null) {
+            for (InvoicingItem item : items) {
+                SalesItem si = item.salesItem
+                if (type == null && si == null || si?.type == type) {
+                    res.add item
+                }
+            }
+        }
+
+        res
     }
 }

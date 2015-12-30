@@ -45,7 +45,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     }
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
-        'payable', 'paymentStateColor'
+        'payable', 'paymentStateColor', 'turnoverOtherSalesItems',
+        'turnoverProducts', 'turnoverServices'
     ]
 
     //-- Fields ---------------------------------
@@ -119,7 +120,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @see     Dunning#getClosingBalance()
      */
     double getClosingBalance() {
-        ((invoice ? invoice : dunning)?.closingBalance ?: 0.0d).round(userService.numFractionDigitsExt)
+        ((invoice ? invoice : dunning)?.closingBalance ?: 0.0d)
+            .round(userService.numFractionDigitsExt)
     }
 
     /**
@@ -177,5 +179,36 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         }
 
         color
+    }
+
+    /**
+     * Gets the turnover of all items of this credit memo which are neither
+     * products nor services.
+     *
+     * @return  the turnover of all other items
+     * @since   2.0
+     */
+    double getTurnoverOtherSalesItems() {
+        itemsOfType(null)*.total.sum 0
+    }
+
+    /**
+     * Gets the turnover of all products of this credit memo.
+     *
+     * @return  the turnover of all products
+     * @since   2.0
+     */
+    double getTurnoverProducts() {
+        itemsOfType('P')*.total.sum 0
+    }
+
+    /**
+     * Gets the turnover of all services of this credit memo.
+     *
+     * @return  the turnover of all services
+     * @since   2.0
+     */
+    double getTurnoverServices() {
+        itemsOfType('S')*.total.sum 0
     }
 }

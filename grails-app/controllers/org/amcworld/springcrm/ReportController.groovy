@@ -35,108 +35,56 @@ class ReportController {
     //-- Public methods -------------------------
 
     /**
-     * Displayes the sales journal for a particular year and optional month.
+     * Displays the sales journal for a particular year and optional month.
      *
      * @return  the model for the view
      */
     def salesJournal() {
-        def cal = Calendar.instance
-        def currentYear = cal[YEAR]
-        int year = (params.year as Integer) ?: currentYear
-        cal[YEAR] = year
-        int month = cal[MONTH] + 1
-        if (params.month) {
-            month = params.month as Integer
-            if (month > 0) {
-                cal[MONTH] = month - 1
-            }
-        }
+        Map<String, Object> model = [: ]
 
-        def start = cal.updated(
-            date: cal.getMinimum(DATE),
-            hourOfDay: cal.getMinimum(HOUR_OF_DAY),
-            minute: cal.getMinimum(MINUTE),
-            second: cal.getMinimum(SECOND)
-        )
-        def end = cal.updated(
-            date: cal.getActualMaximum(DATE),
-            hourOfDay: cal.getActualMaximum(HOUR_OF_DAY),
-            minute: cal.getActualMaximum(MINUTE),
-            second: cal.getActualMaximum(SECOND)
-        )
-        if (month == 0) {
-            start[MONTH] = cal.getMinimum(MONTH)
-            end[MONTH] = cal.getActualMaximum(MONTH)
-        }
-
-        /*
-         * Issue #77: the selection of records below doesn't work for dates at
-         * 1st of month, e. g. 2015-12-01.  Records with docDate 2015-12-01
-         * 00:00:00 are not selected by criterion docDate >= start.time if
-         * start.time = '2015-12-01 00:00:00'.  Maybe this is a bug in mySQL
-         * java driver.
-         *
-         * For now, we subtract one second from start timestamp which causes
-         * the above criterion to work.
-         */
-        start.add SECOND, -1
+        Calendar cal = Calendar.instance
+        int currentYear = cal[YEAR]
+        int year = model.activeYear = (params.year as Integer) ?: currentYear
+        int month = model.activeMonth = (params.month as Integer) ?: 0
+        Calendar start = computeStart(year, month)
+        Calendar end = computeEnd(year, month)
 
         /* find first and last year of all customer accounts */
-        int yearStart = -1
-        int yearEnd = -1
-        List<InvoicingTransaction> l = Invoice.list(sort: 'docDate', max: 1)
-        if (!l.empty) yearStart = l[0].docDate[YEAR]
-        l = Invoice.list(sort: 'docDate', order: 'desc', max: 1)
-        if (!l.empty) yearEnd = l[0].docDate[YEAR]
-        l = Dunning.list(sort: 'docDate', max: 1)
-        if (!l.empty) yearStart = Math.min(yearStart, l[0].docDate[YEAR])
-        l = Dunning.list(sort: 'docDate', order: 'desc', max: 1)
-        if (!l.empty) yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
-        l = CreditMemo.list(sort: 'docDate', max: 1)
-        if (!l.empty) yearStart = Math.min(yearStart, l[0].docDate[YEAR])
-        l = CreditMemo.list(sort: 'docDate', order: 'desc', max: 1)
-        if (!l.empty) yearEnd = Math.max(yearEnd, l[0].docDate[YEAR])
-        yearEnd = Math.max(yearEnd, currentYear)
+        int yearStart = model.yearStart = findYearStart()
+        int yearEnd = model.yearEnd = Math.max(findYearEnd(), currentYear)
 
         /* load customer accounts of the given period */
-        def total = 0.0
-        def totalPaymentAmount = 0.0
-        if ((yearStart < 0) || (yearEnd < 0)) {
-            l = null
-        } else {
-            String sort = params.sort ?: 'number'
-            String order = params.order ?: 'asc'
-            def query = Invoice.where {
-                docDate >= start.time && docDate <= end.time
-            }
-            l = query.list(sort: sort, order: order)
-            query = Dunning.where {
-                docDate >= start.time && docDate <= end.time
-            }
-            l.addAll query.list(sort: sort, order: order)
-            total = l*.total.sum()
-            totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
+        if (yearStart >= 0 && yearEnd >= 0) {
 
+            /* load invoices and reminders with given sort criterion */
+            String sort = params.sort ?: 'number'
+            String sortOrder = params.order ?: 'asc'
+            Closure crit = {
+                between 'docDate', start.time, end.time
+                order sort, sortOrder
+            }
+            List<InvoicingTransaction> l = Invoice.withCriteria crit
+            l.addAll Dunning.withCriteria(crit)
+            double total = l*.total.sum 0
+            double totalPaymentAmount = l*.paymentAmount.sum(0) { it ?: 0 }
+
+            /* load credit notes with modified sort criterion */
             if (sort == 'dueDatePayment') {
                 sort = 'docDate'
             }
-            query = CreditMemo.where {
-                docDate >= start.time && docDate <= end.time
-            }
-            def creditMemos = query.list(sort: sort, order: order)
+            List<CreditMemo> creditMemos = CreditMemo.withCriteria crit
             if (creditMemos) {
                 l.addAll creditMemos
-                total -= creditMemos*.total.sum()
+                total -= creditMemos*.total.sum 0
                 totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
             }
+
+            model.invoicingTransactionInstanceList = l
+            model.total = total
+            model.totalPaymentAmount = totalPaymentAmount
         }
 
-        [
-            invoicingTransactionInstanceList: l, currentDate: cal.time,
-            currentMonth: month, currentYear: year,
-            yearStart: yearStart, yearEnd: yearEnd, total: total,
-            totalPaymentAmount: totalPaymentAmount
-        ]
+        model
     }
 
     /**
@@ -158,7 +106,7 @@ class ReportController {
 
             l = l.findAll { it.closingBalance < 0 }
             if (l) {
-                total = l*.payable.sum()
+                total = l*.payable.sum 0
                 totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
             }
         }
@@ -168,5 +116,205 @@ class ReportController {
             invoicingTransactionInstanceList: l,
             total: total, totalPaymentAmount: totalPaymentAmount
         ]
+    }
+
+    /**
+     * Displays the turnover of the given organization.  If no organization is
+     * specified, a general overview page is displayed.
+     *
+     * @param organization  the given organization; {@code null} to display an
+     *                      overview page
+     * @return              2.0
+     */
+    def turnoverReport(Organization organization) {
+        Map<String, Object> model = [organizationInstance: organization]
+
+        if (organization) {
+
+            /* store current year to allow month selection */
+            int currentYear = model.currentYear = Calendar.instance[YEAR]
+
+            /* find first and last year of all invoices of the organization */
+            model.yearStart = findYearStartByOrganization(organization)
+            model.yearEnd = Math.max(
+                findYearEndByOrganization(organization), currentYear
+            )
+
+            List<Invoice> l
+            String sort = params.sort ?: 'number'
+            String order = params.order ?: 'asc'
+            Integer year = model.activeYear = params.year as Integer
+            if (year == null) {
+
+                /* display all invoices of the organization */
+                l = Invoice.findAllByOrganization(
+                    organization, [sort: sort, order: order]
+                )
+            } else {
+                int month = model.activeMonth = params.month as Integer
+
+                /* compute start and end of period */
+                Calendar start = computeStart(year, month)
+                Calendar end = computeEnd(year, month)
+
+                /*
+                 * Issue #77: the selection of records below doesn't work for dates at
+                 * 1st of month, e. g. 2015-12-01.  Records with docDate 2015-12-01
+                 * 00:00:00 are not selected by criterion docDate >= start.time if
+                 * start.time = '2015-12-01 00:00:00'.  Maybe this is a bug in mySQL
+                 * java driver.
+                 *
+                 * For now, we subtract one second from start timestamp which causes
+                 * the above criterion to work.
+                 */
+                start.add SECOND, -1
+
+                def c = Invoice.createCriteria()
+                l = c {
+                    eq 'organization', organization
+                    between 'docDate', start.time, end.time
+                    delegate.order sort, order
+                }
+            }
+
+            model.invoiceInstanceList = l
+
+            double totalProducts = model.totalProducts =
+                l*.turnoverProducts.sum 0
+            double totalServices = model.totalServices =
+                l*.turnoverServices.sum 0
+            double totalOtherItems = model.totalOtherItems =
+                l*.turnoverOtherSalesItems.sum 0
+            model.total = totalProducts + totalServices + totalOtherItems
+        }
+
+        model
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Computes the end of a period within the given year.  The period is
+     * either the whole year (if parameter {@code month} is zero) or the given
+     * month of that year.
+     *
+     * @param year  the given year
+     * @param month the one-based number of the month; zero to use the last
+     *              month of the year
+     * @return      the end of the period
+     * @since       2.0
+     */
+    private Calendar computeEnd(int year, int month) {
+        Calendar cal = Calendar.instance
+        cal[YEAR] = year
+        cal[MONTH] = month > 0 ? month - 1 : cal.getActualMaximum(MONTH)
+        cal[DATE] = cal.getActualMaximum(DATE)
+        cal[HOUR_OF_DAY] = cal.getActualMaximum(HOUR_OF_DAY)
+        cal[MINUTE] = cal.getActualMaximum(MINUTE)
+        cal[SECOND] = cal.getActualMaximum(SECOND)
+        cal[MILLISECOND] = cal.getActualMaximum(MILLISECOND)
+
+        cal
+    }
+
+    /**
+     * Computes the start of a period within the given year.  The period is
+     * either the whole year (if parameter {@code month} is zero) or the given
+     * month of that year.
+     *
+     * @param year  the given year
+     * @param month the one-based number of the month; zero to use the first
+     *              month of the year
+     * @return      the start of the period
+     * @since       2.0
+     */
+    private Calendar computeStart(int year, int month) {
+        Calendar cal = Calendar.instance
+        cal[YEAR] = year
+        cal[MONTH] = month > 0 ? month - 1 : cal.getMinimum(MONTH)
+        cal[DATE] = cal.getMinimum(DATE)
+        cal[HOUR_OF_DAY] = cal.getMinimum(HOUR_OF_DAY)
+        cal[MINUTE] = cal.getMinimum(MINUTE)
+        cal[SECOND] = cal.getMinimum(SECOND)
+        cal[MILLISECOND] = cal.getMinimum(MILLISECOND)
+
+        cal
+    }
+
+    /**
+     * Finds the first year in which invoices, credit notes or reminders have
+     * been written.
+     *
+     * @return  the first year with invoices, credit notes or reminders; -1 if
+     *          no such elements exist
+     * @since   2.0
+     */
+    private int findYearEnd() {
+        List<Integer> years = new ArrayList<Integer>(3)
+        List<InvoicingTransaction> l = Invoice.list(
+            sort: 'docDate', order: 'desc', max: 1
+        )
+        if (l) years << l[0].docDate[YEAR]
+        l = Dunning.list(sort: 'docDate', order: 'desc', max: 1)
+        if (l) years << l[0].docDate[YEAR]
+        l = CreditMemo.list(sort: 'docDate', order: 'desc', max: 1)
+        if (l) years << l[0].docDate[YEAR]
+
+        years ? years.min() : -1
+    }
+
+    /**
+     * Finds the last year in which invoices for the given organization have
+     * been written.
+     *
+     * @param organization  the given organization
+     * @return              the last year with invoices; -1 if no invoices for
+     *                      the given organization have been found
+     * @since               2.0
+     */
+    private int findYearEndByOrganization(Organization organization) {
+        List<Invoice> l = Invoice.findAllByOrganization(
+            organization, [sort: 'docDate', order: 'desc', max: 1]
+        )
+
+        l ? l[0].docDate[YEAR] : -1
+    }
+
+    /**
+     * Finds the first year in which invoices, credit notes or reminders have
+     * been written.
+     *
+     * @return  the first year with invoices, credit notes or reminders; -1 if
+     *          no such elements exist
+     * @since   2.0
+     */
+    private int findYearStart() {
+        List<Integer> years = new ArrayList<Integer>(3)
+        List<InvoicingTransaction> l = Invoice.list(sort: 'docDate', max: 1)
+        if (l) years << l[0].docDate[YEAR]
+        l = Dunning.list(sort: 'docDate', max: 1)
+        if (l) years << l[0].docDate[YEAR]
+        l = CreditMemo.list(sort: 'docDate', max: 1)
+        if (l) years << l[0].docDate[YEAR]
+
+        years ? years.max() : -1
+    }
+
+    /**
+     * Finds the first year in which invoices for the given organization have
+     * been written.
+     *
+     * @param organization  the given organization
+     * @return              the first year with invoices; -1 if no invoices for
+     *                      the given organization have been found
+     * @since               2.0
+     */
+    private int findYearStartByOrganization(Organization organization) {
+        List<Invoice> l = Invoice.findAllByOrganization(
+            organization, [sort: 'docDate', max: 1]
+        )
+
+        l ? l[0].docDate[YEAR] : -1
     }
 }

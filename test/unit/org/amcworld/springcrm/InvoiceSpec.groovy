@@ -28,7 +28,7 @@ import spock.lang.Specification
 @Mock([Invoice, InvoicingTransaction, CreditMemo])
 class InvoiceSpec extends Specification {
 
-	//-- Instance variables ---------------------
+	//-- Fields ---------------------------------
 
 	Invoice i = new Invoice(
 		adjustment: 0.54,
@@ -38,17 +38,21 @@ class InvoiceSpec extends Specification {
 		dueDatePayment: new Date(),
 		items: [
 			new InvoicingItem(
-				number: 'P-10000', quantity: 4, unit: 'pcs.',
-				name: 'books', unitPrice: 44.99, tax: 19
+				quantity: 4, unit: 'pcs.', name: 'books', unitPrice: 44.99,
+                tax: 19, salesItem: new Product(id: 10000, name: 'books')
 			),
 			new InvoicingItem(
-				number: 'P-20000', quantity: 10.5, unit: 'm',
-				name: 'tape', unitPrice: 0.89, tax: 7
+				quantity: 10.5, unit: 'm', name: 'tape', unitPrice: 0.89,
+                tax: 7, salesItem: new Product(id: 10010, name: 'tape')
 			),
 			new InvoicingItem(
-				number: 'S-10100', quantity: 4.25, unit: 'h',
-				name: 'repairing', unitPrice: 39, tax: 19
-			)
+				quantity: 4.25, unit: 'h', name: 'repairing', unitPrice: 39,
+                tax: 19, salesItem: new Service(id: 10000, name: 'repairing')
+			),
+			new InvoicingItem(
+		        quantity: 10, unit: 'units', name: 'fixing', unitPrice: 9.8,
+                tax: 19
+	        )
 		],
 		organization: new Organization(
 			number: 10405, recType: 1, name: 'YourOrganization Ltd.',
@@ -62,7 +66,9 @@ class InvoiceSpec extends Specification {
 		shippingTax: 7,
 		stage: new InvoiceStage(),
 		subject: 'invoice',
-		creditMemos: new CreditMemo(paymentAmount: 12, stage: new CreditMemoStage())
+		creditMemos: new CreditMemo(
+            paymentAmount: 12, stage: new CreditMemoStage()
+        )
 	)
 
 
@@ -82,16 +88,16 @@ class InvoiceSpec extends Specification {
 		b == i.balance
 
 		where:
-		pa	| total	| b
-        0   | 0     | 0
-        0	| 16	| -16
-        16	| 0 	| 16
-		10	| 10	| 0
-		10	| -10	| 20
-		4	| 2		| 2
-		0.2	| 0.1	| 0.1
-		-4	| 16	| -20
-		-2	| 5331	| -5333
+		pa	| total	|| b
+        0   | 0     || 0
+        0	| 16	|| -16
+        16	| 0 	|| 16
+		10	| 10	|| 0
+		10	| -10	|| 20
+		4	| 2		|| 2
+		0.2	| 0.1	|| 0.1
+		-4	| 16	|| -20
+		-2	| 5331	|| -5333
 	}
 
 	def 'Compute closing balance without changing credit memos'() {
@@ -109,16 +115,16 @@ class InvoiceSpec extends Specification {
         cb == i.closingBalance
 
         where:
-        pa  | total | cb
-        0   | 0     | -12
-        0   | 16    | -28
-        16  | 0     | 4
-        10  | 10    | -12
-        10  | -10   | 8
-        4   | 2     | -10
-        0.2 | 0.1   | -11.9
-        -4  | 16    | -32
-        -2  | 5331  | -5345
+        pa  | total || cb
+        0   | 0     || -12
+        0   | 16    || -28
+        16  | 0     || 4
+        10  | 10    || -12
+        10  | -10   || 8
+        4   | 2     || -10
+        0.2 | 0.1   || -11.9
+        -4  | 16    || -32
+        -2  | 5331  || -5345
 	}
 
     def 'Compute closing balance with changing credit memos'() {
@@ -138,35 +144,35 @@ class InvoiceSpec extends Specification {
         cb == i.closingBalance
 
         where:
-        pa  | total | cpa   | ctotal    | cb
-        0   | 0     | 0     | 0         | 0
-        0   | 0     | 0     | 16        | 16
-        0   | 0     | 16    | 0         | -16
-        0   | 0     | 10    | 10        | 0
-        0   | 16    | 0     | 0         | -16
-        0   | 16    | 0     | 16        | 0
-        0   | 16    | 16    | 0         | -32
-        0   | 16    | 10    | 10        | -16
-        16  | 0     | 0     | 0         | 16
-        16  | 0     | 0     | 16        | 32
-        16  | 0     | 16    | 0         | 0
-        16  | 0     | 10    | 10        | 16
-        10  | 10    | 0     | 0         | 0
-        10  | 10    | 0     | 16        | 16
-        10  | 10    | 16    | 0         | -16
-        10  | 10    | 10    | 10        | 0
-        10  | -10   | 0     | 0         | 20
-        10  | -10   | 0     | 16        | 36
-        10  | -10   | 16    | 0         | 4
-        10  | -10   | 10    | 10        | 20
-        0.2 | 0.1   | 0     | 0         | 0.1
-        0.2 | 0.1   | 0     | 16        | 16.1
-        0.2 | 0.1   | 16    | 0         | -15.9
-        0.2 | 0.1   | 16    | 16        | 0.1
-        0.1 | 0.2   | 0     | 0         | -0.1
-        0.1 | 0.2   | 0     | 16        | 15.9
-        0.1 | 0.2   | 16    | 0         | -16.1
-        0.1 | 0.2   | 16    | 16        | -0.1
+        pa  | total | cpa   | ctotal    || cb
+        0   | 0     | 0     | 0         || 0
+        0   | 0     | 0     | 16        || 16
+        0   | 0     | 16    | 0         || -16
+        0   | 0     | 10    | 10        || 0
+        0   | 16    | 0     | 0         || -16
+        0   | 16    | 0     | 16        || 0
+        0   | 16    | 16    | 0         || -32
+        0   | 16    | 10    | 10        || -16
+        16  | 0     | 0     | 0         || 16
+        16  | 0     | 0     | 16        || 32
+        16  | 0     | 16    | 0         || 0
+        16  | 0     | 10    | 10        || 16
+        10  | 10    | 0     | 0         || 0
+        10  | 10    | 0     | 16        || 16
+        10  | 10    | 16    | 0         || -16
+        10  | 10    | 10    | 10        || 0
+        10  | -10   | 0     | 0         || 20
+        10  | -10   | 0     | 16        || 36
+        10  | -10   | 16    | 0         || 4
+        10  | -10   | 10    | 10        || 20
+        0.2 | 0.1   | 0     | 0         || 0.1
+        0.2 | 0.1   | 0     | 16        || 16.1
+        0.2 | 0.1   | 16    | 0         || -15.9
+        0.2 | 0.1   | 16    | 16        || 0.1
+        0.1 | 0.2   | 0     | 0         || -0.1
+        0.1 | 0.2   | 0     | 16        || 15.9
+        0.1 | 0.2   | 16    | 0         || -16.1
+        0.1 | 0.2   | 16    | 16        || -0.1
     }
 
 	def 'Get the balance color'() {
@@ -188,11 +194,11 @@ class InvoiceSpec extends Specification {
 		color == i.colorIndicatorByDate()
 
         where:
-        d                   | color
-        new Date()          | 'orange'
-        new Date() - 5      | 'red'
-        new Date() + 3      | 'yellow'
-        new Date() + 5      | 'default'
+        d                   || color
+        new Date()          || 'orange'
+        new Date() - 5      || 'red'
+        new Date() + 3      || 'yellow'
+        new Date() + 5      || 'default'
 	}
 
     // TODO test getModifiedClosingBalance()
@@ -206,12 +212,12 @@ class InvoiceSpec extends Specification {
         color == i.paymentStateColor
 
         where:
-        stage               | color
-        900                 | 'default'             // created
-        901                 | 'default'             // revised
-        904                 | 'purple'              // dunned
-        905                 | 'blue'                // cashed
-        906                 | 'black'               // booked out
+        stage               || color
+        900                 || 'default'            // created
+        901                 || 'default'            // revised
+        904                 || 'purple'             // dunned
+        905                 || 'blue'               // cashed
+        906                 || 'black'              // booked out
     }
 
     def 'Get payment state color for stage delivered'() {
@@ -226,11 +232,11 @@ class InvoiceSpec extends Specification {
         color == i.paymentStateColor
 
         where:
-        d                   | color
-        new Date()          | 'orange'
-        new Date() - 5      | 'red'
-        new Date() + 3      | 'yellow'
-        new Date() + 5      | 'default'
+        d                   || color
+        new Date()          || 'orange'
+        new Date() - 5      || 'red'
+        new Date() + 3      || 'yellow'
+        new Date() + 5      || 'default'
     }
 
     def 'Get payment state color for stage paid and positive closing balance'() {
@@ -254,11 +260,11 @@ class InvoiceSpec extends Specification {
         'green' == i.paymentStateColor
 
         where:
-        d                   | _
-        new Date()          | _
-        new Date() - 5      | _
-        new Date() + 3      | _
-        new Date() + 5      | _
+        d                   || _
+        new Date()          || _
+        new Date() - 5      || _
+        new Date() + 3      || _
+        new Date() + 5      || _
     }
 
     def 'Get payment state color for stage paid and negative closing balance'() {
@@ -280,11 +286,11 @@ class InvoiceSpec extends Specification {
         color == i.paymentStateColor
 
         where:
-        d                   | color
-        new Date()          | 'orange'
-        new Date() - 5      | 'red'
-        new Date() + 3      | 'yellow'
-        new Date() + 5      | 'default'
+        d                   || color
+        new Date()          || 'orange'
+        new Date() - 5      || 'red'
+        new Date() + 3      || 'yellow'
+        new Date() + 5      || 'default'
     }
 
     def 'Get payment state color for stage cancelled and positive closing balance'() {
@@ -308,11 +314,11 @@ class InvoiceSpec extends Specification {
         'green' == i.paymentStateColor
 
         where:
-        d                   | _
-        new Date()          | _
-        new Date() - 5      | _
-        new Date() + 3      | _
-        new Date() + 5      | _
+        d                   || _
+        new Date()          || _
+        new Date() - 5      || _
+        new Date() + 3      || _
+        new Date() + 5      || _
     }
 
     def 'Get payment state color for stage cancelled and negative closing balance'() {
@@ -334,11 +340,11 @@ class InvoiceSpec extends Specification {
         color == i.paymentStateColor
 
         where:
-        d                   | color
-        new Date()          | 'orange'
-        new Date() - 5      | 'red'
-        new Date() + 3      | 'yellow'
-        new Date() + 5      | 'default'
+        d                   || color
+        new Date()          || 'orange'
+        new Date() - 5      || 'red'
+        new Date() + 3      || 'yellow'
+        new Date() + 5      || 'default'
     }
 
 	def 'Due date payment constraints'() {
@@ -391,16 +397,175 @@ class InvoiceSpec extends Specification {
 		!valid == i.hasErrors()
 
 		where:
-		pa			| valid
-		-108.56     | false
-		  -5.44     | false
-		  -1.00     | false
-		  -0.01     | false
-		   0.00     | true
-		   0.01     | true
-		   1.00     | true
-		   5.44     | true
-		 108.56     | true
-		 229.45     | true
+		pa			|| valid
+		-108.56     || false
+		  -5.44     || false
+		  -1.00     || false
+		  -0.01     || false
+		   0.00     || true
+		   0.01     || true
+		   1.00     || true
+		   5.44     || true
+		 108.56     || true
+		 229.45     || true
 	}
+
+    def 'Compute payable without changing credit memos'() {
+        given: 'a mocked UserService'
+        def userService = Mock(UserService)
+        userService.getNumFractionDigitsExt() >> 3
+        i.userService = userService
+        i.creditMemos*.userService = userService
+
+        when: 'I set some total values'
+        i.total = total
+
+        then: 'I get the correct payable amount'
+        p == i.payable
+
+        where:
+        total || p
+        0     || 12
+        16    || 28
+        0.1   || 12.1
+        5331  || 5343
+    }
+
+    def 'Compute payable with changing credit memos'() {
+        given: 'a mocked UserService'
+        def userService = Mock(UserService)
+        userService.getNumFractionDigitsExt() >> 3
+        i.userService = userService
+        i.creditMemos*.userService = userService
+
+        when: 'I set some payment amounts and total values'
+        i.total = total
+        i.creditMemos[0].paymentAmount = cpa
+        i.creditMemos[0].total = ctotal
+
+        then: 'I get the correct payable amount'
+        p == i.payable
+
+        where:
+        total | cpa   | ctotal    || p
+        0     | 0     | 0         || 0
+        0     | 0     | 16        || -16
+        0     | 16    | 0         || 16
+        0     | 10    | 10        || 0
+        16    | 0     | 0         || 16
+        16    | 0     | 16        || 0
+        16    | 16    | 0         || 32
+        16    | 10    | 10        || 16
+        16    | 16    | 16        || 16
+        10    | 0     | 0         || 10
+        10    | 0     | 16        || -6
+        10    | 16    | 0         || 26
+        10    | 10    | 10        || 10
+        0.1   | 0     | 0         || 0.1
+        0.1   | 0     | 16        || -15.9
+        0.1   | 16    | 0         || 16.1
+        0.1   | 16    | 16        || 0.1
+    }
+
+    def 'Compute turnover without changing credit memos'() {
+        given: 'a mocked UserService'
+        def userService = Mock(UserService)
+        userService.getNumFractionDigitsExt() >> 3
+        i.userService = userService
+        i.creditMemos*.userService = userService
+
+        when: 'I set some total values'
+        i.total = total
+
+        then: 'I get the correct turnover'
+        t == i.turnover
+
+        where:
+        total || t
+        0     || 0
+        16    || 16
+        0.1   || 0.1
+        5331  || 5331
+    }
+
+    def 'Compute turnover with changing credit memos'() {
+        given: 'a mocked UserService'
+        def userService = Mock(UserService)
+        userService.getNumFractionDigitsExt() >> 3
+        i.userService = userService
+        i.creditMemos*.userService = userService
+
+        when: 'I set some payment amounts and total values'
+        i.total = total
+        i.creditMemos[0].paymentAmount = cpa
+        i.creditMemos[0].total = ctotal
+
+        then: 'I get the correct turnover'
+        t == i.turnover
+
+        where:
+        total | cpa   | ctotal    || t
+        0     | 0     | 0         || 0
+        0     | 0     | 16        || -16
+        0     | 16    | 0         || 0
+        0     | 10    | 10        || -10
+        16    | 0     | 0         || 16
+        16    | 0     | 16        || 0
+        16    | 16    | 0         || 16
+        16    | 10    | 10        || 6
+        16    | 16    | 16        || 0
+        10    | 0     | 0         || 10
+        10    | 0     | 16        || -6
+        10    | 16    | 0         || 10
+        10    | 10    | 10        || 0
+        0.1   | 0     | 0         || 0.1
+        0.1   | 0     | 16        || -15.9
+        0.1   | 16    | 0         || 0.1
+        0.1   | 16    | 16        || -15.9
+    }
+
+    def 'Compute turnover of products'() {
+        when: 'I compute the turnover without credit memo items'
+        double t = i.turnoverProducts
+
+        then: 'I get the correct value'
+        189.305 == t
+
+        when: 'I associate the items to the credit memo and compute anew'
+        i.creditMemos[0].items = i.items
+        t = i.turnoverProducts
+
+        then: 'I have no turnover'
+        0 == t
+    }
+
+    def 'Compute turnover of services'() {
+        when: 'I compute the turnover without credit memo items'
+        double t = i.turnoverServices
+
+        then: 'I get the correct value'
+        165.75 == t
+
+        when: 'I associate the items to the credit memo and compute anew'
+        i.creditMemos[0].items = i.items
+        t = i.turnoverServices
+
+        then: 'I have no turnover'
+        0 == t
+    }
+
+    def 'Compute turnover of other items'() {
+        when: 'I compute the turnover without credit memo items'
+        double t = i.turnoverOtherSalesItems
+
+        then: 'I get the correct value'
+        98 == t
+
+        when: 'I associate the items to the credit memo and compute anew'
+        i.creditMemos[0].items = i.items
+        t = i.turnoverOtherSalesItems
+
+        then: 'I have no turnover'
+        0 == t
+    }
 }

@@ -58,6 +58,7 @@
             <g:ifControllerAllowed controllers="organization invoice dunning creditMemo">
             <li role="menuitem"><g:link controller="report" action="salesJournal"><g:message code="report.salesJournal.title" /></g:link></li>
             <li role="menuitem"><g:link controller="report" action="outstandingItems"><g:message code="report.outstandingItems.title" /></g:link></li>
+            <li role="menuitem"><g:link controller="report" action="turnoverReport"><g:message code="report.turnover.title" /></g:link></li>
             </g:ifControllerAllowed>
           </ul>
         </li>
