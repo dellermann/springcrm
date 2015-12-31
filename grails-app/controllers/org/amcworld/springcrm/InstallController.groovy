@@ -1,7 +1,7 @@
 /*
  * InstallController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,11 +46,19 @@ class InstallController {
 
     def installBaseData() {
         def installStatus = Config.findByName('installStatus')
-        [packages: installService.getBaseDataPackages(), existingData: installStatus?.value, step: 1]
+
+        [
+            existingData: installStatus?.value,
+            packages: installService.getBaseDataPackages(),
+            step: 1
+        ]
     }
 
     def installBaseDataSave() {
-        installService.installBaseDataPackage sessionFactory.currentSession.connection(), params.package
+        installService.installBaseDataPackage(
+            sessionFactory.currentSession.connection(), params.'package-select'
+        )
+
         redirect action: 'clientData'
     }
 
@@ -64,6 +72,7 @@ class InstallController {
             return
         }
         client.save()
+
         redirect action: 'createAdmin'
     }
 
@@ -96,6 +105,7 @@ class InstallController {
         installService.disableInstaller()
         Config installStatus = new Config(name: 'installStatus', value: 1)
         installStatus.save flush: true
+
         redirect controller: 'overview', action: 'index'
     }
 }

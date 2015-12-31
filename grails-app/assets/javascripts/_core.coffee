@@ -42,7 +42,10 @@ window.$I = do ->
   numFractions: $html.data('num-fraction-digits') or 2
   numFractionsExt: $html.data('num-fraction-digits-ext') or 2
   taxRates: do ->
-    s = $html.data('tax-rates').split ','
+    taxRates = $html.data 'tax-rates'
+    return [] unless taxRates
+
+    s = taxRates.split ','
     parseFloat r for r in s
 
 # Formats this date with either the given user-defined format or the localized
