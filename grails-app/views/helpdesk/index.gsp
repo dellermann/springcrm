@@ -4,12 +4,13 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: helpdeskInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: helpdeskInstanceList, type: 'helpdesk']">
       <g:if test="${!mailSystemConfigured}">
       <div class="flash-message form-warning-hint">
         <p><g:message code="ticket.warning.mailNotConfigured.description" /></p>
-        <div><g:button controller="config" action="show" params="[page: 'mail']"
-          color="orange" icon="cog"
+        <div><g:button controller="config" action="show"
+          params="[page: 'mail']" color="warning" icon="cog"
           message="ticket.warning.mailNotConfigured.button" /></div>
       </div>
       </g:if>

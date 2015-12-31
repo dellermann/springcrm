@@ -5,7 +5,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: ticketInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: ticketInstanceList, type: 'ticket']">
       <g:if test="${!mailSystemConfigured}">
       <div class="flash-message form-warning-hint">
         <p

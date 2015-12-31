@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: callInstanceList]">
+    <g:applyLayout name="list" model="[list: callInstanceList, type: 'call']">
       <div class="visible-xs">
         <g:letterBar clazz="${Call}" property="subject" numLetters="5"
           separator="-" />

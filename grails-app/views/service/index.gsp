@@ -6,7 +6,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: serviceInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: serviceInstanceList, type: 'service']">
       <div class="visible-xs">
         <g:letterBar clazz="${Service}" property="name" numLetters="5"
           separator="-" />

@@ -4,7 +4,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: salesOrderInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: salesOrderInstanceList, type: 'salesOrder']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>

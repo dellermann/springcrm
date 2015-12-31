@@ -7,7 +7,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: projectInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: projectInstanceList, type: 'project']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>

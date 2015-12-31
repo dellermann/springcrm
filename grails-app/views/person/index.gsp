@@ -6,7 +6,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: personInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: personInstanceList, type: 'person']">
       <content tag="additionalToolbarButtons">
         <div class="btn-group hidden-xs">
           <button type="button" class="btn btn-default dropdown-toggle"

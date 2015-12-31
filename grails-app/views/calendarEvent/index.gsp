@@ -5,7 +5,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: calendarEventInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: calendarEventInstanceList, type: 'calendarEvent']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>

@@ -5,7 +5,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: dunningInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: dunningInstanceList, type: 'dunning']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>

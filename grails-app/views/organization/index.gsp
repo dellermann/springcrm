@@ -21,10 +21,11 @@
 
   <body>
     <g:applyLayout name="list" model="[
-        list: organizationInstanceList,
         createParams: [
             recType: params.listType ?: 0, listType: params.listType ?: 0
-        ]
+        ],
+        list: organizationInstanceList,
+        type: 'organization'
       ]">
       <div class="visible-xs">
         <g:letterBar params="[listType: params.listType]"

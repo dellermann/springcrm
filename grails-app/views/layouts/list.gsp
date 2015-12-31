@@ -1,3 +1,6 @@
+<g:set var="entityName"
+  value="${message(code: type + '.label', default: type)}" />
+
 <content tag="toolbar">
   <div>
     <a href="#top" class="btn btn-default go-top-btn" role="button">

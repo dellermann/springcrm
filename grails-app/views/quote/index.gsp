@@ -4,7 +4,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: quoteInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: quoteInstanceList, type: 'quote']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>

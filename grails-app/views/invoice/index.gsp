@@ -5,7 +5,8 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: invoiceInstanceList]">
+    <g:applyLayout name="list"
+      model="[list: invoiceInstanceList, type: 'invoice']">
       <div class="table-responsive">
         <table class="table data-table">
           <thead>

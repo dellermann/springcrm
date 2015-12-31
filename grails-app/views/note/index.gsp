@@ -6,7 +6,7 @@
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: noteInstanceList]">
+    <g:applyLayout name="list" model="[list: noteInstanceList, type: 'note']">
       <div class="visible-xs">
         <g:letterBar clazz="${Note}" property="title" numLetters="5"
           separator="-" />
