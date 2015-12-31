@@ -29,7 +29,13 @@ $ = jQuery
 
 class OverviewPanels
 
-  #-- Class variables ---------------------------
+  #-- Internal variables ------------------------
+
+  # @nodoc
+  $ = jq = jQuery
+
+
+  #-- Class fields ------------------------------
 
   @DEFAULTS =
     addPanelBtn: '.add-panel-btn'
@@ -45,6 +51,8 @@ class OverviewPanels
   # @param [Object] options         any options
   #
   constructor: (element, options) ->
+    $ = jq
+
     @$element = $el = $(element)
     @options = opts = options
 
@@ -60,6 +68,8 @@ class OverviewPanels
       .find('.panel')
         .each (idx, panel) =>
           @_initPanel $(panel)
+
+    @_updateNoPanelsMessage()
 
     @$addPanelBtn = $(opts.addPanelBtn).on 'click', =>
       @_toggleAvailablePanels()
@@ -130,6 +140,7 @@ class OverviewPanels
     $panel.parent()
       .remove()
     @_toggleAvailablePanels() unless @_enableDisableAddPanelBtn()
+    @_updateNoPanelsMessage()
 
     $.getJSON @options.addPanelUrl,
       panelId: id
@@ -146,9 +157,7 @@ class OverviewPanels
   # @private
   #
   _onClickAddPanelBtn: (event) ->
-    if @availablePanels
-      @_toggleAvailablePanels()
-    else
+    @_toggleAvailablePanels() if @availablePanels
 
     false
 
@@ -169,6 +178,8 @@ class OverviewPanels
         $this.remove()
         $.getJSON url, panelId: panelId
         that._refreshPanelList()
+
+    @_updateNoPanelsMessage()
 
     false
 
@@ -213,6 +224,8 @@ class OverviewPanels
 
   # Refreshes the list of available panels.
   #
+  # @private
+  #
   _refreshPanelList: ->
     panels = $.extend {}, @availablePanels
     @$element.find('.panel').each -> delete panels[$(this).attr('id')]
@@ -243,10 +256,24 @@ class OverviewPanels
 
   # Opens or closes the list of available panels.
   #
+  # @private
+  #
   _toggleAvailablePanels: ->
     numPanels = @_getNumOfAvailablePanels()
     $panelList = @$availablePanels
     $panelList.slideToggle() if numPanels > 0 or $panelList.is ':visible'
+
+    return
+
+  # Shows or hides the message that no panels are available.
+  #
+  # @private
+  # @since 2.0
+  #
+  _updateNoPanelsMessage: ->
+    $('.empty-list').toggleClass 'hidden', @$element.find('.panel').length
+
+    return
 
 
 Plugin = (option) ->
@@ -274,6 +301,3 @@ $.fn.overviewpanels.noConflict = ->
 #== Main ========================================
 
 $('.overview-panels').overviewpanels()
-
-# vim:set ts=2 sw=2 sts=2:
-

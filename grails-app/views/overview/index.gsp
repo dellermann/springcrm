@@ -69,6 +69,15 @@
       </div>
       </g:each>
     </div>
+    <div class="well well-lg empty-list hidden">
+      <p><g:message code="overview.noPanels" /></p>
+      <div class="buttons">
+        <button type="button" class="btn btn-success add-panel-btn">
+          <i class="fa fa-plus-circle"></i>
+          <g:message code="overview.addPanel.label" />
+        </button>
+      </div>
+    </div>
 
     <content tag="scripts">
       <asset:javascript src="overview" />
