@@ -1,7 +1,7 @@
 /*
  * CreditMemo.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 
 /**
  * The class {@code CreditMemo} represents a credit note.
@@ -34,7 +36,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     static constraints = {
         stage()
         paymentDate nullable: true
-        paymentAmount min: 0.0d, widget: 'currency'
+        paymentAmount min: ZERO, widget: 'currency'
         paymentMethod nullable: true
         invoice nullable: true
         dunning nullable: true
@@ -51,11 +53,9 @@ class CreditMemo extends InvoicingTransaction implements Payable {
 
     //-- Fields ---------------------------------
 
-    def userService
-
     CreditMemoStage stage
     Date paymentDate
-    double paymentAmount
+    BigDecimal paymentAmount = ZERO
     PaymentMethod paymentMethod
 
 
@@ -71,6 +71,9 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         headerText = ''
         footerText = ''
         invoice = i
+        if (i.creditMemos == null) {
+            i.creditMemos = []
+        }
         i.creditMemos << this
     }
 
@@ -80,12 +83,15 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         headerText = ''
         footerText = ''
         dunning = d
+        if (d.creditMemos == null) {
+            d.creditMemos = []
+        }
         d.creditMemos << this
     }
 
     CreditMemo(CreditMemo cm) {
         super(cm)
-        type = 'C'
+        type = cm.type
         invoice = cm.invoice
         dunning = cm.dunning
     }
@@ -95,15 +101,34 @@ class CreditMemo extends InvoicingTransaction implements Payable {
 
     /**
      * Gets the balance of this credit note, that is the difference between the
-     * credit note total sum and the payment amount.
+     * credit note total sum and the payment amount.  A positive value indicates
+     * debts to the client, a negative value indicates debts owned by you.
      *
      * @return  the credit memo balance
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    double getBalance() {
-        int d = userService.numFractionDigitsExt
-        total.round(d) - paymentAmount.round(d)
+    BigDecimal getBalance() {
+        total - paymentAmount
+    }
+
+    /**
+     * Gets the name of a color indicating the status of the balance of this
+     * credit note.  This property is usually used to compute CSS classes in
+     * the views.
+     *
+     * @return  the indicator color
+     * @since   1.0
+     */
+    String getBalanceColor() {
+        String color = 'default'
+        if (closingBalance > ZERO) {
+            color = 'red'
+        } else if (closingBalance < ZERO) {
+            color = 'green'
+        }
+
+        color
     }
 
     /**
@@ -119,28 +144,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @see     Invoice#getClosingBalance()
      * @see     Dunning#getClosingBalance()
      */
-    double getClosingBalance() {
-        ((invoice ? invoice : dunning)?.closingBalance ?: 0.0d)
-            .round(userService.numFractionDigitsExt)
-    }
-
-    /**
-     * Gets the name of a color indicating the status of the balance of this
-     * credit note.  This property is usually used to compute CSS classes in
-     * the views.
-     *
-     * @return  the indicator color
-     * @since   1.0
-     */
-    String getBalanceColor() {
-        String color = 'default'
-        if (closingBalance > 0.0d) {
-            color = 'red'
-        } else if (closingBalance < 0.0d) {
-            color = 'green'
-        }
-
-        color
+    BigDecimal getClosingBalance() {
+        (invoice ? invoice : dunning)?.closingBalance ?: ZERO
     }
 
     /**
@@ -150,8 +155,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @return  the modified closing balance
      * @since   1.3
      */
-    double getModifiedClosingBalance() {
-        (balance - closingBalance).round(userService.numFractionDigitsExt)
+    BigDecimal getModifiedClosingBalance() {
+        balance - closingBalance
     }
 
     /**
@@ -161,8 +166,19 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @return  the payable amount
      * @since   2.0
      */
-    double getPayable() {
+    BigDecimal getPayable() {
         total
+    }
+
+    /**
+     * Sets the payment amount of this credit note.
+     *
+     * @param paymentAmount the payment amount that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setPaymentAmount(BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount == null ? ZERO : paymentAmount
     }
 
     /**
@@ -175,7 +191,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         String color = 'default'
         def id = stage?.id ?: 0
         if ((id >= 2502) && (id <= 2504)) {     // cancelled, paid, delivered
-            color = (closingBalance >= 0.0d) ? 'green' : 'red'
+            color = (closingBalance >= ZERO) ? 'green' : 'red'
         }
 
         color
@@ -188,8 +204,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @return  the turnover of all other items
      * @since   2.0
      */
-    double getTurnoverOtherSalesItems() {
-        itemsOfType(null)*.total.sum 0
+    BigDecimal getTurnoverOtherSalesItems() {
+        itemsOfType(null)*.total.sum ZERO
     }
 
     /**
@@ -198,8 +214,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @return  the turnover of all products
      * @since   2.0
      */
-    double getTurnoverProducts() {
-        itemsOfType('P')*.total.sum 0
+    BigDecimal getTurnoverProducts() {
+        itemsOfType('P')*.total.sum ZERO
     }
 
     /**
@@ -208,7 +224,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @return  the turnover of all services
      * @since   2.0
      */
-    double getTurnoverServices() {
-        itemsOfType('S')*.total.sum 0
+    BigDecimal getTurnoverServices() {
+        itemsOfType('S')*.total.sum ZERO
     }
 }

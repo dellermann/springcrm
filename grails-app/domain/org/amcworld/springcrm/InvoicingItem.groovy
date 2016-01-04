@@ -1,7 +1,7 @@
 /*
  * InvoicingItem.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 
 /**
  * The class {@code InvoicingItem} represents an item in invoicing transactions
@@ -30,39 +32,80 @@ package org.amcworld.springcrm
  */
 class InvoicingItem {
 
-    //-- Class variables ------------------------
+    //-- Constants ------------------------------
+
+    private static final BigInteger HUNDRED = new BigDecimal(100i)
+
+
+    //-- Class fields ---------------------------
 
     static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
-        quantity min: 0.0d
+        quantity min: ZERO
         unit blank: false
         name blank: false
         description nullable: true
         unitPrice widget: 'currency'
-        tax scale: 1, min: 0.0d, widget: 'percent'
+        tax scale: 1, min: ZERO, widget: 'percent'
         salesItem nullable: true
     }
     static mapping = {
         description type: 'text'
     }
-    static transients = ['total']
+    static transients = ['total', 'totalGross']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    double quantity
+    /**
+     * The quantity of this item.
+     */
+    BigDecimal quantity = ZERO
+
+    /**
+     * The unit associated with the quantity of this item.
+     */
     String unit
+
+    /**
+     * The name of this item.
+     */
     String name
+
+    /**
+     * The description of this item.
+     */
     String description
-    double unitPrice
-    double tax
+
+    /**
+     * The net unit price of this item.
+     */
+    BigDecimal unitPrice = ZERO
+
+    /**
+     * The tax rate of this item in percent.
+     */
+    BigDecimal tax = ZERO
+
+    /**
+     * An optional associated sales item pointing to the product or services that
+     * represents this item.
+     */
     SalesItem salesItem
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty invoicing item.
+     */
     InvoicingItem() {}
 
+    /**
+     * Creates a new invoicing item using the values of the given item.
+     *
+     * @param i the given invoicing item
+     */
     InvoicingItem(InvoicingItem i) {
         quantity = i.quantity
         unit = i.unit
@@ -74,24 +117,75 @@ class InvoicingItem {
     }
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
 
-    double getTotal() {
+    /**
+     * Sets the quantity of this item.
+     *
+     * @param quantity  the quantity which should be set; if {@code null} it is
+     *                  converted to zero
+     * @since           2.0
+     */
+    void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity == null ? ZERO : quantity
+    }
+
+    /**
+     * Sets the tax rate of this item in percent.
+     *
+     * @param tax the tax rate which should be set; if {@code null} it is
+     *            converted to zero
+     * @since     2.0
+     */
+    void setTax(BigDecimal tax) {
+        this.tax = tax == null ? ZERO : tax
+    }
+
+    /**
+     * Gets the net total of this item.
+     *
+     * @return  the net total
+     */
+    BigDecimal getTotal() {
         quantity * unitPrice
     }
 
+    /**
+     * Gets the gross total of this item.
+     *
+     * @return  the gross total
+     * @since   2.0
+     */
+    BigDecimal getTotalGross() {
+        total * (HUNDRED + tax) / HUNDRED
+    }
+
+    /**
+     * Sets the net unit price of this item.
+     *
+     * @param unitPrice the net unit price which should be set; if {@code null}
+     *                  it is converted to zero
+     * @since           2.0
+     */
+    void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice == null ? ZERO : unitPrice
+    }
+
+
+    //-- Public methods -------------------------
+
     @Override
-    public boolean equals(Object obj) {
-        (obj instanceof InvoicingItem) ? obj.id == id : false
+    boolean equals(Object obj) {
+        obj instanceof InvoicingItem && obj.id == id
     }
 
     @Override
-    public int hashCode() {
+    int hashCode() {
         (id ?: 0i) as int
     }
 
     @Override
     String toString() {
-        name
+        name ?: ''
     }
 }

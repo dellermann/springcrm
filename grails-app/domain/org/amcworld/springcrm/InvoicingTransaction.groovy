@@ -1,7 +1,7 @@
 /*
  * InvoicingTransaction.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,10 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 import groovy.transform.CompileStatic
+import java.math.RoundingMode
 
 
 /**
@@ -32,7 +35,12 @@ import groovy.transform.CompileStatic
  */
 class InvoicingTransaction {
 
-    //-- Class variables ------------------------
+    //-- Constants ------------------------------
+
+    private static final BigInteger HUNDRED = new BigDecimal(100i)
+
+
+    //-- Class fields ---------------------------
 
     static constraints = {
         number unique: 'type', widget: 'autonumber'
@@ -46,10 +54,10 @@ class InvoicingTransaction {
         headerText nullable: true, widget: 'textarea'
         items nullable: false, minSize: 1
         footerText nullable: true, widget: 'textarea'
-        discountPercent scale: 2, min: 0.0d, widget: 'percent'
-        discountAmount min: 0.0d, widget: 'currency'
-        shippingCosts min: 0.0d, widget: 'currency'
-        shippingTax scale: 1, min: 0.0d, widget: 'percent'
+        discountPercent scale: 2, min: ZERO, widget: 'percent'
+        discountAmount min: ZERO, widget: 'currency'
+        shippingCosts min: ZERO, widget: 'currency'
+        shippingTax scale: 1, min: ZERO, widget: 'percent'
         adjustment widget: 'currency'
         total widget: 'currency'
         notes nullable: true, widget: 'textarea'
@@ -74,12 +82,12 @@ class InvoicingTransaction {
         order 'desc'
     }
     static transients = [
-        'discountPercentAmount', 'fullName', 'fullNumber', 'subtotalGross',
-        'subtotalNet', 'taxRateSums'
+        'discountPercentAmount', 'fullName', 'fullNumber',
+        'shippingCostsGross', 'subtotalGross', 'subtotalNet', 'taxRateSums'
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     def seqNumberService
 
@@ -94,12 +102,12 @@ class InvoicingTransaction {
     String headerText
     List<InvoicingItem> items
     String footerText
-    double discountPercent
-    double discountAmount
-    double shippingCosts
-    double shippingTax = 19.0d
-    double adjustment
-    double total
+    BigDecimal discountPercent = ZERO
+    BigDecimal discountAmount = ZERO
+    BigDecimal shippingCosts = ZERO
+    BigDecimal shippingTax = ZERO
+    BigDecimal adjustment = ZERO
+    BigDecimal total = ZERO
     String notes
     User createUser
     Date dateCreated
@@ -108,18 +116,30 @@ class InvoicingTransaction {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty customer account.
+     */
     InvoicingTransaction() {}
 
+    /**
+     * Creates a new customer account using the data of the given customer
+     * account.
+     *
+     * @param i the given customer account
+     */
     InvoicingTransaction(InvoicingTransaction i) {
-        this()
         subject = i.subject
         organization = i.organization
         person = i.person
-        billingAddr = new Address(i.billingAddr)
-        shippingAddr = new Address(i.shippingAddr)
+        billingAddr = i.billingAddr ? new Address(i.billingAddr) : null
+        shippingAddr = i.shippingAddr ? new Address(i.shippingAddr) : null
         headerText = i.headerText
-        items = new ArrayList(i.items.size())
-        i.items.each { items << new InvoicingItem(it) }
+        if (i.items != null) {
+            items = new ArrayList(i.items.size())
+            for (InvoicingItem item : i.items) {
+                items << new InvoicingItem(item)
+            }
+        }
         footerText = i.footerText
         discountPercent = i.discountPercent
         discountAmount = i.discountAmount
@@ -128,22 +148,56 @@ class InvoicingTransaction {
         adjustment = i.adjustment
         total = i.total
         notes = i.notes
-        termsAndConditions = new HashSet(i.termsAndConditions)
+        termsAndConditions = i.termsAndConditions == null ? null
+            : new HashSet(i.termsAndConditions)
     }
 
 
     //-- Properties -----------------------------
 
     /**
+     * Sets the price adjustment of this customer account.
+     *
+     * @param adjustment    the adjustment that should be set; if {@code null}
+     *                      it is converted to zero
+     * @since 2.0
+     */
+    void setAdjustment(BigDecimal adjustment) {
+        this.adjustment = adjustment == null ? ZERO : adjustment
+    }
+
+    /**
+     * Sets a fixed discount amount of this customer account.
+     *
+     * @param discountAmount    the discount amount that should be set; if
+     *                          {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount == null ? ZERO : discountAmount
+    }
+
+    /**
+     * Sets a percentage discount amount of this customer account.
+     *
+     * @param discountPercent   the percentage discount amount that should be
+     *                          set; if {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent == null ? ZERO : discountPercent
+    }
+
+    /**
      * Gets the discount amount which is granted when the user specifies a
-     * discount percentage value. The percentage value is related to the
+     * discount percentage value.  The percentage value is related to the
      * subtotal gross value.
      *
      * @return  the discount amount from the percentage value
      * @see     #getSubtotalGross()
      */
-    double getDiscountPercentAmount() {
-        subtotalGross * discountPercent / 100.0d
+    BigDecimal getDiscountPercentAmount() {
+        subtotalGross * discountPercent / HUNDRED
     }
 
     /**
@@ -159,8 +213,7 @@ class InvoicingTransaction {
 
     /**
      * Gets the full number of this invoicing transaction, that is, the type
-     * prefix, the sequence number, the type suffix, and the organization
-     * number.
+     * prefix, the sequence number, the type suffix and the organization number.
      *
      * @return  the full number
      */
@@ -172,56 +225,122 @@ class InvoicingTransaction {
         if (organization) {
             buf << '-' << organization.number
         }
+
         buf.toString()
     }
 
     /**
-     * Gets the subtotal gross value. It is computed by adding the tax values
+     * Sets the shipping costs of this customer account.
+     *
+     * @param shippingCosts the shipping costs that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setShippingCosts(BigDecimal shippingCosts) {
+        this.shippingCosts = shippingCosts == null ? ZERO : shippingCosts
+    }
+
+    /**
+     * Gets the gross shipping costs.
+     *
+     * @return  the gross shipping costs
+     * @since   2.0
+     */
+    BigDecimal getShippingCostsGross() {
+        shippingCosts * (HUNDRED + shippingTax) / HUNDRED
+    }
+
+    /**
+     * Sets the shipping tax of this customer account.
+     *
+     * @param shippingTax the shipping tax that should be set; if {@code null} it
+     *                    is converted to zero
+     * @since 2.0
+     */
+    void setShippingTax(BigDecimal shippingTax) {
+        this.shippingTax = shippingTax == null ? ZERO : shippingTax
+    }
+
+    /**
+     * Gets the subtotal gross value.  It is computed by adding the tax values
      * to the subtotal net value.
      *
      * @return  the subtotal gross value
      * @see     #getSubtotalNet()
      */
-    double getSubtotalGross() {
-        subtotalNet + (taxRateSums.values().sum(0) ?: 0.0d)
+    BigDecimal getSubtotalGross() {
+        (items*.totalGross?.sum() ?: ZERO) + shippingCostsGross
     }
 
     /**
-     * Gets the subtotal net value. It is computed by accumulating the total
+     * Gets the subtotal net value.  It is computed by accumulating the total
      * values of the items plus the shipping costs.
      *
      * @return  the subtotal net value
      * @see     #getSubtotalGross()
      */
-    double getSubtotalNet() {
-        items ? (items.total.sum(0) + shippingCosts) : 0.0d
+    BigDecimal getSubtotalNet() {
+        (items*.total?.sum() ?: ZERO) + shippingCosts
     }
 
     /**
-     * Computes a map of taxes used in this transaction. The key represents the
+     * Computes a map of taxes used in this transaction.  The key represents the
      * tax rate (a percentage value), the value the sum of tax values of all
      * items which belong to this tax rate.
+     * <p>
+     * The keys which represent the tax rates in the returned map are stored as
+     * {@code Double} values because the more precise {@code BigDecimal} values
+     * are less suitable as map keys.  This is due to
+     * {@code BigDecimal.hashCode()} returns different hash codes for numbers
+     * which are numerically equal but differ in scale (like 2.0 and 2.00). You
+     * should not use the keys of the returned map in computations due to the
+     * floating point number issues.
      *
      * @return  the tax rates and their associated tax value sums
+     * @see     BigDecimal#hashCode()
      */
-    Map<Double, Double> getTaxRateSums() {
-        Map<Double, Double> res = [: ]
+    @CompileStatic
+    Map<Double, BigDecimal> getTaxRateSums() {
+        Map<Double, BigDecimal> res = new HashMap<Double, BigDecimal>(5)
         if (items) {
-            for (item in items) {
-                double tax = item.tax
-                res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
+            for (InvoicingItem item in items) {
+                addTaxRateSum res, item.tax, item.total
             }
         }
-        if (shippingTax != 0.0d && shippingCosts != 0.0d) {
-            double tax = shippingTax
-            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
+        if (shippingTax && shippingCosts) {
+            addTaxRateSum res, shippingTax, shippingCosts
         }
-        res.sort { e1, e2 -> e1.key <=> e2.key }
+
+        res.sort {
+            Map.Entry<Double, BigDecimal> e1,
+            Map.Entry<Double, BigDecimal> e2 ->
+            e1.key <=> e2.key
+        }
+    }
+
+    /**
+     * Sets the total of this customer account.  Normally, this method is called
+     * by Hibernate only to set the total value from a database record.  You
+     * should not call this method to set the total.  Use method
+     * {@code computeTotal} instead.
+     *
+     * @param total the total that should be set; if {@code null} it is converted
+     *              to zero
+     * @see         #computeTotal()
+     * @since 2.0
+     */
+    void setTotal(BigDecimal total) {
+        this.total = total == null ? ZERO : total
     }
 
 
     //-- Public methods -------------------------
 
+    /**
+     * Called before this customer account is created in the underlying data
+     * store.  The method obtains the next available sequence number and computes
+     * the total value.
+     */
     def beforeInsert() {
         if (number == 0) {
             number = seqNumberService.nextNumber(getClass())
@@ -229,10 +348,18 @@ class InvoicingTransaction {
         total = computeTotal()
     }
 
+    /**
+     * Called before this customer account is updated in the underlying data
+     * store.  The method computes the total value.
+     */
     def beforeUpdate() {
         total = computeTotal()
     }
 
+    /**
+     * Called before this customer account is validated.  The method computes the
+     * total value.
+     */
     def beforeValidate() {
         total = computeTotal()
     }
@@ -243,7 +370,7 @@ class InvoicingTransaction {
      *
      * @return  the total (gross) value
      */
-    double computeTotal() {
+    BigDecimal computeTotal() {
         subtotalGross - discountPercentAmount - discountAmount + adjustment
     }
 
@@ -254,10 +381,7 @@ class InvoicingTransaction {
      * @param org   the given organization; if {@code null} the organization is
      *              taken from this invoicing transaction
      */
-    void copyAddressesFromOrganization(Organization org = null) {
-        if (!org) {
-            org = organization
-        }
+    void copyAddressesFromOrganization(Organization org = organization) {
         if (org) {
             billingAddr = new Address(org.billingAddr)
             shippingAddr = new Address(org.shippingAddr)
@@ -266,7 +390,7 @@ class InvoicingTransaction {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof InvoicingTransaction) ? obj.id == id : false
+        obj instanceof InvoicingTransaction && obj.id == id
     }
 
     @Override
@@ -274,6 +398,13 @@ class InvoicingTransaction {
         (id ?: 0i) as int
     }
 
+    /**
+     * Gets the largest number of any customer account within the limits of the
+     * given sequence number.
+     *
+     * @param seq the given sequence number
+     * @return    the largest number
+     */
     int maxNumber(SeqNumber seq) {
         def c = InvoicingTransaction.createCriteria()
         c.get {
@@ -294,6 +425,13 @@ class InvoicingTransaction {
 
 
     //-- Non-public methods ---------------------
+
+    private void addTaxRateSum(Map<Double, BigDecimal> map, BigDecimal taxRate,
+                               BigDecimal value)
+    {
+        Double tr = taxRate.doubleValue()
+        map[tr] = (map[tr] ?: ZERO) + value * taxRate / HUNDRED
+    }
 
     /**
      * Gets all items of this customer account which is associated to a sales

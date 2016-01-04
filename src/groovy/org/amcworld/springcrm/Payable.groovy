@@ -44,8 +44,8 @@ interface Payable {
     /**
      * Sets the date of payment.
      *
-     * @param paymentDate   the date of payment; {@code null} to specify no
-     *                      payment date
+     * @param paymentDate   the date of payment which should be set; {@code null}
+     *                      to specify no payment date
      */
     void setPaymentDate(Date paymentDate)
 
@@ -54,14 +54,14 @@ interface Payable {
      *
      * @return  the payment amount
      */
-    double getPaymentAmount()
+    BigDecimal getPaymentAmount()
 
     /**
      * Sets the payment amount.
      *
-     * @param paymentAmount the payment amount to set
+     * @param paymentAmount the payment amount which should be set
      */
-    void setPaymentAmount(double paymentAmount)
+    void setPaymentAmount(BigDecimal paymentAmount)
 
     /**
      * Gets the payment method.
@@ -73,7 +73,7 @@ interface Payable {
     /**
      * Sets the payment method.
      *
-     * @param paymentMethod the payment method to set
+     * @param paymentMethod the payment method which should be set
      */
     void setPaymentMethod(PaymentMethod paymentMethod)
 
@@ -82,14 +82,17 @@ interface Payable {
      *
      * @return  the total
      */
-    double getTotal()
+    BigDecimal getTotal()
 
     /**
-     * Sets the total amount.
+     * Sets the total amount.  Normally, this method is called by Hibernate only
+     * to set the total value from a database record.  You should not call this
+     * method to set the total.  Instead rely on an internal computation of the
+     * total.
      *
-     * @param total the total
+     * @param total the total which should be set
      */
-    void setTotal(double total)
+    void setTotal(BigDecimal total)
 
 
     //-- Public methods -------------------------
@@ -102,7 +105,7 @@ interface Payable {
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    double getBalance()
+    BigDecimal getBalance()
 
     /**
      * Gets the name of a color indicating the status of the balance of this
@@ -125,7 +128,7 @@ interface Payable {
      * @since   1.0
      * @see     #getBalance()
      */
-    double getClosingBalance()
+    BigDecimal getClosingBalance()
 
     /**
      * Gets the payable amount of this transaction.  It is calculated from the
@@ -136,7 +139,7 @@ interface Payable {
      * @return  the payable amount
      * @since   2.0
      */
-    double getPayable()
+    BigDecimal getPayable()
 
     /**
      * Gets the name of a color indicating the payment state of this

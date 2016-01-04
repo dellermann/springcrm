@@ -1,7 +1,7 @@
 /*
  * Invoice.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import groovy.transform.CompileStatic
+import static java.math.BigDecimal.ZERO
 
 
 /**
@@ -37,7 +37,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
         stage()
         dueDatePayment()
         paymentDate nullable: true
-        paymentAmount min: 0.0d, widget: 'currency'
+        paymentAmount min: ZERO, widget: 'currency'
         paymentMethod nullable: true
         quote nullable: true
         salesOrder nullable: true
@@ -57,12 +57,10 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
 
     //-- Fields ---------------------------------
 
-    def userService
-
     InvoiceStage stage
     Date dueDatePayment
     Date paymentDate
-    double paymentAmount
+    BigDecimal paymentAmount = ZERO
     PaymentMethod paymentMethod
 
 
@@ -77,17 +75,25 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
         super(q)
         type = 'I'
         quote = q
+        if (q.invoices == null) {
+            q.invoices = []
+        }
+        q.invoices << this
     }
 
     Invoice(SalesOrder so) {
         super(so)
         type = 'I'
         salesOrder = so
+        if (so.invoices == null) {
+            so.invoices = []
+        }
+        so.invoices << this
     }
 
     Invoice(Invoice i) {
         super(i)
-        type = 'I'
+        type = i.type
         quote = i.quote
         salesOrder = i.salesOrder
     }
@@ -97,7 +103,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
 
     /**
      * Gets the balance of this invoice, that is the difference between the
-     * payment amount and the invoice total sum.
+     * payment amount and the invoice total sum.  A positive value indicates
+     * debts to the client, a negative value indicates debts owned by you.
      * <p>
      * Note that the invoice balance does not take any credit memos into
      * account.  Use method {@code getClosingBalance} for it.
@@ -106,9 +113,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    double getBalance() {
-        int d = userService.numFractionDigitsExt
-        paymentAmount.round(d) - total.round(d)
+    BigDecimal getBalance() {
+        paymentAmount - total
     }
 
     /**
@@ -121,9 +127,9 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (closingBalance < 0.0d) {
+        if (closingBalance < ZERO) {
             color = 'red'
-        } else if (closingBalance > 0.0d) {
+        } else if (closingBalance > ZERO) {
             color = 'green'
         }
 
@@ -141,9 +147,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   1.0
      * @see     #getBalance()
      */
-    double getClosingBalance() {
-        (balance + (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
-            .round(userService.numFractionDigitsExt)
+    BigDecimal getClosingBalance() {
+        balance + (creditMemos*.balance?.sum() ?: ZERO)
     }
 
     /**
@@ -153,8 +158,8 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @return  the modified closing balance
      * @since   1.3
      */
-    double getModifiedClosingBalance() {
-        (closingBalance - balance).round(userService.numFractionDigitsExt)
+    BigDecimal getModifiedClosingBalance() {
+        closingBalance - balance
     }
 
     /**
@@ -166,9 +171,19 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @return  the payable amount
      * @since   2.0
      */
-    double getPayable() {
-        (total - (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
-            .round(userService.numFractionDigitsExt)
+    BigDecimal getPayable() {
+        total - (creditMemos*.balance?.sum() ?: ZERO)
+    }
+
+    /**
+     * Sets the payment amount of this invoice.
+     *
+     * @param paymentAmount the payment amount that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setPaymentAmount(BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount == null ? ZERO : paymentAmount
     }
 
     /**
@@ -182,7 +197,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
         String color = 'default'
         switch (stage?.id) {
         case 907:                       // cancelled
-            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
+            color = closingBalance >= ZERO ? 'green' : colorIndicatorByDate()
             break
         case 906:                       // booked out
             color = 'black'
@@ -194,7 +209,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
             color = 'purple'
             break
         case 903:                       // paid
-            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
+            color = closingBalance >= ZERO ? 'green' : colorIndicatorByDate()
             break
         case 902:                       // delivered
             color = colorIndicatorByDate()
@@ -211,7 +226,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @return  the turnover
      * @since   2.0
      */
-    double getTurnover() {
+    BigDecimal getTurnover() {
         turnoverProducts + turnoverServices + turnoverOtherSalesItems
     }
 
@@ -222,10 +237,10 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @return  the turnover of all other items
      * @since   2.0
      */
-    double getTurnoverOtherSalesItems() {
-        double value = itemsOfType(null)*.total.sum 0
+    BigDecimal getTurnoverOtherSalesItems() {
+        BigDecimal value = itemsOfType(null)*.total.sum ZERO
         if (creditMemos) {
-            value -= creditMemos*.turnoverOtherSalesItems.sum 0
+            value -= creditMemos*.turnoverOtherSalesItems.sum ZERO
         }
 
         value
@@ -237,10 +252,10 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @return  the turnover of all products
      * @since   2.0
      */
-    double getTurnoverProducts() {
-        double value = itemsOfType('P')*.total.sum 0
+    BigDecimal getTurnoverProducts() {
+        BigDecimal value = itemsOfType('P')*.total.sum ZERO
         if (creditMemos) {
-            value -= creditMemos*.turnoverProducts.sum 0
+            value -= creditMemos*.turnoverProducts.sum ZERO
         }
 
         value
@@ -252,10 +267,10 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @return  the turnover of all services
      * @since   2.0
      */
-    double getTurnoverServices() {
-        double value = itemsOfType('S')*.total.sum 0
+    BigDecimal getTurnoverServices() {
+        BigDecimal value = itemsOfType('S')*.total.sum ZERO
         if (creditMemos) {
-            value -= creditMemos*.turnoverServices.sum 0
+            value -= creditMemos*.turnoverServices.sum ZERO
         }
 
         value
@@ -273,14 +288,16 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      */
     private String colorIndicatorByDate() {
         String color = 'default'
-        Date d = new Date()
-        if (d >= dueDatePayment - 3) {
-            if (d <= dueDatePayment) {
-                color = 'yellow'
-            } else if (d <= dueDatePayment + 3) {
-                color = 'orange'
-            } else {
-                color = 'red'
+        if (dueDatePayment != null) {
+            Date d = new Date()
+            if (d >= dueDatePayment - 3) {
+                if (d <= dueDatePayment) {
+                    color = 'yellow'
+                } else if (d <= dueDatePayment + 3) {
+                    color = 'orange'
+                } else {
+                    color = 'red'
+                }
             }
         }
 

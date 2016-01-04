@@ -1,7 +1,7 @@
 /*
  * Dunning.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 
 /**
  * The class {@code Dunning} represents a reminder which belongs to an invoice.
@@ -36,7 +38,7 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
         stage()
         dueDatePayment()
         paymentDate nullable: true
-        paymentAmount min: 0.0d, widget: 'currency'
+        paymentAmount min: ZERO, widget: 'currency'
         paymentMethod nullable: true
         invoice()
     }
@@ -53,13 +55,11 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
 
     //-- Fields ---------------------------------
 
-    def userService
-
     DunningLevel level
     DunningStage stage
     Date dueDatePayment
     Date paymentDate
-    double paymentAmount
+    BigDecimal paymentAmount = ZERO
     PaymentMethod paymentMethod
 
 
@@ -103,9 +103,8 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @since   1.0
      * @see     #getClosingBalance()
      */
-    double getBalance() {
-        int d = userService.numFractionDigitsExt
-        paymentAmount.round(d) - total.round(d)
+    BigDecimal getBalance() {
+        paymentAmount - total
     }
 
     /**
@@ -119,9 +118,8 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @since   1.0
      * @see     #getBalance()
      */
-    double getClosingBalance() {
-        (balance + (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
-            .round(userService.numFractionDigitsExt)
+    BigDecimal getClosingBalance() {
+        balance + (creditMemos ? creditMemos*.balance.sum(ZERO) : ZERO)
     }
 
     /**
@@ -134,9 +132,9 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (closingBalance < 0.0d) {
+        if (closingBalance < ZERO) {
             color = 'red'
-        } else if (closingBalance > 0.0d) {
+        } else if (closingBalance > ZERO) {
             color = 'green'
         }
 
@@ -150,8 +148,8 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @return  the modified closing balance
      * @since   1.3
      */
-    double getModifiedClosingBalance() {
-        (closingBalance - balance).round(userService.numFractionDigitsExt)
+    BigDecimal getModifiedClosingBalance() {
+        closingBalance - balance
     }
 
     /**
@@ -163,9 +161,19 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @return  the payable amount
      * @since   2.0
      */
-    double getPayable() {
-        (total - (creditMemos ? creditMemos*.balance.sum(0) : 0.0d))
-            .round(userService.numFractionDigitsExt)
+    BigDecimal getPayable() {
+        total - (creditMemos ? creditMemos*.balance.sum(ZERO) : ZERO)
+    }
+
+    /**
+     * Sets the payment amount of this reminder.
+     *
+     * @param paymentAmount the payment amount that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setPaymentAmount(BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount == null ? ZERO : paymentAmount
     }
 
     /**
@@ -179,7 +187,7 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
         String color = 'default'
         switch (stage?.id) {
         case 2206:                      // cancelled
-            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
+            color = closingBalance >= ZERO ? 'green' : colorIndicatorByDate()
             break
         case 2205:                      // booked out
             color = 'black'
@@ -188,7 +196,7 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
             color = 'blue'
             break
         case 2203:                      // paid
-            color = (closingBalance >= 0) ? 'green' : colorIndicatorByDate()
+            color = closingBalance >= ZERO ? 'green' : colorIndicatorByDate()
             break
         case 2202:                      // delivered
             color = colorIndicatorByDate()
