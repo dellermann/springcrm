@@ -1,7 +1,7 @@
 /*
  * Quote.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ package org.amcworld.springcrm
  */
 class Quote extends InvoicingTransaction {
 
-    //-- Class variables ------------------------
+    //-- Static fields --------------------------
 
     static constraints = {
         stage()
@@ -41,22 +41,36 @@ class Quote extends InvoicingTransaction {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The stage of this quote.
+     */
     QuoteStage stage
+
+    /**
+     * The date until this quote is valid.
+     */
     Date validUntil
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty quote.
+     */
     Quote() {
         super()
         type = 'Q'
     }
 
+    /**
+     * Create a quote using the data of the given one (copy constructor).
+     *
+     * @param q the given quote
+     */
     Quote(Quote q) {
         super(q)
-        type = 'Q'
+        type = q.type
     }
 }
-

@@ -55,20 +55,63 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The level of this reminder (1st reminder, 2nd reminder etc.).
+     */
     DunningLevel level
+
+    /**
+     * The stage of this reminder.
+     */
     DunningStage stage
+
+    /**
+     * The due date of payment.
+     */
     Date dueDatePayment
+
+    /**
+     * The date of payment.
+     */
     Date paymentDate
+
+    /**
+     * The payment amount.
+     */
     BigDecimal paymentAmount = ZERO
+
+    /**
+     * The payment method.
+     */
     PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty reminder.
+     */
     Dunning() {
+        super()
         type = 'D'
     }
 
+    /**
+     * Creates a reminder using the data of the given one (copy constructor).
+     *
+     * @param d the given reminder
+     */
+    Dunning(Dunning d) {
+        super(d)
+        type = d.type
+        invoice = d.invoice
+    }
+
+    /**
+     * Creates a reminder associated to the given invoice.
+     *
+     * @param i the given invoice
+     */
     Dunning(Invoice i) {
         super(i)
         type = 'D'
@@ -79,12 +122,6 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
             i.dunnings = []
         }
         i.dunnings << this
-    }
-
-    Dunning(Dunning d) {
-        super(d)
-        type = d.type
-        invoice = d.invoice
     }
 
 

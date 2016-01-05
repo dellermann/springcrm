@@ -1,7 +1,7 @@
 /*
  * SalesOrder.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,28 +46,53 @@ class SalesOrder extends InvoicingTransaction {
 
     //-- Instance variables ---------------------
 
+    /**
+     * The stage of this sales order.
+     */
     SalesOrderStage stage
+
+    /**
+     * The date when the delivery should take place.
+     */
     Date dueDate
+
+    /**
+     * The actual date of delivery.
+     */
     Date deliveryDate
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty sales order.
+     */
     SalesOrder() {
         super()
         type = 'O'
     }
 
+    /**
+     * Creates a sales order using the data of the given one (copy
+     * constructor).
+     *
+     * @param so    the given sales order
+     */
+    SalesOrder(SalesOrder so) {
+        super(so)
+        type = so.type
+        quote = so.quote
+    }
+
+    /**
+     * Creates a sales order using which is associated to the given quote.
+     *
+     * @param q the given quote
+     */
     SalesOrder(Quote q) {
         super(q)
         type = 'O'
         quote = q
-    }
-
-    SalesOrder(SalesOrder so) {
-        super(so)
-        type = 'O'
-        quote = so.quote
     }
 }
 

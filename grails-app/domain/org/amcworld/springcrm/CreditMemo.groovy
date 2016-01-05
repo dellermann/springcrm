@@ -53,18 +53,42 @@ class CreditMemo extends InvoicingTransaction implements Payable {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The stage of this credit note.
+     */
     CreditMemoStage stage
+
+    /**
+     * The date of payment.
+     */
     Date paymentDate
+
+    /**
+     * The payment amount.
+     */
     BigDecimal paymentAmount = ZERO
+
+    /**
+     * The payment method.
+     */
     PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty credit note.
+     */
     CreditMemo() {
+        super()
         type = 'C'
     }
 
+    /**
+     * Creates a credit note associated to the given invoice.
+     *
+     * @param i the given invoice
+     */
     CreditMemo(Invoice i) {
         super(i)
         type = 'C'
@@ -77,6 +101,11 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         i.creditMemos << this
     }
 
+    /**
+     * Creates a credit note associated to the given reminder.
+     *
+     * @param d the given reminder
+     */
     CreditMemo(Dunning d) {
         super(d)
         type = 'C'
@@ -89,6 +118,12 @@ class CreditMemo extends InvoicingTransaction implements Payable {
         d.creditMemos << this
     }
 
+    /**
+     * Creates a credit note using the data of the given one (copy
+     * constructor).
+     *
+     * @param cm    the given credit note
+     */
     CreditMemo(CreditMemo cm) {
         super(cm)
         type = cm.type

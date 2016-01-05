@@ -27,8 +27,8 @@ import java.math.RoundingMode
 
 
 /**
- * The class {@code InvoicingTransaction} acts as a base class of invoicing
- * transactions such as invoices, quotes etc.
+ * The class {@code InvoicingTransaction} acts as a base class of customer
+ * accounts such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
  * @version 2.0
@@ -89,28 +89,127 @@ class InvoicingTransaction {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The service to obtain sequence numbers.
+     */
     def seqNumberService
 
+    /**
+     * The sequence number of this customer account.
+     */
     int number
+
+    /**
+     * The type of customer account.  This value is intended to be set by
+     * derived classes or by Hibernate during loading.  You should not set this
+     * property by yourself.
+     */
     String type
+
+    /**
+     * The subject of this customer account.
+     */
     String subject
+
+    /**
+     * The date of the document, that is, when this customer account has been
+     * created.
+     */
     Date docDate = new Date()
+
+    /**
+     * The carrier used to transport the document generated from this customer
+     * account.
+     */
     Carrier carrier
+
+    /**
+     * The date when the document generated from this customer account has been
+     * shipped.
+     */
     Date shippingDate
+
+    /**
+     * The address of the organization where to send the invoices to.
+     */
     Address billingAddr
+
+    /**
+     * The address of the organization where to deliver to.
+     */
     Address shippingAddr
+
+    /**
+     * A text which appears in the header of the document generated from this
+     * customer account.
+     */
     String headerText
+
+    /**
+     * The items of this customer account.
+     */
     List<InvoicingItem> items
+
+    /**
+     * A text which appears in the footer of the document generated from this
+     * customer account.
+     */
     String footerText
+
+    /**
+     * A percentage discount amount of this customer account.  The value is
+     * relative to the gross subtotal subtracted from it.
+     */
     BigDecimal discountPercent = ZERO
+
+    /**
+     * A fixed discount amount of this customer account.  The value is
+     * subtracted from the gross subtotal.
+     */
     BigDecimal discountAmount = ZERO
+
+    /**
+     * The net costs for shipping.
+     */
     BigDecimal shippingCosts = ZERO
+
+    /**
+     * Any tax rate used to calculate the gross costs for shipping.
+     */
     BigDecimal shippingTax = ZERO
+
+    /**
+     * A positive or negative value used to adjust the gross total.
+     */
     BigDecimal adjustment = ZERO
+
+    /**
+     * The total of this customer account.  Normally, this method is called
+     * by Hibernate only to set the total value from a database record.  You
+     * should not call this method to set the total.  Use method
+     * {@code computeTotal} instead.
+     */
     BigDecimal total = ZERO
+
+    /**
+     * Any notes which are not printed in the document generated from this
+     * customer account.
+     */
     String notes
+
+    /**
+     * The user has created this customer account.
+     */
     User createUser
+
+    /**
+     * The timestamp when this customer account has been created.
+     */
     Date dateCreated
+
+    /**
+     * The timestamp when this customer account has been modified.
+     */
     Date lastUpdated
 
 

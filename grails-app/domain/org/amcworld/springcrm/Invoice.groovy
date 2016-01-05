@@ -57,20 +57,59 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The stage of this invoice.
+     */
     InvoiceStage stage
+
+    /**
+     * The due date of payment.
+     */
     Date dueDatePayment
+
+    /**
+     * The date of payment.
+     */
     Date paymentDate
+
+    /**
+     * The amount of payment.
+     */
     BigDecimal paymentAmount = ZERO
+
+    /**
+     * The payment method.
+     */
     PaymentMethod paymentMethod
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty invoice.
+     */
     Invoice() {
         super()
         type = 'I'
     }
 
+    /**
+     * Create an invoice using the data of the given one (copy constructor).
+     *
+     * @param i the given invoice
+     */
+    Invoice(Invoice i) {
+        super(i)
+        type = i.type
+        quote = i.quote
+        salesOrder = i.salesOrder
+    }
+
+    /**
+     * Creates an invoice associated to the given quote.
+     *
+     * @param q the given quote
+     */
     Invoice(Quote q) {
         super(q)
         type = 'I'
@@ -81,6 +120,11 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
         q.invoices << this
     }
 
+    /**
+     * Creates an invoice associated to the given sales order.
+     *
+     * @param so    the given sales order
+     */
     Invoice(SalesOrder so) {
         super(so)
         type = 'I'
@@ -89,13 +133,6 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
             so.invoices = []
         }
         so.invoices << this
-    }
-
-    Invoice(Invoice i) {
-        super(i)
-        type = i.type
-        quote = i.quote
-        salesOrder = i.salesOrder
     }
 
 
