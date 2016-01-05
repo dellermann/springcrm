@@ -75,17 +75,15 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
         invoice = i
         headerText = ''
         footerText = ''
+        if (i.dunnings == null) {
+            i.dunnings = []
+        }
+        i.dunnings << this
     }
 
     Dunning(Dunning d) {
         super(d)
-        type = 'D'
-        level = d.level
-        stage = d.stage
-        dueDatePayment = d.dueDatePayment
-        paymentDate = d.paymentDate
-        paymentAmount = d.paymentAmount
-        paymentMethod = d.paymentMethod
+        type = d.type
         invoice = d.invoice
     }
 
@@ -108,21 +106,6 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
     }
 
     /**
-     * Gets the closing balance of this reminder.  The closing balance is
-     * calculated from the reminder balance plus the sum of the balances of
-     * all credit memos associated to this reminder.  A negative balance
-     * indicates a claim to the customer, a positive one indicates a credit of
-     * the customer.
-     *
-     * @return  the closing balance
-     * @since   1.0
-     * @see     #getBalance()
-     */
-    BigDecimal getClosingBalance() {
-        balance + (creditMemos ? creditMemos*.balance.sum(ZERO) : ZERO)
-    }
-
-    /**
      * Gets the name of a color indicating the status of the balance of this
      * reminder.  This property is usually used to compute CSS classes in the
      * views.
@@ -139,6 +122,21 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
         }
 
         color
+    }
+
+    /**
+     * Gets the closing balance of this reminder.  The closing balance is
+     * calculated from the reminder balance plus the sum of the balances of
+     * all credit memos associated to this reminder.  A negative balance
+     * indicates a claim to the customer, a positive one indicates a credit of
+     * the customer.
+     *
+     * @return  the closing balance
+     * @since   1.0
+     * @see     #getBalance()
+     */
+    BigDecimal getClosingBalance() {
+        balance + (creditMemos*.balance?.sum() ?: ZERO)
     }
 
     /**
@@ -162,7 +160,7 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     BigDecimal getPayable() {
-        total - (creditMemos ? creditMemos*.balance.sum(ZERO) : ZERO)
+        total - (creditMemos*.balance?.sum() ?: ZERO)
     }
 
     /**
@@ -218,14 +216,16 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
      */
     private String colorIndicatorByDate() {
         String color = 'default'
-        Date d = new Date()
-        if (d >= dueDatePayment - 3) {
-            if (d <= dueDatePayment) {
-                color = 'yellow'
-            } else if (d <= dueDatePayment + 3) {
-                color = 'orange'
-            } else {
-                color = 'red'
+        if (dueDatePayment != null) {
+            Date d = new Date()
+            if (d >= dueDatePayment - 3) {
+                if (d <= dueDatePayment) {
+                    color = 'yellow'
+                } else if (d <= dueDatePayment + 3) {
+                    color = 'orange'
+                } else {
+                    color = 'red'
+                }
             }
         }
 

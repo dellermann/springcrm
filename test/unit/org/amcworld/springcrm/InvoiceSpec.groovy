@@ -27,57 +27,10 @@ import spock.lang.Specification
 @TestFor(Invoice)
 class InvoiceSpec extends Specification {
 
-    //-- Fields ---------------------------------
-
-    Invoice i = new Invoice(
-        adjustment: 0.54,
-        billingAddr: new Address(),
-        discountAmount: 5,
-        discountPercent: 2,
-        dueDatePayment: new Date(),
-        items: [
-            new InvoicingItem(
-                quantity: 4, unit: 'pcs.', name: 'books', unitPrice: 44.99,
-                tax: 19,
-				salesItem: new Product(id: 10000, name: 'books', type: 'P')
-            ),
-            new InvoicingItem(
-                quantity: 10.5, unit: 'm', name: 'tape', unitPrice: 0.89,
-                tax: 7,
-				salesItem: new Product(id: 10010, name: 'tape', type: 'P')
-            ),
-            new InvoicingItem(
-                quantity: 4.25, unit: 'h', name: 'repairing', unitPrice: 39,
-                tax: 19,
-				salesItem: new Service(id: 10000, name: 'repairing', type: 'S')
-            ),
-            new InvoicingItem(
-                quantity: 10, unit: 'units', name: 'fixing', unitPrice: 9.8,
-                tax: 19
-            )
-        ],
-        organization: new Organization(
-            number: 10405, recType: 1, name: 'YourOrganization Ltd.',
-            billingAddr: new Address(), shippingAddr: new Address()
-        ),
-        paymentAmount: 100.0d,
-        total: 100.0d,
-        type: 'I',
-        shippingAddr: new Address(),
-        shippingCosts: 4.5,
-        shippingTax: 7,
-        stage: new InvoiceStage(),
-        subject: 'invoice',
-        creditMemos: new CreditMemo(
-            paymentAmount: 12, stage: new CreditMemoStage()
-        )
-    )
-
-
     //-- Feature Methods ------------------------
 
     def 'Creating an empty instance initializes the properties'() {
-        when: 'I create an empty credit memo'
+        when: 'I create an empty invoice'
         def i = new Invoice()
 
         then: 'the properties are initialized properly'
