@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoice.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,10 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
+import groovy.transform.CompileStatic
+
 
 /**
  * The class {@code PurchaseInvoice} represents a purchase invoice.
@@ -29,7 +33,12 @@ package org.amcworld.springcrm
  */
 class PurchaseInvoice {
 
-    //-- Class variables ------------------------
+    //-- Constants ------------------------------
+
+    private static final BigInteger HUNDRED = new BigDecimal(100i)
+
+
+    //-- Class fields ---------------------------
 
     static constraints = {
         number blank: false
@@ -42,13 +51,13 @@ class PurchaseInvoice {
         paymentDate nullable: true
         paymentAmount widget: 'currency'
         paymentMethod nullable: true
-        items minSize: 1
+        items nullable: false, minSize: 1
         notes nullable: true, widget: 'textarea'
         documentFile nullable: true
-        discountPercent scale: 1, min: 0.0d, widget: 'percent'
-        discountAmount min: 0.0d, widget: 'currency'
-        shippingCosts min: 0.0d, widget: 'currency'
-        shippingTax scale: 1, min: 0.0d, widget: 'percent'
+        discountPercent scale: 1, min: ZERO, widget: 'percent'
+        discountAmount min: ZERO, widget: 'currency'
+        shippingCosts min: ZERO, widget: 'currency'
+        shippingTax scale: 1, min: ZERO, widget: 'percent'
         adjustment widget: 'currency'
         total()
         dateCreated()
@@ -67,43 +76,139 @@ class PurchaseInvoice {
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def userService
-
+    /**
+     * The number of this purchase invoice.
+     */
     String number
+
+    /**
+     * The subject of this purchase invoice.
+     */
     String subject
+
+    /**
+     * The name of the vendor if property {@code vendor} is not used.
+     */
     String vendorName
+
+    /**
+     * The date of this purchase invoice.
+     */
     Date docDate = new Date()
+
+    /**
+     * The due date of payment.
+     */
     Date dueDate
+
+    /**
+     * The stage of this purchase invoice.
+     */
     PurchaseInvoiceStage stage
-    Date paymentDate
-    double paymentAmount
-    PaymentMethod paymentMethod
+
+    /**
+     * The items of this purchase invoice.
+     */
     List<PurchaseInvoiceItem> items
-    double discountPercent
-    double discountAmount
-    double shippingCosts
-    double shippingTax = 19.0d
-    double adjustment
+
+    /**
+     * A percentage discount amount of this purchase invoice.  The value is
+     * relative to the gross subtotal subtracted from it.
+     */
+    BigDecimal discountPercent = ZERO
+
+    /**
+     * A fixed discount amount of this purchase invoice.  The value is
+     * subtracted from the gross subtotal.
+     */
+    BigDecimal discountAmount = ZERO
+
+    /**
+     * The net costs for shipping.
+     */
+    BigDecimal shippingCosts = ZERO
+
+    /**
+     * Any tax rate used to calculate the gross costs for shipping.
+     */
+    BigDecimal shippingTax = ZERO
+
+    /**
+     * A positive or negative value used to adjust the gross total.
+     */
+    BigDecimal adjustment = ZERO
+
+    /**
+     * The total of this customer account.  Normally, this method is called
+     * by Hibernate only to set the total value from a database record.  You
+     * should not call this method to set the total.  Use method
+     * {@code computeTotal} instead.
+     */
+    BigDecimal total = ZERO
+
+    /**
+     * Any notes which are not printed in the document generated from this
+     * customer account.
+     */
     String notes
+
+    /**
+     * The associated document of this purchase invoice.
+     */
     DataFile documentFile
-    double total
+
+    /**
+     * The date of payment.
+     */
+    Date paymentDate
+
+    /**
+     * The amount of payment.
+     */
+    BigDecimal paymentAmount = ZERO
+
+    /**
+     * The payment method.
+     */
+    PaymentMethod paymentMethod
+
+    /**
+     * The timestamp when this customer account has been created.
+     */
     Date dateCreated
+
+    /**
+     * The timestamp when this customer account has been modified.
+     */
     Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty purchase invoice.
+     */
     PurchaseInvoice() {}
 
+    /**
+     * Creates a purchase invoice using the data of the given one (copy
+     * constructor).
+     *
+     * @param p the given purchase invoice
+     */
     PurchaseInvoice(PurchaseInvoice p) {
         number = p.number
         subject = p.subject
         vendor = p.vendor
         vendorName = p.vendorName
-        items = new ArrayList(p.items.size())
-        p.items.each { items << new PurchaseInvoiceItem(it) }
+        if (p.items != null) {
+            items = new ArrayList(p.items.size())
+            for (PurchaseInvoiceItem item : p.items) {
+                items << new PurchaseInvoiceItem(item)
+            }
+        }
         discountPercent = p.discountPercent
         discountAmount = p.discountAmount
         shippingCosts = p.shippingCosts
@@ -117,15 +222,25 @@ class PurchaseInvoice {
     //-- Properties -----------------------------
 
     /**
+     * Sets the price adjustment of this customer account.
+     *
+     * @param adjustment    the adjustment that should be set; if {@code null}
+     *                      it is converted to zero
+     * @since 2.0
+     */
+    void setAdjustment(BigDecimal adjustment) {
+        this.adjustment = adjustment == null ? ZERO : adjustment
+    }
+
+    /**
      * Gets the balance of this purchase invoice, that is the difference
      * between the payment amount and the invoice total sum.
      *
      * @return  the purchase invoice balance
      * @since   1.0
      */
-    double getBalance() {
-        int d = userService.numFractionDigitsExt
-        paymentAmount.round(d) - total.round(d)
+    BigDecimal getBalance() {
+        paymentAmount - total
     }
 
     /**
@@ -138,24 +253,47 @@ class PurchaseInvoice {
      */
     String getBalanceColor() {
         String color = 'default'
-        if (balance < 0.0d) {
+        if (balance < ZERO) {
             color = 'red'
-        } else if (balance > 0.0d) {
+        } else if (balance > ZERO) {
             color = 'green'
         }
+
         color
     }
 
     /**
+     * Sets a fixed discount amount of this customer account.
+     *
+     * @param discountAmount    the discount amount that should be set; if
+     *                          {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount == null ? ZERO : discountAmount
+    }
+
+    /**
+     * Sets a percentage discount amount of this customer account.
+     *
+     * @param discountPercent   the percentage discount amount that should be
+     *                          set; if {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent == null ? ZERO : discountPercent
+    }
+
+    /**
      * Gets the discount amount which is granted when the user specifies a
-     * discount percentage value. The percentage value is related to the
+     * discount percentage value.  The percentage value is related to the
      * subtotal gross value.
      *
      * @return  the discount amount from the percentage value
      * @see     #getSubtotalGross()
      */
-    double getDiscountPercentAmount() {
-        subtotalGross * discountPercent / 100.0d
+    BigDecimal getDiscountPercentAmount() {
+        subtotalGross * discountPercent / HUNDRED
     }
 
     /**
@@ -173,10 +311,54 @@ class PurchaseInvoice {
             color = 'purple'
             break
         case 2102:                       // paid
-            color = (balance >= 0.0d) ? 'green' : colorIndicatorByDate()
+            color = (balance >= ZERO) ? 'green' : colorIndicatorByDate()
             break
         }
+
         color
+    }
+
+    /**
+     * Sets the payment amount of this purchase invoice.
+     *
+     * @param paymentAmount the payment amount that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setPaymentAmount(BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount == null ? ZERO : paymentAmount
+    }
+
+    /**
+     * Sets the shipping costs of this customer account.
+     *
+     * @param shippingCosts the shipping costs that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setShippingCosts(BigDecimal shippingCosts) {
+        this.shippingCosts = shippingCosts == null ? ZERO : shippingCosts
+    }
+
+    /**
+     * Gets the gross shipping costs.
+     *
+     * @return  the gross shipping costs
+     * @since   2.0
+     */
+    BigDecimal getShippingCostsGross() {
+        shippingCosts * (HUNDRED + shippingTax) / HUNDRED
+    }
+
+    /**
+     * Sets the shipping tax of this purchase invoice.
+     *
+     * @param shippingTax   the shipping tax that should be set; if
+     *                      {@code null} it is converted to zero
+     * @since 2.0
+     */
+    void setShippingTax(BigDecimal shippingTax) {
+        this.shippingTax = shippingTax == null ? ZERO : shippingTax
     }
 
     /**
@@ -186,8 +368,8 @@ class PurchaseInvoice {
      * @return  the subtotal gross value
      * @see     #getSubtotalNet()
      */
-    double getSubtotalGross() {
-        subtotalNet + (taxRateSums.values().sum() ?: 0.0d)
+    BigDecimal getSubtotalGross() {
+        (items*.totalGross?.sum() ?: ZERO) + shippingCostsGross
     }
 
     /**
@@ -197,42 +379,84 @@ class PurchaseInvoice {
      * @return  the subtotal net value
      * @see     #getSubtotalGross()
      */
-    double getSubtotalNet() {
-        items ? (items.total.sum() + shippingCosts) : 0.0d
+    BigDecimal getSubtotalNet() {
+        (items*.total?.sum() ?: ZERO) + shippingCosts
     }
 
     /**
-     * Computes a map of taxes used in this transaction. The key represents the
+     * Computes a map of taxes used in this transaction.  The key represents the
      * tax rate (a percentage value), the value the sum of tax values of all
      * items which belong to this tax rate.
+     * <p>
+     * The keys which represent the tax rates in the returned map are stored as
+     * {@code Double} values because the more precise {@code BigDecimal} values
+     * are less suitable as map keys.  This is due to
+     * {@code BigDecimal.hashCode()} returns different hash codes for numbers
+     * which are numerically equal but differ in scale (like 2.0 and 2.00). You
+     * should not use the keys of the returned map in computations due to the
+     * floating point number issues.
      *
      * @return  the tax rates and their associated tax value sums
+     * @see     BigDecimal#hashCode()
      */
-    Map<Double, Double> getTaxRateSums() {
-        Map<Double, Double> res = [: ]
-        for (item in items) {
-            double tax = item.tax
-            res[tax] = (res[tax] ?: 0.0d) + item.total * tax / 100.0d
+    @CompileStatic
+    Map<Double, BigDecimal> getTaxRateSums() {
+        Map<Double, BigDecimal> res = new HashMap<Double, BigDecimal>(5)
+        if (items) {
+            for (PurchaseInvoiceItem item in items) {
+                addTaxRateSum res, item.tax, item.total
+            }
         }
-        if (getShippingTax() != 0.0d && getShippingCosts() != 0.0d) {
-            double tax = shippingTax
-            res[tax] = (res[tax] ?: 0.0d) + shippingCosts * tax / 100.0d
+        if (shippingTax && shippingCosts) {
+            addTaxRateSum res, shippingTax, shippingCosts
         }
-        res.sort { e1, e2 -> e1.key <=> e2.key }
+
+        res.sort {
+            Map.Entry<Double, BigDecimal> e1,
+            Map.Entry<Double, BigDecimal> e2 ->
+            e1.key <=> e2.key
+        }
+    }
+
+    /**
+     * Sets the total of this customer account.  Normally, this method is called
+     * by Hibernate only to set the total value from a database record.  You
+     * should not call this method to set the total.  Use method
+     * {@code computeTotal} instead.
+     *
+     * @param total the total that should be set; if {@code null} it is
+     *              converted to zero
+     * @see         #computeTotal()
+     * @since 2.0
+     */
+    void setTotal(BigDecimal total) {
+        this.total = total == null ? ZERO : total
     }
 
 
     //-- Public methods -------------------------
 
-    def beforeValidate() {
-        total = computeTotal()
-    }
-
+    /**
+     * Called before this purchase invoice is created in the underlying data
+     * store.  The method computes the total value.
+     */
     def beforeInsert() {
         total = computeTotal()
     }
 
+    /**
+     * Called before this purchase invoice is updated in the underlying data
+     * store.  The method computes the total value.
+     */
     def beforeUpdate() {
+        total = computeTotal()
+    }
+
+    /**
+     * Called before this purchase invoice is validated.  The method computes
+     * the total value.
+     */
+    def beforeValidate() {
         total = computeTotal()
     }
 
@@ -242,13 +466,13 @@ class PurchaseInvoice {
      *
      * @return  the total (gross) value
      */
-    double computeTotal() {
+    BigDecimal computeTotal() {
         subtotalGross - discountPercentAmount - discountAmount + adjustment
     }
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof PurchaseInvoice) ? obj.id == id : false
+        obj instanceof PurchaseInvoice && obj.id == id
     }
 
     @Override
@@ -258,11 +482,18 @@ class PurchaseInvoice {
 
     @Override
     String toString() {
-        subject
+        subject ?: ''
     }
 
 
     //-- Non-public methods ---------------------
+
+    private void addTaxRateSum(Map<Double, BigDecimal> map, BigDecimal taxRate,
+                               BigDecimal value)
+    {
+        Double tr = taxRate.doubleValue()
+        map[tr] = (map[tr] ?: ZERO) + value * taxRate / HUNDRED
+    }
 
     /**
      * Returns the color indicator for the payment state depending on the
@@ -271,18 +502,21 @@ class PurchaseInvoice {
      * @return  the indicator color
      * @since   1.0
      */
-    protected String colorIndicatorByDate() {
+    private String colorIndicatorByDate() {
         String color = 'default'
-        Date d = new Date()
-        if (d >= dueDate - 3) {
-            if (d <= dueDate) {
-                color = 'yellow'
-            } else if (d <= dueDate + 3) {
-                color = 'orange'
-            } else {
-                color = 'red'
+        if (dueDate != null) {
+            Date d = new Date()
+            if (d >= dueDate - 3) {
+                if (d <= dueDate) {
+                    color = 'yellow'
+                } else if (d <= dueDate + 3) {
+                    color = 'orange'
+                } else {
+                    color = 'red'
+                }
             }
         }
+
         color
     }
 }

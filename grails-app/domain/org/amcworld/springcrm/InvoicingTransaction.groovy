@@ -23,7 +23,6 @@ package org.amcworld.springcrm
 import static java.math.BigDecimal.ZERO
 
 import groovy.transform.CompileStatic
-import java.math.RoundingMode
 
 
 /**
@@ -437,8 +436,8 @@ class InvoicingTransaction {
 
     /**
      * Called before this customer account is created in the underlying data
-     * store.  The method obtains the next available sequence number and computes
-     * the total value.
+     * store.  The method obtains the next available sequence number and
+     * computes the total value.
      */
     def beforeInsert() {
         if (number == 0) {

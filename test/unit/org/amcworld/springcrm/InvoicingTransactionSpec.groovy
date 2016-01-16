@@ -930,7 +930,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Persisted instances are unequal if they have the different ID'() {
-        given: 'two invoicing items with different properties'
+        given: 'two invoicing transactions with different properties'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -987,7 +987,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Equal instances produce the same hash code'() {
-        given: 'two invoicing items with different properties'
+        given: 'two invoicing transactions with different properties'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -1001,7 +1001,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Different instances produce different hash codes'() {
-        given: 'two invoicing items with different properties'
+        given: 'two invoicing transactions with different properties'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -1065,7 +1065,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Subject must not be blank'() {
-        given: 'a quite valid invoicing item'
+        given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
             type: 'X',
@@ -1094,7 +1094,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Organization must not be null'() {
-        given: 'a quite valid invoicing item'
+        given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
             type: 'X',
@@ -1119,7 +1119,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Document date must not be null'() {
-        given: 'a quite valid invoicing item'
+        given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
             type: 'X',
@@ -1145,7 +1145,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Items must not be null nor empty'() {
-        given: 'a quite valid invoicing item'
+        given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
             type: 'X',
@@ -1173,5 +1173,72 @@ class InvoicingTransactionSpec extends Specification {
 
         then: 'the instance is not valid'
         !i.validate()
+    }
+
+    def 'Discount percent must not be less than zero'() {
+        given: 'a valid invoicing transaction'
+        def i = new InvoicingTransaction(
+            number: 39999,
+            type: 'X',
+            subject: 'Services',
+            organization: new Organization(),
+            person: new Person(),
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
+            items: [new InvoicingItem()],
+        )
+
+        when: 'I set various values and validate'
+        i.discountPercent = dp
+        i.validate()
+
+        then: 'the instance is valid or not'
+        valid != i.hasErrors()
+
+        where:
+          dp        | valid
+        null        | true
+        -100        | false
+          -5        | false
+          -1        | false
+          -0.005    | false
+           0        | true
+           0.005    | true
+           1        | true
+           5        | true
+         100        | true
+         200        | true
+    }
+
+    def 'Shipping tax must not be less than zero'() {
+        given: 'a valid invoicing transaction'
+        def i = new InvoicingTransaction(
+            number: 39999,
+            type: 'X',
+            subject: 'Services',
+            organization: new Organization(),
+            person: new Person(),
+            billingAddr: new Address(),
+            shippingAddr: new Address(),
+            items: [new InvoicingItem()],
+        )
+
+        when: 'I set various values and validate'
+        i.shippingTax = st
+        i.validate()
+
+        then: 'the instance is valid or not'
+        valid != i.hasErrors()
+
+        where:
+        st              | valid
+        null            | true
+        -120034.005     | false
+        -5              | false
+        1003            | true
+        4               | true
+        100D            | true
+        100.0d          | true
+        1e2d            | true
     }
 }

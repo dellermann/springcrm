@@ -1,5 +1,5 @@
 /*
- * InvoicingItemSpec.groovy
+ * PurchaseInvoiceItemSpec.groovy
  *
  * Copyright (c) 2011-2016, Daniel Ellermann
  *
@@ -24,14 +24,14 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 
-@TestFor(InvoicingItem)
-class InvoicingItemSpec extends Specification {
+@TestFor(PurchaseInvoiceItem)
+class PurchaseInvoiceItemSpec extends Specification {
 
     //-- Feature Methods ------------------------
 
     def 'Creating an empty item initializes the properties'() {
-        when: 'I create an empty invoicing item'
-        def i = new InvoicingItem()
+        when: 'I create an empty invoice item'
+        def i = new PurchaseInvoiceItem()
 
         then: 'the properties are initialized properly'
         0.0 == i.quantity
@@ -40,17 +40,16 @@ class InvoicingItemSpec extends Specification {
         null == i.description
         0.0 == i.unitPrice
         0.0 == i.tax
-        null == i.salesItem
-        null == i.invoicingTransaction
+        null == i.invoice
         null == i.id
     }
 
     def 'Copy an empty item using constructor'() {
-        given: 'an empty invoicing item'
-        def i1 = new InvoicingItem()
+        given: 'an empty invoice item'
+        def i1 = new PurchaseInvoiceItem()
 
-        when: 'I copy the invoicing item using the constructor'
-        def i2 = new InvoicingItem(i1)
+        when: 'I copy the invoice item using the constructor'
+        def i2 = new PurchaseInvoiceItem(i1)
 
         then: 'the properties are set properly'
         BigDecimal.ZERO == i2.quantity
@@ -59,25 +58,23 @@ class InvoicingItemSpec extends Specification {
         null == i2.description
         BigDecimal.ZERO == i2.unitPrice
         BigDecimal.ZERO == i2.tax
-        null == i2.salesItem
-        null == i2.invoicingTransaction
+        null == i2.invoice
         null == i2.id
     }
 
     def 'Copy an item using constructor'() {
-        given: 'an invoicing item with different properties'
-        def i1 = new InvoicingItem(
+        given: 'an invoice item with different properties'
+        def i1 = new PurchaseInvoiceItem(
             quantity: 15,
             unit: 'unit',
             name: '12" pipe',
             description: 'plastic',
             unitPrice: 188.0,
-            tax: 17.0,
-            salesItem: new SalesItem(name: '12" pipe', type: 'P')
+            tax: 17.0
         )
 
-        when: 'I copy the invoicing item using the constructor'
-        def i2 = new InvoicingItem(i1)
+        when: 'I copy the invoice item using the constructor'
+        def i2 = new PurchaseInvoiceItem(i1)
 
         then: 'some properties are the equal'
         i2.quantity == i1.quantity
@@ -87,16 +84,13 @@ class InvoicingItemSpec extends Specification {
         i2.unitPrice == i1.unitPrice
         i2.tax == i1.tax
 
-        and: 'the sales item is the same'
-        i2.salesItem.is i1.salesItem
-
         and: 'some properties are unset'
         !i2.id
     }
 
     def 'Set decimal values to null converts them to zero'() {
-        given: 'an empty invoicing item'
-        def i = new InvoicingItem()
+        given: 'an empty invoice item'
+        def i = new PurchaseInvoiceItem()
 
         when: 'I set the decimal values to null'
         i.quantity = null
@@ -108,8 +102,8 @@ class InvoicingItemSpec extends Specification {
         0.0 == i.unitPrice
         0.0 == i.tax
 
-        when: 'I create an invoicing item with null values'
-        i = new InvoicingItem(quantity: null, unitPrice: null, tax: null)
+        when: 'I create an invoice item with null values'
+        i = new PurchaseInvoiceItem(quantity: null, unitPrice: null, tax: null)
 
         then: 'all decimal values are never null'
         0.0 == i.quantity
@@ -118,8 +112,8 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Get the total price'() {
-        when: 'I create an invoicing item with quantity and unit price'
-        def i = new InvoicingItem(quantity: q, unitPrice: up)
+        when: 'I create an invoice item with quantity and unit price'
+        def i = new PurchaseInvoiceItem(quantity: q, unitPrice: up)
 
         then: 'the I get the correct net total price'
         t == i.total
@@ -149,8 +143,8 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Get the gross total price'() {
-        when: 'I create an invoicing item with quantity and unit price'
-        def i = new InvoicingItem(quantity: q, unitPrice: up, tax: 19.00)
+        when: 'I create an invoice item with quantity and unit price'
+        def i = new PurchaseInvoiceItem(quantity: q, unitPrice: up, tax: 19.00)
 
         then: 'the I get the correct gross total price'
         t == i.totalGross
@@ -180,8 +174,8 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Equals is null-safe'() {
-        given: 'an invoicing item'
-        def i = new InvoicingItem()
+        given: 'an invoice item'
+        def i = new PurchaseInvoiceItem()
 
         expect:
         null != i
@@ -190,8 +184,8 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Instances of other types are always unequal'() {
-        given: 'an invoicing item'
-        def i = new InvoicingItem()
+        given: 'an invoice item'
+        def i = new PurchaseInvoiceItem()
 
         expect:
         i != 'foo'
@@ -202,13 +196,13 @@ class InvoicingItemSpec extends Specification {
 
     def 'Not persisted instances are equal'() {
         given: 'three instances without ID'
-        def i1 = new InvoicingItem(
+        def i1 = new PurchaseInvoiceItem(
             quantity: 5, name: '12" pipe', unitPrice: 6.8
         )
-        def i2 = new InvoicingItem(
+        def i2 = new PurchaseInvoiceItem(
             quantity: 8, name: '10" pipe', unitPrice: 6.2
         )
-        def i3 = new InvoicingItem(
+        def i3 = new PurchaseInvoiceItem(
             quantity: 12, name: '14" pipe', unitPrice: 7.2
         )
 
@@ -229,12 +223,12 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Persisted instances are equal if they have the same ID'() {
-        given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
+        given: 'two invoice items with different properties'
+        def i1 = new PurchaseInvoiceItem(name: '12" pipe')
         i1.id = 7403L
-        def i2 = new InvoicingItem(name: '10" pipe')
+        def i2 = new PurchaseInvoiceItem(name: '10" pipe')
         i2.id = 7403L
-        def i3 = new InvoicingItem(name: '14" pipe')
+        def i3 = new PurchaseInvoiceItem(name: '14" pipe')
         i3.id = 7403L
 
         expect: 'equals() is reflexive'
@@ -254,12 +248,12 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Persisted instances are unequal if they have the different ID'() {
-        given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
+        given: 'two invoice items with different properties'
+        def i1 = new PurchaseInvoiceItem(name: '12" pipe')
         i1.id = 7403L
-        def i2 = new InvoicingItem(name: '12" pipe')
+        def i2 = new PurchaseInvoiceItem(name: '12" pipe')
         i2.id = 7404L
-        def i3 = new InvoicingItem(name: '12" pipe')
+        def i3 = new PurchaseInvoiceItem(name: '12" pipe')
         i3.id = 8473L
 
         expect: 'equals() is reflexive'
@@ -280,7 +274,7 @@ class InvoicingItemSpec extends Specification {
 
     def 'Can compute hash code of an empty instance'() {
         given: 'an empty instance'
-        def i = new InvoicingItem()
+        def i = new PurchaseInvoiceItem()
 
         expect:
         0i == i.hashCode()
@@ -288,7 +282,7 @@ class InvoicingItemSpec extends Specification {
 
     def 'Can compute hash code of a not persisted instance'() {
         given: 'an empty instance'
-        def i = new InvoicingItem(name: '12" pipe')
+        def i = new PurchaseInvoiceItem(name: '12" pipe')
 
         expect:
         0i == i.hashCode()
@@ -296,7 +290,7 @@ class InvoicingItemSpec extends Specification {
 
     def 'Hash codes are consistent'() {
         given: 'an instance'
-        def i = new InvoicingItem(name: '12" pipe')
+        def i = new PurchaseInvoiceItem(name: '12" pipe')
         i.id = 7403L
 
         when: 'I compute the hash code'
@@ -304,19 +298,19 @@ class InvoicingItemSpec extends Specification {
 
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
-            i = new InvoicingItem(name: '12" pipe')
+            i = new PurchaseInvoiceItem(name: '12" pipe')
             i.id = 7403L
             h == i.hashCode()
         }
     }
 
     def 'Equal instances produce the same hash code'() {
-        given: 'two invoicing items with different properties'
-        def i1 = new InvoicingItem(name: '12" pipe')
+        given: 'two invoice items with different properties'
+        def i1 = new PurchaseInvoiceItem(name: '12" pipe')
         i1.id = 7403L
-        def i2 = new InvoicingItem(name: '10" pipe')
+        def i2 = new PurchaseInvoiceItem(name: '10" pipe')
         i2.id = 7403L
-        def i3 = new InvoicingItem(name: '14" pipe')
+        def i3 = new PurchaseInvoiceItem(name: '14" pipe')
         i3.id = 7403L
 
         expect:
@@ -325,7 +319,7 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Different instances produce different hash codes'() {
-        given: 'two invoicing items with different properties'
+        given: 'two invoice items with different properties'
         def i1 = new InvoicingItem(name: '12" pipe')
         i1.id = 7403L
         def i2 = new InvoicingItem(name: '12" pipe')
@@ -339,8 +333,8 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Can convert to string'() {
-        given: 'an empty invoicing item'
-        def i = new InvoicingItem()
+        given: 'an empty invoice item'
+        def i = new PurchaseInvoiceItem()
 
         when: 'I set the name'
         i.name = name
@@ -360,10 +354,10 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Quantity must be positive or zero'() {
-        given: 'a quite valid invoicing item'
-        def i = new InvoicingItem(
+        given: 'a quite valid invoice item'
+        def i = new PurchaseInvoiceItem(
             unit: 'm', name: '12" pipe', unitPrice: 12.8, tax: 19.0,
-            invoicingTransaction: new Invoice()
+            invoice: new PurchaseInvoice()
         )
 
         when: 'I set the quantity'
@@ -385,11 +379,11 @@ class InvoicingItemSpec extends Specification {
         -1750.7 || false
     }
 
-    def 'Unit must not be blank'() {
-        given: 'a quite valid invoicing item'
-        def i = new InvoicingItem(
+    def 'Unit must not be null'() {
+        given: 'a quite valid invoice item'
+        def i = new PurchaseInvoiceItem(
             quantity: 5.8, name: '12" pipe', unitPrice: 12.8, tax: 19.0,
-            invoicingTransaction: new Invoice()
+            invoice: new PurchaseInvoice()
         )
 
         when: 'I set the unit'
@@ -401,9 +395,9 @@ class InvoicingItemSpec extends Specification {
         where:
         u       || v
         null    || false
-        ''      || false
-        '   '   || false
-        ' \t  ' || false
+        ''      || true
+        '   '   || true
+        ' \t  ' || true
         'a'     || true
         ' abc ' || true
         '    x' || true
@@ -411,10 +405,10 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Name must not be blank'() {
-        given: 'a quite valid invoicing item'
-        def i = new InvoicingItem(
+        given: 'a quite valid invoice item'
+        def i = new PurchaseInvoiceItem(
             quantity: 5.8, unit: 'm', unitPrice: 12.8, tax: 19.0,
-            invoicingTransaction: new Invoice()
+            invoice: new PurchaseInvoice()
         )
 
         when: 'I set the name'
@@ -436,10 +430,10 @@ class InvoicingItemSpec extends Specification {
     }
 
     def 'Tax must be positive or zero'() {
-        given: 'a quite valid invoicing item'
-        def i = new InvoicingItem(
+        given: 'a quite valid invoice item'
+        def i = new PurchaseInvoiceItem(
             quantity: 5.8, unit: 'm', name: '12" pipe', unitPrice: 12.8,
-            invoicingTransaction: new Invoice()
+            invoice: new PurchaseInvoice()
         )
 
         when: 'I set the tax'
