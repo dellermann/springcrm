@@ -1,7 +1,7 @@
 /*
  * SalesItem.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 
 /**
  * The class {@code SalesItem} acts as a base class for products and services.
@@ -30,21 +32,25 @@ package org.amcworld.springcrm
  */
 class SalesItem {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         number unique: 'type', widget: 'autonumber'
         type blank: false, maxSize: 1
         name blank: false
-        quantity min: 0.0d, validator: { quantity, salesItem ->
-            ((quantity <= 0.0d) && (salesItem.pricing != null)) ? ['default.invalid.notGreater.message', 0] : null
+        quantity min: ZERO, validator: { quantity, salesItem ->
+            (quantity <= ZERO && salesItem.pricing != null) \
+                ? ['default.invalid.notGreater.message', 0]
+                : null
         }
         unit nullable: true, validator: { unit, salesItem ->
-            ((unit == null) && (salesItem.pricing != null)) ? 'default.null.message' : null
+            (unit == null && salesItem.pricing != null) \
+                ? 'default.null.message'
+                : null
         }
-        unitPrice min: 0.0d, widget: 'currency'
+        unitPrice min: ZERO, widget: 'currency'
         taxRate nullable: true
-        purchasePrice nullable: true, min: 0.0d, widget: 'currency'
+        purchasePrice nullable: true, min: ZERO, widget: 'currency'
         salesStart nullable: true
         salesEnd nullable: true
         description nullable: true, widget: 'textarea'
@@ -60,30 +66,98 @@ class SalesItem {
     static transients = ['fullNumber', 'total']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The service used to obtain sequence numbers.
+     */
     def seqNumberService
 
+    /**
+     * The number of this sales item.
+     */
     int number
+
+    /**
+     * The type of this sales item, either {@code P} for products or {@code S}
+     * for services.
+     */
     String type
+
+    /**
+     * The name of this sales item.
+     */
     String name
-    double quantity
+
+    /**
+     * The quantity of this sales item.
+     */
+    BigDecimal quantity = ZERO
+
+    /**
+     * The unit associated with the quantity of this sales item.
+     */
     Unit unit
-    double unitPrice
+
+    /**
+     * The net unit price of this sales item.
+     */
+    BigDecimal unitPrice = ZERO
+
+    /**
+     * The tax rate of this sales item.
+     */
     TaxRate taxRate
-    Double purchasePrice
+
+    /**
+     * The net purchase price of this sales item.
+     */
+    BigDecimal purchasePrice
+
+    /**
+     * The date when sale of this item starts.
+     */
     Date salesStart
+
+    /**
+     * The date when sale of this item ends.
+     */
     Date salesEnd
+
+    /**
+     * A description of this sales item.
+     */
     String description
+
+    /**
+     * A detailed pricing for this sales item.  If not {@code null} the unit
+     * price is obtained from this pricing.
+     */
     SalesItemPricing pricing
+
+    /**
+     * The timestamp when this sales item has been created.
+     */
     Date dateCreated
+
+    /**
+     * The timestamp when this sales item has been modified.
+     */
     Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty sales item.
+     */
     SalesItem() {}
 
+    /**
+     * Creates a sales item using the data of the given sales item.
+     *
+     * @param si    the given sales item
+     */
     SalesItem(SalesItem si) {
         name = si.name
         quantity = si.quantity
@@ -91,33 +165,78 @@ class SalesItem {
         unitPrice = si.unitPrice
         taxRate = si.taxRate
         purchasePrice = si.purchasePrice
-        salesStart = si.salesStart
-        salesEnd = si.salesEnd
+        salesStart = si.salesStart ? new Date(si.salesStart.time) : null
+        salesEnd = si.salesEnd ? new Date(si.salesEnd.time) : null
         description = si.description
+        pricing = si.pricing
     }
 
 
     //-- Properties -----------------------------
 
+    /**
+     * Gets the full number of this sales item including prefix and suffix.
+     *
+     * @return  the full number
+     */
     String getFullNumber() {
         seqNumberService?.format getClass(), number
     }
 
-    double getUnitPrice() {
-        if (pricing) {
-            double qty = (unit == pricing.unit) ? pricing.quantity : quantity
-            this.unitPrice = qty ? pricing.step2TotalUnitPrice / qty : 0.0d
-        }
-        this.unitPrice
+    /**
+     * Sets the quantity of this sales item.
+     *
+     * @param quantity  the quantity that should be set; if {@code null} it is
+     *                  converted to zero
+     * @since 2.0
+     */
+    void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity == null ? ZERO : quantity
     }
 
-    double getTotal() {
+    /**
+     * Gets the total price of this sales item.
+     *
+     * @return  the total price
+     */
+    BigDecimal getTotal() {
         quantity * unitPrice
+    }
+
+    /**
+     * Gets the unit price of this sales item.  The unit price is either
+     * obtained by the underlying pricing or from field {@code unitPrice}.
+     *
+     * @return  the unit price
+     */
+    BigDecimal getUnitPrice() {
+        if (pricing) {
+            BigDecimal qty =
+                (unit == pricing.unit) ? pricing.quantity : quantity
+            unitPrice = qty ? pricing.step2TotalUnitPrice / qty : ZERO
+        }
+
+        unitPrice
+    }
+
+    /**
+     * Set the unit price of this sales item.
+     *
+     * @param unitPrice the unit price that should be set; if {@code null} it
+     *                  is converted to zero
+     * @since 2.0
+     */
+    void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice == null ? ZERO : unitPrice
     }
 
 
     //-- Public methods -------------------------
 
+    /**
+     * Called before this sales item is created in the underlying data store.
+     * The method obtains the next available sequence number.
+     */
     def beforeInsert() {
         if (number == 0) {
             number = seqNumberService.nextNumber(getClass())
@@ -126,7 +245,7 @@ class SalesItem {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof SalesItem) ? obj.id == id : false
+        obj instanceof SalesItem && obj.id == id
     }
 
     @Override

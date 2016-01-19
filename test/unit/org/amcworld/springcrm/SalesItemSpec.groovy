@@ -1,7 +1,7 @@
 /*
- * ProjectSpec.groovy
+ * SalesItemSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,171 +21,240 @@
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
-import grails.test.mixin.Mock
 import spock.lang.Specification
 
 
 @TestFor(SalesItem)
-@Mock([SalesItem, SalesItemPricing])
 class SalesItemSpec extends Specification {
 
-	//-- Feature Methods --------------------
+	//-- Feature methods ------------------------
 
-	def 'Copy using constructor'() {
-		given:
-		def s1 = new SalesItem(
-			number: 1991,
-			type: 'type',
-			name: 'John',
-			quantity: 4299122,
-			unit: new Unit(),
-			unitPrice: 199,
-			taxRate: new TaxRate(),
-			purchasePrice: 10442,
-			salesStart: new Date(),
-			salesEnd: new Date(),
-			description: 'description',
-			pricing: new SalesItemPricing(),
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+    def 'Creating an empty item initializes the properties'() {
+        when: 'I create an empty sales item'
+        def s = new SalesItem()
 
-		when:
-		def s2 = new SalesItem(s1)
+        then: 'the properties are initialized properly'
+        0i == s.number
+        null == s.type
+        null == s.name
+        0.0 == s.quantity
+        null == s.unit
+        0.0 == s.unitPrice
+        null == s.taxRate
+        null == s.purchasePrice
+        null == s.salesStart
+        null == s.salesEnd
+        null == s.description
+        null == s.pricing
+        null == s.dateCreated
+        null == s.lastUpdated
+    }
 
-		then:
-		s1.name == s2.name
-		s1.quantity == s2.quantity
-		s1.unit == s2.unit
-		s1.unitPrice == s2.unitPrice
-		s1.taxRate == s2.taxRate
-		s1.purchasePrice == s2.purchasePrice
-		s1.salesStart == s2.salesStart
-		s1.salesEnd == s2.salesEnd
-		s1.description == s2.description
+    def 'Copy an empty instance using constructor'() {
+        given: 'an empty sales item'
+        def s1 = new SalesItem()
 
-		and:
-		0 == s2.number
-		null == s2.dateCreated
-		null == s2.lastUpdated
-		null == s2.pricing
-		null == s2.type
-	}
+        when: 'I copy the invoicing transaction using the constructor'
+        def s2 = new SalesItem(s1)
+
+        then: 'the properties are set properly'
+        0i == s2.number
+        null == s2.type
+        null == s2.name
+        0.0 == s2.quantity
+        null == s2.unit
+        0.0 == s2.unitPrice
+        null == s2.taxRate
+        null == s2.purchasePrice
+        null == s2.salesStart
+        null == s2.salesEnd
+        null == s2.description
+        null == s2.pricing
+        null == s2.dateCreated
+        null == s2.lastUpdated
+    }
+
+    def 'Copy a sales item using constructor'() {
+        given: 'some dates'
+        Date start = new Date()
+        Date end = start + 7
+
+        and: 'a sales item with various properties'
+        def s1 = new SalesItem(
+            number: 1991,
+            type: 'S',
+            name: 'socket',
+            quantity: 45,
+            unit: new Unit(),
+            unitPrice: 2.5,
+            taxRate: new TaxRate(),
+            purchasePrice: 2.0,
+            salesStart: start,
+            salesEnd: end,
+            description: 'description',
+            pricing: new SalesItemPricing(),
+            dateCreated: new Date(),
+            lastUpdated: new Date()
+        )
+
+        when: 'I copy the sales item using the constructor'
+        def s2 = new SalesItem(s1)
+
+        then: 'some properties are the equal'
+        s1.name == s2.name
+        s1.quantity == s2.quantity
+        s1.unitPrice == s2.unitPrice
+        s1.purchasePrice == s2.purchasePrice
+        s1.salesStart == s2.salesStart
+        !s1.salesStart.is(s2.salesStart)
+        s1.salesEnd == s2.salesEnd
+        !s1.salesEnd.is(s2.salesEnd)
+        s1.description == s2.description
+
+        and: 'some instances are the same'
+        s1.unit.is s2.unit
+        s1.taxRate.is s2.taxRate
+        s1.pricing.is s2.pricing
+
+        and: 'some properties are unset'
+        null == s2.id
+        0i == s2.number
+        null == s2.type
+        null == s2.dateCreated
+        null == s2.lastUpdated
+    }
+
+    def 'Set decimal values to null converts them to zero'() {
+        given: 'an empty sales item'
+        def s = new SalesItem()
+
+        when: 'I set the decimal values to null'
+        s.quantity = null
+        s.unitPrice = null
+
+        then: 'all decimal values are never null'
+        0.0 == s.quantity
+        0.0 == s.unitPrice
+
+        when: 'I create a sales item with null values'
+        s = new SalesItem(quantity: null, unitPrice: null)
+
+        then: 'all decimal values are never null'
+        0.0 == s.quantity
+        0.0 == s.unitPrice
+    }
 
 	def 'Get the full number'() {
 		given: 'a sales item with mocked sequence number service'
 		def s = new SalesItem()
 		s.seqNumberService = Mock(SeqNumberService)
-		s.seqNumberService.format(_, _) >> 'O-11332'
+		s.seqNumberService.format(_, _) >> 'P-11332'
 
 		expect:
-		'O-11332' == s.fullNumber
+		'P-11332' == s.fullNumber
 	}
 
-	def 'Get the unit price with different units'() {
+    def 'Get the total price'(BigDecimal q, BigDecimal up) {
+        when: 'I create a sales item with quantity and unit price'
+        def s = new SalesItem(quantity: q, unitPrice: up)
+
+        then: 'I get a valid total price'
+        ((q ?: 0.0) * (up ?: 0.0)) == s.getTotal()
+
+        where:
+        q           | up
+        null        | null
+        null        | 0.0
+        null        | 0.00000001
+        null        | 4.475
+        null        | 23874.45
+        0.0         | null
+        0.0         | 0.0
+        0.0         | 0.00000001
+        0.0         | 4.475
+        0.0         | 23874.45
+        0.00000001  | null
+        0.00000001  | 0.0
+        0.00000001  | 0.00000001
+        0.00000001  | 4.475
+        0.00000001  | 23874.45
+        4.475       | null
+        4.475       | 0.0
+        4.475       | 0.00000001
+        4.475       | 4.475
+        4.475       | 23874.45
+        23874.45    | null
+        23874.45    | 0.0
+        23874.45    | 0.00000001
+        23874.45    | 4.475
+        23874.45    | 23874.45
+    }
+
+    def 'Get the unit price without pricing'(BigDecimal up) {
+        when: 'I create a sales item with unit price and no pricing'
+        def s = new SalesItem(unitPrice: up)
+
+        then: 'I get a valid total price'
+        (up ?: 0.0) == s.getUnitPrice()
+
+        where:
+        up << [null, 0.0, 0.00000001, 1.0, 1.475, 5.67, 14.47, 47504.4143]
+    }
+
+	def 'Get the unit price with pricing and different units'(BigDecimal q,
+                                                              BigDecimal up)
+    {
 		given: 'some units'
-		def unit1 = new Unit(name: 'Stück')
+		def unit1 = new Unit(name: 'pcs.')
 		unit1.id = 1
 		def unit2 = new Unit(name: 'm')
 		unit2.id = 2
 
-		and: 'a sales item'
-		def s = new SalesItem(
-			number: 1991,
-			type: 'type',
-			name: 'John',
-			quantity: 1,
-			unit: unit1,
-			unitPrice: 199,
-			taxRate: new TaxRate(),
-			purchasePrice: 12,
-			salesStart: new Date(),
-			salesEnd: new Date(),
-			description: 'description',
-			pricing: new SalesItemPricing(
-				quantity: 100,
-				unit: unit2,
-				discountPercent: 0,
-				adjustment: 0,
-				items: [
-					new SalesItemPricingItem(
-						quantity: 100,
-						unitPrice: 1.2
-					)
-				]
-			),
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+        and: 'a sales item pricing'
+        SalesItemPricing p = Mock()
+        p.asBoolean() >> true
+        p.getQuantity() >> q
+        p.getUnit() >> unit1
+        p.getStep2TotalUnitPrice() >> up
 
-		expect:
-		1.2 == s.unitPrice
+        and: 'a sales item'
+        def s = new SalesItem(quantity: q, unit: unit2, pricing: p)
+
+        expect:
+        (q == 0.0 ? 0.0 : up / q) == s.unitPrice
+
+        where:
+        q << [0.0, 1.0, 1.5, 2.0, 47.751, 1047.47]
+        up << [17.98, 45.0, 407.74, 588.06, 1123.09, 34093.47112]
 	}
 
-	def 'Get the unit price with same units'() {
-		given: 'some units'
-		def unit = new Unit(name: 'm')
-		unit.id = 1
+    def 'Get the unit price with pricing and the same units'(BigDecimal q,
+                                                             BigDecimal up)
+    {
+        given: 'a unit'
+        def unit = new Unit(name: 'pcs.')
+        unit.id = 1
 
-		and: 'a sales item'
-		def s = new SalesItem(
-			number: 1991,
-			type: 'type',
-			name: 'John',
-			quantity: 10,
-			unit: unit,
-			unitPrice: 199,
-			taxRate: new TaxRate(),
-			purchasePrice: 12,
-			salesStart: new Date(),
-			salesEnd: new Date(),
-			description: 'description',
-			pricing: new SalesItemPricing(
-				quantity: 100,
-				unit: unit,
-				discountPercent: 0,
-				adjustment: 0,
-				items: [
-			        new SalesItemPricingItem(
-		        		quantity: 100,
-		        		unitPrice: 1.2
-	        		)
-				]
-			),
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+        and: 'a sales item pricing'
+        SalesItemPricing p = Mock()
+        p.asBoolean() >> true
+        p.getQuantity() >> q
+        p.getUnit() >> unit
+        p.getStep2TotalUnitPrice() >> up
 
-		expect:
-		0.012 == s.unitPrice
-	}
+        and: 'a sales item'
+        def s = new SalesItem(quantity: 0, unit: unit, pricing: p)
 
-	def 'Get the total price'() {
-		when: 'I create a sales item with quantity and unit price'
-		def s = new SalesItem(
-			type: 'type',
-			name: 'name',
-			quantity: 5,
-			unitPrice: unitPrice,
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+        expect:
+        (q == 0.0 ? 0.0 : up / q) == s.unitPrice
 
-		then: 'the method will calculate the total price'
-		total == s.getTotal()
+        where:
+        q << [0.0, 1.0, 1.5, 2.0, 47.751, 1047.47]
+        up << [17.98, 45.0, 407.74, 588.06, 1123.09, 34093.47112]
+    }
 
-		where:
-		unitPrice		|	total
-		1				|	5
-		5				|	25
-		8				|	40
-		20				|	100
-		103.6			|	518
-		0				|	0
-	}
-
-	def 'Simulate the save method in insert mode and check number'() {
-		given: 'a sales item without number'
+	def 'Number is computed before insert'() {
+        given: 'a mocked sequence number service'
 		def s = new SalesItem()
 		s.seqNumberService = Mock(SeqNumberService)
 		s.seqNumberService.nextNumber(_) >> 92283
@@ -197,399 +266,378 @@ class SalesItemSpec extends Specification {
 		92283 == s.number
 	}
 
-	def 'Check for equality'() {
-		given: 'two objects with different properties'
-		def s1 = new SalesItem(
-			type: 'type1',
-			name: 'John',
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
-		def s2 = new SalesItem(
-			type: 'type2',
-			name: 'Don',
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+    def 'Equals is null-safe'() {
+        given: 'a sales item'
+        def s = new SalesItem()
 
-		and: 'the same IDs'
-		s1.id = 10010
-		s2.id = 10010
+        expect:
+        null != s
+        s != null
+        !s.equals(null)
+    }
 
-		expect: 'both sales items to be equal'
-		s1 == s2
-		s2 == s1
-	}
+    def 'Instances of other types are always unequal'() {
+        given: 'a sales item'
+        def s = new SalesItem()
 
-	def 'Check for inequality'() {
-		given: 'two objects with same properties'
-		def s1 = new SalesItem(
-			type: 'type',
-			name: 'John',
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
-		def s2 = new SalesItem(
-			type: 'type',
-			name: 'John',
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+        expect:
+        s != 'foo'
+        s != 45
+        s != 45.3
+        s != new Date()
+    }
 
-		and: 'different IDs'
-		s1.id = 944
-		s2.id = 1003
+    def 'Not persisted instances are equal'() {
+        given: 'three instances without ID'
+        def s1 = new SalesItem(name: '8" pipe')
+        def s2 = new SalesItem(name: '8" pipe')
+        def s3 = new SalesItem(name: '8" pipe')
 
-		when: 'I compare both these sales items'
-		boolean b1 = (s1 != s2)
-		boolean b2 = (s2 != s1)
+        expect: 'equals() is reflexive'
+        s1 == s1
+        s2 == s2
+        s3 == s3
 
-		then: 'they should not be equal'
-		b1
-		b2
+        and: 'all instances are equal and equals() is symmetric'
+        s1 == s2
+        s2 == s1
+        s2 == s3
+        s3 == s2
 
-		when:  'I compare with null'
-		s2 = null
+        and: 'equals() is transitive'
+        s1 == s3
+        s3 == s1
+    }
 
-		then: 'they are not equal'
-		s1 != s2
-		s2 != s1
+    def 'Persisted instances are equal if they have the same ID'() {
+        given: 'three instances with different properties but same IDs'
+        def s1 = new SalesItem(name: '8" pipe')
+        s1.id = 7403L
+        def s2 = new SalesItem(name: '10" pipe')
+        s2.id = 7403L
+        def s3 = new SalesItem(name: '12" pipe')
+        s3.id = 7403L
 
-		when: 'I compare to another type'
-		int i = 3
+        expect: 'equals() is reflexive'
+        s1 == s1
+        s2 == s2
+        s3 == s3
 
-		then: 'they are not equal'
-		s1 != i
-	}
+        and: 'all instances are equal and equals() is symmetric'
+        s1 == s2
+        s2 == s1
+        s2 == s3
+        s3 == s2
 
-	def 'Compute hash code'() {
-		when: 'I create a sales item with no ID'
-		def s = new SalesItem()
+        and: 'equals() is transitive'
+        s1 == s3
+        s3 == s1
+    }
 
-		then: 'I get a valid hash code'
-		0 == s.hashCode()
+    def 'Persisted instances are unequal if they have the different ID'() {
+        given: 'three instances with same properties but different IDs'
+        def s1 = new SalesItem(name: '8" pipe')
+        s1.id = 7403L
+        def s2 = new SalesItem(name: '8" pipe')
+        s2.id = 7404L
+        def s3 = new SalesItem(name: '8" pipe')
+        s3.id = 8473L
 
-		when: 'I create a sales item with an ID'
-		s.id = id
+        expect: 'equals() is reflexive'
+        s1 == s1
+        s2 == s2
+        s3 == s3
 
-		then: 'I get a hash code using this ID'
-		e == s.hashCode()
+        and: 'all instances are unequal and equals() is symmetric'
+        s1 != s2
+        s2 != s1
+        s2 != s3
+        s3 != s2
 
-		where:
-				id 	|   	   e
-				 0 	|   	   0
-				 1 	|   	   1
-				10 	|  		  10
-			   123 	|  		 123
-			  5324 	|  		5324
-			 12344 	| 	   12344
-		1023991929	| 1023991929
-	}
+        and: 'equals() is transitive'
+        s1 != s3
+        s3 != s1
+    }
 
-	def 'Convert to string'() {
-		given: 'a sales item with a name'
-		def s = new SalesItem(
-			type: 'type',
-			name: 'book',
-			dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
+    def 'Can compute hash code of an empty instance'() {
+        given: 'an empty instance'
+        def i = new SalesItem()
+
+        expect:
+        0i == i.hashCode()
+    }
+
+    def 'Can compute hash code of a not persisted instance'() {
+        given: 'an instance without ID'
+        def i = new SalesItem(name: '8" pipe')
+
+        expect:
+        0i == i.hashCode()
+    }
+
+    def 'Hash codes are consistent'() {
+        given: 'an instance with ID'
+        def i = new SalesItemPricing(name: '8" pipe')
+        i.id = 7403L
+
+        when: 'I compute the hash code'
+        int h = i.hashCode()
+
+        then: 'the hash code remains consistent'
+        for (int j = 0; j < 500; j++) {
+            i = new SalesItemPricing(name: '10" pipe')
+            i.id = 7403L
+            h == i.hashCode()
+        }
+    }
+
+    def 'Equal instances produce the same hash code'() {
+        given: 'three instances with different properties but same IDs'
+        def s1 = new SalesItem(name: '8" pipe')
+        s1.id = 7403L
+        def s2 = new SalesItem(name: '10" pipe')
+        s2.id = 7403L
+        def s3 = new SalesItem(name: '12" pipe')
+        s3.id = 7403L
+
+        expect:
+        s1.hashCode() == s2.hashCode()
+        s2.hashCode() == s3.hashCode()
+    }
+
+    def 'Different instances produce different hash codes'() {
+        given: 'three instances with same properties but different IDs'
+        def s1 = new SalesItem(name: '8" pipe')
+        s1.id = 7403L
+        def s2 = new SalesItem(name: '8" pipe')
+        s2.id = 7404L
+        def s3 = new SalesItem(name: '8" pipe')
+        s3.id = 8473L
+
+        expect:
+        s1.hashCode() != s2.hashCode()
+        s2.hashCode() != s3.hashCode()
+    }
+
+    def 'Can convert to string'(String name) {
+        given: 'an empty item'
+        def s = new SalesItem()
+
+        when: 'I set the name'
+        s.name = name
+
+        then: 'I get a valid string representation'
+        (name ?: '') == s.toString()
+
+        where:
+        name << [null, '', '   ', 'a', 'abc', '  foo  ', 'Services']
+    }
+
+    def 'Type must not be blank and max one char long'(String t, boolean v) {
+        given: 'a quite valid sales item'
+        def s = new SalesItem(
+            number: 39999,
+            name: '8" pipe',
+            quantity: 45,
+            unit: new Unit(),
+            unitPrice: 3.45
+        )
+
+        when: 'I set the type'
+        s.type = t
+
+        then: 'the instance is valid or not'
+        v == s.validate()
+
+        where:
+        t       || v
+        null    || false
+        ''      || false
+        '  \t ' || false
+        'a'     || true
+        'S'     || true
+        'abc'   || false
+        'a  x ' || false
+        ' name' || false
+    }
+
+    def 'Name must not be blank'(String n, boolean v) {
+        given: 'a quite valid sales item'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            quantity: 45,
+            unit: new Unit(),
+            unitPrice: 3.45
+        )
+
+        when: 'I set the name'
+        s.name = n
+
+        then: 'the instance is valid or not'
+        v == s.validate()
+
+        where:
+        n       || v
+        null    || false
+        ''      || false
+        '  \t ' || false
+        'a'     || true
+        'abc'   || true
+        'a  x ' || true
+        ' name' || true
+    }
+
+    def 'Quantity must be positive if pricing available'(BigDecimal q,
+                                                         boolean v)
+    {
+        given: 'a quite valid sales item with pricing'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            name: '8" pipe',
+            unit: new Unit(),
+            unitPrice: 3.45,
+            pricing: new SalesItemPricing()
+        )
+
+        when: 'I set the quantity'
+        s.quantity = q
+
+        then: 'the instance is valid or not'
+        v == s.validate()
+
+        where:
+        q       || v
+        null    || false
+        0.0     || false
+        0.00001 || true
+        1.474   || true
+        4703.79 || true
+        -0.0001 || false
+        -450.31 || false
+    }
+
+    def 'Quantity must be positive or zero if no pricing is available'(BigDecimal q, boolean v)
+    {
+        given: 'a quite valid sales item without pricing'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            name: '8" pipe',
+            unit: new Unit(),
+            unitPrice: 3.45
+        )
+
+        when: 'I set the quantity'
+        s.quantity = q
+
+        then: 'the instance is valid or not'
+        v == s.validate()
+
+        where:
+        q       || v
+        null    || true
+        0.0     || true
+        0.00001 || true
+        1.474   || true
+        4703.79 || true
+        -0.0001 || false
+        -450.31 || false
+    }
+
+    def 'Unit must not be null if pricing available'() {
+        given: 'a quite valid sales item with pricing'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            name: '8" pipe',
+            quantity: 45,
+            unitPrice: 3.45,
+            pricing: new SalesItemPricing()
+        )
+
+        when: 'I set the unit'
+        s.unit = new Unit()
+
+        then: 'the instance is valid'
+        s.validate()
+
+        when: 'I unset the unit'
+        s.unit = null
+
+        then: 'the instance is not valid'
+        !s.validate()
+    }
+
+    def 'Unit may be null if no pricing is available'() {
+        given: 'a quite valid sales item with pricing'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            name: '8" pipe',
+            quantity: 45,
+            unitPrice: 3.45
+        )
+
+        when: 'I set the unit'
+        s.unit = new Unit()
+
+        then: 'the instance is valid'
+        s.validate()
+
+        when: 'I unset the unit'
+        s.unit = null
+
+        then: 'the instance is valid'
+        s.validate()
+    }
+
+    def 'Unit price must be positive or zero'(BigDecimal up, boolean v) {
+        given: 'a quite valid sales item without pricing'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            name: '8" pipe',
+            quantity: 45,
+            unit: new Unit()
+        )
+
+        when: 'I set the unit price'
+        s.unitPrice = up
+
+        then: 'the instance is valid or not'
+        v == s.validate()
+
+        where:
+        up      || v
+        null    || true
+        0.0     || true
+        0.00001 || true
+        1.474   || true
+        4703.79 || true
+        -0.0001 || false
+        -450.31 || false
+    }
+
+	def 'Pricing is validated for itself'() {
+        given: 'a mocked pricing'
+        SalesItemPricing p = Mock()
+        p.validate() >>> [true, false]
+
+        and: 'a quite valid sales item with pricing'
+        def s = new SalesItem(
+            number: 39999,
+            type: 'S',
+            name: '8" pipe',
+            quantity: 45,
+            unit: new Unit(),
+            unitPrice: 76.7,
+            pricing: p
+        )
 
 		expect:
-		s.name == s.toString()
-
-		when:
-		s.name = ''
-
-		then:
-		'' == s.toString()
-
-		when:
-		s.name = null
-
-		then:
-		'' == s.toString()
-	}
-
-	def 'Type constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a type and validate it'
-		def s = new SalesItem(
-			type: type, name: 'name', quantity: 4, unitPrice: 130,
-			dateCreated: new Date(), lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		type			| valid
-		null			| false
-		''				| false
-		' '				| false
-		1003			| false
-		'abc'*100		| false
-		'abc'*1000		| false
-		1				| true
-		'P'				| true
-	}
-
-	def 'Name constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a name and validate it'
-		def s = new SalesItem(
-			type: 'P', name: name, quantity: 4,
-			dateCreated: new Date(), lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		name			| valid
-		null			| false
-		''				| false
-		' '				| false
-		1003			| true
-		'Title'			| true
-		'Title 1003'	| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
-
-	def 'Quantity constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a quantity and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: quantity, unitPrice: 130d,
-			dateCreated: new Date(), lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		quantity		| valid
-		''				| true
-		' '				| true
-		1003			| true
-		4				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
-		-50.0d			| false
-		-19442			| false
-	}
-
-	def 'Unit constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with an unit and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'Test', quantity: 0.0d, unit: unit,
-			dateCreated: new Date(), lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		unit			| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		4				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
-		'String'		| true
-		'String 1003'	| true
-	}
-
-	def 'Unit price constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with an unit price and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'Test', quantity: 0.0d, unitPrice: unitPrice,
-			dateCreated: new Date(), lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		unitPrice		| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		4				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
-		-50.0d			| false
-		-19442			| false
-	}
-
-	def 'Tax rate constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a tax rate and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'Test', quantity: 0.0d,
-			taxRate: new TaxRate(taxValue: taxRate), dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		taxRate			| valid
-		null			| true
-		''				| true
-		' '				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
-		100.12			| true
-	}
-
-	def 'Purchase price constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a purchase price and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: 12, unitPrice: 13,
-			purchasePrice: purchasePrice, dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		purchasePrice	| valid
-		''				| true
-		' '				| true
-		1003			| true
-		4				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
-		-50.0d			| false
-		-19442			| false
-	}
-
-	def 'Description constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a description and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
-			description: description, dateCreated: new Date(),
-			lastUpdated: new Date()
-		)
-		s.validate()
-
-		then:
-		!valid == s.hasErrors()
-
-		where:
-		description		| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'String'		| true
-		'String 1003'	| true
-	}
-
-	def 'Pricing constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: 12, unit: new Unit(),
-			unitPrice: 130, dateCreated: new Date(), lastUpdated: new Date()
-		)
-
-		when: 'I set a pricing and validate it'
-		s.pricing = new SalesItemPricing(
-			quantity: 40.0d, unit: new Unit(), discountPercent: 12.0d,
-			adjustment: 14.5d,
-			items:new SalesItemPricingItem(
-	            quantity: 4, unit: 'pcs.',
-	            name: 'books', type: 'P', relToPos: 2,
-				unitPercent: 10.0d, unitPrice: 44.99
-            )
-		)
-		s.validate()
-
-		then:
-		!s.hasErrors()
-	}
-
-	def 'Sales start constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a date for sales start and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
-			dateCreated: new Date(), lastUpdated: new Date(),
-			salesStart: new Date()
-		)
-		s.validate()
-
-		then:
-		!s.hasErrors()
-
-		when:
-		s.salesStart = null
-
-		then:
-		!s.hasErrors()
-	}
-
-	def 'Sales end constraints'() {
-		setup:
-		mockForConstraintsTests(SalesItem)
-
-		when: 'I create a sales item with a date for sales end and validate it'
-		def s = new SalesItem(
-			type: 'P', name: 'name', quantity: 12, unitPrice: 130,
-			dateCreated: new Date(), lastUpdated: new Date(),
-			salesEnd: new Date()
-		)
-		s.validate()
-
-		then:
-		!s.hasErrors()
-
-		when:
-		s.salesEnd = null
-
-		then:
-		!s.hasErrors()
+        s.validate()
+        !s.validate()
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * SalesItemPricingItem.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+import static org.amcworld.springcrm.PricingItemType.*
+
 
 /**
  * The class {@code SalesItemPricingItem} represents an item in the pricing of
@@ -31,42 +34,120 @@ package org.amcworld.springcrm
  */
 class SalesItemPricingItem {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static belongsTo = [pricing: SalesItemPricing]
     static constraints = {
-        quantity min: 0.0d
+        quantity min: ZERO
         unit nullable: true, validator: { unit, pricing ->
-            (!unit && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
+            unit || pricing.type == sum ? null : 'default.null.message'
         }
         name nullable: true, validator: { name, pricing ->
-            (!name && (pricing.type != PricingItemType.sum)) ? 'default.null.message' : null
+            name || pricing.type == sum ? null : 'default.null.message'
         }
         type()
         relToPos nullable: true, min: 0i, validator: { relToPos, pricing ->
-            ((relToPos == null) && (pricing.type == PricingItemType.relativeToPos)) ? 'default.null.message' : null
+            (relToPos == null && pricing.type == relativeToPos) \
+                ? 'default.null.message'
+                : null
         }
-        unitPercent scale: 2, min: 0.0d, widget: 'percent'
+        unitPercent scale: 2, min: ZERO, widget: 'percent'
         unitPrice widget: 'currency'
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    double quantity
+    /**
+     * The quantity of this item.
+     */
+    BigDecimal quantity = ZERO
+
+    /**
+     * The unit of this item.
+     */
     String unit
+
+    /**
+     * The name of this item.
+     */
     String name
+
+    /**
+     * The type of this item which specifies how it is used in computation.
+     */
     PricingItemType type = PricingItemType.absolute
+
+    /**
+     * The zero-based position of a related item if field {@code type} has
+     * value {@code PricingItemType.relativeToPos}.
+     */
     Integer relToPos
-    double unitPercent
-    double unitPrice
+
+    /**
+     * The percentage value used in computation if field {@code type} has one
+     * of the following values:
+     * <ul>
+     *   <li>{@code PricingItemType.relativeToPos}</li>
+     *   <li>{@code PricingItemType.relativeToLastSum}</li>
+     *   <li>{@code PricingItemType.relativeToCurrentSum}</li>
+     * </ul>
+     */
+    BigDecimal unitPercent = ZERO
+
+    /**
+     * The absolute unit price of this item.
+     */
+    BigDecimal unitPrice = ZERO
+
+
+    //-- Properties -----------------------------
+
+    /**
+     * Sets the quantity of this item.
+     *
+     * @param quantity  the quantity which should be set; if {@code null} it is
+     *                  converted to zero
+     * @since           2.0
+     */
+    void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity == null ? ZERO : quantity;
+    }
+
+    /**
+     * Sets the percentage value used in computation if field {@code type} has
+     * one of the following values:
+     * <ul>
+     *   <li>{@code PricingItemType.relativeToPos}</li>
+     *   <li>{@code PricingItemType.relativeToLastSum}</li>
+     *   <li>{@code PricingItemType.relativeToCurrentSum}</li>
+     * </ul>
+     *
+     * @param unitPercent   the percentage value which should be set; if
+     *                      {@code null} it is converted to zero
+     * @since               2.0
+     */
+    void setUnitPercent(BigDecimal unitPercent) {
+        this.unitPercent = unitPercent == null ? ZERO : unitPercent
+    }
+
+    /**
+     * Sets the absolute unit price of this item.
+     *
+     * @param unitPrice the absolute unit price which should be set; if
+     *                  {@code null} it is converted to zero
+     * @since           2.0
+     */
+    void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice == null ? ZERO : unitPrice
+    }
 
 
     //-- Public methods -------------------------
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof SalesItemPricingItem) ? obj.id == id : false
+        obj instanceof SalesItemPricingItem && obj.id == id
     }
 
     @Override
