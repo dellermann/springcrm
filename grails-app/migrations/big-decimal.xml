@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ big-decimal.xml
+
+ Copyright (c) 2011-2016, Daniel Ellermann
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20160120-1">
+    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
+      tableName="invoicing_item" />
+    <modifyDataType columnName="tax" newDataType="decimal(19,1)"
+      tableName="invoicing_item" />
+    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
+      tableName="invoicing_item" />
+
+    <modifyDataType columnName="adjustment" newDataType="decimal(19,2)"
+      tableName="invoicing_transaction" />
+    <modifyDataType columnName="discount_amount"
+      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
+    <modifyDataType columnName="discount_percent"
+      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
+    <modifyDataType columnName="payment_amount"
+      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
+    <modifyDataType columnName="shipping_costs"
+      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
+    <modifyDataType columnName="shipping_tax"
+      newDataType="decimal(19,1)" tableName="invoicing_transaction" />
+    <modifyDataType columnName="total" newDataType="decimal(19,2)"
+      tableName="invoicing_transaction" />
+
+    <modifyDataType columnName="adjustment" newDataType="decimal(19,2)"
+      tableName="purchase_invoice" />
+    <modifyDataType columnName="discount_amount"
+      newDataType="decimal(19,2)" tableName="purchase_invoice" />
+    <modifyDataType columnName="discount_percent"
+      newDataType="decimal(19,1)" tableName="purchase_invoice" />
+    <modifyDataType columnName="payment_amount"
+      newDataType="decimal(19,2)" tableName="purchase_invoice" />
+    <modifyDataType columnName="shipping_costs"
+      newDataType="decimal(19,2)" tableName="purchase_invoice" />
+    <modifyDataType columnName="shipping_tax"
+      newDataType="decimal(19,1)" tableName="purchase_invoice" />
+    <modifyDataType columnName="total" newDataType="decimal(19,2)"
+      tableName="purchase_invoice" />
+
+    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
+      tableName="purchase_invoice_item" />
+    <modifyDataType columnName="tax" newDataType="decimal(19,1)"
+      tableName="purchase_invoice_item" />
+    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
+      tableName="purchase_invoice_item" />
+
+    <modifyDataType columnName="purchase_price"
+      newDataType="decimal(19,2)" tableName="sales_item" />
+    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
+      tableName="sales_item" />
+    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
+      tableName="sales_item" />
+    <modifyDataType columnName="weight" newDataType="decimal(19,2)"
+      tableName="sales_item" />
+
+    <modifyDataType columnName="adjustment" newDataType="decimal(19,2)"
+      tableName="sales_item_pricing" />
+    <modifyDataType columnName="discount_percent"
+      newDataType="decimal(19,2)" tableName="sales_item_pricing" />
+    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
+      tableName="sales_item_pricing" />
+
+    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
+      tableName="sales_item_pricing_item" />
+    <modifyDataType columnName="unit_percent"
+      newDataType="decimal(19,2)" tableName="sales_item_pricing_item" />
+    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
+      tableName="sales_item_pricing_item" />
+
+    <modifyDataType columnName="tax_value" newDataType="decimal(19,2)"
+      tableName="sel_value" />
+  </changeSet>
+</databaseChangeLog>

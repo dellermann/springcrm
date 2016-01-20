@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -396,12 +396,12 @@ class ViewTagLib {
         if (number) {
             def units = ['B', 'K', 'M', 'G', 'T']
             String unit = 'B'
-            float value = 0.0f
+            BigDecimal value = 0.0
             for (int i = units.size() - 1; i >= 0; i--) {
                 def p = 1024i ** i
                 if (number >= p) {
                     unit = units[i]
-                    value = (number / p) as float
+                    value = number / p
                     break
                 }
             }

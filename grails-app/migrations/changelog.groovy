@@ -1,7 +1,7 @@
 /*
  * changelog.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,4 +34,5 @@ databaseChangeLog = {
     include file: 'invoicing-items-sales-items-rel.xml'
 	include file: 'invoicing-transaction-create-user.xml'
 	include file: 'term-of-payment.xml'
+	include file: 'big-decimal.xml'
 }
