@@ -1,7 +1,7 @@
 /*
  * TaxRate.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,23 +20,42 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 
 /**
  * The class {@code TaxRate} represents tax rates.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class TaxRate extends SelValue {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        taxValue min: 0.0d, scale: 2
+        taxValue min: ZERO, scale: 2
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    double taxValue
+    /**
+     * The value of this tax rate in percent.
+     */
+    BigDecimal taxValue = ZERO
+
+
+    //-- Properties -----------------------------
+
+    /**
+     * Sets the value of this tax rate in percent.
+     *
+     * @param taxValue  the tax value that should be set; if {@code null} it is
+     *                  converted to zero
+     * @since 2.0
+     */
+    void setTaxValue(BigDecimal taxValue) {
+        this.taxValue = taxValue == null ? ZERO : taxValue
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * SelValue.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ package org.amcworld.springcrm
  * which may be defined by the user.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class SelValue {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         name blank: false
@@ -45,9 +45,16 @@ class SelValue {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The name of this selection value.
+     */
     String name
+
+    /**
+     * A value used to order various selection values.
+     */
     int orderId = 0
 
 
@@ -55,7 +62,7 @@ class SelValue {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof SelValue) ? obj.id == id : false
+        obj instanceof SelValue && obj.id == id
     }
 
     @Override

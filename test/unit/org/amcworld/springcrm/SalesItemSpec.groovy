@@ -54,7 +54,7 @@ class SalesItemSpec extends Specification {
         given: 'an empty sales item'
         def s1 = new SalesItem()
 
-        when: 'I copy the invoicing transaction using the constructor'
+        when: 'I copy the sales item using the constructor'
         def s2 = new SalesItem(s1)
 
         then: 'the properties are set properly'

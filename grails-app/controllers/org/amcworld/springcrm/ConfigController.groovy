@@ -1,7 +1,7 @@
 /*
  * ConfigController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -197,7 +197,7 @@ class ConfigController {
                 } else {
                     entry.name = "${item.name} %"
                     entry.orderId = orderId
-                    entry.taxValue = (item.name as Double) / 100d
+                    entry.taxValue = (item.name as BigDecimal) / 100.0
                     entry.save flush: true
                     orderId += 10
                 }

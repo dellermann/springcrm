@@ -1,7 +1,7 @@
 /*
  * Document.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,16 +28,31 @@ import java.text.NumberFormat
  * document management of this application.
  *
  * @author	Daniel Ellermann
- * @version 1.2
+ * @version 2.0
  * @since   1.2
  */
 class Document {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The ID of this document.
+     */
     String id
+
+    /**
+     * The file name of this document.
+     */
     String name
+
+    /**
+     * The size of this document in bytes.
+     */
     long size
+
+    /**
+     * The timestamp of the last modification.
+     */
     Date lastModified
 
 
@@ -57,6 +72,19 @@ class Document {
     }
 
 
+    //-- Properties -----------------------------
+
+    /**
+     * Gets the timestamp of the last modification.  The method returns a copy
+     * of the internal last modification timestamp.
+     *
+     * @return  the timestamp of the last modification
+     */
+    Date getLastModified() {
+        new Date(lastModified.time)
+    }
+
+
     //-- Public methods -------------------------
 
     /**
@@ -65,16 +93,16 @@ class Document {
      * @return  the size as string
      */
     String getSizeAsString() {
-        double val
+        BigDecimal val
         String unit
         if (size >= 1024 ** 3) {
-            val = ((size / 1024 ** 3) as Double).round(1)
+            val = size / 1024 ** 3
             unit = 'GB'
         } else if (size >= 1024 ** 2) {
-            val = ((size / 1024 ** 2) as Double).round(1)
+            val = size / 1024 ** 2
             unit = 'MB'
         } else if (size >= 1024) {
-            val = ((size / 1024) as Double).round(1)
+            val = size / 1024
             unit = 'KB'
         } else {
             val = size
@@ -83,8 +111,9 @@ class Document {
 
         def format = NumberFormat.instance
         format.maximumFractionDigits = (unit == 'B') ? 0 : 1
-        StringBuilder buf = new StringBuilder(format.format(val))
+        StringBuilder buf = new StringBuilder(format.format(val.doubleValue()))
         buf << ' ' << unit
-        return buf.toString()
+
+        buf.toString()
     }
 }

@@ -1,7 +1,7 @@
 /*
  * ProductSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,123 +20,91 @@
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
-import grails.test.mixin.Mock
 import spock.lang.Specification
 
 
 @TestFor(Product)
-@Mock([Product])
 class ProductSpec extends Specification {
 
-	//-- Feature Methods ---------------------
+    //-- Feature methods ------------------------
 
-	def 'Copy using constructor'() {
-		given: 'a product with different properties'
-		def p1 = new Product(
-			category: new ProductCategory(),
-			manufacturer: 'manufacturer',
-			retailer: 'retailer',
-			weight: 1993
-		)
-		when:
-		def p2 = new Product(p1)
+    def 'Creating an empty item initializes the properties'() {
+        when: 'I create an empty product'
+        def p = new Product()
 
-		then:
-		p2.category == p1.category
-		p2.manufacturer == p1.manufacturer
-		p2.retailer == p1.retailer
-		p2.weight == p1.weight
+        then: 'the properties are initialized properly'
+        'P' == p.type
+        null == p.category
+        null == p.manufacturer
+        null == p.retailer
+        null == p.weight
+    }
 
-		and:
-		p2.type == 'P'
-	}
+    def 'Copy an empty instance using constructor'() {
+        given: 'an empty product'
+        def p1 = new Product()
 
-	def 'Manufacturer constraints'() {
-		setup:
-		mockForConstraintsTests(Product)
+        when: 'I copy the product using the constructor'
+        def p2 = new Product(p1)
 
-		when: 'I create a product with a manufacturer and validate it'
-		def p = new Product(
-			name: 'name',
-			category: new ProductCategory(),
-			manufacturer: manufacturer,
-			retailer: 'test',
-			weight: 115
-		)
-		p.validate()
+        then: 'the properties are set properly'
+        p1.type == p2.type
+        null == p2.category
+        null == p2.manufacturer
+        null == p2.retailer
+        null == p2.weight
+    }
 
-		then:
-		!valid == p.hasErrors()
+    def 'Copy a product using constructor'() {
+        given: 'a product with various properties'
+        def p1 = new Product(
+            category: new ProductCategory(),
+            manufacturer: 'manufacturer',
+            retailer: 'retailer',
+            weight: 1993
+        )
 
-		where:
-		manufacturer	| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'Manufacturer'	| true
-		'Manu 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
+        when: 'I copy the product using the constructor'
+        def p2 = new Product(p1)
 
-	def 'retailer constraints'() {
-		setup:
-		mockForConstraintsTests(Product)
+        then: 'some properties are the equal'
+        p1.type == p2.type
+        p1.manufacturer == p2.manufacturer
+        p1.retailer == p2.retailer
+        p1.weight == p2.weight
 
-		when: 'I create a product with a retailer and validate it'
-		def p = new Product(
-			name: 'name',
-			category: new ProductCategory(),
-			manufacturer: 'test',
-			retailer: retailer,
-			weight: 115
-		)
-		p.validate()
+        and: 'some instances are the same'
+        p1.category.is p2.category
+    }
 
-		then:
-		!valid == p.hasErrors()
+    def 'Weight must be positive or zero'(BigDecimal w, boolean v) {
+        given: 'a quite valid product'
+        def p = new Product(
+            number: 39999,
+            name: '8" pipe',
+            quantity: 45,
+            unit: new Unit(),
+            unitPrice: 3.45,
+            category: new ProductCategory(),
+            manufacturer: 'manufacturer',
+            retailer: 'retailer'
+        )
 
-		where:
-		retailer		| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'Manufacturer'	| true
-		'Manu 1003'		| true
-		'abc'*100		| true
-		'abc'*1000		| true
-	}
+        when: 'I set a weight'
+        p.weight = w
 
-	def 'weight constraints'() {
-		setup:
-		mockForConstraintsTests(Product)
+        then:
+        v == p.validate()
 
-		when: 'I create a product with a weight and validate it'
-		def p = new Product(
-			name: 'name',
-			category: new ProductCategory(),
-			manufacturer: 'test',
-			retailer: 'retailer',
-			weight: weight
-		)
-		p.validate()
-
-		then:
-		!valid == p.hasErrors()
-
-		where:
-		weight			| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		4				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
-		-5				| false
-		-14001.5d		| false
-	}
+        where:
+        w           | v
+        null        | true
+        0.0         | true
+        0.000000001 | true
+        4           | true
+        475.3703    | true
+        94735.75432 | true
+        -5          | false
+        -14001.5    | false
+    }
 }

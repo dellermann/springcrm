@@ -1,7 +1,7 @@
 /*
  * ReportController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@ class ReportController {
             }
             List<InvoicingTransaction> l = Invoice.withCriteria crit
             l.addAll Dunning.withCriteria(crit)
-            double total = l*.total.sum 0
-            double totalPaymentAmount = l*.paymentAmount.sum(0) { it ?: 0 }
+            BigDecimal total = l*.total.sum 0.0
+            BigDecimal totalPaymentAmount = l*.paymentAmount.sum(0.0) { it ?: 0.0 }
 
             /* load credit notes with modified sort criterion */
             if (sort == 'dueDatePayment') {
@@ -75,8 +75,8 @@ class ReportController {
             List<CreditMemo> creditMemos = CreditMemo.withCriteria crit
             if (creditMemos) {
                 l.addAll creditMemos
-                total -= creditMemos*.total.sum 0
-                totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0 }
+                total -= creditMemos*.total.sum 0.0
+                totalPaymentAmount -= creditMemos*.paymentAmount.sum { it ?: 0.0 }
             }
 
             model.invoicingTransactionInstanceList = l
@@ -98,16 +98,16 @@ class ReportController {
      */
     def outstandingItems(Organization organization) {
         List<PayableAndDue> l = []
-        double total = 0
-        double totalPaymentAmount = 0
+        BigDecimal total = 0.0
+        BigDecimal totalPaymentAmount = 0.0
         if (organization) {
             l.addAll Invoice.findAllByOrganization(organization, params)
             l.addAll Dunning.findAllByOrganization(organization, params)
 
             l = l.findAll { it.closingBalance < 0 }
             if (l) {
-                total = l*.payable.sum 0
-                totalPaymentAmount = l*.paymentAmount.sum { it ?: 0 }
+                total = l*.payable.sum 0.0
+                totalPaymentAmount = l*.paymentAmount.sum { it ?: 0.0 }
             }
         }
 
@@ -179,12 +179,12 @@ class ReportController {
 
             model.invoiceInstanceList = l
 
-            double totalProducts = model.totalProducts =
-                l*.turnoverProducts.sum 0
-            double totalServices = model.totalServices =
-                l*.turnoverServices.sum 0
-            double totalOtherItems = model.totalOtherItems =
-                l*.turnoverOtherSalesItems.sum 0
+            BigDecimal totalProducts = model.totalProducts =
+                l*.turnoverProducts.sum 0.0
+            BigDecimal totalServices = model.totalServices =
+                l*.turnoverServices.sum 0.0
+            BigDecimal totalOtherItems = model.totalOtherItems =
+                l*.turnoverOtherSalesItems.sum 0.0
             model.total = totalProducts + totalServices + totalOtherItems
         }
 

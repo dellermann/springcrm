@@ -1,7 +1,7 @@
 /*
  * ServiceSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,43 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
-import grails.test.mixin.Mock
+import grails.test.mixin.TestMixin
 import spock.lang.Specification
 
 
-//@TestFor(Service)
-//@Mock([Service])
+@TestMixin([Service])
 class ServiceSpec extends Specification {
 
-	//-- Feature Methods --------------------
+	//-- Feature methods ------------------------
 
-	// TODO
-	//Cannot add Service class [class org.amcworld.springcrm.Service].
-	//It is not a Service!
+    def 'Creating an empty item initializes the properties'() {
+        when: 'I create an empty service'
+        def s = new Service()
 
-	def 'Copy using constructor'() {
-		given:
-		def s1 = new Service(category: new ServiceCategory())
+        then: 'the properties are initialized properly'
+        'S' == s.type
+        null == s.category
+    }
 
-		when:
-		def s2 = new Service(s1)
+    def 'Copy an empty instance using constructor'() {
+        given: 'an empty service'
+        def s1 = new Service()
 
-		then:
-		s2.category == s1.category
-	}
+        when: 'I copy the service using the constructor'
+        def s2 = new Service(s1)
 
-	def 'Category constraint'() {
-		setup:
-		mockForConstraintsTests(Service)
+        then: 'the properties are set properly'
+        s1.type == s2.type
+        null == s2.category
+    }
 
-		when:
-		def s = new Service(category: null)
+    def 'Copy a service using constructor'() {
+        given: 'a service with various properties'
+        def s1 = new Service(
+            category: new ServiceCategory()
+        )
 
-		then:
-		!s.hasErrors()
-	}
+        when: 'I copy the service using the constructor'
+        def s2 = new Service(s1)
+
+        then: 'some properties are the equal'
+        s1.type == s2.type
+
+        and: 'some instances are the same'
+        s1.category.is s2.category
+    }
 }
-

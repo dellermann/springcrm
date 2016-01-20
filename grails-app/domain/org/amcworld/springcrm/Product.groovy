@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import static java.math.BigDecimal.ZERO
+
 
 /**
  * The class {@code Product} represents a product.
@@ -31,34 +33,57 @@ package org.amcworld.springcrm
  */
 class Product extends SalesItem {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         category nullable: true
         manufacturer nullable: true
         retailer nullable: true
-        weight nullable: true, min: 0.0
+        weight nullable: true, min: ZERO
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The category this product belongs to.
+     */
     ProductCategory category
+
+    /**
+     * The name of the manufacturer of this product.
+     */
     String manufacturer
+
+    /**
+     * The name of the retailer of this product.
+     */
     String retailer
+
+    /**
+     * The optional weight of this product.
+     */
     BigDecimal weight
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty product.
+     */
     Product() {
         super()
         type = 'P'
     }
 
+    /**
+     * Creates a product using the data of the given product.
+     *
+     * @param p the given product
+     */
     Product(Product p) {
         super(p)
-        type = 'P'
+        type = p.type
         category = p.category
         manufacturer = p.manufacturer
         retailer = p.retailer

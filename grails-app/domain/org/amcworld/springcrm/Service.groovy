@@ -1,7 +1,7 @@
 /*
  * Service.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,28 +30,39 @@ package org.amcworld.springcrm
  */
 class Service extends SalesItem {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-		category(nullable: true)
+		category nullable: true
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The category this service belongs to.
+     */
 	ServiceCategory category
 
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty service.
+     */
 	Service() {
         super()
         type = 'S'
     }
 
+    /**
+     * Creates a service using the data of the given service.
+     *
+     * @param s the given service
+     */
 	Service(Service s) {
         super(s)
-        type = 'S'
+        type = s.type
 		category = s.category
 	}
 }
