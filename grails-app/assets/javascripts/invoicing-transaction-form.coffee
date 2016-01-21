@@ -1,7 +1,7 @@
 #
 # invoicing-transaction-form.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -218,7 +218,7 @@ class InvoicingTransaction
     stageValues = opts.stageValues
 
     if stageValues
-      $el.on 'change', '#stage', (event) => @_onChangeStage event
+      $el.on 'change', '#stage-select', (event) => @_onChangeStage event
       if stageValues.shipping
         $el.on 'change', '#shippingDate-date', (event) =>
           @_onChangeShippingDate event

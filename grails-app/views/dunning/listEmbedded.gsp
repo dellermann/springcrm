@@ -9,7 +9,6 @@
         <g:sortableColumn property="docDate" title="${message(code: 'dunning.docDate.label.short')}" />
         <g:sortableColumn property="dueDatePayment" title="${message(code: 'dunning.dueDatePayment.label')}" />
         <g:sortableColumn property="total" title="${message(code: 'dunning.total.label.short')}" />
-        <g:sortableColumn property="closingBalance" title="${message(code: 'invoicingTransaction.closingBalance.label')}" />
         <th><g:message code="invoicingTransaction.closingBalance.label" /></th>
         <th></th>
       </tr>
@@ -30,6 +29,12 @@
             id="${dunningInstance.id}" color="success" size="xs"
             icon="pencil-square-o" message="default.button.edit.label" />
           </g:if>
+          <g:else>
+          <g:button controller="dunning" action="editPayment"
+            id="${dunningInstance.id}" color="success" size="xs"
+            icon="pencil-square-o"
+            message="invoicingTransaction.button.editPayment.label" />
+          </g:else>
         </td>
       </tr>
     </g:each>

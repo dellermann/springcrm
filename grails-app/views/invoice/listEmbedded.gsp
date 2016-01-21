@@ -29,6 +29,12 @@
             id="${invoiceInstance.id}" color="success" size="xs"
             icon="pencil-square-o" message="default.button.edit.label" />
           </g:if>
+          <g:else>
+          <g:button controller="invoice" action="editPayment"
+            id="${invoiceInstance.id}" color="success" size="xs"
+            icon="pencil-square-o"
+            message="invoicingTransaction.button.editPayment.label" />
+          </g:else>
         </td>
       </tr>
     </g:each>

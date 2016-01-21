@@ -1,7 +1,7 @@
 /*
  * InvoiceController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,6 +136,13 @@ class InvoiceController {
         if (!invoicingTransactionService.save(invoiceInstance, params)) {
             render view: 'create', model: [invoiceInstance: invoiceInstance]
             return
+        }
+
+        Quote quoteInstance = invoiceInstance.quote
+            ?: invoiceInstance.salesOrder?.quote
+        if (quoteInstance) {
+            quoteInstance.stage = QuoteStage.get(603L)
+            quoteInstance.save flush: true
         }
 
         request.invoiceInstance = invoiceInstance

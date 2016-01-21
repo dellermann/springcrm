@@ -1,7 +1,7 @@
 /*
  * SalesOrderController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,6 +126,12 @@ class SalesOrderController {
             render view: 'create',
                 model: [salesOrderInstance: salesOrderInstance]
             return
+        }
+
+        Quote quoteInstance = salesOrderInstance.quote
+        if (quoteInstance) {
+            quoteInstance.stage = QuoteStage.get(603L)
+            quoteInstance.save flush: true
         }
 
         request.salesOrderInstance = salesOrderInstance
