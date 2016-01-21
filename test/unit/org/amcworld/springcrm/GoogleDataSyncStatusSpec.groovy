@@ -30,7 +30,7 @@ import spock.lang.Specification
 class GoogleDataSyncStatusSpec extends Specification {
 
     //-- Feature methods ------------------------
-	
+
 	def 'Check for equality'() {
 		given: 'two google data sync statuses with same user, type and itemId'
 		def g1 = new GoogleDataSyncStatus(
@@ -57,7 +57,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 		)
 		g1.user.id = 1
 		println g1.user.ident()
-		
+
 		def g2 = new GoogleDataSyncStatus(
 			user: new User(
 				userName: 'userName',
@@ -82,12 +82,12 @@ class GoogleDataSyncStatusSpec extends Specification {
 		)
 		g2.user.id = 1
 		println g2.user.ident()
-				
+
 		expect:
 		g1 == g2
 		g2 == g1
 	}
-	
+
 	def 'Convert to string'() {
 		given:
 		def g = new GoogleDataSyncStatus(
@@ -99,7 +99,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 				email: 'email',
 				admin: false,
 				allowedModules: 'aM',
-				allowedModulesAsList: 'test',
+				allowedModulesAsSet: EnumSet.of(Module.CONTACT),
 				dateCreated: new Date(),
 				lastUpdated: new Date(),
 				allowedControllers: 'sfd'
@@ -110,12 +110,12 @@ class GoogleDataSyncStatusSpec extends Specification {
 			etag: 'etag',
 			lastSync: new Date()
 		)
-		
+
 		expect:
 		g.toString() == 'userName/T/14221'
-		
+
 	}
-	
+
 	def 'Compute hash code'() {
 		when:
 		def g = new GoogleDataSyncStatus(
@@ -127,7 +127,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 				email: 'email',
 				admin: false,
 				allowedModules: 'aM',
-				allowedModulesAsList: 'test',
+				allowedModulesAsSet: EnumSet.of(Module.CONTACT),
 				dateCreated: new Date(),
 				lastUpdated: new Date(),
 				allowedControllers: 'sfd'
@@ -138,9 +138,9 @@ class GoogleDataSyncStatusSpec extends Specification {
 			etag: 'etag',
 			lastSync: new Date()
 		)
-		
+
 		then: 'I get a valid hash code'
 		g.hashCode() == -838664358
-		
+
 	}
 }

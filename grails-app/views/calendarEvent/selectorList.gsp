@@ -8,7 +8,7 @@
         <g:sortableColumn property="start" title="${message(code: 'calendarEvent.start.label')}" />
         <g:sortableColumn property="end" title="${message(code: 'calendarEvent.end.label')}" />
         <g:sortableColumn property="recurrence.type" title="${message(code: 'calendarEvent.recurrence.label')}" />
-        <g:ifModuleAllowed modules="contact"><g:sortableColumn property="organization.name" title="${message(code: 'calendarEvent.organization.label')}" /></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="CONTACT"><g:sortableColumn property="organization.name" title="${message(code: 'calendarEvent.organization.label')}" /></g:ifModuleAllowed>
       </tr>
     </thead>
     <tbody>
@@ -19,7 +19,7 @@
         <td class="col-type-date calendar-event-start"><g:formatDate date="${calendarEventInstance.start}" /></td>
         <td class="col-type-date calendar-event-end"><g:formatDate date="${calendarEventInstance.end}" /></td>
         <td class="col-type-string calendar-event-recurrence"><g:message message="${calendarEventInstance.recurrence}" /></td>
-        <g:ifModuleAllowed modules="contact"><td class="col-type-ref calendar-event-organization">${fieldValue(bean: calendarEventInstance, field: "organization")}</td></g:ifModuleAllowed>
+        <g:ifModuleAllowed modules="CONTACT"><td class="col-type-ref calendar-event-organization">${fieldValue(bean: calendarEventInstance, field: "organization")}</td></g:ifModuleAllowed>
       </tr>
     </g:each>
     </tbody>

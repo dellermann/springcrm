@@ -5,7 +5,7 @@
       <tr>
         <g:sortableColumn property="number" title="${message(code: 'project.number.label')}" />
         <g:sortableColumn property="title" title="${message(code: 'project.title.label')}" />
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <g:sortableColumn property="person.lastName" title="${message(code: 'project.person.label')}" />
         </g:ifModuleAllowed>
         <g:sortableColumn property="phase" title="${message(code: 'project.phase.label')}" />
@@ -18,7 +18,7 @@
       <tr>
         <td class="col-type-id project-number"><g:link controller="project" action="show" id="${projectInstance.id}"><g:fieldValue bean="${projectInstance}" field="fullNumber" /></g:link></td>
         <td class="col-type-string project-title"><g:link controller="project" action="show" id="${projectInstance.id}"><g:fieldValue bean="${projectInstance}" field="title" /></g:link></td>
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <td class="col-type-ref project-person"><g:link controller="person" action="show" id="${projectInstance.person?.id}"><g:fieldValue bean="${projectInstance}" field="person" /></g:link></td>
         </g:ifModuleAllowed>
         <td class="col-type-string project-phase"><g:message code="project.phase.${projectInstance.phase}" default="${projectInstance.phase.toString()}" /></td>

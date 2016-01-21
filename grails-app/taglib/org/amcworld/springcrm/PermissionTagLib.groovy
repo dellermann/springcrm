@@ -1,7 +1,7 @@
 /*
  * PermissionTagLib.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * permissions.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  */
 class PermissionTagLib {
 
@@ -41,7 +41,7 @@ class PermissionTagLib {
      * @attr action                 the action to link to
      */
     def createControllerLink = { attrs, body ->
-        if (session.user.checkAllowedControllers([attrs.controller])) {
+        if (session.user.checkAllowedControllers([attrs.controller] as Set)) {
             out << createLink(attrs)
         }
     }
@@ -61,15 +61,22 @@ class PermissionTagLib {
      * permission to view at least one of the controllers with the given names.
      * Administrators always have access to the specified modules.
      *
-     * @attr controllers REQUIRED  the given controller names; you can specify either a single name or a list of names as List or white space separated string
+     * @attr controllers REQUIRED  the given controller names; you can specify either a single name or a collection of names or white space separated string
      */
     def ifControllerAllowed = { attrs, body ->
-        def controllers = attrs.controllers
-        if (controllers instanceof CharSequence) {
-            controllers = controllers.split() as List
-        } else if (!(controllers instanceof List)) {
-            controllers = [controllers]
+        def c = attrs.controllers
+        Set<String> controllers
+        if (c instanceof CharSequence) {
+            controllers = c.split() as Set
+        } else if (c instanceof Collection) {
+            controllers = new HashSet<String>(c.size())
+            for (def item : c) {
+                controllers << item.toString()
+            }
+        } else {
+            controllers = [c] as Set<String>
         }
+
         if (session.user?.checkAllowedControllers(controllers)) {
             out << body()
         }
@@ -80,15 +87,30 @@ class PermissionTagLib {
      * permission to view at least one of the modules with the given names.
      * Administrators always have access to the specified modules.
      *
-     * @attr modules REQUIRED  the given module names; you can specify either a single name or a list of names as List or white space separated string
+     * @attr modules REQUIRED  the given module names; you can specify either a single module, a collection of modules or module names or a white space separated string of module names
      */
     def ifModuleAllowed = { attrs, body ->
-        def modules = attrs.modules
-        if (modules instanceof CharSequence) {
-            modules = modules.split() as List
-        } else if (!(modules instanceof List)) {
-            modules = [modules]
+        def m = attrs.modules
+        Set<Module> modules
+        if (m instanceof CharSequence) {
+            modules = Module.modulesByName(m.split())
+        } else if (m instanceof Iterable) {
+            modules = EnumSet.noneOf(Module)
+            for (def item : m) {
+                if (item instanceof Module) {
+                    modules << item
+                } else if (item instanceof CharSequence) {
+                    modules << Module.valueOf(item.toString())
+                }
+            }
+        } else if (m instanceof Module) {
+            modules = EnumSet.of(m)
+        } else {
+            throw new IllegalArgumentException(
+                "Attribute 'modules' is of invalid type: ${m.getClass()}."
+            )
         }
+
         if (session.user?.checkAllowedModules(modules)) {
             out << body()
         }

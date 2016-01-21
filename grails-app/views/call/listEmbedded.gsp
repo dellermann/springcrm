@@ -4,7 +4,7 @@
     <thead>
       <tr>
         <g:sortableColumn property="subject" title="${message(code: 'call.subject.label', default: 'Subject')}" />
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <g:sortableColumn property="person.lastName" title="${message(code: 'call.person.label', default: 'Person')}" />
         </g:ifModuleAllowed>
         <g:sortableColumn property="start" title="${message(code: 'call.start.label', default: 'Start')}" />
@@ -17,7 +17,7 @@
     <g:each in="${callInstanceList}" status="i" var="callInstance">
       <tr>
         <td class="col-type-string call-subject"><g:link controller="call" action="show" id="${callInstance.id}"><g:fieldValue bean="${callInstance}" field="subject" /></g:link></td>
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <td class="col-type-ref call-person"><g:link controller="person" action="show" id="${callInstance.person?.id}"><g:fieldValue bean="${callInstance}" field="person" /></g:link></td>
         </g:ifModuleAllowed>
         <td class="col-type-date call-start"><g:formatDate date="${callInstance.start}" /></td>

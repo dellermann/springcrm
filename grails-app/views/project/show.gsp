@@ -20,7 +20,7 @@
             <f:display bean="${projectInstance}" property="status" />
           </div>
           <div class="column">
-            <g:ifModuleAllowed modules="contact">
+            <g:ifModuleAllowed modules="CONTACT">
             <f:display bean="${projectInstance}" property="organization" />
             <f:display bean="${projectInstance}" property="person" />
             </g:ifModuleAllowed>

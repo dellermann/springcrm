@@ -8,7 +8,7 @@
       <f:field bean="${callInstance}" property="start" precision="minute" />
     </div>
     <div class="column">
-      <g:ifModuleAllowed modules="contact">
+      <g:ifModuleAllowed modules="CONTACT">
       <f:field bean="${callInstance}" property="organization" />
       <f:field bean="${callInstance}" property="person" />
       </g:ifModuleAllowed>

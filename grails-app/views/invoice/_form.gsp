@@ -8,10 +8,10 @@
       <f:field bean="${invoiceInstance}" property="subject" />
       <f:field bean="${invoiceInstance}" property="organization" />
       <f:field bean="${invoiceInstance}" property="person" />
-      <g:ifModuleAllowed modules="quote">
+      <g:ifModuleAllowed modules="QUOTE">
       <f:field bean="${invoiceInstance}" property="quote" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="salesOrder">
+      <g:ifModuleAllowed modules="SALES_ORDER">
       <f:field bean="${invoiceInstance}" property="salesOrder" />
       </g:ifModuleAllowed>
       <f:field bean="${invoiceInstance}" property="stage" />

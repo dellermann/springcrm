@@ -8,7 +8,7 @@
       <f:field bean="${salesOrderInstance}" property="subject" />
       <f:field bean="${salesOrderInstance}" property="organization" />
       <f:field bean="${salesOrderInstance}" property="person" />
-      <g:ifModuleAllowed modules="quote">
+      <g:ifModuleAllowed modules="QUOTE">
       <f:field bean="${salesOrderInstance}" property="quote" />
       </g:ifModuleAllowed>
       <f:field bean="${salesOrderInstance}" property="stage" />

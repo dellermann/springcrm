@@ -13,7 +13,7 @@
     </div>
     <div class="col col-r">
       <div class="form">
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <f:field bean="${calendarEventInstance}" property="organization" />
         </g:ifModuleAllowed>
         <f:field bean="${calendarEventInstance}" property="location" />

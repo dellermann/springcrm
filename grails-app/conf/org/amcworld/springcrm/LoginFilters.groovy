@@ -86,7 +86,8 @@ class LoginFilters {
             before = {
                 User user = session?.user
                 if (user && controllerName) {
-                    if (!user.checkAllowedControllers([controllerName])) {
+                    if (!user.checkAllowedControllers([controllerName] as Set))
+                    {
                         render status: HttpServletResponse.SC_FORBIDDEN
                         return false
                     }

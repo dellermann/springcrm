@@ -86,7 +86,7 @@
       </g:if>
 
       <g:set var="loadParams" value="person=${personInstance.id}" />
-      <g:ifModuleAllowed modules="quote">
+      <g:ifModuleAllowed modules="QUOTE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'quote', createParams: [
@@ -95,7 +95,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="salesOrder">
+      <g:ifModuleAllowed modules="SALES_ORDER">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'salesOrder', createParams: [
@@ -104,7 +104,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="invoice">
+      <g:ifModuleAllowed modules="INVOICE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'invoice', createParams: [
@@ -113,7 +113,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="dunning">
+      <g:ifModuleAllowed modules="DUNNING">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'dunning', createParams: [
@@ -122,7 +122,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="creditMemo">
+      <g:ifModuleAllowed modules="CREDIT_MEMO">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'creditMemo', createParams: [
@@ -131,7 +131,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="project">
+      <g:ifModuleAllowed modules="PROJECT">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'project', createParams: [
@@ -141,7 +141,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="call">
+      <g:ifModuleAllowed modules="CALL">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'call', createParams: [
@@ -151,7 +151,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="note">
+      <g:ifModuleAllowed modules="NOTE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'note', createParams: [

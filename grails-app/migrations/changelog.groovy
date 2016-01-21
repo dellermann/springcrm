@@ -35,4 +35,5 @@ databaseChangeLog = {
 	include file: 'invoicing-transaction-create-user.xml'
 	include file: 'term-of-payment.xml'
 	include file: 'big-decimal.xml'
+    include file: 'modules-uppercase.xml'
 }

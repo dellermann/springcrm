@@ -1,7 +1,7 @@
 /*
  * UserController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,10 @@ class UserController {
     }
 
     def save() {
-        def userInstance = new User(params)
+        User userInstance = new User()
+        bindData userInstance, params, [exclude: ['allowedModulesNames']]
+        userInstance.allowedModulesNames = params.list('allowedModulesNames') as Set
+
         boolean passwordMismatch =
             params.password != securityService.encryptPassword(params.passwordRepeat)
         if (passwordMismatch) {
@@ -143,9 +146,11 @@ class UserController {
             }
         }
 
-        boolean passwordMismatch = false
         String passwd = userInstance.password
-        userInstance.properties = params
+        bindData userInstance, params, [exclude: ['allowedModulesNames']]
+        userInstance.allowedModulesNames = params.list('allowedModulesNames') as Set
+
+        boolean passwordMismatch = false
         if (params.password) {
             passwordMismatch = params.password != securityService.encryptPassword(params.passwordRepeat)
             if (passwordMismatch) {

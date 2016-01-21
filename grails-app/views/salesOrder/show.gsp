@@ -20,7 +20,7 @@
           model="[id: salesOrderInstance.id]" />
       </content>
       <content tag="actionMenu">
-        <g:ifModuleAllowed modules="invoice">
+        <g:ifModuleAllowed modules="INVOICE">
         <li role="menuitem">
           <g:link controller="invoice" action="create"
             params="[salesOrder: salesOrderInstance?.id]">
@@ -41,7 +41,7 @@
             <f:display bean="${salesOrderInstance}" property="subject" />
             <f:display bean="${salesOrderInstance}" property="organization" />
             <f:display bean="${salesOrderInstance}" property="person" />
-            <g:ifModuleAllowed modules="quote">
+            <g:ifModuleAllowed modules="QUOTE">
             <f:display bean="${salesOrderInstance}" property="quote" />
             </g:ifModuleAllowed>
             <f:display bean="${salesOrderInstance}" property="stage" />
@@ -112,7 +112,7 @@
       </g:if>
 
       <g:set var="loadParams" value="salesOrder=${salesOrderInstance.id}" />
-      <g:ifModuleAllowed modules="invoice">
+      <g:ifModuleAllowed modules="INVOICE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'invoice',

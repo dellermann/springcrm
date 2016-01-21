@@ -5,7 +5,7 @@
       <tr>
         <g:sortableColumn property="number" title="${message(code: 'note.number.label', default: 'Number')}" />
         <g:sortableColumn property="title" title="${message(code: 'note.title.label', default: 'Title')}" />
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <g:sortableColumn property="person.lastName" title="${message(code: 'note.person.label', default: 'Person')}" />
         </g:ifModuleAllowed>
         <th></th>
@@ -16,7 +16,7 @@
       <tr>
         <td class="col-type-id note-number"><g:link controller="note" action="show" id="${noteInstance.id}"><g:fieldValue bean="${noteInstance}" field="fullNumber" /></g:link></td>
         <td class="col-type-string note-title"><g:link controller="note" action="show" id="${noteInstance.id}"><g:fieldValue bean="${noteInstance}" field="title" /></g:link></td>
-        <g:ifModuleAllowed modules="contact">
+        <g:ifModuleAllowed modules="CONTACT">
         <td class="col-type-ref note-person"><g:link controller="person" action="show" id="${noteInstance.person?.id}"><g:fieldValue bean="${noteInstance}" field="person" /></g:link></td>
         </g:ifModuleAllowed>
         <td class="col-actions">

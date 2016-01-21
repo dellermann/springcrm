@@ -217,7 +217,7 @@
                 value="${fieldValue(bean: item, field: 'name')}"
                 required="required" />
               <span class="input-group-btn">
-                <g:ifModuleAllowed modules="product">
+                <g:ifModuleAllowed modules="PRODUCT">
                 <button type="button"
                   class="btn btn-default btn-select-sales-item"
                   data-type="product">
@@ -226,7 +226,7 @@
                   <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
                 </button>
                 </g:ifModuleAllowed>
-                <g:ifModuleAllowed modules="service">
+                <g:ifModuleAllowed modules="SERVICE">
                 <button type="button"
                   class="btn btn-default btn-select-sales-item"
                   data-type="service">
@@ -416,7 +416,7 @@
             value="" required="required" />
           <g:if test="${params.controller != 'purchase-invoice'}">
           <span class="input-group-btn">
-            <g:ifModuleAllowed modules="product">
+            <g:ifModuleAllowed modules="PRODUCT">
             <button type="button" class="btn btn-default btn-select-sales-item"
               data-type="product">
               <i class="fa fa-cog"
@@ -424,7 +424,7 @@
               <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
             </button>
             </g:ifModuleAllowed>
-            <g:ifModuleAllowed modules="service">
+            <g:ifModuleAllowed modules="SERVICE">
             <button type="button" class="btn btn-default btn-select-sales-item"
               data-type="service">
               <i class="fa fa-laptop"

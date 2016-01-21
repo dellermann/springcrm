@@ -22,8 +22,8 @@
           <thead>
             <tr>
               <g:sortableColumn property="subject" title="${message(code: 'call.subject.label')}" />
-              <g:ifModuleAllowed modules="contact"><g:sortableColumn property="organization.name" title="${message(code: 'call.organization.label')}" style="width: 15em;" /></g:ifModuleAllowed>
-              <g:ifModuleAllowed modules="contact"><g:sortableColumn property="person.lastName" title="${message(code: 'call.person.label')}" /></g:ifModuleAllowed>
+              <g:ifModuleAllowed modules="CONTACT"><g:sortableColumn property="organization.name" title="${message(code: 'call.organization.label')}" style="width: 15em;" /></g:ifModuleAllowed>
+              <g:ifModuleAllowed modules="CONTACT"><g:sortableColumn property="person.lastName" title="${message(code: 'call.person.label')}" /></g:ifModuleAllowed>
               <g:sortableColumn property="start" title="${message(code: 'call.start.label')}" />
               <g:sortableColumn property="type" title="${message(code: 'call.type.label')}" />
               <g:sortableColumn property="status" title="${message(code: 'call.status.label')}" />
@@ -34,8 +34,8 @@
           <g:each in="${callInstanceList}" status="i" var="callInstance">
             <tr>
               <td class="col-type-string call-subject"><g:link action="show" id="${callInstance.id}"><g:fieldValue bean="${callInstance}" field="subject" /></g:link></td>
-              <g:ifModuleAllowed modules="contact"><td class="col-type-ref call-organization"><g:link controller="organization" action="show" id="${callInstance.organization?.id}"><g:fieldValue bean="${callInstance}" field="organization" /></g:link></td></g:ifModuleAllowed>
-              <g:ifModuleAllowed modules="contact"><td class="col-type-ref call-person"><g:link controller="person" action="show" id="${callInstance.person?.id}"><g:fieldValue bean="${callInstance}" field="person" /></g:link></td></g:ifModuleAllowed>
+              <g:ifModuleAllowed modules="CONTACT"><td class="col-type-ref call-organization"><g:link controller="organization" action="show" id="${callInstance.organization?.id}"><g:fieldValue bean="${callInstance}" field="organization" /></g:link></td></g:ifModuleAllowed>
+              <g:ifModuleAllowed modules="CONTACT"><td class="col-type-ref call-person"><g:link controller="person" action="show" id="${callInstance.person?.id}"><g:fieldValue bean="${callInstance}" field="person" /></g:link></td></g:ifModuleAllowed>
               <td class="col-type-date call-start"><g:formatDate date="${callInstance.start}" /></td>
               <td class="col-type-status call-type"><g:message code="call.type.${callInstance?.type}" /></td>
               <td class="col-type-status call-status"><g:message code="call.status.${callInstance?.status}" /></td>

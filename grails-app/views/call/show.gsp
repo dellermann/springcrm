@@ -15,7 +15,7 @@
             <f:display bean="${callInstance}" property="start" />
           </div>
           <div class="column">
-            <g:ifModuleAllowed modules="contact">
+            <g:ifModuleAllowed modules="CONTACT">
             <f:display bean="${callInstance}" property="organization" />
             <f:display bean="${callInstance}" property="person" />
             </g:ifModuleAllowed>

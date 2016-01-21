@@ -6,7 +6,7 @@
     <div class="column">
       <f:field bean="${purchaseInvoiceInstance}" property="number" />
       <f:field bean="${purchaseInvoiceInstance}" property="subject" />
-      <g:ifModuleAllowed modules="contact">
+      <g:ifModuleAllowed modules="CONTACT">
       <f:field bean="${purchaseInvoiceInstance}" property="vendorName" />
       </g:ifModuleAllowed>
       <f:field bean="${purchaseInvoiceInstance}" property="documentFile" />

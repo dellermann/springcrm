@@ -8,7 +8,7 @@
       <f:field bean="${dunningInstance}" property="subject" />
       <f:field bean="${dunningInstance}" property="organization" />
       <f:field bean="${dunningInstance}" property="person" />
-      <g:ifModuleAllowed modules="invoice">
+      <g:ifModuleAllowed modules="INVOICE">
       <f:field bean="${dunningInstance}" property="invoice" />
       </g:ifModuleAllowed>
       <f:field bean="${dunningInstance}" property="stage" />

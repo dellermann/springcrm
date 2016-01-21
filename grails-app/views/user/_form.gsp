@@ -26,7 +26,7 @@
   <div class="column-group">
     <div class="column">
       <f:field bean="${userInstance}" property="admin" />
-      <f:field bean="${userInstance}" property="allowedModulesAsList" />
+      <f:field bean="${userInstance}" property="allowedModulesNames" />
     </div>
   </div>
 </section>

@@ -6,14 +6,14 @@
     <div class="column">
       <f:field bean="${creditMemoInstance}" property="number" />
       <f:field bean="${creditMemoInstance}" property="subject" />
-      <g:ifModuleAllowed modules="contact">
+      <g:ifModuleAllowed modules="CONTACT">
       <f:field bean="${creditMemoInstance}" property="organization" />
       <f:field bean="${creditMemoInstance}" property="person" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="invoice">
+      <g:ifModuleAllowed modules="INVOICE">
       <f:field bean="${creditMemoInstance}" property="invoice" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="dunning">
+      <g:ifModuleAllowed modules="DUNNING">
       <f:field bean="${creditMemoInstance}" property="dunning" />
       </g:ifModuleAllowed>
       <f:field bean="${creditMemoInstance}" property="stage" />

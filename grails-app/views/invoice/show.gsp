@@ -16,7 +16,7 @@
           model="[id: invoiceInstance.id]" />
       </content>
       <content tag="actionMenu">
-        <g:ifModuleAllowed modules="dunning">
+        <g:ifModuleAllowed modules="DUNNING">
         <li role="menuitem">
           <g:link controller="dunning" action="create"
             params="[invoice: invoiceInstance?.id]">
@@ -24,7 +24,7 @@
           </g:link>
         </li>
         </g:ifModuleAllowed>
-        <g:ifModuleAllowed modules="creditMemo">
+        <g:ifModuleAllowed modules="CREDIT_MEMO">
         <li role="menuitem">
           <g:link controller="creditMemo" action="create"
             params="[invoice: invoiceInstance?.id]">
@@ -123,13 +123,13 @@
       </g:if>
 
       <g:set var="loadParams" value="invoice=${invoiceInstance.id}" />
-      <g:ifModuleAllowed modules="dunning">
+      <g:ifModuleAllowed modules="DUNNING">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'dunning', createParams: [invoice: invoiceInstance.id]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="creditMemo">
+      <g:ifModuleAllowed modules="CREDIT_MEMO">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'creditMemo', createParams: [invoice: invoiceInstance.id]

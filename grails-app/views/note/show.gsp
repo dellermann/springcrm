@@ -15,7 +15,7 @@
             <f:display bean="${noteInstance}" property="title" />
           </div>
           <div class="column">
-            <g:ifModuleAllowed modules="contact">
+            <g:ifModuleAllowed modules="CONTACT">
             <f:display bean="${noteInstance}" property="organization" />
             <f:display bean="${noteInstance}" property="person" />
             </g:ifModuleAllowed>

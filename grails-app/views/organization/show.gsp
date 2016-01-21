@@ -123,35 +123,35 @@
           ]
         ]" />
       <g:if test="${organizationInstance.isCustomer()}">
-      <g:ifModuleAllowed modules="quote">
+      <g:ifModuleAllowed modules="QUOTE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'quote',
           createParams: ['organization.id': organizationInstance.id]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="salesOrder">
+      <g:ifModuleAllowed modules="SALES_ORDER">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'salesOrder',
           createParams: ['organization.id': organizationInstance.id]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="invoice">
+      <g:ifModuleAllowed modules="INVOICE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'invoice',
           createParams: ['organization.id': organizationInstance.id]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="dunning">
+      <g:ifModuleAllowed modules="DUNNING">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'dunning',
           createParams: ['organization.id': organizationInstance.id]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="creditMemo">
+      <g:ifModuleAllowed modules="CREDIT_MEMO">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'creditMemo',
@@ -160,7 +160,7 @@
       </g:ifModuleAllowed>
       </g:if>
       <g:if test="${organizationInstance.isVendor()}">
-      <g:ifModuleAllowed modules="purchaseInvoice">
+      <g:ifModuleAllowed modules="PURCHASE_INVOICE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'purchaseInvoice', createParams: [
@@ -169,7 +169,7 @@
         ]" />
       </g:ifModuleAllowed>
       </g:if>
-      <g:ifModuleAllowed modules="project">
+      <g:ifModuleAllowed modules="PROJECT">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'project', createParams: [
@@ -177,11 +177,11 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="document">
+      <g:ifModuleAllowed modules="DOCUMENT">
       <g:applyLayout name="remoteList"
         model="[controller: 'document', noCreateBtn: true]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="call">
+      <g:ifModuleAllowed modules="CALL">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'call', createParams: [
@@ -189,7 +189,7 @@
           ]
         ]" />
       </g:ifModuleAllowed>
-      <g:ifModuleAllowed modules="note">
+      <g:ifModuleAllowed modules="NOTE">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'note', createParams: [

@@ -31,8 +31,8 @@
         <div class="column-group">
           <div class="column">
             <f:display bean="${userInstance}" property="admin" />
-            <g:if test="${!userInstance?.admin && userInstance?.allowedModulesAsList}">
-            <f:display bean="${userInstance}" property="allowedModulesAsList" />
+            <g:if test="${!userInstance?.admin && userInstance?.allowedModulesNames}">
+            <f:display bean="${userInstance}" property="allowedModulesNames" />
             </g:if>
           </div>
         </div>

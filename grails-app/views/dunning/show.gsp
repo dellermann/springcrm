@@ -16,7 +16,7 @@
           model="[id: dunningInstance.id]" />
       </content>
       <content tag="actionMenu">
-        <g:ifModuleAllowed modules="creditMemo">
+        <g:ifModuleAllowed modules="CREDIT_MEMO">
         <li role="menuitem">
           <g:link controller="creditMemo" action="create"
             params="[dunning: dunningInstance?.id]">
@@ -111,7 +111,7 @@
       </g:if>
 
       <g:set var="loadParams" value="dunning=${dunningInstance.id}" />
-      <g:ifModuleAllowed modules="creditMemo">
+      <g:ifModuleAllowed modules="CREDIT_MEMO">
       <g:applyLayout name="remoteList"
         model="[
           controller: 'creditMemo', createParams: [dunning: dunningInstance.id]

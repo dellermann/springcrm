@@ -1,7 +1,7 @@
 /*
  * User.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ package org.amcworld.springcrm
  */
 class User implements Cloneable {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         userName blank: false, unique: true
@@ -43,7 +43,6 @@ class User implements Cloneable {
         email blank: false, email: true
         admin()
         allowedModules nullable: true
-        allowedModulesAsList()
         dateCreated()
         lastUpdated()
     }
@@ -53,12 +52,12 @@ class User implements Cloneable {
         userName index: 'user_name'
     }
     static transients = [
-        'allowedControllers', 'allowedModulesAsList', 'fullName',
-        'rawSettings', 'settings'
+        'allowedControllers', 'allowedModulesAsSet', 'allowedModulesNames',
+        'fullName', 'rawSettings', 'settings'
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String userName
     String password
@@ -86,27 +85,74 @@ class User implements Cloneable {
      */
     Set<String> getAllowedControllers() {
         if (allowedControllers == null) {
-            List<String> moduleNames = allowedModulesAsList
-            allowedControllers =
-                moduleNames ? Modules.resolveModules(moduleNames) : []
+            allowedControllers = Module.resolveModules(allowedModulesAsSet)
         }
+
         allowedControllers
     }
 
-    List<String> getAllowedModulesAsList() {
-        allowedModules ? allowedModules.split(',') as List<String> : []
+    /**
+     * Gets a set of allowed modules of this user.
+     *
+     * @return  the allowed modules
+     */
+    EnumSet<Module> getAllowedModulesAsSet() {
+        if (!allowedModules) {
+            return EnumSet.noneOf(Module)
+        }
+
+        Module.modulesByName allowedModules.split(',') as List
     }
 
+    /**
+     * Sets a set of allowed modules of this user.
+     *
+     * @param modules   the allowed modules that should be set; may be
+     *                  {@code null}
+     */
+    void setAllowedModulesAsSet(EnumSet<Module> modules) {
+        allowedModules = modules?.join(',') ?: ''
+    }
+
+    /**
+     * Gets a set of the names of the allowed modules of this user.
+     *
+     * @return  the names of the allowed modules
+     * @since   2.0
+     */
+    Set<String> getAllowedModulesNames() {
+        EnumSet<Module> modules = allowedModulesAsSet
+        Set<String> res = new HashSet<String>(modules.size())
+        for (Module module : modules) {
+            res << module.toString()
+        }
+
+        res
+    }
+
+    /**
+     * Sets the set of the names of the allowed modules of this user.
+     *
+     * @param moduleNames   the names of the allowed modules that should be
+     *                      set
+     * @since               2.0
+     */
+    void setAllowedModulesNames(Set<String> moduleNames) {
+        allowedModulesAsSet = Module.modulesByName(moduleNames)
+    }
+
+    /**
+     * Gets the full name of this user.  The full name consists of the first
+     * and the last name of the user separated by a space character.
+     *
+     * @return  the full name of the user
+     */
     String getFullName() {
         "${firstName ?: ''} ${lastName ?: ''}".trim()
     }
 
     List<UserSetting> getRawSettings() {
         UserSetting.findAllByUser this
-    }
-
-    void setAllowedModulesAsList(List<String> l) {
-        allowedModules = l.join(',')
     }
 
 
@@ -121,11 +167,11 @@ class User implements Cloneable {
      * the given controllers.
      *
      * @param controllers   the names of the controllers to check
-     * @return              {@code true} if the user can access at least one of
+     * @return              {@code true} if the user may access at least one of
      *                      the given controllers; {@code false} otherwise
      */
-    boolean checkAllowedControllers(List<String> controllers) {
-        admin || controllers?.intersect(getAllowedControllers())
+    boolean checkAllowedControllers(Set<String> controllers) {
+        admin || getAllowedControllers().intersect(controllers)
     }
 
     /**
@@ -133,11 +179,11 @@ class User implements Cloneable {
      * the given modules.
      *
      * @param modules   the names of the modules to check
-     * @return          {@code true} if the user can access at least one of the
+     * @return          {@code true} if the user may access at least one of the
      *                  given modules; {@code false} otherwise
      */
-    boolean checkAllowedModules(List<String> modules) {
-        admin || modules?.intersect(allowedModulesAsList)
+    boolean checkAllowedModules(Set<Module> modules) {
+        admin || allowedModulesAsSet.intersect(modules)
     }
 
     @Override
@@ -147,7 +193,7 @@ class User implements Cloneable {
 
     @Override
     boolean equals(Object o) {
-        (o instanceof User) ? o.ident() == ident() : false
+        o instanceof User && o.id == id
     }
 
     @Override
