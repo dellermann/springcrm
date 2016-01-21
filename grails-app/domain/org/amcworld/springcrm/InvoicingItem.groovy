@@ -41,12 +41,12 @@ class InvoicingItem {
 
     static belongsTo = [invoicingTransaction: InvoicingTransaction]
     static constraints = {
-        quantity min: ZERO
+        quantity min: ZERO, scale: 6
         unit blank: false
         name blank: false
         description nullable: true
-        unitPrice widget: 'currency'
-        tax scale: 1, min: ZERO, widget: 'percent'
+        unitPrice scale: 6, widget: 'currency'
+        tax scale: 2, min: ZERO, widget: 'percent'
         salesItem nullable: true
     }
     static mapping = {

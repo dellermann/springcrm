@@ -26,74 +26,155 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
   <changeSet author="d.ellermann@amc-world.de" id="20160120-1">
-    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
-      tableName="invoicing_item" />
-    <modifyDataType columnName="tax" newDataType="decimal(19,1)"
-      tableName="invoicing_item" />
-    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
-      tableName="invoicing_item" />
+    <comment>
+    Changes database columns according to migration from floating point types
+    to fixed point types in Groovy.  All former double and Double types have
+    been migrated to BigDecimal.  Former double values are enforced to be
+    non-null and therefore are declared using &lt;addNotNullConstraint> here.
 
-    <modifyDataType columnName="adjustment" newDataType="decimal(19,2)"
-      tableName="invoicing_transaction" />
-    <modifyDataType columnName="discount_amount"
-      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
-    <modifyDataType columnName="discount_percent"
-      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
-    <modifyDataType columnName="payment_amount"
-      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
-    <modifyDataType columnName="shipping_costs"
-      newDataType="decimal(19,2)" tableName="invoicing_transaction" />
-    <modifyDataType columnName="shipping_tax"
-      newDataType="decimal(19,1)" tableName="invoicing_transaction" />
-    <modifyDataType columnName="total" newDataType="decimal(19,2)"
-      tableName="invoicing_transaction" />
+    The precision of the types are defined as follows:
 
-    <modifyDataType columnName="adjustment" newDataType="decimal(19,2)"
-      tableName="purchase_invoice" />
-    <modifyDataType columnName="discount_amount"
-      newDataType="decimal(19,2)" tableName="purchase_invoice" />
-    <modifyDataType columnName="discount_percent"
-      newDataType="decimal(19,1)" tableName="purchase_invoice" />
-    <modifyDataType columnName="payment_amount"
-      newDataType="decimal(19,2)" tableName="purchase_invoice" />
-    <modifyDataType columnName="shipping_costs"
-      newDataType="decimal(19,2)" tableName="purchase_invoice" />
-    <modifyDataType columnName="shipping_tax"
-      newDataType="decimal(19,1)" tableName="purchase_invoice" />
-    <modifyDataType columnName="total" newDataType="decimal(19,2)"
-      tableName="purchase_invoice" />
+    * currency values: up to 6 fraction digits; the actual precision is defined
+      by a system configuration value
+    * quantities: up to 6 fraction digits
+    * percentage values: up to 2 fraction digits
+    </comment>
+  <modifyDataType tableName="invoicing_item" columnName="quantity"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="invoicing_item" columnName="quantity"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_item" columnName="tax"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="invoicing_item" columnName="tax"
+    columnDataType="decimal(19,2)" defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_item" columnName="unit_price"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="invoicing_item" columnName="unit_price"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
 
-    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
-      tableName="purchase_invoice_item" />
-    <modifyDataType columnName="tax" newDataType="decimal(19,1)"
-      tableName="purchase_invoice_item" />
-    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
-      tableName="purchase_invoice_item" />
+  <modifyDataType tableName="invoicing_transaction" columnName="adjustment"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="invoicing_transaction"
+    columnName="adjustment" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_transaction"
+    columnName="discount_amount" newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="invoicing_transaction"
+    columnName="discount_amount" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_transaction"
+    columnName="discount_percent" newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="invoicing_transaction"
+    columnName="discount_percent" columnDataType="decimal(19,2)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_transaction" columnName="payment_amount"
+    newDataType="decimal(19,6)" />
+  <modifyDataType tableName="invoicing_transaction" columnName="shipping_costs"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="invoicing_transaction"
+    columnName="shipping_costs" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_transaction" columnName="shipping_tax"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="invoicing_transaction"
+    columnName="shipping_tax" columnDataType="decimal(19,2)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="invoicing_transaction" columnName="total"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="invoicing_transaction" columnName="total"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
 
-    <modifyDataType columnName="purchase_price"
-      newDataType="decimal(19,2)" tableName="sales_item" />
-    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
-      tableName="sales_item" />
-    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
-      tableName="sales_item" />
-    <modifyDataType columnName="weight" newDataType="decimal(19,2)"
-      tableName="sales_item" />
+  <modifyDataType tableName="purchase_invoice" columnName="adjustment"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice" columnName="adjustment"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice" columnName="discount_amount"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice"
+    columnName="discount_amount" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice" columnName="discount_percent"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="purchase_invoice"
+    columnName="discount_percent" columnDataType="decimal(19,2)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice" columnName="payment_amount"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice"
+    columnName="payment_amount" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice" columnName="shipping_costs"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice"
+    columnName="shipping_costs" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice" columnName="shipping_tax"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="purchase_invoice" columnName="shipping_tax"
+    columnDataType="decimal(19,2)" defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice" columnName="total"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice" columnName="total"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
 
-    <modifyDataType columnName="adjustment" newDataType="decimal(19,2)"
-      tableName="sales_item_pricing" />
-    <modifyDataType columnName="discount_percent"
-      newDataType="decimal(19,2)" tableName="sales_item_pricing" />
-    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
-      tableName="sales_item_pricing" />
+  <modifyDataType tableName="purchase_invoice_item" columnName="quantity"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice_item" columnName="quantity"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice_item" columnName="tax"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="purchase_invoice_item" columnName="tax"
+    columnDataType="decimal(19,2)" defaultNullValue="0.0" />
+  <modifyDataType tableName="purchase_invoice_item" columnName="unit_price"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="purchase_invoice_item"
+    columnName="unit_price" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
 
-    <modifyDataType columnName="quantity" newDataType="decimal(19,2)"
-      tableName="sales_item_pricing_item" />
-    <modifyDataType columnName="unit_percent"
-      newDataType="decimal(19,2)" tableName="sales_item_pricing_item" />
-    <modifyDataType columnName="unit_price" newDataType="decimal(19,2)"
-      tableName="sales_item_pricing_item" />
+  <modifyDataType tableName="sales_item" columnName="quantity"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="sales_item" columnName="quantity"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+  <modifyDataType tableName="sales_item" columnName="purchase_price"
+    newDataType="decimal(19,6)" />
+  <modifyDataType tableName="sales_item" columnName="unit_price"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="sales_item" columnName="unit_price"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+  <modifyDataType tableName="sales_item" columnName="weight"
+    newDataType="decimal(19,6)" />
 
-    <modifyDataType columnName="tax_value" newDataType="decimal(19,2)"
-      tableName="sel_value" />
+  <modifyDataType tableName="sales_item_pricing" columnName="adjustment"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="sales_item_pricing" columnName="adjustment"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+  <modifyDataType tableName="sales_item_pricing" columnName="discount_percent"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="sales_item_pricing"
+    columnName="discount_percent" columnDataType="decimal(19,2)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="sales_item_pricing" columnName="quantity"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="sales_item_pricing" columnName="quantity"
+    columnDataType="decimal(19,6)" defaultNullValue="0.0" />
+
+  <modifyDataType tableName="sales_item_pricing_item" columnName="quantity"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="sales_item_pricing_item"
+    columnName="quantity" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="sales_item_pricing_item" columnName="unit_percent"
+    newDataType="decimal(19,2)" />
+  <addNotNullConstraint tableName="sales_item_pricing_item"
+    columnName="unit_percent" columnDataType="decimal(19,2)"
+    defaultNullValue="0.0" />
+  <modifyDataType tableName="sales_item_pricing_item" columnName="unit_price"
+    newDataType="decimal(19,6)" />
+  <addNotNullConstraint tableName="sales_item_pricing_item"
+    columnName="unit_price" columnDataType="decimal(19,6)"
+    defaultNullValue="0.0" />
+
+  <modifyDataType tableName="sel_value" columnName="tax_value"
+    newDataType="decimal(19,2)" />
   </changeSet>
 </databaseChangeLog>

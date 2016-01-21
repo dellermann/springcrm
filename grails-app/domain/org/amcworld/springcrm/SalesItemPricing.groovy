@@ -43,12 +43,12 @@ class SalesItemPricing {
     //-- Class fields ---------------------------
 
     static constraints = {
-        quantity min: ZERO, validator: {
+        quantity min: ZERO, scale: 6, validator: {
             it <= ZERO ? ['default.invalid.notGreater.message', 0] : null
         }
         unit()
-        discountPercent scale: 2, min: ZERO, widget: 'percent'
-        adjustment widget: 'currency'
+        discountPercent min: ZERO, scale: 2, widget: 'percent'
+        adjustment scale: 6, widget: 'currency'
         items nullable: false, minSize: 1
     }
     static hasMany = [items: SalesItemPricingItem]

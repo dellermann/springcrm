@@ -36,7 +36,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     static constraints = {
         stage()
         paymentDate nullable: true
-        paymentAmount min: ZERO, widget: 'currency'
+        paymentAmount min: ZERO, scale: 6, widget: 'currency'
         paymentMethod nullable: true
         invoice nullable: true
         dunning nullable: true

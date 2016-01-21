@@ -38,7 +38,7 @@ class SalesItem {
         number unique: 'type', widget: 'autonumber'
         type blank: false, maxSize: 1
         name blank: false
-        quantity min: ZERO, validator: { quantity, salesItem ->
+        quantity min: ZERO, scale: 6, validator: { quantity, salesItem ->
             (quantity <= ZERO && salesItem.pricing != null) \
                 ? ['default.invalid.notGreater.message', 0]
                 : null
@@ -48,9 +48,9 @@ class SalesItem {
                 ? 'default.null.message'
                 : null
         }
-        unitPrice min: ZERO, widget: 'currency'
+        unitPrice min: ZERO, scale: 6, widget: 'currency'
         taxRate nullable: true
-        purchasePrice nullable: true, min: ZERO, widget: 'currency'
+        purchasePrice nullable: true, min: ZERO, scale: 6, widget: 'currency'
         salesStart nullable: true
         salesEnd nullable: true
         description nullable: true, widget: 'textarea'

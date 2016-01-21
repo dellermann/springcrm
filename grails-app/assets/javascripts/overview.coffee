@@ -1,7 +1,7 @@
 #
 # overview.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -271,7 +271,7 @@ class OverviewPanels
   # @since 2.0
   #
   _updateNoPanelsMessage: ->
-    $('.empty-list').toggleClass 'hidden', @$element.find('.panel').length
+    $('.empty-list').toggleClass 'hidden', @$element.find('.panel').length > 0
 
     return
 

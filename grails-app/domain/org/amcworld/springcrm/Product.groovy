@@ -39,7 +39,7 @@ class Product extends SalesItem {
         category nullable: true
         manufacturer nullable: true
         retailer nullable: true
-        weight nullable: true, min: ZERO
+        weight nullable: true, scale: 6, min: ZERO
     }
 
 

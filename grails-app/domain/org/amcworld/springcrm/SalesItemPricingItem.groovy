@@ -38,7 +38,7 @@ class SalesItemPricingItem {
 
     static belongsTo = [pricing: SalesItemPricing]
     static constraints = {
-        quantity min: ZERO
+        quantity min: ZERO, scale: 6
         unit nullable: true, validator: { unit, pricing ->
             unit || pricing.type == sum ? null : 'default.null.message'
         }
@@ -51,8 +51,8 @@ class SalesItemPricingItem {
                 ? 'default.null.message'
                 : null
         }
-        unitPercent scale: 2, min: ZERO, widget: 'percent'
-        unitPrice widget: 'currency'
+        unitPercent min: ZERO, scale: 2, widget: 'percent'
+        unitPrice scale: 6, widget: 'currency'
     }
 
 

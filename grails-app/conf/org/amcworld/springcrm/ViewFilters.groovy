@@ -1,7 +1,7 @@
 /*
  * ViewFilters.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class ViewFilters {
                     model.groupingSeparator = userService.groupingSeparator
 
                     List<TaxRate> taxRates = TaxRate.list(sort: 'orderId')
-                    model.taxRatesString = taxRates.collect { (it.taxValue * 100d).round(2) }.join ','
+                    model.taxRatesString = taxRates.collect { it.taxValue * 100 }.join ','
                 }
             }
         }

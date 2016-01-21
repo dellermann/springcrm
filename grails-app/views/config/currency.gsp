@@ -42,7 +42,7 @@
               </label>
               <div class="control-container">
                 <g:select name="config.numFractionDigits"
-                  id="numFractionDigits-select" from="${0..10}"
+                  id="numFractionDigits-select" from="${0..6}"
                   value="${numFractionDigits}"
                   title="${message(code: 'config.numFractionDigits.title')}" />
               </div>
@@ -53,7 +53,7 @@
               </label>
               <div class="control-container">
                 <g:select name="config.numFractionDigitsExt"
-                  id="numFractionDigitsExt-select" from="${0..10}"
+                  id="numFractionDigitsExt-select" from="${0..6}"
                   value="${numFractionDigitsExt}"
                   title="${message(code: 'config.numFractionDigitsExt.title')}" />
               </div>

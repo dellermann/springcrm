@@ -53,12 +53,12 @@ class InvoicingTransaction {
         headerText nullable: true, widget: 'textarea'
         items nullable: false, minSize: 1
         footerText nullable: true, widget: 'textarea'
-        discountPercent scale: 2, min: ZERO, widget: 'percent'
-        discountAmount min: ZERO, widget: 'currency'
-        shippingCosts min: ZERO, widget: 'currency'
-        shippingTax scale: 1, min: ZERO, widget: 'percent'
-        adjustment widget: 'currency'
-        total widget: 'currency'
+        discountPercent min: ZERO, scale: 2, widget: 'percent'
+        discountAmount min: ZERO, scale: 6, widget: 'currency'
+        shippingCosts min: ZERO, scale: 6, widget: 'currency'
+        shippingTax min: ZERO, scale: 2, widget: 'percent'
+        adjustment scale: 6, widget: 'currency'
+        total scale: 6, widget: 'currency'
         notes nullable: true, widget: 'textarea'
         createUser nullable: true
         dateCreated()

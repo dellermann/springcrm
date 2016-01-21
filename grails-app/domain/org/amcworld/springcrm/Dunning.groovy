@@ -38,7 +38,7 @@ class Dunning extends InvoicingTransaction implements PayableAndDue {
         stage()
         dueDatePayment()
         paymentDate nullable: true
-        paymentAmount min: ZERO, widget: 'currency'
+        paymentAmount min: ZERO, scale: 6, widget: 'currency'
         paymentMethod nullable: true
         invoice()
     }

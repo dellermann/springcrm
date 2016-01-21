@@ -49,17 +49,17 @@ class PurchaseInvoice {
         dueDate()
         stage()
         paymentDate nullable: true
-        paymentAmount widget: 'currency'
+        paymentAmount scale: 6, widget: 'currency'
         paymentMethod nullable: true
         items nullable: false, minSize: 1
         notes nullable: true, widget: 'textarea'
         documentFile nullable: true
-        discountPercent scale: 1, min: ZERO, widget: 'percent'
-        discountAmount min: ZERO, widget: 'currency'
-        shippingCosts min: ZERO, widget: 'currency'
-        shippingTax scale: 1, min: ZERO, widget: 'percent'
-        adjustment widget: 'currency'
-        total()
+        discountPercent min: ZERO, scale: 2, widget: 'percent'
+        discountAmount min: ZERO, scale: 6, widget: 'currency'
+        shippingCosts min: ZERO, scale: 6, widget: 'currency'
+        shippingTax min: ZERO, scale: 2, widget: 'percent'
+        adjustment scale: 6, widget: 'currency'
+        total scale: 6
         dateCreated()
         lastUpdated()
     }
