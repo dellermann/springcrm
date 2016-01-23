@@ -245,11 +245,11 @@ class InvoicingTransactionXMLBase extends Specification {
     protected void matchItems(entry) {
         assert 3 == entry.invoicingItem.size()
         def item = entry.invoicingItem[0]
-        assert '4.0' == item.quantity.text()
+        assert '4.000000' == item.quantity.text()
         assert 'pcs.' == item.unit.text()
         assert 'books' == item.name.text()
-        assert '44.99' == item.unitPrice.text()
-        assert '19.0' == item.tax.text()
+        assert '44.990000' == item.unitPrice.text()
+        assert '19.00' == item.tax.text()
     }
 
     protected void matchOrganization(entry) {
@@ -260,8 +260,8 @@ class InvoicingTransactionXMLBase extends Specification {
 
     protected void matchTaxRates(entry) {
         assert 2 == entry.entry.size()
-        assert '65.6849' == getEntryText(entry, '19.0')
-        assert '0.96915' == getEntryText(entry, '7.0')
+        assert '65.68490000000000' == getEntryText(entry, '19.0')
+        assert '0.96915000000000' == getEntryText(entry, '7.0')
     }
 
     protected void matchUser(entry) {
@@ -295,10 +295,10 @@ class InvoicingTransactionXMLBase extends Specification {
     }
 
     protected void matchValues(entry) {
-        assert '359.555' == getEntryText(entry, 'subtotalNet')
-        assert '426.20905' == getEntryText(entry, 'subtotalGross')
-        assert '8.524181' == getEntryText(entry, 'discountPercentAmount')
-        assert '413.224869' == getEntryText(entry, 'total')
+        assert '359.555000000000' == getEntryText(entry, 'subtotalNet')
+        assert '426.20905000000000' == getEntryText(entry, 'subtotalGross')
+        assert '8.5241810000000000' == getEntryText(entry, 'discountPercentAmount')
+        assert '413.2248690000000000' == getEntryText(entry, 'total')
     }
 
     protected void registerDefaultConverters() {

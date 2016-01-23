@@ -1,7 +1,7 @@
 /*
  * AbstractUserCredentialDataStore.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ class AbstractUserCredentialDataStore
     @Override
     AbstractUserCredentialDataStore clear() {
         UserSetting.withTransaction {
-            for (UserSetting entry in entries) {
+            for (UserSetting entry : getEntries()) {
                 entry.delete flush: true
             }
         }
@@ -142,7 +142,7 @@ class AbstractUserCredentialDataStore
     Set<String> keySet() {
         Set<String> res = new HashSet<String>()
         UserSetting.withTransaction {
-            for (UserSetting entry in entries) {
+            for (UserSetting entry : getEntries()) {
                 res << entry.user.userName
             }
         }
@@ -181,7 +181,7 @@ class AbstractUserCredentialDataStore
     Collection<StoredCredential> values() {
         Collection<StoredCredential> res = new ArrayList<StoredCredential>()
         UserSetting.withTransaction {
-            for (UserSetting entry in entries) {
+            for (UserSetting entry : getEntries()) {
                 res << convertJsonToCredential(entry.value)
             }
         }

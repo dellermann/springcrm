@@ -312,6 +312,9 @@ class PersonControllerSpec extends Specification {
         given: 'a person'
         makePersonFixture()
 
+        and: 'a mocked credential'
+        makeCredential()
+
         and: 'a mock LDAP service that throws an exception'
         def srv = Mock(LdapService)
         srv.save(_) >> { throw new AuthenticationException() }
@@ -341,6 +344,9 @@ class PersonControllerSpec extends Specification {
         given: 'a person'
         makePersonFixture()
 
+        and: 'a mocked credential'
+        makeCredential()
+
         and: 'a mock LDAP service that throws an exception'
         def srv = Mock(LdapService)
         srv.save(_) >> { throw new CommunicationException() }
@@ -369,6 +375,9 @@ class PersonControllerSpec extends Specification {
     def 'Handle name not found exception'() {
         given: 'a person'
         makePersonFixture()
+
+        and: 'a mocked credential'
+        makeCredential()
 
         and: 'a mock LDAP service that throws an exception'
         def srv = Mock(LdapService)
@@ -441,6 +450,17 @@ class PersonControllerSpec extends Specification {
 
             ]
         ]
+    }
+
+    private makeCredential() {
+        UserSettings us = Mock()
+        us.getAt(_) >> null
+
+        User u = Mock()
+        u.getId() >> 5L
+        u.getSettings() >> us
+
+        session.credential = new Credential(u)
     }
 
     protected void matchEmptyList(Map model) {

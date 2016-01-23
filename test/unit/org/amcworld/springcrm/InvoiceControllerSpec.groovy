@@ -1,7 +1,7 @@
 /*
  * InvoiceControllerSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,7 +206,6 @@ class InvoiceControllerSpec extends Specification {
 
         def userService = Mock(UserService)
         userService.getNumFractionDigitsExt() >> 2
-        l.each { it.userService = userService }
 
         mockDomain Invoice, l
     }
