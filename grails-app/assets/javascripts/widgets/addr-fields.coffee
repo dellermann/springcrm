@@ -1,7 +1,7 @@
 #
 # addr-fields.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -240,19 +240,20 @@ class AddrFields
     $target = $(event.currentTarget)
     $toAddr = $target.closest '.address'
     $fromAddr = $toAddr.siblings '.address'
+    toPrefix = $toAddr.data 'prefix'
 
-    toPrefix = $toAddr.data('prefix')
-
-    if (@_doesExist $toAddr)
+    promise = $.Deferred().resolve().promise()
+    if @_doesExist $toAddr
       msg = $L("default.copyAddressWarning.#{toPrefix}")
-      return unless @options.confirm msg
+      promise = promise.then -> $.confirm msg
 
-    $fromAddr.find('.column-content :input')
-      .each ->
-        $this = $(this)
-        name = toPrefix + '.' + $this.attr('name').split('.').pop()
-        $toAddr.find(":input[name='#{name}']")
-          .val $this.val()
+    promise.done ->
+      $fromAddr.find('.column-content :input')
+        .each ->
+          $this = $(this)
+          name = toPrefix + '.' + $this.attr('name').split('.').pop()
+          $toAddr.find(":input[name='#{name}']")
+            .val $this.val()
 
     return
 
@@ -306,5 +307,3 @@ $.fn.addrfields.Constructor = AddrFields
 $.fn.addrfields.noConflict = ->
   $.fn.addrfields = old
   this
-
-# vim:set ts=2 sw=2 sts=2:
