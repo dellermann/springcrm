@@ -1,7 +1,7 @@
 /*
  * LruService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * recently used) entries.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.0
  */
 class LruService {
 
@@ -61,7 +61,7 @@ class LruService {
      *                      list
      */
     void recordItem(String controller, long id, String name) {
-        User user = User.get(session.user.id)
+        User user = session.credential.loadUser()
 
         /* check whether or not this entry already exists */
         def c = LruEntry.createCriteria()
@@ -126,7 +126,8 @@ class LruService {
      */
     List<LruEntry> retrieveLruEntries() {
         LruEntry.findAllByUser(
-            session.user, [max: numOfLruEntries, sort: 'pos', order: 'desc']
+            session.credential.loadUser(),
+            [max: numOfLruEntries, sort: 'pos', order: 'desc']
         )
     }
 
@@ -140,7 +141,9 @@ class LruService {
      */
     void removeItem(String controller, long id) {
         def query = LruEntry.where {
-            user == session.user && controller == controller && itemId == id
+            user == session.credential.loadUser() &&
+            controller == controller &&
+            itemId == id
         }
         query.deleteAll()
     }

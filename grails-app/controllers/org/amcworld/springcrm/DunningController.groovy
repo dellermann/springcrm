@@ -1,7 +1,7 @@
 /*
  * DunningController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -194,7 +194,7 @@ class DunningController {
             return
         }
 
-        if (!session.user.admin && dunningInstance.stage.id >= 2202) {
+        if (!session.credential.admin && dunningInstance.stage.id >= 2202) {
             redirect action: 'index'
             return
         }
@@ -227,7 +227,7 @@ class DunningController {
             return
         }
 
-        if (!session.user.admin && dunningInstance.stage.id >= 2202) {
+        if (!session.credential.admin && dunningInstance.stage.id >= 2202) {
             redirect action: 'index'
             return
         }
@@ -329,7 +329,7 @@ class DunningController {
             return
         }
 
-        if (!session.user.admin && dunningInstance.stage.id >= 2202) {
+        if (!session.credential.admin && dunningInstance.stage.id >= 2202) {
             redirect action: 'index'
             return
         }
@@ -396,8 +396,10 @@ class DunningController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            dunningInstance, dunningInstance.createUser ?: session.user,
-            !!params.duplicate, [
+            dunningInstance,
+            dunningInstance.createUser ?: session.credential.loadUser(),
+            !!params.duplicate,
+            [
                 invoice: dunningInstance.invoice,
                 invoiceFullNumber: dunningInstance.invoice.fullNumber,
             ]

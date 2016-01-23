@@ -1,7 +1,7 @@
 /*
  * CalendarEventService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * calendar events.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.3
  */
 class CalendarEventService {
@@ -66,7 +66,8 @@ class CalendarEventService {
      */
     List<Reminder> loadReminders(CalendarEvent calendarEvent) {
         def query = Reminder.where {
-            user == session.user && calendarEvent == calendarEvent
+            user == session.credential.loadUser() &&
+            calendarEvent == calendarEvent
         }
         List<Reminder> reminders = query.list()
         if (!reminders) {

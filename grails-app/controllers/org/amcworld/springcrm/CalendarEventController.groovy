@@ -1,7 +1,7 @@
 /*
  * CalendarEventController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,14 +196,14 @@ class CalendarEventController {
 
     def save() {
         CalendarEvent calendarEventInstance = new CalendarEvent(params)
-        calendarEventInstance.owner = session.user
+        calendarEventInstance.owner = session.credential.loadUser()
         if (!calendarEventInstance.validate()) {
             render view: 'create', model: [calendarEventInstance: calendarEventInstance]
             return
         }
 
         calendarEventService.refineCalendarEvent calendarEventInstance, params['recurrence.endType'], params['recurrence.cnt'] as Integer
-        calendarEventInstance.owner = session.user
+        calendarEventInstance.owner = session.credential.loadUser()
         calendarEventInstance.save flush: true
         calendarEventService.saveReminders params.reminders.split(), calendarEventInstance
 
@@ -291,9 +291,15 @@ class CalendarEventController {
             return
         }
 
-        calendarEventService.refineCalendarEvent calendarEventInstance, params['recurrence.endType'], params['recurrence.cnt'] as Integer
+        calendarEventService.refineCalendarEvent(
+            calendarEventInstance, params['recurrence.endType'],
+            params['recurrence.cnt'] as Integer
+        )
         calendarEventInstance.save flush: true
-        calendarEventService.saveReminders params.reminders.split(), calendarEventInstance, session.user
+        calendarEventService.saveReminders(
+            params.reminders.split(), calendarEventInstance,
+            session.credential.loadUser()
+        )
 
         request.calendarEventInstance = calendarEventInstance
         flash.message = message(
@@ -338,7 +344,9 @@ class CalendarEventController {
         calendarEventInstance.start = startDate
         calendarEventInstance.end = endDate
         calendarEventInstance.save()
-        calendarEventService.updateReminders calendarEventInstance, session.user
+        calendarEventService.updateReminders(
+            calendarEventInstance, session.credential.loadUser()
+        )
 
         render status: HttpServletResponse.SC_OK
     }
@@ -386,7 +394,7 @@ class CalendarEventController {
             and {
                 or {
                     isNull('user')
-                    eq('user', session.user)
+                    eq('user', session.credential.loadUser())
                 }
                 le('nextReminder', new Date())
             }

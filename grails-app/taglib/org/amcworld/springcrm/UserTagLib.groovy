@@ -1,7 +1,7 @@
 /*
  * UserTagLib.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +35,10 @@ class UserTagLib {
      * Renders an area to display the currently logged in user.
      */
     def loginControl = {
-        User user = session.user
-        if (request.getSession(false) && user) {
-            out << '<small>' << user.fullName << ' [' <<
-                user.userName << ']</small>'
+        Credential credential = session.credential
+        if (request.getSession(false) && credential) {
+            out << '<small>' << credential.fullName << ' [' <<
+                credential.userName << ']</small>'
             out << link(
                 controller: 'user', action: 'logout',
                 'class': 'btn btn-warning btn-xs',
@@ -56,7 +56,7 @@ class UserTagLib {
      * @attr key REQUIRED   the name of the user setting
      */
     def userSetting = { attrs, body ->
-        def settings = session.user?.settings
+        def settings = session.credential?.settings
         if (settings) {
             out << settings[attrs.key]
         }

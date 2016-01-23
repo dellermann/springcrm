@@ -300,7 +300,8 @@ class SalesOrderController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            salesOrderInstance, salesOrderInstance.createUser ?: session.user,
+            salesOrderInstance,
+            salesOrderInstance.createUser ?: session.credential.loadUser(),
             !!params.duplicate
         )
         GString fileName =

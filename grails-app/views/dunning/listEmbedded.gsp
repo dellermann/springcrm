@@ -24,7 +24,8 @@
         <td class="col-type-currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" displayZero="true" external="true" /></td>
         <td class="col-type-currency dunning-closing-balance balance-state balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" external="true" /></td>
         <td class="col-actions">
-          <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+          <g:if test="${session.credential.admin ||
+              dunningInstance.stage.id < 2202}">
           <g:button controller="dunning" action="edit"
             id="${dunningInstance.id}" color="success" size="xs"
             icon="pencil-square-o" message="default.button.edit.label" />

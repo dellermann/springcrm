@@ -1,7 +1,7 @@
 /*
  * ErrorController.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import org.apache.http.message.BasicNameValuePair
  * The class {@code ErrorController} handles errors in the application.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class ErrorController {
@@ -104,13 +104,16 @@ class ErrorController {
             break
         }
 
-        render view: 'ldap', model: [
+        render(
+            view: 'ldap',
+            model: [
                 msg: msg,
                 retryUrl: retryUrl,
                 backUrl: backUrl,
                 listUrl: createLink(controller: 'person', action: 'index'),
-                admin: session.user.admin
+                admin: session.credential.admin
             ]
+        )
     }
 
     def notFound() {}

@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
+
 
 /**
  * The class {@code User} represents a user which can authorize at the system.
@@ -27,7 +29,7 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.0
  */
-class User implements Cloneable {
+class User {
 
     //-- Class fields ---------------------------
 
@@ -52,50 +54,123 @@ class User implements Cloneable {
         userName index: 'user_name'
     }
     static transients = [
-        'allowedControllers', 'allowedModulesAsSet', 'allowedModulesNames',
-        'fullName', 'rawSettings', 'settings'
+        'allowedModulesAsSet', 'allowedModulesNames', 'fullName',
+        'rawSettings', 'settings'
     ]
 
 
     //-- Fields ---------------------------------
 
+    /**
+     * The user name of this user used for authentication.
+     */
     String userName
+
+    /**
+     * The encrypted password of this user.
+     */
     String password
+
+    /**
+     * The first name of this user.
+     */
     String firstName
+
+    /**
+     * The last name of this user.
+     */
     String lastName
+
+    /**
+     * The office phone number of this user.
+     */
     String phone
+
+    /**
+     * The home phone number of this user.
+     */
     String phoneHome
+
+    /**
+     * The mobile phone number of this user.
+     */
     String mobile
+
+    /**
+     * The fax number of this user.
+     */
     String fax
+
+    /**
+     * The e-mail address of this user.
+     */
     String email
+
+    /**
+     * Whether or not this user is administrator and has access permissions to
+     * all components of this software.
+     */
     boolean admin
+
+    /**
+     * A comma separated list of module names this user may access.  This value
+     * is only used if this user is no administrator.
+     */
     String allowedModules
+
+    /**
+     * The timestamp when this sales item has been created.
+     */
     Date dateCreated
+
+    /**
+     * The timestamp when this sales item has been modified.
+     */
     Date lastUpdated
-    UserSettings settings
-    Set<String> allowedControllers
+
+    /**
+     * The underlying user settings which allow accessing the settings of this
+     * user as a {@code Map}.
+     */
+    private UserSettings settings
+
+
+    //-- Constructors ---------------------------
+
+    /**
+     * Creates an empty user.
+     */
+    User() {}
+
+    /**
+     * Creates a user using the data of the given one.
+     *
+     * @param user  the given user
+     * @since       2.0
+     */
+    User(User user) {
+        userName = user.userName
+        firstName = user.firstName
+        lastName = user.lastName
+        phone = user.phone
+        phoneHome = user.phoneHome
+        mobile = user.mobile
+        fax = user.fax
+        email = user.email
+        admin = user.admin
+        allowedModules = user.allowedModules
+        settings = user.settings
+    }
 
 
     //-- Properties -----------------------------
-
-    /**
-     * Gets a set of controllers the user is permitted to access.
-     *
-     * @return  the names of the controllers the user may access
-     */
-    Set<String> getAllowedControllers() {
-        if (allowedControllers == null) {
-            allowedControllers = Module.resolveModules(allowedModulesAsSet)
-        }
-
-        allowedControllers
-    }
 
     /**
      * Gets a set of allowed modules of this user.
      *
      * @return  the allowed modules
      */
+    @CompileStatic
     EnumSet<Module> getAllowedModulesAsSet() {
         if (!allowedModules) {
             return EnumSet.noneOf(Module)
@@ -110,6 +185,7 @@ class User implements Cloneable {
      * @param modules   the allowed modules that should be set; may be
      *                  {@code null}
      */
+    @CompileStatic
     void setAllowedModulesAsSet(EnumSet<Module> modules) {
         allowedModules = modules?.join(',') ?: ''
     }
@@ -120,6 +196,7 @@ class User implements Cloneable {
      * @return  the names of the allowed modules
      * @since   2.0
      */
+    @CompileStatic
     Set<String> getAllowedModulesNames() {
         EnumSet<Module> modules = allowedModulesAsSet
         Set<String> res = new HashSet<String>(modules.size())
@@ -137,6 +214,7 @@ class User implements Cloneable {
      *                      set
      * @since               2.0
      */
+    @CompileStatic
     void setAllowedModulesNames(Set<String> moduleNames) {
         allowedModulesAsSet = Module.modulesByName(moduleNames)
     }
@@ -147,48 +225,48 @@ class User implements Cloneable {
      *
      * @return  the full name of the user
      */
+    @CompileStatic
     String getFullName() {
-        "${firstName ?: ''} ${lastName ?: ''}".trim()
+        String fn = firstName?.trim()
+        String ln = lastName?.trim()
+        StringBuilder buf = new StringBuilder()
+        if (fn) buf << fn
+        if (fn && ln) buf << ' '
+        if (ln) buf << ln
+
+        buf.toString()
     }
 
+    /**
+     * Gets the raw settings associated to this user.
+     *
+     * @return  the list of raw settings objects
+     */
     List<UserSetting> getRawSettings() {
         UserSetting.findAllByUser this
+    }
+
+    /**
+     * Gets the settings of this user.
+     *
+     * @return  the user settings
+     */
+    @CompileStatic
+    UserSettings getSettings() {
+        settings
     }
 
 
     //-- Public methods -------------------------
 
+    /**
+     * Called after this user object has been loaded completely from
+     * persistence layer.  The method initializes the embedded
+     * {@code UserSettings} object.
+     */
+    @CompileStatic
     def afterLoad() {
         settings = new UserSettings(this)
-    }
-
-    /**
-     * Checks whether or not the user has permission to access at least one of
-     * the given controllers.
-     *
-     * @param controllers   the names of the controllers to check
-     * @return              {@code true} if the user may access at least one of
-     *                      the given controllers; {@code false} otherwise
-     */
-    boolean checkAllowedControllers(Set<String> controllers) {
-        admin || getAllowedControllers().intersect(controllers)
-    }
-
-    /**
-     * Checks whether or not the user has permission to access at least one of
-     * the given modules.
-     *
-     * @param modules   the names of the modules to check
-     * @return          {@code true} if the user may access at least one of the
-     *                  given modules; {@code false} otherwise
-     */
-    boolean checkAllowedModules(Set<Module> modules) {
-        admin || allowedModulesAsSet.intersect(modules)
-    }
-
-    @Override
-    User clone() {
-        (User) super.clone()
     }
 
     @Override
@@ -202,6 +280,7 @@ class User implements Cloneable {
     }
 
     @Override
+    @CompileStatic
     String toString() {
         fullName
     }

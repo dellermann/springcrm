@@ -124,7 +124,8 @@
         icon="th-list" message="default.button.list.label" />
       <g:button action="create" color="success" class="hidden-xs"
         icon="plus-circle" message="default.button.create.label" />
-      <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+      <g:if test="${session.credential.admin ||
+          dunningInstance.stage.id < 2202}">
       <g:button action="edit" id="${dunningInstance?.id}" color="success"
         icon="pencil-square-o" message="default.button.edit.label" />
       </g:if>
@@ -135,7 +136,8 @@
       </g:else>
       <g:button action="copy" id="${dunningInstance?.id}" color="primary"
         class="hidden-xs" icon="copy" message="default.button.copy.label" />
-      <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+      <g:if test="${session.credential.admin ||
+          dunningInstance.stage.id < 2202}">
       <g:button action="delete" id="${dunningInstance?.id}" color="danger"
         class="hidden-xs btn-action-delete" icon="trash"
         message="default.button.delete.label" aria-haspopup="true"
@@ -160,7 +162,8 @@
             <g:message code="default.button.copy.label" />
           </g:link>
         </li>
-        <g:if test="${session.user.admin || dunningInstance.stage.id < 2202}">
+        <g:if test="${session.credential.admin ||
+            dunningInstance.stage.id < 2202}">
         <li role="menuitem">
           <g:link action="delete" id="${dunningInstance?.id}"
             class="btn-action-delete" aria-haspopup="true"

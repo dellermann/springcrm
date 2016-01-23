@@ -1,7 +1,7 @@
 /*
  * CreditMemoController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,7 +198,7 @@ class CreditMemoController {
             return
         }
 
-        if (!session.user.admin && creditMemoInstance.stage.id >= 2502) {
+        if (!session.credential.admin && creditMemoInstance.stage.id >= 2502) {
             redirect action: 'index'
             return
         }
@@ -231,7 +231,7 @@ class CreditMemoController {
             return
         }
 
-        if (!session.user.admin && creditMemoInstance.stage.id >= 2502) {
+        if (!session.credential.admin && creditMemoInstance.stage.id >= 2502) {
             redirect action: 'index'
             return
         }
@@ -350,7 +350,7 @@ class CreditMemoController {
             return
         }
 
-        if (!session.user.admin && creditMemoInstance.stage.id >= 2502) {
+        if (!session.credential.admin && creditMemoInstance.stage.id >= 2502) {
             redirect action: 'index'
             return
         }
@@ -384,8 +384,10 @@ class CreditMemoController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            creditMemoInstance, creditMemoInstance.createUser ?: session.user,
-            !!params.duplicate, [
+            creditMemoInstance,
+            creditMemoInstance.createUser ?: session.credential.loadUser(),
+            !!params.duplicate,
+            [
                 invoice: creditMemoInstance.invoice,
                 invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
                 dunning: creditMemoInstance.dunning,

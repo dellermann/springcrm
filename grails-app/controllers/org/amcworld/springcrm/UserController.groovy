@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import com.google.api.client.auth.oauth2.Credential
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.LocaleUtils
 
@@ -154,7 +153,9 @@ class UserController {
         if (params.password) {
             passwordMismatch = params.password != securityService.encryptPassword(params.passwordRepeat)
             if (passwordMismatch) {
-                userInstance.errors.rejectValue 'password', 'user.password.doesNotMatch'
+                userInstance.errors.rejectValue(
+                    'password', 'user.password.doesNotMatch'
+                )
             }
         } else {
             userInstance.password = passwd
@@ -224,7 +225,7 @@ class UserController {
             return
         }
 
-        session.user = userInstance
+        session.credential = new Credential(userInstance)
         setUserLocale()
 
         redirect controller: 'overview', action: 'index'
@@ -232,14 +233,14 @@ class UserController {
 
     def logout() {
         flash.message = message(code: 'user.logout.message')
-        session.user = null
+        session.credential = null
         session.invalidate()
 
         redirect action: 'login'
     }
 
     def storeSetting() {
-        session.user.settings[params.key] = params.value
+        session.credential.settings[params.key] = params.value
 
         render status: HttpServletResponse.SC_OK
     }
@@ -260,8 +261,8 @@ class UserController {
     }
 
     def settingsGoogleAuth() {
-        Credential cred =
-            googleOAuthService.loadCredential(session.user.userName)
+        com.google.api.client.auth.oauth2.Credential cred =
+            googleOAuthService.loadCredential(session.credential.userName)
 
         [authorized: cred != null]
     }
@@ -294,7 +295,7 @@ class UserController {
         }
 
         boolean res = googleOAuthService.obtainAndStoreCredential(
-            session.user.userName, params.clientId
+            session.credential.userName, params.clientId
         )
         if (!res) {
             flash.message = message(
@@ -311,7 +312,7 @@ class UserController {
     }
 
     def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy(session.user.userName)
+        googleOAuthService.revokeAtProxy(session.credential.userName)
 
         flash.message = message(
             code: 'user.settings.googleAuth.revoked.message'
@@ -320,7 +321,7 @@ class UserController {
     }
 
     def settingsSync() {
-        List<Long> values = session.user.settings.excludeFromSync?.split(/,/)
+        List<Long> values = session.credential.settings.excludeFromSync?.split(/,/)
             ?.collect { it as Long }
 
         [
@@ -330,7 +331,7 @@ class UserController {
     }
 
     def settingsSyncSave() {
-        session.user.settings.excludeFromSync = params.excludeFromSync.join ','
+        session.credential.settings.excludeFromSync = params.excludeFromSync.join ','
 
         redirect action: 'settingsIndex'
     }
@@ -340,9 +341,9 @@ class UserController {
 
     private void setUserLocale(String locale = null) {
         if (locale) {
-            session.user.settings.locale = locale
+            session.credential.settings.locale = locale
         } else {
-            locale = session.user.settings.locale
+            locale = session.credential.settings.locale
         }
         if (locale) {
             session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = LocaleUtils.toLocale(locale)

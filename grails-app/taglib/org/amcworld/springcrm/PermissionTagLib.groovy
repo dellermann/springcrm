@@ -41,7 +41,8 @@ class PermissionTagLib {
      * @attr action                 the action to link to
      */
     def createControllerLink = { attrs, body ->
-        if (session.user.checkAllowedControllers([attrs.controller] as Set)) {
+        Set controllers = [attrs.controller] as Set
+        if (session.credential.checkAllowedControllers(controllers)) {
             out << createLink(attrs)
         }
     }
@@ -51,7 +52,7 @@ class PermissionTagLib {
      * administrator.
      */
     def ifAdmin = { attrs, body ->
-        if (session.user?.admin) {
+        if (session.credential?.admin) {
             out << body()
         }
     }
@@ -77,7 +78,7 @@ class PermissionTagLib {
             controllers = [c] as Set<String>
         }
 
-        if (session.user?.checkAllowedControllers(controllers)) {
+        if (session.credential?.checkAllowedControllers(controllers)) {
             out << body()
         }
     }
@@ -93,7 +94,7 @@ class PermissionTagLib {
         def m = attrs.modules
         Set<Module> modules
         if (m instanceof CharSequence) {
-            modules = Module.modulesByName(m.split())
+            modules = Module.modulesByName(m.split() as List)
         } else if (m instanceof Iterable) {
             modules = EnumSet.noneOf(Module)
             for (def item : m) {
@@ -111,7 +112,7 @@ class PermissionTagLib {
             )
         }
 
-        if (session.user?.checkAllowedModules(modules)) {
+        if (session.credential?.checkAllowedModules(modules)) {
             out << body()
         }
     }

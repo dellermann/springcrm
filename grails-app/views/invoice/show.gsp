@@ -45,10 +45,10 @@
             <f:display bean="${invoiceInstance}" property="subject" />
             <f:display bean="${invoiceInstance}" property="organization" />
             <f:display bean="${invoiceInstance}" property="person" />
-            <g:ifModuleAllowed modules="quote">
+            <g:ifModuleAllowed modules="QUOTE">
             <f:display bean="${invoiceInstance}" property="quote" />
             </g:ifModuleAllowed>
-            <g:ifModuleAllowed modules="salesOrder">
+            <g:ifModuleAllowed modules="SALES_ORDER">
             <f:display bean="${invoiceInstance}" property="salesOrder" />
             </g:ifModuleAllowed>
             <f:display bean="${invoiceInstance}" property="stage" />
@@ -142,7 +142,8 @@
         icon="th-list" message="default.button.list.label" />
       <g:button action="create" color="success" class="hidden-xs"
         icon="plus-circle" message="default.button.create.label" />
-      <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
+      <g:if test="${session.credential.admin ||
+          invoiceInstance.stage.id < 902}">
       <g:button action="edit" id="${invoiceInstance?.id}" color="success"
         icon="pencil-square-o" message="default.button.edit.label" />
       </g:if>
@@ -153,7 +154,8 @@
       </g:else>
       <g:button action="copy" id="${invoiceInstance?.id}" color="primary"
         class="hidden-xs" icon="copy" message="default.button.copy.label" />
-      <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
+      <g:if test="${session.credential.admin ||
+          invoiceInstance.stage.id < 902}">
       <g:button action="delete" id="${invoiceInstance?.id}" color="danger"
         class="hidden-xs btn-action-delete" icon="trash"
         message="default.button.delete.label" aria-haspopup="true"
@@ -178,7 +180,8 @@
             <g:message code="default.button.copy.label" />
           </g:link>
         </li>
-        <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
+        <g:if test="${session.credential.admin ||
+            invoiceInstance.stage.id < 902}">
         <li role="menuitem">
           <g:link action="delete" id="${invoiceInstance?.id}"
             class="btn-action-delete" aria-haspopup="true"

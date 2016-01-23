@@ -1,7 +1,7 @@
 /*
  * GoogleDataSyncStatusSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,10 +99,8 @@ class GoogleDataSyncStatusSpec extends Specification {
 				email: 'email',
 				admin: false,
 				allowedModules: 'aM',
-				allowedModulesAsSet: EnumSet.of(Module.CONTACT),
 				dateCreated: new Date(),
-				lastUpdated: new Date(),
-				allowedControllers: 'sfd'
+				lastUpdated: new Date()
 			),
 			type: 'T',
 			itemId: 14221,
@@ -127,10 +125,8 @@ class GoogleDataSyncStatusSpec extends Specification {
 				email: 'email',
 				admin: false,
 				allowedModules: 'aM',
-				allowedModulesAsSet: EnumSet.of(Module.CONTACT),
 				dateCreated: new Date(),
-				lastUpdated: new Date(),
-				allowedControllers: 'sfd'
+				lastUpdated: new Date()
 			),
 			type: 'T',
 			itemId: 14221,

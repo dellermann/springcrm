@@ -53,7 +53,7 @@ class TicketController {
 
         List<Ticket> ticketInstanceList = null
         int ticketInstanceTotal = 0
-        User user = session.user
+        User user = session.credential.loadUser()
 
         if (params.helpdesk) {
             Helpdesk helpdesk = Helpdesk.get(params.helpdesk as Long)
@@ -264,7 +264,7 @@ class TicketController {
             return
         }
 
-        User user = session.user
+        User user = session.credential.loadUser()
         if ((user.admin || user in ticketInstance.helpdesk.users) &&
             ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted])
         {
@@ -288,7 +288,7 @@ class TicketController {
                 return
             }
 
-            User creator = session.user
+            User creator = session.credential.loadUser()
             User recipient =
                 params.recipient ? User.get(params.recipient) : null
             if (recipient || creator.admin ||
@@ -319,7 +319,8 @@ class TicketController {
             }
 
             ticketService.createNote(
-                ticketInstance, message, params.attachment, session.user
+                ticketInstance, message, params.attachment,
+                session.credential.loadUser()
             )
         }
 
@@ -337,7 +338,7 @@ class TicketController {
             return
         }
 
-        User user = session.user
+        User user = session.credential.loadUser()
         if (user.admin || user == ticketInstance.assignedUser) {
             EnumSet<TicketStage> allowedStages
             switch (ticketInstance.stage) {
@@ -374,7 +375,7 @@ class TicketController {
             return
         }
 
-        User creator = session.user
+        User creator = session.credential.loadUser()
         User recipient = User.get(user)
         if (recipient &&
             (recipient in ticketInstance.helpdesk.users) &&
@@ -511,7 +512,7 @@ class TicketController {
      * @return  the list of helpdesks
      */
     protected List<Helpdesk> getHelpdesks() {
-        User user = session.user
+        User user = session.credential.loadUser()
         user.admin ? Helpdesk.list() : user.helpdesks as List
     }
 

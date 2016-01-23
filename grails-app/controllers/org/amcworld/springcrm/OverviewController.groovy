@@ -1,7 +1,7 @@
 /*
  * OverviewController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class OverviewController {
     def index() {
         OverviewPanelRepository repository = OverviewPanelRepository.instance
 
-        List<Panel> panels = Panel.findAllByUser(session.user)
+        List<Panel> panels = Panel.findAllByUser(session.credential.loadUser())
         for (Panel panel : panels) {
             panel.panelDef = repository.getPanel(panel.panelId)
         }
@@ -75,14 +75,16 @@ class OverviewController {
     }
 
     def addPanel(String panelId, Integer pos) {
-        new Panel(user: session.user, pos: pos, panelId: panelId)
-            .save flush: true
+        new Panel(
+            user: session.credential.loadUser(), pos: pos, panelId: panelId
+        ).save flush: true
+
         render status: SC_OK
     }
 
     def movePanel(String panelId1, Integer pos1, String panelId2, Integer pos2)
     {
-        User user = session.user
+        User user = session.credential.loadUser()
         Panel panel1 = Panel.findByUserAndPanelId(user, panelId1)
         Panel panel2 = Panel.findByUserAndPanelId(user, panelId2)
         if (!panel1 || !panel2) {
@@ -99,7 +101,9 @@ class OverviewController {
     }
 
     def removePanel(String panelId) {
-        Panel panel = Panel.findByUserAndPanelId(session.user, panelId)
+        Panel panel = Panel.findByUserAndPanelId(
+            session.credential.loadUser(), panelId
+        )
         if (!panel) {
             render status: SC_NOT_FOUND
             return

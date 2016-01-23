@@ -1,7 +1,7 @@
 /*
  * UserSettings.java
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  * storage (usually a database).
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.2
  */
 public class UserSettings extends AbstractMap<String, String> {
@@ -67,10 +67,12 @@ public class UserSettings extends AbstractMap<String, String> {
     public UserSettings(User user) {
         this.user = user;
         List<UserSetting> rawSettings = user.getRawSettings();
-        this.settings =
-            new HashMap<String, UserSetting>(rawSettings.size() + 16);
+        if (rawSettings == null) {
+            this.settings = new HashMap<String, UserSetting>();
+        } else {
+            this.settings =
+                new HashMap<String, UserSetting>(rawSettings.size() + 16);
 
-        if (rawSettings != null) {
             for (UserSetting us : rawSettings) {
                 this.settings.put(us.getName(), us);
             }

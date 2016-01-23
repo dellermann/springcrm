@@ -4,7 +4,7 @@
 <g:if test="${val}">
 <g:set var="text"
   value="${org.amcworld.springcrm.InvoicingTransaction.isAssignableFrom(type) ? val?.fullName : val}" />
-<g:if test="${session.user?.checkAllowedControllers([GrailsNameUtils.getPropertyName(type)])}">
+<g:if test="${session.credential?.checkAllowedControllers([GrailsNameUtils.getPropertyName(type)] as Set)}">
 <g:link controller="${GrailsNameUtils.getPropertyName(type)}" action="show"
   id="${val?.id}">${text?.encodeAsHTML()}</g:link
 >

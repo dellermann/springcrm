@@ -35,7 +35,7 @@
               <td class="col-type-currency credit-memo-total"><g:formatCurrency number="${creditMemoInstance?.total}" displayZero="true" external="true" /></td>
               <td class="col-type-currency credit-memo-closing-balance balance-state balance-state-${creditMemoInstance?.balanceColor}"><g:formatCurrency number="${creditMemoInstance?.closingBalance}" displayZero="true" external="true" /></td>
               <td class="col-actions">
-                <g:if test="${session.user.admin ||
+                <g:if test="${session.credential.admin ||
                     creditMemoInstance.stage.id < 2502}">
                 <g:button action="edit" id="${creditMemoInstance.id}"
                   color="success" size="xs" icon="pencil-square-o"

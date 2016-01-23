@@ -182,7 +182,7 @@ class InvoiceController {
             return
         }
 
-        if (!session.user.admin && invoiceInstance.stage.id >= 902) {
+        if (!session.credential.admin && invoiceInstance.stage.id >= 902) {
             redirect action: 'index'
             return
         }
@@ -215,7 +215,7 @@ class InvoiceController {
             return
         }
 
-        if (!session.user.admin && invoiceInstance.stage.id >= 902) {
+        if (!session.credential.admin && invoiceInstance.stage.id >= 902) {
             redirect action: 'index'
             return
         }
@@ -314,7 +314,7 @@ class InvoiceController {
             return
         }
 
-        if (!session.user.admin && invoiceInstance.stage.id >= 902) {
+        if (!session.credential.admin && invoiceInstance.stage.id >= 902) {
             redirect action: 'index'
             return
         }
@@ -381,7 +381,8 @@ class InvoiceController {
         }
 
         String xml = invoicingTransactionService.generateXML(
-            invoiceInstance, invoiceInstance.createUser ?: session.user,
+            invoiceInstance,
+            invoiceInstance.createUser ?: session.credential.loadUser(),
             !!params.duplicate
         )
         GString fileName =

@@ -104,8 +104,10 @@ enum Module {
      */
     static EnumSet<Module> modulesByName(Iterable<String> names) {
         EnumSet<Module> res = EnumSet.noneOf(Module)
-        for (String name : names) {
-            res << Module.valueOf(name.trim())
+        if (names) {
+            for (String name : names) {
+                res << Module.valueOf(name.trim())
+            }
         }
 
         res
@@ -119,7 +121,11 @@ enum Module {
      *                  given modules
      */
     static Set<String> resolveModules(EnumSet<Module> modules) {
-        Set<String> res = new HashSet<String>((modules?.size() ?: 0) * 2)
+        if (!modules) {
+            return [] as Set
+        }
+
+        Set<String> res = new HashSet<String>(modules.size() * 2)
         for (Module module : modules) {
             res.addAll module.controllers   // don't use "<<" instead of addAll!
         }

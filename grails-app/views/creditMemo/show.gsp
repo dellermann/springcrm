@@ -108,7 +108,8 @@
         icon="th-list" message="default.button.list.label" />
       <g:button action="create" color="success" class="hidden-xs"
         icon="plus-circle" message="default.button.create.label" />
-      <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
+      <g:if test="${session.credential.admin ||
+          creditMemoInstance.stage.id < 2502}">
       <g:button action="edit" id="${creditMemoInstance?.id}" color="success"
         icon="pencil-square-o" message="default.button.edit.label" />
       </g:if>
@@ -119,7 +120,8 @@
       </g:else>
       <g:button action="copy" id="${creditMemoInstance?.id}" color="primary"
         class="hidden-xs" icon="copy" message="default.button.copy.label" />
-      <g:if test="${session.user.admin || creditMemoInstance.stage.id < 2502}">
+      <g:if test="${session.credential.admin ||
+          creditMemoInstance.stage.id < 2502}">
       <g:button action="delete" id="${creditMemoInstance?.id}" color="danger"
         class="hidden-xs btn-action-delete" icon="trash"
         message="default.button.delete.label" aria-haspopup="true"
@@ -144,7 +146,7 @@
             <g:message code="default.button.copy.label" />
           </g:link>
         </li>
-        <g:if test="${session.user.admin ||
+        <g:if test="${session.credential.admin ||
             creditMemoInstance.stage.id < 2502}">
         <li role="menuitem">
           <g:link action="delete" id="${creditMemoInstance?.id}"

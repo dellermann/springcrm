@@ -6,7 +6,7 @@
   <head>
     <meta name="layout" content="main" />
     <meta name="stylesheet" content="helpdesk" />
-    <g:set var="user" value="${session.user}" />
+    <g:set var="user" value="${session.credential.loadUser()}" />
     <g:set var="users" value="${ticketInstance.helpdesk.users}" />
     <g:set var="otherUsers" value="${ticketInstance.helpdesk.users - user}" />
   </head>

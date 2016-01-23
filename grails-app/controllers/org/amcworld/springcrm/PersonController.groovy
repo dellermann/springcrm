@@ -1,7 +1,7 @@
 /*
  * PersonController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -317,7 +317,7 @@ class PersonController {
 
     def gdatasync() {
         if (googleContactSync) {
-            googleContactSync.sync session.user
+            googleContactSync.sync session.credential.loadUser()
             flash.message = message(
                 code: 'default.gdata.allsync.success',
                 args: [message(code: 'person.plural')]
@@ -411,7 +411,7 @@ class PersonController {
      * @since   2.0
      */
     private List<Long> getExcludeFromSyncValues() {
-        List<Long> ids = session.user.settings.excludeFromSync?.split(/,/)
+        List<Long> ids = session.credential.settings.excludeFromSync?.split(/,/)
             ?.collect { it as Long }
 
         ids ?: []

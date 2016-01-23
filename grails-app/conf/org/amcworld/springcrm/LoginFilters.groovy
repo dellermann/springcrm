@@ -45,7 +45,9 @@ class LoginFilters {
                         action: 'save|update|authenticate|create-admin-save')
         {
             before = {
-                params.password = params.password ? securityService.encryptPassword(params.password) : null
+                params.password = params.password \
+                    ? securityService.encryptPassword(params.password)
+                    : null
             }
         }
 
@@ -59,7 +61,7 @@ class LoginFilters {
                     redirect controller: 'install', action: 'index'
                     return false
                 }
-                if (!session?.user) {
+                if (!session?.credential) {
                     redirect controller: 'user', action: 'login'
                     return false
                 }
@@ -84,10 +86,10 @@ class LoginFilters {
                    actionExclude: 'login|authenticate|logout|settings*|frontend*')
         {
             before = {
-                User user = session?.user
-                if (user && controllerName) {
-                    if (!user.checkAllowedControllers([controllerName] as Set))
-                    {
+                Credential credential = session?.credential
+                if (credential && controllerName) {
+                    Set<String> controllerNames = [controllerName] as Set
+                    if (!credential.checkAllowedControllers(controllerNames)) {
                         render status: HttpServletResponse.SC_FORBIDDEN
                         return false
                     }

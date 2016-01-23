@@ -377,7 +377,7 @@ class SalesItemSpec extends Specification {
 
     def 'Hash codes are consistent'() {
         given: 'an instance with ID'
-        def i = new SalesItemPricing(name: '8" pipe')
+        def i = new SalesItem(name: '8" pipe')
         i.id = 7403L
 
         when: 'I compute the hash code'
@@ -385,7 +385,7 @@ class SalesItemSpec extends Specification {
 
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
-            i = new SalesItemPricing(name: '10" pipe')
+            i = new SalesItem(name: '10" pipe')
             i.id = 7403L
             h == i.hashCode()
         }

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXML.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import org.codehaus.groovy.grails.web.xml.StreamingMarkupWriter
  * invoicing transactions to XML.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.0
  * @since   1.4
  */
 class InvoicingTransactionXML extends XML {
@@ -189,15 +189,12 @@ class InvoicingTransactionXML extends XML {
      * @return              the collected data
      */
     protected Map collectData(InvoicingTransaction transaction, User user) {
-        User u = user.clone()
-        u.password = null       // unset password for security reasons
-
-        def data = [
+        [
             transaction: transaction,
             items: transaction.items,
             organization: transaction.organization,
             person: transaction.person,
-            user: u,
+            user: new User(user),
             fullNumber: transaction.fullNumber,
             taxRates: transaction.taxRateSums,
             values: [
@@ -209,8 +206,6 @@ class InvoicingTransactionXML extends XML {
             watermark: '',
             client: Client.loadAsMap()
         ]
-
-        data
     }
 
     /**

@@ -1,5 +1,5 @@
 <input type="hidden" id="stage-old"
-  value="${session.user.admin ? 0 : bean?.stage?.id}" />
+  value="${session.credential.admin ? 0 : bean?.stage?.id}" />
 <g:select name="stage" id="stage-select"
   from="${type.findAllByIdGreaterThanEquals(902)}" optionKey="id"
   value="${bean?.stage?.id}" />

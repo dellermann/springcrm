@@ -97,8 +97,7 @@ class ViewFilters {
 
                 /* store or restore sorting and order */
                 String name = controllerName.capitalize()
-                User user = session.user
-                if (!user.attached) user.attach()
+                User user = session.credential.loadUser()
                 exchangeSetting params, 'sort', user.settings, "sort${name}"
                 exchangeSetting params, 'order', user.settings, "order${name}"
             }
@@ -110,8 +109,7 @@ class ViewFilters {
 
         salesJournalView(controller: 'report', action: 'sales-journal') {
             before = {
-                User user = session.user
-                if (!user.attached) user.attach()
+                User user = session.credential.loadUser()
                 exchangeSetting params, 'year', session, 'salesJournalYear'
                 exchangeSetting params, 'month', session, 'salesJournalMonth'
             }
@@ -151,7 +149,7 @@ class ViewFilters {
             after = { model ->
                 def instance = model?."${controllerName}Instance"
                 if (instance) {
-                    instance.createUser = session.user
+                    instance.createUser = session.credential.loadUser()
                 }
             }
         }

@@ -36,7 +36,7 @@
               <td class="col-type-string ticket-number"><g:link action="show" id="${ticketInstance.id}"><g:fieldValue bean="${ticketInstance}" field="fullNumber" /></g:link></td>
               <td class="col-type-string ticket-subject"><g:link action="show" id="${ticketInstance.id}"><g:fieldValue bean="${ticketInstance}" field="subject" /></g:link></td>
               <td class="col-type-ref ticket-helpdesk">
-                <g:if test="${session.user.checkAllowedControllers(['helpdesk'])}">
+                <g:if test="${session.credential.checkAllowedControllers(['helpdesk'] as Set)}">
                 <g:link controller="helpdesk" action="show"
                   id="${ticketInstance.helpdesk.id}"><g:fieldValue
                   bean="${ticketInstance}" field="helpdesk.name" /></g:link>

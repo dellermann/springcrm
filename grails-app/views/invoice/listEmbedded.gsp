@@ -24,7 +24,8 @@
         <td class="col-type-currency invoice-total"><g:formatCurrency number="${invoiceInstance?.total}" displayZero="true" external="true" /></td>
         <td class="col-type-currency invoice-closing-balance balance-state balance-state-${invoiceInstance?.balanceColor}"><g:formatCurrency number="${invoiceInstance?.closingBalance}" displayZero="true" external="true" /></td>
         <td class="col-actions">
-          <g:if test="${session.user.admin || invoiceInstance.stage.id < 902}">
+          <g:if test="${session.credential.admin ||
+              invoiceInstance.stage.id < 902}">
           <g:button controller="invoice" action="edit"
             id="${invoiceInstance.id}" color="success" size="xs"
             icon="pencil-square-o" message="default.button.edit.label" />
