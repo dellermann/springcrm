@@ -1,7 +1,7 @@
 #
 # _invoicing-items.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -132,9 +132,7 @@ class InvoicingItems
     @_initTaxTypeahead $row.find '.col-tax input'
     autosize $row.find 'textarea'
     if jumpToNewRow
-      $('html').scrollTop(
-          $row.position().top - $('.title-toolbar').outerHeight()
-        )
+      $('html').scrollTop($row.position().top - window.innerHeight / 2)
 
     return
 
