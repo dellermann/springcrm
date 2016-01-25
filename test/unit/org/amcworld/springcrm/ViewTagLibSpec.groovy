@@ -1,7 +1,7 @@
 /*
  * ViewTagLibSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1399,5 +1399,5 @@ class ViewTagLibSpec extends Specification {
         'foo\rx\nwhee\ry\nbar'  | 'foo<br />x<br />whee<br />y<br />bar'
     }
 
-    // TODO test paginate, renderItemErrors, searchResults, title and url
+    // TODO test paginate, searchResults, title and url
 }

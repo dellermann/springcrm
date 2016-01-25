@@ -356,11 +356,18 @@
     icon="plus-circle" message="invoicingTransaction.button.addRow.label" />
 </div>
 <ul class="control-messages">
-  <g:renderItemErrors bean="${invoicingTransaction}"
-    prefix="invoicingTransaction"
-    ><li class="control-message-error">${it}</li
-  ></g:renderItemErrors
-></ul>
+  <g:each in="${invoicingTransaction.items}" var="item" status="idx">
+  <g:hasErrors bean="${item}">
+  <g:eachError bean="${item}">
+  <li class="control-message-error">
+    <g:message code="invoicingTransaction.pos.label" /> ${idx + 1},
+    <g:message code="invoicingTransaction.${it.field}.label" />:
+    <g:message error="${it}" />
+  </li>
+  </g:eachError>
+  </g:hasErrors>
+  </g:each>
+</ul>
 
 <div id="inventory-selector-product" class="modal fade inventory-selector"
   aria-labelledby="inventory-selector-product-title" aria-hidden="true">

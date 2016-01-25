@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionService.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,17 +106,20 @@ class InvoicingTransactionService {
         } else {
             invoicingTransaction.items.clear()
         }
+        boolean itemErrors = false
         for (int i = 0; params."items[${i}]"; i++) {
             if (create || params."items[${i}]".id != 'null') {
-                invoicingTransaction.addToItems params."items[${i}]"
+                InvoicingItem item = params."items[${i}]"
+                itemErrors |= item.hasErrors()
+                invoicingTransaction.addToItems item
             }
         }
 
-        if (!invoicingTransaction.validate()) {
+        if (itemErrors || !invoicingTransaction.validate()) {
             invoicingTransaction.discard()
             return false
         }
 
-        invoicingTransaction.save flush: true
+        invoicingTransaction.save flush: true, failOnError: true
     }
 }

@@ -50,11 +50,18 @@
 
           <g:render template="/layouts/salesItemPricingItems" />
           <ul class="control-messages">
-            <g:renderItemErrors bean="${salesItem.pricing}"
-              prefix="salesItem.pricing"
-              ><li class="control-message-error">${it}</li
-            ></g:renderItemErrors
-          ></ul>
+            <g:each in="${salesItem.pricing?.items}" var="item" status="idx">
+            <g:hasErrors bean="${item}">
+            <g:eachError bean="${item}">
+            <li class="control-message-error">
+              <g:message code="salesItem.pricing.pos.label" /> ${idx + 1},
+              <g:message code="salesItem.pricing.${it.field}.label" />:
+              <g:message error="${it}" />
+            </li>
+            </g:eachError>
+            </g:hasErrors>
+            </g:each>
+          </ul>
         </div>
       </div>
     </div>

@@ -104,7 +104,9 @@ class PurchaseInvoiceController {
 
     def save() {
         PurchaseInvoice purchaseInvoiceInstance = new PurchaseInvoice(params)
-        if (!purchaseInvoiceInstance.validate()) {
+        if (purchaseInvoiceInstance.items?.find { it.hasErrors() } ||
+            !purchaseInvoiceInstance.validate())
+        {
             render view: 'create',
                 model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
@@ -206,13 +208,17 @@ class PurchaseInvoiceController {
          *      so we can remove these lines.
          */
         purchaseInvoiceInstance.items?.clear()
+        boolean itemErrors = false
         for (int i = 0; params."items[${i}]"; i++) {
             if (params."items[${i}]".id != 'null') {
-                purchaseInvoiceInstance.addToItems params."items[${i}]"
+                PurchaseInvoiceItem item = params."items[${i}]"
+                itemErrors |= item.hasErrors()
+                purchaseInvoiceInstance.addToItems item
             }
         }
 
-        if (!purchaseInvoiceInstance.validate()) {
+        if (itemErrors || !purchaseInvoiceInstance.validate()) {
+            purchaseInvoiceInstance.discard()
             render view: 'edit',
                 model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
             return
