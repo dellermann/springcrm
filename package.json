@@ -1,6 +1,6 @@
 {
   "name": "springcrm",
-  "version": "2.0.18",
+  "version": "2.0.19",
   "description": "An open-source customer relationship management (CRM) software.",
   "keywords": [
     "SpringCRM",
@@ -33,11 +33,11 @@
     "grunt-contrib-clean": "~0.7.0",
     "grunt-contrib-coffee": "~0.13.0",
     "grunt-contrib-concat": "~0.5.1",
-    "grunt-contrib-copy": "~0.8.0",
+    "grunt-contrib-copy": "~0.8.2",
     "grunt-contrib-handlebars": "~0.11.0",
     "grunt-contrib-less": "~1.1.0",
     "grunt-contrib-watch": "~0.6.1",
-    "load-grunt-tasks": "^3.3.0"
+    "load-grunt-tasks": "^3.4.0"
   },
   "private": true
 }

@@ -2,7 +2,7 @@
 
   vat-calc.coffee
 
-  Copyright (c) 2014-2015, Daniel Ellermann
+  Copyright (c) 2014-2016, Daniel Ellermann
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ class VatCalculator
   $ = jQuery
 
 
-  #-- Instance variables ------------------------
+  #-- Fields ------------------------------------
 
   DEFAULT_OPTIONS =
     accessKeys:
@@ -74,7 +74,6 @@ class VatCalculator
   constructor: (element, options = {}) ->
     @$element = $(element)
     @options = $.extend {}, DEFAULT_OPTIONS, options
-    @disabled = false
 
     @_renderTemplate()
 

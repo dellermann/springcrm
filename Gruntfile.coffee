@@ -1,7 +1,7 @@
 #
 # Gruntfile.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ module.exports = (grunt) ->
             src: '<%= dirs.bower.jquery %>/dist/jquery.js'
           ,
             dest: '<%= dirs.src.javascripts %>/jquery/autosize.js'
-            src: '<%= dirs.bower.jqueryAutosize %>/autosize.js'
+            src: '<%= dirs.bower.jqueryAutosize %>/dist/autosize.js'
           ,
             dest: '<%= dirs.src.javascripts %>/jquery/json.js'
             src: '<%= dirs.bower.jqueryJson %>/src/jquery.json.js'
@@ -185,7 +185,7 @@ module.exports = (grunt) ->
             src: '<%= dirs.bower.selectize %>/dist/js/standalone/selectize.js'
           ,
             dest: '<%= dirs.src.javascripts %>/_typeahead.js'
-            src: '<%= dirs.bower.typeahead %>/typeahead.bundle.js'
+            src: '<%= dirs.bower.typeahead %>/dist/typeahead.bundle.js'
           ,
             dest: '<%= dirs.src.stylesheets %>/_typeahead.less'
             src: '<%= dirs.bower.typeaheadBootstrap %>/typeahead.less'
