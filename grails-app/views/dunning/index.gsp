@@ -17,6 +17,7 @@
               <g:sortableColumn property="stage" title="${message(code: 'dunning.stage.label.short')}" />
               <g:sortableColumn property="docDate" title="${message(code: 'dunning.docDate.label.short')}" />
               <g:sortableColumn property="dueDatePayment" title="${message(code: 'dunning.dueDatePayment.label')}" />
+              <g:sortableColumn property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label')}" />
               <g:sortableColumn property="total" title="${message(code: 'dunning.total.label.short')}" />
               <th><g:message code="invoicingTransaction.closingBalance.label" /></th>
               <th></th>
@@ -30,7 +31,8 @@
               <td class="col-type-ref dunning-organization"><g:link controller="organization" action="show" id="${dunningInstance.organization?.id}"><g:fieldValue bean="${dunningInstance}" field="organization" /></g:link></td>
               <td class="col-type-status dunning-stage payment-state payment-state-${dunningInstance?.paymentStateColor}"><g:fieldValue bean="${dunningInstance}" field="stage" /></td>
               <td class="col-type-date dunning-doc-date"><g:formatDate date="${dunningInstance?.docDate}" formatName="default.format.date" /></td>
-              <td class="col-type-date dunning-subjectdue-date-payment"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
+              <td class="col-type-date dunning-due-date-payment"><g:formatDate date="${dunningInstance?.dueDatePayment}" formatName="default.format.date" /></td>
+              <td class="col-type-date dunning-payment-date"><g:formatDate date="${dunningInstance?.paymentDate}" formatName="default.format.date" /></td>
               <td class="col-type-currency dunning-total"><g:formatCurrency number="${dunningInstance?.total}" displayZero="true" external="true" /></td>
               <td class="col-type-currency dunning-closing-balance balance-state balance-state-${dunningInstance?.balanceColor}"><g:formatCurrency number="${dunningInstance?.closingBalance}" displayZero="true" external="true" /></td>
               <td class="col-actions">

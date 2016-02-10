@@ -17,6 +17,7 @@
               <g:sortableColumn property="stage" title="${message(code: 'invoice.stage.label.short')}" />
               <g:sortableColumn property="docDate" title="${message(code: 'invoice.docDate.label.short')}" />
               <g:sortableColumn property="dueDatePayment" title="${message(code: 'invoice.dueDatePayment.label')}" />
+              <g:sortableColumn property="paymentDate" title="${message(code: 'invoicingTransaction.paymentDate.label')}" />
               <g:sortableColumn property="total" title="${message(code: 'invoice.total.label.short')}" />
               <th><g:message code="invoicingTransaction.closingBalance.label" /></th>
               <th></th>
@@ -31,6 +32,7 @@
               <td class="col-type-status invoice-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>
               <td class="col-type-date invoice-doc-date"><g:formatDate date="${invoiceInstance?.docDate}" formatName="default.format.date" /></td>
               <td class="col-type-date invoice-due-date-payment"><g:formatDate date="${invoiceInstance?.dueDatePayment}" formatName="default.format.date" /></td>
+              <td class="col-type-date invoice-payment-date"><g:formatDate date="${invoiceInstance?.paymentDate}" formatName="default.format.date" /></td>
               <td class="col-type-currency invoice-total"><g:formatCurrency number="${invoiceInstance?.total}" displayZero="true" external="true" /></td>
               <td class="col-type-currency invoice-closing-balance balance-state balance-state-${invoiceInstance?.balanceColor}"><g:formatCurrency number="${invoiceInstance?.closingBalance}" displayZero="true" external="true" /></td>
               <td class="col-actions">
