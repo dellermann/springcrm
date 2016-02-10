@@ -97,10 +97,10 @@ class InvoicingTransaction
   #
   # @param [Number] value the value that should be set
   # @private
-  # @since                2.0
+  # @since 2.0
   #
   _changeStage: (value) ->
-    $stage = @$element.find '#stage'
+    $stage = @$element.find '#stage-select'
     $stage[0].selectize.addItem value if parseInt($stage.val(), 10) < value
 
   # Gets the modified closing balance of this invoicing transaction used as
@@ -374,7 +374,7 @@ class InvoicingTransaction
     if $oldStage.length
       oldVal = parseInt $oldStage.val(), 10
       if oldVal > 0
-        newVal = $form.find('#stage').val()
+        newVal = $form.find('#stage-select').val()
         shippingStageValue = @options.stageValues.shipping
         if (oldVal < shippingStageValue) and (newVal >= shippingStageValue)
           $.confirm($LANG('invoicingTransaction.changeState.label'))
