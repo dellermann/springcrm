@@ -1,7 +1,7 @@
 /*
  * BootStrap.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  */
 
 
+import javax.servlet.ServletContext
 import org.amcworld.springcrm.Config
 import org.amcworld.springcrm.ConfigHolder
 import org.amcworld.springcrm.InstallService
@@ -53,15 +54,18 @@ class BootStrap {
 
     //-- Public methods -------------------------
 
-    def init = { servletContext ->
+    def init = { ServletContext servletContext ->
         exceptionHandler.exceptionMappings = [
             'java.lang.Exception': '/error'
         ]
 
         /* load instance specific configuration file */
+        log.debug 'Searching for instance specific configuration file…'
         if (springcrmConfig) {
             File file = new File(springcrmConfig.toString())
+            log.debug "Found instance specific configuration in ${file}."
             if (file.exists()) {
+                log.debug "Reading and parsing instance specific configuration from ${file}."
                 def whatToParse
                 if (file.name.endsWith('.groovy')) {
                     whatToParse = file.toURI().toURL()

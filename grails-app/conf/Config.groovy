@@ -229,6 +229,7 @@ log4j.main = {
     info 'grails.app.services.org.amcworld.springcrm.InstallService'
     info 'org.grails.plugins.coffee.compiler'
 
+    debug 'grails.app.conf.BootStrap'
 //    debug 'grails.app.controllers.org.amcworld.springcrm.TicketController'
 //    debug 'org.amcworld.springcrm.google.GoogleContactSync'
 //    debug 'org.amcworld.springcrm.google.GoogleContactSyncTask'
