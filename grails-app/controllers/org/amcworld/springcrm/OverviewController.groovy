@@ -35,9 +35,10 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  */
 class OverviewController {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     LruService lruService
+    OverviewService overviewService
 
 
     //-- Public methods -------------------------
@@ -50,7 +51,13 @@ class OverviewController {
             panel.panelDef = repository.getPanel(panel.panelId)
         }
 
-        [panels: panels]
+        boolean showChangelog = !session.dontShowChangelog &&
+            overviewService.showChangelog(session.credential)
+        if (showChangelog) {
+            session.dontShowChangelog = true
+        }
+
+        [panels: panels, showChangelog: showChangelog]
     }
 
     def listAvailablePanels() {
@@ -110,6 +117,37 @@ class OverviewController {
         }
 
         panel.delete flush: true
+
+        render status: SC_OK
+    }
+
+    /**
+     * Renders the part of the changelog file in
+     * {@code WEB-INF/data/changelog.md} until the marker
+     * {@code [comment]: STOP}.
+     *
+     * @return  the part of the Markdown changelog
+     * @since   2.0
+     */
+    def changelog() {
+        Locale locale = LCH.locale
+
+        render(
+            text: overviewService.getChangelog(locale),
+            contentType: 'text/markdown',
+            encoding: 'UTF-8'
+        )
+    }
+
+    /**
+     * Stores the current version in the user settings to prevent display of
+     * changelog for this version.
+     *
+     * @return  always HTTP status code 200 (OK)
+     * @since   2.0
+     */
+    def changelogDontShowAgain() {
+        overviewService.dontShowAgain session.credential
 
         render status: SC_OK
     }

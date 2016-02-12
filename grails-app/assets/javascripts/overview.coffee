@@ -77,6 +77,8 @@ class OverviewPanels
     url = availablePanels.data 'load-available-panels-url'
     $.getJSON url, (data) => @_onLoadedPanels data
 
+    @_initChangelogModal()
+
 
   #-- Non-public methods ------------------------
 
@@ -101,6 +103,29 @@ class OverviewPanels
   #
   _getNumOfAvailablePanels: ->
     @$availablePanels.find('.panel').length
+
+  # Initializes the modal containing the changelog.
+  #
+  # @private
+  # @since 2.0
+  #
+  _initChangelogModal: ->
+    $ = jq
+
+    $('#changelog-modal')
+      .find('.modal-body a')
+        .each( -> $(this).attr 'target', '_blank')
+      .end()
+      .modal()
+      .on('hide.bs.modal', (event) ->
+        $modal = $(event.currentTarget)
+        if $modal.find('#dont-show-again:checked').length
+          $.get $modal.data('url')
+
+        return
+      )
+
+    return
 
   # Initializes the given overview page panel.
   #

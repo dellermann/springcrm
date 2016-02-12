@@ -1,0 +1,28 @@
+## 2.0.19
+
+* Anzeige der letzten Änderungen bei jeder neuen Version
+  ([Problem #80](https://github.com/dellermann/springcrm/issues/80))
+* Anzeige der Zahlungsdatums bei Rechnungen und Mahnungen
+  ([Problem #72](https://github.com/dellermann/springcrm/issues/72))
+* Fehlerbehebung: Eintragung des Versand- oder Zahlungsdatums in Rechnungen,
+  Mahnungen und Gutschriften schaltete nicht auf "versendet" bzw. "bezahlt" um
+  ([Problem #82](https://github.com/dellermann/springcrm/issues/82))
+
+## 2.0.18
+
+* Hinzufügen von neuen Einträgen in Fakturavorgängen scrollt jetzt den neuen
+  Eintrag in die Mitte
+* Fehlerbehebung: größere Präzision beim Rechnen mit Währungsangaben
+* Fehlerbehebung: Authentifizierungstokens bei Google-Synchronisation wurde
+  nicht richtig aufgefrischt
+* Fehlerbehebungen in Formular für Anrufe und in Adressfeldern
+
+[comment]: STOP
+
+## 2.0.17
+
+* Umsatzanzeige für Kunden
+  ([Problem #71](https://github.com/dellermann/springcrm/issues/71))
+* Fehlerbehebung: falsche Anzeige von Typen bei leeren Listen
+  ([Problem #81](https://github.com/dellermann/springcrm/issues/81))
+* Fehlerbehebung im Installationsbereich

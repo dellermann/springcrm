@@ -79,6 +79,43 @@
       </div>
     </div>
 
+    <g:if test="${showChangelog}">
+    <div id="changelog-modal" class="modal fade" role="dialog"
+      aria-labelledby="changelog-modal-title" aria-hidden="false"
+      data-url="${createLink(action: 'changelogDontShowAgain')}">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+              aria-label="${message(code: 'default.btn.close')}"
+              ><span aria-hidden="true">×</span
+            ></button>
+            <h4 id="changelog-modal-title" class="modal-title">
+              <g:message code="overview.changelog.title" />
+            </h4>
+          </div>
+          <div class="modal-body">
+            <markdown:renderHtml
+              ><g:include controller="overview" action="changelog"
+            /></markdown:renderHtml>
+          </div>
+          <div class="modal-footer">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" id="dont-show-again" />
+                <g:message code="overview.changelog.dontShowAgain" />
+              </label>
+            </div>
+            <button type="button" class="btn btn-default btn-ok"
+              data-dismiss="modal">
+              <span><g:message code="default.btn.close" /></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </g:if>
+
     <content tag="scripts">
       <asset:javascript src="overview" />
     </content>
