@@ -81,7 +81,7 @@ class OverviewService {
             new LocalizedResourceHelper(grailsApplication.mainContext)
         Resource res =
             helper.findLocalizedResource(CHANGELOG_PATH, '.md', locale)
-        String text = res.inputStream?.text
+        String text = res.inputStream?.getText('UTF-8')
         if (text) {
             Matcher m = text =~ /(?m)^\[comment\]:\s*STOP$/
             if (m) {
