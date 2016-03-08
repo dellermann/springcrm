@@ -1,7 +1,7 @@
 /*
  * Organization.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ package org.amcworld.springcrm
  * customer or a vendor.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class Organization {
+class Organization implements NumberedDomain {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         number unique: 'recType', widget: 'autonumber'
@@ -51,8 +51,6 @@ class Organization {
         notes nullable: true, widget: 'textarea'
         termOfPayment nullable: true
         docPlaceholderValue nullable: true
-        dateCreated()
-        lastUpdated()
     }
     static embedded = ['billingAddr', 'shippingAddr']
     static hasMany = [
@@ -71,11 +69,8 @@ class Organization {
     static transients = ['fullNumber', 'shortName', 'customer', 'vendor']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def seqNumberService
-
-    int number
     byte recType
     String name
     Address billingAddr
@@ -127,10 +122,6 @@ class Organization {
 
     //-- Properties -----------------------------
 
-    String getFullNumber() {
-        seqNumberService.format getClass(), number
-    }
-
     String getShortName() {
         String res = name ?: ''
         if (res.length() > 40) {
@@ -158,15 +149,9 @@ class Organization {
 
     //-- Public methods -------------------------
 
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
-    }
-
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Organization) ? obj.id == id : false
+        obj instanceof Organization && obj.id == id
     }
 
     @Override

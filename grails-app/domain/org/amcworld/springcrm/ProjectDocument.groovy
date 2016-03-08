@@ -1,7 +1,7 @@
 /*
  * ProjectDocument.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,45 +26,42 @@ package org.amcworld.springcrm
  * to a project.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 2.1
  * @since   1.2
  */
 class ProjectDocument {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
+    static belongsTo = [project: Project]
     static constraints = {
-        phase()
-        path(blank: false)
-        title(blank: false)
+        path blank: false
+        title blank: false
     }
     static mapping = {
         path index: 'path'
     }
-    static belongsTo = [project: Project]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     ProjectPhase phase
     String path
     String title
 
+
     //-- Public methods -------------------------
 
     boolean equals(Object o) {
-        if (o instanceof ProjectDocument) {
-            return (o.project == project) && (o.phase == phase) && (o.path == path)
-        } else {
-            return false
-        }
+        o instanceof ProjectDocument && o.project == project &&
+            o.phase == phase && o.path == path
     }
 
     int hashCode() {
-        return "${project.ident()}-${phase}-${path}".hashCode()
+        "${project.ident()}-${phase}-${path}".hashCode()
     }
 
     String toString() {
-        return title
+        title
     }
 }

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ rename-service.xml
+
+ Copyright (c) 2011-2016, Daniel Ellermann
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+  <changeSet author="d.ellermann@amc-world.de" id="20160304-1">
+    <update tableName="sales_item">
+      <column name="class" value="org.amcworld.springcrm.Work"/>
+      <where>class = 'org.amcworld.springcrm.Service'</where>
+    </update>
+    <update tableName="config">
+      <column name="name" value="workIdDunningCharge"/>
+      <where>name = 'serviceIdDunningCharge'</where>
+    </update>
+    <update tableName="config">
+      <column name="name" value="workIdDefaultInterest"/>
+      <where>name = 'serviceIdDefaultInterest'</where>
+    </update>
+    <update tableName="sel_value">
+      <column name="class" value="org.amcworld.springcrm.WorkCategory"/>
+      <where>class = 'org.amcworld.springcrm.ServiceCategory'</where>
+    </update>
+    <update tableName="seq_number">
+      <column name="controller_name" value="work"/>
+      <where>controller_name = 'service'</where>
+    </update>
+  </changeSet>
+  <changeSet author="d.ellermann@amc-world.de" id="20160304-2"
+    dbms="h2, mysql">
+    <sql>
+      UPDATE user_data
+        SET allowed_modules = REPLACE(allowed_modules, 'SERVICE', 'WORK')
+    </sql>
+  </changeSet>
+</databaseChangeLog>

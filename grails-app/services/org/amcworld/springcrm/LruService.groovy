@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import javax.servlet.http.HttpSession
+import org.grails.datastore.gorm.GormEntity
 import org.springframework.web.context.request.RequestContextHolder
 
 
@@ -29,7 +30,7 @@ import org.springframework.web.context.request.RequestContextHolder
  * recently used) entries.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class LruService {
 
@@ -41,14 +42,13 @@ class LruService {
     //-- Public methods -------------------------
 
     /**
-     * Records the given domain instance of the given controller in the LRU
-     * list.
+     * Records the given entity of the given controller in the LRU list.
      *
-     * @param controller        the controller name
-     * @param domainInstance    the given domain instance
+     * @param controller    the controller name
+     * @param entity        the given entity
      */
-    void recordItem(String controller, def domainInstance) {
-        recordItem controller, domainInstance.ident(), domainInstance.toString()
+    void recordItem(String controller, GormEntity entity) {
+        recordItem controller, entity.ident(), entity.toString()
     }
 
     /**

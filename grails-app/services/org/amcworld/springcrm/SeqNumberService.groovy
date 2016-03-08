@@ -1,7 +1,7 @@
 /*
  * SeqNumberService.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,10 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.commons.ArtefactHandler
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsClass
+import grails.core.ArtefactHandler
+import grails.core.GrailsApplication
+import grails.core.GrailsClass
+import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.transaction.annotation.Transactional
 
 
@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional
  * content items.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  */
 class SeqNumberService {
 

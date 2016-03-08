@@ -24,13 +24,13 @@ import static java.math.BigDecimal.ZERO
 
 
 /**
- * The class {@code SalesItem} acts as a base class for products and services.
+ * The class {@code SalesItem} acts as a base class for products and works.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.3
  */
-class SalesItem {
+class SalesItem implements NumberedDomain {
 
     //-- Class fields ---------------------------
 
@@ -55,8 +55,6 @@ class SalesItem {
         salesEnd nullable: true
         description nullable: true, widget: 'textarea'
         pricing nullable: true, validator: { it?.validate() }
-        dateCreated()
-        lastUpdated()
     }
     static mapping = {
         description type: 'text'
@@ -69,18 +67,8 @@ class SalesItem {
     //-- Fields ---------------------------------
 
     /**
-     * The service used to obtain sequence numbers.
-     */
-    def seqNumberService
-
-    /**
-     * The number of this sales item.
-     */
-    int number
-
-    /**
      * The type of this sales item, either {@code P} for products or {@code S}
-     * for services.
+     * for works.
      */
     String type
 
@@ -175,15 +163,6 @@ class SalesItem {
     //-- Properties -----------------------------
 
     /**
-     * Gets the full number of this sales item including prefix and suffix.
-     *
-     * @return  the full number
-     */
-    String getFullNumber() {
-        seqNumberService?.format getClass(), number
-    }
-
-    /**
      * Sets the quantity of this sales item.
      *
      * @param quantity  the quantity that should be set; if {@code null} it is
@@ -232,16 +211,6 @@ class SalesItem {
 
 
     //-- Public methods -------------------------
-
-    /**
-     * Called before this sales item is created in the underlying data store.
-     * The method obtains the next available sequence number.
-     */
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
-    }
 
     @Override
     boolean equals(Object obj) {

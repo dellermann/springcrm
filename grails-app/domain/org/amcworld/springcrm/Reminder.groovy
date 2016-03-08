@@ -1,7 +1,7 @@
 /*
  * Reminder.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,18 +27,17 @@ import org.springframework.context.MessageSourceResolvable
  * The class {@code Reminder} represents a reminder of a calendar event.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.1
+ * @since   1.3
  * @see     CalendarEvent
  */
 class Reminder implements MessageSourceResolvable {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         value min: 0
         unit inList: ['m', 'h', 'd', 'w']
-        nextReminder()
-        calendarEvent()
         user nullable: true
     }
     static belongsTo = [calendarEvent: CalendarEvent, user: User]
@@ -51,29 +50,14 @@ class Reminder implements MessageSourceResolvable {
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     int value
     String unit
     Date nextReminder
 
 
-    //-- Public methods -------------------------
-
-    @Override
-    Object [] getArguments() {
-        [value] as Object[]
-    }
-
-    @Override
-    String [] getCodes() {
-        ["calendarEvent.reminder.pattern.${unit}"] as String[]
-    }
-
-    @Override
-    String getDefaultMessage() {
-        toString()
-    }
+    //-- Properties -----------------------------
 
     String getRule() {
         value + unit
@@ -98,17 +82,36 @@ class Reminder implements MessageSourceResolvable {
         return v
     }
 
+
+    //-- Public methods -------------------------
+
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Reminder) ? obj.id == id : false
+        obj instanceof Reminder && obj.id == id
     }
 
     static Reminder fromRule(String rule) {
-        def m = (rule =~ /^(\d+)([mhdw])$/)
+        def m = rule =~ /^(\d+)([mhdw])$/
         if (!m) {
             throw new IllegalArgumentException("Rule ${rule} is not valid.")
         }
+
         new Reminder(value: m[0][1] as Integer, unit: m[0][2])
+    }
+
+    @Override
+    Object [] getArguments() {
+        [value] as Object[]
+    }
+
+    @Override
+    String [] getCodes() {
+        ["calendarEvent.reminder.pattern.${unit}"] as String[]
+    }
+
+    @Override
+    String getDefaultMessage() {
+        toString()
     }
 
     @Override

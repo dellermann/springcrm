@@ -27,7 +27,7 @@ import groovy.transform.CompileStatic
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class User {
 
@@ -43,10 +43,7 @@ class User {
         mobile nullable: true, maxSize: 40
         fax nullable: true, maxSize: 40
         email blank: false, email: true
-        admin()
         allowedModules nullable: true
-        dateCreated()
-        lastUpdated()
     }
     static mapping = {
         allowedModules type: 'text'
@@ -258,6 +255,18 @@ class User {
 
 
     //-- Public methods -------------------------
+
+    /**
+     * Called after this user object has been inserted into the underlying
+     * persistence layer.  The method initializes the embedded
+     * {@code UserSettings} object.
+     *
+     * @since 2.1
+     */
+    @CompileStatic
+    def afterInsert() {
+        settings = new UserSettings(this)
+    }
 
     /**
      * Called after this user object has been loaded completely from

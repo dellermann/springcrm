@@ -27,14 +27,13 @@ import static java.math.BigDecimal.ZERO
  * The class {@code CreditMemo} represents a credit note.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class CreditMemo extends InvoicingTransaction implements Payable {
 
-    //-- Static fields --------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        stage()
         paymentDate nullable: true
         paymentAmount min: ZERO, scale: 6, widget: 'currency'
         paymentMethod nullable: true
@@ -48,7 +47,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'payable', 'paymentStateColor', 'turnoverOtherSalesItems',
-        'turnoverProducts', 'turnoverServices'
+        'turnoverProducts', 'turnoverWorks'
     ]
 
     //-- Fields ---------------------------------
@@ -234,7 +233,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
 
     /**
      * Gets the turnover of all items of this credit memo which are neither
-     * products nor services.
+     * products nor works.
      *
      * @return  the turnover of all other items
      * @since   2.0
@@ -254,12 +253,12 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     }
 
     /**
-     * Gets the turnover of all services of this credit memo.
+     * Gets the turnover of all works of this credit memo.
      *
-     * @return  the turnover of all services
+     * @return  the turnover of all works
      * @since   2.0
      */
-    BigDecimal getTurnoverServices() {
+    BigDecimal getTurnoverWorks() {
         itemsOfType('S')*.total.sum ZERO
     }
 }

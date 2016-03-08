@@ -118,7 +118,7 @@
               <g:sortableColumn property="subject" params="['organization.id': organizationInstance.id]" title="${message(code: 'invoicingTransaction.subject.label')}" />
               <g:sortableColumn property="turnover" params="['organization.id': organizationInstance.id]" title="${message(code: 'report.turnover.turnover.total')}" />
               <g:sortableColumn property="turnoverProducts" params="['organization.id': organizationInstance.id]" title="${message(code: 'report.turnover.turnoverProducts.label')}" />
-              <g:sortableColumn property="turnoverServices" params="['organization.id': organizationInstance.id]" title="${message(code: 'report.turnover.turnoverServices.label')}" />
+              <g:sortableColumn property="turnoverWorks" params="['organization.id': organizationInstance.id]" title="${message(code: 'report.turnover.turnoverWorks.label')}" />
               <g:sortableColumn property="turnoverOtherSalesItems" params="['organization.id': organizationInstance.id]" title="${message(code: 'report.turnover.turnoverOtherSalesItems.label')}" />
             </tr>
           </thead>
@@ -127,7 +127,7 @@
               <td colspan="3"><g:message code="report.turnover.total.label" /></td>
               <td class="col-type-currency"><g:formatCurrency number="${total}" displayZero="true" external="true" /></td>
               <td class="col-type-currency"><g:formatCurrency number="${totalProducts}" displayZero="true" external="true" /></td>
-              <td class="col-type-currency"><g:formatCurrency number="${totalServices}" displayZero="true" external="true" /></td>
+              <td class="col-type-currency"><g:formatCurrency number="${totalWorks}" displayZero="true" external="true" /></td>
               <td class="col-type-currency"><g:formatCurrency number="${totalOtherItems}" displayZero="true" external="true" /></td>
               <td></td>
             </tr>
@@ -140,7 +140,7 @@
             <td class="col-type-string turnover-report-subject"><g:link controller="invoice" action="show" id="${invoiceInstance.id}">${invoiceInstance.subject.replaceAll(~/_{2,}/, ' ')}</g:link></td>
             <td class="col-type-currency turnover-report-turnover"><g:formatCurrency number="${invoiceInstance.turnover}" displayZero="true" external="true" /></td>
             <td class="col-type-currency turnover-report-turnover-products"><g:formatCurrency number="${invoiceInstance.turnoverProducts}" displayZero="true" external="true" /></td>
-            <td class="col-type-currency turnover-report-turnover-services"><g:formatCurrency number="${invoiceInstance.turnoverServices}" displayZero="true" external="true" /></td>
+            <td class="col-type-currency turnover-report-turnover-works"><g:formatCurrency number="${invoiceInstance.turnoverWorks}" displayZero="true" external="true" /></td>
             <td class="col-type-currency turnover-report-turnover-other-items"><g:formatCurrency number="${invoiceInstance.turnoverOtherSalesItems}" displayZero="true" external="true" /></td>
             <td class="col-type-status turnover-report-stage payment-state payment-state-${invoiceInstance?.paymentStateColor}"><g:fieldValue bean="${invoiceInstance}" field="stage" /></td>
           </tr>

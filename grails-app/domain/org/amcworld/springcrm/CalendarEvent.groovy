@@ -1,7 +1,7 @@
 /*
  * CalendarEvent.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,12 @@ import org.springframework.context.MessageSourceResolvable
  * is, an appointment.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @see     Reminder
  */
 class CalendarEvent {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         subject blank: false
@@ -43,13 +43,7 @@ class CalendarEvent {
         start validator: { start, calendarEvent ->
             ((calendarEvent.recurrence.type == 0i) && !start.before(calendarEvent.end)) ? ['calendarEvent.start.validator.notBefore'] : null
         }
-        end()
-        allDay()
-        recurrence()
         organization nullable: true
-        owner()
-        dateCreated()
-        lastUpdated()
     }
     static belongsTo = [organization: Organization, owner: User]
     static embedded = ['recurrence']
@@ -63,7 +57,7 @@ class CalendarEvent {
     static transients = ['synthetic']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String subject
     String location
@@ -105,7 +99,7 @@ class CalendarEvent {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof CalendarEvent) ? obj.id == id : false
+        obj instanceof CalendarEvent && obj.id == id
     }
 
     /**

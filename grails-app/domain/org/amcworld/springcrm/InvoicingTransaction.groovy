@@ -30,9 +30,9 @@ import groovy.transform.CompileStatic
  * accounts such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class InvoicingTransaction {
+class InvoicingTransaction implements NumberedDomain {
 
     //-- Constants ------------------------------
 
@@ -45,9 +45,7 @@ class InvoicingTransaction {
         number unique: 'type', widget: 'autonumber'
         type blank: false, maxSize: 1
         subject blank: false, widget: 'textarea', attributes: [nl2br: true]
-        organization()
         person nullable: true
-        docDate()
         carrier nullable: true
         shippingDate nullable: true
         headerText nullable: true, widget: 'textarea'
@@ -61,8 +59,6 @@ class InvoicingTransaction {
         total scale: 6, widget: 'currency'
         notes nullable: true, widget: 'textarea'
         createUser nullable: true
-        dateCreated()
-        lastUpdated()
     }
     static belongsTo = [organization: Organization, person: Person]
     static embedded = ['billingAddr', 'shippingAddr']
@@ -87,16 +83,6 @@ class InvoicingTransaction {
 
 
     //-- Fields ---------------------------------
-
-    /**
-     * The service to obtain sequence numbers.
-     */
-    def seqNumberService
-
-    /**
-     * The sequence number of this customer account.
-     */
-    int number
 
     /**
      * The type of customer account.  This value is intended to be set by
@@ -440,9 +426,7 @@ class InvoicingTransaction {
      * computes the total value.
      */
     def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
+        NumberedDomain.super.beforeInsert()
         total = computeTotal()
     }
 

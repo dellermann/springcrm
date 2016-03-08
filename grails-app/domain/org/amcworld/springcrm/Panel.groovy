@@ -1,7 +1,7 @@
 /*
  * Panel.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,13 @@ package org.amcworld.springcrm
  * The class {@code Panel} contains data about a panel on the overview page.
  *
  * @author	Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class Panel {
 
-    //-- Class variables ------------------------
+    //-- Class fiels ----------------------------
 
     static constraints = {
-		user()
 		pos min: 0
 		panelId blank: false
     }
@@ -44,7 +43,7 @@ class Panel {
 	static transients = ['panelDef']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
 	User user
 	int pos
@@ -56,8 +55,7 @@ class Panel {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Panel) ? obj.user == user && obj.panelId == panelId
-            : false
+        obj instanceof Panel && obj.user == user && obj.panelId == panelId
     }
 
     @Override

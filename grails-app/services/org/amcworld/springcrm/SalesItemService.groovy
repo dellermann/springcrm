@@ -1,7 +1,7 @@
 /*
  * SalesItemService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@ package org.amcworld.springcrm
 
 /**
  * The class {@code SalesItemService} contains service methods which handle
- * sales items such as products and services as well as handling for pricing.
+ * sales items such as products and works as well as handling for pricing.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.1
  * @since   1.3
  */
 class SalesItemService {

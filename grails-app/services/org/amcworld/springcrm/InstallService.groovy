@@ -1,7 +1,7 @@
 /*
  * InstallService.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,12 @@
 
 package org.amcworld.springcrm
 
+import grails.core.GrailsApplication
+import grails.web.context.ServletContextHolder as SCH
 import groovy.sql.Sql
 import java.sql.Connection
 import javax.servlet.ServletContext
 import org.amcworld.springcrm.install.diffset.StartupDiffSet
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 import org.springframework.context.ApplicationContext
 
 
@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext
  * reasons or obtaining the available base data packages.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class InstallService {
 

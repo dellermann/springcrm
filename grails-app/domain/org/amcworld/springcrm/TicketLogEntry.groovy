@@ -1,7 +1,7 @@
 /*
  * TicketLogEntry.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,22 +28,20 @@ import org.springframework.context.MessageSourceResolvable
  * ticket.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.4
  */
 class TicketLogEntry implements MessageSourceResolvable {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static belongsTo = [ticket: Ticket]
     static constraints = {
-        action()
         creator nullable: true
         recipient nullable: true
         stage nullable: true
         message nullable: true, widget: 'textarea'
         attachment nullable: true
-        dateCreated()
     }
     static mapping = {
         message type: 'text'
@@ -52,7 +50,7 @@ class TicketLogEntry implements MessageSourceResolvable {
     static transients = ['arguments', 'codes', 'defaultMessage', 'internal']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     TicketLogAction action
     User creator
@@ -82,11 +80,7 @@ class TicketLogEntry implements MessageSourceResolvable {
 
     @Override
     boolean equals(Object obj) {
-        if (!(obj instanceof TicketLogEntry)) {
-            return false
-        }
-
-        (id == null) ? super.equals(obj) : (id == obj.id)
+        obj instanceof TicketLogEntry && id == obj.id
     }
 
     @Override
@@ -108,7 +102,7 @@ class TicketLogEntry implements MessageSourceResolvable {
 
     @Override
     int hashCode() {
-        (id == null) ? super.hashCode : (id as int)
+        (id ?: 0i) as int
     }
 
     @Override

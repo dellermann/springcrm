@@ -25,14 +25,13 @@ package org.amcworld.springcrm
  * The class {@code SalesOrder} represents a sales order.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class SalesOrder extends InvoicingTransaction {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        stage()
         dueDate nullable: true
         deliveryDate nullable: true
         quote nullable: true
@@ -44,7 +43,7 @@ class SalesOrder extends InvoicingTransaction {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     /**
      * The stage of this sales order.
@@ -95,4 +94,3 @@ class SalesOrder extends InvoicingTransaction {
         quote = q
     }
 }
-

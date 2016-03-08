@@ -181,11 +181,11 @@ class ReportController {
 
             BigDecimal totalProducts = model.totalProducts =
                 l*.turnoverProducts.sum 0.0
-            BigDecimal totalServices = model.totalServices =
-                l*.turnoverServices.sum 0.0
+            BigDecimal totalWorks = model.totalWorks =
+                l*.turnoverWorks.sum 0.0
             BigDecimal totalOtherItems = model.totalOtherItems =
                 l*.turnoverOtherSalesItems.sum 0.0
-            model.total = totalProducts + totalServices + totalOtherItems
+            model.total = totalProducts + totalWorks + totalOtherItems
         }
 
         model

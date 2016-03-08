@@ -82,7 +82,7 @@
   </div>
   <content tag="scripts">
     <asset:javascript src="calendar" />
-    <asset:javascript src="lang/fullcalendar/${(org.springframework.web.servlet.support.RequestContextUtils.getLocale(org.codehaus.groovy.grails.web.util.WebUtils.retrieveGrailsWebRequest().currentRequest) ?: Locale.default).language}" />
+    <asset:javascript src="lang/fullcalendar/${(org.springframework.web.servlet.support.RequestContextUtils.getLocale(org.grails.web.util.WebUtils.retrieveGrailsWebRequest().currentRequest) ?: Locale.default).language}" />
     <asset:script>//<![CDATA[
       (function (window, $L, $) {
 

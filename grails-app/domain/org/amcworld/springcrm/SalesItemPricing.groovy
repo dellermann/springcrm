@@ -27,10 +27,10 @@ import groovy.transform.CompileStatic
 
 /**
  * The class {@code SalesItemPricing} represents a pricing for a sales item
- * such as a product or service.
+ * such as a product or work.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.3
  */
 class SalesItemPricing {
@@ -46,7 +46,6 @@ class SalesItemPricing {
         quantity min: ZERO, scale: 6, validator: {
             it <= ZERO ? ['default.invalid.notGreater.message', 0] : null
         }
-        unit()
         discountPercent min: ZERO, scale: 2, widget: 'percent'
         adjustment scale: 6, widget: 'currency'
         items nullable: false, minSize: 1

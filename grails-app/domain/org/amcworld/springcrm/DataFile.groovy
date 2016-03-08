@@ -1,7 +1,7 @@
 /*
  * DataFile.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,24 +29,22 @@ import org.springframework.web.multipart.MultipartFile
  * instances such as purchase invoices or ticket messages.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.4
  */
 class DataFile {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         fileName blank: false
         mimeType nullable: true
         fileSize range: 0L..104_857_600L        // 0..100M
-        dateCreated()
-        lastUpdated()
     }
     static transients = ['storageName']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String fileName
     String mimeType
@@ -102,7 +100,7 @@ class DataFile {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof DataFile) ? id == obj.id : false
+        obj instanceof DataFile && id == obj.id
     }
 
     @Override

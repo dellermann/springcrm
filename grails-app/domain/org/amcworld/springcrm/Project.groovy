@@ -1,7 +1,7 @@
 /*
  * Project.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,23 +27,18 @@ package org.amcworld.springcrm
  * documents etc.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.0
  */
-class Project {
+class Project implements NumberedDomain {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         number unique: true, widget: 'autonumber'
         title blank: false
         description nullable: true, blank: true, widget: 'textarea'
-        organization()
         person nullable: true
-        phase()
-        status()
-        dateCreated()
-        lastUpdated()
     }
     static belongsTo = [organization: Organization, person: Person]
     static hasMany = [items: ProjectItem, documents: ProjectDocument]
@@ -54,11 +49,8 @@ class Project {
     static transients = ['fullNumber']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def seqNumberService
-
-    int number
     String title
     String description
     Organization organization
@@ -81,24 +73,11 @@ class Project {
     }
 
 
-    //-- Properties -----------------------------
-
-    String getFullNumber() {
-        seqNumberService.format getClass(), number
-    }
-
-
     //-- Public methods -------------------------
-
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
-    }
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Project) ? obj.id == id : false
+        obj instanceof Project && obj.id == id
     }
 
     @Override

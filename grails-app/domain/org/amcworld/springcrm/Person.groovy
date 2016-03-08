@@ -1,7 +1,7 @@
 /*
  * Person.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,14 @@ package org.amcworld.springcrm
  *
  * @author  Daniel Ellermann
  * @author 	Philip Drozd
- * @version 2.0
+ * @version 2.1
  */
-class Person {
+class Person implements NumberedDomain {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         number unique: true, widget: 'autonumber'
-        organization()
         salutation nullable: true
         title nullable: true
         firstName blank: false
@@ -53,8 +52,6 @@ class Person {
         birthday nullable: true
         notes nullable: true, widget: 'textarea'
         picture nullable: true, maxSize: 1048576
-        dateCreated()
-        lastUpdated()
     }
     static belongsTo = [organization: Organization]
     static embedded = ['mailingAddr', 'otherAddr']
@@ -73,11 +70,8 @@ class Person {
     static transients = ['fullNumber', 'fullName']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def seqNumberService
-
-    int number
     Organization organization
     Salutation salutation
     String title
@@ -146,22 +140,12 @@ class Person {
 		buf.toString()
     }
 
-    String getFullNumber() {
-        seqNumberService.format getClass(), number
-    }
-
 
     //-- Public methods -------------------------
 
-    def beforeInsert() {
-        if (number == 0 && seqNumberService) {
-            number = seqNumberService.nextNumber(getClass())
-        }
-    }
-
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Person) ? obj.id == id : false
+        obj instanceof Person && obj.id == id
     }
 
     @Override

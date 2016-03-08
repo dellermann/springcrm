@@ -1,7 +1,7 @@
 /*
  * FopService.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import grails.core.GrailsApplication
+import grails.web.context.ServletContextHolder as SCH
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.*
@@ -33,8 +35,6 @@ import org.apache.fop.apps.FOUserAgent
 import org.apache.fop.apps.Fop
 import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 import org.xml.sax.EntityResolver
@@ -50,7 +50,7 @@ import org.xml.sax.helpers.XMLReaderFactory
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  */
 class FopService {
 

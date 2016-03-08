@@ -1,7 +1,7 @@
 /*
  * UserService.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 package org.amcworld.springcrm
 
 import java.text.DecimalFormatSymbols
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
@@ -30,7 +30,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * user settings.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.3
  */
 class UserService {

@@ -20,10 +20,10 @@
 
 package org.amcworld.springcrm
 
+import grails.databinding.converters.ValueConverter
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import javax.servlet.http.HttpServletResponse
-import org.grails.databinding.converters.ValueConverter
 
 
 /**
@@ -34,7 +34,7 @@ import org.grails.databinding.converters.ValueConverter
  * is no Bootstrap compatible full calendar available.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class CalendarEventController {
 

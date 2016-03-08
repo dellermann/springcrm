@@ -21,8 +21,8 @@
 package org.amcworld.springcrm
 
 import java.util.regex.Matcher
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.VersionComparator
+import grails.core.GrailsApplication
+import grails.plugins.VersionComparator
 import org.springframework.core.io.Resource
 import org.springframework.core.io.support.LocalizedResourceHelper
 
@@ -32,7 +32,7 @@ import org.springframework.core.io.support.LocalizedResourceHelper
  * overview controller.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   2.0
  */
 class OverviewService {

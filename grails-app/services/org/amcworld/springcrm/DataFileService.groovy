@@ -1,7 +1,7 @@
 /*
  * DataFileService.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile
  * The class {@code DataFileService} handles files in the data space.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.4
  */
 @Transactional

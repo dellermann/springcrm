@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.core.GrailsApplication
 
 
 /**
@@ -28,7 +28,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  * invoicing transactions such as quotes, sales order, invoices etc.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.2
  */
 class InvoicingTransactionService {

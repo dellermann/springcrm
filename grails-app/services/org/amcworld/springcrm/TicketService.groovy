@@ -1,7 +1,7 @@
 /*
  * TicketService.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import org.codehaus.groovy.grails.web.mapping.LinkGenerator
+import grails.web.mapping.LinkGenerator
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile
  * tickets in a helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.4
  */
 class TicketService {

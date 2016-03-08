@@ -1,7 +1,7 @@
 /*
  * MailSystemService.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,9 @@
 package org.amcworld.springcrm
 
 import com.naleid.grails.MarkdownService
+import grails.core.GrailsApplication
 import grails.gsp.PageRenderer
-import grails.plugin.mail.MailService
-import org.codehaus.groovy.grails.commons.GrailsApplication
+import grails.plugins.mail.MailService
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 import org.springframework.mail.MailMessage
@@ -33,7 +33,7 @@ import org.springframework.mail.MailMessage
  * The class {@code MailSystemService} contains service methods to send mails.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.4
  */
 class MailSystemService {

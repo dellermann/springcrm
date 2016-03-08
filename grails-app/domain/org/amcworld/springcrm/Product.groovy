@@ -27,9 +27,9 @@ import static java.math.BigDecimal.ZERO
  * The class {@code Product} represents a product.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.3
- * @see     Service
+ * @see     Work
  */
 class Product extends SalesItem {
 

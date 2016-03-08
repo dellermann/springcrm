@@ -1,7 +1,7 @@
 /*
  * ProjectController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
+import grails.core.GrailsClass
 import org.apache.commons.vfs2.FileObject
-import org.codehaus.groovy.grails.commons.GrailsClass
 
 
 /**

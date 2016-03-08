@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * which may be defined by the user.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class SelValue {
 
@@ -34,7 +34,6 @@ class SelValue {
 
     static constraints = {
         name blank: false
-        orderId()
     }
     static mapping = {
         sort 'orderId'

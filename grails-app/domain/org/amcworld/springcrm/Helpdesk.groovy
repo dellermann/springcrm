@@ -1,7 +1,7 @@
 /*
  * Helpdesk.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@ package org.amcworld.springcrm
  * organization can be submitted.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   2.0
  */
 class Helpdesk {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static belongsTo = [organization: Organization]
     static constraints = {
@@ -39,14 +39,12 @@ class Helpdesk {
         urlName blank: false, unique: true
         accessCode blank: false, matches: /[A-Z0-9]+/, maxSize: 10
         users minSize: 1
-        dateCreated()
-        lastUpdated()
     }
     static hasMany = [tickets: Ticket]
     static transients = ['users']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String name
     String urlName
@@ -71,7 +69,7 @@ class Helpdesk {
 
     void setName(String name) {
         this.name = name
-        this.urlName = name.encodeAsUrlPart()
+        this.urlName = java.net.URLEncoder.encode(name).toLowerCase()
     }
 
     void setUsers(Set<User> users) {
@@ -96,7 +94,7 @@ class Helpdesk {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Helpdesk) ? urlName == obj.urlName : false
+        obj instanceof Helpdesk && urlName == obj.urlName
     }
 
     @Override

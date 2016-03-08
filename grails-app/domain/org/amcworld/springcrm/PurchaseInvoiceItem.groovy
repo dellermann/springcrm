@@ -28,7 +28,7 @@ import static java.math.BigDecimal.ZERO
  * invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class PurchaseInvoiceItem {
 
@@ -42,7 +42,6 @@ class PurchaseInvoiceItem {
     static belongsTo = [invoice: PurchaseInvoice]
     static constraints = {
         quantity min: ZERO, scale: 6
-        unit()
         name blank: false
         description nullable: true
         unitPrice scale: 6, widget: 'currency'
@@ -181,4 +180,3 @@ class PurchaseInvoiceItem {
         name ?: ''
     }
 }
-

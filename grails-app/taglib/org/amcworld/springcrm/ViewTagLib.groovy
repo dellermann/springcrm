@@ -21,9 +21,9 @@
 package org.amcworld.springcrm
 
 import grails.util.GrailsNameUtils
+import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
 import java.util.regex.Pattern
-import org.codehaus.groovy.grails.web.mapping.UrlMapping
 import org.springframework.validation.FieldError
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
@@ -33,7 +33,8 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * views.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
+ * @since   2.0
  */
 class ViewTagLib {
 
@@ -55,9 +56,9 @@ class ViewTagLib {
         purchaseInvoice: 'shopping-cart',
         quote: 'briefcase',
         salesOrder: 'bars',
-        service: 'laptop',
         ticket: 'ticket',
-        user: 'user'
+        user: 'user',
+        work: 'laptop'
     ]
 
 

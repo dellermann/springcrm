@@ -1,7 +1,7 @@
 /*
  * Note.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,81 +26,62 @@ package org.amcworld.springcrm
  *
  * @author	Daniel Ellermann
  * @author	Philip Drozd
- * @version 2.0
+ * @version 2.1
  */
-class Note {
+class Note implements NumberedDomain {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        number(unique: true, widget: 'autonumber')
-		title(blank: false, maxSize: 200)
-		content(blank: true, widget: 'textarea')
-		organization(nullable: true)
-		person(nullable: true)
-		dateCreated()
-		lastUpdated()
+        number unique: true, widget: 'autonumber'
+        title blank: false, maxSize: 200
+        content blank: true, widget: 'textarea'
+        organization nullable: true
+        person nullable: true
     }
-    static belongsTo = [ organization: Organization, person: Person ]
-	static mapping = {
-		sort 'title'
-		content type: 'text'
+    static belongsTo = [organization: Organization, person: Person]
+    static mapping = {
+        sort 'title'
+        content type: 'text'
         title index: 'title'
-	}
-	static transients = [ 'fullNumber' ]
+    }
+    static transients = ['fullNumber']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-	def seqNumberService
-
-	int number
-	String title
-	String content
-	Date dateCreated
-	Date lastUpdated
+    String title
+    String content
+    Date dateCreated
+    Date lastUpdated
 
 
     //-- Constructors ---------------------------
 
-	Note() {}
+    Note() {}
 
-	Note(Note n) {
-		title = n.title
-		content = n.content
-		organization = n.organization
-		person = n.person
-	}
+    Note(Note n) {
+        title = n.title
+        content = n.content
+        organization = n.organization
+        person = n.person
+    }
 
 
     //-- Public methods -------------------------
 
-	String getFullNumber() {
-		return seqNumberService.format(getClass(), number)
-	}
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Note) {
-            return obj.id == id
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        obj instanceof Note && obj.id == id
     }
 
     @Override
-    public int hashCode() {
+    int hashCode() {
         (id ?: 0i) as int
     }
 
     @Override
-	String toString() {
-		title ?: ''
-	}
-
-	def beforeInsert() {
-		if (number == 0) {
-			number = seqNumberService.nextNumber(getClass())
-		}
-	}
+    String toString() {
+        title ?: ''
+    }
 }

@@ -36,4 +36,5 @@ databaseChangeLog = {
 	include file: 'term-of-payment.xml'
 	include file: 'big-decimal.xml'
     include file: 'modules-uppercase.xml'
+    include file: 'rename-service.xml'
 }

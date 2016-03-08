@@ -21,7 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.commons.GrailsClass
+import grails.core.GrailsClass
 
 
 /**
@@ -215,17 +215,15 @@ class ConfigController {
         def list = SeqNumber.list()
 
         def ch = ConfigHolder.instance
-        Long serviceIdDunningCharge =
-            ch['serviceIdDunningCharge']?.toType(Long)
-        Service serviceDunningCharge = Service.read(serviceIdDunningCharge)
-        Long serviceIdDefaultInterest =
-            ch['serviceIdDefaultInterest']?.toType(Long)
-        Service serviceDefaultInterest = Service.read(serviceIdDefaultInterest)
+        Long workIdDunningCharge = ch['workIdDunningCharge']?.toType(Long)
+        Work workDunningCharge = Work.read(workIdDunningCharge)
+        Long workIdDefaultInterest = ch['workIdDefaultInterest']?.toType(Long)
+        Work workDefaultInterest = Work.read(workIdDefaultInterest)
 
         render view: 'seqNumbers', model: [
             seqNumberList: list,
-            serviceDunningCharge: serviceDunningCharge,
-            serviceDefaultInterest: serviceDefaultInterest
+            workDunningCharge: workDunningCharge,
+            workDefaultInterest: workDefaultInterest
         ]
     }
 
@@ -256,15 +254,15 @@ class ConfigController {
         }
 
         def configHolder = ConfigHolder.instance
-        if (params.serviceIdDunningCharge) {
-            configHolder.setConfig 'serviceIdDunningCharge', params.serviceIdDunningCharge
+        if (params.workIdDunningCharge) {
+            configHolder.setConfig 'workIdDunningCharge', params.workIdDunningCharge
         } else {
-            configHolder.removeConfig 'serviceIdDunningCharge'
+            configHolder.removeConfig 'workIdDunningCharge'
         }
-        if (params.serviceIdDefaultInterest) {
-            configHolder.setConfig 'serviceIdDefaultInterest', params.serviceIdDefaultInterest
+        if (params.workIdDefaultInterest) {
+            configHolder.setConfig 'workIdDefaultInterest', params.workIdDefaultInterest
         } else {
-            configHolder.removeConfig 'serviceIdDefaultInterest'
+            configHolder.removeConfig 'workIdDefaultInterest'
         }
 
         if (hasErrors) {

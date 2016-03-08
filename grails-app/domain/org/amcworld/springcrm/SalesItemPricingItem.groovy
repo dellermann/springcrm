@@ -29,7 +29,7 @@ import static org.amcworld.springcrm.PricingItemType.*
  * a sales item.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.3
  */
 class SalesItemPricingItem {
@@ -45,7 +45,6 @@ class SalesItemPricingItem {
         name nullable: true, validator: { name, pricing ->
             name || pricing.type == sum ? null : 'default.null.message'
         }
-        type()
         relToPos nullable: true, min: 0i, validator: { relToPos, pricing ->
             (relToPos == null && pricing.type == relativeToPos) \
                 ? 'default.null.message'

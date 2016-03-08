@@ -1,7 +1,7 @@
 /*
  * Call.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@ package org.amcworld.springcrm
  * The class {@code Call} represents a phone call.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class Call {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         subject blank: false
@@ -37,11 +37,6 @@ class Call {
         organization nullable: true
         person nullable: true
         phone nullable: true, maxSize: 40
-        start()
-        type()
-        status()
-        dateCreated()
-        lastUpdated()
     }
     static belongsTo = [organization: Organization, person: Person]
     static mapping = {
@@ -52,7 +47,7 @@ class Call {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String subject
     String notes
@@ -84,7 +79,7 @@ class Call {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Call) ? obj.id == id : false
+        obj instanceof Call && obj.id == id
     }
 
     @Override

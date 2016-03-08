@@ -1,7 +1,7 @@
 /*
  * DocumentService.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.core.GrailsApplication
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSelector
@@ -27,7 +28,6 @@ import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.NameScope
 import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
-import org.codehaus.groovy.grails.commons.GrailsApplication
 
 
 class DocumentService {

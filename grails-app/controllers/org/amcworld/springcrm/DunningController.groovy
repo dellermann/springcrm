@@ -111,18 +111,18 @@ class DunningController {
         dunningInstance.copyAddressesFromOrganization()
 
         ConfigHolder config = ConfigHolder.instance
-        def serviceId = config['serviceIdDunningCharge']
-        if (serviceId) {
-            Service service = Service.get(serviceId.toType(Long))
-            if (service) {
-                dunningInstance.addToItems serviceToItem(service)
+        def workId = config['workIdDunningCharge']
+        if (workId) {
+            Work work = Work.get(workId.toType(Long))
+            if (work) {
+                dunningInstance.addToItems workToItem(work)
             }
         }
-        serviceId = config['serviceIdDefaultInterest']
-        if (serviceId) {
-            Service service = Service.get(serviceId.toType(Long))
-            if (service) {
-                dunningInstance.addToItems serviceToItem(service)
+        workId = config['workIdDefaultInterest']
+        if (workId) {
+            Work work = Work.get(workId.toType(Long))
+            if (work) {
+                dunningInstance.addToItems workToItem(work)
             }
         }
 
@@ -422,11 +422,11 @@ class DunningController {
 
     //-- Non-public methods ---------------------
 
-    private InvoicingItem serviceToItem(Service s) {
+    private InvoicingItem workToItem(Work w) {
         new InvoicingItem(
-            number: s.fullNumber, quantity: s.quantity,
-            unit: s.unit.toString(), name: s.name, description: s.description,
-            unitPrice: s.unitPrice, tax: s.taxRate.taxValue * 100
+            number: w.fullNumber, quantity: with.quantity,
+            unit: w.unit.toString(), name: w.name, description: w.description,
+            unitPrice: w.unitPrice, tax: w.taxRate.taxValue * 100
         )
     }
 }

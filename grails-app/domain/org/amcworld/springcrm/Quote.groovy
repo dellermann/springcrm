@@ -25,14 +25,13 @@ package org.amcworld.springcrm
  * The class {@code Quote} represents a quote.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class Quote extends InvoicingTransaction {
 
-    //-- Static fields --------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        stage()
         validUntil nullable: true
     }
     static hasMany = [salesOrders: SalesOrder, invoices: Invoice]

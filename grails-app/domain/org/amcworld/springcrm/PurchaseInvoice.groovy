@@ -29,7 +29,7 @@ import groovy.transform.CompileStatic
  * The class {@code PurchaseInvoice} represents a purchase invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class PurchaseInvoice {
 
@@ -45,9 +45,6 @@ class PurchaseInvoice {
         subject blank: false
         vendor nullable: true
         vendorName blank: false
-        docDate()
-        dueDate()
-        stage()
         paymentDate nullable: true
         paymentAmount scale: 6, widget: 'currency'
         paymentMethod nullable: true
@@ -60,8 +57,6 @@ class PurchaseInvoice {
         shippingTax min: ZERO, scale: 2, widget: 'percent'
         adjustment scale: 6, widget: 'currency'
         total scale: 6
-        dateCreated()
-        lastUpdated()
     }
     static belongsTo = [vendor: Organization]
     static hasMany = [items: PurchaseInvoiceItem]

@@ -88,8 +88,8 @@ class InvoicingItem {
     BigDecimal tax = ZERO
 
     /**
-     * An optional associated sales item pointing to the product or services
-     * that represents this item.
+     * An optional associated sales item pointing to the product or works that
+     * represents this item.
      */
     SalesItem salesItem
 

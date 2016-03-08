@@ -1,7 +1,7 @@
 /*
  * LruEntry.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,17 +26,15 @@ package org.amcworld.springcrm
  * used (LRU) list.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.1
  */
 class LruEntry {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        user()
         controller blank: false
         itemId unique: ['user', 'controller']
-        pos()
         name nullable: true, blank: true
     }
     static mapping = {
@@ -44,7 +42,7 @@ class LruEntry {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     User user
     String controller
@@ -57,7 +55,8 @@ class LruEntry {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof LruEntry) ? obj.user == user && obj.controller == controller && obj.itemId == itemId : false
+        obj instanceof LruEntry && obj.user == user &&
+            obj.controller == controller && obj.itemId == itemId
     }
 
     @Override

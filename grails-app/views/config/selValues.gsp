@@ -46,7 +46,7 @@
             <g:render template="/config/selValuesList"
               model="[type: 'productCategory']" />
             <g:render template="/config/selValuesList"
-              model="[type: 'serviceCategory']" />
+              model="[type: 'workCategory']" />
           </div>
         </div>
       </section>

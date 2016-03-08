@@ -63,7 +63,7 @@
           </ul>
         </li>
         </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="product service">
+        <g:ifControllerAllowed controllers="product work">
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-stock">
@@ -72,7 +72,7 @@
           <ul id="menu-stock" class="dropdown-menu" role="menu"
             aria-expanded="false">
             <g:ifControllerAllowed controllers="product"><li role="menuitem"><g:link controller="product"><g:message code="product.plural" /></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="service"><li role="menuitem"><g:link controller="service"><g:message code="service.plural" /></g:link></li></g:ifControllerAllowed>
+            <g:ifControllerAllowed controllers="work"><li role="menuitem"><g:link controller="work"><g:message code="work.plural" /></g:link></li></g:ifControllerAllowed>
           </ul>
         </li>
         </g:ifControllerAllowed>

@@ -27,15 +27,13 @@ import static java.math.BigDecimal.ZERO
  * The class {@code Invoice} represents an invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class Invoice extends InvoicingTransaction implements PayableAndDue {
 
-    //-- Static fields --------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        stage()
-        dueDatePayment()
         paymentDate nullable: true
         paymentAmount min: ZERO, scale: 6, widget: 'currency'
         paymentMethod nullable: true
@@ -51,7 +49,7 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
     static transients = [
         'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
         'payable', 'paymentStateColor', 'turnover', 'turnoverOtherSalesItems',
-        'turnoverProducts', 'turnoverServices'
+        'turnoverProducts', 'turnoverWorks'
     ]
 
 
@@ -264,12 +262,12 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
      * @since   2.0
      */
     BigDecimal getTurnover() {
-        turnoverProducts + turnoverServices + turnoverOtherSalesItems
+        turnoverProducts + turnoverWorks + turnoverOtherSalesItems
     }
 
     /**
      * Gets the turnover of all items of this invoice which are neither
-     * products nor services.
+     * products nor works.
      *
      * @return  the turnover of all other items
      * @since   2.0
@@ -299,15 +297,15 @@ class Invoice extends InvoicingTransaction implements PayableAndDue {
     }
 
     /**
-     * Gets the turnover of all services of this invoice.
+     * Gets the turnover of all works of this invoice.
      *
-     * @return  the turnover of all services
+     * @return  the turnover of all works
      * @since   2.0
      */
-    BigDecimal getTurnoverServices() {
+    BigDecimal getTurnoverWorks() {
         BigDecimal value = itemsOfType('S')*.total.sum ZERO
         if (creditMemos) {
-            value -= creditMemos*.turnoverServices.sum ZERO
+            value -= creditMemos*.turnoverWorks.sum ZERO
         }
 
         value

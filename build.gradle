@@ -1,0 +1,158 @@
+import java.nio.file.Path
+
+buildscript {
+    ext {
+        grailsVersion = project.grailsVersion
+    }
+    repositories {
+        mavenLocal()
+        maven { url 'https://repo.grails.org/grails/core' }
+    }
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.5.0'
+        classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
+        classpath 'org.grails.plugins:hibernate:4.3.10.5'
+    }
+}
+
+plugins {
+    id 'io.spring.dependency-management' version '0.5.4.RELEASE'
+}
+
+version '2.1.0'
+group 'org.amcworld'
+
+apply plugin: 'spring-boot'
+apply plugin: 'war'
+apply plugin: 'asset-pipeline'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.grails.grails-web'
+apply plugin: 'org.grails.grails-gsp'
+apply plugin: 'org.grails.grails-doc'
+
+ext {
+    grailsVersion = project.grailsVersion
+    gradleWrapperVersion = project.gradleWrapperVersion
+}
+
+assets {
+    minifyJs = true
+    minifyCss = true
+}
+
+repositories {
+    // TODO old repositories:
+    // grailsPlugins()
+    // grailsHome()
+    // grailsCentral()
+    // mavenCentral()
+    // mavenRepo 'http://mavenrepo.google-api-java-client.googlecode.com/hg/'
+    // mavenRepo 'http://maven.springframework.org/milestone/'
+
+    mavenLocal()
+    maven { url 'https://repo.grails.org/grails/core' }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.grails:grails-bom:$grailsVersion"
+    }
+    applyMavenExclusions false
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-logging'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework.boot:spring-boot-autoconfigure'
+    compile 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.grails:grails-dependencies'
+    compile 'org.grails:grails-web-boot'
+
+    compile 'org.hibernate:hibernate-ehcache'
+    compile 'org.liquibase:liquibase-core:3.3.2'
+
+    // SpringCRM dependencies
+    compile 'com.google.apis:google-api-services-calendar:v3-rev157-1.21.0'
+    compile 'com.google.gdata:core:1.47.1'
+    compile 'commons-fileupload:commons-fileupload:1.3.1'
+    compile 'commons-io:commons-io:2.4'
+    compile 'jmimemagic:jmimemagic:0.1.2'
+    compile 'org.apache.commons:commons-vfs2:2.0'
+    compile 'org.apache.httpcomponents:httpclient:4.3.2'
+    compile 'org.apache.xmlgraphics:fop:1.0'
+    compile files('lib/groovy-ldap.jar')
+
+    // Grails plugins
+    compile 'com.bertramlabs.plugins:coffee-asset-pipeline:2.6.9'
+    compile 'com.bertramlabs.plugins:handlebars-asset-pipeline:2.6.9'
+    compile 'com.bertramlabs.plugins:less-asset-pipeline:2.6.9'
+    compile 'org.grails.plugins:cache'
+    compile 'org.grails.plugins:fields:2.1.2'
+    compile 'org.grails.plugins:grails-markdown:3.0.0'
+    compile 'org.grails.plugins:hibernate4'
+    compile 'org.grails.plugins:mail:2.0.0.RC4'
+    compile 'org.grails.plugins:scaffolding'
+
+    runtime 'org.grails.plugins:asset-pipeline'
+    runtime 'org.grails.plugins:database-migration:2.0.0.RC1'
+
+    runtime 'mysql:mysql-connector-java:5.1.27'
+    runtime 'net.sf.barcode4j:barcode4j-fop-ext-complete:2.0'
+    runtime 'net.sf.offo:fop-hyph:1.2'
+
+    testCompile 'org.grails:grails-plugin-testing'
+    testCompile 'org.grails.plugins:geb'
+    // testCompile "org.gebish:geb-spock:${gebVersion}"
+    testCompile 'org.seleniumhq.selenium:selenium-firefox-driver:2.52.0'
+
+    testRuntime 'net.sourceforge.htmlunit:htmlunit:2.18'
+
+    console 'org.grails:grails-console'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'grails-app/migrations'
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = gradleWrapperVersion
+}
+
+eclipse {
+    classpath {
+        file {
+            whenMerged { classpath ->
+                Path projectPath = projectDir.toPath()
+                classpath.entries
+                    .each {
+
+                        // transform to relative paths
+                        if (it.kind == 'lib') {
+                            Path p = projectPath.relativize(
+                                file(it.path).toPath()
+                            )
+                            it.path = p.toString()
+                        }
+                    }
+                    .removeAll {
+
+                        // remove entry "gsp-classes"
+                        it.kind == 'lib' && it.path == 'gsp-classes'
+                    }
+            }
+        }
+    }
+    pathVariables(
+        GRADLE_CACHE: file("${System.getProperty('user.home')}/.gradle"),
+        M2_REPO: file("${System.getProperty('user.home')}/.m2/repository")
+    )
+    project {
+        natures 'org.springsource.ide.eclipse.gradle.core.nature'
+    }
+}

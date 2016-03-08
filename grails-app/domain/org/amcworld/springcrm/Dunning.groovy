@@ -27,20 +27,16 @@ import static java.math.BigDecimal.ZERO
  * The class {@code Dunning} represents a reminder which belongs to an invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class Dunning extends InvoicingTransaction implements PayableAndDue {
 
-    //-- Static fields --------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
-        level()
-        stage()
-        dueDatePayment()
         paymentDate nullable: true
         paymentAmount min: ZERO, scale: 6, widget: 'currency'
         paymentMethod nullable: true
-        invoice()
     }
     static belongsTo = [invoice: Invoice]
     static hasMany = [creditMemos: CreditMemo]

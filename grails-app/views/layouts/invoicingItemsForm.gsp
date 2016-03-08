@@ -1,8 +1,8 @@
 <g:if test="${params.controller != 'purchase-invoice'}">
 <g:set var="productListUrl"
   value="${createControllerLink(controller: 'product', action: 'selectorList')}" />
-<g:set var="serviceListUrl"
-  value="${createControllerLink(controller: 'service', action: 'selectorList')}" />
+<g:set var="workListUrl"
+  value="${createControllerLink(controller: 'work', action: 'selectorList')}" />
 </g:if>
 <div class="table-responsive">
   <table id="${pageProperty(name: 'tableId')}"
@@ -10,7 +10,7 @@
     data-tax-items="${taxRates*.taxValue.join(',')}"
     data-units="${units*.name.join(',')}"
     data-product-list-url="${productListUrl}"
-    data-service-list-url="${serviceListUrl}">
+    data-work-list-url="${workListUrl}">
     <thead>
       <tr>
         <th><g:message code="invoicingTransaction.pos.label" /></th>
@@ -226,13 +226,13 @@
                   <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
                 </button>
                 </g:ifModuleAllowed>
-                <g:ifModuleAllowed modules="SERVICE">
+                <g:ifModuleAllowed modules="WORK">
                 <button type="button"
                   class="btn btn-default btn-select-sales-item"
-                  data-type="service">
+                  data-type="work">
                   <i class="fa fa-laptop"
-                    title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
-                  <span class="sr-only">${message(code: 'invoicingTransaction.selector.services.title')}</span>
+                    title="${message(code: 'invoicingTransaction.selector.works.title')}"></i>
+                  <span class="sr-only">${message(code: 'invoicingTransaction.selector.works.title')}</span>
                 </button>
                 </g:ifModuleAllowed>
               </span>
@@ -386,8 +386,8 @@
     </div>
   </div>
 </div>
-<div id="inventory-selector-service" class="modal fade inventory-selector"
-  aria-labelledby="inventory-selector-service-title" aria-hidden="true">
+<div id="inventory-selector-work" class="modal fade inventory-selector"
+  aria-labelledby="inventory-selector-work-title" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -395,8 +395,8 @@
           aria-label="${message(code: 'default.btn.close')}"
           ><span aria-hidden="true">×</span
         ></button>
-        <h4 id="inventory-selector-service-title" class="modal-title"
-          ><g:message code="invoicingTransaction.selector.services.title"
+        <h4 id="inventory-selector-work-title" class="modal-title"
+          ><g:message code="invoicingTransaction.selector.works.title"
         /></h4>
       </div>
       <div class="modal-body"></div>
@@ -431,12 +431,12 @@
               <span class="sr-only">${message(code: 'invoicingTransaction.selector.products.title')}</span>
             </button>
             </g:ifModuleAllowed>
-            <g:ifModuleAllowed modules="SERVICE">
+            <g:ifModuleAllowed modules="WORK">
             <button type="button" class="btn btn-default btn-select-sales-item"
-              data-type="service">
+              data-type="work">
               <i class="fa fa-laptop"
-                title="${message(code: 'invoicingTransaction.selector.services.title')}"></i>
-              <span class="sr-only">${message(code: 'invoicingTransaction.selector.services.title')}</span>
+                title="${message(code: 'invoicingTransaction.selector.works.title')}"></i>
+              <span class="sr-only">${message(code: 'invoicingTransaction.selector.works.title')}</span>
             </button>
             </g:ifModuleAllowed>
           </span>

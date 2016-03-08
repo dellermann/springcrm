@@ -38,7 +38,7 @@ class InvoicingItems
     currency: $I.currencySymbol
     fieldNamePrefix: 'items'
     productListUrl: $('.price-table').data('product-list-url')
-    serviceListUrl: $('.price-table').data('service-list-url')
+    workListUrl: $('.price-table').data('work-list-url')
     taxes: $('.price-table').data('tax-items')?.split(',') ? []
     units: $('.price-table').data('units')?.split(',') ? []
 
@@ -342,7 +342,7 @@ class InvoicingItems
 
   # Loads the content of the sales item selector via AJAX.
   #
-  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `service`
+  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `work`
   # @param [Number] pos     the zero-based position of the row that should be filled in the price table
   # @param [String] url     the URL which is called to load the sales items via AJAX
   # @param [Object] params  any parameters which are to send (optional)
@@ -442,7 +442,7 @@ class InvoicingItems
   # loaded via AJAX.
   #
   # @param [jQuery] $modal  the modal where the selector content has been loaded
-  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `service`
+  # @param [String] type    the type of sales items which should be retrieved; must be either `product` or `work`
   # @param [Number] pos     the zero-based position of the row that should be filled in the price table
   # @private
   #

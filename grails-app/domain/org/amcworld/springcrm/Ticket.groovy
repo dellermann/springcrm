@@ -1,7 +1,7 @@
 /*
  * Ticket.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,18 +25,17 @@ package org.amcworld.springcrm
  * The class {@code Ticket} represents a ticket of a particular helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.4
  */
-class Ticket {
+class Ticket implements NumberedDomain {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static belongsTo = [helpdesk: Helpdesk]
     static constraints = {
         number unique: true, widget: 'autonumber'
         subject blank: false
-        stage()
         salutation nullable: true
         firstName blank: false
         lastName blank: false
@@ -60,8 +59,6 @@ class Ticket {
         assignedUser nullable: true
         priority nullable: true
         logEntries minSize: 1
-        dateCreated()
-        lastUpdated()
     }
     static embedded = ['address']
     static hasMany = [logEntries: TicketLogEntry]
@@ -71,11 +68,8 @@ class Ticket {
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def seqNumberService
-
-    int number
     String subject
     TicketStage stage = TicketStage.created
     Salutation salutation
@@ -135,10 +129,6 @@ class Ticket {
         s.toString()
     }
 
-    String getFullNumber() {
-        seqNumberService.format getClass(), number
-    }
-
     /**
      * Gets the initial message text of this ticket, that is, the message text
      * submitted when the ticket was created.
@@ -161,24 +151,14 @@ class Ticket {
 
     //-- Public methods -------------------------
 
-    def beforeInsert() {
-        if (number == 0) {
-            number = seqNumberService.nextNumber(getClass())
-        }
-    }
-
     @Override
     boolean equals(Object obj) {
-        if (!(obj instanceof Ticket)) {
-            return false
-        }
-
-        (id == null) ? super.equals(obj) : id == obj.id
+        obj instanceof Ticket && id == obj.id
     }
 
     @Override
     int hashCode() {
-        (id == null) ? super.hashCode() : (id as int)
+        (id ?: 0i) as int
     }
 
     @Override
