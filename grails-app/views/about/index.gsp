@@ -27,8 +27,10 @@
         <p><g:message code="about.app.description" /></p>
         <p><g:message code="about.app.version"
           args="[
-              meta(name: 'app.version'), meta(name: 'app.buildNumber'),
-              meta(name: 'app.buildDate'), meta(name: 'app.buildProfile')
+              meta(name: 'info.app.version'),
+              meta(name: 'info.app.buildNumber'),
+              meta(name: 'info.app.buildDate'),
+              meta(name: 'grails.env')
             ]" /></p>
         <p><g:message code="about.app.copyright" args="[new Date()]" /></p>
 

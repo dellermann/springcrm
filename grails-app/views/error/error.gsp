@@ -196,10 +196,10 @@
               xsi:schemaLocation="http://www.amc-world.de/data/xml/springcrm http://www.amc-world.de/data/xml/springcrm/error-report-1.1.xsd"&gt;
   &lt;report-version&gt;1.1&lt;/report-version&gt;
   &lt;application&gt;
-    &lt;version&gt;<g:meta name="app.version" />&lt;/version&gt;
+    &lt;version&gt;<g:meta name="info.app.version" />&lt;/version&gt;
     &lt;build-number&gt;<g:meta name="app.buildNumber" />&lt;/build-number&gt;
     &lt;build-date&gt;<g:meta name="app.buildDate" />&lt;/build-date&gt;
-    &lt;build-profile&gt;<g:meta name="app.buildProfile" />&lt;/build-profile&gt;
+    &lt;build-profile&gt;<g:meta name="grails.env" />&lt;/build-profile&gt;
   &lt;/application&gt;
   &lt;customer&gt;
     &lt;name&gt;%name%&lt;/name&gt;

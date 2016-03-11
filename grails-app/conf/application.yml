@@ -28,6 +28,8 @@ info:
         name: '@info.app.name@'
         version: '@info.app.version@'
         grailsVersion: '@info.app.grailsVersion@'
+        buildNumber: '@info.app.buildNumber@'
+        buildDate: '@info.app.buildDate@'
 spring:
     groovy:
         template:

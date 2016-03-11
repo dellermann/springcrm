@@ -1,4 +1,7 @@
 import java.nio.file.Path
+import java.text.SimpleDateFormat
+import org.apache.tools.ant.filters.ReplaceTokens
+
 
 buildscript {
     ext {
@@ -10,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.5.0'
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.7.2'
         classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
         classpath 'org.grails.plugins:hibernate:4.3.10.5'
     }
@@ -94,6 +97,7 @@ dependencies {
     compile 'org.grails.plugins:hibernate4'
     compile 'org.grails.plugins:mail:2.0.0.RC4'
     compile 'org.grails.plugins:scaffolding'
+    compile fileTree('../i18n-asset-pipeline/build/classes/main')
 
     runtime 'org.grails.plugins:asset-pipeline'
     runtime 'org.grails.plugins:database-migration:2.0.0.RC1'
@@ -122,6 +126,45 @@ sourceSets {
 
 task wrapper(type: Wrapper) {
     gradleVersion = gradleWrapperVersion
+}
+
+task buildInfo << {
+    def buildNumberFile = file('grails-app/conf/buildNumber')
+    String buildNumber = '0'
+    if (buildNumberFile.exists()) {
+        buildNumber = buildNumberFile.text.trim()
+        buildNumber = ((buildNumber as long) + 1L).toString()
+    }
+    buildNumberFile.text = buildNumber
+    def formatter = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
+    def replaceTokens = [
+        'info.app.buildNumber': buildNumber,
+        'info.app.buildDate': formatter.format(new Date())
+    ]
+
+    copy {
+        from(sourceSets.main.output.resourcesDir) {
+            filter(ReplaceTokens, tokens: replaceTokens)
+            include '**/*.groovy'
+            include '**/*.yml'
+            include '**/*.xml'
+        }
+        into temporaryDir
+    }
+    copy {
+        from(temporaryDir) {
+            include '**/*.groovy'
+            include '**/*.yml'
+            include '**/*.xml'
+        }
+        into sourceSets.main.output.resourcesDir
+    }
+}
+processResources.finalizedBy buildInfo
+
+groovydoc {
+    docTitle = "SpringCRM API v${version}"
+    windowTitle = "SpringCRM API v${version}"
 }
 
 eclipse {

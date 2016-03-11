@@ -28,17 +28,18 @@
       <h3><g:message code="about.sysInfo.application" /></h3>
       <dl class="dl-horizontal sys-info-list">
         <dt><g:message code="about.sysInfo.version" /></dt>
-        <dd><g:meta name="app.version" /></dd>
+        <dd><g:meta name="info.app.version" /></dd>
         <dt><g:message code="about.sysInfo.build" /></dt>
         <dd
           ><g:message code="about.sysInfo.build.value"
             args="[
-                meta(name: 'app.buildNumber'), meta(name: 'app.buildDate'),
-                meta(name: 'app.buildProfile')
+                meta(name: 'info.app.buildNumber'),
+                meta(name: 'info.app.buildDate'),
+                meta(name: 'grails.env')
               ]"
         /></dd>
         <dt><g:message code="about.sysInfo.grailsVersion" /></dt>
-        <dd><g:meta name="app.grails.version" /></dd>
+        <dd><g:meta name="info.app.grailsVersion" /></dd>
       </dl>
     </section>
 

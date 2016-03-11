@@ -62,7 +62,8 @@ class OverviewService {
      *                      user
      */
     void dontShowAgain(Credential credential) {
-        String currentVersion = grailsApplication.metadata['app.version']
+        String currentVersion =
+            grailsApplication.metadata.getApplicationVersion()
         credential.settings['changelogVersion'] = currentVersion
     }
 
@@ -107,7 +108,8 @@ class OverviewService {
             return true
         }
 
-        String currentVersion = grailsApplication.metadata['app.version']
+        String currentVersion =
+            grailsApplication.metadata.getApplicationVersion()
         new VersionComparator().compare(version, currentVersion) < 0
     }
 }

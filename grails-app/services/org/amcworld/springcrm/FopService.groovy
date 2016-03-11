@@ -284,8 +284,8 @@ class FopService {
     protected FOUserAgent getUserAgent(FopFactory fopFactory) {
         FOUserAgent ua = fopFactory.newFOUserAgent()
         StringBuilder buf =
-            new StringBuilder(grailsApplication.metadata['app.name'])
-        buf << ' v' << grailsApplication.metadata['app.version']
+            new StringBuilder(grailsApplication.metadata.getApplicationName())
+        buf << ' v' << grailsApplication.metadata.getApplicationVersion()
         ua.producer = buf.toString()
         ua.creationDate = new Date()
         ua

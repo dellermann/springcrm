@@ -79,7 +79,7 @@
           <div class="col-xs-12 col-sm-4">
             <g:message code="default.appName" />
             <g:message code="default.version"
-              args="[meta(name: 'app.version')]" />
+              args="[meta(name: 'info.app.version')]" />
           </div>
           <div class="col-xs-12 col-sm-8">
             <g:message code="default.copyright" args="[new Date()]" />,

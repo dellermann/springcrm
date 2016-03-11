@@ -3,8 +3,10 @@
     <div class="col-xs-12 col-sm-6">
       <ul>
         <li><g:message code="default.appName" />
-          <g:message code="default.version.long"
-            args="[meta(name: 'app.version'), meta(name: 'app.buildNumber')]" />
+          <g:message code="default.version.long" args="[
+              meta(name: 'info.app.version'),
+              meta(name: 'info.app.buildNumber')
+            ]" />
         </li>
         <g:if test="${controllerName != 'install'}">
         <li>
