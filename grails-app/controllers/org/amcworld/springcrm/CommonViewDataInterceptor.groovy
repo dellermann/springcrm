@@ -37,7 +37,18 @@ class CommonViewDataInterceptor implements Interceptor {
 
     //-- Fields ---------------------------------
 
+    int order = 10
     UserService userService
+
+
+    //-- Constructors ---------------------------
+
+    /**
+     * Creates a new instance of the interceptor.
+     */
+    CommonViewDataInterceptor() {
+        matchAll()
+    }
 
 
     //-- Public methods -------------------------
