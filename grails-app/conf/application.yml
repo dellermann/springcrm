@@ -69,9 +69,10 @@ grails:
             xml:
               - text/xml
               - application/xml
-    web:
-        url:
-            converter: hyphenated
+    # XXX does not work in Grails 3.1.4
+    # web:
+    #     url:
+    #         converter: hyphenated
     urlmapping:
         cache:
             maxsize: 1000

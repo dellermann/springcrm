@@ -29,6 +29,3 @@ Handlebars.registerHelper 'section', (name, options) ->
     options.inverse this
 
 Handlebars.registerHelper 'message', (key) -> $L(key)
-
-# vim:set ts=2 sw=2 sts=2:
-
