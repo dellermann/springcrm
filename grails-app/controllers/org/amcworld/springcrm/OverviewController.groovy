@@ -31,7 +31,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * overview page and handle the panels.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class OverviewController {
 
@@ -64,15 +64,15 @@ class OverviewController {
         OverviewPanelRepository repository = OverviewPanelRepository.instance
         Locale locale = LCH.locale
 
-        render(contentType: 'text/json') {
+        render(contentType: 'application/json') {
             for (Map.Entry<String, OverviewPanel> entry in repository.panels) {
-                setProperty(entry.key, {
+                "${entry.key}" {
                     OverviewPanel p = entry.value
-                    title = p.getTitle(locale)
-                    description = p.getDescription(locale)
-                    url = p.url
-                    style = p.style
-                })
+                    title p.getTitle(locale)
+                    description p.getDescription(locale)
+                    url p.url
+                    style p.style
+                }
             }
         }
     }
