@@ -1,3 +1,23 @@
+/*
+ * build.gradle
+ *
+ * Copyright (c) 2011-2016, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 import java.nio.file.Path
 import java.text.SimpleDateFormat
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -12,10 +32,14 @@ buildscript {
         maven { url 'https://repo.grails.org/grails/core' }
     }
     dependencies {
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:$assetPipelineVersion"
+        classpath "com.bertramlabs.plugins:coffee-asset-pipeline:$assetPipelineVersion"
+        classpath "com.bertramlabs.plugins:handlebars-asset-pipeline:$assetPipelineVersion"
+        classpath "com.bertramlabs.plugins:less-asset-pipeline:$assetPipelineVersion"
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:2.7.2'
         classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
         classpath 'org.grails.plugins:hibernate:4.3.10.5'
+        classpath 'org.grails.plugins:i18n-asset-pipeline:3.0.0'
     }
 }
 
@@ -41,8 +65,26 @@ ext {
 }
 
 assets {
-    minifyJs = true
+    configOptions = [
+        less: [compiler: 'standard']
+    ]
+    excludes = [
+        // stylesheets
+        'bootstrap/**.less',
+        'font-awesome/**.less',
+        'js-calc/**.less',
+        'selectize/**.less',
+        'vat-calc/**.less',
+
+        // scripts
+        'bootstrap/*.js',
+        'jquery/*.js',
+        'jqueryui/*.js',
+        'selectize/*.js',
+        'widgets/**'
+    ]
     minifyCss = true
+    minifyJs = true
 }
 
 repositories {
@@ -88,17 +130,17 @@ dependencies {
     compile files('lib/groovy-ldap.jar')
 
     // Grails plugins
-    compile 'com.bertramlabs.plugins:coffee-asset-pipeline:2.6.9'
-    compile 'com.bertramlabs.plugins:handlebars-asset-pipeline:2.6.9'
-    compile 'com.bertramlabs.plugins:less-asset-pipeline:2.6.9'
     compile 'org.grails.plugins:cache'
     compile 'org.grails.plugins:fields:2.1.2'
     compile 'org.grails.plugins:grails-markdown:3.0.0'
     compile 'org.grails.plugins:hibernate4'
+    compile 'org.grails.plugins:i18n-asset-pipeline:3.0.0'
     compile 'org.grails.plugins:mail:2.0.0.RC4'
     compile 'org.grails.plugins:scaffolding'
-    compile files('../i18n-asset-pipeline/build/libs/i18n-asset-pipeline-3.0.0.jar')
 
+    runtime "com.bertramlabs.plugins:coffee-asset-pipeline:$assetPipelineVersion"
+    runtime "com.bertramlabs.plugins:handlebars-asset-pipeline:$assetPipelineVersion"
+    runtime "com.bertramlabs.plugins:less-asset-pipeline:$assetPipelineVersion"
     runtime 'org.grails.plugins:asset-pipeline'
     runtime 'org.grails.plugins:database-migration:2.0.0.RC1'
 
