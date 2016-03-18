@@ -39,7 +39,7 @@ class DataFile {
     static constraints = {
         fileName blank: false
         mimeType nullable: true
-        fileSize range: 0L..104_857_600L        // 0..100M
+        fileSize min: 0L, max: 104_857_600L             // 0..100M
     }
     static transients = ['storageName']
 

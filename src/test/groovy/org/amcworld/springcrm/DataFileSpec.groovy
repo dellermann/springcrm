@@ -331,9 +331,6 @@ class DataFileSpec extends Specification {
     }
 
     def 'FileName constraints'() {
-        setup:
-        mockForConstraintsTests(DataFile)
-
         when:
         def df = new DataFile(fileName: f, fileSize: 1024)
         df.validate()
@@ -353,10 +350,7 @@ class DataFileSpec extends Specification {
         'foo.html'      | true
     }
 
-    def 'FileSize constraints'() {
-        setup:
-        mockForConstraintsTests(DataFile)
-
+    def 'FileSize constraints'(long fs, boolean valid) {
         when:
         def df = new DataFile(fileName: 'foo.odt', fileSize: fs)
         df.validate()
