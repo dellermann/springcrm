@@ -39,7 +39,7 @@ buildscript {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
         classpath 'org.grails.plugins:hibernate:4.3.10.5'
-        classpath 'org.grails.plugins:i18n-asset-pipeline:3.0.0'
+        classpath 'org.grails.plugins:i18n-asset-pipeline:2.0.0'
     }
 }
 
@@ -112,6 +112,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.boot:spring-boot-autoconfigure'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.grails:grails-core'
     compile 'org.grails:grails-dependencies'
     compile 'org.grails:grails-web-boot'
 
@@ -134,7 +135,6 @@ dependencies {
     compile 'org.grails.plugins:fields:2.1.2'
     compile 'org.grails.plugins:grails-markdown:3.0.0'
     compile 'org.grails.plugins:hibernate4'
-    compile 'org.grails.plugins:i18n-asset-pipeline:3.0.0'
     compile 'org.grails.plugins:mail:2.0.0.RC4'
     compile 'org.grails.plugins:scaffolding'
 
@@ -143,6 +143,7 @@ dependencies {
     runtime "com.bertramlabs.plugins:less-asset-pipeline:$assetPipelineVersion"
     runtime 'org.grails.plugins:asset-pipeline'
     runtime 'org.grails.plugins:database-migration:2.0.0.RC1'
+    runtime 'org.grails.plugins:i18n-asset-pipeline:2.0.0'
 
     runtime 'mysql:mysql-connector-java:5.1.27'
     runtime 'net.sf.barcode4j:barcode4j-fop-ext-complete:2.0'
