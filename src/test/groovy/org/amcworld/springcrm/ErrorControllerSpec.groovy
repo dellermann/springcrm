@@ -1,7 +1,7 @@
 /*
  * ErrorControllerSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,12 @@
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
+import org.apache.http.HttpStatus
+import org.apache.http.HttpVersion
+import org.apache.http.client.methods.CloseableHttpResponse
+import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
+import org.apache.http.message.BasicStatusLine
 import spock.lang.Specification
 
 
@@ -106,13 +110,20 @@ class ErrorControllerSpec extends Specification {
 
         and: 'a mock for the HttpClient class'
         def postData = [: ]
-        def mock = mockFor(CloseableHttpClient)
-        mock.demand.execute {
-            postData.uri = it.URI
-            postData.contentType = it.entity.contentType.value
-            postData.content = it.entity.content.text
+        CloseableHttpClient client = Mock()
+        1 * client.execute(_) >> { HttpPost post ->
+            postData.uri = post.URI
+            postData.contentType = post.entity.contentType.value
+            postData.content = post.entity.content.text
+
+            CloseableHttpResponse response = Mock()
+            response.statusLine >> new BasicStatusLine(
+                HttpVersion.HTTP_1_1, HttpStatus.SC_OK, 'OK'
+            )
+
+            response
         }
-        HttpClients.metaClass.'static'.createDefault = { mock.createMock() }
+        controller.httpClient = client
 
         when: 'I call the report error action'
         params.xml = xml

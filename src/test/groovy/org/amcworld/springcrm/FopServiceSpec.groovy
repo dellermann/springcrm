@@ -1,7 +1,7 @@
 /*
  * FopServiceSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,101 +20,369 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import javax.servlet.ServletContext
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
+import javax.xml.transform.Transformer
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.sax.SAXResult
+import javax.xml.transform.sax.SAXSource
+import javax.xml.transform.stream.StreamSource
+import org.amcworld.springcrm.xml.TemplateURIResolver
+import org.apache.avalon.framework.configuration.Configuration
+import org.apache.fop.apps.FOUserAgent
+import org.apache.fop.apps.Fop
+import org.apache.fop.apps.FopFactory
+import org.apache.fop.apps.MimeConstants
+import org.springframework.context.MessageSource
+import org.xml.sax.XMLReader
+import org.xml.sax.helpers.DefaultHandler
+import spock.lang.Specification
 
 
 @TestFor(FopService)
-@Mock([
-    Config, FopService, Invoice, InvoiceStage, InvoicingItem, Organization,
-    Person, TermsAndConditions, User
-])
-class FopServiceSpec extends InvoicingTransactionXMLBase {
-
-    def setup() {
-        def control = mockFor(ServletContext)
-        control.demand.getResourcePaths(1) { String path ->
-            def f = new File(System.getProperty('user.dir'), "web-app/${path}")
-            def l = f.list()
-            def res = new HashSet<String>(l.length)
-            l.each { res << "${f}/${it}/" }
-            res
-        }
-        control.demand.getResourceAsStream(2) { String path ->
-            try {
-                new File(path).newInputStream()
-            } catch (IOException e) {
-                null
-            }
-        }
-        service.servletContext = control.createMock()
-    }
-
+class FopServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
 
+    def 'No templates result in an empty template name map'() {
+        given: 'a mocked servlet context'
+        ServletContext ctx = Mock()
+        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> ([] as Set)
+        service.servletContext = ctx
+
+        and: 'an application setting to an non-existing path'
+        config.springcrm.dir.print = '/foo/bar'
+
+        expect:
+        0 == service.templateNames.size()
+    }
+
     def 'Get template names'() {
-        when: 'I call the method'
-        def names = service.templateNames
+        given: 'some temporary directories'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File userDir1 = new File(tempDir, 'bar')
+        userDir1.mkdir()
+        File userDir2 = new File(tempDir, 'whee')
+        userDir2.mkdir()
+        File userDir3 = new File(tempDir, 'foo')
+        userDir3.mkdir()
+        config.springcrm.dir.print = tempDir.absolutePath
 
-        then: 'I get at least the default template'
-        1 <= names.size()
-        'default' == names['default']
-        !('dtd' in names)
+        and: 'some meta files'
+        File metaFile2 = new File(userDir2, 'meta.properties')
+        metaFile2.text = 'name = Test template'
+        File metaFile3 = new File(userDir3, 'meta.properties')
+        metaFile3.text = 'foo = bar'
+
+        and: 'a mocked servlet context'
+        ServletContext ctx = Mock()
+        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> ([] as Set)
+        service.servletContext = ctx
+
+        and: 'a mocked message source'
+        MessageSource messageSource = Mock()
+        messageSource.getMessage('print.template.bar', _, _, _) >> 'Drafts'
+        messageSource.getMessage('print.template.whee', _, _, _) >> 'Not used'
+        messageSource.getMessage('print.template.foo', _, _, _) >> 'Branch A'
+        service.messageSource = messageSource
+
+        when: 'I obtain the template names'
+        Map<String, String> res = service.templateNames
+
+        then: 'I get a valid map of names'
+        3 == res.size()
+        'Drafts' == res['bar']
+        'Test template' == res['whee']
+        'Branch A' == res['foo']
+
+        cleanup:
+        userDir1.delete()
+        metaFile2.delete()
+        userDir2.delete()
+        metaFile3.delete()
+        userDir3.delete()
+        tempDir.delete()
     }
 
-    def 'Get template paths'() {
-        when: 'I call the method'
-        def paths = service.templatePaths
+    def 'Get template paths with non-existing user template directory'() {
+        given: 'some resource paths'
+        def paths = [
+            '/WEB-INF/data/foo/', '/WEB-INF/data/bar/', '/WEB-INF/data/dtd/'
+        ] as Set
 
-        then: 'I get at least the path of the default template'
-        1 <= paths.size()
-        String p = paths['default']
-        null != p
-        p.startsWith 'SYSTEM:'
-        p.endsWith '/default/'
-        !('dtd' in paths)
+        and: 'a mocked servlet context'
+        ServletContext ctx = Mock()
+        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> paths
+        service.servletContext = ctx
+
+        and: 'an application setting to an non-existing path'
+        config.springcrm.dir.print = '/foo/bar'
+
+        when: 'I obtains the template paths'
+        Map<String, String> res = service.templatePaths
+
+        then: 'I get a valid map of paths'
+        2 == res.size()
+        'SYSTEM:/WEB-INF/data/foo/' == res['foo']
+        'SYSTEM:/WEB-INF/data/bar/' == res['bar']
     }
 
-    def 'Get user template directory'() {
-        given: 'the name of this application'
-        String appName = grailsApplication.metadata['app.name']
+    def 'Get template paths with existing user template directory'() {
+        given: 'some resource paths'
+        def paths = [
+            '/WEB-INF/data/foo/', '/WEB-INF/data/bar/', '/WEB-INF/data/dtd/'
+        ] as Set
 
-        when: 'I call the method'
+        and: 'a mocked servlet context'
+        ServletContext ctx = Mock()
+        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> paths
+        service.servletContext = ctx
+
+        and: 'an application setting to an existing path'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File userDir1 = new File(tempDir, 'bar')
+        userDir1.mkdir()
+        File userDir2 = new File(tempDir, 'whee')
+        userDir2.mkdir()
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        when: 'I obtains the template paths'
+        Map<String, String> res = service.templatePaths
+
+        then: 'I get a valid map of paths'
+        3 == res.size()
+        'SYSTEM:/WEB-INF/data/foo/' == res['foo']
+        userDir1.absolutePath == res['bar']
+        userDir2.absolutePath == res['whee']
+
+        cleanup:
+        userDir1.delete()
+        userDir2.delete()
+        tempDir.delete()
+    }
+
+    def 'Get non-existing user template directory'() {
+        given: 'no print template configuration'
+        config.springcrm.dir.print = null
+
+        expect:
+        null == service.userTemplateDir
+    }
+
+    def 'Get existing user template directory'() {
+        given: 'a application setting'
+        config.springcrm.dir.print = '/foo/bar'
+
+        when: 'I obtain the user template directory'
         File f = service.userTemplateDir
 
         then: 'I get a valid path to the user template directory'
-        null != f
-        f.absolutePath.endsWith "/.${appName}/print"
+        '/foo/bar' == f.path
     }
 
-//    def 'Generate PDF of an invoice'() {
-//        given: 'an invoicing transaction XML converter factory'
-//        InvoicingTransactionXMLFactory invoicingTransactionXMLFactory =
-//            initInvoicingTransactionXMLFactory()
-//
-//        and: 'an invoice'
-//        def invoice = makeInvoiceFixture()
-//
-//        and: 'some client data'
-//        makeClientFixture()
-//
-//        and: 'a user in the session'
-//        def user = makeUserFixture()
-//
-//        and: 'XML created from this invoice'
-//        def conv = invoicingTransactionXMLFactory.createConverter(invoice, user)
-//        String xml = conv.toXML()
-//
-//        when: 'I generate PDF from this XML'
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-//        service.generatePdf new StringReader(xml), 'invoice', 'default', baos
-//
-//        then: 'I get valid PDF data'
-//        println baos.toString()
-//        0 > baos.size()
-//    }
+    def 'Generate PDF of an invoice'() {
+        given: 'some necessary values'
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        Date now = new Date()
+        String xml = '<?xml test data?>'
 
-    // TODO write test for the other methods
+        and: 'a mocked servlet context'
+        ServletContext ctx = Mock()
+        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> []
+        service.servletContext = ctx
+
+        and: 'a template directory'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File tplDir = new File(tempDir, 'bar')
+        tplDir.mkdir()
+        File configFile = new File(tplDir, 'fop-conf.xml')
+        configFile.text = '''<?xml version="1.0" encoding="UTF-8"?>
+
+<fop version="1.0">
+  <default-page-settings width="210mm" height="297mm"/>
+  <renderers>
+    <renderer mime="application/pdf">
+      <fonts>
+        <auto-detect/>
+      </fonts>
+    </renderer>
+  </renderers>
+</fop>'''
+        File xslFile = new File(tplDir, 'invoice-fo.xsl')
+        xslFile.text = '<?xslt test file?>'
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        and: 'a mocked XML reader'
+        XMLReader xmlReader = Mock()
+        service.xmlReader = xmlReader
+
+        and: 'a mocked content handler'
+        DefaultHandler handler = Mock()
+
+        and: 'a mocked transformer'
+        Transformer transformer = Mock()
+        1 * transformer.setParameter('versionParam', '2.0')
+        1 * transformer.transform(_, _) >> { SAXSource source, SAXResult result ->
+            assert xmlReader.is(source.XMLReader)
+            assert xml == source.inputSource.characterStream.text
+            assert handler == result.handler
+        }
+
+        and: 'a mocked transformer factory'
+        TransformerFactory transformerFactory = Mock()
+        1 * transformerFactory.setURIResolver(_) >> { TemplateURIResolver resolver ->
+            assert tplDir.absolutePath == resolver.userTemplatePath
+        }
+        1 * transformerFactory.newTransformer(_) >> { StreamSource source ->
+            assert '<?xslt test file?>' == source.inputStream.text
+
+            transformer
+        }
+        service.transformerFactory = transformerFactory
+
+        and: 'a mocked FOP instance'
+        Fop fop = Mock()
+        1 * fop.defaultHandler >> handler
+
+        and: 'a mocked FOP factory'
+        FopFactory fopFactory = Mock()
+        1 * fopFactory.setUserConfig(_) >> { Configuration config ->
+            assert 'fop' == config.name
+            assert '1.0' == config.getAttribute('version')
+            Configuration c = config.getChild('default-page-settings', false)
+            assert '210mm' == c.getAttribute('width')
+            assert '297mm' == c.getAttribute('height')
+            c = config.getChild('renderers', false).getChild('renderer', false)
+            assert 'application/pdf' == c.getAttribute('mime')
+            assert null != c.getChild('fonts', false).getChild('auto-detect', false)
+        }
+        1 * fopFactory.newFop(MimeConstants.MIME_PDF, _, _) >> { String mimeType, FOUserAgent ua, OutputStream out ->
+            assert "springcrm v${grailsApplication.metadata.getApplicationVersion()}" == ua.producer
+            assert now <= ua.creationDate
+            assert baos.is(out)
+
+            out.write 'PDF1.1/Test result'.bytes
+
+            fop
+        }
+        1 * fopFactory.getBaseURL() >> ''
+        1 * fopFactory.getTargetResolution() >> 72.0f
+        1 * fopFactory.isAccessibilityEnabled() >> false
+        1 * fopFactory.newFOUserAgent() >> new FOUserAgent(fopFactory)
+        service.fopFactory = fopFactory
+
+        when: 'I generate the PDF document'
+        service.generatePdf(
+            new StringReader(xml), 'invoice', 'bar', baos
+        )
+
+        then: 'the output stream contains the correct result'
+        'PDF1.1/Test result' == baos.toString()
+
+        cleanup:
+        tempDir.deleteDir()
+    }
+
+    def 'Output PDF of an invoice'() {
+        given: 'some necessary values'
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+        Date now = new Date()
+        String xml = '<?xml test data?>'
+        byte [] result = 'PDF1.1/Test result'.bytes
+
+        and: 'a mocked servlet context'
+        ServletContext ctx = Mock()
+        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> []
+        service.servletContext = ctx
+
+        and: 'a template directory'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File tplDir = new File(tempDir, 'bar')
+        tplDir.mkdir()
+        File configFile = new File(tplDir, 'fop-conf.xml')
+        configFile.text = '''<?xml version="1.0" encoding="UTF-8"?>
+
+<fop version="1.0">
+  <default-page-settings width="210mm" height="297mm"/>
+  <renderers>
+    <renderer mime="application/pdf">
+      <fonts>
+        <auto-detect/>
+      </fonts>
+    </renderer>
+  </renderers>
+</fop>'''
+        File xslFile = new File(tplDir, 'invoice-fo.xsl')
+        xslFile.text = '<?xslt test file?>'
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        and: 'a mocked XML reader'
+        XMLReader xmlReader = Mock()
+        service.xmlReader = xmlReader
+
+        and: 'a mocked content handler'
+        DefaultHandler handler = Mock()
+
+        and: 'a mocked transformer'
+        Transformer transformer = Mock()
+        1 * transformer.setParameter('versionParam', '2.0')
+        1 * transformer.transform(_, _)
+
+        and: 'a mocked transformer factory'
+        TransformerFactory transformerFactory = Mock()
+        1 * transformerFactory.setURIResolver(_)
+        1 * transformerFactory.newTransformer(_) >> transformer
+        service.transformerFactory = transformerFactory
+
+        and: 'a mocked FOP instance'
+        Fop fop = Mock()
+        1 * fop.defaultHandler >> handler
+
+        and: 'a mocked FOP factory'
+        FopFactory fopFactory = Mock()
+        1 * fopFactory.setUserConfig(_)
+        1 * fopFactory.newFop(MimeConstants.MIME_PDF, _, _) >> { String mimeType, FOUserAgent ua, OutputStream out ->
+            out.write result
+
+            fop
+        }
+        1 * fopFactory.getBaseURL() >> ''
+        1 * fopFactory.getTargetResolution() >> 72.0f
+        1 * fopFactory.isAccessibilityEnabled() >> false
+        1 * fopFactory.newFOUserAgent() >> new FOUserAgent(fopFactory)
+        service.fopFactory = fopFactory
+
+        and: 'a mocked servlet output stream'
+        ServletOutputStream outputStream = Mock()
+        1 * outputStream.write(_ as byte[]) >> {
+
+            /*
+             * XXX despite I call outputStream.write with a byte [] I get a
+             * list with one element representing the byte array.  This could
+             * be an error in Spock.
+             */
+            baos.write it[0]
+        }
+        1 * outputStream.flush()
+
+        and: 'a mocked HTTP response'
+        HttpServletResponse response = Mock()
+        1 * response.setContentType('application/pdf')
+        1 * response.addHeader('Content-Disposition', 'attachment; filename="Invoice I-40473-10473.pdf"')
+        1 * response.setContentLength(result.length)
+        response.outputStream >> outputStream
+
+        when: 'I output the PDF document'
+        service.outputPdf(
+            xml, 'invoice', 'bar', response, 'Invoice I-40473-10473.pdf'
+        )
+
+        then: 'the output stream contains the correct result'
+        'PDF1.1/Test result' == baos.toString()
+
+        cleanup:
+        tempDir.deleteDir()
+    }
 }

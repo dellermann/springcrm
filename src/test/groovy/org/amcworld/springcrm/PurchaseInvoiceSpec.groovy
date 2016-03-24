@@ -20,11 +20,13 @@
 
 package org.amcworld.springcrm
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 
 @TestFor(PurchaseInvoice)
+@Mock([PurchaseInvoice, PurchaseInvoiceItem])
 class PurchaseInvoiceSpec extends Specification {
 
 	//-- Feature Methods --------------------------
@@ -995,7 +997,7 @@ class PurchaseInvoiceSpec extends Specification {
             docDate: new Date(),
             dueDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the number'
@@ -1023,7 +1025,7 @@ class PurchaseInvoiceSpec extends Specification {
             docDate: new Date(),
             dueDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the subject'
@@ -1051,7 +1053,7 @@ class PurchaseInvoiceSpec extends Specification {
             docDate: new Date(),
             dueDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the vendor name'
@@ -1079,7 +1081,7 @@ class PurchaseInvoiceSpec extends Specification {
             vendorName: 'Sugar & salt & bicycle vendor',
             dueDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the document date'
@@ -1103,7 +1105,7 @@ class PurchaseInvoiceSpec extends Specification {
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the due date'
@@ -1127,7 +1129,7 @@ class PurchaseInvoiceSpec extends Specification {
             vendorName: 'Sugar & salt & bicycle vendor',
             docDate: new Date(),
             dueDate: new Date(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the stage'
@@ -1155,7 +1157,7 @@ class PurchaseInvoiceSpec extends Specification {
         )
 
         when: 'I set the items'
-        pi.items = [new InvoicingItem()]
+        pi.items = [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
 
         then: 'the instance is valid'
         pi.validate()
@@ -1173,7 +1175,9 @@ class PurchaseInvoiceSpec extends Specification {
         !pi.validate()
     }
 
-	def 'Discount percent must not be less than zero'() {
+	def 'Discount percent must not be less than zero'(BigDecimal dp,
+                                                      boolean valid)
+    {
         given: 'a valid purchase invoice'
         def pi = new PurchaseInvoice(
             number: '123456',
@@ -1182,7 +1186,7 @@ class PurchaseInvoiceSpec extends Specification {
             docDate: new Date(),
             dueDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
 		when: 'I set various values and validate'
@@ -1216,7 +1220,7 @@ class PurchaseInvoiceSpec extends Specification {
             docDate: new Date(),
             dueDate: new Date(),
             stage: new PurchaseInvoiceStage(),
-            items: [new PurchaseInvoiceItem()]
+            items: [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set various values and validate'

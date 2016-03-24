@@ -303,6 +303,6 @@ class InvoicingTransactionXMLBase extends Specification {
 
     protected void registerDefaultConverters() {
         def convertersInit = new ConvertersConfigurationInitializer()
-        convertersInit.initialize(grailsApplication)
+        convertersInit.initialize()
     }
 }

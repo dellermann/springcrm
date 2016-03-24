@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Controller
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.LocaleUtils
 
@@ -29,9 +30,9 @@ import org.apache.commons.lang.LocaleUtils
  * the application.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class UserController {
+class UserController implements Controller {
 
     //-- Class variables ------------------------
 
@@ -49,6 +50,7 @@ class UserController {
     //-- Public methods -------------------------
 
     def index() {
+        float f = 3 / 0
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
             int num = User.countByUserNameLessThan(params.letter)

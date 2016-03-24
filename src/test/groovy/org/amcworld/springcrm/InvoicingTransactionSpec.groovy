@@ -20,11 +20,13 @@
 
 package org.amcworld.springcrm
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 
 @TestFor(InvoicingTransaction)
+@Mock([InvoicingTransaction, InvoicingItem])
 class InvoicingTransactionSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -234,7 +236,7 @@ class InvoicingTransactionSpec extends Specification {
             ],
             shippingCosts: 4.5,
             shippingTax: 5
-        )
+        ) // subtotalGross == 426.11095
 
         when: 'I set a discrete percentage value'
         i.discountPercent = d
@@ -1044,7 +1046,7 @@ class InvoicingTransactionSpec extends Specification {
             person: new Person(),
             billingAddr: new Address(),
             shippingAddr: new Address(),
-            items: [new InvoicingItem()],
+            items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
         when: 'I set the type'
@@ -1073,7 +1075,7 @@ class InvoicingTransactionSpec extends Specification {
             person: new Person(),
             billingAddr: new Address(),
             shippingAddr: new Address(),
-            items: [new InvoicingItem()],
+            items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
         when: 'I set the subject'
@@ -1102,7 +1104,7 @@ class InvoicingTransactionSpec extends Specification {
             person: new Person(),
             billingAddr: new Address(),
             shippingAddr: new Address(),
-            items: [new InvoicingItem()],
+            items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
         when: 'I set the organization'
@@ -1128,7 +1130,7 @@ class InvoicingTransactionSpec extends Specification {
             person: new Person(),
             billingAddr: new Address(),
             shippingAddr: new Address(),
-            items: [new InvoicingItem()],
+            items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
         when: 'I set the document date'
@@ -1157,7 +1159,7 @@ class InvoicingTransactionSpec extends Specification {
         )
 
         when: 'I set the items'
-        i.items = [new InvoicingItem()]
+        i.items = [new InvoicingItem(unit: 'h', name: 'Administration')]
 
         then: 'the instance is valid'
         i.validate()
@@ -1185,7 +1187,7 @@ class InvoicingTransactionSpec extends Specification {
             person: new Person(),
             billingAddr: new Address(),
             shippingAddr: new Address(),
-            items: [new InvoicingItem()],
+            items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
         when: 'I set various values and validate'
@@ -1220,7 +1222,7 @@ class InvoicingTransactionSpec extends Specification {
             person: new Person(),
             billingAddr: new Address(),
             shippingAddr: new Address(),
-            items: [new InvoicingItem()],
+            items: [new InvoicingItem(unit: 'h', name: 'Administration')],
         )
 
         when: 'I set various values and validate'

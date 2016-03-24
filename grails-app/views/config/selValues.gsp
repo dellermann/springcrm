@@ -16,8 +16,8 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="saveSelValues" elementId="config-form"
-      params="[returnUrl: params.returnUrl]" method="post"
+    <form action="${createLink(action: 'saveSelValues', params: [returnUrl: params.returnUrl])}"
+      id="config-form" method="post"
       class="form-horizontal data-form form-view">
       <section>
         <header>
@@ -75,7 +75,7 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
 
     <content tag="scripts">
       <asset:javascript src="config-sel-values" />

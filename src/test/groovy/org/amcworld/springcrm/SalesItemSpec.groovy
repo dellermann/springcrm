@@ -20,11 +20,13 @@
 
 package org.amcworld.springcrm
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 
 @TestFor(SalesItem)
+@Mock([SalesItem, SalesItemPricing, SalesItemPricingItem])
 class SalesItemSpec extends Specification {
 
 	//-- Feature methods ------------------------
@@ -498,7 +500,10 @@ class SalesItemSpec extends Specification {
             name: '8" pipe',
             unit: new Unit(),
             unitPrice: 3.45,
-            pricing: new SalesItemPricing()
+            pricing: new SalesItemPricing(
+                unit: new Unit(),
+                items: [new SalesItemPricingItem(unit: 'h', name: 'Service')]
+            )
         )
 
         when: 'I set the quantity'
@@ -554,7 +559,10 @@ class SalesItemSpec extends Specification {
             name: '8" pipe',
             quantity: 45,
             unitPrice: 3.45,
-            pricing: new SalesItemPricing()
+            pricing: new SalesItemPricing(
+                unit: new Unit(),
+                items: [new SalesItemPricingItem(unit: 'h', name: 'Service')]
+            )
         )
 
         when: 'I set the unit'

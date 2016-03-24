@@ -1,7 +1,7 @@
 /*
  * ProxyAuthorizationCodeFlow.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ import groovy.transform.CompileStatic
  * World OAuth2 proxy.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.0
  */
 @CompileStatic
@@ -226,12 +226,16 @@ class ProxyAuthorizationCodeFlow {
             new ArrayList<CredentialRefreshListener>(1)
         listeners << new DataStoreCredentialRefreshListener(userId, dataStore)
 
+        /*
+         * Implementation notes: the calls setTokenServerUrl() and
+         * setClientAuthentication() are needed to build a valid credential
+         * even if they are not really used.  The URL used to refresh the token
+         * is build in ProxyCredential.executeRefreshToken().
+         */
         new ProxyCredential.Builder(accessMethod)
             .setTransport(transport)
             .setJsonFactory(jsonFactory)
-            .setTokenServerUrl(
-                new GenericUrl('https://server.example.com/token')
-            )
+            .setTokenServerUrl(new GenericUrl('https://example.com/token'))
             .setClientAuthentication(
                 new BasicAuthentication('s6BhdRkqt3', '7Fjfp0ZBr1KtDRbnfVdmIw')
             )

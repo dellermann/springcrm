@@ -20,27 +20,31 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Service
 import grails.core.GrailsApplication
 import grails.web.context.ServletContextHolder as SCH
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
+import java.util.regex.Matcher
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.*
 import javax.xml.transform.sax.SAXResult
 import javax.xml.transform.sax.SAXSource
 import javax.xml.transform.stream.StreamSource
-import org.amcworld.springcrm.util.TemplateURIResolver
+import org.amcworld.springcrm.xml.TemplateURIResolver
 import org.apache.avalon.framework.configuration.Configuration
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.apache.fop.apps.FOUserAgent
 import org.apache.fop.apps.Fop
 import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
-import org.xml.sax.EntityResolver
 import org.xml.sax.InputSource
-import org.xml.sax.SAXException
-import org.xml.sax.helpers.XMLReaderFactory
+import org.xml.sax.XMLReader
 
 
 /**
@@ -52,7 +56,8 @@ import org.xml.sax.helpers.XMLReaderFactory
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class FopService {
+@CompileStatic
+class FopService implements Service {
 
     //-- Constants ------------------------------
 
@@ -60,26 +65,31 @@ class FopService {
      * The folder in the web application containing the system-wide print
      * configuration and template files.
      */
-    protected static final String SYSTEM_FOLDER = '/WEB-INF/data/print'
+    public static final String SYSTEM_FOLDER = '/WEB-INF/data/print'
+
+    private static final Log log = LogFactory.getLog(this)
 
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static transactional = false
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    FopFactory fopFactory
     GrailsApplication grailsApplication
     MessageSource messageSource
     ServletContext servletContext = SCH.servletContext
+    TransformerFactory transformerFactory
+    XMLReader xmlReader
 
 
     //-- Public methods -------------------------
 
     /**
-     * Generates a PDF document from the given template and document type and
-     * writes the data to the given output stream.  The template must be a
+     * Generates a PDF document from the given XML, template and document type
+     * and writes the data to the given output stream.  The template must be a
      * XSL-FO template which is processed by FOP.
      *
      * @param data      a reader containing the XML data to process by the
@@ -91,51 +101,43 @@ class FopService {
      * @param out       the output stream to write the generated PDF data to
      */
     void generatePdf(Reader data, String type, String template,
-                     OutputStream out) {
+                     OutputStream out)
+    {
+        Map<String, String> paths = templatePaths
+        String templateDir = paths[template]
+        URIResolver uriResolver =
+            new TemplateURIResolver(servletContext, templateDir)
+
+        /*
+         * Implementation notes: this sets the URI resolver for XSLT.  The bean
+         * is injected by Spring and defined in
+         * "grails-app/conf/spring/resources.groovy".  The bean must not be
+         * singleton because each instance is modified by setting the URI
+         * resolver.
+         *
+         * If there are URLs in the XML (stored in "data") are to be resolved
+         * you must set a suitable URI resolver at "transformer" using
+         * transformer.URIResolver = …
+         */
+        transformerFactory.URIResolver = uriResolver
 
         /*
          * Implementation notes: normally, the FopFactory instance should be
          * re-used.  In our configuration we have to configure that instance
-         * depending on the template directory.  Thus, we cannot re-used it
-         * because each thread may have its own template and therefore,
-         * template directory.
+         * depending on the template directory.  Thus, we cannot re-use it
+         * because each thread may have its own template and thus, template
+         * directory.
          */
-        Map<String, String> paths = templatePaths
-        String templateDir = paths[template]
-
-        URIResolver uriResolver = new TemplateURIResolver(
-            servletContext, templateDir
-        )
-        FopFactory fopFactory = FopFactory.newInstance()
         fopFactory.URIResolver = uriResolver
         fopFactory.userConfig = getFopConfiguration(templateDir)
-        def ua = getUserAgent(fopFactory)
-
+        FOUserAgent ua = getUserAgent(fopFactory)
         Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, ua, out)
-
-        TransformerFactory tfFactory = TransformerFactory.newInstance()
-        tfFactory.URIResolver = uriResolver
-        tfFactory.errorListener = [
-            error: { e ->
-                log.error "XSL-FO error: ${e.messageAndLocation}"
-            },
-            fatalError: { e ->
-                log.fatal "XSL-FO fatal error: ${e.messageAndLocation}"
-            },
-            warning: { e ->
-                log.warn "XSL-FO warning: ${e.messageAndLocation}"
-            }
-        ] as ErrorListener
 
         try {
             InputStream is = getTemplateFile("${templateDir}/${type}-fo.xsl")
             Transformer transformer =
-                tfFactory.newTransformer(new StreamSource(is))
-            transformer.URIResolver = uriResolver
+                transformerFactory.newTransformer(new StreamSource(is))
             transformer.setParameter('versionParam', '2.0')
-
-            def xmlReader = XMLReaderFactory.createXMLReader()
-            xmlReader.entityResolver = new XHTMLEntityResolver(servletContext)
 
             Source src = new SAXSource(xmlReader, new InputSource(data))
             Result res = new SAXResult(fop.defaultHandler)
@@ -155,7 +157,7 @@ class FopService {
     Map<String, String> getTemplateNames() {
         Map<String, String> paths = templatePaths
         Map<String, String> res = [: ]
-        for (Map.Entry entry in paths) {
+        for (Map.Entry<String, String> entry : paths) {
             Properties props = new Properties()
             try {
                 InputStream is = getTemplateFile(
@@ -166,11 +168,13 @@ class FopService {
             String name = props.getProperty('name')
             if (!name) {
                 name = messageSource.getMessage(
-                    "print.template.${entry.key}", null, entry.key, LCH.locale
+                    "print.template.${entry.key}".toString(), null,
+                    entry.key, LCH.locale
                 )
             }
             res[entry.key] = name
         }
+
         res
     }
 
@@ -184,13 +188,16 @@ class FopService {
      */
     Map<String, String> getTemplatePaths() {
         Map<String, String> res = [: ]
-        servletContext.getResourcePaths(SYSTEM_FOLDER).each {
-            def m = (it =~ '^.*/([-\\w]+)/$')
-            String id = m[0][1]
-            if (m.matches() && id != 'dtd') {
-                res[id] = "SYSTEM:${it}"
+        for (String path : servletContext.getResourcePaths(SYSTEM_FOLDER)) {
+            Matcher m = (path =~ '^.*/([-\\w]+)/$')
+            if (m.matches()) {
+                String id = m.group(1)
+                if (id != 'dtd') {
+                    res[id] = 'SYSTEM:' + path
+                }
             }
         }
+
         File dir = userTemplateDir
         if (dir?.exists()) {
             dir.eachDir { res[it.name] = it.absolutePath }
@@ -204,8 +211,10 @@ class FopService {
      * @return  the user print template directory; {@code null} if no user
      *          print template directory is defined
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     File getUserTemplateDir() {
         def dir = grailsApplication.config.springcrm.dir.print
+
         dir ? new File(dir) : null
     }
 
@@ -227,12 +236,13 @@ class FopService {
                    HttpServletResponse response, String fileName) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
         generatePdf new StringReader(xml), type, template ?: 'default', baos
+        byte [] buf = baos.toByteArray()
 
         response.contentType = 'application/pdf'
         response.addHeader 'Content-Disposition',
             "attachment; filename=\"${fileName}\""
-        response.contentLength = baos.size()
-        response.outputStream.write baos.toByteArray()
+        response.contentLength = buf.length
+        response.outputStream.write buf
         response.outputStream.flush()
     }
 
@@ -247,13 +257,14 @@ class FopService {
      *                      the template
      * @return              the FOP configuration data
      */
-    protected Configuration getFopConfiguration(String templateDir) {
+    private Configuration getFopConfiguration(String templateDir) {
         InputStream is = getTemplateFile("${templateDir}/fop-conf.xml")
         if (!is) {
             is = getTemplateFile(
                 "SYSTEM:${SYSTEM_FOLDER}/default/fop-conf.xml"
             )
         }
+
         new DefaultConfigurationBuilder().build(is)
     }
 
@@ -266,7 +277,7 @@ class FopService {
      * @return      the input stream of the file; {@code null} if no such file
      *              exists
      */
-    protected InputStream getTemplateFile(String path) {
+    private InputStream getTemplateFile(String path) {
         if (path.startsWith('SYSTEM:')) {
             return servletContext.getResourceAsStream(path.substring(7))
         }
@@ -281,46 +292,14 @@ class FopService {
      * @return              the user agent
      * @since               1.4
      */
-    protected FOUserAgent getUserAgent(FopFactory fopFactory) {
+    private FOUserAgent getUserAgent(FopFactory fopFactory) {
         FOUserAgent ua = fopFactory.newFOUserAgent()
         StringBuilder buf =
             new StringBuilder(grailsApplication.metadata.getApplicationName())
         buf << ' v' << grailsApplication.metadata.getApplicationVersion()
         ua.producer = buf.toString()
         ua.creationDate = new Date()
+
         ua
-    }
-}
-
-
-class XHTMLEntityResolver implements EntityResolver {
-
-    //-- Instance variables ---------------------
-
-    ServletContext servletContext
-
-
-    //-- Constructors ---------------------------
-
-    XHTMLEntityResolver(ServletContext servletContext) {
-        this.servletContext = servletContext
-    }
-
-
-    //-- Public methods -------------------------
-
-    @Override
-    InputSource resolveEntity(String publicId, String systemId)
-        throws SAXException, IOException
-    {
-        String path = InvoicingTransactionXML.ENTITY_CATALOG[publicId]
-        if (!path) {
-            return null
-        }
-
-        InputStream input = servletContext.getResourceAsStream(
-            "${FopService.SYSTEM_FOLDER}/dtd/${path}"
-        )
-        new InputSource(input)
     }
 }

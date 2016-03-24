@@ -1,7 +1,7 @@
 /*
  * ProjectDocumentSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,13 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+
 @TestFor(ProjectDocument)
 @Mock([ProjectDocument, Project])
-
 class ProjectDocumentSpec extends Specification {
-	
+
 	//-- Feature Methods ---------------------------
-	
+
 	def 'Check for equality'() {
 		given: 'two objects with same properties but different title'
 		def p1 = new ProjectDocument(
@@ -39,16 +39,16 @@ class ProjectDocumentSpec extends Specification {
 		def p2 = new ProjectDocument(
 			phase: 'test', path: 'path', title: 'website'
 		)
-		
+
 		and: 'the same IDs'
 		p1.id = 1002
 		p2.id = 1002
-		
+
 		expect: 'both objects to be equal'
 		p1 == p2
 		p2 == p1
 	}
-	
+
 	def 'Check for inequality'() {
 		given: 'two objects with the same properties'
 		def p1 = new ProjectDocument(
@@ -57,16 +57,16 @@ class ProjectDocumentSpec extends Specification {
 		def p2 = new ProjectDocument(
 			phase: 'test', path: 'path2', title: 'invoice'
 		)
-		
+
 		when: 'I compare them'
 		boolean b1 = (p1 != p2)
 		boolean b2 = (p2 != p1)
-		
+
 		then: 'they are not equal'
 		b1
 		b2
 	}
-	
+
 	def 'Compute hash code'() {
 		when:
 		def project = new Project(
@@ -86,19 +86,19 @@ class ProjectDocumentSpec extends Specification {
 			phase: ProjectPhase.planning, path: 'path',
 			project: project
 		)
-		
-		then: 
+
+		then:
 		p1.hashCode() == p2.hashCode()
-		
+
 		when:
 		int h = p1.hashCode()
-		
+
 		then:
 		for (int i = 0; i < 1000; i++) {
 			h == p1.hashCode()
 		}
 	}
-	
+
 	def 'Convert to string'() {
 		when: 'I create an object with different properties'
 		def p = new ProjectDocument(
@@ -108,11 +108,8 @@ class ProjectDocumentSpec extends Specification {
 		then: 'the string should be the title'
 		p.title == p.toString()
 	}
-	
+
 	def 'path constraints'() {
-		setup:
-		mockForConstraintsTests(ProjectDocument)
-		
 		when: 'I create a project and a project document with a path and validate it'
 		def project = new Project(
 			title: 'title',
@@ -127,10 +124,10 @@ class ProjectDocumentSpec extends Specification {
 			project: project
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		path			| valid
 		null			| false
@@ -142,11 +139,8 @@ class ProjectDocumentSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'title constraints'() {
-		setup:
-		mockForConstraintsTests(ProjectDocument)
-		
 		when: 'I create a project and a project document with a title and validate it'
 		def project = new Project(
 			title: 'title',
@@ -161,10 +155,10 @@ class ProjectDocumentSpec extends Specification {
 			project: project
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		title			| valid
 		null			| false

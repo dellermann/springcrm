@@ -1,7 +1,7 @@
 /*
  * ConfigControllerSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ import spock.lang.Specification
 
 
 @TestFor(ConfigController)
-@Mock([Config, QuoteStage, Salutation, SeqNumber, TaxRate])
+@Mock([Config, QuoteStage, Salutation, SeqNumber, TaxRate, Work])
 class ConfigControllerSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -62,7 +62,7 @@ class ConfigControllerSpec extends Specification {
         and: 'there are valid configuration data'
         Map d = model.configData
         null != d
-        8 == d.size()
+        9 == d.size()
         'foo-value' == d.foo
         '15' == d.'int-val'
         'EUR' == d.currency
@@ -460,9 +460,7 @@ class ConfigControllerSpec extends Specification {
         makeTaxRatesFixture()
 
         when: 'I call the saveTaxRates action'
-        params.selValues = [
-            taxRates: '[{id: 1, name: "8"}, {id: 2, name: null}, {id: -1, name: "20"}]'
-        ]
+        params.taxRates = '[{id: 1, name: "8"}, {id: 2, name: null}, {id: -1, name: "20"}]'
         controller.saveTaxRates()
 
         then: 'I am redirected to the configuration overview page'
@@ -487,8 +485,8 @@ class ConfigControllerSpec extends Specification {
         given: 'some sequence numbers'
         makeSeqNumberFixture()
 
-        and: 'a mock of the Service class'
-        mockDomain Service
+        and: 'a mock of the Work class'
+        mockDomain Work
 
         when: 'I call the loadSeqNumbers action'
         controller.loadSeqNumbers()
@@ -506,26 +504,23 @@ class ConfigControllerSpec extends Specification {
         99999 == sn.endValue
 
         and: 'the special services are not defined'
-        null == model.serviceIdDunningCharge
-        '' == model.serviceDunningCharge
-        null == model.serviceIdDefaultInterest
-        '' == model.serviceDefaultInterest
+        null == model.workDunningCharge
+        null == model.workDefaultInterest
     }
 
     def 'LoadSeqNumbers action with special services'() {
         given: 'some sequence numbers'
         makeSeqNumberFixture()
 
-        and: 'a mock of the Service class'
-        mockDomain Service, [
-            [number: 59000, name: 'Mahngebühr'],
-            [number: 59010, name: 'Verzugszinsen']
-        ]
+        and: 'a mock of the Work class'
+        def w1 = new Work(number: 59000, name: 'Mahngebühr')
+        def w2 = new Work(number: 59010, name: 'Verzugszinsen')
+        mockDomain Work, [w1, w2]
 
         and: 'the associated configuration values'
         mockDomain Config, [
-            [name: 'serviceIdDunningCharge', value: '1'],
-            [name: 'serviceIdDefaultInterest', value: '2']
+            [name: 'workIdDunningCharge', value: w1.id.toString()],
+            [name: 'workIdDefaultInterest', value: w2.id.toString()]
         ]
 
         when: 'I call the loadSeqNumbers action'
@@ -540,10 +535,10 @@ class ConfigControllerSpec extends Specification {
         2 == l.size()
 
         and: 'the special services are not defined'
-        1 == model.serviceIdDunningCharge
-        'Mahngebühr' == model.serviceDunningCharge
-        2 == model.serviceIdDefaultInterest
-        'Verzugszinsen' == model.serviceDefaultInterest
+        1 == model.workDunningCharge.id
+        'Mahngebühr' == model.workDunningCharge.name
+        2 == model.workDefaultInterest.id
+        'Verzugszinsen' == model.workDefaultInterest.name
     }
 
     def 'SaveSeqNumbers action success without special services'() {
@@ -572,8 +567,8 @@ class ConfigControllerSpec extends Specification {
         99999 == s2.endValue
 
         and: 'there are no settings concerning special services'
-        0 == Config.countByName('serviceIdDunningCharge')
-        0 == Config.countByName('serviceIdDefaultInterest')
+        0 == Config.countByName('workIdDunningCharge')
+        0 == Config.countByName('workIdDefaultInterest')
     }
 
     def 'SaveSeqNumbers action success with special services'() {
@@ -585,8 +580,8 @@ class ConfigControllerSpec extends Specification {
             '1': [prefix: 'A', suffix: '', startValue: 30000, endValue: 99999],
             '2': [prefix: 'M', suffix: '', startValue: 40000, endValue: 79999]
         ]
-        params.serviceIdDunningCharge = '15'
-        params.serviceIdDefaultInterest = '392'
+        params.workIdDunningCharge = '15'
+        params.workIdDefaultInterest = '392'
         controller.saveSeqNumbers()
 
         then: 'I am redirected to the configuration overview page'
@@ -605,8 +600,8 @@ class ConfigControllerSpec extends Specification {
 
         and: 'there are two settings concerning special services'
         ConfigHolder ch = ConfigHolder.instance
-        '15' == ch['serviceIdDunningCharge'].value
-        '392' == ch['serviceIdDefaultInterest'].value
+        '15' == ch['workIdDunningCharge'].value
+        '392' == ch['workIdDefaultInterest'].value
     }
 
     def 'SaveSeqNumbers action error'() {
@@ -667,6 +662,7 @@ class ConfigControllerSpec extends Specification {
             [name: 'float-val', value: '8.45'],
             [name: 'boolean-val', value: 'true'],
             [name: 'currency', value: 'EUR'],
+            [name: 'termOfPayment', value: '14'],
             [name: 'ldapBindPasswd', value: 'secret'],
             [name: 'mailPassword', value: 'very-secret']
         ]

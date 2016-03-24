@@ -1,7 +1,7 @@
 /*
  * ConfigSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -391,9 +391,6 @@ class ConfigSpec extends Specification {
     }
 
     def 'Name constraints'() {
-        setup:
-        mockForConstraintsTests(Config)
-
         when:
         def c = new Config(name: name)
         c.validate()

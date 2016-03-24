@@ -33,9 +33,8 @@ class OverviewServiceSpec extends Specification {
     //-- Feature methods ------------------------
 
     def 'Dont show again changelog for a version'() {
-        given: 'a mocked Grails application'
-        GrailsApplication app = Mock()
-        app.metadata >> ['app.version': '2.0.19']
+        given: 'a mocked application version'
+        grailsApplication.metadata['info.app.version'] = '2.0.19'
 
         and: 'a user with mocked settings'
         User user = makeUser()
@@ -187,9 +186,8 @@ class OverviewServiceSpec extends Specification {
     }
 
     def 'Changelog is displayed depending on versions'(String v, boolean b) {
-        given: 'a mocked Grails application'
-        GrailsApplication app = Mock()
-        app.metadata >> ['app.version': '2.0.19']
+        given: 'a mocked application version'
+        grailsApplication.metadata['info.app.version'] = '2.0.19'
 
         and: 'a user with mocked settings'
         User user = makeUser()

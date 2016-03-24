@@ -20,11 +20,13 @@
 
 package org.amcworld.springcrm
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 
 @TestFor(SalesItemPricing)
+@Mock([SalesItemPricing, SalesItemPricingItem])
 class SalesItemPricingSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -1281,7 +1283,7 @@ class SalesItemPricingSpec extends Specification {
         given: 'a quite valid instance'
         def s = new SalesItemPricing(
             unit: new Unit(name: 'h'),
-            items: [new SalesItemPricingItem()]
+            items: [new SalesItemPricingItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the quantity'
@@ -1307,7 +1309,7 @@ class SalesItemPricingSpec extends Specification {
         given: 'a quite valid instance'
         def s = new SalesItemPricing(
             quantity: 5.8,
-            items: [new SalesItemPricingItem()]
+            items: [new SalesItemPricingItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the unit'
@@ -1329,7 +1331,7 @@ class SalesItemPricingSpec extends Specification {
         def s = new SalesItemPricing(
             quantity: 5.8,
             unit: new Unit(name: 'h'),
-            items: [new SalesItemPricingItem()]
+            items: [new SalesItemPricingItem(unit: 'h', name: 'Service')]
         )
 
         when: 'I set the discount percentage'
@@ -1371,7 +1373,7 @@ class SalesItemPricingSpec extends Specification {
         !s.validate()
 
         when: 'I add an item'
-        s.items << new SalesItemPricingItem()
+        s.items << new SalesItemPricingItem(unit: 'h', name: 'Service')
 
         then: 'the instance is valid'
         s.validate()

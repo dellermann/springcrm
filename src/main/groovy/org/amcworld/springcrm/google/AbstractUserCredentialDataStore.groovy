@@ -28,6 +28,7 @@ import com.google.api.client.util.store.AbstractDataStore
 import com.google.api.client.util.store.DataStore
 import com.google.api.client.util.store.DataStoreFactory
 import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import org.amcworld.springcrm.User
 import org.amcworld.springcrm.UserSetting
 
@@ -37,9 +38,10 @@ import org.amcworld.springcrm.UserSetting
  * to store Google credentials in the {@code UserSetting} domain model.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.4
  */
+@CompileStatic
 class AbstractUserCredentialDataStore
     extends AbstractDataStore<StoredCredential>
 {
@@ -81,7 +83,7 @@ class AbstractUserCredentialDataStore
         UserSetting.withTransaction {
             User user = getUser(key)
             if (user) {
-                res = UserSetting.countByUserAndName(user, SETTINGS_KEY) > 0
+                res = countByUser(user) > 0
             }
         }
 
@@ -97,7 +99,7 @@ class AbstractUserCredentialDataStore
         boolean res
         UserSetting.withTransaction {
             String json = convertCredentialToJson(credential)
-            res = UserSetting.countByNameAndValue(SETTINGS_KEY, json) > 0
+            res = countByValue(json) > 0
         }
 
         res
@@ -108,7 +110,7 @@ class AbstractUserCredentialDataStore
         UserSetting.withTransaction {
             User user = getUser(key)
             if (user) {
-                user.settings.remove SETTINGS_KEY
+                findByUser(user)?.delete flush: true
             }
         }
 
@@ -125,7 +127,7 @@ class AbstractUserCredentialDataStore
         UserSetting.withTransaction {
             User user = getUser(key)
             if (user) {
-                s = user.settings[SETTINGS_KEY]
+                s = findByUser(user)?.value
             }
         }
 
@@ -170,9 +172,7 @@ class AbstractUserCredentialDataStore
     @Override
     int size() {
         int res
-        UserSetting.withTransaction {
-            res = UserSetting.countByName(SETTINGS_KEY)
-        }
+        UserSetting.withTransaction { res = count() }
 
         res
     }
@@ -198,7 +198,6 @@ class AbstractUserCredentialDataStore
      * @param credential    the given credential
      * @return              the JSON string
      */
-    @CompileStatic
     private String convertCredentialToJson(StoredCredential credential) {
         JSON_FACTORY.toString([
             accessToken: credential.accessToken,
@@ -213,7 +212,6 @@ class AbstractUserCredentialDataStore
      * @param json  the given JSON data
      * @return      the stored credential
      */
-    @CompileStatic
     private StoredCredential convertJsonToCredential(String json) {
         HashMap<String, Object> data = JSON_FACTORY.fromString(json, HashMap)
 
@@ -227,11 +225,59 @@ class AbstractUserCredentialDataStore
     }
 
     /**
+     * Counts all Google credentials stored in the database.
+     *
+     * @return the number of Google credentials
+     * @since 2.1
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private int count() {
+        UserSetting.countByName SETTINGS_KEY
+    }
+
+    /**
+     * Counts the Google credentials of the given user.
+     *
+     * @param user  the given user
+     * @return      the number of Google credentials of the given user
+     * @since 2.1
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private int countByUser(User user) {
+        UserSetting.countByUserAndName user, SETTINGS_KEY
+    }
+
+    /**
+     * Counts the Google credentials with the given value.
+     *
+     * @param value the given value
+     * @return      the number of Google credentials with the given value
+     * @since 2.1
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private int countByValue(String value) {
+        UserSetting.countByNameAndValue SETTINGS_KEY, value
+    }
+
+    /**
+     * Finds the user setting with the Google credential of the given user.
+     *
+     * @param user  the given user
+     * @return      the user setting with the Google credential
+     * @since 2.1
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private UserSetting findByUser(User user) {
+        UserSetting.findByUserAndName user, SETTINGS_KEY
+    }
+
+    /**
      * Gets all Google credential entries.
      *
      * @return  the credential entries
      * @since   2.0
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     private List<UserSetting> getEntries() {
         UserSetting.findAllByName SETTINGS_KEY
     }
@@ -242,6 +288,7 @@ class AbstractUserCredentialDataStore
      * @param userName  the given user name
      * @return          the user object
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     private User getUser(String userName) {
         User.findByUserName userName
     }

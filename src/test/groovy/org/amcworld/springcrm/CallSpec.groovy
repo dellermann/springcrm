@@ -1,7 +1,7 @@
 /*
  * CallSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,9 +162,6 @@ class CallSpec extends Specification {
     }
 
     def 'Subject constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when:
         def c = new Call(
             subject: subject, type: CallType.incoming,
@@ -187,9 +184,6 @@ class CallSpec extends Specification {
     }
 
     def 'Phone constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when:
         def c = new Call(
             subject: 'My phone call', phone: phone, type: CallType.incoming,
@@ -212,9 +206,6 @@ class CallSpec extends Specification {
     }
 
     def 'Start constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when: 'I create a phone call without start time and validate it'
         def c = new Call(
             subject: 'My phone call', type: CallType.incoming,
@@ -241,9 +232,6 @@ class CallSpec extends Specification {
     }
 
     def 'Type constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when: 'I create a phone call with a discrete type value and validate it'
         def c = new Call(
             subject: 'My phone call', type: CallType.incoming,
@@ -263,9 +251,6 @@ class CallSpec extends Specification {
     }
 
     def 'Status constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when: 'I create a phone call with a discrete status value and validate it'
         def c = new Call(
             subject: 'My phone call', type: CallType.incoming,

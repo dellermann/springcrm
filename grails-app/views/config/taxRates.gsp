@@ -16,8 +16,8 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="saveTaxRates" elementId="config-form"
-      params="[returnUrl: params.returnUrl]" method="post"
+    <form action="${createLink(action: 'saveTaxRates', params: [returnUrl: params.returnUrl])}"
+      id="config-form" method="post"
       class="form-horizontal data-form form-view">
       <section>
         <header>
@@ -40,7 +40,7 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
 
     <content tag="scripts">
       <asset:javascript src="config-sel-values" />

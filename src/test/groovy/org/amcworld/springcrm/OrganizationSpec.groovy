@@ -1,7 +1,7 @@
 /*
  * OrganizationSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,9 +257,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'RecType constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
         when:
         def org = new Organization(
             recType: recType, name: 'foo', billingAddr: new Address(),
@@ -282,9 +279,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'Name constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
         when:
         def org = new Organization(
             recType: 1, name: name, billingAddr: new Address(),
@@ -307,9 +301,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'BillingAddr constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when: 'I create an organization with a billing address and validate it'
         def org = new Organization(
             recType: 1, name: 'YourOrganization Ltd.',
@@ -329,9 +320,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'ShippingAddr constraints'() {
-        setup:
-        mockForConstraintsTests(Call)
-
         when: 'I create an organization with a shipping address and validate it'
         def org = new Organization(
             recType: 1, name: 'YourOrganization Ltd.',
@@ -351,9 +339,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'Phone constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),
@@ -376,9 +361,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'Fax constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),
@@ -401,9 +383,6 @@ class OrganizationSpec extends Specification {
     }
 
     def 'PhoneOther constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),
@@ -425,10 +404,7 @@ class OrganizationSpec extends Specification {
         'x' * 50        | false
     }
 
-    def 'E-mail 1 constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
+    def 'E-mail 1 constraints'(String email, boolean valid) {
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),
@@ -449,15 +425,12 @@ class OrganizationSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | false
+        'user@.com'         | true
         'user@mydomain.com' | true
-        'user@härbört.com'  | false     // XXX currently no IDN support
+        'user@härbört.com'  | true
     }
 
-    def 'E-mail 2 constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
+    def 'E-mail 2 constraints'(String email, boolean valid) {
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),
@@ -478,14 +451,12 @@ class OrganizationSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | false
+        'user@.com'         | true
         'user@mydomain.com' | true
+        'user@härbört.com'  | true
     }
 
     def 'Website constraints'() {
-        setup:
-        mockForConstraintsTests(Organization)
-
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),

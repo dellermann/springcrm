@@ -1,7 +1,7 @@
 /*
  * DocumentController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
+import grails.artefact.Controller
 import org.apache.commons.logging.LogFactory
 import org.apache.commons.vfs2.FileContent
 import org.apache.commons.vfs2.FileName
@@ -37,10 +38,10 @@ import org.springframework.web.multipart.MultipartFile
  * documents.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.2
  */
-class DocumentController {
+class DocumentController implements Controller {
 
     //-- Constants ------------------------------
 
@@ -77,25 +78,19 @@ class DocumentController {
             fileList = fileList.sort { it.name.baseName }
 
             render(contentType: 'application/json') {
-                folders = array {
-                    for (FileObject folder in folderList) {
-                        fileObject name: folder.name.baseName,
-                            readable: folder.readable,
-                            writeable: folder.writeable
-                    }
+                delegate.call('folders', folderList) { FileObject folder ->
+                    name folder.name.baseName
+                    readable folder.readable
+                    writeable folder.writeable
                 }
-                files = array {
-                    for (FileObject file in fileList) {
-                        fileObject name: file.name.baseName,
-                            ext: file.name.extension,
-                            size: file.content.size,
-                            readable: file.readable,
-                            writeable: file.writeable
-                    }
+                delegate.call('files', fileList) { FileObject file ->
+                    name file.name.baseName
+                    ext file.name.extension
+                    size file.content.size
+                    readable file.readable
+                    writeable file.writeable
                 }
             }
-
-            null
         } catch (FileSystemException e) {
             render status: SC_NOT_FOUND
         }

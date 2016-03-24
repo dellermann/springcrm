@@ -34,28 +34,29 @@ import spock.lang.Specification
 @Mock([User, UserSetting])
 class UserCredentialDataStoreSpec extends Specification {
 
-    //-- Instance methods -----------------------
+    //-- Fields ---------------------------------
 
     DataStore dataStore
+    User userBwayne
+    User userJsmith
 
 
     //-- Fixture methods ------------------------
 
     def setup() {
-        dataStore = UserCredentialDataStoreFactory.defaultInstance.createDataStore('StoredCredential')
-        mockDomain User, [
-            [
-                userName: 'jsmith', password: 'secret', firstName: 'John',
-                lastName: 'Smith', email: 'j.smith@example.com'
-            ],
-            [
-                userName: 'bwayne', password: 'very-secret',
-                firstName: 'Barbra', lastName: 'Wayne',
-                email: 'b.wayne@example.com'
-            ]
-        ]
-
-        User.metaClass.getSettings = { -> new UserSettings(delegate) }
+        dataStore = UserCredentialDataStoreFactory
+            .defaultInstance
+            .createDataStore('StoredCredential')
+        userJsmith = new User(
+            userName: 'jsmith', password: 'secret', firstName: 'John',
+            lastName: 'Smith', email: 'j.smith@example.com'
+        )
+        userBwayne = new User(
+            userName: 'bwayne', password: 'very-secret',
+            firstName: 'Barbra', lastName: 'Wayne',
+            email: 'b.wayne@example.com'
+        )
+        mockDomain User, [userJsmith, userBwayne]
     }
 
 
@@ -374,7 +375,9 @@ class UserCredentialDataStoreSpec extends Specification {
         new StoredCredential()  | false
     }
 
-    def 'Check for values in one stored credential'() {
+    def 'Check for values in one stored credential'(StoredCredential credential,
+                                                    boolean found)
+    {
         given: 'a stored credential'
         prepareCredentialUserSetting()
 
@@ -445,7 +448,7 @@ class UserCredentialDataStoreSpec extends Specification {
     protected void prepareCredentialUserSetting() {
         mockDomain UserSetting, [
             [
-                user: User.get(1), name: SETTINGS_KEY,
+                user: userJsmith, name: SETTINGS_KEY,
                 value: prepareCredentialJsonString()
             ]
         ]

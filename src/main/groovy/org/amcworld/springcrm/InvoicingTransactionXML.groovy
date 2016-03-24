@@ -45,19 +45,19 @@ class InvoicingTransactionXML extends XML {
      * Markdown code.  The table maps public IDs to a file path relative to
      * {@code WEB-INF/data/print/dtd}.
      */
-    protected static final Map<String, String> ENTITY_CATALOG = [
+    public static final Map<String, String> ENTITY_CATALOG = [
             '-//W3C//ENTITIES Latin 1 for XHTML//EN': 'xhtml-lat1.ent',
             '-//W3C//ENTITIES Special for XHTML//EN': 'xhtml-special.ent',
             '-//W3C//ENTITIES Symbols for XHTML//EN': 'xhtml-symbol.ent'
         ].asImmutable()
 
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     private static final Log log = LogFactory.getLog(this)
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     final Map data
     MarkdownService markdownService

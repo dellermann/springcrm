@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Organization} represents an organization, either a
@@ -28,7 +30,7 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class Organization implements NumberedDomain {
+class Organization implements GormEntity<Organization>, NumberedDomain {
 
     //-- Class fields ---------------------------
 

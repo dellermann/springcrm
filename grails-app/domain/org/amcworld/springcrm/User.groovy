@@ -169,7 +169,7 @@ class User {
      */
     @CompileStatic
     EnumSet<Module> getAllowedModulesAsSet() {
-        if (!allowedModules) {
+        if (!allowedModules?.trim()) {
             return EnumSet.noneOf(Module)
         }
 

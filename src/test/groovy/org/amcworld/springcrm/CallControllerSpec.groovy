@@ -1,7 +1,7 @@
 /*
  * CallControllerSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,17 +22,14 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Specification
 
 
 @TestFor(CallController)
-@TestMixin(DomainClassUnitTestMixin)
 @Mock([Call, Organization, Person])
 class CallControllerSpec extends Specification {
 
-    //-- Feature methods --------------------------
+    //-- Feature methods ------------------------
 
     def 'Index action without parameters'() {
         when:
@@ -528,6 +525,7 @@ class CallControllerSpec extends Specification {
 
         when: 'I call the delete action with a valid ID'
         params.id = 1
+        params.confirmed = 1
         controller.delete()
 
         then: 'I am redirected to the list view'
@@ -545,6 +543,7 @@ class CallControllerSpec extends Specification {
         when: 'I call the delete action with a valid ID'
         params.id = 1
         params.returnUrl = '/organization/show/5'
+        params.confirmed = 1
         controller.delete()
 
         then: 'I am redirected to the requested URL'
@@ -558,7 +557,7 @@ class CallControllerSpec extends Specification {
 
     //-- Non-public methods ---------------------
 
-    protected void makeCallFixture(Date d = new Date()) {
+    private void makeCallFixture(Date d = new Date()) {
         makeOrganizationFixture()
         def org = Organization.get(1)
         makePersonFixture org
@@ -572,7 +571,7 @@ class CallControllerSpec extends Specification {
         ]
     }
 
-    protected void makeOrganizationFixture() {
+    private void makeOrganizationFixture() {
         mockDomain Organization, [
             [
                 id: 1, number: 10000, recType: 1,
@@ -583,7 +582,7 @@ class CallControllerSpec extends Specification {
         ]
     }
 
-    protected void makePersonFixture(Organization org) {
+    private void makePersonFixture(Organization org) {
         mockDomain Person, [
             [
                 id: 1, number: 10000, organization: org, firstName: 'Daniel',
@@ -594,7 +593,7 @@ class CallControllerSpec extends Specification {
         ]
     }
 
-    protected void matchCall(Call c, Date d = null) {
+    private void matchCall(Call c, Date d = null) {
         assert 'Test' == c.subject
         assert 'Test call' == c.notes
         assert '+49 30 8321475-0' == c.phone
@@ -611,7 +610,7 @@ class CallControllerSpec extends Specification {
         assert 'Ellermann' == c.person.lastName
     }
 
-    protected void matchCallInList(Map model, Date d = null) {
+    private void matchCallInList(Map model, Date d = null) {
         assert null != model.callInstanceList
         assert 1 == model.callInstanceList.size()
         assert 1 == model.callInstanceTotal
@@ -619,13 +618,13 @@ class CallControllerSpec extends Specification {
         matchCall model.callInstanceList[0], d
     }
 
-    protected void matchEmptyList(Map model) {
+    private void matchEmptyList(Map model) {
         assert null != model.callInstanceList
         assert 0 == model.callInstanceList.size()
         assert 0 == model.callInstanceTotal
     }
 
-    protected void matchNullList(Map model) {
+    private void matchNullList(Map model) {
         assert null == model.callInstanceList
         assert 0 == model.callInstanceTotal
     }

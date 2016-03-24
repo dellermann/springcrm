@@ -1,7 +1,7 @@
 /*
  * ProxyAuthorizationCodeFlowSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,20 +21,29 @@
 package org.amcworld.springcrm.google
 
 import static org.amcworld.springcrm.google.AbstractUserCredentialDataStore.SETTINGS_KEY
+
 import com.google.api.client.auth.oauth2.TokenResponse
-import com.google.api.client.http.GenericUrl
+import com.google.api.client.http.HttpTransport
+import com.google.api.client.json.JsonFactory
 import com.google.api.client.testing.http.MockHttpTransport
 import com.google.api.client.testing.http.MockLowLevelHttpResponse
 import grails.test.mixin.Mock
 import org.amcworld.springcrm.User
 import org.amcworld.springcrm.UserSetting
-import org.amcworld.springcrm.UserSettings
 import org.amcworld.springcrm.google.UserCredentialDataStoreFactory.UserCredentialDataStore
 import spock.lang.Specification
 
 
 @Mock([User, UserSetting])
 class ProxyAuthorizationCodeFlowSpec extends Specification {
+
+    //-- Fields ---------------------------------
+
+    ProxyAuthorizationCodeFlow authorizationCodeFlow
+    JsonFactory jsonFactory = GoogleSync.JSON_FACTORY
+    long timeStamp = System.currentTimeMillis()
+    HttpTransport transport = new MockHttpTransport()
+
 
     //-- Fixture methods ------------------------
 
@@ -51,7 +60,7 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
             ]
         ]
 
-        User.metaClass.getSettings = { -> new UserSettings(delegate) }
+        buildCodeFlow()
     }
 
 
@@ -67,18 +76,10 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
             tokenType: 'bearer'
         )
 
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
-        and: 'a time stamp'
-        long timeStamp = System.currentTimeMillis()
-
         when: 'I create and store a credential from the token response'
-        def credential =
-            authorizationCodeFlow.createAndStoreCredential(tokenResponse, 'jsmith')
+        def credential = authorizationCodeFlow.createAndStoreCredential(
+            tokenResponse, 'jsmith'
+        )
 
         then: 'I get a valid credential'
         null != credential
@@ -107,18 +108,10 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
             tokenType: 'bearer'
         )
 
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
-        and: 'a time stamp'
-        long timeStamp = System.currentTimeMillis()
-
         when: 'I create and store a credential from the token response'
-        def credential =
-            authorizationCodeFlow.createAndStoreCredential(tokenResponse, 'jdoe')
+        def credential = authorizationCodeFlow.createAndStoreCredential(
+            tokenResponse, 'jdoe'
+        )
 
         then: 'I get a valid credential'
         null != credential
@@ -139,15 +132,6 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         given: 'a stored credential'
         prepareCredentialUserSetting()
 
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
-        and: 'a time stamp'
-        long timeStamp = System.currentTimeMillis()
-
         when: 'I load the credential'
         def credential = authorizationCodeFlow.loadCredential('jsmith')
 
@@ -167,12 +151,6 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         given: 'a stored credential'
         prepareCredentialUserSetting()
 
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
         expect:
         null == authorizationCodeFlow.loadCredential('jdoe')
     }
@@ -181,54 +159,24 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         given: 'a stored credential'
         prepareCredentialUserSetting()
 
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
         expect:
         null == authorizationCodeFlow.loadCredential('bwayne')
     }
 
     def 'Obtain credential from proxy and store it'() {
-        given: 'a mocked execution method'
-        def urlParams = null
-        ProxyRequest.metaClass.execute = { ->
-            urlParams = delegate
-            new ProxyResponse(
-                code: 'abc', 'message': '',
-                tokenResponse: new TokenResponse(
-                    accessToken: 'access4040-Token-4711',
-                    expiresInSeconds: 3600,
-                    refreshToken: 'refresh8403%Token-2041',
-                    scope: 'fooBarScope',
-                    tokenType: 'bearer',
-                )
-            )
-        }
+        given: 'a mocked HTTP response'
+        String responseContent = '''200 OK
+tokenResponse={"access_token":"access4040-Token-4711","token_type":"Bearer","expires_in":3600,"refresh_token":"refresh8403%Token-2041","created":1405420651}'''
 
         and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
-            .build()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
-        and: 'a time stamp'
-        long timeStamp = System.currentTimeMillis()
+        buildCodeFlow(responseContent)
 
         when: 'I obtain the credential from proxy and store it'
         def credential = authorizationCodeFlow.obtainAndStoreCredential(
             'jsmith', 'A450-8201'
         )
 
-        then: 'the request was executed with the correct parameters'
-        null != urlParams
-        'A450-8201' == urlParams.get('clientId')
-
-        and: 'I get a valid credential'
+        then: 'I get a valid credential'
         null != credential
         'access4040-Token-4711' == credential.accessToken
         3000L <= credential.expiresInSeconds    // expiration time has just begun
@@ -246,49 +194,28 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
     }
 
     def 'Register application instance at proxy'() {
-        given: 'a mocked execution method'
-        def urlParams = null
-        ProxyRequest.metaClass.execute = { ->
-            urlParams = delegate
-            new ProxyResponse(url: 'http://www.google.com/login')
-        }
+        given: 'a mocked HTTP response'
+        String responseContent = '''200 OK
+url=http://www.google.com/login'''
 
         and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
-            .build()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
+        buildCodeFlow(responseContent)
 
         when: 'I obtain the credential from proxy and store it'
         def url = authorizationCodeFlow.register(
             'http://localhost:8080/springcrm'
         )
 
-        then: 'the request was executed with the correct parameters'
-        null != urlParams
-        'http://localhost:8080/springcrm' == urlParams.get('redirectUrl')
-
-        and: 'I get a valid credential'
+        then: 'I get a valid credential'
         'http://www.google.com/login' == url
     }
 
     def 'Revoke a credential of existing user'() {
-        given: 'a mocked execution method'
-        def urlParams = null
-        ProxyRequest.metaClass.execute = { ->
-            urlParams = delegate
-            new ProxyResponse()
-        }
+        given: 'a mocked HTTP response'
+        String responseContent = '200 OK'
 
         and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
-            .build()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
+        buildCodeFlow(responseContent)
 
         and: 'a stored credential'
         prepareCredentialUserSetting()
@@ -296,76 +223,56 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         when: 'I obtain the credential from proxy and store it'
         authorizationCodeFlow.revoke 'jsmith'
 
-        then: 'the request was executed with the correct parameters'
-        null != urlParams
-        'access4040-Token-4711' == urlParams.get('token')
-
-        and: 'there are no UserSetting objects'
+        then: 'there are no UserSetting objects'
         0 == UserSetting.count()
     }
 
     def 'Revoke a credential of non-existing user'() {
-        given: 'a mocked execution method'
-        def requestExecuted = false
-        ProxyRequest.metaClass.execute = { ->
-            requestExecuted = true
-            new ProxyResponse()
-        }
-
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
-            .build()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
-        and: 'a stored credential'
+        given: 'a stored credential'
         prepareCredentialUserSetting()
 
         when: 'I obtain the credential from proxy and store it'
         authorizationCodeFlow.revoke 'jdoe'
 
-        then: 'no request was sent to the AMC World proxy'
-        !requestExecuted
-
-        and: 'there is still one UserSetting object'
+        then: 'there is still one UserSetting object'
         1 == UserSetting.count()
     }
 
     def 'Revoke a non-existing credential of existing user'() {
-        given: 'a mocked execution method'
-        def requestExecuted = false
-        ProxyRequest.metaClass.execute = { ->
-            requestExecuted = true
-            new ProxyResponse()
-        }
-
-        and: 'an authorization code flow instance'
-        def transport = new MockHttpTransport.Builder()
-            .setLowLevelHttpResponse(new MockLowLevelHttpResponse())
-            .build()
-        def jsonFactory = GoogleSync.JSON_FACTORY
-        def authorizationCodeFlow =
-            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
-
-        and: 'a stored credential'
+        given: 'a stored credential'
         prepareCredentialUserSetting()
 
         when: 'I obtain the credential from proxy and store it'
         authorizationCodeFlow.revoke 'bwayne'
 
-        then: 'no request was sent to the AMC World proxy'
-        !requestExecuted
-
-        and: 'there is still one UserSetting object'
+        then: 'there is still one UserSetting object'
         1 == UserSetting.count()
     }
 
 
     //-- Non-public methods ---------------------
 
-    protected String prepareCredentialJsonString(int userId = 1) {
+    private void buildCodeFlow(String response = null) {
+        if (response != null) {
+            transport = buildTransport(response)
+        }
+
+        authorizationCodeFlow =
+            new ProxyAuthorizationCodeFlow(transport, jsonFactory)
+    }
+
+    private HttpTransport buildTransport(String responseContent) {
+        byte [] data = responseContent.bytes
+        def response = new MockLowLevelHttpResponse()
+            .setContent(data)
+            .setContentLength(data.length)
+
+        new MockHttpTransport.Builder()
+            .setLowLevelHttpResponse(response)
+            .build()
+    }
+
+    private String prepareCredentialJsonString(int userId = 1) {
         def buf = new StringBuilder('{"accessToken":"access4040-Token-471')
         buf << userId
         buf << '","refreshToken":"refresh8403%Token-204'
@@ -373,10 +280,11 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
         buf << '","expirationTimeMilliseconds":'
         buf << (System.currentTimeMillis() + 3600000L)
         buf << '}'
+
         buf.toString()
     }
 
-    protected void prepareCredentialUserSetting() {
+    private void prepareCredentialUserSetting() {
         mockDomain UserSetting, [
             [
                 user: User.get(1), name: SETTINGS_KEY,

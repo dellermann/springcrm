@@ -1,7 +1,7 @@
 /*
  * PersonSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,15 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
+
 @TestFor(Person)
 @Mock([Person])
 class PersonSpec extends Specification {
 
     //-- Feature methods ------------------------
-	
+
 	def 'Copy using constructor'() {
-		given: 
+		given:
 		def p1 = new Person(
 			number: 10003,
 			organization: new Organization (recType: 1, name : 'YourOrganizationLtd'),
@@ -56,11 +57,11 @@ class PersonSpec extends Specification {
 			picture: 'foobar'.getBytes(),
 			notes: 'some notes'
 		)
-		
+
 		when:
 		def p2 = new Person(p1)
-		
-		then: 
+
+		then:
 		p2.organization == p1.organization
 		p2.salutation == p1.salutation
 		p2.title == p1.title
@@ -81,26 +82,26 @@ class PersonSpec extends Specification {
 		p2.assistant == p1.assistant
 		p2.birthday == p1.birthday
 		p2.picture == p1.picture
-		p2.notes == p1.notes	
-		
+		p2.notes == p1.notes
+
 		and: 'some properties are unset'
 		0 == p2.number
 		null == p2.dateCreated
 		null == p2.lastUpdated
 	}
-	
+
 	def 'Get full name'() {
-		given: 
+		given:
 		def p = new Person()
-		
+
 		when:
 		p.firstName = firstName
 		p.lastName = lastName
 		def fullName = p.getFullName()
-		
+
 		then:
 		result == fullName
-		
+
 		where:
 		firstName		| lastName		| result
 		null			| null			| ''
@@ -116,17 +117,17 @@ class PersonSpec extends Specification {
 		'user@mydomain' | ''			| 'user@mydomain'
 		'string123'		| '321string'	| 'string123 321string'
 	}
-	
+
 	def 'Get the full number'() {
 		given: 'a person with mocked sequence number service'
 		def p = new Person()
 		p.seqNumberService = Mock(SeqNumberService)
 		p.seqNumberService.format(_, _) >> 'O-11332'
-		
+
 		expect:
 		'O-11332' == p.fullNumber
 	}
-	
+
 	def 'Simulate the save method in insert mode and check number'() {
 		given: 'a person without number'
 		def p = new Person()
@@ -139,52 +140,52 @@ class PersonSpec extends Specification {
 		then: 'the sequence number must be set'
 		92283 == p.number
 	}
-	
+
 	def 'Check for equality'() {
 		given: 'two objects with different properties'
 		def p1 = new Person (firstName: 'Ben', lastName: 'Rider')
 		def p2 = new Person (firstName: 'Tom', lastName: 'Riggins')
-		
+
 		and: 'the same IDs'
 		p1.id = 10010
 		p2.id = 10010
-		
+
 		expect: 'both persons to be equal'
 		p1 == p2
-		p2 == p1 
+		p2 == p1
 	}
-	
+
 	def 'Check for inequality'() {
 		given: 'two objects with same properties'
 		def p1 = new Person (firstName: 'Ben', lastName: 'Rider')
 		def p2 = new Person (firstName: 'Ben', lastName: 'Rider')
-		
+
 		and: 'different IDs'
 		p1.id = 944
 		p2.id = 1003
-		
+
 		when: 'I compare both these persons'
 		boolean b1 = (p1 != p2)
 		boolean b2 = (p2 != p1)
-		
+
 		then: 'they should not be equal'
 		b1
 		b2
-		
+
 		when:  'I compare with null'
 		p2 = null
-		
+
 		then: 'they are not equal'
 		p1 != p2
 		p2 != p1
-		
+
 		when: 'I compare to another type'
 		int i = 3
-		
+
 		then: 'they are not equal'
 		p1 != i
 	}
-	
+
 	def 'Compute hash code'() {
 		when: 'I create a person with no ID'
 		def p = new Person()
@@ -208,55 +209,52 @@ class PersonSpec extends Specification {
 		 	 12344 	| 	   12344
 		1023991929	| 1023991929
 	}
-	
+
 	def 'Convert to string'() {
 		given: 'an empty person'
 		def p = new Person()
-		
+
 		when: 'I set the first name'
 		p.firstName = 'Johan'
-		
+
 		and: 'do not set the last name'
 		p.lastName = ''
-		
-		then: 
+
+		then:
 		'Johan' == p.toString()
-		
+
 		when: 'I set the last name'
 		p.lastName = 'Doug'
-		
+
 		and: 'do not set the first name'
 		p.firstName = ''
-		
-		then: 
+
+		then:
 		'Doug' == p.toString()
-		
+
 		when: 'I set the first name and the last name'
 		p.firstName = 'Tim'
 		p.lastName = 'Statter'
-		
-		then: 
+
+		then:
 		'Statter, Tim' == p.toString()
 	}
-	
+
 	def 'title constraints'() {
-		setup: 
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a title and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			title: title, firstName: 'John', lastName: 'Doe', 
+			title: title, firstName: 'John', lastName: 'Doe',
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		title			| valid
 		null			| true
@@ -268,25 +266,22 @@ class PersonSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'firstName constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a first name and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			firstName: firstName, lastName: 'Doe', 
+			firstName: firstName, lastName: 'Doe',
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
-		then: 
+
+		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		firstName		| valid
 		null			| false
@@ -300,25 +295,22 @@ class PersonSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'lastName constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a last name and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			firstName: 'John', lastName: lastName, 
+			firstName: 'John', lastName: lastName,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		lastName		| valid
 		null			| false
@@ -332,11 +324,8 @@ class PersonSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'Phone constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a phone number and validate it'
 		def p = new Person(
 			organization: new Organization(
@@ -347,10 +336,10 @@ class PersonSpec extends Specification {
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
-		then: 
+
+		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		phone		| valid
 		null		| true
@@ -364,11 +353,8 @@ class PersonSpec extends Specification {
 		'1'*41		| false
 		'1'*999		| false
 	}
-	
+
 	def 'Fax constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a fax number and validate it'
 		def p = new Person(
 			organization: new Organization(
@@ -379,10 +365,10 @@ class PersonSpec extends Specification {
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		fax 		| valid
 		null		| true
@@ -396,25 +382,22 @@ class PersonSpec extends Specification {
 		'1'*41		| false
 		'1'*999		| false
 	}
-	
+
 	def 'phoneAssistant constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a phone assistant number and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			firstName: 'John', lastName: 'Doe', phoneAssistant: phoneAssistant, 
+			firstName: 'John', lastName: 'Doe', phoneAssistant: phoneAssistant,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		phoneAssistant	| valid
 		null			| true
@@ -428,11 +411,8 @@ class PersonSpec extends Specification {
 		'1'*41			| false
 		'1'*999			| false
 	}
-	
+
 	def 'phoneOther constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with an other phone number and validate it'
 		def p = new Person(
 			organization: new Organization(
@@ -443,10 +423,10 @@ class PersonSpec extends Specification {
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		phoneOther		| valid
 		null			| true
@@ -460,11 +440,8 @@ class PersonSpec extends Specification {
 		'1'*41			| false
 		'1'*999			| false
 	}
-	
-	def 'Email1 constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
+
+	def 'Email1 constraints'(String email, boolean valid) {
 		when: 'I create a person with an email1 and validate it'
 		def p = new Person(
 			organization: new Organization(
@@ -475,11 +452,11 @@ class PersonSpec extends Specification {
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
-		then: 
+
+		then:
 		!valid == p.hasErrors()
-		
-		where: 
+
+		where:
 		email               | valid
         null                | true
         ''                  | true
@@ -489,62 +466,56 @@ class PersonSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | false
+        'user@.com'         | true
         'user@mydomain.com' | true
-        'user@härbört.com'  | false     // XXX currently no IDN support
+        'user@härbört.com'  | true
 	}
-	
-	def 'Email2 constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
+
+	def 'Email2 constraints'(String email, boolean valid) {
 		when: 'I create a person with an email2 and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			firstName: 'John', lastName: 'Doe', email2: email, 
+			firstName: 'John', lastName: 'Doe', email2: email,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		email               | valid
 		null                | true
-		''                  | true
-		' '                 | true
-		'foo'               | false
-		'any name'          | false
-		'foobar@'           | false
-		'@mydomain.com'     | false
-		'user@mydomain'     | false
-		'user@.com'         | false
-		'user@mydomain.com' | true
-		'user@härbört.com'  | false     // XXX currently no IDN support
+        ''                  | true
+        ' '                 | true
+        'foo'               | false
+        'any name'          | false
+        'foobar@'           | false
+        '@mydomain.com'     | false
+        'user@mydomain'     | false
+        'user@.com'         | true
+        'user@mydomain.com' | true
+        'user@härbört.com'  | true
 	}
-	
+
 	def 'Job title constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a job title and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			firstName: 'John', lastName: 'Doe', jobTitle: jobTitle, 
+			firstName: 'John', lastName: 'Doe', jobTitle: jobTitle,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		jobTitle		| valid
 		null			| true
@@ -556,11 +527,8 @@ class PersonSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'Department constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with a department and validate it'
 		def p = new Person(
 			organization: new Organization(
@@ -571,10 +539,10 @@ class PersonSpec extends Specification {
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		department		| valid
 		null			| true
@@ -586,25 +554,22 @@ class PersonSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'Assistant constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with an assistant and validate it'
 		def p = new Person(
 			organization: new Organization(
 				recType: 1, name: 'foo', billingAddr: new Address(),
 				shippingAddr: new Address()
 			),
-			firstName: 'John', lastName: 'Doe', assistant: assistant, 
+			firstName: 'John', lastName: 'Doe', assistant: assistant,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		assistant		| valid
 		null			| true
@@ -616,11 +581,8 @@ class PersonSpec extends Specification {
 		'abc'*100		| true
 		'abc'*1000		| true
 	}
-	
+
 	def 'Notes constraints'() {
-		setup:
-		mockForConstraintsTests(Person)
-		
 		when: 'I create a person with an assistant and validate it'
 		def p = new Person(
 			organization: new Organization(
@@ -631,10 +593,10 @@ class PersonSpec extends Specification {
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
 		p.validate()
-		
+
 		then:
 		!valid == p.hasErrors()
-		
+
 		where:
 		notes			| valid
 		null			| true

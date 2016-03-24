@@ -20,11 +20,17 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Controller
+import groovy.transform.CompileStatic
 import java.security.MessageDigest
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
+import org.apache.http.HttpStatus
 import org.apache.http.NameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.HttpClients
+import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.message.BasicNameValuePair
 
 
@@ -32,10 +38,20 @@ import org.apache.http.message.BasicNameValuePair
  * The class {@code ErrorController} handles errors in the application.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.4
  */
-class ErrorController {
+class ErrorController implements Controller {
+
+    //-- Constants ------------------------------
+
+    private static final Log log = LogFactory.getLog(this)
+
+
+    //-- Fields ---------------------------------
+
+    CloseableHttpClient httpClient
+
 
     //-- Public methods -------------------------
 
@@ -121,30 +137,30 @@ class ErrorController {
     /**
      * Sends an error report to AMC World Technologies.
      */
+    @CompileStatic
     def reportError() {
         String xml = params.xml
-        def messageDigest = MessageDigest.getInstance('SHA1')
-        messageDigest.update(xml.getBytes('UTF-8'))
-        def sw = new StringWriter()
+        MessageDigest messageDigest = MessageDigest.getInstance('SHA1')
+        messageDigest.update xml.getBytes('UTF-8')
+        StringWriter sw = new StringWriter()
         messageDigest.digest().encodeHex().writeTo sw
 
-        def httpClient = HttpClients.createDefault()
         def httpPost = new HttpPost(
             'http://dev.amc-world.de/scripts/springcrm/error-report.php'
         )
         List<NameValuePair> nvps = [
             new BasicNameValuePair('xml', xml),
             new BasicNameValuePair('checksum', sw.toString())
-        ]
+        ] as List<NameValuePair>
         httpPost.entity = new UrlEncodedFormEntity(nvps)
-        httpClient.execute httpPost
 
-//        def body = [ xml: xml, checksum: sw.toString() ]
-//
-//        def http = new HTTPBuilder('http://dev.amc-world.de')
-//        http.post(
-//            path: '/scripts/springcrm/error-report.php', body: body,
-//            requestContentType: groovyx.net.http.ContentType.URLENC
-//        )
+        CloseableHttpResponse response = httpClient.execute(httpPost)
+        try {
+            if (response.statusLine.statusCode != HttpStatus.SC_OK) {
+                log.error "Could not report XML error report:\n${xml}"
+            }
+        } finally {
+            response.close()
+        }
     }
 }

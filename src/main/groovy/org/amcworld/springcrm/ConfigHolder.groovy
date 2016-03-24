@@ -1,7 +1,7 @@
 /*
  * ConfigHolder.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,18 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
+
 
 /**
  * The class {@code ConfigHolder} holds the system configuration of the
  * application.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
+@CompileStatic
 class ConfigHolder {
 
     //-- Public methods -------------------------
@@ -40,6 +44,7 @@ class ConfigHolder {
         getConfig name
     }
 
+    @CompileStatic(TypeCheckingMode.SKIP)
     Config getConfig(String name) {
         Config.findByName name
     }

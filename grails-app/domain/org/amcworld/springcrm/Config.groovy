@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,18 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Config} represents a system configuration information.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class Config {
+class Config implements GormEntity<Config> {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         name blank: false
@@ -40,9 +42,16 @@ class Config {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
+    /**
+     * The name of the configuration setting.
+     */
     String name
+
+    /**
+     * The string representation of the value of the configuration setting.
+     */
     String value
 
 
@@ -50,7 +59,7 @@ class Config {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof Config) ? name == obj.name : false
+        obj instanceof Config && name == obj.name
     }
 
     @Override

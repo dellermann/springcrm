@@ -28,7 +28,7 @@ import spock.lang.Specification
 
 
 @TestFor(ViewTagLib)
-@Mock([Config])
+@Mock(Config)
 class ViewTagLibSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -1319,7 +1319,7 @@ class ViewTagLibSpec extends Specification {
         step    | s
         0       | '<li><b>Text</b></li>'
         1       | '<li><b>Text</b></li>'
-        2       | '<li class="current"><b>Text</b></li>'
+        2       | '<li class="active"><b>Text</b></li>'
         3       | '<li><b>Text</b></li>'
         4       | '<li><b>Text</b></li>'
     }

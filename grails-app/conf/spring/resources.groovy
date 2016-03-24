@@ -1,7 +1,7 @@
 /*
  * resources.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,17 @@
 import org.amcworld.springcrm.*
 import org.amcworld.springcrm.converter.*
 import org.amcworld.springcrm.google.*
+import org.amcworld.springcrm.xml.XHTMLEntityResolver
+import org.apache.http.impl.client.HttpClients
+import org.grails.spring.DefaultBeanConfiguration
+import org.xml.sax.helpers.XMLReaderFactory
 
 
 beans = {
+
+    /*
+     * Implementation notes: delegate is an object of grails.spring.BeanBuilder
+     */
 
     /* configuration handling */
     springcrmConfig(org.springframework.jndi.JndiObjectFactoryBean) {
@@ -54,7 +62,33 @@ beans = {
     startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet) {
         markdownService = ref('markdownService')
     }
-	startupDiffSet4(org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet)
+    startupDiffSet4(org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet)
+
+    /* XML and XSLT */
+    fopFactory(FopFactory) { DefaultBeanConfiguration b ->
+        b.factoryMethod = 'newInstance'
+        b.singleton = false     // must not be singleton! See FopService.
+    }
+    transformerFactory(javax.xml.transform.TransformerFactory)
+    { DefaultBeanConfiguration b ->
+        b.factoryMethod = 'newInstance'
+        b.singleton = false     // must not be singleton! See FopService.
+        errorListener = ref('xsltLogErrorListener')
+    }
+    xhtmlEntityResolver(XHTMLEntityResolver) {
+        applicationContext = application.mainContext
+    }
+    xmlReader(XMLReaderFactory) { DefaultBeanConfiguration b ->
+        b.factoryMethod = 'createXMLReader'
+        b.singleton = false     // must not be singleton! See FopService.
+        entityResolver = ref('xhtmlEntityResolver')
+    }
+    xsltLogErrorListener(org.amcworld.springcrm.xml.LogErrorListener)
+
+    /* HTTP clients */
+    httpClient(HttpClients) { DefaultBeanConfiguration b ->
+        b.factoryMethod = 'createDefault'
+    }
 
     /* Google synchronization */
     googleContactSyncTask(GoogleContactSyncTask) {

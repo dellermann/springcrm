@@ -20,8 +20,11 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Controller
 import grails.converters.JSON
 import grails.core.GrailsClass
+import groovy.json.StreamingJsonBuilder
+import groovy.transform.CompileStatic
 
 
 /**
@@ -29,9 +32,9 @@ import grails.core.GrailsClass
  * settings such as client data, currency, selection values etc.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class ConfigController {
+class ConfigController implements Controller {
 
     //-- Constants ------------------------------
 
@@ -130,14 +133,37 @@ class ConfigController {
     }
 
     def loadSelValues() {
-        def list = getTypeClass(params.type).list(sort: 'orderId')
-        render(contentType: 'text/json') {
-            array {
-                for (i in list) {
-                    item id: i.ident(), name: i.name, disabled: i.ident() in READONLY_IDS
-                }
-            }
+        List<SelValue> list = getTypeClass(params.type).list(sort: 'orderId')
+
+        /*
+         * XXX in Grails 3.1.4, the following code doesn't work because the
+         * delegate of the render closure is set to
+         * groovy.json.StreamingJsonBuilder.StreamingJsonDelegate, which is
+         * used to render non-root JSON elements.  However, we would need a
+         * delegate of groovy.json.StreamingJsonBuilder to render an array as
+         * root element.
+         *
+         * See grails.artefact.controller.support.ResponseRenderer.render(Map argMap, Closure closure)
+         * for more information.
+         */
+//        render(contentType: 'application/json') {
+//            delegate.call(list) { SelValue value ->
+//                item(
+//                    id: value.ident(), name: value.name,
+//                    disabled: value.ident() in READONLY_IDS
+//                )
+//            }
+//        }
+
+        response.contentType = 'application/json'
+        def jsonBuilder = new StreamingJsonBuilder(response.writer)
+        jsonBuilder(list) { SelValue value ->
+            id value.ident()
+            name value.name
+            disabled(value.ident() in READONLY_IDS)
         }
+
+        false
     }
 
     def saveSelValues() {
@@ -175,14 +201,20 @@ class ConfigController {
     }
 
     def loadTaxRates() {
-        def list = TaxRate.list(sort: 'orderId')
-        render(contentType: 'text/json') {
-            array {
-                for (i in list) {
-                    item id: i.ident(), name: (i.taxValue * 100d).round(2)
-                }
-            }
+        List<TaxRate> list = TaxRate.list(sort: 'orderId')
+
+        /*
+         * XXX in Grails 3.1.4, the former code does not work. See method
+         * loadSelValues() for more information.
+         */
+        response.contentType = 'application/json'
+        def jsonBuilder = new StreamingJsonBuilder(response.writer)
+        jsonBuilder(list) { TaxRate t ->
+            id t.ident()
+            name(t.taxValue * 100.0)
         }
+
+        false
     }
 
     def saveTaxRates() {
@@ -212,13 +244,13 @@ class ConfigController {
     }
 
     def loadSeqNumbers() {
-        def list = SeqNumber.list()
+        List<SeqNumber> list = SeqNumber.list()
 
-        def ch = ConfigHolder.instance
-        Long workIdDunningCharge = ch['workIdDunningCharge']?.toType(Long)
-        Work workDunningCharge = Work.read(workIdDunningCharge)
-        Long workIdDefaultInterest = ch['workIdDefaultInterest']?.toType(Long)
-        Work workDefaultInterest = Work.read(workIdDefaultInterest)
+        ConfigHolder ch = ConfigHolder.instance
+        Long id = ch['workIdDunningCharge']?.toType(Long)
+        Work workDunningCharge = Work.read(id)
+        id = ch['workIdDefaultInterest']?.toType(Long)
+        Work workDefaultInterest = Work.read(id)
 
         render view: 'seqNumbers', model: [
             seqNumberList: list,
@@ -289,7 +321,8 @@ class ConfigController {
      * @return      the class of the selector value
      * @see         SelValue
      */
-    private Class<?> getTypeClass(String type) {
+    @CompileStatic
+    private Class<SelValue> getTypeClass(String type) {
         GrailsClass gc =
             grailsApplication.getArtefactByLogicalPropertyName('Domain', type)
         if (!gc) {
@@ -303,6 +336,7 @@ class ConfigController {
                 "Type ${type} must be of type SelValue."
             )
         }
-        cls
+
+        (Class<SelValue>) cls
     }
 }
