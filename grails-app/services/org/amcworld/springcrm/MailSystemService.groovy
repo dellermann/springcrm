@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import com.naleid.grails.MarkdownService
+import grails.artefact.Service
 import grails.core.GrailsApplication
 import grails.gsp.PageRenderer
 import grails.plugins.mail.MailService
@@ -36,9 +37,9 @@ import org.springframework.mail.MailMessage
  * @version 2.1
  * @since   1.4
  */
-class MailSystemService {
+class MailSystemService implements Service {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GrailsApplication grailsApplication
     MailService mailService
@@ -69,6 +70,7 @@ class MailSystemService {
      */
     boolean isUserConfigured() {
         Boolean b = config['mailUseConfig']?.toType(Boolean)
+
         b != null && b.booleanValue()
     }
 
@@ -117,7 +119,9 @@ class MailSystemService {
      * @return              the rendered plain text code
      */
     String getTextMessage(String controller, String view, Map model) {
-        groovyPageRenderer.render view: "/email/${controller}/${view}", model: model
+        groovyPageRenderer.render(
+            view: "/email/${controller}/${view}", model: model
+        )
     }
 
     /**
@@ -183,7 +187,7 @@ class MailSystemService {
         }
         String htmlMsgText = data.htmlMessage ?: convertToHtml(plainMsgText)
 
-        sendRawMail {
+        mailService.sendMail mailConfiguration, {
             multipart true
             from data.from ?: fromAddress
             to data.to
@@ -191,20 +195,6 @@ class MailSystemService {
             text plainMsgText
             html htmlMsgText
         }
-    }
-
-    /**
-     * Sends a mail using the given data.
-     *
-     * @param mail  the mail data
-     * @return      the sent mail message
-     */
-    MailMessage sendRawMail(Closure mail) {
-        if (!configured) {
-            return null
-        }
-
-        mailService.sendMail mailConfiguration, mail
     }
 
 
@@ -216,7 +206,7 @@ class MailSystemService {
      *
      * @return  the configuration holder
      */
-    protected ConfigHolder getConfig() {
+    private ConfigHolder getConfig() {
         ConfigHolder.instance
     }
 
@@ -225,7 +215,7 @@ class MailSystemService {
      *
      * @return  the configuration data
      */
-    protected ConfigObject getMailConfiguration() {
+    private ConfigObject getMailConfiguration() {
         ConfigObject configuration = new ConfigObject()
 
         configuration.host = (config['mailHost']?.toString()) ?: 'localhost'
