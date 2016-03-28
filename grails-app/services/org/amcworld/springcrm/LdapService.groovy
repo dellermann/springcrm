@@ -1,7 +1,7 @@
 /*
  * LdapService.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,13 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Service
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import javax.naming.NameAlreadyBoundException
+import org.amcworld.springcrm.ldap.LdapFactory
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.apache.directory.groovyldap.LDAP
 
 
@@ -29,13 +35,24 @@ import org.apache.directory.groovyldap.LDAP
  * server and store person data.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class LdapService {
+@CompileStatic
+class LdapService implements Service {
 
-    //-- Class variables ------------------------
+    //-- Constants ------------------------------
+
+    private static final Log log = LogFactory.getLog(this)
+
+
+    //-- Class fields ---------------------------
 
     static transactional = false
+
+
+    //-- Fields ---------------------------------
+
+    LdapFactory ldapFactory
 
 
     //-- Public methods -------------------------
@@ -48,7 +65,7 @@ class LdapService {
     void delete(Person p) {
         LDAP ldap = getLdap()
         if (ldap) {
-            LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
+            LdapSyncStatus status = getByPerson(p)
             if (status) {
                 if (ldap.exists(status.dn)) {
                     log.debug "Deleting DN ${status.dn} from LDAP..."
@@ -68,15 +85,19 @@ class LdapService {
     void save(Person p) {
         LDAP ldap = getLdap()
         if (ldap) {
-            log.debug "Exporting person ${p} to LDAP..."
-            LdapSyncStatus status = LdapSyncStatus.findByItemId(p.id)
+            if (log.debugEnabled) {
+                log.debug "Exporting person ${p} to LDAP..."
+            }
+            LdapSyncStatus status = getByPerson(p)
             if (status) {
                 if (ldap.exists(status.dn)) {
-                    log.debug "DN ${status.dn} already exists -> delete it."
+                    if (log.debugEnabled) {
+                        log.debug "DN ${status.dn} already exists -> delete it."
+                    }
                     ldap.delete status.dn
                 }
             } else {
-                status = new LdapSyncStatus(itemId: p.id)
+                status = createByPerson(p)
             }
             def attrs = convertPersonToAttrs(p)
             StringBuilder dn
@@ -88,14 +109,18 @@ class LdapService {
                 }
                 dn << ',' << config['ldapContactDn']?.toString()
                 try {
-                    log.debug "Trying to save DN ${dn} to LDAP..."
+                    if (log.debugEnabled) {
+                        log.debug "Trying to save DN ${dn} to LDAP..."
+                    }
                     ldap.add dn.toString(), attrs
                     status.dn = dn.toString()
                     status.save flush: true
                     break
                 } catch (NameAlreadyBoundException ignored) { /* ignored */ }
             }
-            log.debug "Successfully exported person ${p} to LDAP."
+            if (log.debugEnabled) {
+                log.debug "Successfully exported person ${p} to LDAP."
+            }
         }
     }
 
@@ -110,7 +135,7 @@ class LdapService {
      * @return  the attribute map containing the person property values
      *          suitable for LDAP
      */
-    protected Map convertPersonToAttrs(Person p) {
+    private Map convertPersonToAttrs(Person p) {
         def attrs = [
             cn: "${p.lastName} ${p.firstName}".toString(),
             displayname: "${p.firstName} ${p.lastName}".toString(),
@@ -204,7 +229,32 @@ class LdapService {
                 it.replaceAll ~/\D/, ''
             }
         }
+
         attrs
+    }
+
+    /**
+     * Creates an LDAP sync status by the given person.
+     *
+     * @param p the given person
+     * @return  the created sync status
+     * @since   2.1
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private LdapSyncStatus createByPerson(Person p) {
+        new LdapSyncStatus(itemId: p.id)
+    }
+
+    /**
+     * Gets the LDAP sync status by the given person.
+     *
+     * @param p the given person
+     * @return  the sync status or {@code null} if no such status exist
+     * @since   2.1
+     */
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private LdapSyncStatus getByPerson(Person p) {
+        LdapSyncStatus.findByItemId p.id
     }
 
     /**
@@ -213,7 +263,7 @@ class LdapService {
      *
      * @return  the configuration holder
      */
-    protected ConfigHolder getConfig() {
+    private ConfigHolder getConfig() {
         ConfigHolder.instance
     }
 
@@ -225,22 +275,16 @@ class LdapService {
      * @return  the LDAP server connection; {@code null} if no LDAP server is
      *          configured
      */
-    protected LDAP getLdap() {
-        LDAP ldap = null
+    private LDAP getLdap() {
         String host = config['ldapHost']?.toString()
-        if (host) {
-            StringBuilder buf = new StringBuilder('ldap://')
-            buf << host
-            Integer port = config['ldapPort']?.toType(Integer)
-            if (port) {
-                buf << ':' << port
-            }
-            ldap = LDAP.newInstance(
-                buf.toString(), config['ldapBindDn']?.toString(),
-                config['ldapBindPasswd']?.toString()
-            )
+        if (!host) {
+            return null
         }
 
-        ldap
+        ldapFactory.newLdap(
+            host, config['ldapBindDn']?.toString(),
+            config['ldapBindPasswd']?.toString(),
+            config['ldapPort']?.toType(Integer)
+        )
     }
 }

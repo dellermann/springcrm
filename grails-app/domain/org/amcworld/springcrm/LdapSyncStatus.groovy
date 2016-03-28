@@ -1,7 +1,7 @@
 /*
  * LdapSyncStatus.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,19 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code LdapSyncStatus} stores the status of the synchronization of
  * a content item with LDAP.
  *
  * @author	Daniel Ellermann
- * @version 1.3
+ * @version 2.1
  */
-class LdapSyncStatus {
+class LdapSyncStatus implements GormEntity<LdapSyncStatus> {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {}
     static mapping = {
@@ -38,31 +40,27 @@ class LdapSyncStatus {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-	Long itemId
-	String dn
-	Date lastSync = new Date()
+    Long itemId
+    String dn
+    Date lastSync = new Date()
 
 
     //-- Public methods -------------------------
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof LdapSyncStatus) {
-            return obj.itemId == itemId
-        } else {
-            return false
-        }
+    boolean equals(Object obj) {
+        obj instanceof LdapSyncStatus && obj.itemId == itemId
     }
 
     @Override
-    public int hashCode() {
-        return itemId as int
+    int hashCode() {
+        (itemId ?: 0L) as int
     }
 
     @Override
     String toString() {
-        return "${itemId} → ${dn}"
+        "${itemId} → ${dn}"
     }
 }

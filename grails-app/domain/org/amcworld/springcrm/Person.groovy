@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Person} represents a person of an organization.
@@ -28,7 +30,7 @@ package org.amcworld.springcrm
  * @author 	Philip Drozd
  * @version 2.1
  */
-class Person implements NumberedDomain {
+class Person implements GormEntity<Person>, NumberedDomain {
 
     //-- Class fields ---------------------------
 
@@ -129,15 +131,15 @@ class Person implements NumberedDomain {
     //-- Properties -----------------------------
 
     String getFullName() {
-		String firstName = this.firstName?.trim()?:''
-		String lastName = this.lastName?.trim()?:''
+        String firstName = this.firstName?.trim()?:''
+        String lastName = this.lastName?.trim()?:''
 
-		StringBuilder buf = new StringBuilder (firstName)
-		if(firstName && lastName) {
-			buf << ' '
-		}
-		buf << lastName
-		buf.toString()
+        StringBuilder buf = new StringBuilder (firstName)
+        if(firstName && lastName) {
+            buf << ' '
+        }
+        buf << lastName
+        buf.toString()
     }
 
 

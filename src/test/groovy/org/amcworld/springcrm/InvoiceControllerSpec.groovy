@@ -22,13 +22,11 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Specification
 
 
 @TestFor(InvoiceController)
-@TestMixin(DomainClassUnitTestMixin)
 @Mock([Invoice, InvoiceStage, Organization, Person])
 class InvoiceControllerSpec extends Specification {
 
@@ -45,6 +43,7 @@ class InvoiceControllerSpec extends Specification {
     def 'List unpaid bills'() {
         given: 'some invoices'
         makeInvoicesFixture()
+        Invoice.list().each { println it.dump() }
 
         when: 'I call the listUnpaidBills action'
         def model = controller.listUnpaidBills()
@@ -58,13 +57,13 @@ class InvoiceControllerSpec extends Specification {
         def i1 = l.find { it.number == 40000 }
         null != i1
         107.0762 == i1.total
-        -107.08 == i1.balance
+        -107.0762 == i1.balance
 
         and: 'the second invoice has the following properties'
         def i2 = l.find { it.number == 40001 }
         null != i2
         9.99915 == i2.total
-        -0.5 == i2.balance
+        -0.49915 == i2.balance
     }
 
     // TODO test the remaining actions
@@ -139,75 +138,71 @@ class InvoiceControllerSpec extends Specification {
         }
         def d = new Date() - 5      // 5 days before today
 
-        def l = [
-            new Invoice(
-                billingAddr: new Address(),
-                dueDatePayment: d,
-                footerText: 'my footer text',
-                headerText: 'my header text',
-                items: [
-                    new InvoicingItem(
-                        number: 'P-10000', quantity: 4, unit: 'pcs.',
-                        name: 'books', unitPrice: 44.99, tax: 19
-                    )
-                ],
-                number: 39999,
-                organization: org,
-                paymentAmount: 214.15,
-                person: p,
-                shippingAddr: new Address(),
-                stage: InvoiceStage.get(903),
-                subject: 'Test invoice 1',
-                termsAndConditions: [],
-                total: 214.1524
-            ),
-            new Invoice(
-                billingAddr: new Address(),
-                dueDatePayment: d,
-                footerText: 'my footer text',
-                headerText: 'my header text',
-                items: [
-                    new InvoicingItem(
-                        number: 'P-10000', quantity: 2, unit: 'pcs.',
-                        name: 'books', unitPrice: 44.99, tax: 19
-                    )
-                ],
-                number: 40000,
-                organization: org,
-                person: p,
-                shippingAddr: new Address(),
-                stage: InvoiceStage.get(902),
-                subject: 'Test invoice 2',
-                termsAndConditions: [],
-                total: 107.0762
-            ),
-            new Invoice(
-                billingAddr: new Address(),
-                dueDatePayment: d,
-                footerText: 'my footer text',
-                headerText: 'my header text',
-                items: [
-                    new InvoicingItem(
-                        number: 'P-20000', quantity: 10.5, unit: 'm',
-                        name: 'tape', unitPrice: 0.89, tax: 7
-                    ),
-                ],
-                number: 40001,
-                organization: org,
-                paymentAmount: 9.5,
-                person: p,
-                shippingAddr: new Address(),
-                stage: InvoiceStage.get(903),
-                subject: 'Test invoice 3',
-                termsAndConditions: [],
-                total: 9.99915
-            )
-        ]
+        def i1 = new Invoice(
+            billingAddr: new Address(),
+            dueDatePayment: d,
+            footerText: 'my footer text',
+            headerText: 'my header text',
+            items: [],
+            number: 39999,
+            organization: org,
+            paymentAmount: 214.1524,
+            person: p,
+            shippingAddr: new Address(),
+            stage: InvoiceStage.get(903),
+            subject: 'Test invoice 1',
+            termsAndConditions: [],
+            total: 214.1524
+        )
+        i1.items << new InvoicingItem(
+            quantity: 4, unit: 'pcs.', name: 'books',
+            unitPrice: 44.99, tax: 19
+        )
+        def i2 = new Invoice(
+            billingAddr: new Address(),
+            dueDatePayment: d,
+            footerText: 'my footer text',
+            headerText: 'my header text',
+            items: [],
+            number: 40000,
+            organization: org,
+            person: p,
+            shippingAddr: new Address(),
+            stage: InvoiceStage.get(902),
+            subject: 'Test invoice 2',
+            termsAndConditions: [],
+            total: 107.0762
+        )
+        i2.items << new InvoicingItem(
+            quantity: 2, unit: 'pcs.', name: 'books',
+            unitPrice: 44.99, tax: 19
+        )
 
-        def userService = Mock(UserService)
-        userService.getNumFractionDigitsExt() >> 2
+        def i3 = new Invoice(
+            billingAddr: new Address(),
+            dueDatePayment: d,
+            footerText: 'my footer text',
+            headerText: 'my header text',
+            items: [],
+            number: 40001,
+            organization: org,
+            paymentAmount: 9.5,
+            person: p,
+            shippingAddr: new Address(),
+            stage: InvoiceStage.get(903),
+            subject: 'Test invoice 3',
+            termsAndConditions: [],
+            total: 9.99915
+        )
+        i3.items << new InvoicingItem(
+            quantity: 10.5, unit: 'm', name: 'tape',
+            unitPrice: 0.89, tax: 7
+        )
 
-        mockDomain Invoice, l
+        mockDomain Invoice, [i1, i2, i3]
+
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
     }
 
     protected void makeInvoiceStageFixture() {

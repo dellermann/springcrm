@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -82,7 +83,8 @@ class Config implements GormEntity<Config> {
      * @return      the converted object
      * @see         #asType(Class)
      */
-    def toType(Class type) {
+    @CompileStatic
+    public <T> T toType(Class<T> type) {
         switch (type) {
         case Date:
             return value ? Date.parseToStringDate(value) : null

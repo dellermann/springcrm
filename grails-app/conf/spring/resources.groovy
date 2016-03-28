@@ -90,6 +90,11 @@ beans = {
         b.factoryMethod = 'createDefault'
     }
 
+    /* LDAP */
+    ldapFactory(org.amcworld.springcrm.ldap.LdapFactory) { DefaultBeanConfiguration b ->
+        b.factoryMethod = 'getInstance'
+    }
+
     /* Google synchronization */
     googleContactSyncTask(GoogleContactSyncTask) {
         googleContactSync = ref('googleContactSync')

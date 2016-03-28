@@ -1,7 +1,7 @@
 /*
  * LdapServiceSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,211 +22,277 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import org.amcworld.springcrm.ldap.Ldap
+import org.amcworld.springcrm.ldap.LdapFactory
 import org.apache.directory.groovyldap.LDAP
 import spock.lang.Specification
 
 
 @TestFor(LdapService)
-@Mock([Config, LdapService, LdapSyncStatus, Organization, Person])
+@Mock([Config, LdapSyncStatus, Organization, Person])
 class LdapServiceSpec extends Specification {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    Organization org
-    Person person
-
-
-    //-- Fixture methods ------------------------
-
-    void setup() {
-        makeOrganizationFixture()
-        org = Organization.first()
-
-        makePersonFixture(org)
-        person = Person.first()
-    }
+    Organization org = makeOrganization()
+    Person person = makePerson(org)
 
 
     //-- Feature methods ------------------------
 
-    def 'Configuration without port'() {
-        given: 'a configuration'
-        mockDomain Config, [
-            [name: 'ldapHost', value: 'localhost'],
-            [name: 'ldapBindDn', value: 'cn=admin,dc=example,dc=org'],
-            [name: 'ldapBindPasswd', value: 'secret']
-        ]
+    def 'No delete if no host has been configured'() {
+        given: 'a mocked LDAP'
+        Ldap ldap = Mock()
 
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            assert 'ldap://localhost' == host
-            assert 'cn=admin,dc=example,dc=org' == bindDn
-            assert 'secret' == bindPw
-        }
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newInstance(null, null, null, null) >> ldap
+        service.ldapFactory = factory
 
-        when: 'I save the person to DIT'
-        service.save person
-        ctrl.verify()
-
-        then: 'there nothing has been saved'
-        notThrown(Exception)
-    }
-
-    def 'Configuration with port'() {
-        given: 'a configuration'
-        mockDomain Config, [
-            [name: 'ldapHost', value: 'localhost'],
-            [name: 'ldapPort', value: '400'],
-            [name: 'ldapBindDn', value: 'cn=admin,dc=example,dc=org'],
-            [name: 'ldapBindPasswd', value: 'secret']
-        ]
-
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            assert 'ldap://localhost:400' == host
-            assert 'cn=admin,dc=example,dc=org' == bindDn
-            assert 'secret' == bindPw
-        }
-
-        when: 'I save the person to DIT'
-        service.save person
-        ctrl.verify()
-
-        then: 'there nothing has been saved'
-        notThrown(Exception)
-    }
-
-    def 'Delete with non-configured LDAP server'() {
-        given: 'an empty configuration'
-        mockDomain Config
-
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(0) { -> }
-
-        when: 'I delete the person from DIT'
+        when: 'I call the delete method'
         service.delete person
-        ctrl.verify()
 
-        then: 'there nothing has been deleted'
-        notThrown(Exception)
+        then: 'no LDAP method has been called'
+        0 * ldap.exists(_)
+        0 * ldap.delete(_)
     }
 
-    def 'Delete an existing person'() {
-        given: 'some configuration data'
-        makeConfigFixture()
+    def 'No delete if an empty host has been configured'() {
+        given: 'a configuration'
+        mockDomain Config, [
+            [name: 'ldapHost', value: '']
+        ]
 
-        and: 'an LDAP sync status entry'
+        and: 'a mocked LDAP'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newInstance('', null, null, null) >> ldap
+        service.ldapFactory = factory
+
+        when: 'I call the delete method'
+        service.delete person
+
+        then: 'no LDAP method has been called'
+        0 * ldap.exists(_)
+        0 * ldap.delete(_)
+    }
+
+    def 'No save if no host has been configured'() {
+        given: 'a mocked LDAP'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newInstance(null, null, null, null) >> ldap
+        service.ldapFactory = factory
+
+        when: 'I call the save method'
+        service.save person
+
+        then: 'no LDAP method has been called'
+        0 * ldap.add(_, _)
+    }
+
+    def 'No save if an empty host has been configured'() {
+        given: 'a configuration'
+        mockDomain Config, [
+            [name: 'ldapHost', value: '']
+        ]
+
+        and: 'a mocked LDAP'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newInstance('', null, null, null) >> ldap
+        service.ldapFactory = factory
+
+        when: 'I call the save method'
+        service.save person
+
+        then: 'no LDAP method has been called'
+        0 * ldap.add(_, _)
+    }
+
+    def 'Establish an LDAP connection without bind data'() {
+        given: 'a configuration'
+        mockDomain Config, [
+            [name: 'ldapHost', value: 'localhost']
+        ]
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', null, null, null) >> ldap
+        service.ldapFactory = factory
+
+        and: 'a mocked sync status'
         mockDomain LdapSyncStatus, [
-            [itemId: 1, dn: 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org']
+            [itemId: person.id, dn: 'cn=foo']
         ]
 
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            new LDAP()
-        }
-        ctrl.demand.exists(1) { String dn ->
-            assert 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == dn
-            true
-        }
-        ctrl.demand.delete(1) { String dn ->
-            assert 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == dn
-        }
-
-        when: 'I delete the person from DIT'
+        when: 'I call for example the delete method'
         service.delete person
-        ctrl.verify()
 
-        then: 'there is no entry in DIT'
-        notThrown(Exception)
+        then: 'the LDAP methods have been called'
+        1 * ldap.exists(_) >> true
+        1 * ldap.delete(_)
+    }
 
-        and: 'no LDAP sync status entry'
-        0 == LdapSyncStatus.count()
+    def 'Establish an LDAP connection without port'() {
+        given: 'a configuration'
+        mockDomain Config, [
+            [name: 'ldapHost', value: 'localhost'],
+            [name: 'ldapBindDn', value: 'cn=admin,dc=example,dc=org'],
+            [name: 'ldapBindPasswd', value: 'secret']
+        ]
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', null) >> ldap
+        service.ldapFactory = factory
+
+        and: 'a mocked sync status'
+        mockDomain LdapSyncStatus, [
+            [itemId: person.id, dn: 'cn=foo']
+        ]
+
+        when: 'I call for example the delete method'
+        service.delete person
+
+        then: 'the LDAP methods have been called'
+        1 * ldap.exists(_) >> true
+        1 * ldap.delete(_)
+    }
+
+    def 'Establish an LDAP connection with port'() {
+        given: 'a configuration'
+        makeConfig()
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
+
+        and: 'a mocked sync status'
+        mockDomain LdapSyncStatus, [
+            [itemId: person.id, dn: 'cn=foo']
+        ]
+
+        when: 'I call for example the delete method'
+        service.delete person
+
+        then: 'the LDAP methods have been called'
+        1 * ldap.exists(_) >> true
+        1 * ldap.delete(_)
     }
 
     def 'Delete a person not existing in sync table'() {
-        given: 'some configuration data'
-        makeConfigFixture()
+        given: 'a configuration'
+        makeConfig()
 
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            new LDAP()
-        }
-        ctrl.demand.delete(0) { String dn -> }
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
 
         when: 'I delete the person from DIT'
         service.delete person
-        ctrl.verify()
 
-        then: 'there is no entry in DIT'
-        notThrown(Exception)
-
-        and: 'no LDAP sync status entry'
-        0 == LdapSyncStatus.count()
+        then: 'no LDAP entry has been deleted'
+        0 * ldap.exists(_)
+        0 * ldap.delete(_)
     }
 
     def 'Delete a person not existing in DIT'() {
-        given: 'some configuration data'
-        makeConfigFixture()
+        given: 'a configuration'
+        makeConfig()
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+        1 * ldap.exists('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org') >> false
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
 
         and: 'an LDAP sync status entry'
         mockDomain LdapSyncStatus, [
-            [itemId: 1, dn: 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org']
+            [
+                itemId: person.id,
+                dn: 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org'
+            ]
         ]
-
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            new LDAP()
-        }
-        ctrl.demand.exists(1) { String dn ->
-            assert 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == dn
-            false
-        }
-        ctrl.demand.delete(0) { String dn -> }
 
         when: 'I delete the person from DIT'
         service.delete person
-        ctrl.verify()
 
-        then: 'there is no entry in DIT'
-        notThrown(Exception)
+        then: 'the LDAP entry is not deleted'
+        0 * ldap.delete('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org')
+    }
 
-        and: 'no LDAP sync status entry'
+    def 'Delete an existing person'() {
+        given: 'a configuration'
+        makeConfig()
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+        1 * ldap.exists('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org') >> true
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
+
+        and: 'an LDAP sync status entry'
+        mockDomain LdapSyncStatus, [
+            [
+                itemId: person.id,
+                dn: 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org'
+            ]
+        ]
+
+        when: 'I delete the person from DIT'
+        service.delete person
+
+        then: 'the LDAP entry has been deleted'
+        1 * ldap.delete('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org')
+
+        and: 'there is no LDAP sync status entry'
         0 == LdapSyncStatus.count()
     }
 
-    def 'Save with non-configured LDAP server'() {
-        given: 'an empty configuration'
-        mockDomain Config
+    def 'Save a new person'() {
+        given: 'a configuration'
+        makeConfig()
 
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(0) { -> }
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
 
         when: 'I save the person to DIT'
         service.save person
-        ctrl.verify()
 
-        then: 'there nothing has been saved'
-        notThrown(Exception)
-    }
-
-    def 'Save a new person'() {
-        given: 'some configuration data'
-        makeConfigFixture()
-
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            new LDAP()
-        }
-        ctrl.demand.add(1) { String dn, Map data ->
-            assert 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == dn
+        then: 'there is one entry in DIT'
+        1 * ldap.add('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org', _) >> { String dn, Map data ->
             assert ['top', 'inetOrgPerson'] == data.objectclass
             assert 'Daniel' == data.givenname
             assert 'Ellermann' == data.sn
@@ -242,43 +308,91 @@ class LdapServiceSpec extends Specification {
             assert 'http://www.example.com' == data.labeleduri
         }
 
+        and: 'there is one LDAP sync status entry'
+        LdapSyncStatus status = LdapSyncStatus.first()
+        1 == status.itemId
+        'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == status.dn
+    }
+
+    def 'Save a person only existing in sync table'() {
+        given: 'a configuration'
+        makeConfig()
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+        ldap.exists('cn=Ellermann Peter,ou=contacts,dc=example,dc=org') >> false
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
+
+        and: 'an LDAP sync status entry'
+        mockDomain LdapSyncStatus, [
+            [
+                itemId: person.id,
+                dn: 'cn=Ellermann Peter,ou=contacts,dc=example,dc=org'
+            ]
+        ]
+
         when: 'I save the person to DIT'
         service.save person
-        ctrl.verify()
 
-        then: 'there is one entry in DIT'
-        notThrown(Exception)
+        then: 'the no old LDAP entry has been deleted'
+        0 * ldap.delete(_)
 
-        and: 'one LDAP sync status entry'
+        and: 'a new LDAP entry has been created'
+        1 * ldap.add('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org', _) >> { String dn, Map data ->
+            assert ['top', 'inetOrgPerson'] == data.objectclass
+            assert 'Daniel' == data.givenname
+            assert 'Ellermann' == data.sn
+            assert 'Daniel Ellermann' == data.displayname
+            assert 'AMC World Technologies GmbH' == data.o
+            assert 'Fischerinsel 1' == data.street
+            assert '10179' == data.postalcode
+            assert 'Berlin' == data.l
+            assert 'Berlin' == data.st
+            assert 'Fischerinsel 1, 10179 Berlin' == data.postaladdress
+            assert ['123456789', '987654321'] == data.telephonenumber
+            assert ['daniel@example.com', 'info@example.com'] == data.mail
+            assert 'http://www.example.com' == data.labeleduri
+        }
+
+        and: 'there is one LDAP sync status entry'
         LdapSyncStatus status = LdapSyncStatus.first()
-        null != status
         1 == status.itemId
         'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == status.dn
     }
 
     def 'Save an existing person'() {
-        given: 'some configuration data'
-        makeConfigFixture()
+        given: 'a configuration'
+        makeConfig()
+
+        and: 'a mocked LDAP class'
+        Ldap ldap = Mock()
+        ldap.exists('cn=Ellermann Peter,ou=contacts,dc=example,dc=org') >> true
+
+        and: 'a mocked LDAP factory'
+        LdapFactory factory = Mock()
+        factory.newLdap('localhost', 'cn=admin,dc=example,dc=org', 'secret', 400) >> ldap
+        service.ldapFactory = factory
 
         and: 'an LDAP sync status entry'
         mockDomain LdapSyncStatus, [
-            [itemId: 1, dn: 'cn=Ellermann Peter,ou=contacts,dc=example,dc=org']
+            [
+                itemId: person.id,
+                dn: 'cn=Ellermann Peter,ou=contacts,dc=example,dc=org'
+            ]
         ]
 
-        and: 'a mock LDAP class'
-        def ctrl = mockFor(LDAP)
-        ctrl.demand.static.newInstance(1) { String host, String bindDn, String bindPw ->
-            new LDAP()
-        }
-        ctrl.demand.exists(1) { String dn ->
-            assert 'cn=Ellermann Peter,ou=contacts,dc=example,dc=org' == dn
-            true
-        }
-        ctrl.demand.delete(1) { String dn ->
-            assert 'cn=Ellermann Peter,ou=contacts,dc=example,dc=org' == dn
-        }
-        ctrl.demand.add(1) { String dn, Map data ->
-            assert 'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == dn
+        when: 'I save the person to DIT'
+        service.save person
+
+        then: 'the old LDAP entry has been deleted'
+        1 * ldap.delete('cn=Ellermann Peter,ou=contacts,dc=example,dc=org')
+
+        and: 'a new LDAP entry has been created'
+        1 * ldap.add('cn=Ellermann Daniel,ou=contacts,dc=example,dc=org', _) >> { String dn, Map data ->
             assert ['top', 'inetOrgPerson'] == data.objectclass
             assert 'Daniel' == data.givenname
             assert 'Ellermann' == data.sn
@@ -294,16 +408,8 @@ class LdapServiceSpec extends Specification {
             assert 'http://www.example.com' == data.labeleduri
         }
 
-        when: 'I save the person to DIT'
-        service.save person
-        ctrl.verify()
-
-        then: 'there is one entry in DIT'
-        notThrown(Exception)
-
-        and: 'one LDAP sync status entry'
+        and: 'there is one LDAP sync status entry'
         LdapSyncStatus status = LdapSyncStatus.first()
-        null != status
         1 == status.itemId
         'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == status.dn
     }
@@ -311,52 +417,53 @@ class LdapServiceSpec extends Specification {
 
     //-- Non-public methods ---------------------
 
-    protected void makeConfigFixture() {
+    private void makeConfig() {
         mockDomain Config, [
             [name: 'ldapHost', value: 'localhost'],
             [name: 'ldapPort', value: '400'],
             [name: 'ldapBindDn', value: 'cn=admin,dc=example,dc=org'],
-            [name: 'ldapBindPassword', value: 'secret'],
+            [name: 'ldapBindPasswd', value: 'secret'],
             [name: 'ldapContactDn', value: 'ou=contacts,dc=example,dc=org']
         ]
     }
 
-    protected void makeOrganizationFixture() {
-        mockDomain Organization, [
-            [
-                id: 1, number: 10000, recType: 1,
-                name: 'AMC World Technologies GmbH', legalForm: 'GmbH',
-                billingAddr: new Address(
-                    street: '45, Tulip rd.',
-                    postalCode: '39339',
-                    location: 'Mt Helena',
-                    state: 'NY',
-                    country: 'USA'
-                ), shippingAddr: new Address(),
-                phone: '987654321',
-                email1: 'info@example.com',
-                website: 'http://www.example.com'
-            ]
-        ]
+    private Organization makeOrganization() {
+        def org = new Organization(
+            number: 10000, recType: 1,
+            name: 'AMC World Technologies GmbH', legalForm: 'GmbH',
+            billingAddr: new Address(
+                street: '45, Tulip rd.',
+                postalCode: '39339',
+                location: 'Mt Helena',
+                state: 'NY',
+                country: 'USA'
+            ), shippingAddr: new Address(),
+            phone: '987654321',
+            email1: 'info@example.com',
+            website: 'http://www.example.com'
+        )
+        mockDomain Organization, [org]
+
+        org
     }
 
-    protected void makePersonFixture(Organization org) {
-        mockDomain Person, [
-            [
-                id: 1, number: 10000, organization: org, firstName: 'Daniel',
-                lastName: 'Ellermann',
-                mailingAddr: new Address(
-                    street: 'Fischerinsel 1',
-                    postalCode: '10179',
-                    location: 'Berlin',
-                    state: 'Berlin',
-                    country: 'Deutschland'
-                ),
-                otherAddr: new Address(), phone: '123456789',
-                email1: 'daniel@example.com',
-                email2: 'info@example.com'
+    private Person makePerson(Organization org) {
+        def p = new Person(
+            number: 10000, organization: org, firstName: 'Daniel',
+            lastName: 'Ellermann',
+            mailingAddr: new Address(
+                street: 'Fischerinsel 1',
+                postalCode: '10179',
+                location: 'Berlin',
+                state: 'Berlin',
+                country: 'Deutschland'
+            ),
+            otherAddr: new Address(), phone: '123456789',
+            email1: 'daniel@example.com',
+            email2: 'info@example.com'
+        )
+        mockDomain Person, [p]
 
-            ]
-        ]
+        p
     }
 }
