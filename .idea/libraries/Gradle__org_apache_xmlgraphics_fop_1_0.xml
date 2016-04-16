@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.xmlgraphics:fop:1.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/fop/1.0/763be6b7d2556cd4486bd306408cc2490e57668d/fop-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/fop/1.0/e1e373895cb6570d47a3cc567b3e6f02673dddc0/fop-1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

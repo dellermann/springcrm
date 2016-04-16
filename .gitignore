@@ -4,6 +4,9 @@
 /.gradle
 /.grails
 /.groovy
+/.idea/tasks.xml
+/.idea/workspace.xml
+/*.iws
 /.project
 /.settings
 /bin

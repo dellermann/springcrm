@@ -20,7 +20,10 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Service
 import grails.core.GrailsApplication
+import org.amcworld.springcrm.xml.InvoicingTransactionXML
+import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
 
 
 /**
@@ -31,9 +34,9 @@ import grails.core.GrailsApplication
  * @version 2.1
  * @since   1.2
  */
-class InvoicingTransactionService {
+class InvoicingTransactionService implements Service {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GrailsApplication grailsApplication
     InvoicingTransactionXMLFactory invoicingTransactionXMLFactory
@@ -62,11 +65,12 @@ class InvoicingTransactionService {
                        boolean duplicate = false, Map additionalData = null)
     {
         InvoicingTransactionXML xml =
-            invoicingTransactionXMLFactory.createConverter(transaction, user)
+            invoicingTransactionXMLFactory.newConverter(transaction, user)
         xml.duplicate = duplicate
         if (additionalData) {
             xml << additionalData
         }
+
         xml.toString()
     }
 

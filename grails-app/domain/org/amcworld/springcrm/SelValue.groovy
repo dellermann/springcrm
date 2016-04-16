@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code SelValue} represents a base class for selector values
@@ -28,7 +30,7 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class SelValue {
+class SelValue implements GormEntity<SelValue> {
 
     //-- Class fields ---------------------------
 

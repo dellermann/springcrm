@@ -1,7 +1,7 @@
 /*
  * SeqNumber.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,11 @@ package org.amcworld.springcrm
  * number various content items.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  */
 class SeqNumber {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         controllerName blank: false
@@ -44,7 +44,7 @@ class SeqNumber {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String controllerName
     String prefix = ''
@@ -57,7 +57,7 @@ class SeqNumber {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof SeqNumber) ? obj.controllerName == controllerName : false
+        obj instanceof SeqNumber && obj.controllerName == controllerName
     }
 
     @Override

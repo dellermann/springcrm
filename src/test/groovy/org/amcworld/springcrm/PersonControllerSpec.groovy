@@ -1,7 +1,7 @@
 /*
  * PersonControllerSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,9 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.test.mixin.domain.DomainClassUnitTestMixin
-import grails.test.mixin.web.ControllerUnitTestMixin
 import javax.naming.AuthenticationException
 import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 
 
@@ -254,6 +251,7 @@ class PersonControllerSpec extends Specification {
         def org = Organization.get(1)
 
         when: 'I send a form to the save action'
+        params.number = 10000   // prevents use of SeqNumberService
         params.firstName = 'Daniel'
         params.lastName = 'Ellermann'
         params.organization = org
@@ -328,7 +326,7 @@ class PersonControllerSpec extends Specification {
         controller.update()
 
         then: 'I am redirected to the show view'
-        '/error/ldap-person?type=authentication&origAction=&personId=1' == response.redirectedUrl   // the origAction is not available in tests
+        '/error/ldapPerson?type=authentication&origAction=&personId=1' == response.redirectedUrl   // the origAction is not available in tests
 
         and: 'there is still one person'
         1 == Person.count()
@@ -360,7 +358,7 @@ class PersonControllerSpec extends Specification {
         controller.update()
 
         then: 'I am redirected to the show view'
-        '/error/ldap-person?type=communication&origAction=&personId=1' == response.redirectedUrl   // the origAction is not available in tests
+        '/error/ldapPerson?type=communication&origAction=&personId=1' == response.redirectedUrl   // the origAction is not available in tests
 
         and: 'there is still one person'
         1 == Person.count()
@@ -392,7 +390,7 @@ class PersonControllerSpec extends Specification {
         controller.update()
 
         then: 'I am redirected to the show view'
-        '/error/ldap-person?type=nameNotFound&origAction=&personId=1' == response.redirectedUrl   // the origAction is not available in tests
+        '/error/ldapPerson?type=nameNotFound&origAction=&personId=1' == response.redirectedUrl   // the origAction is not available in tests
 
         and: 'there is still one person'
         1 == Person.count()

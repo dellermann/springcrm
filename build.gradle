@@ -119,6 +119,8 @@ dependencies {
     compile 'org.hibernate:hibernate-ehcache'
     compile 'org.liquibase:liquibase-core:3.3.2'
 
+    profile "org.grails.profiles:web:${grailsVersion}"
+
     // SpringCRM dependencies
     compile 'com.google.apis:google-api-services-calendar:v3-rev157-1.21.0'
     compile 'com.google.gdata:core:1.47.1'

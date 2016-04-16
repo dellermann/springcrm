@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.apache.avalon.framework:avalon-framework-impl:4.3.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.avalon.framework/avalon-framework-impl/4.3.1/2d5f5a07fd14513ce6d7a7bfaff69419c26dbd0b/avalon-framework-impl-4.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.avalon.framework/avalon-framework-impl/4.3.1/9f779f9b35461a7767a54bc835d21bd2a97ad6e/avalon-framework-impl-4.3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

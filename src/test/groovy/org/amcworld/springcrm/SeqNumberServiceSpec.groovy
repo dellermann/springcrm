@@ -1,7 +1,7 @@
 /*
  * SeqNumberServiceSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +35,10 @@ class SeqNumberServiceSpec extends Specification {
     //-- Fixture methods ------------------------
 
     def setup() {
-        new SeqNumber(controllerName: 'invoice', prefix: 'R', suffix: 'M')
-            .save failOnError: true
-        new SeqNumber(controllerName: 'organization', prefix: 'O')
-            .save failOnError: true
+        mockDomain SeqNumber, [
+            new SeqNumber(controllerName: 'invoice', prefix: 'R', suffix: 'M'),
+            new SeqNumber(controllerName: 'organization', prefix: 'O')
+        ]
         assert 2 == SeqNumber.count()
     }
 
@@ -46,7 +46,7 @@ class SeqNumberServiceSpec extends Specification {
     //-- Feature methods ------------------------
 
     def 'Load sequence number of a known class'() {
-        when: 'I load a sequence number by an artefact type'
+        when: 'I load a sequence number by an artifact type'
         SeqNumber sn = service.loadSeqNumber('invoice')
 
         then: 'I get a valid sequence number object'
@@ -83,7 +83,7 @@ class SeqNumberServiceSpec extends Specification {
     }
 
     def 'Get next default sequence number'() {
-        when: 'I retrieve the next sequence number by an artefact type'
+        when: 'I retrieve the next sequence number by an artifact type'
         int n = service.nextNumber('invoice')
 
         then: 'I get a valid sequence number'
@@ -106,7 +106,7 @@ class SeqNumberServiceSpec extends Specification {
         given: 'an organization with a particular sequence number'
         createOrganization()
 
-        when: 'I retrieve the next sequence number by an artefact type'
+        when: 'I retrieve the next sequence number by an artifact type'
         int n = service.nextNumber('organization')
 
         then: 'I get a valid sequence number after the given one'
@@ -131,7 +131,7 @@ class SeqNumberServiceSpec extends Specification {
         Quote quote = createQuote(org)
         createInvoice org, quote
 
-        when: 'I retrieve the next sequence number by an artefact type'
+        when: 'I retrieve the next sequence number by an artifact type'
         int n = service.nextNumber('invoice')
 
         then: 'I get a valid sequence number after the given one'
@@ -154,7 +154,7 @@ class SeqNumberServiceSpec extends Specification {
         given: 'an organization with a particular sequence number'
         createOrganization()
 
-        when: 'I retrieve the next full number by an artefact type'
+        when: 'I retrieve the next full number by an artifact type'
         String s = service.nextFullNumber('organization')
 
         then: 'I get a valid full number with prefix'
@@ -177,7 +177,7 @@ class SeqNumberServiceSpec extends Specification {
         given: 'an invoice with a particular sequence number'
         createInvoice()
 
-        when: 'I retrieve the next full number by an artefact type'
+        when: 'I retrieve the next full number by an artifact type'
         String s = service.nextFullNumber('invoice')
 
         then: 'I get a valid full number with prefix'
@@ -203,15 +203,15 @@ class SeqNumberServiceSpec extends Specification {
         s == service.format(OrganizationController, n)
 
         where:
-            n | s
-            0 | 'O-0'
-            1 | 'O-1'
-           10 | 'O-10'
-         1005 | 'O-1005'
-        10000 | 'O-10000'
-        10608 | 'O-10608'
-        39999 | 'O-39999'
-        99999 | 'O-99999'
+            n || s
+            0 || 'O-0'
+            1 || 'O-1'
+           10 || 'O-10'
+         1005 || 'O-1005'
+        10000 || 'O-10000'
+        10608 || 'O-10608'
+        39999 || 'O-39999'
+        99999 || 'O-99999'
     }
 
     def 'Format a number with prefix and suffix'() {
@@ -221,15 +221,15 @@ class SeqNumberServiceSpec extends Specification {
         s == service.format(InvoiceController, n)
 
         where:
-            n | s
-            0 | 'R-0-M'
-            1 | 'R-1-M'
-           10 | 'R-10-M'
-         1005 | 'R-1005-M'
-        10000 | 'R-10000-M'
-        10608 | 'R-10608-M'
-        39999 | 'R-39999-M'
-        99999 | 'R-99999-M'
+            n || s
+            0 || 'R-0-M'
+            1 || 'R-1-M'
+           10 || 'R-10-M'
+         1005 || 'R-1005-M'
+        10000 || 'R-10000-M'
+        10608 || 'R-10608-M'
+        39999 || 'R-39999-M'
+        99999 || 'R-99999-M'
     }
 
     def 'Format a prefix sequence number with prefix only'() {
@@ -239,15 +239,15 @@ class SeqNumberServiceSpec extends Specification {
         s == service.formatWithPrefix(OrganizationController, n)
 
         where:
-            n | s
-            0 | 'O-0'
-            1 | 'O-1'
-           10 | 'O-10'
-         1005 | 'O-1005'
-        10000 | 'O-10000'
-        10608 | 'O-10608'
-        39999 | 'O-39999'
-        99999 | 'O-99999'
+            n || s
+            0 || 'O-0'
+            1 || 'O-1'
+           10 || 'O-10'
+         1005 || 'O-1005'
+        10000 || 'O-10000'
+        10608 || 'O-10608'
+        39999 || 'O-39999'
+        99999 || 'O-99999'
     }
 
     def 'Format a prefix/suffix sequence number with prefix only'() {
@@ -257,15 +257,15 @@ class SeqNumberServiceSpec extends Specification {
         s == service.formatWithPrefix(InvoiceController, n)
 
         where:
-            n | s
-            0 | 'R-0'
-            1 | 'R-1'
-           10 | 'R-10'
-         1005 | 'R-1005'
-        10000 | 'R-10000'
-        10608 | 'R-10608'
-        39999 | 'R-39999'
-        99999 | 'R-99999'
+            n || s
+            0 || 'R-0'
+            1 || 'R-1'
+           10 || 'R-10'
+         1005 || 'R-1005'
+        10000 || 'R-10000'
+        10608 || 'R-10608'
+        39999 || 'R-39999'
+        99999 || 'R-99999'
     }
 
     def 'Format a prefix sequence number with suffix only'() {
@@ -275,15 +275,15 @@ class SeqNumberServiceSpec extends Specification {
         s == service.formatWithSuffix(OrganizationController, n)
 
         where:
-            n | s
-            0 | '0'
-            1 | '1'
-           10 | '10'
-         1005 | '1005'
-        10000 | '10000'
-        10608 | '10608'
-        39999 | '39999'
-        99999 | '99999'
+            n || s
+            0 || '0'
+            1 || '1'
+           10 || '10'
+         1005 || '1005'
+        10000 || '10000'
+        10608 || '10608'
+        39999 || '39999'
+        99999 || '99999'
     }
 
     def 'Format a prefix/suffix sequence number with suffix only'() {
@@ -293,54 +293,64 @@ class SeqNumberServiceSpec extends Specification {
         s == service.formatWithSuffix(InvoiceController, n)
 
         where:
-            n | s
-            0 | '0-M'
-            1 | '1-M'
-           10 | '10-M'
-         1005 | '1005-M'
-        10000 | '10000-M'
-        10608 | '10608-M'
-        39999 | '39999-M'
-        99999 | '99999-M'
+            n || s
+            0 || '0-M'
+            1 || '1-M'
+           10 || '10-M'
+         1005 || '1005-M'
+        10000 || '10000-M'
+        10608 || '10608-M'
+        39999 || '39999-M'
+        99999 || '99999-M'
     }
 
 
     //-- Non-public methods ---------------------
 
-    protected Invoice createInvoice(Organization org = createOrganization(),
-                                    Quote quote = null) {
-        new Invoice(
-                number: 14000, subject: 'Foo', dueDatePayment: new Date(),
-                organization: org, quote: quote, docDate: new Date(),
-                stage: new InvoiceStage(name: 'paid'),
-                billingAddr: new Address(), shippingAddr: new Address(),
-                items: [
-                    new InvoicingItem(
-                        number: 'P-10000', quantity: 4, unit: 'pcs.',
-                        name: 'books', unitPrice: 44.99, tax: 19
-                    )
-                ]
-            ).save failOnError: true
+    private Invoice createInvoice(Organization org = createOrganization(),
+                                  Quote quote = null) {
+        def invoice = new Invoice(
+            number: 14000, subject: 'Foo', dueDatePayment: new Date(),
+            organization: org, quote: quote, docDate: new Date(),
+            stage: new InvoiceStage(name: 'paid'),
+            billingAddr: new Address(), shippingAddr: new Address(),
+            items: []
+        )
+        invoice.items << new InvoicingItem(
+            number: 'P-10000', quantity: 4, unit: 'pcs.',
+            name: 'books', unitPrice: 44.99, tax: 19
+        )
+
+        mockDomain Invoice, [invoice]
+
+        invoice
     }
 
-    protected Organization createOrganization() {
-        new Organization(
-                number: 39999, recType: 1, name: 'YourOrganization Ltd.',
-                billingAddr: new Address(), shippingAddr: new Address()
-            ).save failOnError: true
+    private Organization createOrganization() {
+        def org = new Organization(
+            number: 39999, recType: 1, name: 'YourOrganization Ltd.',
+            billingAddr: new Address(), shippingAddr: new Address()
+        )
+
+        mockDomain Organization, [org]
+
+        org
     }
 
-    protected Quote createQuote(Organization org = createOrganization()) {
-        new Quote(
-                number: 29999, subject: 'Foo', organization: org,
-                docDate: new Date(), stage: new QuoteStage(name: 'delivered'),
-                billingAddr: new Address(), shippingAddr: new Address(),
-                items: [
-                    new InvoicingItem(
-                        number: 'P-10000', quantity: 4, unit: 'pcs.',
-                        name: 'books', unitPrice: 44.99, tax: 19
-                    )
-                ]
-            ).save failOnError: true
+    private Quote createQuote(Organization org = createOrganization()) {
+        def q = new Quote(
+            number: 29999, subject: 'Foo', organization: org,
+            docDate: new Date(), stage: new QuoteStage(name: 'delivered'),
+            billingAddr: new Address(), shippingAddr: new Address(),
+            items: []
+        )
+        q.items << new InvoicingItem(
+            number: 'P-10000', quantity: 4, unit: 'pcs.',
+            name: 'books', unitPrice: 44.99, tax: 19
+        )
+
+        mockDomain Quote, [q]
+
+        q
     }
 }

@@ -22,15 +22,17 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code InvoicingItem} represents an item in invoicing transactions
  * such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class InvoicingItem {
+class InvoicingItem implements GormEntity<InvoicingItem> {
 
     //-- Constants ------------------------------
 

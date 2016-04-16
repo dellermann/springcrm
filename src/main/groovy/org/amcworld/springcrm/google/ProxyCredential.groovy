@@ -1,7 +1,7 @@
 /*
  * ProxyCredential.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import com.google.api.client.auth.oauth2.Credential.AccessMethod
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 
 
 /**
@@ -34,7 +35,7 @@ import groovy.transform.CompileStatic
  * instead of to the Google server.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.0
  */
 @CompileStatic
@@ -48,12 +49,8 @@ class ProxyCredential extends Credential {
      *
      * @param builder   the given builder
      */
-    protected ProxyCredential(Builder builder) {
-
-        /*
-         * Implementation notes: constructor should be package private, but
-         * this is not possible in Groovy.
-         */
+    @PackageScope
+    ProxyCredential(Builder builder) {
         super(builder)
     }
 

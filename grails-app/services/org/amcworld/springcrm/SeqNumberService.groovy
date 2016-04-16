@@ -23,6 +23,8 @@ package org.amcworld.springcrm
 import grails.core.ArtefactHandler
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,14 +36,15 @@ import org.springframework.transaction.annotation.Transactional
  * @author  Daniel Ellermann
  * @version 2.1
  */
+@CompileStatic
 class SeqNumberService {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static transactional = false
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GrailsApplication grailsApplication
 
@@ -55,6 +58,7 @@ class SeqNumberService {
      * @param controllerName    the given controller name
      * @return                  the next available sequence number
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     @Transactional(readOnly = true)
     int nextNumber(String controllerName) {
         SeqNumber seq = loadSeqNumber(controllerName)
@@ -64,7 +68,7 @@ class SeqNumberService {
         Integer num
         try {
             num = cls.clazz.'maxNumber'(seq)
-        } catch (e) {
+        } catch (Exception ignore) {
             def c = cls.clazz.'createCriteria'()
             num = c.get {
                 projections {
@@ -73,6 +77,7 @@ class SeqNumberService {
                 between 'number', seq.startValue, seq.endValue
             }
         }
+
         (num == null || num < seq.startValue) ? seq.startValue : num + 1
     }
 
@@ -120,6 +125,7 @@ class SeqNumberService {
      *                          such data are stored for the given controller
      */
     @Transactional(readOnly = true)
+    @CompileStatic(TypeCheckingMode.SKIP)
     SeqNumber loadSeqNumber(String controllerName) {
         SeqNumber.findByControllerName controllerName
     }
@@ -173,7 +179,9 @@ class SeqNumberService {
      */
     @Transactional(readOnly = true)
     String formatWithPrefix(String controllerName, int number) {
-        formatNumber controllerName: controllerName, number: number, withSuffix: false
+        formatNumber(
+            controllerName: controllerName, number: number, withSuffix: false
+        )
     }
 
     /**
@@ -199,7 +207,9 @@ class SeqNumberService {
      */
     @Transactional(readOnly = true)
     String formatWithSuffix(String controllerName, int number) {
-        formatNumber controllerName: controllerName, number: number, withPrefix: false
+        formatNumber(
+            controllerName: controllerName, number: number, withPrefix: false
+        )
     }
 
     /**
@@ -225,31 +235,37 @@ class SeqNumberService {
      * @param cls   the given class
      * @return      the associated controller name
      */
-    protected String classToControllerName(Class cls) {
+    private String classToControllerName(Class cls) {
         ArtefactHandler handler = grailsApplication.getArtefactType(cls)
         GrailsClass gc = grailsApplication.getArtefact(handler.type, cls.name)
+
         gc?.logicalPropertyName
     }
 
     /**
-     * Formats a sequence number as specified in the given arguments.
+     * Formats a sequence number as specified in the given arguments.  The
+     * given argument map may contain the following keys:
+     * <ul>
+     *   <li>{@code controllerName}.  The name of the controller that sequence
+     *   number should be returned.</li>
+     *   <li>{@code number}.  The number to format; if not specified the next
+     *   available sequence number for the given controller is used.</li>
+     *   <li>{@code withPrefix}.  If {@code true} or not specified the prefix
+     *   is added to the returned string.</li>
+     *   <li>{@code withSuffix}. If {@code true} or not specified the suffix is
+     *   added to the returned string.</li>
+     * </ul>
      *
-     * @param controllerName    the name of the controller that sequence number
-     *                          should be returned
-     * @param number            the number to format; if not specified the next
-     *                          available sequence number for the given
-     *                          controller is used
-     * @param withPrefix        if {@code true} or not specified the prefix is
-     *                          added to the returned string
-     * @param withSuffix        if {@code true} or not specified the suffix is
-     *                          added to the returned string
-     * @return                  the formatted sequence number
+     * @param args  any arguments as described above
+     * @return      the formatted sequence number
      */
-    protected String formatNumber(Map args) {
-        String controllerName = args.controllerName
-        Integer number = args.number
-        boolean withPrefix = (args.withPrefix == null) ? true : args.withPrefix
-        boolean withSuffix = (args.withSuffix == null) ? true : args.withSuffix
+    private String formatNumber(Map args) {
+        String controllerName = args.controllerName.toString()
+        Integer number = (Integer) args.number
+        boolean withPrefix = (args.withPrefix == null) ? true
+            : (boolean) args.withPrefix
+        boolean withSuffix = (args.withSuffix == null) ? true
+            : (boolean) args.withSuffix
 
         def seqNumberInstance = loadSeqNumber(controllerName)
         if (seqNumberInstance) {

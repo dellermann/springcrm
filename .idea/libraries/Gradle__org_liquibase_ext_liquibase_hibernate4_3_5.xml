@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.liquibase.ext:liquibase-hibernate4:3.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.liquibase.ext/liquibase-hibernate4/3.5/519ff37561eef935c1b4af82e4871811a3a2e2bd/liquibase-hibernate4-3.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.liquibase.ext/liquibase-hibernate4/3.5/316ceea82d5825b333127ef0d9a03e4a83cf2e89/liquibase-hibernate4-3.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

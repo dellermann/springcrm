@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.grails.plugins:i18n-asset-pipeline:2.0.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.grails.plugins/i18n-asset-pipeline/2.0.0/5b9b148d00b87baa1423b440e911ffa9a20600fb/i18n-asset-pipeline-2.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.grails.plugins/i18n-asset-pipeline/2.0.0/b4731a912d2484b433131e6b9ce93ee91f29ed52/i18n-asset-pipeline-2.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

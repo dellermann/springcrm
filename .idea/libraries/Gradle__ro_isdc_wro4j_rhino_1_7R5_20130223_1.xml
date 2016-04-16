@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ro.isdc.wro4j/rhino/1.7R5-20130223-1/83f4a63640881f9ac0d18eb6f17b94c090ccc8d/rhino-1.7R5-20130223-1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ro.isdc.wro4j/rhino/1.7R5-20130223-1/5860d5e8c1a18b9d266065b1895f70260c976d9d/rhino-1.7R5-20130223-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

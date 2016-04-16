@@ -50,12 +50,9 @@ class LoginInterceptor implements Interceptor {
      */
     LoginInterceptor() {
         matchAll()
-            .excludes(
-                controller: ~/(assets|help|install)/,
-                action: ~/(login|authenticate|frontend.*)/
-            )
+            .excludes(controller: ~/(assets|help|install)/)
+            .excludes(action: ~/(login|authenticate|frontend.*)/)
     }
-
 
     //-- Public methods -------------------------
 

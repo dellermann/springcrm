@@ -22,6 +22,8 @@ import org.amcworld.springcrm.*
 import org.amcworld.springcrm.converter.*
 import org.amcworld.springcrm.google.*
 import org.amcworld.springcrm.xml.XHTMLEntityResolver
+import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
+import org.apache.fop.apps.FopFactory
 import org.apache.http.impl.client.HttpClients
 import org.grails.spring.DefaultBeanConfiguration
 import org.xml.sax.helpers.XMLReaderFactory
@@ -49,14 +51,6 @@ beans = {
             targetType = numberType
         }
     }
-//    [Short.TYPE, Integer.TYPE, Float.TYPE, Long.TYPE, Double.TYPE].each { numberType ->
-//        "defaultGrails${numberType.name}Converter"(PrimitiveNumberValueConverter) {
-//            targetType = numberType
-//        }
-//    }
-    invoicingTransactionXMLFactory(InvoicingTransactionXMLFactory) {
-        markdownService = ref('markdownService')
-    }
 
     /* startup difference sets */
     startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet) {
@@ -68,6 +62,9 @@ beans = {
     fopFactory(FopFactory) { DefaultBeanConfiguration b ->
         b.factoryMethod = 'newInstance'
         b.singleton = false     // must not be singleton! See FopService.
+    }
+    invoicingTransactionXMLFactory(InvoicingTransactionXMLFactory) {
+        markdownService = ref('markdownService')
     }
     transformerFactory(javax.xml.transform.TransformerFactory)
     { DefaultBeanConfiguration b ->

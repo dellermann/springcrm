@@ -22,7 +22,6 @@ package org.amcworld.springcrm.xml
 
 import groovy.transform.CompileStatic
 import org.amcworld.springcrm.FopService
-import org.amcworld.springcrm.InvoicingTransactionXML
 import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
 import org.xml.sax.EntityResolver

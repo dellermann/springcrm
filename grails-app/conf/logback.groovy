@@ -43,5 +43,5 @@ logger 'grails.app.conf.BootStrap', DEBUG
 // logger 'org.amcworld.springcrm.google.AbstractGoogleSync', DEBUG
 
 if (Environment.isDevelopmentMode()) {
-    logger 'org.amcworld.springcrm.InvoicingTransactionXML', DEBUG
+    logger 'org.amcworld.springcrm.xml.InvoicingTransactionXML', DEBUG
 }

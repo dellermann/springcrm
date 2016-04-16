@@ -23,6 +23,8 @@ package org.amcworld.springcrm
 import static java.math.BigDecimal.ZERO
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEntity
+import org.grails.datastore.mapping.query.api.BuildableCriteria
 
 
 /**
@@ -32,7 +34,9 @@ import groovy.transform.CompileStatic
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class InvoicingTransaction implements NumberedDomain {
+class InvoicingTransaction
+    implements GormEntity<InvoicingTransaction>, NumberedDomain
+{
 
     //-- Constants ------------------------------
 
@@ -85,22 +89,14 @@ class InvoicingTransaction implements NumberedDomain {
     //-- Fields ---------------------------------
 
     /**
-     * The type of customer account.  This value is intended to be set by
-     * derived classes or by Hibernate during loading.  You should not set this
-     * property by yourself.
+     * A positive or negative value used to adjust the gross total.
      */
-    String type
+    BigDecimal adjustment = ZERO
 
     /**
-     * The subject of this customer account.
+     * The address of the organization where to send the invoices to.
      */
-    String subject
-
-    /**
-     * The date of the document, that is, when this customer account has been
-     * created.
-     */
-    Date docDate = new Date()
+    Address billingAddr
 
     /**
      * The carrier used to transport the document generated from this customer
@@ -109,20 +105,38 @@ class InvoicingTransaction implements NumberedDomain {
     Carrier carrier
 
     /**
-     * The date when the document generated from this customer account has been
-     * shipped.
+     * The user has created this customer account.
      */
-    Date shippingDate
+    User createUser
 
     /**
-     * The address of the organization where to send the invoices to.
+     * The timestamp when this customer account has been created.
      */
-    Address billingAddr
+    Date dateCreated
 
     /**
-     * The address of the organization where to deliver to.
+     * A fixed discount amount of this customer account.  The value is
+     * subtracted from the gross subtotal.
      */
-    Address shippingAddr
+    BigDecimal discountAmount = ZERO
+
+    /**
+     * A percentage discount amount of this customer account.  The value is
+     * relative to the gross subtotal subtracted from it.
+     */
+    BigDecimal discountPercent = ZERO
+
+    /**
+     * The date of the document, that is, when this customer account has been
+     * created.
+     */
+    Date docDate = new Date()
+
+    /**
+     * A text which appears in the footer of the document generated from this
+     * customer account.
+     */
+    String footerText
 
     /**
      * A text which appears in the header of the document generated from this
@@ -136,22 +150,30 @@ class InvoicingTransaction implements NumberedDomain {
     List<InvoicingItem> items
 
     /**
-     * A text which appears in the footer of the document generated from this
+     * The timestamp when this customer account has been modified.
+     */
+    Date lastUpdated
+
+    /**
+     * Any notes which are not printed in the document generated from this
      * customer account.
      */
-    String footerText
+    String notes
 
     /**
-     * A percentage discount amount of this customer account.  The value is
-     * relative to the gross subtotal subtracted from it.
+     * The organization associated to this invoicing transaction.
      */
-    BigDecimal discountPercent = ZERO
+    Organization organization
 
     /**
-     * A fixed discount amount of this customer account.  The value is
-     * subtracted from the gross subtotal.
+     * The person associated to this invoicing transaction.
      */
-    BigDecimal discountAmount = ZERO
+    Person person
+
+    /**
+     * The address of the organization where to deliver to.
+     */
+    Address shippingAddr
 
     /**
      * The net costs for shipping.
@@ -159,14 +181,20 @@ class InvoicingTransaction implements NumberedDomain {
     BigDecimal shippingCosts = ZERO
 
     /**
+     * The date when the document generated from this customer account has been
+     * shipped.
+     */
+    Date shippingDate
+
+    /**
      * Any tax rate used to calculate the gross costs for shipping.
      */
     BigDecimal shippingTax = ZERO
 
     /**
-     * A positive or negative value used to adjust the gross total.
+     * The subject of this customer account.
      */
-    BigDecimal adjustment = ZERO
+    String subject
 
     /**
      * The total of this customer account.  Normally, this method is called
@@ -177,25 +205,11 @@ class InvoicingTransaction implements NumberedDomain {
     BigDecimal total = ZERO
 
     /**
-     * Any notes which are not printed in the document generated from this
-     * customer account.
+     * The type of customer account.  This value is intended to be set by
+     * derived classes or by Hibernate during loading.  You should not set this
+     * property by yourself.
      */
-    String notes
-
-    /**
-     * The user has created this customer account.
-     */
-    User createUser
-
-    /**
-     * The timestamp when this customer account has been created.
-     */
-    Date dateCreated
-
-    /**
-     * The timestamp when this customer account has been modified.
-     */
-    Date lastUpdated
+    String type
 
 
     //-- Constructors ---------------------------
@@ -403,13 +417,13 @@ class InvoicingTransaction implements NumberedDomain {
     }
 
     /**
-     * Sets the total of this customer account.  Normally, this method is called
-     * by Hibernate only to set the total value from a database record.  You
-     * should not call this method to set the total.  Use method
+     * Sets the total of this customer account.  Normally, this method is
+     * called by Hibernate only to set the total value from a database record.
+     * You should not call this method to set the total.  Use method
      * {@code computeTotal} instead.
      *
-     * @param total the total that should be set; if {@code null} it is converted
-     *              to zero
+     * @param total the total that should be set; if {@code null} it is
+     *              converted to zero
      * @see         #computeTotal()
      * @since 2.0
      */
@@ -488,7 +502,7 @@ class InvoicingTransaction implements NumberedDomain {
      * @return    the largest number
      */
     int maxNumber(SeqNumber seq) {
-        def c = InvoicingTransaction.createCriteria()
+        BuildableCriteria c = createCriteria()
         c.get {
             projections {
                 max 'number'
@@ -497,7 +511,7 @@ class InvoicingTransaction implements NumberedDomain {
                 eq 'type', type
                 between 'number', seq.startValue, seq.endValue
             }
-        }
+        } as int
     }
 
     @Override
@@ -508,8 +522,8 @@ class InvoicingTransaction implements NumberedDomain {
 
     //-- Non-public methods ---------------------
 
-    private void addTaxRateSum(Map<Double, BigDecimal> map, BigDecimal taxRate,
-                               BigDecimal value)
+    private static void addTaxRateSum(Map<Double, BigDecimal> map,
+                                      BigDecimal taxRate, BigDecimal value)
     {
         Double tr = taxRate.doubleValue()
         map[tr] = (map[tr] ?: ZERO) + value * taxRate / HUNDRED

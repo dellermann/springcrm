@@ -32,7 +32,7 @@ class OverviewServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
 
-    def 'Dont show again changelog for a version'() {
+    def 'Don\'t show again changelog for a version'() {
         given: 'a mocked application version'
         grailsApplication.metadata['info.app.version'] = '2.0.19'
 
@@ -98,6 +98,9 @@ class OverviewServiceSpec extends Specification {
         and: 'a mocked Grails application'
         mockApplication contentDefault, contentDe
 
+        and: 'a default locale'
+        Locale.default = Locale.ENGLISH
+
         expect:
         contentDefault == service.getChangelog(Locale.default)
         contentDe == service.getChangelog(Locale.GERMAN)
@@ -145,6 +148,9 @@ class OverviewServiceSpec extends Specification {
 
         and: 'a mocked Grails application'
         mockApplication contentDefault, contentDe
+
+        and: 'a default locale'
+        Locale.default = Locale.ENGLISH
 
         expect:
          '''## 2.0.19

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXMLSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,43 +20,42 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import groovy.util.slurpersupport.GPathResult
+import org.amcworld.springcrm.xml.InvoicingTransactionXML
+import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
+import spock.lang.Specification
 
 
 @TestFor(InvoicingTransactionService)
-@Mock([
-    Config, Invoice, InvoiceStage, InvoicingItem, Organization, Person,
-    TermsAndConditions, User
-])
-class InvoicingTransactionServiceSpec extends InvoicingTransactionXMLBase {
-
-    //-- Fixture methods ------------------------
-
-    def setup() {
-        service.invoicingTransactionXMLFactory =
-            initInvoicingTransactionXMLFactory()
-    }
-
+class InvoicingTransactionServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
 
     def 'Generate XML for an invoice'() {
         given: 'an invoice'
-        def invoice = makeInvoiceFixture()
-
-        and: 'some client data'
-        makeClientFixture()
+        def invoice = new Invoice()
 
         and: 'a user in the session'
-        def user = makeUserFixture()
+        def user = new User()
+
+        and: 'some example XML'
+        String xml = '<? example XML ?>'
+
+        and: 'a mocked XML converter'
+        InvoicingTransactionXML conv = Mock()
+        1 * conv.setDuplicate(false)
+        1 * conv.toString() >> xml
+
+        and: 'a mocked XML converter factory'
+        InvoicingTransactionXMLFactory invoicingTransactionXMLFactory = Mock()
+        1 * invoicingTransactionXMLFactory.newConverter(invoice, user) >> conv
+        service.invoicingTransactionXMLFactory = invoicingTransactionXMLFactory
 
         when: 'I generate XML from this invoice'
-        String xml = service.generateXML(invoice, user)
+        String res = service.generateXML(invoice, user)
 
         then: 'I get valid XML'
-        matchValidXML xml
+        xml == res
     }
 
     // TODO test the other methods

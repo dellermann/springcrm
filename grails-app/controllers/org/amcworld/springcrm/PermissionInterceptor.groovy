@@ -44,7 +44,9 @@ class PermissionInterceptor implements Interceptor {
     PermissionInterceptor() {
         matchAll()
             .excludes(
-                controller: ~/(about|assets|dataFile|help|install|notification|overview)/,
+                controller: ~/(about|assets|dataFile|help|install|notification|overview)/
+            )
+            .excludes(
                 action: ~/(login|authenticate|logout|settings*|frontend.*)/
             )
     }

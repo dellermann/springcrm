@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.bertramlabs.plugins:handlebars-asset-pipeline:2.7.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.bertramlabs.plugins/handlebars-asset-pipeline/2.7.2/48c51f92388f69f82da04d05d0f4f78fafcbf943/handlebars-asset-pipeline-2.7.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.bertramlabs.plugins/handlebars-asset-pipeline/2.7.2/f60b6dd2fab77f42db11428946d4aa4a8e7924de/handlebars-asset-pipeline-2.7.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
