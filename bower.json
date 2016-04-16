@@ -1,6 +1,6 @@
 {
   "name": "springcrm",
-  "version": "2.0.20",
+  "version": "2.1.0",
   "homepage": "https://github.com/dellermann/springcrm",
   "authors": [
     {
@@ -30,9 +30,9 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.6",
-    "bootstrap-datepicker": "~1.5.0",
+    "bootstrap-datepicker": "~1.6.0",
     "bootstrap-fileinput": "~4.2.8",
-    "font-awesome": "~4.5.0",
+    "font-awesome": "~4.6.1",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.5",
     "jquery-autosize": "~3.0.14",
