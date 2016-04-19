@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: org.antlr:antlr-runtime:3.5.2">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.antlr/antlr-runtime/3.5.2/cd9cd41361c155f3af0f653009dcecb08d8b4afd/antlr-runtime-3.5.2.jar!/" />
     </CLASSES>
     <JAVADOC />

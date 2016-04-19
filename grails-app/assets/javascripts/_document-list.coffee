@@ -1,7 +1,7 @@
 #
 # _document-list.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ $ = jQuery
 # files.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.1
 # @since    1.4
 #
 class DocumentList
@@ -44,7 +44,7 @@ class DocumentList
   $ = jq = jQuery
 
 
-  #-- Class variables ---------------------------
+  #-- Class fields ------------------------------
 
   # The ID of the `<iframe>` which is internally generated to realize the file
   # download.
@@ -58,7 +58,7 @@ class DocumentList
   @VERSION: '2.0.0'
 
 
-  #-- Instance variables ------------------------
+  #-- Fields ------------------------------------
 
   DEFAULT_OPTIONS =
     hideActions: false

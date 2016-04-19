@@ -19,7 +19,10 @@
 
 
 module.exports = (grunt) ->
+  path = require 'path'
   require('load-grunt-tasks') grunt
+  require('load-grunt-config') grunt,
+    configPath: path.join(process.cwd(), 'grunt')
 
   grunt.initConfig
     clean:
@@ -54,13 +57,13 @@ module.exports = (grunt) ->
       test:
         files: [
             cwd: '<%= dirs.src.coffee %>/'
-            dest: '<%= dirs.target.test.js.scripts %>/'
+            dest: '<%= dirs.target.test.scripts %>/'
             expand: true
             ext: '.js'
             src: ['*.coffee']
           ,
             cwd: '<%= dirs.src.test.coffee %>/'
-            dest: '<%= dirs.target.test.js.scripts %>/'
+            dest: '<%= dirs.target.test.scripts %>/'
             expand: true
             ext: '.js'
             src: ['*.coffee']
@@ -76,8 +79,8 @@ module.exports = (grunt) ->
           ]
         ]
         options:
-          process: (src, filepath) ->
-            src.replace /Handlebars\.templates\['js-calc'\]/g,
+          process: (src) ->
+            src.replace /Handlebars\.templates\['js-calc']/g,
               'Handlebars.templates[\'tools/js-calc\']'
     copy:
       publish:
@@ -214,64 +217,74 @@ module.exports = (grunt) ->
 
             jc = conf.get 'dirs.bower.jsCalc'
             tb = conf.get 'dirs.bower.typeaheadBootstrap'
-            fa = conf.get 'dirs.bower.fontAwesome'
+#            fa = conf.get 'dirs.bower.fontAwesome'
             vc = conf.get 'dirs.bower.vatCalc'
 
             # if file.doesPathContain "#{fa}/less", srcPath
             #   contents = String(contents)
-            #   contents = contents.replace /@\{fa-css-prefix\}/g, 'fa'
+            #   contents = contents.replace /@\{fa-css-prefix}/g, 'fa'
             if file.arePathsEquivalent srcPath, "#{jc}/less/core.less"
               contents = String(contents)
-              contents = contents.replace /@\{prefix\}/g, 'jscalc'
+              contents = contents.replace /@\{prefix}/g, 'jscalc'
             if file.arePathsEquivalent srcPath, "#{tb}/typeahead.less"
               contents = String(contents)
               contents = contents.replace /\.tt-dropdown-menu/, '.tt-menu'
             if file.arePathsEquivalent srcPath, "#{vc}/less/core.less"
               contents = String(contents)
-              contents = contents.replace /@\{prefix\}/g, 'vatcalc'
+              contents = contents.replace /@\{prefix}/g, 'vatcalc'
             if file.arePathsEquivalent srcPath, "#{vc}/coffee/vat-calc.coffee"
               contents = String(contents)
-              contents = contents.replace /Handlebars.templates\['vat-calc'\]/g, '''Handlebars.templates['tools/vat-calc']'''
+              contents = contents.replace /Handlebars.templates\['vat-calc']/g, '''Handlebars.templates['tools/vat-calc']'''
 
             contents
       test:
         files: [
-            cwd: '<%= dirs.src.test.base %>/'
-            dest: '<%= dirs.target.test.js.base %>/'
-            expand: true
-            src: ['*.html']
-          ,
             cwd: '<%= dirs.bower.qunit %>/qunit/'
-            dest: '<%= dirs.target.test.js.css %>/'
+            dest: '<%= dirs.target.test.css %>/'
             expand: true
             src: 'qunit.css'
           ,
             cwd: '<%= dirs.bower.qunit %>/qunit/'
-            dest: '<%= dirs.target.test.js.scripts %>/'
+            dest: '<%= dirs.target.test.scripts %>/'
             expand: true
             src: 'qunit.js'
           ,
-            cwd: '<%= dirs.src.javascripts %>/'
-            dest: '<%= dirs.target.test.js.scripts %>/'
+            cwd: '<%= dirs.src.javascripts %>/bootstrap/'
+            dest: '<%= dirs.target.test.scripts %>/bootstrap/'
+            expand: true
+            src: ['*.js']
+          ,
+            cwd: '<%= dirs.src.javascripts %>/jquery/'
+            dest: '<%= dirs.target.test.scripts %>/jquery/'
             expand: true
             src: [
-              '_jquery.js'
-              '_jquery-ui.js'
-              '_jquery-autosize.js'
+              'autosize.js'
+              'jquery.js'
+              'storage-api.js'
             ]
           ,
-            cwd: '<%= dirs.bower.jqueryMockjax %>/'
-            dest: '<%= dirs.target.test.js.scripts %>/'
+            cwd: '<%= dirs.src.javascripts %>/jqueryui/'
+            dest: '<%= dirs.target.test.scripts %>/jqueryui/'
+            expand: true
+            src: ['*.js']
+          ,
+            cwd: '<%= dirs.src.javascripts %>/selectize/'
+            dest: '<%= dirs.target.test.scripts %>/selectize/'
+            expand: true
+            src: ['*.js']
+          ,
+            cwd: '<%= dirs.bower.jqueryMockjax %>/dist/'
+            dest: '<%= dirs.target.test.scripts %>/jquery/'
             expand: true
             src: 'jquery.mockjax.js'
           ,
             cwd: '<%= dirs.bower.handlebars %>/'
-            dest: '<%= dirs.target.test.js.scripts %>/'
+            dest: '<%= dirs.target.test.scripts %>/'
             expand: true
             src: 'handlebars.js'
           ,
             cwd: '<%= dirs.src.assets %>/'
-            dest: '<%= dirs.target.test.js.base %>/'
+            dest: '<%= dirs.target.test.base %>/'
             expand: true
             src: 'fonts/**'
         ]
@@ -307,22 +320,21 @@ module.exports = (grunt) ->
         javascripts: '<%= dirs.src.assets %>/javascripts'
         stylesheets: '<%= dirs.src.assets %>/stylesheets'
         test:
-          base: '<%= dirs.src.base %>/test/js'
+          base: '<%= dirs.src.base %>/src/test/js'
           coffee: '<%= dirs.src.test.base %>/coffee'
       target:
-        base: 'target'
+        base: 'build'
         documentation: '<%= dirs.target.base %>/documentation'
         test:
-          base: '<%= dirs.target.base %>/test'
-          js:
-            base: '<%= dirs.target.test.base %>/javascript'
-            css: '<%= dirs.target.test.js.base %>/css'
-            scripts: '<%= dirs.target.test.js.base %>/scripts'
+          base: '<%= dirs.target.base %>/test-javascript'
+          coffee: '<%= dirs.target.test.base %>/coffee'
+          css: '<%= dirs.target.test.base %>/css'
+          scripts: '<%= dirs.target.test.base %>/scripts'
     handlebars:
       test:
         files: [
           cwd: '<%= dirs.src.javascripts %>/templates/'
-          dest: '<%= dirs.target.test.js.scripts %>/templates/'
+          dest: '<%= dirs.target.test.scripts %>/templates/'
           expand: true
           ext: '.js'
           src: ['**/*.hbs']
@@ -334,13 +346,24 @@ module.exports = (grunt) ->
     less:
       test:
         files:
-            '<%= dirs.target.test.js.css %>/main.css':
-              '<%= dirs.src.stylesheets %>/main.less'
-            '<%= dirs.target.test.js.css %>/document.css':
+            '<%= dirs.target.test.css %>/main.css':
+              '<%= dirs.src.stylesheets %>/application.less'
+            '<%= dirs.target.test.css %>/document.css':
               '<%= dirs.src.stylesheets %>/document.less'
         options:
           path: '<%= dirs.src.stylesheets %>/'
     pkg: grunt.file.readJSON 'package.json'
+    resolveAssets:
+      test:
+        assets: '**/*.{coffee,hbs,js}'
+        assetsDir: '<%= dirs.src.coffee %>/'
+        destScriptsDir: 'scripts'
+        files: [
+          cwd: '<%= dirs.src.test.base %>/'
+          dest: '<%= dirs.target.test.base %>/'
+          expand: true
+          src: ['**/*.html']
+        ]
     watch:
       coffee:
         files: [
@@ -356,12 +379,12 @@ module.exports = (grunt) ->
         tasks: ['copy:test']
 
   grunt.registerTask 'default', [
-    'clean:test', 'less:test', 'coffee:test', 'handlebars:test', 'copy:test'
+    'clean:publish', 'copy:publish', 'concat:publish'
+  ]
+  grunt.registerTask 'test', [
+    'clean:test', 'less:test', 'coffee:test', 'handlebars:test', 'copy:test',
+    'resolveAssets:test'
   ]
   grunt.registerTask 'documentation', [
     'clean:documentation', 'codo:documentation'
   ]
-  grunt.registerTask 'publish', [
-    'clean:publish', 'copy:publish', 'concat:publish'
-  ]
-

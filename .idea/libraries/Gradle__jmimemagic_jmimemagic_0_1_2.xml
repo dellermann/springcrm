@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: jmimemagic:jmimemagic:0.1.2">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/jmimemagic/jmimemagic/0.1.2/jmimemagic-0.1.2.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jmimemagic/jmimemagic/0.1.2/fde20371ad58ca83621e5c0c153fd2f48634346a/jmimemagic-0.1.2.jar!/" />
     </CLASSES>
     <JAVADOC />

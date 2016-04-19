@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: org.apache.maven.scm:maven-scm-provider-svnexe:1.4">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/maven/scm/maven-scm-provider-svnexe/1.4/maven-scm-provider-svnexe-1.4.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.maven.scm/maven-scm-provider-svnexe/1.4/b3213b40157b701ba079b738baac391e41418c18/maven-scm-provider-svnexe-1.4.jar!/" />
     </CLASSES>
     <JAVADOC />

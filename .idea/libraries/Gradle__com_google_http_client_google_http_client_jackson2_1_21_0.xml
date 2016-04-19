@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.http-client:google-http-client-jackson2:1.21.0">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/http-client/google-http-client-jackson2/1.21.0/google-http-client-jackson2-1.21.0.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.http-client/google-http-client-jackson2/1.21.0/8ce17bdd15fff0fd8cf359757f29e778fc7191ad/google-http-client-jackson2-1.21.0.jar!/" />
     </CLASSES>
     <JAVADOC />

@@ -1,7 +1,7 @@
 #
 # _ui.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -345,7 +345,6 @@ class Page
   #
   constructor: ->
     $ = jq
-    $I = $I18N
     win = window
     $spinner = $('#spinner')
 
@@ -454,8 +453,9 @@ class Page
   #
   _initToolbar: ->
     @$titleToolbar = $titleToolbar = $('.title-toolbar')
-    @yToolbar = $titleToolbar.offset().top
-    $titleToolbar.parent().height $titleToolbar.innerHeight()
+    if $titleToolbar.length
+      @yToolbar = $titleToolbar.offset().top
+      $titleToolbar.parent().height $titleToolbar.innerHeight()
 
   # Initializes the tools such as the calculators.
   #

@@ -1,7 +1,7 @@
 {
   "name": "springcrm",
   "version": "2.1.0",
-  "homepage": "https://github.com/dellermann/springcrm",
+  "homepage": "https://www.springcrm.de",
   "authors": [
     {
       "name": "Daniel Ellermann",
@@ -37,7 +37,7 @@
     "jQuery-Storage-API": "~1.7.5",
     "jquery-autosize": "~3.0.14",
     "jquery-json": "~2.5.1",
-    "jquery-mockjax": "1.6.1",
+    "jquery-mockjax": "2.1.1",
     "jqueryui": "~1.11.4",
     "jqueryui-touch-punch": "",
     "js-calc": "~0.9.10",

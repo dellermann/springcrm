@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: oro:oro:2.0.8">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/oro/oro/2.0.8/oro-2.0.8.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/oro/oro/2.0.8/5592374f834645c4ae250f4c9fbb314c9369d698/oro-2.0.8.jar!/" />
     </CLASSES>
     <JAVADOC />

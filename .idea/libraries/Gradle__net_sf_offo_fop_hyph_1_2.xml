@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: net.sf.offo:fop-hyph:1.2">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/net/sf/offo/fop-hyph/1.2/fop-hyph-1.2.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.offo/fop-hyph/1.2/122fc948e18b7f2337bbe074710a24f82f6aec84/fop-hyph-1.2.jar!/" />
     </CLASSES>
     <JAVADOC />

@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: com.google.api-client:google-api-client:1.21.0">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/google/api-client/google-api-client/1.21.0/google-api-client-1.21.0.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.api-client/google-api-client/1.21.0/16a6b3c680f3bf7b81bb42790ff5c1b72c5bbedc/google-api-client-1.21.0.jar!/" />
     </CLASSES>
     <JAVADOC />

@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: org.apache.xmlgraphics:batik-script:1.7">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/xmlgraphics/batik-script/1.7/batik-script-1.7.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.xmlgraphics/batik-script/1.7/4ea7906724bfefc1fca3e5b28229a458523e1fbf/batik-script-1.7.jar!/" />
     </CLASSES>
     <JAVADOC />

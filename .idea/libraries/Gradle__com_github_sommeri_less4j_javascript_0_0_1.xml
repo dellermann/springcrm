@@ -1,6 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.sommeri:less4j-javascript:0.0.1">
     <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/sommeri/less4j-javascript/0.0.1/less4j-javascript-0.0.1.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.sommeri/less4j-javascript/0.0.1/33331ee5198840394bd7ff02a8a7ef506c0f4975/less4j-javascript-0.0.1.jar!/" />
     </CLASSES>
     <JAVADOC />
