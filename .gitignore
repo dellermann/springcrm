@@ -4,6 +4,7 @@
 /.gradle
 /.grails
 /.groovy
+/.idea/libraries
 /.idea/tasks.xml
 /.idea/workspace.xml
 /*.iws
