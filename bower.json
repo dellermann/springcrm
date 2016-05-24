@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.6",
-    "bootstrap-datepicker": "~1.6.0",
+    "bootstrap-datepicker": "~1.6.1",
     "bootstrap-fileinput": "~4.2.8",
     "font-awesome": "~4.6.1",
     "handlebars": "~3.0.3",
