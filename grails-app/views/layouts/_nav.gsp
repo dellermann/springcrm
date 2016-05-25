@@ -29,9 +29,9 @@
           </a>
           <ul id="menu-contacts" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <li role="menuitem"><g:link controller="organization"><g:message code="organization.plural" /></g:link></li>
-            <li role="menuitem"><g:link controller="organization" params="[listType: 1]"><g:message code="organization.customers" /></g:link></li>
-            <li role="menuitem"><g:link controller="organization" params="[listType: 2]"><g:message code="organization.vendors" /></g:link></li>
+            <li role="menuitem"><g:link controller="organization" params="[offset: 0]"><g:message code="organization.plural" /></g:link></li>
+            <li role="menuitem"><g:link controller="organization" params="[listType: 1, offset: 0]"><g:message code="organization.customers" /></g:link></li>
+            <li role="menuitem"><g:link controller="organization" params="[listType: 2, offset: 0]"><g:message code="organization.vendors" /></g:link></li>
             <li class="divider" role="presentation"></li>
             <li role="menuitem"><g:link controller="person"><g:message code="person.plural" /></g:link></li>
           </ul>

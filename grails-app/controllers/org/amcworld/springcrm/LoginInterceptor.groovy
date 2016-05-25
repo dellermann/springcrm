@@ -21,8 +21,8 @@
 package org.amcworld.springcrm
 
 import grails.artefact.Interceptor
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 
 
 /**
@@ -82,8 +82,13 @@ class LoginInterceptor implements Interceptor {
 
     //-- Non-public methods ---------------------
 
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     private Config getInstallStatus() {
-        Config.findByName 'installStatus'
+        Config config = null
+        Config.withNewSession {
+            config = Config.findByName 'installStatus'
+        }
+
+        config
     }
 }
