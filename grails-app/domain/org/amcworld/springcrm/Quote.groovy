@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Quote} represents a quote.
@@ -27,7 +29,7 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class Quote extends InvoicingTransaction {
+class Quote extends InvoicingTransaction implements GormEntity<Quote> {
 
     //-- Class fields ---------------------------
 

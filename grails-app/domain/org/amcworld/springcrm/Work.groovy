@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Work} represents a work from the service catalog.
@@ -28,7 +30,7 @@ package org.amcworld.springcrm
  * @version 2.1
  * @see     Product
  */
-class Work extends SalesItem {
+class Work extends SalesItem implements GormEntity<Work> {
 
     //-- Class fields ---------------------------
 

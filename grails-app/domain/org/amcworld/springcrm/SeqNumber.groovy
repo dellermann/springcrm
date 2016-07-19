@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code SeqNumber} represents a sequence number which is used to
@@ -28,7 +30,7 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class SeqNumber {
+class SeqNumber implements GormEntity<SeqNumber> {
 
     //-- Class fields ---------------------------
 

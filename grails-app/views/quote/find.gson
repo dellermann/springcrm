@@ -1,0 +1,12 @@
+import org.amcworld.springcrm.Quote
+
+model {
+    List<Quote> quoteInstanceList
+}
+
+json(quoteInstanceList) { Quote q ->
+    id q.id
+    number q.fullNumber
+    name q.subject
+    fullName q.fullName
+}

@@ -1,0 +1,10 @@
+import org.amcworld.springcrm.Product
+
+model {
+    Product productInstance
+}
+
+json {
+    fullNumber productInstance.fullNumber
+    inventoryItem g.render(productInstance)
+}

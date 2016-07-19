@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Product} represents a product.
@@ -31,7 +33,7 @@ import static java.math.BigDecimal.ZERO
  * @since   1.3
  * @see     Work
  */
-class Product extends SalesItem {
+class Product extends SalesItem implements GormEntity<Product> {
 
     //-- Class fields ---------------------------
 

@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code SalesOrder} represents a sales order.
@@ -27,7 +29,8 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class SalesOrder extends InvoicingTransaction {
+class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
+{
 
     //-- Class fields ---------------------------
 

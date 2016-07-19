@@ -1,0 +1,13 @@
+import org.amcworld.springcrm.CalendarEvent
+
+model {
+    Set<CalendarEvent> calendarEventInstanceSet
+}
+
+json(calendarEventInstanceSet) { CalendarEvent event ->
+    title event.subject
+    allDay event.allDay
+    start event.start
+    end event.end
+    url g.link(controller: 'calendarEvent', action: 'show', id: event.id)
+}

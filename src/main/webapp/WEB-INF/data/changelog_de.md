@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Aktualisierung auf Grails 3
+
 ## 2.0.20
 
 * Fehler bei Darstellung der Änderungshistorie unter Windows
@@ -15,6 +19,8 @@
   Mahnungen und Gutschriften schaltete nicht auf "versendet" bzw. "bezahlt" um
   ([Problem #82](https://github.com/dellermann/springcrm/issues/82))
 
+[comment]: STOP
+
 ## 2.0.18 (RC 1)
 
 * Hinzufügen von neuen Einträgen in Fakturavorgängen scrollt jetzt den neuen
@@ -23,8 +29,6 @@
 * Fehlerbehebung: Authentifizierungstokens bei Google-Synchronisation wurde
   nicht richtig aufgefrischt
 * Fehlerbehebungen in Formular für Anrufe und in Adressfeldern
-
-[comment]: STOP
 
 ## 2.0.17
 

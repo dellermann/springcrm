@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Invoice} represents an invoice.
@@ -29,7 +31,9 @@ import static java.math.BigDecimal.ZERO
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class Invoice extends InvoicingTransaction implements PayableAndDue {
+class Invoice extends InvoicingTransaction
+    implements GormEntity<Invoice>, PayableAndDue
+{
 
     //-- Class fields ---------------------------
 

@@ -1,7 +1,7 @@
 /*
  * OrganizationController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm
 
-import grails.converters.JSON
 import javax.servlet.http.HttpServletResponse
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse
  * organizations.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class OrganizationController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
@@ -41,20 +41,22 @@ class OrganizationController {
     //-- Public methods -------------------------
 
     def index(Byte listType) {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
 
         List<Byte> types = [listType, 3 as byte]
-        if (params.letter) {
+        String letter = params.letter?.toString()
+        if (letter) {
             int num
             if (listType) {
                 num = Organization.countByNameLessThanAndRecTypeInList(
-                    params.letter, types
+                    letter, types
                 )
             } else {
-                num = Organization.countByNameLessThan(params.letter)
+                num = Organization.countByNameLessThan(params)
             }
             params.sort = 'name'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         List<Organization> list
@@ -230,7 +232,7 @@ class OrganizationController {
             } else {
                 redirect action: 'index', params: [listType: listType]
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'organization.label')]
@@ -252,13 +254,7 @@ class OrganizationController {
             )
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (org in list) {
-                    organization id: org.id, name: org.name
-                }
-            }
-        }
+        [organizationInstanceList: list]
     }
 
     def get(Long id) {
@@ -268,7 +264,7 @@ class OrganizationController {
             return
         }
 
-        render organizationInstance as JSON
+        [organizationInstance: organizationInstance]
     }
 
     def getPhoneNumbers(Long id) {
@@ -278,14 +274,15 @@ class OrganizationController {
             return
         }
 
-        def phoneNumbers = [
+        List<String> phoneNumbers = [
                 organizationInstance.phone,
                 organizationInstance.phoneOther,
                 organizationInstance.fax
             ]
             .findAll({ it != '' })
             .unique()
-        render phoneNumbers as JSON
+
+        [phoneNumbers: phoneNumbers]
     }
 
     def getTermOfPayment(Long id) {
@@ -297,9 +294,6 @@ class OrganizationController {
             termOfPayment = organizationInstance.termOfPayment
         }
 
-        render(
-            contentType: 'application/json',
-            text: "{\"termOfPayment\": ${termOfPayment}}"
-        )
+        [termOfPayment: termOfPayment]
     }
 }

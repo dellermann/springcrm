@@ -20,14 +20,13 @@
 
 package org.amcworld.springcrm
 
-import com.google.gdata.data.extensions.*
-import grails.converters.JSON
 import javax.naming.AuthenticationException
 import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
 import javax.servlet.http.HttpServletResponse
 import net.sf.jmimemagic.Magic
 import org.amcworld.springcrm.google.GoogleContactSync
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -35,16 +34,16 @@ import org.amcworld.springcrm.google.GoogleContactSync
  * that belong to an organization.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class PersonController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GoogleContactSync googleContactSync
     LdapService ldapService
@@ -53,11 +52,12 @@ class PersonController {
     //-- Public methods -------------------------
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
-            int num = Person.countByLastNameLessThan(params.letter)
+            int num = Person.countByLastNameLessThan(params.letter.toString())
             params.sort = 'lastName'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         [
@@ -67,9 +67,9 @@ class PersonController {
     }
 
     def listEmbedded(Long organization) {
-        List<Person> l
-        int count
-        Map<String, Object> linkParams
+        List<Person> l = null
+        int count = 0
+        Map<String, Object> linkParams = null
 
         if (organization) {
             def organizationInstance = Organization.get(organization)
@@ -247,7 +247,7 @@ class PersonController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'person.label')]
@@ -267,6 +267,7 @@ class PersonController {
             Magic.getMagicMatch(personInstance.picture).mimeType
         response.contentLength = personInstance.picture.length
         response.outputStream << personInstance.picture
+
         null
     }
 
@@ -277,7 +278,7 @@ class PersonController {
             return
         }
 
-        def phoneNumbers = [
+        List<String> phoneNumbers = [
                 personInstance.phone,
                 personInstance.phoneHome,
                 personInstance.mobile,
@@ -290,7 +291,8 @@ class PersonController {
             ]
             .findAll({ it != '' })
             .unique()
-        render phoneNumbers as JSON
+
+        [phoneNumbers: phoneNumbers]
     }
 
     def find(Long organization) {
@@ -306,18 +308,15 @@ class PersonController {
             }
             order('lastName', 'asc')
         }
-        render(contentType: 'text/json') {
-            array {
-                for (p in list) {
-                    person id: p.id, name: p.fullName
-                }
-            }
-        }
+
+        [personInstanceList: list]
     }
 
     def gdatasync() {
         if (googleContactSync) {
-            googleContactSync.sync session.credential.loadUser()
+            googleContactSync.sync(
+                ((Credential) session.credential).loadUser()
+            )
             flash.message = message(
                 code: 'default.gdata.allsync.success',
                 args: [message(code: 'person.plural')]
@@ -411,8 +410,9 @@ class PersonController {
      * @since   2.0
      */
     private List<Long> getExcludeFromSyncValues() {
-        List<Long> ids = session.credential.settings.excludeFromSync?.split(/,/)
-            ?.collect { it as Long }
+        Credential credential = (Credential) session.credential
+        List<Long> ids = credential.settings.excludeFromSync?.split(/,/)?.
+            collect { it as Long }
 
         ids ?: []
     }

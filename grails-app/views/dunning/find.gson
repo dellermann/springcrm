@@ -1,0 +1,12 @@
+import org.amcworld.springcrm.Dunning
+
+model {
+    List<Dunning> dunningInstanceList
+}
+
+json(dunningInstanceList) { Dunning d ->
+    id d.id
+    number d.fullNumber
+    name d.subject
+    fullName d.fullName
+}

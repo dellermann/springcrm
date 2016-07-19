@@ -45,14 +45,15 @@ class OverviewController {
 
     def index() {
         OverviewPanelRepository repository = OverviewPanelRepository.instance
+        Credential credential = (Credential) session.credential
 
-        List<Panel> panels = Panel.findAllByUser(session.credential.loadUser())
+        List<Panel> panels = Panel.findAllByUser(credential.loadUser())
         for (Panel panel : panels) {
             panel.panelDef = repository.getPanel(panel.panelId)
         }
 
         boolean showChangelog = !session.dontShowChangelog &&
-            overviewService.showChangelog(session.credential)
+            overviewService.showChangelog(credential)
         if (showChangelog) {
             session.dontShowChangelog = true
         }
@@ -61,20 +62,7 @@ class OverviewController {
     }
 
     def listAvailablePanels() {
-        OverviewPanelRepository repository = OverviewPanelRepository.instance
-        Locale locale = LCH.locale
-
-        render(contentType: 'application/json') {
-            for (Map.Entry<String, OverviewPanel> entry in repository.panels) {
-                "${entry.key}" {
-                    OverviewPanel p = entry.value
-                    title p.getTitle(locale)
-                    description p.getDescription(locale)
-                    url p.url
-                    style p.style
-                }
-            }
-        }
+        [repository: OverviewPanelRepository.instance, l: LCH.locale]
     }
 
     def lruList() {
@@ -109,7 +97,7 @@ class OverviewController {
 
     def removePanel(String panelId) {
         Panel panel = Panel.findByUserAndPanelId(
-            session.credential.loadUser(), panelId
+            ((Credential) session.credential).loadUser(), panelId
         )
         if (!panel) {
             render status: SC_NOT_FOUND
@@ -147,7 +135,7 @@ class OverviewController {
      * @since   2.0
      */
     def changelogDontShowAgain() {
-        overviewService.dontShowAgain session.credential
+        overviewService.dontShowAgain((Credential) session.credential)
 
         render status: SC_OK
     }

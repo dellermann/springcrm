@@ -1,0 +1,11 @@
+import org.amcworld.springcrm.ConfigController
+import org.amcworld.springcrm.SelValue
+
+model {
+    List<SelValue> selValueList
+}
+json(selValueList) { SelValue value ->
+    id value.id
+    name value.name
+    disabled(value.id in ConfigController.READONLY_IDS)
+}

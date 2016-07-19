@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Panel} contains data about a panel on the overview page.
@@ -27,9 +29,9 @@ package org.amcworld.springcrm
  * @author	Daniel Ellermann
  * @version 2.1
  */
-class Panel {
+class Panel implements GormEntity<Panel> {
 
-    //-- Class fiels ----------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
 		pos min: 0

@@ -1,0 +1,12 @@
+import org.amcworld.springcrm.SalesOrder
+
+model {
+    List<SalesOrder> salesOrderInstanceList
+}
+
+json(salesOrderInstanceList) { SalesOrder so ->
+    id so.id
+    number so.fullNumber
+    name so.subject
+    fullName so.fullName
+}

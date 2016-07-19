@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
 import org.springframework.context.MessageSourceResolvable
 
 
@@ -31,7 +32,7 @@ import org.springframework.context.MessageSourceResolvable
  * @since   1.3
  * @see     CalendarEvent
  */
-class Reminder implements MessageSourceResolvable {
+class Reminder implements GormEntity<Reminder>, MessageSourceResolvable {
 
     //-- Class fields ---------------------------
 

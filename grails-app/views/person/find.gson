@@ -1,0 +1,10 @@
+import org.amcworld.springcrm.Person
+
+model {
+    List<Person> personInstanceList
+}
+
+json(personInstanceList) { Person p ->
+    id p.id
+    name p.fullName
+}

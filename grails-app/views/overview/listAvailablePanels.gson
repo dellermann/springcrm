@@ -1,0 +1,18 @@
+import org.amcworld.springcrm.OverviewPanel
+import org.amcworld.springcrm.OverviewPanelRepository
+
+model {
+    OverviewPanelRepository repository
+    Locale l
+}
+
+json {
+    for (Map.Entry<String, OverviewPanel> entry : repository.panels.entrySet()) {
+        call(entry.key, entry.value) { OverviewPanel p ->
+            title p.getTitle(l)
+            description p.getDescription(l)
+            url p.url
+            style p.style
+        }
+    }
+}

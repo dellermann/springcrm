@@ -1,0 +1,10 @@
+import org.amcworld.springcrm.Work
+
+model {
+    List<Work> workInstanceList
+}
+
+json(workInstanceList) { Work w ->
+    id w.id
+    name w.name
+}

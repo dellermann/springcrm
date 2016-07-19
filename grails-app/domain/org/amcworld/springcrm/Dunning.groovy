@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Dunning} represents a reminder which belongs to an invoice.
@@ -29,7 +31,9 @@ import static java.math.BigDecimal.ZERO
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class Dunning extends InvoicingTransaction implements PayableAndDue {
+class Dunning extends InvoicingTransaction
+    implements GormEntity<Dunning>, PayableAndDue
+{
 
     //-- Class fields ---------------------------
 

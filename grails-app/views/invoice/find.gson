@@ -1,0 +1,12 @@
+import org.amcworld.springcrm.Invoice
+
+model {
+    List<Invoice> invoiceInstanceList
+}
+
+json(invoiceInstanceList) { Invoice invoice ->
+    id invoice.id
+    number invoice.fullNumber
+    name invoice.subject
+    fullName invoice.fullName
+}

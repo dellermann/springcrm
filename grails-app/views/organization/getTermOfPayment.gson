@@ -1,0 +1,7 @@
+model {
+    int termOfPayment
+}
+
+json {
+    termOfPayment termOfPayment
+}

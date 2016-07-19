@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code SalesItem} acts as a base class for products and works.
@@ -30,7 +32,7 @@ import static java.math.BigDecimal.ZERO
  * @version 2.1
  * @since   1.3
  */
-class SalesItem implements NumberedDomain {
+class SalesItem implements GormEntity<SalesItem>, NumberedDomain {
 
     //-- Class fields ---------------------------
 

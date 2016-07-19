@@ -136,7 +136,7 @@ class CalendarEventService {
         }
         query.deleteAll()
 
-        for (String rule in reminderRules) {
+        for (String rule : reminderRules) {
             Reminder reminder = Reminder.fromRule rule
             reminder.calendarEvent = calendarEvent
             reminder.user = user
@@ -147,7 +147,8 @@ class CalendarEventService {
                 )
                 d = helper.approximate(d)
             }
-            reminder.nextReminder = new Date(d.time - reminder.valueAsMilliseconds)
+            reminder.nextReminder =
+                new Date(d.time - reminder.valueAsMilliseconds)
             reminder.save()
         }
     }
@@ -190,7 +191,7 @@ class CalendarEventService {
      *
      * @return the session instance
      */
-    protected HttpSession getSession() {
+    private static HttpSession getSession() {
         RequestContextHolder.currentRequestAttributes().session
     }
 }

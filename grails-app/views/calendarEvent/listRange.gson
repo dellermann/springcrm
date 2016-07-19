@@ -1,0 +1,17 @@
+import java.text.SimpleDateFormat
+import org.amcworld.springcrm.CalendarEvent
+
+model {
+    List<CalendarEvent> calendarEventInstanceList
+}
+
+SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
+json(calendarEventInstanceList) { CalendarEvent event ->
+    id event.id
+    title event.subject
+    allDay event.allDay
+    start iso8601Format.format(event.start)
+    end iso8601Format.format(event.end)
+    url g.link(action: 'show', id: event.id)
+    editable !event.synthetic
+}

@@ -22,23 +22,23 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-import grails.converters.JSON
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class InvoiceController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
@@ -66,9 +66,10 @@ class InvoiceController {
     def listEmbedded(Long organization, Long person, Long quote,
                      Long salesOrder)
     {
-        List<Invoice> l
-        int count
-        def linkParams
+        List<Invoice> l = null
+        int count = 0
+        Map<String, Object> linkParams = null
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
             def organizationInstance = Organization.get(organization)
@@ -81,7 +82,7 @@ class InvoiceController {
             count = Invoice.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         } else if (quote) {
-            def quoteInstance = Quote.get(params.quote)
+            def quoteInstance = Quote.get(params.long('quote'))
             l = Invoice.findAllByQuote(quoteInstance, params)
             count = Invoice.countByQuote(quoteInstance)
             linkParams = [quote: quoteInstance.id]
@@ -101,10 +102,10 @@ class InvoiceController {
     def create() {
         Invoice invoiceInstance
         if (params.quote) {
-            def quoteInstance = Quote.get(params.quote)
+            def quoteInstance = Quote.get(params.long('quote'))
             invoiceInstance = new Invoice(quoteInstance)
         } else if (params.salesOrder) {
-            def salesOrderInstance = SalesOrder.get(params.salesOrder)
+            def salesOrderInstance = SalesOrder.get(params.long('salesOrder'))
             invoiceInstance = new Invoice(salesOrderInstance)
             invoiceInstance.quote = salesOrderInstance.quote
         } else {
@@ -138,8 +139,8 @@ class InvoiceController {
             return
         }
 
-        Quote quoteInstance = invoiceInstance.quote
-            ?: invoiceInstance.salesOrder?.quote
+        Quote quoteInstance = invoiceInstance.quote ?:
+            invoiceInstance.salesOrder?.quote
         if (quoteInstance) {
             quoteInstance.stage = QuoteStage.get(603L)
             quoteInstance.save flush: true
@@ -276,7 +277,7 @@ class InvoiceController {
         }
 
         invoiceInstance.properties = params.findAll {
-            it.key in [
+            it.key.toString() in [
                 'stage', 'paymentDate', 'paymentAmount', 'paymentMethod'
             ]
         }
@@ -331,7 +332,7 @@ class InvoiceController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'invoice.label')]
@@ -346,11 +347,11 @@ class InvoiceController {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
         Organization organization = params.organization \
-            ? Organization.get(params.organization) \
+            ? Organization.get(params.long('organization')) \
             : null
 
         def c = Invoice.createCriteria()
-        List<Invoice> list = c.list {
+        List<Invoice> list = (List<Invoice>) c.list {
             or {
                 eq('number', number)
                 ilike('subject', "%${params.name}%")
@@ -363,14 +364,7 @@ class InvoiceController {
             order('number', 'desc')
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (Invoice i in list) {
-                    invoice id: i.id, number: i.fullNumber, name: i.subject,
-                        fullName: i.fullName
-                }
-            }
-        }
+        [invoiceInstanceList: list]
     }
 
     def print(Long id, String template) {
@@ -383,7 +377,7 @@ class InvoiceController {
         String xml = invoicingTransactionService.generateXML(
             invoiceInstance,
             invoiceInstance.createUser ?: session.credential.loadUser(),
-            !!params.duplicate
+            params.boolean('duplicate')
         )
         GString fileName =
             "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
@@ -397,7 +391,7 @@ class InvoiceController {
 
     def listUnpaidBills() {
         def c = Invoice.createCriteria()
-        List<Invoice> l = c.list {
+        List<Invoice> l = (List<Invoice>) c.list {
             and {
                 or {
                     eq 'stage', InvoiceStage.get(902)           // sent
@@ -422,7 +416,6 @@ class InvoiceController {
     }
 
     def getClosingBalance(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        render([closingBalance: invoiceInstance.closingBalance] as JSON)
+        [invoiceInstance: Invoice.get(id)]
     }
 }

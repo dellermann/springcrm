@@ -1,0 +1,9 @@
+import org.amcworld.springcrm.Dunning
+
+model {
+    Dunning dunningInstance
+}
+
+json {
+    closingBalance dunningInstance.closingBalance
+}

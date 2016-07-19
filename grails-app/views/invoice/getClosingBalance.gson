@@ -1,0 +1,9 @@
+import org.amcworld.springcrm.Invoice
+
+model {
+    Invoice invoiceInstance
+}
+
+json {
+    closingBalance invoiceInstance.closingBalance
+}

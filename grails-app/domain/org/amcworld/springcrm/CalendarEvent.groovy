@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import java.text.DateFormatSymbols
+import org.grails.datastore.gorm.GormEntity
 import org.springframework.context.MessageSourceResolvable
 
 
@@ -32,7 +33,7 @@ import org.springframework.context.MessageSourceResolvable
  * @version 2.1
  * @see     Reminder
  */
-class CalendarEvent {
+class CalendarEvent implements GormEntity<CalendarEvent> {
 
     //-- Class fields ---------------------------
 
@@ -117,7 +118,8 @@ class CalendarEvent {
             allDay: allDay, organization: organization, owner: owner,
             dateCreated: dateCreated, lastUpdated: lastUpdated
         )
-        res.id = ident()
+        res.id = id
+
         res
     }
 
@@ -138,11 +140,13 @@ class CalendarEvent {
  * events.
  *
  * @author  Daniel Ellermann
- * @version 1.3
+ * @version 2.1
  */
-class RecurrenceData implements MessageSourceResolvable {
+class RecurrenceData
+    implements GormEntity<RecurrenceData>, MessageSourceResolvable
+{
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         type inList: [0i, 10i, 30i, 40i, 50i, 60i, 70i]
@@ -168,7 +172,7 @@ class RecurrenceData implements MessageSourceResolvable {
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     int type = 0i
     Date until
@@ -198,22 +202,15 @@ class RecurrenceData implements MessageSourceResolvable {
 
     @Override
     boolean equals(Object obj) {
-        if (obj instanceof RecurrenceData) {
-            return obj.type == type && obj.until == until &&
-                obj.interval == interval && obj.monthDay == monthDay &&
-                obj.weekdays == weekdays && obj.weekdayOrd == weekdayOrd &&
-                obj.month == month
-        } else {
-            return false
-        }
+        obj instanceof RecurrenceData &&
+            obj.type == type && obj.until == until &&
+            obj.interval == interval && obj.monthDay == monthDay &&
+            obj.weekdays == weekdays && obj.weekdayOrd == weekdayOrd &&
+            obj.month == month
     }
 
     List<Integer> getWeekdaysAsList() {
-        List<Integer> res = null
-        if (weekdays) {
-            res = weekdays.split(',').collect { it as Integer }
-        }
-        res
+        weekdays ? weekdays.split(',').collect { it as Integer } : null
     }
 
     List<String> getWeekdayNamesAsList() {
@@ -231,6 +228,7 @@ class RecurrenceData implements MessageSourceResolvable {
                 }
             }
         }
+
         res
     }
 
@@ -239,12 +237,7 @@ class RecurrenceData implements MessageSourceResolvable {
     }
 
     String getMonthName() {
-        if (month == null) {
-            return null
-        } else {
-            String [] monthNames = DateFormatSymbols.instance.months
-            monthNames[month]
-        }
+        month == null ? null : DateFormatSymbols.instance.months[month]
     }
 
     Object [] getArguments() {
@@ -281,6 +274,7 @@ class RecurrenceData implements MessageSourceResolvable {
         if (interval > 1) {
             buf << ' /' << interval
         }
+
         buf.toString()
     }
 }

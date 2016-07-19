@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Upgrade to Grails 3
+
 ## 2.0.20
 
 * Wrong character set when displaying changelog on Windows
@@ -15,14 +19,14 @@
   reminders didn't change stage to "delivered" or "paid", respectively
   ([issue #82](https://github.com/dellermann/springcrm/issues/82))
 
+[comment]: STOP
+
 ## 2.0.18 (RC 1)
 
 * Scroll new invoice items to middle of the page instead of to the top
 * Bug fix: more precision at currency calculation
 * Bug fix: refresh token at Google synchronization was not evaluated correctly
 * Bugfixes in call form and address fields
-
-[comment]: STOP
 
 ## 2.0.17
 

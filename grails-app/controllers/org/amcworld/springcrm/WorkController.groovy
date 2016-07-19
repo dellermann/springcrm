@@ -22,7 +22,7 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-import grails.converters.JSON
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -34,7 +34,7 @@ import grails.converters.JSON
  */
 class WorkController {
 
-    //-- Class fiels ----------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
@@ -47,31 +47,34 @@ class WorkController {
     //-- Public methods -------------------------
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
-            int num = Work.countByNameLessThan(params.letter)
+            int num = Work.countByNameLessThan(params.letter.toString())
             params.sort = 'name'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         [workInstanceList: Work.list(params), workInstanceTotal: Work.count()]
     }
 
     def selectorList() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
         String searchFilter =
             params.search ? "%${params.search}%".toString() : ''
-        if (params.letter) {
+        String letter = params.letter?.toString()
+        if (letter) {
             int num
             if (params.search) {
                 num = Work.countByNameLessThanAndNameLike(
-                    params.letter, searchFilter
+                    letter, searchFilter
                 )
             } else {
-                num = Work.countByNameLessThan(params.letter)
+                num = Work.countByNameLessThan(letter)
             }
             params.sort = 'name'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         List<Work> list
@@ -227,7 +230,7 @@ class WorkController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'work.label')]
@@ -243,12 +246,7 @@ class WorkController {
             return
         }
 
-        JSON.use('deep') {
-            render(contentType: 'text/json') {
-                fullNumber = workInstance.fullNumber
-                inventoryItem = workInstance
-            }
-        }
+        [workInstance: workInstance]
     }
 
     def find(String name) {
@@ -258,7 +256,7 @@ class WorkController {
         } catch (NumberFormatException ignored) { /* ignored */ }
 
         def c = Work.createCriteria()
-        List<Work> list = c.list {
+        List<Work> list = (List<Work>) c.list {
             or {
                 eq 'number', number
                 ilike 'name', "%${name}%"
@@ -266,12 +264,6 @@ class WorkController {
             order 'number', 'asc'
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (Work w in list) {
-                    work id: w.id, name: w.name
-                }
-            }
-        }
+        [workInstanceList: list]
     }
 }

@@ -22,23 +22,23 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-import grails.converters.JSON
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
  * The class {@code DunningController} contains actions which manage dunnings.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class DunningController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
@@ -64,9 +64,10 @@ class DunningController {
     }
 
     def listEmbedded(Long organization, Long person, Long invoice) {
-        List<Dunning> l
-        int count
-        def linkParams
+        List<Dunning> l = null
+        int count = 0
+        def linkParams = null
+
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
             def organizationInstance = Organization.get(organization)
@@ -100,12 +101,12 @@ class DunningController {
     def create() {
         Dunning dunningInstance
         if (params.invoice) {
-            def invoiceInstance = Invoice.get(params.invoice)
+            def invoiceInstance = Invoice.get(params.long('invoice'))
             invoiceInstance.items?.clear()
             dunningInstance = new Dunning(invoiceInstance)
         } else {
             dunningInstance = new Dunning()
-            dunningInstance.properties = params
+            dunningInstance.setProperties params
         }
 
         dunningInstance.copyAddressesFromOrganization()
@@ -346,7 +347,7 @@ class DunningController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'dunning.label')]
@@ -361,11 +362,11 @@ class DunningController {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
         Organization organization = params.organization \
-            ? Organization.get(params.organization) \
+            ? Organization.get(params.long('organization')) \
             : null
 
         def c = Dunning.createCriteria()
-        List<Dunning> list = c.list {
+        List<Dunning> list = (List<Dunning>) c.list {
             or {
                 eq('number', number)
                 ilike('subject', "%${params.name}%")
@@ -378,14 +379,7 @@ class DunningController {
             order('number', 'desc')
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (Dunning d in list) {
-                    dunning id: d.id, number: d.fullNumber, name: d.subject,
-                        fullName: d.fullName
-                }
-            }
-        }
+        [dunningInstanceList: list]
     }
 
     def print(Long id, String template) {
@@ -397,8 +391,9 @@ class DunningController {
 
         String xml = invoicingTransactionService.generateXML(
             dunningInstance,
-            dunningInstance.createUser ?: session.credential.loadUser(),
-            !!params.duplicate,
+            dunningInstance.createUser ?:
+                ((Credential) session.credential).loadUser(),
+            params.boolean('duplicate'),
             [
                 invoice: dunningInstance.invoice,
                 invoiceFullNumber: dunningInstance.invoice.fullNumber,
@@ -415,8 +410,7 @@ class DunningController {
     }
 
     def getClosingBalance(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        render([closingBalance: dunningInstance.closingBalance] as JSON)
+        [dunningInstance: Dunning.get(id)]
     }
 
 

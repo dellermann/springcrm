@@ -1,0 +1,9 @@
+import org.amcworld.springcrm.TaxRate
+
+model {
+    List<TaxRate> taxRateList
+}
+json(taxRateList) { TaxRate t ->
+    id t.id
+    name(t.taxValue * 100.0)
+}

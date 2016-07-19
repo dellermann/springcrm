@@ -1,0 +1,7 @@
+import org.amcworld.springcrm.Organization
+
+model {
+    Organization organizationInstance
+}
+
+json g.render(organizationInstance)

@@ -21,9 +21,8 @@
 package org.amcworld.springcrm
 
 import grails.databinding.converters.ValueConverter
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import javax.servlet.http.HttpServletResponse
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -38,15 +37,14 @@ import javax.servlet.http.HttpServletResponse
  */
 class CalendarEventController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     CalendarEventService calendarEventService
-	DateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
     ValueConverter defaultDateConverter
 
 
@@ -72,13 +70,14 @@ class CalendarEventController {
 
     def calendar() {
         calendarEventService.currentCalendarView = 'calendar'
+
         [: ]        // needed for ViewFilters.commonData
     }
 
     def listEmbedded(Long organization) {
-        List<CalendarEvent> l
-        int count
-        Map<String, Object> linkParams
+        List<CalendarEvent> l = null
+        int count = 0
+        Map<String, Object> linkParams = null
 
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
@@ -99,22 +98,22 @@ class CalendarEventController {
     }
 
     /**
-     * Returns a JSON array containing the calendar events between the given
-     * start and end time stamp.  The method loads non-recurring events and
-     * all occurrences of recurring events.  Usually, the method is called by
-     * the <em>fullcalendar</em> JavaScript library via AJAX.
+     * Returns the calendar events between the given start and end time stamp.
+     * The method loads non-recurring events and all occurrences of recurring
+     * events.  Usually, the method is called by the <em>fullcalendar</em>
+     * JavaScript library via AJAX.
      *
      * @param start the given start in ISO 8601 format
      * @param end   the given end in ISO 8601 format
-     * @return      the rendered JSON response containing the calendar events
+     * @return      the calendar events
      */
     def listRange(String start, String end) {
-        Date startDate = defaultDateConverter.convert(start)
-        Date endDate = defaultDateConverter.convert(end)
+        Date startDate = (Date) defaultDateConverter.convert(start)
+        Date endDate = (Date) defaultDateConverter.convert(end)
 
         /* load non-recurring events */
         def c = CalendarEvent.createCriteria()
-        List<CalendarEvent> list = c.list {
+        List<CalendarEvent> list = (List<CalendarEvent>) c.list {
             and {
                 eq('recurrence.type', 0)
                 or {
@@ -130,7 +129,7 @@ class CalendarEventController {
 
         /* add occurrences of recurring events to list */
         c = CalendarEvent.createCriteria()
-        List<CalendarEvent> l = c.list {
+        List<CalendarEvent> l = (List<CalendarEvent>) c.list {
             ne('recurrence.type', 0)
         }
         for (CalendarEvent ce in l) {
@@ -147,21 +146,7 @@ class CalendarEventController {
             }
         }
 
-        render(contentType: 'text/json') {
-            array {
-            	synchronized (iso8601Format) {
-	                for (CalendarEvent ce in list) {
-	                    event(
-	                        id: ce.id, title: ce.subject, allDay: ce.allDay,
-	                        start: iso8601Format.format(ce.start),
-							end: iso8601Format.format(ce.end),
-	                        url: createLink(action: 'show', id: ce.id),
-	                        editable: !ce.synthetic
-	                    )
-	                }
-	            }
-	        }
-		}
+        [calendarEventInstanceList: list]
     }
 
     def create() {
@@ -184,28 +169,39 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'calenderEvent.label'), id]
+                args: [message(code: 'calendarEvent.label'), id]
             )
             redirect action: 'index'
             return
         }
 
         calendarEventInstance = new CalendarEvent(calendarEventInstance)
-        render view: 'create', model: [calendarEventInstance: calendarEventInstance]
+        render(
+            view: 'create',
+            model: [calendarEventInstance: calendarEventInstance]
+        )
     }
 
     def save() {
         CalendarEvent calendarEventInstance = new CalendarEvent(params)
         calendarEventInstance.owner = session.credential.loadUser()
         if (!calendarEventInstance.validate()) {
-            render view: 'create', model: [calendarEventInstance: calendarEventInstance]
+            render(
+                view: 'create',
+                model: [calendarEventInstance: calendarEventInstance]
+            )
             return
         }
 
-        calendarEventService.refineCalendarEvent calendarEventInstance, params['recurrence.endType'], params['recurrence.cnt'] as Integer
+        calendarEventService.refineCalendarEvent(
+            calendarEventInstance, params['recurrence.endType'].toString(),
+            params.int('recurrence.cnt')
+        )
         calendarEventInstance.owner = session.credential.loadUser()
         calendarEventInstance.save flush: true
-        calendarEventService.saveReminders params.reminders.split(), calendarEventInstance
+        calendarEventService.saveReminders(
+            params.reminders.toString().split(), calendarEventInstance
+        )
 
         request.calendarEventInstance = calendarEventInstance
         flash.message = message(
@@ -228,7 +224,7 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'calenderEvent.label'), id]
+                args: [message(code: 'calendarEvent.label'), id]
             )
             redirect action: 'index'
             return
@@ -247,7 +243,7 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'calenderEvent.label'), id]
+                args: [message(code: 'calendarEvent.label'), id]
             )
             redirect action: 'index'
             return
@@ -266,7 +262,7 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'calenderEvent.label'), id]
+                args: [message(code: 'calendarEvent.label'), id]
             )
             redirect action: 'index'
             return
@@ -280,25 +276,28 @@ class CalendarEventController {
                     [message(code: 'calendarEvent.label')] as Object[],
                     'Another user has updated this CalendarEvent while you were editing'
                 )
-                render view: 'edit', model: [calendarEventInstance: calendarEventInstance]
+                render(
+                    view: 'edit',
+                    model: [calendarEventInstance: calendarEventInstance]
+                )
                 return
             }
         }
 
-        calendarEventInstance.properties = params
+        calendarEventInstance.setProperties params
         if (!calendarEventInstance.validate()) {
             render view: 'edit', model: [calendarEventInstance: calendarEventInstance]
             return
         }
 
         calendarEventService.refineCalendarEvent(
-            calendarEventInstance, params['recurrence.endType'],
-            params['recurrence.cnt'] as Integer
+            calendarEventInstance, params['recurrence.endType'].toString(),
+            params.int('recurrence.cnt')
         )
         calendarEventInstance.save flush: true
         calendarEventService.saveReminders(
-            params.reminders.split(), calendarEventInstance,
-            session.credential.loadUser()
+            params.reminders.toString().split(), calendarEventInstance,
+            ((Credential) session.credential).loadUser()
         )
 
         request.calendarEventInstance = calendarEventInstance
@@ -328,8 +327,8 @@ class CalendarEventController {
      * @return      the HTTP status code
      */
     def updateStartEnd(Long id, String start, String end) {
-        Date startDate = defaultDateConverter.convert(start)
-        Date endDate = defaultDateConverter.convert(end)
+        Date startDate = (Date) defaultDateConverter.convert(start)
+        Date endDate = (Date) defaultDateConverter.convert(end)
 
         def calendarEventInstance = CalendarEvent.get(id)
         if (!calendarEventInstance) {
@@ -345,7 +344,7 @@ class CalendarEventController {
         calendarEventInstance.end = endDate
         calendarEventInstance.save()
         calendarEventService.updateReminders(
-            calendarEventInstance, session.credential.loadUser()
+            calendarEventInstance, ((Credential) session.credential).loadUser()
         )
 
         render status: HttpServletResponse.SC_OK
@@ -356,13 +355,15 @@ class CalendarEventController {
         if (!calendarEventInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'calenderEvent.label'), id]
+                args: [message(code: 'calendarEvent.label'), id]
             )
 
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: calendarEventService.currentCalendarView ?: 'index'
+                redirect(
+                    action: calendarEventService.currentCalendarView ?: 'index'
+                )
             }
             return
         }
@@ -377,9 +378,11 @@ class CalendarEventController {
             if (params.returnUrl) {
                 redirect url: params.returnUrl
             } else {
-                redirect action: calendarEventService.currentCalendarView ?: 'index'
+                redirect(
+                    action: calendarEventService.currentCalendarView ?: 'index'
+                )
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'calendarEvent.label')]
@@ -390,7 +393,7 @@ class CalendarEventController {
 
     def reminders() {
         def c = Reminder.createCriteria()
-        def l = c.list {
+        List<Reminder> l = (List<Reminder>) c.list {
             and {
                 or {
                     isNull('user')
@@ -400,33 +403,18 @@ class CalendarEventController {
             }
         }
 
-        def list = []
+        Map<CalendarEvent, Reminder> map = [: ]
         for (Reminder r in l) {
             if (r.user != null) {
-                list[r.calendarEvent] = r
+                map[r.calendarEvent] = r
             }
         }
         for (Reminder r in l) {
-            if (r.user == null && list[r.calendarEvent] == null) {
-                list[r.calendarEvent] = r
+            if (r.user == null && map[r.calendarEvent] == null) {
+                map[r.calendarEvent] = r
             }
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (Reminder r in list) {
-                    reminder(
-                        title: r.calendarEvent.subject,
-                        allDay: r.calendarEvent.allDay,
-                        start: r.calendarEvent.start,
-                        end: r.calendarEvent.end,
-                        url: createLink(
-                            controller: 'calendarEvent', action: 'show',
-                            id: r.calendarEvent.id
-                        )
-                    )
-                }
-            }
-        }
+        [calendarEventInstanceSet: map.keySet()]
     }
 }

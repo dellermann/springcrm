@@ -23,7 +23,6 @@ package org.amcworld.springcrm
 import grails.artefact.Controller
 import grails.converters.JSON
 import grails.core.GrailsClass
-import groovy.json.StreamingJsonBuilder
 import groovy.transform.CompileStatic
 
 
@@ -41,13 +40,13 @@ class ConfigController implements Controller {
     /**
      * A list of IDs of selector values which are considered read-only.
      */
-    protected static final List<Long> READONLY_IDS = [
+    public static final List<Long> READONLY_IDS = [
         *600L..604L, *800L..804L, *900L..907L, *2100L..2103L, *2200L..2206L,
         *2500L..2504L, *2600L..2605L
-    ]
+    ].asImmutable()
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     UserService userService
 
@@ -133,37 +132,10 @@ class ConfigController implements Controller {
     }
 
     def loadSelValues() {
-        List<SelValue> list = getTypeClass(params.type).list(sort: 'orderId')
+        List<SelValue> list = getTypeClass(params.type.toString())
+            .list(sort: 'orderId')
 
-        /*
-         * XXX in Grails 3.1.4, the following code doesn't work because the
-         * delegate of the render closure is set to
-         * groovy.json.StreamingJsonBuilder.StreamingJsonDelegate, which is
-         * used to render non-root JSON elements.  However, we would need a
-         * delegate of groovy.json.StreamingJsonBuilder to render an array as
-         * root element.
-         *
-         * See grails.artefact.controller.support.ResponseRenderer.render(Map argMap, Closure closure)
-         * for more information.
-         */
-//        render(contentType: 'application/json') {
-//            delegate.call(list) { SelValue value ->
-//                item(
-//                    id: value.ident(), name: value.name,
-//                    disabled: value.ident() in READONLY_IDS
-//                )
-//            }
-//        }
-
-        response.contentType = 'application/json'
-        def jsonBuilder = new StreamingJsonBuilder(response.writer)
-        jsonBuilder(list) { SelValue value ->
-            id value.ident()
-            name value.name
-            disabled(value.ident() in READONLY_IDS)
-        }
-
-        false
+        [selValueList: list]
     }
 
     def saveSelValues() {
@@ -173,8 +145,8 @@ class ConfigController implements Controller {
             }
 
             int orderId = 10
-            Class<?> cls = getTypeClass(entry.key)
-            def list = JSON.parse(entry.value)
+            Class<?> cls = getTypeClass(entry.key.toString())
+            def list = JSON.parse(entry.value.toString())
             for (def item in list) {
                 Long id = item.id as Long
                 def selValue = (id < 0L) ? cls.newInstance() : cls.get(id)
@@ -201,20 +173,7 @@ class ConfigController implements Controller {
     }
 
     def loadTaxRates() {
-        List<TaxRate> list = TaxRate.list(sort: 'orderId')
-
-        /*
-         * XXX in Grails 3.1.4, the former code does not work. See method
-         * loadSelValues() for more information.
-         */
-        response.contentType = 'application/json'
-        def jsonBuilder = new StreamingJsonBuilder(response.writer)
-        jsonBuilder(list) { TaxRate t ->
-            id t.ident()
-            name(t.taxValue * 100.0)
-        }
-
-        false
+        [taxRateList: TaxRate.list(sort: 'orderId')]
     }
 
     def saveTaxRates() {
@@ -264,7 +223,7 @@ class ConfigController implements Controller {
         boolean hasErrors = false
         for (def entry in params.seqNumbers) {
             try {
-                Long id = Long.valueOf(entry.key)
+                Long id = Long.valueOf(entry.key.toString())
                 SeqNumber seqNumber = SeqNumber.get(id)
 
                 /*
@@ -287,12 +246,16 @@ class ConfigController implements Controller {
 
         def configHolder = ConfigHolder.instance
         if (params.workIdDunningCharge) {
-            configHolder.setConfig 'workIdDunningCharge', params.workIdDunningCharge
+            configHolder.setConfig(
+                'workIdDunningCharge', params.workIdDunningCharge.toString()
+            )
         } else {
             configHolder.removeConfig 'workIdDunningCharge'
         }
         if (params.workIdDefaultInterest) {
-            configHolder.setConfig 'workIdDefaultInterest', params.workIdDefaultInterest
+            configHolder.setConfig(
+                'workIdDefaultInterest', params.workIdDefaultInterest.toString()
+            )
         } else {
             configHolder.removeConfig 'workIdDefaultInterest'
         }

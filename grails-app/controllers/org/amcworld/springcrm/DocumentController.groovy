@@ -24,13 +24,13 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
 import grails.artefact.Controller
-import org.apache.commons.logging.LogFactory
 import org.apache.commons.vfs2.FileContent
 import org.apache.commons.vfs2.FileName
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemException
 import org.apache.commons.vfs2.FileType
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartHttpServletRequest
 
 
 /**
@@ -43,12 +43,7 @@ import org.springframework.web.multipart.MultipartFile
  */
 class DocumentController implements Controller {
 
-    //-- Constants ------------------------------
-
-    private static final log = LogFactory.getLog(this)
-
-
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     DocumentService documentService
 
@@ -77,21 +72,8 @@ class DocumentController implements Controller {
             folderList = folderList.sort { it.name.baseName }
             fileList = fileList.sort { it.name.baseName }
 
-            render(contentType: 'application/json') {
-                delegate.call('folders', folderList) { FileObject folder ->
-                    name folder.name.baseName
-                    readable folder.readable
-                    writeable folder.writeable
-                }
-                delegate.call('files', fileList) { FileObject file ->
-                    name file.name.baseName
-                    ext file.name.extension
-                    size file.content.size
-                    readable file.readable
-                    writeable file.writeable
-                }
-            }
-        } catch (FileSystemException e) {
+            [folderList: folderList, fileList: fileList]
+        } catch (FileSystemException ignored) {
             render status: SC_NOT_FOUND
         }
     }
@@ -162,29 +144,30 @@ class DocumentController implements Controller {
             response.outputStream << content.inputStream
 
             null
-        } catch (FileSystemException e) {
+        } catch (FileSystemException ignored) {
             render status: SC_NOT_FOUND
         }
     }
 
     def upload(String path) {
-        List<String> errorneousFiles = []
-        for (MultipartFile file in request.getFiles('file')) {
+        MultipartHttpServletRequest req = (MultipartHttpServletRequest) request
+        List<String> erroneousFiles = []
+        for (MultipartFile file in req.getFiles('file')) {
             try {
                 documentService.uploadFile(
                     path, file.originalFilename, file.inputStream
                 )
-            } catch (FileSystemException e) {
-                errorneousFiles << file.originalFilename
+            } catch (FileSystemException ignored) {
+                erroneousFiles << file.originalFilename
             }
         }
 
-        if (errorneousFiles.empty) {
+        if (erroneousFiles.empty) {
             flash.message = message(code: 'document.upload.success')
         } else {
             flash.message = message(
                 code: 'document.upload.error',
-                args: [errorneousFiles.size(), errorneousFiles.join(', ')]
+                args: [erroneousFiles.size(), erroneousFiles.join(', ')]
             )
         }
 
@@ -195,7 +178,7 @@ class DocumentController implements Controller {
         try {
             documentService.createFolder path, name
             render status: SC_OK
-        } catch (FileSystemException e) {
+        } catch (FileSystemException ignored) {
             render status: SC_NOT_FOUND
         }
     }
@@ -204,7 +187,7 @@ class DocumentController implements Controller {
         int sc = SC_OK
         try {
             documentService.deleteFileObject path
-        } catch (FileSystemException e) {
+        } catch (FileSystemException ignored) {
             sc = SC_NOT_FOUND
         }
 

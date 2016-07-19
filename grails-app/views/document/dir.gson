@@ -1,0 +1,21 @@
+import org.apache.commons.vfs2.FileObject
+
+model {
+    List<FileObject> folderList
+    List<FileObject> fileList
+}
+
+json {
+    folders(folderList) { FileObject folder ->
+        name folder.name.baseName
+        readable folder.readable
+        writeable folder.writeable
+    }
+    files(fileList) { FileObject file ->
+        name file.name.baseName
+        ext file.name.extension
+        size file.content.size
+        readable file.readable
+        writeable file.writeable
+    }
+}

@@ -22,14 +22,16 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code TaxRate} represents tax rates.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
-class TaxRate extends SelValue {
+class TaxRate extends SelValue implements GormEntity<TaxRate> {
 
     //-- Class fields ---------------------------
 

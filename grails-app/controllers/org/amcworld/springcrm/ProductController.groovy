@@ -1,7 +1,7 @@
 /*
  * ProductController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,23 +22,23 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-import grails.converters.JSON
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
  * The class {@code ProductController} contains actions which manage products.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class ProductController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     SalesItemService salesItemService
 
@@ -46,11 +46,12 @@ class ProductController {
     //-- Public methods -------------------------
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
-            int num = Product.countByNameLessThan(params.letter)
+            int num = Product.countByNameLessThan(params.letter.toString())
             params.sort = 'name'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         [
@@ -60,21 +61,23 @@ class ProductController {
     }
 
     def selectorList() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
         String searchFilter = params.search \
             ? "%${params.search}%".toString() \
             : ''
-        if (params.letter) {
+        String letter = params.letter?.toString()
+        if (letter) {
             int num
             if (params.search) {
                 num = Product.countByNameLessThanAndNameLike(
-                    params.letter, searchFilter
+                    letter, searchFilter
                 )
             } else {
-                num = Product.countByNameLessThan(params.letter)
+                num = Product.countByNameLessThan(letter)
             }
             params.sort = 'name'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         List<Product> list
@@ -229,7 +232,7 @@ class ProductController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'product.label')]
@@ -245,11 +248,6 @@ class ProductController {
             return
         }
 
-        JSON.use('deep') {
-            render(contentType: 'text/json') {
-                fullNumber = productInstance.fullNumber
-                inventoryItem = productInstance
-            }
-        }
+        [productInstance: productInstance]
     }
 }

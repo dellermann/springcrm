@@ -22,21 +22,23 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
+import org.springframework.dao.DataIntegrityViolationException
+
 
 /**
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class QuoteController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
@@ -64,9 +66,9 @@ class QuoteController {
     def listEmbedded(Long organization, Long person) {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        List<Quote> l
-        int count
-        def linkParams
+        List<Quote> l = null
+        int count = 0
+        def linkParams = null
         if (organization) {
             def organizationInstance = Organization.get(organization)
             l = Quote.findAllByOrganization(organizationInstance, params)
@@ -226,7 +228,7 @@ class QuoteController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'quote.label')]
@@ -241,11 +243,11 @@ class QuoteController {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
         Organization organization = params.organization \
-            ? Organization.get(params.organization) \
+            ? Organization.get(params.long('organization')) \
             : null
 
         def c = Quote.createCriteria()
-        List<Quote> list = c.list {
+        List<Quote> list = (List<Quote>) c.list {
             or {
                 eq('number', number)
                 ilike('subject', "%${params.name}%")
@@ -258,14 +260,7 @@ class QuoteController {
             order('number', 'desc')
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (Quote q in list) {
-                    quote id: q.id, number: q.fullNumber, name: q.subject,
-                        fullName: q.fullName
-                }
-            }
-        }
+        [quoteInstanceList: list]
     }
 
     def print(Long id, String template) {
@@ -277,8 +272,9 @@ class QuoteController {
 
         String xml = invoicingTransactionService.generateXML(
             quoteInstance,
-            quoteInstance.createUser ?: session.credential.loadUser(),
-            !!params.duplicate
+            quoteInstance.createUser ?:
+                ((Credential) session.credential).loadUser(),
+            params.boolean('duplicate')
         )
         GString fileName =
             "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"

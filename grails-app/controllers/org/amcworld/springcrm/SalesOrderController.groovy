@@ -22,22 +22,24 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
+import org.springframework.dao.DataIntegrityViolationException
+
 
 /**
  * The class {@code SalesOrderController} contains actions which manage sales
  * orders.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class SalesOrderController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
@@ -65,9 +67,9 @@ class SalesOrderController {
     def listEmbedded(Long organization, Long person, Long quote) {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        List<SalesOrder> l
-        int count
-        def linkParams
+        List<SalesOrder> l = null
+        int count = 0
+        def linkParams = null
         if (organization) {
             def organizationInstance = Organization.get(organization)
             l = SalesOrder.findAllByOrganization(organizationInstance, params)
@@ -94,7 +96,7 @@ class SalesOrderController {
     def create() {
         SalesOrder salesOrderInstance
         if (params.quote) {
-            Quote quoteInstance = Quote.get(params.quote)
+            Quote quoteInstance = Quote.get(params.long('quote'))
             salesOrderInstance = new SalesOrder(quoteInstance)
         } else {
             salesOrderInstance = new SalesOrder(params)
@@ -250,7 +252,7 @@ class SalesOrderController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'salesOrder.label')]
@@ -265,11 +267,11 @@ class SalesOrderController {
             number = params.name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
         Organization organization = params.organization \
-            ? Organization.get(params.organization) \
+            ? Organization.get(params.long('organization')) \
             : null
 
         def c = SalesOrder.createCriteria()
-        List<SalesOrder> list = c.list {
+        List<SalesOrder> list = (List<SalesOrder>) c.list {
             or {
                 eq('number', number)
                 ilike('subject', "%${params.name}%")
@@ -282,14 +284,7 @@ class SalesOrderController {
             order('number', 'desc')
         }
 
-        render(contentType: 'text/json') {
-            array {
-                for (SalesOrder so in list) {
-                    salesOrder id: so.id, number: so.fullNumber,
-                        name: so.subject, fullName: so.fullName
-                }
-            }
-        }
+        [salesOrderInstanceList: list]
     }
 
     def print(Long id, String template) {
@@ -301,8 +296,9 @@ class SalesOrderController {
 
         String xml = invoicingTransactionService.generateXML(
             salesOrderInstance,
-            salesOrderInstance.createUser ?: session.credential.loadUser(),
-            !!params.duplicate
+            salesOrderInstance.createUser
+                ?: ((Credential) session.credential).loadUser(),
+            params.boolean('duplicate')
         )
         GString fileName =
             "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"

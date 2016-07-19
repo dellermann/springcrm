@@ -1,0 +1,10 @@
+import org.amcworld.springcrm.Organization
+
+model {
+    List<Organization> organizationInstanceList
+}
+
+json(organizationInstanceList) { Organization org ->
+    id org.id
+    name org.name
+}

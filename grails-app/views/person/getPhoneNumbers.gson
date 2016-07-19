@@ -1,0 +1,5 @@
+model {
+    List<String> phoneNumbers
+}
+
+json(phoneNumbers)
