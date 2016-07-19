@@ -22,7 +22,7 @@
   <body>
     <g:applyLayout name="list" model="[
         createParams: [
-            recType: params.listType ?: 0, listType: params.listType ?: 0
+            recType: params.listType ?: 0, listType: params.listType
         ],
         list: organizationInstanceList,
         type: 'organization'

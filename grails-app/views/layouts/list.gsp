@@ -2,18 +2,9 @@
   value="${message(code: type + '.label', default: type)}" />
 
 <content tag="toolbar">
-  <div>
-    <a href="#top" class="btn btn-default go-top-btn" role="button">
-      <i class="fa fa-arrow-up"></i>
-      <span class="sr-only"
-        ><g:message code="default.button.top.label"
-      /></span>
-    </a>
-    <g:button action="create" params="${createParams}"
-      color="success" icon="plus-circle"
-      message="default.button.create.label" />
-    <g:pageProperty name="page.additionalToolbarButtons" />
-  </div>
+  <g:button action="create" params="${createParams}" color="success"
+    icon="plus-circle" message="default.button.create.label" />
+  <g:pageProperty name="page.additionalToolbarButtons" />
 </content>
 
 <g:render template="/layouts/flashMessage" />

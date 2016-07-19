@@ -53,7 +53,7 @@ class OrganizationController {
                     letter, types
                 )
             } else {
-                num = Organization.countByNameLessThan(params)
+                num = Organization.countByNameLessThan(letter)
             }
             params.sort = 'name'
             params.offset = Math.floor(num / max) * max

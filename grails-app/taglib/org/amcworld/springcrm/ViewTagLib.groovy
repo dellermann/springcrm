@@ -62,7 +62,7 @@ class ViewTagLib {
     ]
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     CalendarEventService calendarEventService
     UserService userService

@@ -8,7 +8,7 @@
   <body>
     <g:applyLayout name="create" model="[
         type: 'organization', instance: organizationInstance,
-        listParams: [listType: params.recType]
+        listParams: [listType: params.listType]
       ]" />
 
     <content tag="scripts">

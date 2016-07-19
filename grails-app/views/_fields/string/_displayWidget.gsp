@@ -13,4 +13,4 @@
 <g:elseif test="${constraints?.email && value}"
   ><a href="mailto:${value}">${value}</a
 ></g:elseif>
-<g:else><output>${value}</output></g:else>
+<g:else>${value}</g:else>
