@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import java.math.RoundingMode
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -54,6 +55,8 @@ class Dunning extends InvoicingTransaction
 
 
     //-- Fields ---------------------------------
+
+    def userService
 
     /**
      * The level of this reminder (1st reminder, 2nd reminder etc.).
@@ -139,7 +142,9 @@ class Dunning extends InvoicingTransaction
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        paymentAmount - total
+        (paymentAmount - total).setScale(
+                userService.numFractionDigitsExt, RoundingMode.HALF_UP
+            )
     }
 
     /**

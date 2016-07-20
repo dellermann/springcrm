@@ -369,6 +369,11 @@ class DunningSpec extends Specification {
         given: 'an empty dunning'
         def d = new Dunning()
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        d.userService = userService
+
         when: 'I set discrete values for total and payment amount'
         d.total = t
         d.paymentAmount = pa
@@ -380,60 +385,77 @@ class DunningSpec extends Specification {
         t       | pa        || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
 
     def 'Get the balance color'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
         when: 'I create an empty dunning'
         def d = new Dunning()
+        d.userService = userService
 
         then: 'I get the default color'
         'default' == d.balanceColor
 
         when: 'I set a zero balance'
         d = new Dunning(paymentAmount: 25.6669, total: 25.666900000)
+        d.userService = userService
 
         then: 'I get the default color'
         'default' == d.balanceColor
 
         when: 'I set a positive balance'
         d = new Dunning(paymentAmount: 25.7, total: 25.66666669)
+        d.userService = userService
 
         then: 'I get the default color'
         'green' == d.balanceColor
 
         when: 'I set a negative balance'
         d = new Dunning(paymentAmount: 25.7, total: 25.70000001)
+        d.userService = userService
 
         then: 'I get the default color'
-        'red' == d.balanceColor
+        'default' == d.balanceColor
     }
 
     def 'Compute (modified) closing balance without credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
+        and: 'a credit memo'
+        def c = new CreditMemo()
+        c.userService = userService
+
         when: 'I create an empty dunning'
         def d = new Dunning()
+        d.userService = userService
 
         then: 'the closing balance is zero'
         0.0 == d.closingBalance
@@ -441,13 +463,14 @@ class DunningSpec extends Specification {
 
         when: 'I set an empty credit memo list'
         d = new Dunning(creditMemos: [])
+        d.userService = userService
 
         then: 'the closing balance is zero'
         0.0 == d.closingBalance
         0.0 == d.modifiedClosingBalance
 
         when: 'I add an empty credit memo'
-        d.creditMemos << new CreditMemo()
+        d.creditMemos << c
 
         then: 'the closing balance is zero'
         0.0 == d.closingBalance
@@ -455,9 +478,15 @@ class DunningSpec extends Specification {
     }
 
     def 'Compute (modified) closing balance with credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
         when: 'I create a non-empty dunning'
         def d = new Dunning(creditMemos: [])
+        d.userService = userService
         def c = new CreditMemo(total: t, paymentAmount: pa)
+        c.userService = userService
         c.id = 457L
         d.creditMemos << c
 
@@ -469,6 +498,7 @@ class DunningSpec extends Specification {
         c = new CreditMemo(
             total: 2 * (t ?: 0.0), paymentAmount: 2 * (pa ?: 0.0)
         )
+        c.userService = userService
         c.id = 458L
         d.creditMemos << c
 
@@ -488,61 +518,78 @@ class DunningSpec extends Specification {
         pa      | t         || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0.0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
 
-    def 'Compute payable without credit memos'() {
+    def 'Compute payable amount without credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
+        and: 'a credit memo'
+        def c = new CreditMemo()
+        c.userService = userService
+
         when: 'I create an empty dunning'
         def d = new Dunning()
+        d.userService = userService
 
         then: 'the payable amount is zero'
         0.0 == d.payable
 
         when: 'I set an empty credit memo list'
         d = new Dunning(creditMemos: [])
+        d.userService = userService
 
         then: 'the payable amount is zero'
         0.0 == d.payable
 
         when: 'I add an empty credit memo'
-        d.creditMemos << new CreditMemo()
+        d.creditMemos << c
 
         then: 'the payable amount is zero'
         0.0 == d.payable
 
         when: 'I create an empty invoice'
         d = new Dunning(total: 45.76)
+        d.userService = userService
 
         then: 'the payable amount is zero'
         45.76 == d.payable
     }
 
     def 'Compute payable amount with credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
         when: 'I create a non-empty dunning'
         def d = new Dunning(creditMemos: [])
+        d.userService = userService
         def c = new CreditMemo(total: t, paymentAmount: pa)
+        c.userService = userService
         c.id = 457L
         d.creditMemos << c
 
@@ -553,6 +600,7 @@ class DunningSpec extends Specification {
         c = new CreditMemo(
             total: 2 * (t ?: 0.0), paymentAmount: 2 * (pa ?: 0.0)
         )
+        c.userService = userService
         c.id = 458L
         d.creditMemos << c
 
@@ -569,27 +617,27 @@ class DunningSpec extends Specification {
         pa      | t         || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0.0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
@@ -632,6 +680,11 @@ class DunningSpec extends Specification {
         given: 'a dunning with a balance'
         def d = new Dunning(paymentAmount: pa, total: t)
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        d.userService = userService
+
         when: 'I set stage "paid"'
         d.stage = new DunningStage()
         d.stage.id = 2203L
@@ -663,12 +716,12 @@ class DunningSpec extends Specification {
         pa          | t         || color
         null        | null      || 'green'
         null        | 0.0       || 'green'
-        null        | 0.0000001 || 'default'
+        null        | 0.0000001 || 'green'
         null        | 5.867     || 'default'
         null        | 4795.492  || 'default'
         0.0         | null      || 'green'
         0.0         | 0.0       || 'green'
-        0.0         | 0.0000001 || 'default'
+        0.0         | 0.0000001 || 'green'
         0.0         | 5.867     || 'default'
         0.0         | 4795.492  || 'default'
         0.0000001   | null      || 'green'

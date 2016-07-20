@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import java.math.RoundingMode
+
 
 /**
  * The class {@code CreditMemo} represents a credit note.
@@ -51,6 +53,8 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     ]
 
     //-- Fields ---------------------------------
+
+    def userService
 
     /**
      * The stage of this credit note.
@@ -143,7 +147,9 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        total - paymentAmount
+        (total - paymentAmount).setScale(
+                userService.numFractionDigitsExt, RoundingMode.HALF_UP
+            )
     }
 
     /**

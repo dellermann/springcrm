@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import static java.math.BigDecimal.ZERO
 
+import java.math.RoundingMode
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -58,6 +59,8 @@ class Invoice extends InvoicingTransaction
 
 
     //-- Fields ---------------------------------
+
+    def userService
 
     /**
      * The stage of this invoice.
@@ -153,7 +156,9 @@ class Invoice extends InvoicingTransaction
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        paymentAmount - total
+        (paymentAmount - total).setScale(
+                userService.numFractionDigitsExt, RoundingMode.HALF_UP
+            )
     }
 
     /**
@@ -236,7 +241,10 @@ class Invoice extends InvoicingTransaction
         String color = 'default'
         switch (stage?.id) {
         case 907:                       // cancelled
-            color = closingBalance >= ZERO ? 'green' : colorIndicatorByDate()
+        case 903:                       // paid
+            color = (closingBalance <=> ZERO) >= 0 \
+                ? 'green'
+                : colorIndicatorByDate()
             break
         case 906:                       // booked out
             color = 'black'
@@ -246,9 +254,6 @@ class Invoice extends InvoicingTransaction
             break
         case 904:                       // reminded
             color = 'purple'
-            break
-        case 903:                       // paid
-            color = closingBalance >= ZERO ? 'green' : colorIndicatorByDate()
             break
         case 902:                       // delivered
             color = colorIndicatorByDate()

@@ -470,6 +470,11 @@ class CreditMemoSpec extends Specification {
         given: 'an empty credit memo'
         def c = new CreditMemo()
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        1 * userService.numFractionDigitsExt >> 2
+        c.userService = userService
+
         when: 'I set discrete values for total and payment amount'
         c.total = t
         c.paymentAmount = pa
@@ -481,27 +486,27 @@ class CreditMemoSpec extends Specification {
         t       | pa        || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || -0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || -0.25
         null    | 450.47    || -450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || -0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || -0.25
         0.0     | 450.47    || -450.47
-        0.00001 | null      || 0.00001
-        0.00001 | 0.0       || 0.00001
-        0.00001 | 0.0000001 || 0.0000099
-        0.00001 | 0.25      || -0.24999
-        0.00001 | 450.47    || -450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || -0.25
+        0.00001 | 450.47    || -450.47
         0.25    | null      || 0.25
         0.25    | 0.0       || 0.25
-        0.25    | 0.0000001 || 0.2499999
+        0.25    | 0.0000001 || 0.25
         0.25    | 0.25      || 0
         0.25    | 450.47    || -450.22
         450.47  | null      || 450.47
         450.47  | 0.0       || 450.47
-        450.47  | 0.0000001 || 450.4699999
+        450.47  | 0.0000001 || 450.47
         450.47  | 0.25      || 450.22
         450.47  | 450.47    || 0.0
     }
@@ -527,17 +532,30 @@ class CreditMemoSpec extends Specification {
         when: 'I create an empty credit memo'
         def c = new CreditMemo()
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        c.userService = userService
+
+        and: 'a mocked invoice'
+        Invoice invoice = Mock()
+        invoice.userService = userService
+
+        and: 'a mocked dunning'
+        Dunning dunning = Mock()
+        dunning.userService = userService
+
         then: 'the closing balance is zero'
         0.0 == c.closingBalance
 
         when: 'I set an empty invoice'
-        c = new CreditMemo(invoice: new Invoice())
+        c = new CreditMemo(invoice: invoice)
 
         then: 'the closing balance is zero'
         0.0 == c.closingBalance
 
         when: 'I set a non-empty invoice'
-        c = new CreditMemo(invoice: Mock(Invoice))
+        c = new CreditMemo(invoice: invoice)
         3 * c.invoice.getClosingBalance() >>> [-30.7, 45.8, 0.2584]
 
         then: 'the closing balance is the same as in the invoice'
@@ -546,13 +564,13 @@ class CreditMemoSpec extends Specification {
         0.2584 == c.closingBalance
 
         when: 'I set an empty dunning'
-        c = new CreditMemo(dunning: new Dunning())
+        c = new CreditMemo(dunning: dunning)
 
         then: 'the closing balance is zero'
         0.0 == c.closingBalance
 
         when: 'I set a non-empty dunning'
-        c = new CreditMemo(dunning: Mock(Dunning))
+        c = new CreditMemo(dunning: dunning)
         3 * c.dunning.getClosingBalance() >>> [-30.7, 45.8, 0.2584]
 
         then: 'the closing balance is the same as in the invoice'
@@ -562,20 +580,35 @@ class CreditMemoSpec extends Specification {
     }
 
     def 'Compute modified closing balance'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
+        and: 'a mocked invoice'
+        Invoice invoice = Mock()
+        invoice.userService = userService
+
+        and: 'a mocked dunning'
+        Dunning dunning = Mock()
+        dunning.userService = userService
+
         when: 'I create a credit memo'
         def c = new CreditMemo(total: t, paymentAmount: pa)
+        c.userService = userService
 
         then: 'I get the correct modified closing balance'
         e == c.modifiedClosingBalance
 
         when: 'I create a credit memo with an empty invoice'
-        c = new CreditMemo(total: t, paymentAmount: pa, invoice: new Invoice())
+        c = new CreditMemo(total: t, paymentAmount: pa, invoice: invoice)
+        c.userService = userService
 
         then: 'I get the correct modified closing balance'
         e == c.modifiedClosingBalance
 
         when: 'I create a credit memo with a non-empty invoice'
-        c = new CreditMemo(total: t, paymentAmount: pa, invoice: Mock(Invoice))
+        c = new CreditMemo(total: t, paymentAmount: pa, invoice: invoice)
+        c.userService = userService
         3 * c.invoice.getClosingBalance() >>> [-30.7, 45.8, 0.2584]
 
         then: 'I get the correct modified closing balance'
@@ -584,13 +617,15 @@ class CreditMemoSpec extends Specification {
         e - 0.2584 == c.modifiedClosingBalance
 
         when: 'I create a credit memo with an empty dunning'
-        c = new CreditMemo(total: t, paymentAmount: pa, dunning: new Dunning())
+        c = new CreditMemo(total: t, paymentAmount: pa, dunning: dunning)
+        c.userService = userService
 
         then: 'I get the correct modified closing balance'
         e == c.modifiedClosingBalance
 
         when: 'I create a credit memo with a non-empty dunning'
-        c = new CreditMemo(total: t, paymentAmount: pa, dunning: Mock(Dunning))
+        c = new CreditMemo(total: t, paymentAmount: pa, dunning: dunning)
+        c.userService = userService
         3 * c.dunning.getClosingBalance() >>> [-30.7, 45.8, 0.2584]
 
         then: 'I get the correct modified closing balance'
@@ -602,27 +637,27 @@ class CreditMemoSpec extends Specification {
         t       | pa        || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || -0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || -0.25
         null    | 450.47    || -450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || -0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || -0.25
         0.0     | 450.47    || -450.47
-        0.00001 | null      || 0.00001
-        0.00001 | 0.0       || 0.00001
-        0.00001 | 0.0000001 || 0.0000099
-        0.00001 | 0.25      || -0.24999
-        0.00001 | 450.47    || -450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || -0.25
+        0.00001 | 450.47    || -450.47
         0.25    | null      || 0.25
         0.25    | 0.0       || 0.25
-        0.25    | 0.0000001 || 0.2499999
+        0.25    | 0.0000001 || 0.25
         0.25    | 0.25      || 0
         0.25    | 450.47    || -450.22
         450.47  | null      || 450.47
         450.47  | 0.0       || 450.47
-        450.47  | 0.0000001 || 450.4699999
+        450.47  | 0.0000001 || 450.47
         450.47  | 0.25      || 450.22
         450.47  | 450.47    || 0.0
     }

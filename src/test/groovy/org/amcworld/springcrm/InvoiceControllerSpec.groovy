@@ -22,11 +22,13 @@ package org.amcworld.springcrm
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
 import spock.lang.Specification
 
 
 @TestFor(InvoiceController)
+@TestMixin(DomainClassUnitTestMixin)
 @Mock([Invoice, InvoiceStage, Organization, Person])
 class InvoiceControllerSpec extends Specification {
 
@@ -43,7 +45,6 @@ class InvoiceControllerSpec extends Specification {
     def 'List unpaid bills'() {
         given: 'some invoices'
         makeInvoicesFixture()
-        Invoice.list().each { println it.dump() }
 
         when: 'I call the listUnpaidBills action'
         def model = controller.listUnpaidBills()
@@ -57,72 +58,19 @@ class InvoiceControllerSpec extends Specification {
         def i1 = l.find { it.number == 40000 }
         null != i1
         107.0762 == i1.total
-        -107.0762 == i1.balance
+        -107.08 == i1.balance
 
         and: 'the second invoice has the following properties'
         def i2 = l.find { it.number == 40001 }
         null != i2
         9.99915 == i2.total
-        -0.49915 == i2.balance
+        -0.50 == i2.balance
     }
 
     // TODO test the remaining actions
 
 
     //-- Non-public methods ---------------------
-
-    protected void makeInvoiceFixture(Organization org = null, Person p = null)
-    {
-        makeInvoiceStageFixture()
-        if (!org) {
-            makeOrganizationFixture()
-            org = Organization.get(1)
-        }
-        if (!p) {
-            makePersonFixture()
-            p = Person.get(1)
-        }
-
-        mockDomain Invoice, [
-            [
-                adjustment: 0.54,
-                billingAddr: new Address(),
-                discountAmount: 5,
-                discountPercent: 2,
-                dueDatePayment: new Date(),
-                footerText: 'my footer text',
-                headerText: 'my header text',
-                items: [
-                    new InvoicingItem(
-                        number: 'P-10000', quantity: 4, unit: 'pcs.',
-                        name: 'books', unitPrice: 44.99, tax: 19
-                    ),
-                    new InvoicingItem(
-                        number: 'P-20000', quantity: 10.5, unit: 'm',
-                        name: 'tape', unitPrice: 0.89, tax: 7
-                    ),
-                    new InvoicingItem(
-                        number: 'S-10100', quantity: 4.25, unit: 'h',
-                        name: 'repairing', unitPrice: 39, tax: 19
-                    )
-                ],
-                notes: 'my notes',
-                number: 39999,
-                organization: org,
-                person: p,
-                shippingAddr: new Address(),
-                shippingCosts: 4.5,
-                shippingTax: 7,
-                stage: InvoiceStage.get(903),
-                subject: 'Test invoice',
-                termsAndConditions: [
-                    new TermsAndConditions(name: 'wares'),
-                    new TermsAndConditions(name: 'services')
-                ],
-                total: 414.632541
-            ]
-        ]
-    }
 
     protected void makeInvoicesFixture(Organization org = null,
                                        Person p = null)
@@ -137,6 +85,9 @@ class InvoiceControllerSpec extends Specification {
             p = Person.get(1)
         }
         def d = new Date() - 5      // 5 days before today
+
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
 
         def i1 = new Invoice(
             billingAddr: new Address(),
@@ -154,6 +105,7 @@ class InvoiceControllerSpec extends Specification {
             termsAndConditions: [],
             total: 214.1524
         )
+        i1.userService = userService
         i1.items << new InvoicingItem(
             quantity: 4, unit: 'pcs.', name: 'books',
             unitPrice: 44.99, tax: 19
@@ -173,6 +125,7 @@ class InvoiceControllerSpec extends Specification {
             termsAndConditions: [],
             total: 107.0762
         )
+        i2.userService = userService
         i2.items << new InvoicingItem(
             quantity: 2, unit: 'pcs.', name: 'books',
             unitPrice: 44.99, tax: 19
@@ -194,15 +147,13 @@ class InvoiceControllerSpec extends Specification {
             termsAndConditions: [],
             total: 9.99915
         )
+        i3.userService = userService
         i3.items << new InvoicingItem(
             quantity: 10.5, unit: 'm', name: 'tape',
             unitPrice: 0.89, tax: 7
         )
 
         mockDomain Invoice, [i1, i2, i3]
-
-        UserService userService = Mock()
-        userService.numFractionDigitsExt >> 2
     }
 
     protected void makeInvoiceStageFixture() {

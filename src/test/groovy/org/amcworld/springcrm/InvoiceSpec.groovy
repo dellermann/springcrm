@@ -481,6 +481,11 @@ class InvoiceSpec extends Specification {
         given: 'an empty invoice'
         def i = new Invoice()
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        i.userService = userService
+
         when: 'I set discrete values for total and payment amount'
         i.total = t
         i.paymentAmount = pa
@@ -492,60 +497,77 @@ class InvoiceSpec extends Specification {
         t       | pa        || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || -0.0
+        0.00001 | 0.0       || -0.0
+        0.00001 | 0.0000001 || -0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
 
     def 'Get the balance color'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
         when: 'I create an empty invoice'
         def i = new Invoice()
+        i.userService = userService
 
         then: 'I get the default color'
         'default' == i.balanceColor
 
         when: 'I set a zero balance'
         i = new Invoice(paymentAmount: 25.6669, total: 25.666900000)
+        i.userService = userService
 
         then: 'I get the default color'
         'default' == i.balanceColor
 
         when: 'I set a positive balance'
         i = new Invoice(paymentAmount: 25.7, total: 25.66666669)
+        i.userService = userService
 
         then: 'I get the default color'
         'green' == i.balanceColor
 
         when: 'I set a negative balance'
         i = new Invoice(paymentAmount: 25.7, total: 25.70000001)
+        i.userService = userService
 
         then: 'I get the default color'
-        'red' == i.balanceColor
+        'default' == i.balanceColor
     }
 
     def 'Compute (modified) closing balance without credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
+        and: 'a mocked credit memo'
+        def c = new CreditMemo()
+        c.userService = userService
+
         when: 'I create an empty invoice'
         def i = new Invoice()
+        i.userService = userService
 
         then: 'the closing balance is zero'
         0.0 == i.closingBalance
@@ -553,13 +575,14 @@ class InvoiceSpec extends Specification {
 
         when: 'I set an empty credit memo list'
         i = new Invoice(creditMemos: [])
+        i.userService = userService
 
         then: 'the closing balance is zero'
         0.0 == i.closingBalance
         0.0 == i.modifiedClosingBalance
 
         when: 'I add an empty credit memo'
-        i.creditMemos << new CreditMemo()
+        i.creditMemos << c
 
         then: 'the closing balance is zero'
         0.0 == i.closingBalance
@@ -573,6 +596,12 @@ class InvoiceSpec extends Specification {
         c.id = 457L
         i.creditMemos << c
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        i.userService = userService
+        c.userService = userService
+
         then: 'the closing balance is computed correctly'
         e == i.closingBalance
         e == i.modifiedClosingBalance
@@ -581,6 +610,7 @@ class InvoiceSpec extends Specification {
         c = new CreditMemo(
             total: 2 * (t ?: 0.0), paymentAmount: 2 * (pa ?: 0.0)
         )
+        c.userService = userService
         c.id = 458L
         i.creditMemos << c
 
@@ -600,61 +630,78 @@ class InvoiceSpec extends Specification {
         pa      | t         || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0.0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
 
-    def 'Compute payable without credit memos'() {
+    def 'Compute payable amount without credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
+        and: 'a credit memo'
+        def c = new CreditMemo()
+        c.userService = userService
+
         when: 'I create an empty invoice'
         def i = new Invoice()
+        i.userService = userService
 
         then: 'the payable amount is zero'
         0.0 == i.payable
 
         when: 'I set an empty credit memo list'
         i = new Invoice(creditMemos: [])
+        i.userService = userService
 
         then: 'the payable amount is zero'
         0.0 == i.payable
 
         when: 'I add an empty credit memo'
-        i.creditMemos << new CreditMemo()
+        i.creditMemos << c
 
         then: 'the payable amount is zero'
         0.0 == i.payable
 
         when: 'I create an empty invoice'
         i = new Invoice(total: 45.76)
+        i.userService = userService
 
         then: 'the payable amount is zero'
         45.76 == i.payable
     }
 
     def 'Compute payable amount with credit memos'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
         when: 'I create a non-empty invoice'
         def i = new Invoice(creditMemos: [])
+        i.userService = userService
         def c = new CreditMemo(total: t, paymentAmount: pa)
+        c.userService = userService
         c.id = 457L
         i.creditMemos << c
 
@@ -665,6 +712,7 @@ class InvoiceSpec extends Specification {
         c = new CreditMemo(
             total: 2 * (t ?: 0.0), paymentAmount: 2 * (pa ?: 0.0)
         )
+        c.userService = userService
         c.id = 458L
         i.creditMemos << c
 
@@ -681,27 +729,27 @@ class InvoiceSpec extends Specification {
         pa      | t         || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0.0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
@@ -745,6 +793,11 @@ class InvoiceSpec extends Specification {
         given: 'an invoice with a balance'
         def i = new Invoice(paymentAmount: pa, total: t)
 
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        i.userService = userService
+
         when: 'I set stage "paid"'
         i.stage = new InvoiceStage()
         i.stage.id = 903L
@@ -776,12 +829,12 @@ class InvoiceSpec extends Specification {
         pa          | t         || color
         null        | null      || 'green'
         null        | 0.0       || 'green'
-        null        | 0.0000001 || 'default'
+        null        | 0.0000001 || 'green'
         null        | 5.867     || 'default'
         null        | 4795.492  || 'default'
         0.0         | null      || 'green'
         0.0         | 0.0       || 'green'
-        0.0         | 0.0000001 || 'default'
+        0.0         | 0.0000001 || 'green'
         0.0         | 5.867     || 'default'
         0.0         | 4795.492  || 'default'
         0.0000001   | null      || 'green'
