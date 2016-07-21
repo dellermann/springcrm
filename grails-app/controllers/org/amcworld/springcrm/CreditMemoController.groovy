@@ -28,16 +28,16 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
  * memos.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class CreditMemoController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
@@ -386,7 +386,7 @@ class CreditMemoController {
         String xml = invoicingTransactionService.generateXML(
             creditMemoInstance,
             creditMemoInstance.createUser ?: session.credential.loadUser(),
-            !!params.duplicate,
+            params.boolean('duplicate') ?: false,
             [
                 invoice: creditMemoInstance.invoice,
                 invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,

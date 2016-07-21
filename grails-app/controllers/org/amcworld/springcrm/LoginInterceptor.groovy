@@ -83,7 +83,7 @@ class LoginInterceptor implements Interceptor {
     //-- Non-public methods ---------------------
 
     @CompileDynamic
-    private Config getInstallStatus() {
+    private static Config getInstallStatus() {
         Config config = null
         Config.withNewSession {
             config = Config.findByName 'installStatus'

@@ -29,6 +29,12 @@ import spock.lang.Specification
 @Mock(Config)
 class LoginInterceptorSpec extends Specification {
 
+    //-- Fixture methods ------------------------
+
+    def setup() {
+        Config.metaClass.static.withNewSession = { Closure c -> c.call() }
+    }
+
     //-- Feature methods ------------------------
 
     def 'Interceptor matches the correct controller/action pairs'(
@@ -113,7 +119,8 @@ class LoginInterceptorSpec extends Specification {
         new Config(name: 'installStatus', value: '1').save()
 
         and: 'a mocked install service'
-        interceptor.installService = Mock(InstallService)
+        InstallService installService = Mock()
+        interceptor.installService = installService
 
         and: 'a mocked credential'
         session.credential = 'foo'
@@ -125,7 +132,7 @@ class LoginInterceptorSpec extends Specification {
         res
 
         and: 'the installer is not enabled'
-        0 * interceptor.installService.enableInstaller()
+        0 * installService.enableInstaller()
     }
 
     def 'Redirect if user is not logged in'() {

@@ -1,6 +1,7 @@
 <html>
   <head>
     <meta name="layout" content="main" />
+    <asset:stylesheet src="invoicing-transaction"/>
   </head>
 
   <body>

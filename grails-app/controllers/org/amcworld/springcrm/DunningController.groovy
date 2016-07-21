@@ -393,7 +393,7 @@ class DunningController {
             dunningInstance,
             dunningInstance.createUser ?:
                 ((Credential) session.credential).loadUser(),
-            params.boolean('duplicate'),
+            params.boolean('duplicate') ?: false,
             [
                 invoice: dunningInstance.invoice,
                 invoiceFullNumber: dunningInstance.invoice.fullNumber,

@@ -16,6 +16,7 @@
     <meta name="caption" content="${entitiesName}" />
     <meta name="backLinkUrl"
       content="${createLink(action: 'index', params: [listType: params.listType])}" />
+    <asset:stylesheet src="invoicing-transaction"/>
   </head>
 
   <body>

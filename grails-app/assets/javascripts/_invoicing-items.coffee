@@ -87,7 +87,7 @@ class InvoicingItems
         #{options.fieldNamePrefix}      # the prefix
         \[(\d+)\]                       # the numerical index
         \.                              # followed by a dot
-        (\w+)                           # the name of the field
+        ([\w.]+)                        # the name of the field
         $
       ///
 
@@ -543,7 +543,7 @@ class InvoicingItems
         els[prefix + 'salesItem.id'].value = item.id
         els[prefix + 'name'].value = item.name
         textArea = els[prefix + 'description']
-        textArea.value = item.description
+        textArea.value = item.description ? ''
         autosize.update textArea
         unitPrice = item.unitPrice
         unitPriceInput = els[prefix + 'unitPrice']

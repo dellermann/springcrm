@@ -298,7 +298,7 @@ class SalesOrderController {
             salesOrderInstance,
             salesOrderInstance.createUser
                 ?: ((Credential) session.credential).loadUser(),
-            params.boolean('duplicate')
+            params.boolean('duplicate') ?: false
         )
         GString fileName =
             "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"

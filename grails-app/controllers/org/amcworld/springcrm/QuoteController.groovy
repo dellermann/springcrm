@@ -274,7 +274,7 @@ class QuoteController {
             quoteInstance,
             quoteInstance.createUser ?:
                 ((Credential) session.credential).loadUser(),
-            params.boolean('duplicate')
+            params.boolean('duplicate') ?: false
         )
         GString fileName =
             "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"

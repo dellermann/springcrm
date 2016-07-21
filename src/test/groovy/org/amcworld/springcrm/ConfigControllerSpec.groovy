@@ -361,14 +361,13 @@ class ConfigControllerSpec extends Specification {
 
         when: 'I call the loadSelValues action'
         params.type = 'salutation'
-        controller.loadSelValues()
+        def res = controller.loadSelValues()
 
-        then: 'I get valid JSON data without disabled flags'
-        3 == response.json.size()
-        'Mr.' == response.json[0].name
-        !response.json[0].disabled
-        'Mrs.' == response.json[1].name
-        !response.json[1].disabled
+        then: 'I get valid selection values'
+        null != res.selValueList
+        3 == res.selValueList.size()
+        'Mr.' == res.selValueList[0].name
+        'Mrs.' == res.selValueList[1].name
     }
 
     def 'LoadSelValues action with disabled values'() {
@@ -377,16 +376,15 @@ class ConfigControllerSpec extends Specification {
 
         when: 'I call the loadSelValues action'
         params.type = 'quoteStage'
-        controller.loadSelValues()
+        def res = controller.loadSelValues()
 
-        then: 'I get valid JSON data with disabled flags'
-        5 == response.json.size()
-        600 == response.json[0].id
-        'created' == response.json[0].name
-        response.json[0].disabled
-        601 == response.json[1].id
-        'revised' == response.json[1].name
-        response.json[1].disabled
+        then: 'I get valid selection values'
+        null != res.selValueList
+        5 == res.selValueList.size()
+        600 == res.selValueList[0].id
+        'created' == res.selValueList[0].name
+        601 == res.selValueList[1].id
+        'revised' == res.selValueList[1].name
     }
 
     def 'SaveSelValues action with enabled values'() {
@@ -447,12 +445,13 @@ class ConfigControllerSpec extends Specification {
         makeTaxRatesFixture()
 
         when: 'I call the loadTaxRates action'
-        controller.loadTaxRates()
+        def res = controller.loadTaxRates()
 
-        then: 'I get valid JSON data'
-        2 == response.json.size()
-        7 == response.json[0].name
-        19 == response.json[1].name
+        then: 'I get valid tax rates'
+        null != res.taxRateList
+        2 == res.taxRateList.size()
+        '7 %' == res.taxRateList[0].name
+        '19 %' == res.taxRateList[1].name
     }
 
     def 'SaveTaxRates action'() {

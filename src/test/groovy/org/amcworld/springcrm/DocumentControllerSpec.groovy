@@ -29,7 +29,6 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.VFS
 import org.grails.plugins.testing.GrailsMockMultipartFile
-import org.grails.web.json.JSONObject
 import spock.lang.Specification
 
 
@@ -58,55 +57,49 @@ class DocumentControllerSpec extends Specification {
     def 'List root directory'() {
         when: 'I list the content of the root directory with empty path'
         params.path = ''
-        controller.dir()
+        def res = controller.dir()
 
-        then: 'I get the correct JSON data of these files'
-        SC_OK == response.status
-        checkRootFolderContent response.json
+        then: 'I get the data of these files'
+        checkRootFolderContent res
     }
 
     def 'List non-empty subdirectory content'() {
         when: 'I list the content of the root directory with foo path'
         params.path = 'foo'
-        controller.dir()
+        def res = controller.dir()
 
-        then: 'I get the correct JSON data of these files'
-        SC_OK == response.status
-        checkFooFolderContent response.json
+        then: 'I get the data of these files'
+        checkFooFolderContent res
 
         when: 'I list the content of the root directory with foo/ path'
         params.path = 'foo/'
-        controller.dir()
+        res = controller.dir()
 
-        then: 'I get the correct JSON data of these files'
-        SC_OK == response.status
-        checkFooFolderContent response.json
+        then: 'I get the data of these files'
+        checkFooFolderContent res
 
         when: 'I list the content of the root directory with a complex path'
         params.path = 'bar/./../foo/.'
-        controller.dir()
+        res = controller.dir()
 
-        then: 'I get the correct JSON data of these files'
-        SC_OK == response.status
-        checkFooFolderContent response.json
+        then: 'I get the data of these files'
+        checkFooFolderContent res
     }
 
     def 'List empty subdirectory content'() {
         when: 'I list the content of the root directory with bar path'
         params.path = 'bar'
-        controller.dir()
+        def res = controller.dir()
 
-        then: 'I get the correct JSON data of these files'
-        SC_OK == response.status
-        checkBarFolderContent response.json
+        then: 'I get the data of these files'
+        checkBarFolderContent res
 
         when: 'I list the content of the root directory with /bar/ path'
         params.path = 'bar/'
-        controller.dir()
+        res = controller.dir()
 
-        then: 'I get the correct JSON data of these files'
-        SC_OK == response.status
-        checkBarFolderContent response.json
+        then: 'I get the data of these files'
+        checkBarFolderContent res
     }
 
     def 'Cannot list a forbidden parent directory'() {
@@ -617,9 +610,9 @@ function helloWorld() {
 
     //-- Non-public methods ---------------------
 
-    private void checkBarFolderContent(JSONObject json) {
-        assert 0 == response.json.folders.size()
-        assert 0 == response.json.files.size()
+    private void checkBarFolderContent(Map data) {
+        assert 0 == data.folderList.size()
+        assert 0 == data.fileList.size()
     }
 
     private void checkEmbeddedList(Map model, List expected,
@@ -642,43 +635,43 @@ function helloWorld() {
         }
     }
 
-    private void checkFooFolderContent(JSONObject json) {
-        assert 0 == response.json.folders.size()
+    private void checkFooFolderContent(Map data) {
+        assert 0 == data.folderList.size()
 
-        def files = response.json.files
+        List<FileObject> files = data.fileList
         assert 1 == files.size()
         def f = files[0]
-        assert 'wheezy.php' == f.name
-        assert 'php' == f.ext
-        assert 108 == f.size
+        assert 'wheezy.php' == f.name.baseName
+        assert 'php' == f.name.extension
+        assert 108L == f.content.size
         assert f.readable
         assert f.writeable
     }
 
-    private void checkRootFolderContent(JSONObject json) {
-        def folders = response.json.folders
+    private void checkRootFolderContent(Map data) {
+        List<FileObject> folders = data.folderList
         assert 2 == folders.size()
         def f = folders[0]
-        assert 'bar' == f.name
+        assert 'bar' == f.name.baseName
         assert f.readable
         assert f.writeable
         f = folders[1]
-        assert 'foo' == f.name
+        assert 'foo' == f.name.baseName
         assert f.readable
         assert f.writeable
 
-        def files = response.json.files
+        List<FileObject> files = data.fileList
         2 == files.size()
         f = files[0]
-        assert 'baz.txt' == f.name
-        assert 'txt' == f.ext
-        assert 20 == f.size
+        assert 'baz.txt' == f.name.baseName
+        assert 'txt' == f.name.extension
+        assert 20L == f.content.size
         assert f.readable
         assert f.writeable
         f = files[1]
-        assert 'yummy.csv' == f.name
-        assert 'csv' == f.ext
-        assert 32 == f.size
+        assert 'yummy.csv' == f.name.baseName
+        assert 'csv' == f.name.extension
+        assert 32L == f.content.size
         assert f.readable
         assert f.writeable
     }
