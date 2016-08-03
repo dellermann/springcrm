@@ -381,9 +381,9 @@ class ConfigControllerSpec extends Specification {
         then: 'I get valid selection values'
         null != res.selValueList
         5 == res.selValueList.size()
-        600 == res.selValueList[0].id
+        600L == res.selValueList[0].id
         'created' == res.selValueList[0].name
-        601 == res.selValueList[1].id
+        601L == res.selValueList[1].id
         'revised' == res.selValueList[1].name
     }
 

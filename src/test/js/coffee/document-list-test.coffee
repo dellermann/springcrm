@@ -705,7 +705,7 @@ QUnit.asyncTest 'Set selection at multi-select', (assert) ->
             'yummy.csv is selected'
           $('#dl2 > ul > li:nth-child(2)').click()
         )
-        .then( (data) ->
+        .then( ->
           assert.ok $('#dl2 > ul > li:nth-child(3) > .selection > input').is (':checked'),
             'hello-world.c is selected'
           assert.ok not $('#dl2 > ul > li:nth-child(4) > .selection > input').is (':checked'),

@@ -613,7 +613,8 @@ class ViewTagLib {
         DateFormatSymbols dfs = DateFormatSymbols.getInstance(
             userService.currentLocale
         )
-        String [] monthNames = dfs.shortMonths
+        String [] shortMonthNames = dfs.shortMonths
+        String [] longMonthNames = dfs.months
 
         for (int i = 0; i < 12; i++) {
             StringBuilder buf = new StringBuilder('btn btn-default')
@@ -625,9 +626,9 @@ class ViewTagLib {
 
             out << link(
                     action: action, params: linkParams, class: cssClass,
-                    'data-month': i + 1
+                    title: longMonthNames[i], 'data-month': i + 1
                 ) {
-                    monthNames[i]
+                    shortMonthNames[i]
                 }
         }
     }

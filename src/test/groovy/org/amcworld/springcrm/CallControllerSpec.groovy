@@ -400,7 +400,7 @@ class CallControllerSpec extends Specification {
         def model = controller.show()
 
         then: 'I get the show view with the phone call'
-        1 == model.callInstance.id
+        1L == model.callInstance.id
         matchCall model.callInstance, d
     }
 
@@ -424,7 +424,7 @@ class CallControllerSpec extends Specification {
         def model = controller.edit()
 
         then: 'I get the edit view with the phone call'
-        1 == model.callInstance.id
+        1L == model.callInstance.id
         matchCall model.callInstance, d
     }
 

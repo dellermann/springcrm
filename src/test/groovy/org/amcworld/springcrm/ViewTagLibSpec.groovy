@@ -466,7 +466,7 @@ class ViewTagLibSpec extends Specification {
         String s = applyTemplate("<g:dataTypeIcon controller='${c}' />")
 
         then: 'I get a <i> element representing the associated icon'
-        "<i class=\"fa fa-fw fa-${icon} data-type-icon\" title=\"${c}.label\"></i> " == s
+        "<i class=\"fa fa-fw fa-${icon} data-type-icon\" title=\"${c}.label\"></i> ".toString() == s
 
         where:
         c               | icon

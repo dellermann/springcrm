@@ -105,6 +105,7 @@ class Invoice extends InvoicingTransaction
      */
     Invoice(Invoice i) {
         super(i)
+        userService = i.userService
         type = i.type
         quote = i.quote
         salesOrder = i.salesOrder
@@ -156,9 +157,10 @@ class Invoice extends InvoicingTransaction
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        (paymentAmount - total).setScale(
-                userService.numFractionDigitsExt, RoundingMode.HALF_UP
-            )
+        int n = userService.numFractionDigitsExt
+        RoundingMode rm = RoundingMode.HALF_UP
+
+        paymentAmount.setScale(n, rm) - total.setScale(n, rm)
     }
 
     /**

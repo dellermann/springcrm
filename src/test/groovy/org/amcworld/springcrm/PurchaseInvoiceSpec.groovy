@@ -94,8 +94,6 @@ class PurchaseInvoiceSpec extends Specification {
         given: 'some dates'
         Date docDate = new Date()
         Date dueDate = docDate + 7
-        Date dateCreated = docDate - 2
-        Date lastUpdated = docDate - 1
 
         and: 'an organization'
         def organization = new Organization(name: 'Plumbing inc.')
@@ -215,9 +213,14 @@ class PurchaseInvoiceSpec extends Specification {
         0.0 == pi.paymentAmount
     }
 
-    def 'Compute balance'() {
+    def 'Compute balance'(BigDecimal t, BigDecimal pa, BigDecimal e) {
         given: 'an empty purchase invoice'
         def pi = new PurchaseInvoice()
+
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        pi.userService = userService
 
         when: 'I set discrete values for total and payment amount'
         pi.total = t
@@ -230,58 +233,66 @@ class PurchaseInvoiceSpec extends Specification {
         t       | pa        || e
         null    | null      || 0.0
         null    | 0.0       || 0.0
-        null    | 0.0000001 || 0.0000001
+        null    | 0.0000001 || 0.0
         null    | 0.25      || 0.25
         null    | 450.47    || 450.47
         0.0     | null      || 0.0
         0.0     | 0.0       || 0.0
-        0.0     | 0.0000001 || 0.0000001
+        0.0     | 0.0000001 || 0.0
         0.0     | 0.25      || 0.25
         0.0     | 450.47    || 450.47
-        0.00001 | null      || -0.00001
-        0.00001 | 0.0       || -0.00001
-        0.00001 | 0.0000001 || -0.0000099
-        0.00001 | 0.25      || 0.24999
-        0.00001 | 450.47    || 450.46999
+        0.00001 | null      || 0.0
+        0.00001 | 0.0       || 0.0
+        0.00001 | 0.0000001 || 0.0
+        0.00001 | 0.25      || 0.25
+        0.00001 | 450.47    || 450.47
         0.25    | null      || -0.25
         0.25    | 0.0       || -0.25
-        0.25    | 0.0000001 || -0.2499999
+        0.25    | 0.0000001 || -0.25
         0.25    | 0.25      || 0
         0.25    | 450.47    || 450.22
         450.47  | null      || -450.47
         450.47  | 0.0       || -450.47
-        450.47  | 0.0000001 || -450.4699999
+        450.47  | 0.0000001 || -450.47
         450.47  | 0.25      || -450.22
         450.47  | 450.47    || 0.0
     }
 
     def 'Get the balance color'() {
+        given: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+
         when: 'I create an empty purchase invoice'
         def pi = new PurchaseInvoice()
+        pi.userService = userService
 
         then: 'I get the default color'
         'default' == pi.balanceColor
 
         when: 'I set a zero balance'
         pi = new PurchaseInvoice(paymentAmount: 25.6669, total: 25.666900000)
+        pi.userService = userService
 
         then: 'I get the default color'
         'default' == pi.balanceColor
 
         when: 'I set a positive balance'
         pi = new PurchaseInvoice(paymentAmount: 25.7, total: 25.66666669)
+        pi.userService = userService
 
         then: 'I get the default color'
         'green' == pi.balanceColor
 
         when: 'I set a negative balance'
         pi = new PurchaseInvoice(paymentAmount: 25.7, total: 25.70000001)
+        pi.userService = userService
 
         then: 'I get the default color'
-        'red' == pi.balanceColor
+        'default' == pi.balanceColor
     }
 
-    def 'Compute discount percent amount'() {
+    def 'Compute discount percent amount'(BigDecimal d, BigDecimal e) {
         given: 'a purchase invoice'
         def pi = new PurchaseInvoice(
             items: [
@@ -292,6 +303,11 @@ class PurchaseInvoiceSpec extends Specification {
             shippingCosts: 4.5,
             shippingTax: 5
         )
+
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        pi.userService = userService
 
         when: 'I set a discrete percentage value'
         pi.discountPercent = d
@@ -323,7 +339,7 @@ class PurchaseInvoiceSpec extends Specification {
         'default' == pi.paymentStateColor
     }
 
-    def 'Get payment state color for default cases'() {
+    def 'Get payment state color for default cases'(Long id, String color) {
         when: 'I create an invoice with an empty stage'
         def stage = new PurchaseInvoiceStage()
         stage.id = id
@@ -342,9 +358,17 @@ class PurchaseInvoiceSpec extends Specification {
         2103L   || 'purple'     // rejected
     }
 
-    def 'Get payment state color for balance-dependent cases'() {
+    def 'Get payment state color for balance-dependent cases'(BigDecimal pa,
+                                                              BigDecimal t,
+                                                              String color)
+    {
         given: 'a purchase invoice with a balance'
         def pi = new PurchaseInvoice(paymentAmount: pa, total: t)
+
+        and: 'a mocked user service'
+        UserService userService = Mock()
+        userService.numFractionDigitsExt >> 2
+        pi.userService = userService
 
         when: 'I set stage "paid"'
         pi.stage = new PurchaseInvoiceStage()
@@ -359,12 +383,12 @@ class PurchaseInvoiceSpec extends Specification {
         pa          | t         || color
         null        | null      || 'green'
         null        | 0.0       || 'green'
-        null        | 0.0000001 || 'default'
+        null        | 0.0000001 || 'green'
         null        | 5.867     || 'default'
         null        | 4795.492  || 'default'
         0.0         | null      || 'green'
         0.0         | 0.0       || 'green'
-        0.0         | 0.0000001 || 'default'
+        0.0         | 0.0000001 || 'green'
         0.0         | 5.867     || 'default'
         0.0         | 4795.492  || 'default'
         0.0000001   | null      || 'green'
@@ -384,7 +408,9 @@ class PurchaseInvoiceSpec extends Specification {
         4795.492    | 4795.492  || 'green'
     }
 
-    def 'Get the shipping costs gross'() {
+    def 'Get the shipping costs gross'(BigDecimal s, BigDecimal t,
+                                       BigDecimal e)
+    {
         given:
         def pi = new PurchaseInvoice(shippingCosts: s, shippingTax: t)
 
@@ -439,7 +465,9 @@ class PurchaseInvoiceSpec extends Specification {
         0.0 == pi.subtotalGross
     }
 
-    def 'Get the subtotal gross with items'() {
+    def 'Get the subtotal gross with items'(BigDecimal q, BigDecimal up,
+                                            BigDecimal t, BigDecimal s)
+    {
         given: 'an empty purchase invoice'
         def pi = new PurchaseInvoice(items: [])
 
@@ -538,7 +566,9 @@ class PurchaseInvoiceSpec extends Specification {
         0.0 == pi.subtotalNet
     }
 
-    def 'Get the subtotal net with items'() {
+    def 'Get the subtotal net with items'(BigDecimal q, BigDecimal up,
+                                          BigDecimal t, BigDecimal s)
+    {
         given: 'an empty invoicing transaction'
         def pi = new PurchaseInvoice(items: [])
 
@@ -641,7 +671,10 @@ class PurchaseInvoiceSpec extends Specification {
         taxRateSums.isEmpty()
     }
 
-    def 'Compute tax rate sums with items'() {
+    def 'Compute tax rate sums with items'(BigDecimal up, BigDecimal t,
+                                           BigDecimal trs1, BigDecimal trs2,
+                                           BigDecimal trs3)
+    {
         given: 'an empty purchase invoice'
         def pi = new PurchaseInvoice(items: [])
 
@@ -767,7 +800,7 @@ class PurchaseInvoiceSpec extends Specification {
         407.00637375 == pi.total
     }
 
-    def 'Compute total'() {
+    def 'Compute total'(BigDecimal da, BigDecimal a, BigDecimal e) {
         given: 'a purchase invoice'
         def pi = new PurchaseInvoice(
             discountPercent: 2.5,
@@ -968,7 +1001,7 @@ class PurchaseInvoiceSpec extends Specification {
         pi2.hashCode() != pi3.hashCode()
     }
 
-    def 'Can convert to string'() {
+    def 'Can convert to string'(String subject, String s) {
         given: 'an empty purchase invoice'
         def pi = new PurchaseInvoice()
 
@@ -989,7 +1022,7 @@ class PurchaseInvoiceSpec extends Specification {
         'Services'      || 'Services'
     }
 
-    def 'Number must not be blank'() {
+    def 'Number must not be blank'(String s, boolean v) {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
             subject: 'International delivery',
@@ -1017,7 +1050,7 @@ class PurchaseInvoiceSpec extends Specification {
         ' name' || true
     }
 
-    def 'Subject must not be blank'() {
+    def 'Subject must not be blank'(String s, boolean v) {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
             number: '123456',
@@ -1045,7 +1078,7 @@ class PurchaseInvoiceSpec extends Specification {
         ' name' || true
     }
 
-	def 'Vendor name must not be blank'() {
+	def 'Vendor name must not be blank'(String vn, boolean v) {
         given: 'a quite valid purchase invoice'
         def pi = new PurchaseInvoice(
             number: '123456',
@@ -1197,21 +1230,22 @@ class PurchaseInvoiceSpec extends Specification {
 		valid != pi.hasErrors()
 
 		where:
-		  dp        | valid
-        null        | true
-		-100        | false
-		  -5        | false
-		  -1        | false
-		  -0.005    | false
-		   0        | true
-		   0.005    | true
-		   1        | true
-		   5        | true
-		 100        | true
-		 200        | true
+		  dp        || valid
+        null        || true
+		-100        || false
+		  -5        || false
+		  -1        || false
+		  -0.005    || false
+		   0        || true
+		   0.005    || true
+		   1        || true
+		   5        || true
+		 100        || true
+		 200        || true
 	}
 
-	def 'Shipping tax must not be less than zero'() {
+	def 'Shipping tax must not be less than zero'(BigDecimal st, boolean valid)
+    {
         given: 'a valid purchase invoice'
         def pi = new PurchaseInvoice(
             number: '123456',
@@ -1231,15 +1265,15 @@ class PurchaseInvoiceSpec extends Specification {
 		valid != pi.hasErrors()
 
 		where:
-		st				| valid
-		null            | true
-		-120034.005		| false
-		-5				| false
-		1003			| true
-		4				| true
-		100D			| true
-		100.0d			| true
-		1e2d			| true
+		st				|| valid
+		null            || true
+		-120034.005		|| false
+		-5				|| false
+		1003			|| true
+		4				|| true
+		100D			|| true
+		100.0d			|| true
+		1e2d			|| true
 	}
 
 

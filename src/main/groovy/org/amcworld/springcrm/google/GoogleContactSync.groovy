@@ -1,7 +1,7 @@
 /*
  * GoogleContactSync.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * The class {@code GoogleContactSync} synchronizes person records with Google.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.0
  */
 class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
@@ -98,8 +98,8 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
      * @since 2.0
      */
     @CompileStatic
-    private void convertToAddress(Address localAddr,
-                                  StructuredPostalAddress addr)
+    private static void convertToAddress(Address localAddr,
+                                         StructuredPostalAddress addr)
     {
         localAddr.street = addr.street?.value
         localAddr.poBox = addr.pobox?.value
@@ -535,7 +535,9 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
      * @since           2.0
      */
     @CompileStatic
-    private ContactEntry loadGoogleEntry(GoogleService service, String url) {
+    private static ContactEntry loadGoogleEntry(GoogleService service,
+                                                String url)
+    {
         service.getEntry new URL(url), ContactEntry
     }
 
@@ -552,10 +554,12 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
 
     @Override
     @CompileStatic
-    protected Person syncInsertLocal(ContactEntry googleEntry) {
+    protected Person syncInsertLocal(GoogleService service,
+                                     ContactEntry googleEntry)
+    {
         updateOrganization googleEntry
 
-        super.syncInsertLocal googleEntry
+        super.syncInsertLocal service, googleEntry
     }
 
     @Override
@@ -686,7 +690,7 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
             request.requestStream.write picture
             try {
                 request.execute()
-            } catch (PreconditionFailedException e) {   // etag outdated
+            } catch (PreconditionFailedException ignored) { // etag outdated
                 log.debug "Photo for ${localEntry} changed by third party."
             } catch (InvalidEntryException e) {
                 log.debug "Cannot update picture for person ${localEntry}: ${e.message}"

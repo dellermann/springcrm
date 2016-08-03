@@ -154,7 +154,7 @@ class ConfigFunctionalSpec extends GeneralFunctionalTest {
         waitFor { at ConfigOverviewPage }
 
         and: 'the mail configuration has been disabled'
-        false == ConfigHolder.instance['mailUseConfig'] as Boolean
+        !(ConfigHolder.instance['mailUseConfig'] as Boolean)
 
         when: 'I again click the mail configuration item'
         item('mail').link.click()
@@ -185,10 +185,10 @@ class ConfigFunctionalSpec extends GeneralFunctionalTest {
 
         and: 'the mail configuration has been disabled'
         def config = ConfigHolder.instance
-        true == config['mailUseConfig'] as Boolean
+        (config['mailUseConfig'] as Boolean)
         '192.168.100.1' == config['mailHost'] as String
         465 == config['mailPort'] as Integer
-        true == config['mailAuth'] as Boolean
+        (config['mailAuth'] as Boolean)
         'jsmith' == config['mailUserName'] as String
         'very-secret' == config['mailPassword'] as String
         'ssl' == config['mailEncryption'] as String
@@ -221,10 +221,10 @@ class ConfigFunctionalSpec extends GeneralFunctionalTest {
 
         and: 'the mail configuration has been disabled'
         def config = ConfigHolder.instance
-        true == config['mailUseConfig'] as Boolean
+        (config['mailUseConfig'] as Boolean)
         '192.168.100.1' == config['mailHost'] as String
         465 == config['mailPort'] as Integer
-        true == config['mailAuth'] as Boolean
+        (config['mailAuth'] as Boolean)
         'jsmith' == config['mailUserName'] as String
         'secret' == config['mailPassword'] as String
         'ssl' == config['mailEncryption'] as String
@@ -257,10 +257,10 @@ class ConfigFunctionalSpec extends GeneralFunctionalTest {
 
         and: 'the mail configuration has been disabled'
         def config = ConfigHolder.instance
-        true == config['mailUseConfig'] as Boolean
+        (config['mailUseConfig'] as Boolean)
         '192.168.100.1' == config['mailHost'] as String
         465 == config['mailPort'] as Integer
-        false == config['mailAuth'] as Boolean
+        !(config['mailAuth'] as Boolean)
         'jdoe' == config['mailUserName'] as String
         'secret' == config['mailPassword'] as String
         'ssl' == config['mailEncryption'] as String

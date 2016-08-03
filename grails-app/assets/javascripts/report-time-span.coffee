@@ -79,6 +79,7 @@ class TimeSpanReport
 
     $target = $(event.currentTarget)
     $month = $('.month-year-selector .btn-month.active')
+    $month = $('.month-year-selector .btn-whole-year') unless $month.length
     @_submitFilter $month, $target.data('year')
 
     false

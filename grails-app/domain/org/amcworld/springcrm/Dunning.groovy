@@ -106,6 +106,7 @@ class Dunning extends InvoicingTransaction
      */
     Dunning(Dunning d) {
         super(d)
+        userService = d.userService
         type = d.type
         invoice = d.invoice
     }
@@ -117,6 +118,7 @@ class Dunning extends InvoicingTransaction
      */
     Dunning(Invoice i) {
         super(i)
+        userService = i.userService
         type = 'D'
         invoice = i
         headerText = ''
@@ -142,9 +144,10 @@ class Dunning extends InvoicingTransaction
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        (paymentAmount - total).setScale(
-                userService.numFractionDigitsExt, RoundingMode.HALF_UP
-            )
+        int n = userService.numFractionDigitsExt
+        RoundingMode rm = RoundingMode.HALF_UP
+
+        paymentAmount.setScale(n, rm) - total.setScale(n, rm)
     }
 
     /**

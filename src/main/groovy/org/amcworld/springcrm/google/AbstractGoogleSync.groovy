@@ -1,7 +1,7 @@
 /*
  * AbstractGoogleSync.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import org.amcworld.springcrm.Organization
 import org.amcworld.springcrm.User
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
+import org.grails.datastore.gorm.GormEntity
 import org.springframework.context.MessageSource
 
 
@@ -44,10 +45,12 @@ import org.springframework.context.MessageSource
  *              service
  * @param <G>   the type of Google entries which are handled by this service
  * @author      Daniel Ellermann
- * @version     2.0
+ * @version     2.1
  * @since       1.0
  */
-abstract class AbstractGoogleSync<E, G> implements GoogleSync {
+abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
+    implements GoogleSync
+{
 
     //-- Constants ------------------------------
 
@@ -253,7 +256,7 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
                         if (log.debugEnabled) {
                             log.debug "L doesn't exist, G exists → create L: G = ${googleEntryToString(googleEntry)}"
                         }
-                        E localEntry = syncInsertLocal(googleEntry)
+                        E localEntry = syncInsertLocal(service, googleEntry)
                         insertStatus user, localEntry, googleEntry
                     } catch (RecoverableGoogleSyncException ignored) { /* ignore */ }
                 }
@@ -316,7 +319,8 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
      */
     protected GoogleDataSyncStatus findSyncStatus(E item) {
         def c = GoogleDataSyncStatus.createCriteria()
-        c.get {
+
+        (GoogleDataSyncStatus) c.get {
             eq('user', user)
             eq('type', item.class.name)
             eq('itemId', item.id)
@@ -359,9 +363,9 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
      * @return              the configuration value
      */
     @CompileStatic
-    protected boolean getBooleanSystemConfig(String key,
-                                             boolean defaultValue = false)
-    {
+    protected static boolean getBooleanSystemConfig(
+        String key, boolean defaultValue = false
+    ) {
         Config config = getSystemConfig(key)
         (config == null) ? defaultValue : config.toType(Boolean)
     }
@@ -384,7 +388,7 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
     private Map<Long, E> getLocalEntries() {
         Map<Long, E> entries = [: ]
         localEntryClass.'list'().each {
-            E entry -> entries[entry.ident()] = entry
+            E entry -> entries[(Long) entry.ident()] = entry
         }
 
         entries
@@ -419,7 +423,7 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
      *              for the given key exists
      */
     @CompileStatic
-    private Config getSystemConfig(String key) {
+    private static Config getSystemConfig(String key) {
         ConfigHolder.instance.getConfig key
     }
 
@@ -474,7 +478,8 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
      */
     private void insertStatus(User user, E localEntry, G googleEntry) {
         def status = new GoogleDataSyncStatus(
-            user: user, type: localEntryClass.name, itemId: localEntry.ident(),
+            user: user, type: localEntryClass.name,
+            itemId: (Long) localEntry.ident(),
             url: getUrl(googleEntry), etag: getEtag(googleEntry)
         )
         status.save flush: true
@@ -536,7 +541,7 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
      *
      * @param localEntry    the local entry to delete
      */
-    private void syncDeleteLocal(E localEntry) {
+    private static void syncDeleteLocal(E localEntry) {
         localEntry.delete flush: true
     }
 
@@ -555,12 +560,14 @@ abstract class AbstractGoogleSync<E, G> implements GoogleSync {
     /**
      * Creates (inserts) the given local entry.
      *
+     * @param service       the underlying Google service
      * @param localEntry    the local entry to create
      * @return              a reference to the created local entry
      */
-    protected E syncInsertLocal(G googleEntry) {
+    protected E syncInsertLocal(GoogleService service, G googleEntry) {
         E localEntry = localEntryClass.newInstance()
-        convertToLocal localEntry, googleEntry
+        convertToLocal service, localEntry, googleEntry
+
         localEntry.save flush: true
     }
 

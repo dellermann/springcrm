@@ -141,8 +141,8 @@ class ConfigSpec extends Specification {
 
         then: 'I can convert it to an integer type'
         i == c.toType(Integer)
-        i == c.toType(Long)
-        i == c.toType(BigInteger)
+        i as Long == c.toType(Long)
+        i as BigInteger == c.toType(BigInteger)
 
         where:
         v       | i

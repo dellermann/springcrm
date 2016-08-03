@@ -37,24 +37,24 @@ import org.codehaus.groovy.runtime.InvokerHelper;
  * storage (usually a database).
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.2
  */
 public class UserSettings extends AbstractMap<String, String> {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     private AbstractSet<Map.Entry<String, String>> entrySet;
 
     /**
      * The underlying map containing user settings for each setting name.
      */
-    protected Map<String, UserSetting> settings;
+    private final Map<String, UserSetting> settings;
 
     /**
      * The user the settings belong to.
      */
-    protected User user;
+    private final User user;
 
 
     //-- Constructors ---------------------------
@@ -68,10 +68,9 @@ public class UserSettings extends AbstractMap<String, String> {
         this.user = user;
         List<UserSetting> rawSettings = user.getRawSettings();
         if (rawSettings == null) {
-            this.settings = new HashMap<String, UserSetting>();
+            this.settings = new HashMap<>();
         } else {
-            this.settings =
-                new HashMap<String, UserSetting>(rawSettings.size() + 16);
+            this.settings = new HashMap<>(rawSettings.size() + 16);
 
             for (UserSetting us : rawSettings) {
                 this.settings.put(us.getName(), us);
@@ -87,9 +86,9 @@ public class UserSettings extends AbstractMap<String, String> {
         if (entrySet == null) {
             entrySet = new AbstractSet<Map.Entry<String, String>>() {
 
-                //-- Instance variables ---------------------
+                //-- Fields ---------------------------------
 
-                private Set<Map.Entry<String, UserSetting>> entries =
+                private final Set<Map.Entry<String, UserSetting>> entries =
                     settings.entrySet();
 
 
@@ -102,8 +101,9 @@ public class UserSettings extends AbstractMap<String, String> {
                         //-- Instance variables -----------------
 
                         private UserSetting current;
-                        private Iterator<Map.Entry<String, UserSetting>> iter =
-                            entries.iterator();
+                        private final
+                            Iterator<Map.Entry<String, UserSetting>> iter =
+                                entries.iterator();
 
 
                         //-- Public methods ---------------------
@@ -121,8 +121,7 @@ public class UserSettings extends AbstractMap<String, String> {
 
                         @Override
                         public void remove() {
-                            HashMap<String, Object> params =
-                                new HashMap<String, Object>(1);
+                            HashMap<String, Object> params = new HashMap<>(1);
                             params.put("flush", true);
                             InvokerHelper.invokeMethod(
                                 current, "delete", params
@@ -172,7 +171,7 @@ public class UserSettings extends AbstractMap<String, String> {
             oldValue = setting.getValue();
             setting.setValue(value);
         }
-        HashMap<String, Object> params = new HashMap<String, Object>(2);
+        HashMap<String, Object> params = new HashMap<>(2);
         params.put("flush", true);
         params.put("failOnError", true);
         InvokerHelper.invokeMethod(setting, "save", params);
@@ -188,17 +187,17 @@ public class UserSettings extends AbstractMap<String, String> {
      * underlying UserSetting object for updates when calling {@code setValue}.
      *
      * @author  Daniel Ellermann
-     * @version 1.2
+     * @version 2.1
      * @since   1.2
      */
     static class Entry implements Map.Entry<String, String> {
 
-        //-- Instance variables ---------------------
+        //-- Fields -----------------------------
 
         /**
          * The underlying user setting.
          */
-        UserSetting setting;
+        final UserSetting setting;
 
 
         //-- Constructors -----------------------
@@ -209,20 +208,17 @@ public class UserSettings extends AbstractMap<String, String> {
          *
          * @param setting   the given underlying {@code UserSetting} object
          */
-        public Entry(UserSetting setting) {
+        Entry(UserSetting setting) {
             this.setting = setting;
         }
 
 
-        //-- Public methods -------------------------
+        //-- Public methods ---------------------
 
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof Entry) {
-                return getKey().equals(((Entry) obj).getKey());
-            } else {
-                return false;
-            }
+            return obj instanceof Entry &&
+                getKey().equals(((Entry) obj).getKey());
         }
 
         @Override
@@ -250,7 +246,7 @@ public class UserSettings extends AbstractMap<String, String> {
         public String setValue(String value) {
             String oldValue = setting.getValue();
             setting.setValue(value);
-            HashMap<String, Object> params = new HashMap<String, Object>(2);
+            HashMap<String, Object> params = new HashMap<>(2);
             params.put("flush", true);
             params.put("failOnError", true);
             InvokerHelper.invokeMethod(setting, "save", params);
@@ -259,10 +255,8 @@ public class UserSettings extends AbstractMap<String, String> {
 
         @Override
         public String toString() {
-            StringBuilder buf = new StringBuilder(getKey());
-            buf.append('=');
-            buf.append(getValue());
-            return buf.toString();
+            /* String concatenation is as efficient as StringBuilder here */
+            return getKey() + "=" + getValue();
         }
     }
 }

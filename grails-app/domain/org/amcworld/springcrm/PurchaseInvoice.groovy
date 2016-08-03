@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import static java.math.BigDecimal.ZERO
 
 import groovy.transform.CompileStatic
+import java.math.RoundingMode
 
 
 /**
@@ -72,6 +73,8 @@ class PurchaseInvoice {
 
 
     //-- Fields ---------------------------------
+
+    def userService
 
     /**
      * The number of this purchase invoice.
@@ -235,7 +238,10 @@ class PurchaseInvoice {
      * @since   1.0
      */
     BigDecimal getBalance() {
-        paymentAmount - total
+        int n = userService.numFractionDigitsExt
+        RoundingMode rm = RoundingMode.HALF_UP
+
+        paymentAmount.setScale(n, rm) - total.setScale(n, rm)
     }
 
     /**
@@ -483,8 +489,15 @@ class PurchaseInvoice {
 
     //-- Non-public methods ---------------------
 
-    private void addTaxRateSum(Map<Double, BigDecimal> map, BigDecimal taxRate,
-                               BigDecimal value)
+    /**
+     * Adds the given tax rate to the specified map.
+     *
+     * @param map       the map to add the tax rate to
+     * @param taxRate   the given tax rate
+     * @param value     the given value
+     */
+    private static void addTaxRateSum(Map<Double, BigDecimal> map,
+                                      BigDecimal taxRate, BigDecimal value)
     {
         Double tr = taxRate.doubleValue()
         map[tr] = (map[tr] ?: ZERO) + value * taxRate / HUNDRED

@@ -44,7 +44,7 @@ class InvoicingTransactionCreateUserInterceptor implements Interceptor {
     InvoicingTransactionCreateUserInterceptor() {
         match(
             controller: ~/(quote|salesOrder|invoice|dunning|creditMemo)/,
-            action: 'create'
+            action: ~'(create|copy)'
         )
     }
 

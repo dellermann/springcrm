@@ -418,7 +418,7 @@ class DunningController {
 
     private InvoicingItem workToItem(Work w) {
         new InvoicingItem(
-            number: w.fullNumber, quantity: with.quantity,
+            number: w.fullNumber, quantity: w.quantity,
             unit: w.unit.toString(), name: w.name, description: w.description,
             unitPrice: w.unitPrice, tax: w.taxRate.taxValue * 100
         )

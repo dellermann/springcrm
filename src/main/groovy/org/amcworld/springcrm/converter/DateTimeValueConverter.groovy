@@ -38,7 +38,7 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  */
 class DateTimeValueConverter implements ValueConverter {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     MessageSource messageSource
 
@@ -57,7 +57,8 @@ class DateTimeValueConverter implements ValueConverter {
         }
 
         String text = value.toString()
-        (text.indexOf(' ') < 0 && text.indexOf('T') < 0) ? parseDate(text) : parseDateTime(text)
+        text.indexOf(' ') < 0 && text.indexOf('T') < 0 ? parseDate(text)
+            : parseDateTime(text)
     }
 
     @Override
@@ -68,38 +69,42 @@ class DateTimeValueConverter implements ValueConverter {
 
     //-- Non-public methods ---------------------
 
-    protected Date parseDate(String text) throws IllegalArgumentException {
+    private Date parseDate(String text) throws IllegalArgumentException {
+        Date res
         try {
 
             /* try ISO8601 dates first */
-            return DatatypeConverter.parseDate(text).time
-        } catch (IllegalArgumentException iae) {
+            res = DatatypeConverter.parseDate(text).time
+        } catch (IllegalArgumentException ignored) {
 
             /*
              * otherwise try either the short format or the locale specific one
              */
             String fmt
             if (text.isLong()) {
-                fmt = (text.length() > 6) ? 'ddMMyyyy' : 'ddMMyy'
+                fmt = text.length() > 6 ? 'ddMMyyyy' : 'ddMMyy'
             } else {
                 fmt = messageSource.getMessage(
                     'default.format.date', null, 'yyyy-MM-dd', LCH.locale
                 )
             }
             try {
-                return new SimpleDateFormat(fmt).parse(text)
-            } catch (ParseException pe) {
+                res = new SimpleDateFormat(fmt).parse(text)
+            } catch (ParseException ignored1) {
                 throw new IllegalArgumentException()
             }
         }
+
+        res
     }
 
-    protected Date parseDateTime(String text) throws IllegalArgumentException {
+    private Date parseDateTime(String text) throws IllegalArgumentException {
+        Date res
         try {
 
             /* try ISO8601 dates/times first */
-            return DatatypeConverter.parseDateTime(text).time
-        } catch (IllegalArgumentException iae) {
+            res = DatatypeConverter.parseDateTime(text).time
+        } catch (IllegalArgumentException ignored) {
 
             /*
              * otherwise try either the short format or the locale specific one
@@ -110,7 +115,7 @@ class DateTimeValueConverter implements ValueConverter {
             if (pos >= 0) {
                 String s = text.substring(0, pos)
                 if (s.isLong()) {
-                    fmt << ((s.length() > 6) ? 'ddMMyyyy' : 'ddMMyy')
+                    fmt << (s.length() > 6 ? 'ddMMyyyy' : 'ddMMyy')
                 } else {
                     fmt << messageSource.getMessage(
                         'default.format.date', null, 'yyyy-MM-dd', locale
@@ -131,10 +136,12 @@ class DateTimeValueConverter implements ValueConverter {
                 )
             }
             try {
-                return new SimpleDateFormat(fmt.toString()).parse(text)
-            } catch (ParseException pe) {
+                res = new SimpleDateFormat(fmt.toString()).parse(text)
+            } catch (ParseException ignored1) {
                 throw new IllegalArgumentException()
             }
         }
+
+        res
     }
 }

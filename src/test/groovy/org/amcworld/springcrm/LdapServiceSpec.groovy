@@ -310,7 +310,7 @@ class LdapServiceSpec extends Specification {
 
         and: 'there is one LDAP sync status entry'
         LdapSyncStatus status = LdapSyncStatus.first()
-        1 == status.itemId
+        1L == status.itemId
         'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == status.dn
     }
 
@@ -360,7 +360,7 @@ class LdapServiceSpec extends Specification {
 
         and: 'there is one LDAP sync status entry'
         LdapSyncStatus status = LdapSyncStatus.first()
-        1 == status.itemId
+        1L == status.itemId
         'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == status.dn
     }
 
@@ -410,7 +410,7 @@ class LdapServiceSpec extends Specification {
 
         and: 'there is one LDAP sync status entry'
         LdapSyncStatus status = LdapSyncStatus.first()
-        1 == status.itemId
+        1L == status.itemId
         'cn=Ellermann Daniel,ou=contacts,dc=example,dc=org' == status.dn
     }
 

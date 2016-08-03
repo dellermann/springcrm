@@ -1,7 +1,7 @@
 /*
  * GoogleContactSyncTask.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +33,17 @@ import org.apache.commons.logging.LogFactory
  * account and synchronizes the person entries.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.0
  */
 class GoogleContactSyncTask extends TimerTask {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     private static final Log log = LogFactory.getLog(this)
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GoogleContactSync googleContactSync
 
@@ -59,7 +59,7 @@ class GoogleContactSyncTask extends TimerTask {
                     log.debug "Syncing with Google account of user ${user} (${user.userName})…"
                 }
                 googleContactSync.sync user
-            } catch (GoogleAuthException e) {
+            } catch (GoogleAuthException ignored) {
                 if (log.infoEnabled) {
                     log.info "User ${user} not authenticated at Google."
                 }

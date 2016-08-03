@@ -14,7 +14,8 @@
           <div class="column">
             <f:display bean="${purchaseInvoiceInstance}" property="number" />
             <f:display bean="${purchaseInvoiceInstance}" property="subject" />
-            <f:display bean="${purchaseInvoiceInstance}" property="vendor" />
+            <f:display bean="${purchaseInvoiceInstance}"
+              property="vendorName" />
             <f:display bean="${purchaseInvoiceInstance}"
               property="documentFile" />
             <f:display bean="${purchaseInvoiceInstance}" property="stage" />

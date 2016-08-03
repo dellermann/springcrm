@@ -94,6 +94,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      */
     CreditMemo(Invoice i) {
         super(i)
+        userService = i.userService
         type = 'C'
         headerText = ''
         footerText = ''
@@ -111,6 +112,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      */
     CreditMemo(Dunning d) {
         super(d)
+        userService = d.userService
         type = 'C'
         headerText = ''
         footerText = ''
@@ -129,6 +131,7 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      */
     CreditMemo(CreditMemo cm) {
         super(cm)
+        userService = cm.userService
         type = cm.type
         invoice = cm.invoice
         dunning = cm.dunning
@@ -147,9 +150,10 @@ class CreditMemo extends InvoicingTransaction implements Payable {
      * @see     #getClosingBalance()
      */
     BigDecimal getBalance() {
-        (total - paymentAmount).setScale(
-                userService.numFractionDigitsExt, RoundingMode.HALF_UP
-            )
+        int n = userService.numFractionDigitsExt
+        RoundingMode rm = RoundingMode.HALF_UP
+
+        total.setScale(n, rm) - paymentAmount.setScale(n, rm)
     }
 
     /**

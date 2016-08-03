@@ -42,6 +42,7 @@ class InvoiceController {
 
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
+    UserService userService
 
 
     //-- Public methods -------------------------
@@ -104,10 +105,12 @@ class InvoiceController {
         if (params.quote) {
             def quoteInstance = Quote.get(params.long('quote'))
             invoiceInstance = new Invoice(quoteInstance)
+            invoiceInstance.userService = userService
         } else if (params.salesOrder) {
             def salesOrderInstance = SalesOrder.get(params.long('salesOrder'))
             invoiceInstance = new Invoice(salesOrderInstance)
             invoiceInstance.quote = salesOrderInstance.quote
+            invoiceInstance.userService = userService
         } else {
             invoiceInstance = new Invoice(params)
         }

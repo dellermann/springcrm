@@ -175,7 +175,7 @@ class ProjectItemCreateInterceptorSpec extends Specification {
         ProjectItem item = pNew.items.first()
         ProjectPhase.quote == item.phase
         'call' == item.controller
-        453 == item.itemId
+        453L == item.itemId
         'Phone call' == item.title
     }
 

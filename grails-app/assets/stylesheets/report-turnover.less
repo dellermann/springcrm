@@ -21,3 +21,24 @@
 
 @import "invoicing-transaction";
 @import "_report";
+
+
+@media (max-width: @screen-sm-max) {
+  .month-year-selector {
+    > .btn {
+      font-size: 0;
+
+      &:first-letter {
+        font-size: @font-size-base;
+      }
+    }
+    .btn-whole-year {
+      font-size: @font-size-base;
+    }
+  }
+}
+@media (min-width: @screen-sm-min) {
+  .month-year-selector {
+    table-layout: auto;
+  }
+}

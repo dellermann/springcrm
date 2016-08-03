@@ -20,6 +20,9 @@
 
 package org.amcworld.springcrm
 
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.web.multipart.MultipartFile
+
 
 /**
  * The class {@code PurchaseInvoiceController} contains actions which manage
@@ -228,7 +231,9 @@ class PurchaseInvoiceController {
         if (params.fileRemove == '1') {
             purchaseInvoiceInstance.documentFile = null
         } else if (!params.file?.empty) {
-            df = dataFileService.updateFile FILE_TYPE, df, params.file
+            df = dataFileService.updateFile(
+                FILE_TYPE, df, (MultipartFile) params.file
+            )
         }
 
         if (!purchaseInvoiceInstance.save(failOnError: true, flush: true)) {
@@ -287,7 +292,7 @@ class PurchaseInvoiceController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'purchaseInvoice.label')]

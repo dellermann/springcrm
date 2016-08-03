@@ -587,8 +587,8 @@ class InvoicingItems
   # @private
   #
   _swapItemPos: ($tr, $destTr) ->
-    $td = $tr.find 'td:first-child'
-    $destTd = $destTr.find 'td:first-child'
+    $td = $tr.find 'td:first-child > span'
+    $destTd = $destTr.find 'td:first-child > span'
 
     s = $td.text()
     $td.text $destTd.text()
@@ -597,5 +597,3 @@ class InvoicingItems
     return
 
 SPRINGCRM.InvoicingItems = InvoicingItems
-
-# vim:set ts=2 sw=2 sts=2:
