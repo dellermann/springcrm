@@ -9,6 +9,8 @@
       <f:field bean="${productInstance}" property="category" />
       <f:field bean="${productInstance}" property="manufacturer" />
       <f:field bean="${productInstance}" property="retailer" />
+      <f:field bean="${productInstance}" property="salesStart" />
+      <f:field bean="${productInstance}" property="salesEnd" />
     </div>
     <div class="column">
       <div class="toggle-visibility">
@@ -16,6 +18,9 @@
         <f:field bean="${productInstance}" property="unit" />
         <f:field bean="${productInstance}" property="unitPrice" />
       </div>
+      <f:field bean="${productInstance}" property="taxRate" />
+      <f:field bean="${productInstance}" property="purchasePrice" />
+      <f:field bean="${productInstance}" property="weight" />
     </div>
   </div>
 </section>

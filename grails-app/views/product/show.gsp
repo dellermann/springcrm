@@ -16,16 +16,16 @@
             <f:display bean="${productInstance}" property="category" />
             <f:display bean="${productInstance}" property="manufacturer" />
             <f:display bean="${productInstance}" property="retailer" />
+            <f:display bean="${productInstance}" property="salesStart" />
+            <f:display bean="${productInstance}" property="salesEnd" />
+          </div>
+          <div class="column">
             <f:display bean="${productInstance}" property="quantity" />
             <f:display bean="${productInstance}" property="unit" />
             <f:display bean="${productInstance}" property="unitPrice" />
-          </div>
-          <div class="column">
-            <f:display bean="${productInstance}" property="weight" />
             <f:display bean="${productInstance}" property="taxRate" />
             <f:display bean="${productInstance}" property="purchasePrice" />
-            <f:display bean="${productInstance}" property="salesStart" />
-            <f:display bean="${productInstance}" property="salesEnd" />
+            <f:display bean="${productInstance}" property="weight" />
           </div>
         </div>
       </section>

@@ -7,16 +7,16 @@
       <f:field bean="${workInstance}" property="number" />
       <f:field bean="${workInstance}" property="name" />
       <f:field bean="${workInstance}" property="category" />
+      <f:field bean="${workInstance}" property="salesStart" />
+      <f:field bean="${workInstance}" property="salesEnd" />
+    </div>
+    <div class="column">
       <div class="toggle-visibility">
         <f:field bean="${workInstance}" property="quantity" />
         <f:field bean="${workInstance}" property="unit" />
         <f:field bean="${workInstance}" property="unitPrice" />
       </div>
-    </div>
-    <div class="column">
       <f:field bean="${workInstance}" property="taxRate" />
-      <f:field bean="${workInstance}" property="salesStart" />
-      <f:field bean="${workInstance}" property="salesEnd" />
     </div>
   </div>
 </section>

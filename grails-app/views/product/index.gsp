@@ -37,7 +37,7 @@
               <td class="col-type-id product-number"><g:link action="show" id="${productInstance.id}"><g:fieldValue bean="${productInstance}" field="fullNumber" /></g:link></td>
               <td class="col-type-string product-name"><g:link action="show" id="${productInstance.id}"><g:fieldValue bean="${productInstance}" field="name" /></g:link></td>
               <td class="col-type-string product-category"><g:fieldValue bean="${productInstance}" field="category" /></td>
-              <td class="col-type-number product-quantity"><g:fieldValue bean="${productInstance}" field="quantity" /></td>
+              <td class="col-type-number product-quantity"><g:formatNumber number="${productInstance.quantity}" maxFractionDigits="10" groupingUsed="true"/></td>
               <td class="col-type-string product-unit"><g:fieldValue bean="${productInstance}" field="unit" /></td>
               <td class="col-type-currency product-unit-price"><g:formatCurrency number="${productInstance.unitPrice}" displayZero="true" /></td>
               <td class="col-actions">

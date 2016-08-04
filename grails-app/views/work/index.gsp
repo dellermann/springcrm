@@ -36,7 +36,7 @@
               <td class="col-type-id work-number"><g:link action="show" id="${workInstance.id}"><g:fieldValue bean="${workInstance}" field="fullNumber" /></g:link></td>
               <td class="col-type-string work-name"><g:link action="show" id="${workInstance.id}"><g:fieldValue bean="${workInstance}" field="name" /></g:link></td>
               <td class="col-type-string work-category"><g:fieldValue bean="${workInstance}" field="category" /></td>
-              <td class="col-type-number work-quantity"><g:fieldValue bean="${workInstance}" field="quantity" /></td>
+              <td class="col-type-number work-quantity"><g:formatNumber number="${workInstance.quantity}" maxFractionDigits="10" groupingUsed="true"/></td>
               <td class="col-type-string work-unit"><g:fieldValue bean="${workInstance}" field="unit" /></td>
               <td class="col-type-currency work-unit-price"><g:formatCurrency number="${workInstance.unitPrice}" displayZero="true" /></td>
               <td class="col-actions">

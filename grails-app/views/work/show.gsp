@@ -14,14 +14,14 @@
             <f:display bean="${workInstance}" property="number" />
             <f:display bean="${workInstance}" property="name" />
             <f:display bean="${workInstance}" property="category" />
+            <f:display bean="${workInstance}" property="salesStart" />
+            <f:display bean="${workInstance}" property="salesEnd" />
+          </div>
+          <div class="column">
             <f:display bean="${workInstance}" property="quantity" />
             <f:display bean="${workInstance}" property="unit" />
             <f:display bean="${workInstance}" property="unitPrice" />
-          </div>
-          <div class="column">
             <f:display bean="${workInstance}" property="taxRate" />
-            <f:display bean="${workInstance}" property="salesStart" />
-            <f:display bean="${workInstance}" property="salesEnd" />
           </div>
         </div>
       </section>

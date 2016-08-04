@@ -387,6 +387,9 @@ class Page
       )
     $('.auto-number').trigger 'change'
 
+    # open all links in HTML content in new window
+    $('.html-content a').attr 'target', '_blank'
+
     @_initTools()
 
 
@@ -641,6 +644,7 @@ class Page
   #
   _onFocusOutNumberControl: (event) ->
     $target = $(event.currentTarget)
+    return if $target.data 'allow-null'
 
     numDigits = $I.numFractions
     if $target.hasClass 'form-control-currency-ext'

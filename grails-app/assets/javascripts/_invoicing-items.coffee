@@ -539,7 +539,8 @@ class InvoicingItems
         item = data.inventoryItem
         qty = item.quantity
         els[prefix + 'quantity'].value = qty.format()
-        els[prefix + 'unit'].value = item.unit.name
+        unit = item.unit.name ? item.pricing.unit.name
+        els[prefix + 'unit'].value = unit
         els[prefix + 'salesItem.id'].value = item.id
         els[prefix + 'name'].value = item.name
         textArea = els[prefix + 'description']
