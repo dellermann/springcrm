@@ -6,10 +6,7 @@
 
   <body>
     <g:applyLayout name="create"
-      model="[type: 'salesOrder', instance: salesOrderInstance]">
-      <g:hiddenField name="project" value="${project}" />
-      <g:hiddenField name="projectPhase" value="${projectPhase}" />
-    </g:applyLayout>
+      model="[type: 'salesOrder', instance: salesOrderInstance]"/>
 
     <content tag="scripts">
       <asset:javascript src="invoicing-transaction-form" />

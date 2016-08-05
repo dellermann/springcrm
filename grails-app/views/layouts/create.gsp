@@ -17,6 +17,9 @@
 <form action="${createLink(action: 'save')}" id="${formName}"
   class="form-horizontal data-form form-view" method="post"
   enctype="${enctype ?: 'application/x-www-form-urlencoded'}">
+  <g:hiddenField name="returnUrl" value="${params.returnUrl}"/>
+  <g:hiddenField name="project" value="${project}"/>
+  <g:hiddenField name="projectPhase" value="${projectPhase}"/>
   <g:render template="/layouts/flashMessage" />
   <g:render template="/layouts/errorMessage" />
   <g:layoutBody />

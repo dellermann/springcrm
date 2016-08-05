@@ -16,6 +16,7 @@
 <form action="${createLink(action: 'update')}" id="${formName}"
   class="form-horizontal data-form form-view" method="post"
   enctype="${enctype ?: 'application/x-www-form-urlencoded'}">
+  <g:hiddenField name="returnUrl" value="${params.returnUrl}"/>
   <g:render template="/layouts/flashMessage" />
   <g:render template="/layouts/errorMessage" />
   <g:hiddenField name="id" value="${instance?.id}" />

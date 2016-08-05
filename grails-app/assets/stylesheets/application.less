@@ -253,7 +253,18 @@ h2 {
       margin-bottom: 0;
     }
   }
-  table:extend(.table all) {}
+  table:extend(.table all) {
+    > thead > tr > th {
+      text-align: center;
+    }
+    td, th {
+      border-left: 1px solid @table-border-color;
+
+      &:first-child {
+        border-left: none;
+      }
+    }
+  }
 }
 
 // removed since version 2.0.5 because it offsets the icon 1-2 pixels down

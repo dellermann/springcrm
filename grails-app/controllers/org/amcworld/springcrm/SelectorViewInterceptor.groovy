@@ -57,8 +57,7 @@ class SelectorViewInterceptor implements Interceptor {
      * @return  always {@code true}
      */
     boolean after() {
-        String view = (params.view == 'selector') ? 'selectorList' : 'index'
-        render view: "/${controllerName}/${view}", model: model
+        view = (params.view == 'selector') ? 'selectorList' : 'index'
 
         true
     }
