@@ -16,9 +16,9 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="save" elementId="config-form"
-      params="[returnUrl: params.returnUrl]" method="post"
-      class="form-horizontal data-form form-view">
+    <form id="config-form"
+      action="${createLink(action: 'save', params: [returnUrl: params.returnUrl])}"
+      method="post" class="form-horizontal data-form form-view">
       <section class="column-group">
         <div class="column">
           <header>
@@ -196,7 +196,7 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
 
     <content tag="scripts">
       <asset:javascript src="config-mail" />

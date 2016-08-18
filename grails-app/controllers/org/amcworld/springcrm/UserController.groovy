@@ -66,6 +66,21 @@ class UserController implements Controller {
         [userInstance: new User(params)]
     }
 
+    def copy(Long id) {
+        User userInstance = User.get(id)
+        if (!userInstance) {
+            flash.message = message(
+                code: 'default.not.found.message',
+                args: [message(code: 'user.label'), id]
+            )
+            redirect action: 'index'
+            return
+        }
+
+        userInstance = new User(userInstance)
+        render view: 'create', model: [userInstance: userInstance]
+    }
+
     def save() {
         User userInstance = new User()
         bindData userInstance, params, [exclude: ['allowedModulesNames']]

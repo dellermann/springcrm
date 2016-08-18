@@ -15,9 +15,9 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="save" params="[returnUrl: params.returnUrl]"
-      elementId="config-form" method="post"
-      class="form-horizontal data-form form-view">
+    <form id="config-form"
+      action="${createLink(action: 'save', params: [returnUrl: params.returnUrl])}" params="[returnUrl: params.returnUrl]"
+      method="post" class="form-horizontal data-form form-view">
       <section>
         <header>
           <h3><g:message code="config.fieldset.currency.label" /></h3>
@@ -86,6 +86,6 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
   </body>
 </html>

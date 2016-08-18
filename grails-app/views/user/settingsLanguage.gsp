@@ -17,7 +17,8 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="settingsLanguageSave" elementId="config-form" method="post"
+    <form id="config-form"
+      action="${createLink(action: 'settingsLanguageSave')}" method="post"
       class="form-horizontal data-form form-view">
       <section>
         <header>
@@ -38,6 +39,6 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
   </body>
 </html>

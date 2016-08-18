@@ -19,8 +19,8 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="settingsSyncSave" elementId="config-form" method="post"
-      class="form-horizontal data-form form-view">
+    <form id="config-form" action="${createLink(action: 'settingsSyncSave')}"
+      method="post" class="form-horizontal data-form form-view">
       <section>
         <header>
           <h3><g:message code="user.settings.sync.fieldset.exclude.label" /></h3>
@@ -42,6 +42,6 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
   </body>
 </html>

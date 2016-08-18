@@ -1,7 +1,7 @@
 #
 # config-sel-values.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2016, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ $ = jQuery
 # Renders a widget to manage a particular list of select values.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.1
 # @since    1.4
 #
 class ConfigSelValuesWidget
@@ -205,7 +205,9 @@ class ConfigSelValuesWidget
   _onClickDeleteBtn: (event) ->
     $li = $(event.currentTarget).closest 'li'
     id = $li.data 'item-id'
-    @itemsToRemove.push parseInt(id, 10) if id and (id isnt '-1')
+    if id and (id isnt '-1')
+      id = parseInt id, 10
+      @itemsToRemove.push id if @itemsToRemove.indexOf(id) is -1
 
     $li.remove()
     @dirty = true

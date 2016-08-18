@@ -46,11 +46,35 @@ class Helpdesk {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The name of the helpdesk.
+     */
     String name
+
+    /**
+     * The name of the helpdesk used in URLs to access the frontend view.  The
+     * URL name is computed automatically from property {@code name}.
+     */
     String urlName
+
+    /**
+     * An access code which improves security when accessing the frontend view.
+     */
     String accessCode
+
+    /**
+     * The users which handle tickets of this helpdesk.
+     */
     Set<User> users
+
+    /**
+     * The timestamp when this helpdesk has been created.
+     */
     Date dateCreated
+
+    /**
+     * The timestamp when this helpdesk has been modified.
+     */
     Date lastUpdated
 
 

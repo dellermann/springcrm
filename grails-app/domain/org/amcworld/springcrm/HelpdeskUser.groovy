@@ -44,7 +44,14 @@ class HelpdeskUser implements Serializable {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The associated helpdesk.
+     */
     Helpdesk helpdesk
+
+    /**
+     * The associated user.
+     */
     User user
 
 

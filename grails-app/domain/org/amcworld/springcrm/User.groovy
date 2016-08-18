@@ -47,6 +47,7 @@ class User {
     }
     static mapping = {
         allowedModules type: 'text'
+        sort 'userName'
         table 'user_data'
         userName index: 'user_name'
     }
@@ -116,12 +117,12 @@ class User {
     String allowedModules
 
     /**
-     * The timestamp when this sales item has been created.
+     * The timestamp when this user has been created.
      */
     Date dateCreated
 
     /**
-     * The timestamp when this sales item has been modified.
+     * The timestamp when this user has been modified.
      */
     Date lastUpdated
 

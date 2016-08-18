@@ -15,9 +15,9 @@
     <g:render template="/layouts/flashMessage" />
     <g:render template="/layouts/errorMessage" />
 
-    <g:form action="saveClient" elementId="config-form"
-      params="[returnUrl: params.returnUrl]" method="post"
-      class="form-horizontal data-form form-view">
+    <form id="config-form"
+      action="${createLink(action: 'saveClient', params: [returnUrl: params.returnUrl])}"
+      method="post" class="form-horizontal data-form form-view">
       <section>
         <header>
           <h3><g:message code="install.clientData.fieldset.general.label" /></h3>
@@ -212,6 +212,6 @@
           </div>
         </div>
       </section>
-    </g:form>
+    </form>
   </body>
 </html>
