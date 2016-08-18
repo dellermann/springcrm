@@ -4,7 +4,7 @@
     <output url="file://$MODULE_DIR$/../../build/classes/integrationTest" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../src/integration-test">
-      <sourceFolder url="file://$MODULE_DIR$/../../src/integration-test/groovy" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/integration-test/groovy" isTestSource="true" />
     </content>
     <content url="file://$MODULE_DIR$/../../src/integrationTest">
       <sourceFolder url="file://$MODULE_DIR$/../../src/integrationTest/groovy" isTestSource="false" />
@@ -354,5 +354,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.javascript:closure-compiler:v20151015" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: commons-codec:commons-codec:1.10" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: xerces:xercesImpl:2.11.0" level="project" />
+    <orderEntry type="library" name="spock-core-1.0-groovy-2.4" level="project" />
   </component>
 </module>
