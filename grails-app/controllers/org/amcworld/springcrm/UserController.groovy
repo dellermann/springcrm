@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import grails.artefact.Controller
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.LocaleUtils
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -34,12 +35,12 @@ import org.apache.commons.lang.LocaleUtils
  */
 class UserController implements Controller {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GoogleOAuthService googleOAuthService
     InstallService installService
@@ -50,12 +51,12 @@ class UserController implements Controller {
     //-- Public methods -------------------------
 
     def index() {
-        float f = 3 / 0
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
         if (params.letter) {
-            int num = User.countByUserNameLessThan(params.letter)
+            int num = User.countByUserNameLessThan(params.letter.toString())
             params.sort = 'userName'
-            params.offset = Math.floor(num / params.max) * params.max
+            params.offset = Math.floor(num / max) * max
         }
 
         [userInstanceList: User.list(params), userInstanceTotal: User.count()]
@@ -207,7 +208,7 @@ class UserController implements Controller {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'user.label')]
@@ -219,8 +220,9 @@ class UserController implements Controller {
     def login() {}
 
     def authenticate() {
-        User userInstance =
-            User.findByUserNameAndPassword(params.userName, params.password)
+        User userInstance = User.findByUserNameAndPassword(
+            params.userName.toString(), params.password.toString()
+        )
         if (!userInstance) {
             flash.message = message(code: 'user.authenticate.failed.message')
             redirect action: 'login'
@@ -242,7 +244,8 @@ class UserController implements Controller {
     }
 
     def storeSetting() {
-        session.credential.settings[params.key] = params.value
+        Credential credential = (Credential) session.credential
+        credential.settings[params.key] = params.value
 
         render status: HttpServletResponse.SC_OK
     }
@@ -250,7 +253,10 @@ class UserController implements Controller {
     def settingsIndex() {}
 
     def settingsLanguage() {
-        Map<String, String> locales = userService.availableLocales.collectEntries { [it.toString(), it.displayName] }
+        Map<String, String> locales =
+            userService.availableLocales.collectEntries {
+                [it.toString(), it.displayName]
+            }
         locales = locales.sort { a, b -> a.value <=> b.value }
 
         [locales: locales, currentLocale: userService.currentLocale.toString()]
@@ -288,7 +294,7 @@ class UserController implements Controller {
     }
 
     def settingsGoogleAuthResponse() {
-        if (params.success != '200') {
+        if (params.success.toString() != '200') {
             flash.message = message(
                 code: 'user.settings.googleAuth.failed.message'
             )
@@ -297,7 +303,8 @@ class UserController implements Controller {
         }
 
         boolean res = googleOAuthService.obtainAndStoreCredential(
-            session.credential.userName, params.clientId
+            ((Credential) session.credential).userName,
+            params.clientId.toString()
         )
         if (!res) {
             flash.message = message(
@@ -314,7 +321,9 @@ class UserController implements Controller {
     }
 
     def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy(session.credential.userName)
+        googleOAuthService.revokeAtProxy(
+            ((Credential) session.credential).userName
+        )
 
         flash.message = message(
             code: 'user.settings.googleAuth.revoked.message'
@@ -323,8 +332,11 @@ class UserController implements Controller {
     }
 
     def settingsSync() {
-        List<Long> values = session.credential.settings.excludeFromSync?.split(/,/)
-            ?.collect { it as Long }
+        Credential credential = (Credential) session.credential
+        List<Long> values =
+            credential.settings.excludeFromSync?.split(/,/)?.collect {
+                it as Long
+            }
 
         [
             ratings: Rating.list(),
@@ -333,7 +345,8 @@ class UserController implements Controller {
     }
 
     def settingsSyncSave() {
-        session.credential.settings.excludeFromSync = params.excludeFromSync.join ','
+        Credential credential = (Credential) session.credential
+        credential.settings.excludeFromSync = params.excludeFromSync.join ','
 
         redirect action: 'settingsIndex'
     }
@@ -348,8 +361,8 @@ class UserController implements Controller {
             locale = session.credential.settings.locale
         }
         if (locale) {
-            session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] = LocaleUtils.toLocale(locale)
+            session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] =
+                LocaleUtils.toLocale(locale)
         }
     }
 }
-

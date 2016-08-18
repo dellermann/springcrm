@@ -59,7 +59,7 @@ class ProjectItemDeleteInterceptor implements Interceptor {
             DetachedCriteria query = ProjectItem.where {
                 controller == controllerName && itemId == params.long('id')
             }
-            def res = query.deleteAll()
+            query.deleteAll()
         }
 
         true

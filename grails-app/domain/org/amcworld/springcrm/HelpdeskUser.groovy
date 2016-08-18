@@ -1,7 +1,7 @@
 /*
  * HelpdeskUser.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@ package org.amcworld.springcrm
  * instead.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.4
  */
 class HelpdeskUser implements Serializable {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static mapping = {
         id composite: ['helpdesk', 'user']
@@ -42,7 +42,7 @@ class HelpdeskUser implements Serializable {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     Helpdesk helpdesk
     User user
@@ -52,13 +52,20 @@ class HelpdeskUser implements Serializable {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof HelpdeskUser) \
-            ? helpdesk == obj.helpdesk && user == obj.user \
-            : false
+        obj instanceof HelpdeskUser && helpdesk == obj.helpdesk &&
+            user == obj.user
     }
 
     @Override
     int hashCode() {
-        "${helpdesk?.id}/${user?.id}".hashCode()
+        "${helpdesk?.urlName}/${user?.userName}".toString().hashCode()
+    }
+
+    @Override
+    String toString() {
+        StringBuilder buf = new StringBuilder('Helpdesk ')
+        buf << helpdesk << ' -> user ' << user.userName
+
+        buf.toString()
     }
 }

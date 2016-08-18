@@ -50,6 +50,19 @@ class HelpdeskController {
         ]
     }
 
+    def listEmbedded(Long organization) {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        Organization organizationInstance = Organization.get(organization)
+        List<Helpdesk> l =
+            Helpdesk.findAllByOrganization(organizationInstance, params)
+        int count = Helpdesk.countByOrganization(organizationInstance)
+
+        [
+            helpdeskInstanceList: l, helpdeskInstanceTotal: count,
+            linkParams: [organization: organizationInstance.id]
+        ]
+    }
+
     def create() {
         [helpdeskInstance: new Helpdesk(params)]
     }
@@ -199,14 +212,14 @@ class HelpdeskController {
         }
     }
 
-    def frontendIndex(String urlName, String accessCode) {
+    def frontendIndex(String urlName) {
         Helpdesk helpdeskInstance = Helpdesk.findByUrlName(urlName)
         if (!helpdeskInstance) {
             render status: SC_NOT_FOUND
             return
         }
 
-        def ticketInstanceList =
+        List<Ticket> ticketInstanceList =
             Ticket.findAllByHelpdesk(helpdeskInstance, params)
 
         [

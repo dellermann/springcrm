@@ -39,7 +39,7 @@ class TicketService {
     public static final DataFileType FILE_TYPE = DataFileType.ticketMessage
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     DataFileService dataFileService
     LinkGenerator grailsLinkGenerator
@@ -175,8 +175,7 @@ class TicketService {
         ticket.stage = TicketStage.created
         ticket.addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.create
-            ))
-            .addToLogEntries(new TicketLogEntry(
+            )).addToLogEntries(new TicketLogEntry(
                 action: TicketLogAction.sendMessage,
                 message: message,
                 attachment: dataFile
@@ -189,8 +188,8 @@ class TicketService {
             subject: [key: 'email.ticket.create.subject'],
             message: [
                 controller: 'ticket',
-                view: 'createdUsers',
-                model: [ticketInstance: ticket, messageText: message]
+                view      : 'createdUsers',
+                model     : [ticketInstance: ticket, messageText: message]
             ]
         )
 
@@ -237,7 +236,7 @@ class TicketService {
             ))
             .save()
 
-        def toAddr = null
+        def toAddr
         String msgView = 'sendMessageUser'
         Map msgModel = null
         if (sender == null) {               // customer -> engineer/team
@@ -290,7 +289,7 @@ class TicketService {
          * <g:link> or <g:createLink> tags need to know the schema (HTTP,
          * HTTPS etc.) to render an absolute link.  So, if you try to use
          * these tags in the .gsp files you'll get an
-         * UnsupportedOperationExeption with the message "You cannot read
+         * UnsupportedOperationException with the message "You cannot read
          * the server port in non-request rendering operations."
          */
         String showLink = grailsLinkGenerator.link(

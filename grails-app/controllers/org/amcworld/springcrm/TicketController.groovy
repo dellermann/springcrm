@@ -1,7 +1,7 @@
 /*
  * TicketController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.web.multipart.MultipartFile
 
 
 /**
@@ -29,19 +30,18 @@ import org.springframework.dao.DataIntegrityViolationException
  * helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.4
  */
 class TicketController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    DataFileService dataFileService
     MailSystemService mailSystemService
     TicketService ticketService
 
@@ -51,8 +51,8 @@ class TicketController {
     def index() {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        List<Ticket> ticketInstanceList = null
-        int ticketInstanceTotal = 0
+        List<Ticket> ticketInstanceList
+        int ticketInstanceTotal
         User user = session.credential.loadUser()
 
         if (params.helpdesk) {
@@ -63,12 +63,13 @@ class TicketController {
             ticketInstanceList = Ticket.list(params)
             ticketInstanceTotal = Ticket.count()
         } else {
-            List<Helpdesk> helpdesks = user.helpdesks
-            if (!helpdesks) {
+            List<HelpdeskUser> helpdeskUsers = HelpdeskUser.findAllByUser(user)
+            if (!helpdeskUsers) {
                 render view: 'noHelpdesks'
                 return
             }
 
+            List<Helpdesk> helpdesks = helpdeskUsers*.helpdesk
             ticketInstanceList =
                 Ticket.findAllByHelpdeskInList(helpdesks, params)
             ticketInstanceTotal = Ticket.countByHelpdeskInList(helpdesks)
@@ -78,6 +79,32 @@ class TicketController {
             ticketInstanceList: ticketInstanceList,
             ticketInstanceTotal: ticketInstanceTotal,
             mailSystemConfigured: mailSystemService.configured
+        ]
+    }
+
+    def listEmbedded(Long organization) {
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        Organization organizationInstance = Organization.get(organization)
+        User user = session.credential.loadUser()
+
+        List<Ticket> ticketList = Ticket.executeQuery(
+            'select t from Ticket as t inner join t.helpdesk as h, ' +
+                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
+                'and h.organization = :o',
+            [u: user, o: organizationInstance],
+            params
+        )
+        int count = Ticket.executeQuery(
+            'select count(*) from Ticket as t inner join t.helpdesk as h, ' +
+                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
+                'and h.organization = :o',
+            [u: user, o: organizationInstance],
+        )[0]
+
+        [
+            ticketInstanceList: ticketList,
+            ticketInstanceTotal: count,
+            linkParams: [organization: organizationInstance.id]
         ]
     }
 
@@ -120,7 +147,7 @@ class TicketController {
         }
 
         ticketInstance = ticketService.createTicket(
-            ticketInstance, messageText, params.attachment
+            ticketInstance, messageText, (MultipartFile) params.attachment
         )
         if (!ticketInstance) {
             render view: 'create', model: [
@@ -296,8 +323,8 @@ class TicketController {
                 ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]))
             {
                 ticketService.sendMessage(
-                    ticketInstance, message, params.attachment, creator,
-                    recipient
+                    ticketInstance, message, (MultipartFile) params.attachment,
+                    creator, recipient
                 )
             }
         }
@@ -319,8 +346,8 @@ class TicketController {
             }
 
             ticketService.createNote(
-                ticketInstance, message, params.attachment,
-                session.credential.loadUser()
+                ticketInstance, message, (MultipartFile) params.attachment,
+                ((Credential) session.credential).loadUser()
             )
         }
 
@@ -352,6 +379,9 @@ class TicketController {
                 break
             case TicketStage.closed:
                 allowedStages = EnumSet.of(TicketStage.resubmitted)
+                break
+            default:
+                allowedStages = EnumSet.noneOf(TicketStage)
                 break
             }
 
@@ -390,7 +420,7 @@ class TicketController {
     }
 
     def frontendCreate() {
-        Helpdesk helpdeskInstance = Helpdesk.get(params.helpdesk)
+        Helpdesk helpdeskInstance = Helpdesk.get(params.long('helpdesk'))
         if (!helpdeskInstance) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return
@@ -400,7 +430,7 @@ class TicketController {
     }
 
     def frontendSave() {
-        Helpdesk helpdeskInstance = Helpdesk.get(params.helpdesk)
+        Helpdesk helpdeskInstance = Helpdesk.get(params.long('helpdesk'))
         if (!helpdeskInstance) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return
@@ -430,7 +460,7 @@ class TicketController {
         }
 
         ticketInstance = ticketService.createTicket(
-            ticketInstance, messageText, params.attachment
+            ticketInstance, messageText, (MultipartFile) params.attachment
         )
         if (!ticketInstance) {
             log.debug 'No ticket created.'
@@ -460,7 +490,7 @@ class TicketController {
     def frontendSendMessage(Long id) {
         Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            redirectToHelpdeskFrontend Helpdesk.read(params.helpdesk)
+            redirectToHelpdeskFrontend Helpdesk.read(params.long('helpdesk'))
             return
         }
 
@@ -470,7 +500,9 @@ class TicketController {
             return
         }
 
-        ticketService.sendMessage ticketInstance, message, params.attachment
+        ticketService.sendMessage(
+            ticketInstance, message, (MultipartFile) params.attachment
+        )
 
         flash.message = g.message(code: 'ticket.sendMessage.flash')
         redirectToFrontendPage ticketInstance.helpdesk
@@ -497,7 +529,7 @@ class TicketController {
     protected def frontendChangeStage(Long id, TicketStage stage) {
         Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            redirectToHelpdeskFrontend Helpdesk.read(params.helpdesk)
+            redirectToHelpdeskFrontend Helpdesk.read(params.long('helpdesk'))
             return
         }
 
@@ -512,7 +544,8 @@ class TicketController {
      * @return  the list of helpdesks
      */
     protected List<Helpdesk> getHelpdesks() {
-        User user = session.credential.loadUser()
+        User user = ((Credential) session.credential).loadUser()
+
         user.admin ? Helpdesk.list() : user.helpdesks as List
     }
 

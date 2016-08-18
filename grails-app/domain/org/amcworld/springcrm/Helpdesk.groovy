@@ -54,6 +54,24 @@ class Helpdesk {
     Date lastUpdated
 
 
+    //-- Constructors ---------------------------
+
+    /**
+     * Creates an empty helpdesk.
+     */
+    Helpdesk() {}
+
+    /**
+     * Creates a copy of the given helpdesk.
+     *
+     * @param h the given helpdesk
+     */
+    Helpdesk(Helpdesk h) {
+        users = new HashSet<>(h.users)
+        organization = h.organization
+    }
+
+
     //-- Properties -----------------------------
 
     String getName() {
@@ -62,14 +80,22 @@ class Helpdesk {
 
     Set<User> getUsers() {
         if (users == null) {
-            users = (Helpdesk.exists(id) ? HelpdeskUser.findAllByHelpdesk(this).collect { it.user } : []) as Set
+            users = (
+                exists(id) \
+                    ? HelpdeskUser.findAllByHelpdesk(this).collect { it.user }
+                    : []
+            ) as Set
         }
+
         users
     }
 
     void setName(String name) {
-        this.name = name
-        this.urlName = java.net.URLEncoder.encode(name).toLowerCase()
+        this.name = name = name?.trim()
+        this.urlName = name == null ? null
+            : URLEncoder.encode(
+                name.replaceAll(/[^0-9a-zA-Z]/, '-'), 'utf-8'
+            ).toLowerCase()
     }
 
     void setUsers(Set<User> users) {
@@ -79,15 +105,33 @@ class Helpdesk {
 
     //-- Public methods -------------------------
 
+    /**
+     * Called after this helpdesk is inserted.  The method saves all user
+     * associations.
+     *
+     * @return  no return value
+     */
     def afterInsert() {
         saveUsers()
     }
 
+    /**
+     * Called after this helpdesk is updated.  The method removes all user
+     * associations and sets them anew.
+     *
+     * @return  no return value
+     */
     def afterUpdate() {
         removeAllUsers()
         saveUsers()
     }
 
+    /**
+     * Called before this helpdesk is deleted.  The method removes all user
+     * associations.
+     *
+     * @return  no return value
+     */
     def beforeDelete() {
         removeAllUsers()
     }
@@ -102,26 +146,39 @@ class Helpdesk {
         urlName ? urlName.hashCode() : 0i
     }
 
+    /**
+     * Checks whether or not this helpdesk is associated to the given user.
+     *
+     * @param user  the given user
+     * @return      {@code true} if the given user has been associated to this
+     *              helpdesk; {@code false} otherwise
+     */
     boolean hasUser(User user) {
         HelpdeskUser.countByHelpdeskAndUser(this, user) > 0
     }
 
     @Override
     String toString() {
-        name
+        name ?: ''
     }
 
 
     //-- Non-public methods ---------------------
 
-    protected void removeAllUsers() {
+    /**
+     * Removes all users associated to the given helpdesk.
+     */
+    private void removeAllUsers() {
         executeUpdate(
-            'delete from HelpdeskUser where helpdesk=:helpdesk',
+            'delete from HelpdeskUser where helpdesk = :helpdesk',
             [helpdesk: this]
         )
     }
 
-    protected void saveUsers() {
+    /**
+     * Saves the users of this helpdesk as {@code HelpdeskUser} objects.
+     */
+    private void saveUsers() {
         for (User user in users) {
             HelpdeskUser helpdeskUser =
                 new HelpdeskUser(helpdesk: this, user: user)

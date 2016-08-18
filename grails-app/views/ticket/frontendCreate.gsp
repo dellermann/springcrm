@@ -18,8 +18,10 @@
         message="default.button.cancel.label" />
     </content>
 
-    <g:uploadForm controller="ticket" action="frontendSave" method="post"
-      elementId="ticket-form" class="form-horizontal data-form form-view">
+    <form id="ticket-form"
+      action="${createLink(controller: 'ticket', action: 'frontendSave')}"
+      method="post" class="form-horizontal data-form form-view"
+      enctype="multipart/form-data">
       <g:hiddenField name="helpdesk" value="${helpdeskInstance.id}" />
       <g:hiddenField name="accessCode" value="${helpdeskInstance.accessCode}" />
       <section>
@@ -76,7 +78,7 @@
           </div>
         </div>
       </section>
-    </g:uploadForm>
+    </form>
 
     <%--
       <div id="send-message-form" style="display: none;">

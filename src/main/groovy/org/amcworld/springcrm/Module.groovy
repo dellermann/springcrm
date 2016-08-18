@@ -106,7 +106,7 @@ enum Module {
         EnumSet<Module> res = EnumSet.noneOf(Module)
         if (names) {
             for (String name : names) {
-                res << Module.valueOf(name.trim())
+                res << valueOf(name.trim())
             }
         }
 

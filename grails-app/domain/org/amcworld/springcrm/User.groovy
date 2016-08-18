@@ -280,12 +280,12 @@ class User {
 
     @Override
     boolean equals(Object o) {
-        o instanceof User && o.id == id
+        o instanceof User && o.userName == userName
     }
 
     @Override
     int hashCode() {
-        (id ?: 0i) as int
+        (userName ?: '').hashCode()
     }
 
     @Override

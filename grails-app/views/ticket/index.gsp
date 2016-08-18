@@ -31,7 +31,7 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${ticketInstanceList}" status="i" var="ticketInstance">
+            <g:each in="${ticketInstanceList}" status="i" var="ticketInstance">
             <tr>
               <td class="col-type-string ticket-number"><g:link action="show" id="${ticketInstance.id}"><g:fieldValue bean="${ticketInstance}" field="fullNumber" /></g:link></td>
               <td class="col-type-string ticket-subject"><g:link action="show" id="${ticketInstance.id}"><g:fieldValue bean="${ticketInstance}" field="subject" /></g:link></td>
@@ -54,7 +54,7 @@
                   message="default.button.edit.label" />
               </td>
             </tr>
-          </g:each>
+            </g:each>
           </tbody>
         </table>
       </div>

@@ -198,6 +198,22 @@
           ]
         ]" />
       </g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="HELPDESK">
+      <g:applyLayout name="remoteList"
+        model="[
+          controller: 'helpdesk', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
+      </g:ifModuleAllowed>
+      <g:ifModuleAllowed modules="TICKET">
+      <g:applyLayout name="remoteList"
+        model="[
+          controller: 'ticket', createParams: [
+            'organization.id': organizationInstance.id, returnUrl: url()
+          ]
+        ]" />
+      </g:ifModuleAllowed>
     </g:applyLayout>
 
     <content tag="scripts">

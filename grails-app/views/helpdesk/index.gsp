@@ -26,8 +26,8 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${helpdeskInstanceList}" status="i"
-            var="helpdeskInstance">
+            <g:each in="${helpdeskInstanceList}" status="i"
+              var="helpdeskInstance">
             <tr>
               <td class="col-type-string helpdesk-name"><g:link action="show" id="${helpdeskInstance.id}">${fieldValue(bean: helpdeskInstance, field: "name")}</g:link></td>
               <td class="col-type-string helpdesk-access-code"><g:fieldValue bean="${helpdeskInstance}" field="accessCode" /></td>
@@ -43,7 +43,7 @@
                   message="default.button.edit.label" />
               </td>
             </tr>
-          </g:each>
+            </g:each>
           </tbody>
         </table>
       </div>
