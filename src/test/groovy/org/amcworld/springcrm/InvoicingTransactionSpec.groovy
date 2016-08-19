@@ -907,7 +907,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Persisted instances are equal if they have the same ID'() {
-        given: 'two invoicing items with different properties'
+        given: 'three invoicing transactions with same ID'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -932,7 +932,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Persisted instances are unequal if they have the different ID'() {
-        given: 'two invoicing transactions with different properties'
+        given: 'three invoicing transactions with different IDs'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -989,7 +989,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Equal instances produce the same hash code'() {
-        given: 'two invoicing transactions with different properties'
+        given: 'three invoicing transactions with same ID'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -1003,7 +1003,7 @@ class InvoicingTransactionSpec extends Specification {
     }
 
     def 'Different instances produce different hash codes'() {
-        given: 'two invoicing transactions with different properties'
+        given: 'three invoicing transactions with different properties'
         def i1 = new InvoicingTransaction(subject: 'Repair')
         i1.id = 7403L
         def i2 = new InvoicingTransaction(subject: 'Pipes')
@@ -1016,7 +1016,7 @@ class InvoicingTransactionSpec extends Specification {
         i2.hashCode() != i3.hashCode()
     }
 
-    def 'Can convert to string'() {
+    def 'Can convert to string'(String subject, String s) {
         given: 'an empty invoicing transaction'
         def i = new InvoicingTransaction()
 
@@ -1037,7 +1037,9 @@ class InvoicingTransactionSpec extends Specification {
         'Services'      || 'Services'
     }
 
-    def 'Type must not be blank or longer than one character'() {
+    def 'Type must not be blank or longer than one character'(String t,
+                                                              boolean v)
+    {
         given: 'a quite valid invoicing item'
         def i = new InvoicingTransaction(
             number: 39999,
@@ -1066,7 +1068,7 @@ class InvoicingTransactionSpec extends Specification {
         'name'  || false
     }
 
-    def 'Subject must not be blank'() {
+    def 'Subject must not be blank'(String s, boolean v) {
         given: 'a quite valid invoicing transaction'
         def i = new InvoicingTransaction(
             number: 39999,
