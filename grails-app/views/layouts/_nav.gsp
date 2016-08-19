@@ -116,9 +116,10 @@
           </a>
           <ul id="menu-settings" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <g:ifAdmin><li role="menuitem"><g:link controller="user"><g:message code="user.plural" /></g:link></li></g:ifAdmin>
-            <li role="menuitem"><g:link controller="user" action="settingsIndex"><g:message code="user.settings.title" /></g:link></li>
-            <g:ifAdmin><li role="menuitem"><g:link controller="config"><g:message code="config.title" /></g:link></li></g:ifAdmin>
+            <g:ifAdmin><li role="menuitem"><g:link controller="user"><g:message code="user.plural"/></g:link></li></g:ifAdmin>
+            <li role="menuitem"><g:link controller="user" action="settingsIndex"><g:message code="user.settings.title"/></g:link></li>
+            <g:ifAdmin><li role="menuitem"><g:link controller="config"><g:message code="config.title"/></g:link></li></g:ifAdmin>
+            <g:ifControllerAllowed controllers="boilerplate"><li role="menuitem"><g:link controller="boilerplate"><g:message code="boilerplate.plural"/></g:link></li></g:ifControllerAllowed>
           </ul>
         </li>
         <li class="hidden-xs">

@@ -36,6 +36,7 @@ enum Module {
 
     //-- Values ---------------------------------
 
+    BOILERPLATE(['boilerplate']),
     CALENDAR(['calendarEvent', 'organization']),
     CALL(['call']),
     CONTACT(['organization', 'person']),

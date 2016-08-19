@@ -38,7 +38,7 @@ class Boilerplate {
         content widget: 'textarea'
     }
     static mapping = {
-        sort start: 'desc'
+        sort name: 'asc'
         name index: 'name'
         content type: 'text'
     }
