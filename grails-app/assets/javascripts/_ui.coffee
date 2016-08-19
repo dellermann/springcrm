@@ -361,6 +361,9 @@ class Page
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
       )
+      .on('click', '.hidden-assessments > header > h3', (event) =>
+        @_onClickHiddenAssessmentsHeader event
+      )
       .on('focusin', '.form-control-number', (event) =>
         @_onFocusInNumberControl event
       )
@@ -503,8 +506,9 @@ class Page
 
     return
 
-  # Called if the state of the checkbox at auto number fields has been changed.
-  # The method toggles the disabled state of the auto number input field.
+  # Called when the state of the checkbox at auto number fields has been
+  # changed. The method toggles the disabled state of the auto number input
+  # field.
   #
   # @param [Event] event  any event data
   # @private
@@ -515,8 +519,8 @@ class Page
       .find('.input-group input')
         .toggleEnable $target, true
 
-  # Called if either the date or time part of a date/time input field has been
-  # changed. The method computes a formatted composed value in a hidden
+  # Called when either the date or time part of a date/time input field has
+  # been changed. The method computes a formatted composed value in a hidden
   # date/time field.
   #
   # @param [Event] event  any event data
@@ -545,7 +549,7 @@ class Page
 
       elements[baseId].value = val
 
-  # Called if the time value has been changed.  The method parses and formats
+  # Called when the time value has been changed.  The method parses and formats
   # particular time values.
   #
   # @param [Event] event  any event data
@@ -571,7 +575,7 @@ class Page
     $target.val val
     return
 
-  # Called if the user clicks on a link to delete a record.  This method
+  # Called when the user clicks on a link to delete a record.  This method
   # displays a deletion confirmation dialog.  If the user confirms the link is
   # loaded to the current window.
   #
@@ -600,7 +604,23 @@ class Page
 
     false
 
-  # Called if the user clicks on the icon to display the Markdown help.
+  # Called when the user clicks on the header of a section with hidden
+  # assessments.  The method opens or closes the assessments content area.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  # @since 2.1
+  #
+  _onClickHiddenAssessmentsHeader: (event) ->
+    $(event.currentTarget)
+      .closest('.hidden-assessments')
+        .find('.assessments-content')
+          .slideToggle()
+
+    false
+
+  # Called when the user clicks on the icon to display the Markdown help.
   #
   # @private
   #
@@ -621,7 +641,7 @@ class Page
 
     return
 
-  # Called if a number control gets the focus.  The method removes all zeros
+  # Called when a number control gets the focus.  The method removes all zeros
   # after the decimal point.
   #
   # @param [Event] event  any event data
@@ -635,7 +655,7 @@ class Page
 
     return
 
-  # Called if a number control looses the focus.  The method formats the
+  # Called when a number control looses the focus.  The method formats the
   # number depending on the type of number control (currency, percentage
   # etc.).
   #
@@ -658,7 +678,7 @@ class Page
     val = $target.val().parseNumber()
     $target.val val.format numDigits
 
-  # Called if the window has been finished loading and rendering.
+  # Called when the window has been finished loading and rendering.
   #
   # @param [Event] event  any event data
   # @private
@@ -682,7 +702,7 @@ class Page
     $.extend $.fn.datepicker.defaults, datePickerDefaults
     $('.date-input-date-control').datepicker()
 
-  # Called if the window is scrolling.
+  # Called when the window is scrolling.
   #
   # @param [Event] event  any event data
   # @private
@@ -695,5 +715,3 @@ class Page
 #== Main ========================================
 
 window.SPRINGCRM.page = new Page()
-
-# vim:set ts=2 sw=2 sts=2:

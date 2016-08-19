@@ -53,6 +53,8 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
         notes nullable: true, widget: 'textarea'
         termOfPayment nullable: true
         docPlaceholderValue nullable: true
+        assessmentPositive nullable: true, widget: 'textarea'
+        assessmentNegative nullable: true, widget: 'textarea'
     }
     static embedded = ['billingAddr', 'shippingAddr']
     static hasMany = [
@@ -92,6 +94,8 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
     String notes
     Integer termOfPayment
     String docPlaceholderValue
+    String assessmentPositive
+    String assessmentNegative
     Date dateCreated
     Date lastUpdated
 
@@ -119,6 +123,8 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
         rating = org.rating
         notes = org.notes
         docPlaceholderValue = org.docPlaceholderValue
+        assessmentPositive = org.assessmentPositive
+        assessmentNegative = org.assessmentNegative
     }
 
 

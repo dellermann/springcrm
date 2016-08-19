@@ -1,6 +1,8 @@
 ## 2.1.0
 
 * Upgrade to Grails 3
+* Positive and negative assessments of organizations and persons
+* Lot of bug fixes and code optimizations
 
 ## 2.0.20
 

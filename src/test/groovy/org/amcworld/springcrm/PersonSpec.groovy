@@ -55,7 +55,9 @@ class PersonSpec extends Specification {
 			assistant: 'test assistant',
 			birthday: new Date(),
 			picture: 'foobar'.getBytes(),
-			notes: 'some notes'
+			notes: 'some notes',
+			assessmentPositive: 'friendly person',
+			assessmentNegative: 'a little bit slow'
 		)
 
 		when:
@@ -83,6 +85,8 @@ class PersonSpec extends Specification {
 		p2.birthday == p1.birthday
 		p2.picture == p1.picture
 		p2.notes == p1.notes
+		p2.assessmentPositive == p1.assessmentPositive
+		p2.assessmentNegative == p1.assessmentNegative
 
 		and: 'some properties are unset'
 		0 == p2.number

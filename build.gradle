@@ -48,7 +48,7 @@ plugins {
     id 'io.spring.dependency-management' version '0.5.4.RELEASE'
 }
 
-version '2.1.0'
+version '2.1.1'
 group 'org.amcworld'
 
 apply plugin: 'spring-boot'

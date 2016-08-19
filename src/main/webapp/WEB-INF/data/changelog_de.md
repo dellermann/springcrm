@@ -1,6 +1,8 @@
 ## 2.1.0
 
 * Aktualisierung auf Grails 3
+* Positive and negative Bewertungen von Organisationen und Personen
+* Viele Fehlerbehebungen und Codeoptimierungen
 
 ## 2.0.20
 
