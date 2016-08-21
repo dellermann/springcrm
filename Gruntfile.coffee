@@ -98,6 +98,8 @@ module.exports = (grunt) ->
               'collapse.js'
               'dropdown.js'
               'modal.js'
+              'popover.js'
+              'tooltip.js'
               'transition.js'
             ]
           ,

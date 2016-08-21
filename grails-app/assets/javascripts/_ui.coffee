@@ -28,6 +28,8 @@
 #= require bootstrap/collapse
 #= require bootstrap/dropdown
 #= require bootstrap/modal
+#= require bootstrap/tooltip
+#= require bootstrap/popover
 #= require bootstrap/datepicker
 #= require selectize/selectize
 #= require selectize/plugin-no-delete
@@ -219,6 +221,35 @@ JQueryUiExt =
     else
       @disable()
 
+  # Gets the selected text of the input controls in the jQuery object.  For
+  # each input control either the selected text is taken or the whole text if
+  # nothing is selected.  The obtained texts are concatenated by the given
+  # separator.
+  #
+  # @param [string] separator the separator used to concatenate the texts
+  # @return [string]          the selected texts
+  # @since 2.1
+  #
+  getSelection: (separator = '') ->
+    $ = jQuery
+
+    selections = []
+    @each ->
+      if 'selectionStart' of this and 'selectionEnd' of this
+        $input = $(this)
+        text = $input.val()
+        selStart = @selectionStart
+        selEnd = @selectionEnd
+
+        if selStart isnt selEnd
+          text = text.substring selStart, selEnd
+
+        selections.push text
+
+      return
+
+    selections.join separator
+
   # Replaces the selection of the input controls in the jQuery object by the
   # given content.
   #
@@ -376,6 +407,10 @@ class Page
         $ = jQuery
         $('html, body').scrollTo $(event.currentTarget).attr 'href'
         false
+      )
+      .on(
+        'click', '.boilerplate-add-btn',
+        (event) => @_onClickAddBoilerplate event
       )
       .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
       .on('click', '#spinner', -> $(this).fadeOut())
@@ -643,6 +678,72 @@ class Page
     $target.val val
     return
 
+  # Called when the button to add a boilerplate has been clicked.  The method
+  # displays a modal window containing a form to submit the boilerplate name
+  # and content, submits the form and displays a popup indicating success or
+  # failure.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickAddBoilerplate: (event) ->
+    $ = jq
+    $container = $(event.currentTarget).closest '.textarea-container'
+    $textarea = $container.find 'textarea'
+
+    getPopoverTemplate = (status) ->
+      """
+        <div class="popover popover-#{status}" role="tooltip">
+          <div class="arrow"></div>
+          <h3 class="popover-title"></h3>
+          <div class="popover-content"></div>
+        </div>
+      """
+
+    $('#add-boilerplate-modal')
+      .find('#content')
+        .val($textarea.getSelection())
+      .end()
+      .on('click', '.btn-ok', (event) ->
+        $modal = $(event.delegateTarget)
+        $form = $modal.find 'form'
+
+        return false unless $form[0].reportValidity()
+
+        $.post($form.attr('action'), $form.serialize())
+          .done( ->
+            $textarea
+              .popover(
+                content: $L('default.boilerplate.saved')
+                template: getPopoverTemplate('success')
+              )
+              .popover('show')
+
+            return
+          )
+          .fail( ->
+            $textarea
+              .popover(
+                content: $L('default.boilerplate.error')
+                template: getPopoverTemplate('danger')
+              )
+              .popover('show')
+
+            return
+          )
+          .always( ->
+            $modal.modal 'hide'
+            window.setTimeout (-> $textarea.popover 'hide'), 3000
+
+            return
+          )
+
+        false
+      )
+      .modal()
+
+    false
+
   # Called when the user clicks on a link to delete a record.  This method
   # displays a deletion confirmation dialog.  If the user confirms the link is
   # loaded to the current window.
@@ -814,6 +915,21 @@ class Page
   _onScrollWindow: (event) ->
     $target = $(event.target)
     @$titleToolbar.toggleClass 'fixed', $target.scrollTop() >= @yToolbar
+
+
+#== Polyfills ===================================
+
+unless HTMLFormElement::reportValidity
+  HTMLFormElement::reportValidity = ->
+    valid = @checkValidity()
+    unless valid
+      for btn in @querySelectorAll 'button, input[type=submit]'
+
+        # Filter out <button type="button">, as querySelectorAll can't
+        # handle :not filtering
+        btn.click() if btn.type is 'submit'
+
+    valid
 
 
 #== Main ========================================

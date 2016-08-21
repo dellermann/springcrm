@@ -1,7 +1,7 @@
 //
 // _mixins.less
 //
-// Copyright (c) 2011-2015, Daniel Ellermann
+// Copyright (c) 2011-2016, Daniel Ellermann
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -63,4 +63,35 @@
   }
 }
 
-// vim:set ts=2 sw=2 sts=2:
+// Generates a colored variant of a popover using the given class.
+//
+// @param class the given class, e. g. "success", "warning", "danger" etc.
+//
+.popover-variant(@class) {
+  @bg-var: "alert-@{class}-bg";
+  @border-var: "alert-@{class}-border";
+  @text-var: "alert-@{class}-text";
+
+  .arrow-variant(@dir) {
+    @property: ~"border-@{dir}-color";
+
+    &.@{dir} > .arrow {
+      @{property}: @@border-var;
+
+      &:after {
+        @{property}: @@bg-var;
+      }
+    }
+  }
+
+  .popover-@{class} {
+    background-color: @@bg-var;
+    border-color: @@border-var;
+    color: @@text-var;
+
+    .arrow-variant(top);
+    .arrow-variant(right);
+    .arrow-variant(bottom);
+    .arrow-variant(left);
+  }
+}
