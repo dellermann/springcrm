@@ -219,4 +219,15 @@ class BoilerplateController {
             redirect action: 'show', id: id
         }
     }
+
+    def find(String name) {
+        List<Boilerplate> boilerplateInstanceList =
+            Boilerplate.findAllByNameIlike("%${name}%")
+
+        [boilerplateInstanceList: boilerplateInstanceList]
+    }
+
+    def get(Long id) {
+        [boilerplateInstance: Boilerplate.get(id)]
+    }
 }

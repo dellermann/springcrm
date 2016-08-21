@@ -27,6 +27,8 @@
   data-decimal-separator="${decimalSeparator}"
   data-grouping-separator="${groupingSeparator}"
   data-tax-rates="${taxRatesString}"
+  data-load-boilerplates-url="${createLink(controller: 'boilerplate', action: 'find')}"
+  data-get-boilerplate-url="${createLink(controller: 'boilerplate', action: 'get')}"
   data-load-markdown-help-url="${createLink(controller: 'help', params: [type: 'markdown'])}">
   <head>
     <meta charset="utf-8" />

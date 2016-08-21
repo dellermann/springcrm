@@ -1,0 +1,10 @@
+import org.amcworld.springcrm.Boilerplate
+
+model {
+    List<Boilerplate> boilerplateInstanceList
+}
+
+json(boilerplateInstanceList) { Boilerplate b ->
+    id b.id
+    name b.name
+}
