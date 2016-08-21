@@ -97,7 +97,10 @@ class BoilerplateController {
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
-            redirect action: 'show', id: boilerplateInstance.id
+            redirect(
+                action: 'show', id: boilerplateInstance.id,
+                params: [noLruRecord: params.noLruRecord]
+            )
         }
     }
 

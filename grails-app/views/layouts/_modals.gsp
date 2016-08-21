@@ -70,6 +70,7 @@
       </div>
       <div class="modal-body">
         <g:form controller="boilerplate" action="save">
+          <input type="hidden" name="noLruRecord" value="true"/>
           <f:field bean="${boilerplateInstance}" property="name"/>
           <f:field bean="${boilerplateInstance}" property="content"
             noToolbar="true"/>

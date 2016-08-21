@@ -60,14 +60,16 @@ class LruRecordInterceptor implements Interceptor {
      * @return  always {@code true}
      */
     boolean after() {
-        def instance = model?.get("${controllerName}Instance".toString())
-        if (!instance) {
-            instance = request["${controllerName}Instance"]
-        }
-        if (instance instanceof GormEntity) {
-            GormEntity entity = (GormEntity) instance
-            if (entity.ident() && !entity.hasErrors()) {
-                lruService.recordItem controllerName, instance
+        if (!params.boolean('noLruRecord')) {
+            def instance = model?.get("${controllerName}Instance".toString())
+            if (!instance) {
+                instance = request["${controllerName}Instance"]
+            }
+            if (instance instanceof GormEntity) {
+                GormEntity entity = (GormEntity) instance
+                if (entity.ident() && !entity.hasErrors()) {
+                    lruService.recordItem controllerName, instance
+                }
             }
         }
 
