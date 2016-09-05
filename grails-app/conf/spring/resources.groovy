@@ -18,14 +18,22 @@
  */
 
 
-import org.amcworld.springcrm.*
-import org.amcworld.springcrm.converter.*
-import org.amcworld.springcrm.google.*
-import org.amcworld.springcrm.xml.XHTMLEntityResolver
+import javax.xml.transform.TransformerFactory
+import org.amcworld.springcrm.converter.DateTimeValueConverter
+import org.amcworld.springcrm.converter.PrimitiveNumberValueConverter
+import org.amcworld.springcrm.google.GoogleCalendarSync
+import org.amcworld.springcrm.google.GoogleContactSync
+import org.amcworld.springcrm.google.GoogleContactSyncTask
+import org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet
+import org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet
+import org.amcworld.springcrm.ldap.LdapFactory
 import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
+import org.amcworld.springcrm.xml.LogErrorListener
+import org.amcworld.springcrm.xml.XHTMLEntityResolver
 import org.apache.fop.apps.FopFactory
 import org.apache.http.impl.client.HttpClients
 import org.grails.spring.DefaultBeanConfiguration
+import org.springframework.jndi.JndiObjectFactoryBean
 import org.xml.sax.helpers.XMLReaderFactory
 
 
@@ -36,7 +44,7 @@ beans = {
      */
 
     /* configuration handling */
-    springcrmConfig(org.springframework.jndi.JndiObjectFactoryBean) {
+    springcrmConfig(JndiObjectFactoryBean) {
         defaultObject = ''
         lookupOnStartup = true
         jndiName = 'java:comp/env/springcrmConfig'
@@ -53,10 +61,10 @@ beans = {
     }
 
     /* startup difference sets */
-    startupDiffSet2(org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet) {
+    startupDiffSet2(NoteMarkdownDiffSet) {
         markdownService = ref('markdownService')
     }
-    startupDiffSet4(org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet)
+    startupDiffSet4(ProjectDocumentDiffSet)
 
     /* XML and XSLT */
     fopFactory(FopFactory) { DefaultBeanConfiguration b ->
@@ -66,7 +74,7 @@ beans = {
     invoicingTransactionXMLFactory(InvoicingTransactionXMLFactory) {
         markdownService = ref('markdownService')
     }
-    transformerFactory(javax.xml.transform.TransformerFactory)
+    transformerFactory(TransformerFactory)
     { DefaultBeanConfiguration b ->
         b.factoryMethod = 'newInstance'
         b.singleton = false     // must not be singleton! See FopService.
@@ -80,7 +88,7 @@ beans = {
         b.singleton = false     // must not be singleton! See FopService.
         entityResolver = ref('xhtmlEntityResolver')
     }
-    xsltLogErrorListener(org.amcworld.springcrm.xml.LogErrorListener)
+    xsltLogErrorListener(LogErrorListener)
 
     /* HTTP clients */
     httpClient(HttpClients) { DefaultBeanConfiguration b ->
@@ -88,7 +96,7 @@ beans = {
     }
 
     /* LDAP */
-    ldapFactory(org.amcworld.springcrm.ldap.LdapFactory) { DefaultBeanConfiguration b ->
+    ldapFactory(LdapFactory) { DefaultBeanConfiguration b ->
         b.factoryMethod = 'getInstance'
     }
 

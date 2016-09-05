@@ -57,21 +57,7 @@ class MailSystemService implements Service {
      *          {@code false} otherwise
      */
     boolean isConfigured() {
-        config['mailUseConfig'] != null
-    }
-
-    /**
-     * Checks whether or not the mail system is configured by the user, that
-     * is, using system configuration data.
-     *
-     * @return  {@code true} if the mail system is user configured;
-     *          {@code false} if the mail system is configured by the
-     *          underlying system
-     */
-    boolean isUserConfigured() {
-        Boolean b = config['mailUseConfig']?.toType(Boolean)
-
-        b != null && b.booleanValue()
+        grailsApplication.config.grails.mail.host != null
     }
 
 
@@ -187,7 +173,7 @@ class MailSystemService implements Service {
         }
         String htmlMsgText = data.htmlMessage ?: convertToHtml(plainMsgText)
 
-        mailService.sendMail mailConfiguration, {
+        mailService.sendMail {
             multipart true
             from data.from ?: fromAddress
             to data.to
@@ -195,52 +181,5 @@ class MailSystemService implements Service {
             text plainMsgText
             html htmlMsgText
         }
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    /**
-     * Gets the configuration data from the application wide configuration
-     * holder.
-     *
-     * @return  the configuration holder
-     */
-    private ConfigHolder getConfig() {
-        ConfigHolder.instance
-    }
-
-    /**
-     * Gets the configuration data for the mail system.
-     *
-     * @return  the configuration data
-     */
-    private ConfigObject getMailConfiguration() {
-        ConfigObject configuration = new ConfigObject()
-
-        configuration.host = (config['mailHost']?.toString()) ?: 'localhost'
-        int port = (config['mailPort']?.toType(Integer)) ?: 587
-        configuration.port = port
-        String s = config['mailUserName']?.toString()
-        if (s) configuration.username = s
-        s = config['mailPassword']?.toString()
-        if (s) configuration.password = s
-
-        def props = [: ]
-        if (config['mailAuth'] as Boolean) {
-            props.'mail.smtp.auth' = true
-        }
-        String encryption = (config['mailEncryption']?.toString()) ?: 'none'
-        if (encryption == 'ssl') {
-            props.'mail.smtp.socketFactory.port' = port
-            props.'mail.smtp.socketFactory.class' = 'javax.net.ssl.SSLSocketFactory'
-            props.'mail.smtp.socketFactory.fallback' = false
-        } else if (encryption == 'starttls') {
-            props.'mail.smtp.starttls.enable' = true
-            props.'mail.smtp.port' = port
-        }
-        configuration.props = props
-
-        configuration
     }
 }

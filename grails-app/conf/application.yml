@@ -110,6 +110,14 @@ endpoints:
     jmx:
         unique-names: true
 
+
+---
+#================================================
+#
+# Data source configuration
+#
+#================================================
+
 dataSource:
     dbCreate: none    # updated by database-migration plugin
     pooled: true
@@ -118,20 +126,37 @@ dataSource:
     username: sa
     password:
 
+grails:
+    plugin:
+        databasemigration:
+            autoMigrateScripts:
+                - RunApp
+                - TestApp
+        forceAutoMigrate: true
+        updateOnStart: true
+        updateOnStartFileNames:
+            - changelog.groovy
+
 environments:
     development:
         dataSource:
             driverClassName: com.mysql.jdbc.Driver
-            # url: jdbc:mysql://localhost/springcrm?autoreconnect=true
-            url: jdbc:mysql://localhost/springcrm2
-            username: 'project'
-            password: 'haluni21'
             properties:
                 dbProperties:
                     autoReconnect: true
                     characterEncoding: UTF-8
                     useUnicode: true
             # logSql: true
+
+    production:
+        dataSource:
+            driverClassName: com.mysql.jdbc.Driver
+            properties:
+                dbProperties:
+                    autoReconnect: true
+                    characterEncoding: UTF-8
+                    useUnicode: true
+#            jndiName: java:comp/env/jdbc/springcrmDataSource
 
     test:
         dataSource:
@@ -142,15 +167,21 @@ environments:
             properties:
                 initSQL: SET REFERENTIAL_INTEGRITY FALSE
 
-    production:
-        dataSource:
-            jndiName: java:comp/env/jdbc/springcrmDataSource
-
     standalone:
         dataSource:
+            url: jdbc:h2:file:${user.home}/.springcrm/database/springcrm
+            username: springcrm
             properties:
                 initSQL: SET REFERENTIAL_INTEGRITY FALSE
+
+
 ---
+#================================================
+#
+# Asset configuration
+#
+#================================================
+
 grails:
     assets:
         excludes:
@@ -169,3 +200,52 @@ grails:
             - widgets/**
         less:
             compiler: standard
+
+
+---
+#================================================
+#
+# Plugin configuration
+#
+#================================================
+
+markdown:
+    abbreviations: true
+    definitionLists: true
+    hardwraps: true
+    removeHtml: true
+    smartPunctuation: true
+    tables: true
+
+
+---
+#================================================
+#
+# SpringCRM configuration
+#
+#================================================
+
+springcrm:
+    cacheDocs: true
+    dir:
+        data: ${springcrm.dir.base}/data
+        documents: ${springcrm.dir.base}/documents
+        installer: ${springcrm.dir.base}/install
+        log: ${springcrm.dir.base}/log
+        print: ${springcrm.dir.base}/print
+    lruList:
+        numEntries: 10
+    mail:
+        from: SpringCRM Service <noreply@springcrm.de>
+
+environments:
+    test:
+        grails.plugin.databasemigration.dropOnStart: true
+        springcrm:
+            dir:
+                base: ${java.io.tmpdir}/springcrm
+                data: ${springcrm.dir.base}/data
+                documents: ${springcrm.dir.base}/documents
+                installer: ${springcrm.dir.base}/install
+                log: ${springcrm.dir.base}/log
+                print: ${springcrm.dir.base}/print

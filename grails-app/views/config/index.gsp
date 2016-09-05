@@ -49,6 +49,10 @@
               <g:message code="config.taxRates.description" />
             </p>
           </li>
+          <%--
+
+            Currently inactive because mail can be configured from file, only.
+
           <li>
             <g:link action="show" params="[page: 'mail']"
               class="configuration-icon" role="presentation">
@@ -62,6 +66,7 @@
               <g:message code="config.mail.description" />
             </p>
           </li>
+          --%>
           <li>
             <g:link action="show" params="[page: 'sync']"
               class="configuration-icon" role="presentation">

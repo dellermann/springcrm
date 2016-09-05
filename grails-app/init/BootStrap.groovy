@@ -20,12 +20,10 @@
 
 import grails.core.GrailsApplication
 import javax.servlet.ServletContext
-import org.amcworld.springcrm.Config
-import org.amcworld.springcrm.ConfigHolder
-import org.amcworld.springcrm.InstallService
-import org.amcworld.springcrm.InstallerDisableTask
-import org.amcworld.springcrm.OverviewPanelRepository
+import javax.sql.DataSource
+import org.amcworld.springcrm.*
 import org.amcworld.springcrm.google.GoogleContactSyncTask
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
 
 
 /**
@@ -42,10 +40,10 @@ class BootStrap {
     public static final int CURRENT_DB_VERSION = 4i
 
 
-    //-- Instance fields ------------------------
+    //-- Fields ---------------------------------
 
-    def dataSource
-    def exceptionHandler
+    DataSource dataSource
+    SimpleMappingExceptionResolver exceptionHandler
     GoogleContactSyncTask googleContactSyncTask
     GrailsApplication grailsApplication
     InstallService installService
@@ -59,28 +57,29 @@ class BootStrap {
             'java.lang.Exception': '/error'
         ]
 
-        // /* load instance specific configuration file */
-        // log.debug 'Searching for instance specific configuration file…'
-        // if (springcrmConfig) {
-        //     File file = new File(springcrmConfig.toString())
-        //     log.debug "Found instance specific configuration in ${file}."
-        //     if (file.exists()) {
-        //         log.debug "Reading and parsing instance specific configuration from ${file}."
-        //         def whatToParse
-        //         if (file.name.endsWith('.groovy')) {
-        //             whatToParse = file.toURI().toURL()
-        //         } else {
-        //             whatToParse = new Properties()
-        //             whatToParse.load file.newReader()
-        //         }
-        //         ConfigObject config = new ConfigSlurper().parse(whatToParse)
-        //         grailsApplication.config.merge config
-        //     }
-        // }
+        /* load instance specific configuration file */
+        log.debug 'Searching for instance specific configuration file…'
+        if (springcrmConfig) {
+            File file = new File(springcrmConfig.toString())
+            log.debug "Found instance specific configuration in ${file}."
+            if (file.exists()) {
+                log.debug "Reading and parsing instance specific configuration from ${file}."
+                def whatToParse
+                if (file.name.endsWith('.groovy')) {
+                    whatToParse = file.toURI().toURL()
+                } else {
+                    whatToParse = new Properties()
+                    whatToParse.load file.newReader()
+                }
+                ConfigObject config = new ConfigSlurper().parse(whatToParse)
+                grailsApplication.config.merge config
+            }
+        }
 
         /* apply difference sets */
-        installService.applyAllDiffSets dataSource.connection,
-            CURRENT_DB_VERSION
+        installService.applyAllDiffSets(
+            dataSource.connection, CURRENT_DB_VERSION
+        )
 
         /* perform data migration */
         installService.migrateData dataSource.connection
