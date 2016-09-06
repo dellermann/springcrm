@@ -20,11 +20,8 @@
 
 package org.amcworld.springcrm
 
-import grails.util.GrailsNameUtils
 import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
-import java.util.regex.Pattern
-import org.springframework.validation.FieldError
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
@@ -41,6 +38,7 @@ class ViewTagLib {
     //-- Constants ------------------------------
 
     static final Map<String, String> CONTROLLER_ICON_MAPPING = [
+        boilerplate: 'font',
         calendarEvent: 'calendar',
         call: 'phone',
         creditMemo: 'money',

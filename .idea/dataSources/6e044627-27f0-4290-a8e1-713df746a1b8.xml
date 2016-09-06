@@ -1,0 +1,2071 @@
+<dataSource name="MySQL - springcrm2@localhost">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="2.6">
+    <schema id="1" name="springcrm2">
+      <visible>1</visible>
+    </schema>
+    <schema id="2" name="amarok" />
+    <schema id="3" name="amcweb" />
+    <schema id="4" name="information_schema" />
+    <schema id="5" name="lehrerinberlin" />
+    <schema id="6" name="magento" />
+    <schema id="7" name="mysql" />
+    <schema id="8" name="performance_schema" />
+    <schema id="9" name="phpmyadmin" />
+    <schema id="10" name="proj_breha" />
+    <schema id="11" name="proj_drs" />
+    <schema id="12" name="proj_euroregion" />
+    <schema id="13" name="proj_euroregion2" />
+    <schema id="14" name="proj_medienrat" />
+    <schema id="15" name="proj_par" />
+    <schema id="16" name="proj_praesentainment" />
+    <schema id="17" name="proj_proaut" />
+    <schema id="18" name="proj_scil" />
+    <schema id="19" name="proj_sh" />
+    <schema id="20" name="proj_sonjamueller" />
+    <schema id="21" name="scil" />
+    <schema id="22" name="springcrm" />
+    <table id="23" parent="1" name="DATABASECHANGELOG" />
+    <table id="24" parent="1" name="DATABASECHANGELOGLOCK" />
+    <table id="25" parent="1" name="calendar_event" />
+    <table id="26" parent="1" name="config" />
+    <table id="27" parent="1" name="data_file" />
+    <table id="28" parent="1" name="google_data_sync_status" />
+    <table id="29" parent="1" name="helpdesk" />
+    <table id="30" parent="1" name="helpdesk_users" />
+    <table id="31" parent="1" name="hibernate_sequence" />
+    <table id="32" parent="1" name="invoicing_item" />
+    <table id="33" parent="1" name="invoicing_transaction" />
+    <table id="34" parent="1" name="invoicing_transaction_terms_and_conditions" />
+    <table id="35" parent="1" name="ldap_sync_status" />
+    <table id="36" parent="1" name="lru_entry" />
+    <table id="37" parent="1" name="note" />
+    <table id="38" parent="1" name="organization" />
+    <table id="39" parent="1" name="panel" />
+    <table id="40" parent="1" name="person" />
+    <table id="41" parent="1" name="phone_call" />
+    <table id="42" parent="1" name="project" />
+    <table id="43" parent="1" name="project_document" />
+    <table id="44" parent="1" name="project_item" />
+    <table id="45" parent="1" name="purchase_invoice" />
+    <table id="46" parent="1" name="purchase_invoice_item" />
+    <table id="47" parent="1" name="reminder" />
+    <table id="48" parent="1" name="sales_item" />
+    <table id="49" parent="1" name="sales_item_pricing" />
+    <table id="50" parent="1" name="sales_item_pricing_item" />
+    <table id="51" parent="1" name="sel_value" />
+    <table id="52" parent="1" name="seq_number" />
+    <table id="53" parent="1" name="ticket" />
+    <table id="54" parent="1" name="ticket_log_entry" />
+    <table id="55" parent="1" name="user_data" />
+    <table id="56" parent="1" name="user_setting" />
+    <column id="57" parent="23" name="ID">
+      <mandatory>1</mandatory>
+      <data-type>varchar(63)|0</data-type>
+    </column>
+    <column id="58" parent="23" name="AUTHOR">
+      <mandatory>1</mandatory>
+      <data-type>varchar(63)|0</data-type>
+    </column>
+    <column id="59" parent="23" name="FILENAME">
+      <mandatory>1</mandatory>
+      <data-type>varchar(200)|0</data-type>
+    </column>
+    <column id="60" parent="23" name="DATEEXECUTED">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="61" parent="23" name="ORDEREXECUTED">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="62" parent="23" name="EXECTYPE">
+      <mandatory>1</mandatory>
+      <data-type>varchar(10)|0</data-type>
+    </column>
+    <column id="63" parent="23" name="MD5SUM">
+      <data-type>varchar(35)|0</data-type>
+    </column>
+    <column id="64" parent="23" name="DESCRIPTION">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="65" parent="23" name="COMMENTS">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="66" parent="23" name="TAG">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="67" parent="23" name="LIQUIBASE">
+      <data-type>varchar(20)|0</data-type>
+    </column>
+    <key id="68" parent="23" name="PRIMARY">
+      <columns>ID
+AUTHOR
+FILENAME</columns>
+      <primary>1</primary>
+    </key>
+    <column id="69" parent="24" name="ID">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="70" parent="24" name="LOCKED">
+      <mandatory>1</mandatory>
+      <data-type>tinyint(1)|0</data-type>
+    </column>
+    <column id="71" parent="24" name="LOCKGRANTED">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="72" parent="24" name="LOCKEDBY">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <key id="73" parent="24" name="PRIMARY">
+      <columns>ID</columns>
+      <primary>1</primary>
+    </key>
+    <column id="74" parent="25" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="75" parent="25" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="76" parent="25" name="all_day">
+      <mandatory>1</mandatory>
+      <data-type>bit(1)|0</data-type>
+    </column>
+    <column id="77" parent="25" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="78" parent="25" name="description">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="79" parent="25" name="end_time">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="80" parent="25" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="81" parent="25" name="location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="82" parent="25" name="organization_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="83" parent="25" name="owner_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="84" parent="25" name="recurrence_interval">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="85" parent="25" name="recurrence_month">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="86" parent="25" name="recurrence_month_day">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="87" parent="25" name="recurrence_type">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="88" parent="25" name="recurrence_until">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="89" parent="25" name="recurrence_weekday_ord">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="90" parent="25" name="recurrence_weekdays">
+      <data-type>varchar(13)|0</data-type>
+    </column>
+    <column id="91" parent="25" name="start_time">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="92" parent="25" name="subject">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="93" parent="25" name="calendar_event_subject">
+      <columns>subject</columns>
+      <desc-columns />
+    </index>
+    <index id="94" parent="25" name="FK2A9BEA598466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="95" parent="25" name="FK2A9BEA59DC0B6238">
+      <columns>owner_id</columns>
+      <desc-columns />
+    </index>
+    <key id="96" parent="25" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="97" parent="26" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="98" parent="26" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="99" parent="26" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="100" parent="26" name="value">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="101" parent="26" name="name">
+      <columns>name</columns>
+      <desc-columns />
+    </index>
+    <key id="102" parent="26" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="103" parent="27" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="104" parent="27" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="105" parent="27" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="106" parent="27" name="file_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="107" parent="27" name="file_size">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="108" parent="27" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="109" parent="27" name="mime_type">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <key id="110" parent="27" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="111" parent="28" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="112" parent="28" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="113" parent="28" name="etag">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="114" parent="28" name="item_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="115" parent="28" name="last_sync">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="116" parent="28" name="type">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="117" parent="28" name="url">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="118" parent="28" name="user_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="119" parent="28" name="FK7A34DA477024B220">
+      <columns>user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="120" parent="28" name="google_data_sync_status_type">
+      <columns>type</columns>
+      <desc-columns />
+    </index>
+    <key id="121" parent="28" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="122" parent="29" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="123" parent="29" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="124" parent="29" name="access_code">
+      <mandatory>1</mandatory>
+      <data-type>varchar(10)|0</data-type>
+    </column>
+    <column id="125" parent="29" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="126" parent="29" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="127" parent="29" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="128" parent="29" name="organization_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="129" parent="29" name="url_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="130" parent="29" name="FKD0F4455A8466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="131" parent="29" name="name_uniq_1374668216000">
+      <columns>name</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <index id="132" parent="29" name="url_name_uniq_1374668216001">
+      <columns>url_name</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <key id="133" parent="29" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="134" parent="29" name="name_uniq_1374668216000">
+      <columns>name</columns>
+      <underlying-index>name_uniq_1374668216000</underlying-index>
+    </key>
+    <key id="135" parent="29" name="url_name_uniq_1374668216001">
+      <columns>url_name</columns>
+      <underlying-index>url_name_uniq_1374668216001</underlying-index>
+    </key>
+    <column id="136" parent="30" name="user_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="137" parent="30" name="helpdesk_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="138" parent="30" name="FK99A04AE37024B220">
+      <columns>user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="139" parent="30" name="FK99A04AE3C26980C0">
+      <columns>helpdesk_id</columns>
+      <desc-columns />
+    </index>
+    <key id="140" parent="30" name="PRIMARY">
+      <columns>helpdesk_id
+user_id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="141" parent="31" name="next_val">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="142" parent="32" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="143" parent="32" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="144" parent="32" name="description">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="145" parent="32" name="invoicing_transaction_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="146" parent="32" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="147" parent="32" name="quantity">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="148" parent="32" name="sales_item_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="149" parent="32" name="tax">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="150" parent="32" name="unit">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="151" parent="32" name="unit_price">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="152" parent="32" name="items_idx">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <index id="153" parent="32" name="FKCF5EC58815DA134D">
+      <columns>sales_item_id</columns>
+      <desc-columns />
+    </index>
+    <index id="154" parent="32" name="FKCF5EC5886BC3566B">
+      <columns>invoicing_transaction_id</columns>
+      <desc-columns />
+    </index>
+    <key id="155" parent="32" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="156" parent="33" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="157" parent="33" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="158" parent="33" name="adjustment">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="159" parent="33" name="billing_addr_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="160" parent="33" name="billing_addr_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="161" parent="33" name="billing_addr_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="162" parent="33" name="billing_addr_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="163" parent="33" name="billing_addr_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="164" parent="33" name="billing_addr_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="165" parent="33" name="carrier_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="166" parent="33" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="167" parent="33" name="discount_amount">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="168" parent="33" name="discount_percent">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="169" parent="33" name="doc_date">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="170" parent="33" name="footer_text">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="171" parent="33" name="header_text">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="172" parent="33" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="173" parent="33" name="notes">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="174" parent="33" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="175" parent="33" name="organization_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="176" parent="33" name="person_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="177" parent="33" name="shipping_addr_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="178" parent="33" name="shipping_addr_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="179" parent="33" name="shipping_addr_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="180" parent="33" name="shipping_addr_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="181" parent="33" name="shipping_addr_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="182" parent="33" name="shipping_addr_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="183" parent="33" name="shipping_costs">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="184" parent="33" name="shipping_date">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="185" parent="33" name="shipping_tax">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="186" parent="33" name="subject">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="187" parent="33" name="total">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="188" parent="33" name="type">
+      <mandatory>1</mandatory>
+      <data-type>varchar(1)|0</data-type>
+    </column>
+    <column id="189" parent="33" name="class">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="190" parent="33" name="quote_stage_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="191" parent="33" name="valid_until">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="192" parent="33" name="delivery_date">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="193" parent="33" name="due_date">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="194" parent="33" name="quote_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="195" parent="33" name="so_stage_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="196" parent="33" name="due_date_payment">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="197" parent="33" name="invoice_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="198" parent="33" name="level_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="199" parent="33" name="payment_amount">
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="200" parent="33" name="payment_date">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="201" parent="33" name="payment_method_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="202" parent="33" name="dunning_stage_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="203" parent="33" name="dunning_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="204" parent="33" name="credit_memo_stage_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="205" parent="33" name="sales_order_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="206" parent="33" name="invoice_stage_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="207" parent="33" name="create_user_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="208" parent="33" name="FK44B5CAC913DBA780">
+      <columns>credit_memo_stage_id</columns>
+      <desc-columns />
+    </index>
+    <index id="209" parent="33" name="FK44B5CAC9257B68B4">
+      <columns>carrier_id</columns>
+      <desc-columns />
+    </index>
+    <index id="210" parent="33" name="FK44B5CAC92B8F89DD">
+      <columns>dunning_stage_id</columns>
+      <desc-columns />
+    </index>
+    <index id="211" parent="33" name="FK44B5CAC92FD73DDD">
+      <columns>create_user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="212" parent="33" name="FK44B5CAC9354E73CF">
+      <columns>level_id</columns>
+      <desc-columns />
+    </index>
+    <index id="213" parent="33" name="FK44B5CAC96FB140B4">
+      <columns>quote_id</columns>
+      <desc-columns />
+    </index>
+    <index id="214" parent="33" name="FK44B5CAC98466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="215" parent="33" name="FK44B5CAC99346B214">
+      <columns>dunning_id</columns>
+      <desc-columns />
+    </index>
+    <index id="216" parent="33" name="FK44B5CAC9A91976E7">
+      <columns>sales_order_id</columns>
+      <desc-columns />
+    </index>
+    <index id="217" parent="33" name="FK44B5CAC9BB290094">
+      <columns>invoice_id</columns>
+      <desc-columns />
+    </index>
+    <index id="218" parent="33" name="FK44B5CAC9C4EFC2F5">
+      <columns>so_stage_id</columns>
+      <desc-columns />
+    </index>
+    <index id="219" parent="33" name="FK44B5CAC9CEECCCE5">
+      <columns>invoice_stage_id</columns>
+      <desc-columns />
+    </index>
+    <index id="220" parent="33" name="FK44B5CAC9E696B207">
+      <columns>quote_stage_id</columns>
+      <desc-columns />
+    </index>
+    <index id="221" parent="33" name="FK44B5CAC9F1C1460">
+      <columns>person_id</columns>
+      <desc-columns />
+    </index>
+    <index id="222" parent="33" name="FK44B5CAC9F806AF41">
+      <columns>payment_method_id</columns>
+      <desc-columns />
+    </index>
+    <index id="223" parent="33" name="invoicing_transaction_subject">
+      <columns>subject</columns>
+      <desc-columns />
+    </index>
+    <index id="224" parent="33" name="invoicing_transaction_unique_number">
+      <columns>type
+number</columns>
+      <desc-columns />
+    </index>
+    <key id="225" parent="33" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="226" parent="34" name="invoicing_transaction_terms_and_conditions_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="227" parent="34" name="terms_and_conditions_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="228" parent="34" name="FKC357738E61189250">
+      <columns>terms_and_conditions_id</columns>
+      <desc-columns />
+    </index>
+    <index id="229" parent="34" name="FKC357738EAA3A3B86">
+      <columns>invoicing_transaction_terms_and_conditions_id</columns>
+      <desc-columns />
+    </index>
+    <column id="230" parent="35" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="231" parent="35" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="232" parent="35" name="dn">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="233" parent="35" name="item_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="234" parent="35" name="last_sync">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <index id="235" parent="35" name="item_id">
+      <columns>item_id</columns>
+      <desc-columns />
+    </index>
+    <key id="236" parent="35" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="237" parent="36" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="238" parent="36" name="controller">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="239" parent="36" name="item_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="240" parent="36" name="name">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="241" parent="36" name="pos">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="242" parent="36" name="user_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="243" parent="36" name="FKA43D4FE27024B220">
+      <columns>user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="244" parent="36" name="lru_entry_unique_item_id">
+      <columns>controller
+user_id
+item_id</columns>
+      <desc-columns />
+    </index>
+    <key id="245" parent="36" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="246" parent="37" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="247" parent="37" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="248" parent="37" name="content">
+      <mandatory>1</mandatory>
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="249" parent="37" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="250" parent="37" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="251" parent="37" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="252" parent="37" name="organization_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="253" parent="37" name="person_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="254" parent="37" name="title">
+      <mandatory>1</mandatory>
+      <data-type>varchar(200)|0</data-type>
+    </column>
+    <index id="255" parent="37" name="FK33AFF28466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="256" parent="37" name="FK33AFF2F1C1460">
+      <columns>person_id</columns>
+      <desc-columns />
+    </index>
+    <index id="257" parent="37" name="note_title">
+      <columns>title</columns>
+      <desc-columns />
+    </index>
+    <index id="258" parent="37" name="number_unique_1345899500460">
+      <columns>number</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <key id="259" parent="37" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="260" parent="37" name="number_unique_1345899500460">
+      <columns>number</columns>
+      <underlying-index>number_unique_1345899500460</underlying-index>
+    </key>
+    <column id="261" parent="38" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="262" parent="38" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="263" parent="38" name="billing_addr_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="264" parent="38" name="billing_addr_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="265" parent="38" name="billing_addr_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="266" parent="38" name="billing_addr_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="267" parent="38" name="billing_addr_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="268" parent="38" name="billing_addr_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="269" parent="38" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="270" parent="38" name="doc_placeholder_value">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="271" parent="38" name="email1">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="272" parent="38" name="email2">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="273" parent="38" name="fax">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="274" parent="38" name="industry_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="275" parent="38" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="276" parent="38" name="legal_form">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="277" parent="38" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="278" parent="38" name="notes">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="279" parent="38" name="num_employees">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="280" parent="38" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="281" parent="38" name="owner">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="282" parent="38" name="phone">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="283" parent="38" name="phone_other">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="284" parent="38" name="rating_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="285" parent="38" name="rec_type">
+      <mandatory>1</mandatory>
+      <data-type>tinyint(4)|0</data-type>
+    </column>
+    <column id="286" parent="38" name="shipping_addr_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="287" parent="38" name="shipping_addr_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="288" parent="38" name="shipping_addr_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="289" parent="38" name="shipping_addr_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="290" parent="38" name="shipping_addr_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="291" parent="38" name="shipping_addr_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="292" parent="38" name="type_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="293" parent="38" name="website">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="294" parent="38" name="term_of_payment">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <index id="295" parent="38" name="FK4644ED3359B47A78">
+      <columns>type_id</columns>
+      <desc-columns />
+    </index>
+    <index id="296" parent="38" name="FK4644ED33BCD40240">
+      <columns>industry_id</columns>
+      <desc-columns />
+    </index>
+    <index id="297" parent="38" name="FK4644ED33F3FD0F60">
+      <columns>rating_id</columns>
+      <desc-columns />
+    </index>
+    <index id="298" parent="38" name="organization_name">
+      <columns>name</columns>
+      <desc-columns />
+    </index>
+    <index id="299" parent="38" name="organization_rec_type">
+      <columns>rec_type</columns>
+      <desc-columns />
+    </index>
+    <index id="300" parent="38" name="organization_unique_number">
+      <columns>rec_type
+number</columns>
+      <desc-columns />
+    </index>
+    <key id="301" parent="38" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="302" parent="39" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="303" parent="39" name="panel_id">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="304" parent="39" name="pos">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="305" parent="39" name="user_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="306" parent="39" name="FK6580A047024B220">
+      <columns>user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="307" parent="39" name="panel_panel_id">
+      <columns>panel_id</columns>
+      <desc-columns />
+    </index>
+    <key id="308" parent="39" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="309" parent="40" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="310" parent="40" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="311" parent="40" name="assistant">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="312" parent="40" name="birthday">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="313" parent="40" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="314" parent="40" name="department">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="315" parent="40" name="email1">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="316" parent="40" name="email2">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="317" parent="40" name="fax">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="318" parent="40" name="first_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="319" parent="40" name="job_title">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="320" parent="40" name="last_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="321" parent="40" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="322" parent="40" name="mailing_addr_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="323" parent="40" name="mailing_addr_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="324" parent="40" name="mailing_addr_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="325" parent="40" name="mailing_addr_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="326" parent="40" name="mailing_addr_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="327" parent="40" name="mailing_addr_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="328" parent="40" name="mobile">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="329" parent="40" name="notes">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="330" parent="40" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="331" parent="40" name="organization_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="332" parent="40" name="other_addr_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="333" parent="40" name="other_addr_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="334" parent="40" name="other_addr_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="335" parent="40" name="other_addr_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="336" parent="40" name="other_addr_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="337" parent="40" name="other_addr_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="338" parent="40" name="phone">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="339" parent="40" name="phone_assistant">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="340" parent="40" name="phone_home">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="341" parent="40" name="phone_other">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="342" parent="40" name="picture">
+      <data-type>mediumblob|0</data-type>
+    </column>
+    <column id="343" parent="40" name="salutation_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="344" parent="40" name="title">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="345" parent="40" name="FKC4E39B558466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="346" parent="40" name="FKC4E39B55DD23A680">
+      <columns>salutation_id</columns>
+      <desc-columns />
+    </index>
+    <index id="347" parent="40" name="number_unique_1345899500481">
+      <columns>number</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <index id="348" parent="40" name="person_first_name">
+      <columns>first_name</columns>
+      <desc-columns />
+    </index>
+    <index id="349" parent="40" name="person_last_name">
+      <columns>last_name</columns>
+      <desc-columns />
+    </index>
+    <key id="350" parent="40" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="351" parent="40" name="number_unique_1345899500481">
+      <columns>number</columns>
+      <underlying-index>number_unique_1345899500481</underlying-index>
+    </key>
+    <column id="352" parent="41" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="353" parent="41" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="354" parent="41" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="355" parent="41" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="356" parent="41" name="notes">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="357" parent="41" name="organization_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="358" parent="41" name="person_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="359" parent="41" name="phone">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="360" parent="41" name="start">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="361" parent="41" name="status">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="362" parent="41" name="subject">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="363" parent="41" name="type">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="364" parent="41" name="FK93412A8F8466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="365" parent="41" name="FK93412A8FF1C1460">
+      <columns>person_id</columns>
+      <desc-columns />
+    </index>
+    <index id="366" parent="41" name="phone_call_subject">
+      <columns>subject</columns>
+      <desc-columns />
+    </index>
+    <key id="367" parent="41" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="368" parent="42" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="369" parent="42" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="370" parent="42" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="371" parent="42" name="description">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="372" parent="42" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="373" parent="42" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="374" parent="42" name="organization_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="375" parent="42" name="person_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="376" parent="42" name="phase">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="377" parent="42" name="status_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="378" parent="42" name="title">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="379" parent="42" name="FKED904B192B4AEB6D">
+      <columns>status_id</columns>
+      <desc-columns />
+    </index>
+    <index id="380" parent="42" name="FKED904B198466B320">
+      <columns>organization_id</columns>
+      <desc-columns />
+    </index>
+    <index id="381" parent="42" name="FKED904B19F1C1460">
+      <columns>person_id</columns>
+      <desc-columns />
+    </index>
+    <index id="382" parent="42" name="number_unique_1345899500498">
+      <columns>number</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <key id="383" parent="42" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="384" parent="42" name="number_unique_1345899500498">
+      <columns>number</columns>
+      <underlying-index>number_unique_1345899500498</underlying-index>
+    </key>
+    <column id="385" parent="43" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="386" parent="43" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="387" parent="43" name="path">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="388" parent="43" name="phase">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="389" parent="43" name="project_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="390" parent="43" name="title">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="391" parent="43" name="FKEC8223814C82E914">
+      <columns>project_id</columns>
+      <desc-columns />
+    </index>
+    <key id="392" parent="43" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="393" parent="44" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="394" parent="44" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="395" parent="44" name="controller">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="396" parent="44" name="item_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="397" parent="44" name="phase">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="398" parent="44" name="project_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="399" parent="44" name="title">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="400" parent="44" name="FK37FBF0794C82E914">
+      <columns>project_id</columns>
+      <desc-columns />
+    </index>
+    <key id="401" parent="44" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="402" parent="45" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="403" parent="45" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="404" parent="45" name="adjustment">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="405" parent="45" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="406" parent="45" name="discount_amount">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="407" parent="45" name="discount_percent">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="408" parent="45" name="doc_date">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="409" parent="45" name="due_date">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="410" parent="45" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="411" parent="45" name="notes">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="412" parent="45" name="number">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="413" parent="45" name="payment_amount">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="414" parent="45" name="payment_date">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="415" parent="45" name="payment_method_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="416" parent="45" name="shipping_costs">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="417" parent="45" name="shipping_tax">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="418" parent="45" name="stage_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="419" parent="45" name="subject">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="420" parent="45" name="total">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="421" parent="45" name="vendor_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="422" parent="45" name="vendor_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="423" parent="45" name="document_file_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="424" parent="45" name="FK5ABE5DEF14CAA126">
+      <columns>document_file_id</columns>
+      <desc-columns />
+    </index>
+    <index id="425" parent="45" name="FK5ABE5DEFA555D5B4">
+      <columns>stage_id</columns>
+      <desc-columns />
+    </index>
+    <index id="426" parent="45" name="FK5ABE5DEFF49B86EB">
+      <columns>vendor_id</columns>
+      <desc-columns />
+    </index>
+    <index id="427" parent="45" name="FK5ABE5DEFF806AF41">
+      <columns>payment_method_id</columns>
+      <desc-columns />
+    </index>
+    <index id="428" parent="45" name="purchase_invoice_subject">
+      <columns>subject</columns>
+      <desc-columns />
+    </index>
+    <key id="429" parent="45" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="430" parent="46" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="431" parent="46" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="432" parent="46" name="description">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="433" parent="46" name="invoice_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="434" parent="46" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="435" parent="46" name="quantity">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="436" parent="46" name="tax">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="437" parent="46" name="unit">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="438" parent="46" name="unit_price">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="439" parent="46" name="items_idx">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <index id="440" parent="46" name="FKFBF6336329E58653">
+      <columns>invoice_id</columns>
+      <desc-columns />
+    </index>
+    <key id="441" parent="46" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="442" parent="47" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="443" parent="47" name="calendar_event_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="444" parent="47" name="next_reminder">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="445" parent="47" name="unit">
+      <mandatory>1</mandatory>
+      <data-type>varchar(1)|0</data-type>
+    </column>
+    <column id="446" parent="47" name="user_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="447" parent="47" name="value">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <index id="448" parent="47" name="FKE116C0727024B220">
+      <columns>user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="449" parent="47" name="FKE116C072DCB8B137">
+      <columns>calendar_event_id</columns>
+      <desc-columns />
+    </index>
+    <key id="450" parent="47" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="451" parent="48" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="452" parent="48" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="453" parent="48" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="454" parent="48" name="description">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="455" parent="48" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="456" parent="48" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="457" parent="48" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="458" parent="48" name="purchase_price">
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="459" parent="48" name="quantity">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="460" parent="48" name="sales_end">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="461" parent="48" name="sales_start">
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="462" parent="48" name="tax_rate_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="463" parent="48" name="type">
+      <mandatory>1</mandatory>
+      <data-type>varchar(1)|0</data-type>
+    </column>
+    <column id="464" parent="48" name="unit_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="465" parent="48" name="unit_price">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="466" parent="48" name="class">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="467" parent="48" name="category_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="468" parent="48" name="manufacturer">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="469" parent="48" name="retailer">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="470" parent="48" name="weight">
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="471" parent="48" name="pricing_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="472" parent="48" name="FK6669B26667D5AB80">
+      <columns>unit_id</columns>
+      <desc-columns />
+    </index>
+    <index id="473" parent="48" name="FK6669B266C7AFB16B">
+      <columns>tax_rate_id</columns>
+      <desc-columns />
+    </index>
+    <index id="474" parent="48" name="FK6669B266DCF64401">
+      <columns>pricing_id</columns>
+      <desc-columns />
+    </index>
+    <index id="475" parent="48" name="FK6669B266E9949B03">
+      <columns>category_id</columns>
+      <desc-columns />
+    </index>
+    <index id="476" parent="48" name="sales_item_class">
+      <columns>class</columns>
+      <desc-columns />
+    </index>
+    <index id="477" parent="48" name="sales_item_name">
+      <columns>name</columns>
+      <desc-columns />
+    </index>
+    <index id="478" parent="48" name="sales_item_number">
+      <columns>type
+number</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <key id="479" parent="48" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="480" parent="48" name="sales_item_number">
+      <columns>type
+number</columns>
+      <underlying-index>sales_item_number</underlying-index>
+    </key>
+    <column id="481" parent="49" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="482" parent="49" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="483" parent="49" name="adjustment">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="484" parent="49" name="discount_percent">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="485" parent="49" name="quantity">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="486" parent="49" name="unit_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <index id="487" parent="49" name="FKFA432ED67D5AB80">
+      <columns>unit_id</columns>
+      <desc-columns />
+    </index>
+    <key id="488" parent="49" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="489" parent="50" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="490" parent="50" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="491" parent="50" name="name">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="492" parent="50" name="pricing_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="493" parent="50" name="quantity">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="494" parent="50" name="rel_to_pos">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="495" parent="50" name="type">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="496" parent="50" name="unit">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="497" parent="50" name="unit_percent">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <column id="498" parent="50" name="unit_price">
+      <mandatory>1</mandatory>
+      <data-type>decimal(19,6)|0</data-type>
+    </column>
+    <column id="499" parent="50" name="items_idx">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <index id="500" parent="50" name="FK303CD25DCF64401">
+      <columns>pricing_id</columns>
+      <desc-columns />
+    </index>
+    <key id="501" parent="50" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="502" parent="51" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="503" parent="51" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="504" parent="51" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="505" parent="51" name="order_id">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="506" parent="51" name="class">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="507" parent="51" name="tax_value">
+      <data-type>decimal(19,2)|0</data-type>
+    </column>
+    <key id="508" parent="51" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="509" parent="52" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="510" parent="52" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="511" parent="52" name="controller_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="512" parent="52" name="end_value">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="513" parent="52" name="prefix">
+      <mandatory>1</mandatory>
+      <data-type>varchar(5)|0</data-type>
+    </column>
+    <column id="514" parent="52" name="start_value">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="515" parent="52" name="suffix">
+      <mandatory>1</mandatory>
+      <data-type>varchar(5)|0</data-type>
+    </column>
+    <index id="516" parent="52" name="seq_number_controller_name">
+      <columns>controller_name</columns>
+      <desc-columns />
+    </index>
+    <key id="517" parent="52" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="518" parent="53" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="519" parent="53" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="520" parent="53" name="assigned_user_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="521" parent="53" name="address_country">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="522" parent="53" name="creator_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="523" parent="53" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="524" parent="53" name="email1">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="525" parent="53" name="email2">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="526" parent="53" name="fax">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="527" parent="53" name="first_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="528" parent="53" name="helpdesk_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="529" parent="53" name="last_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="530" parent="53" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="531" parent="53" name="address_location">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="532" parent="53" name="mobile">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="533" parent="53" name="number">
+      <mandatory>1</mandatory>
+      <data-type>int(11)|0</data-type>
+    </column>
+    <column id="534" parent="53" name="phone">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="535" parent="53" name="phone_home">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="536" parent="53" name="address_postal_code">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="537" parent="53" name="priority_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="538" parent="53" name="salutation_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="539" parent="53" name="stage">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="540" parent="53" name="address_state">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="541" parent="53" name="address_street">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="542" parent="53" name="subject">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="543" parent="53" name="address_po_box">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="544" parent="53" name="FKCBE86B0C2F381B2C">
+      <columns>priority_id</columns>
+      <desc-columns />
+    </index>
+    <index id="545" parent="53" name="FKCBE86B0C7B5CB8AF">
+      <columns>assigned_user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="546" parent="53" name="FKCBE86B0CC26980C0">
+      <columns>helpdesk_id</columns>
+      <desc-columns />
+    </index>
+    <index id="547" parent="53" name="FKCBE86B0CCB20B61F">
+      <columns>creator_id</columns>
+      <desc-columns />
+    </index>
+    <index id="548" parent="53" name="FKCBE86B0CDD23A680">
+      <columns>salutation_id</columns>
+      <desc-columns />
+    </index>
+    <index id="549" parent="53" name="number_uniq_1374668216067">
+      <columns>number</columns>
+      <desc-columns />
+      <unique>1</unique>
+    </index>
+    <key id="550" parent="53" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <key id="551" parent="53" name="number_uniq_1374668216067">
+      <columns>number</columns>
+      <underlying-index>number_uniq_1374668216067</underlying-index>
+    </key>
+    <column id="552" parent="54" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="553" parent="54" name="action">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="554" parent="54" name="attachment_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="555" parent="54" name="creator_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="556" parent="54" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="557" parent="54" name="message">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="558" parent="54" name="recipient_id">
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="559" parent="54" name="stage">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="560" parent="54" name="ticket_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="561" parent="54" name="log_entries_idx">
+      <data-type>int(11)|0</data-type>
+    </column>
+    <index id="562" parent="54" name="FKCA9A9244C447E112">
+      <columns>recipient_id</columns>
+      <desc-columns />
+    </index>
+    <index id="563" parent="54" name="FKCA9A9244C82D1B43">
+      <columns>attachment_id</columns>
+      <desc-columns />
+    </index>
+    <index id="564" parent="54" name="FKCA9A9244CB20B61F">
+      <columns>creator_id</columns>
+      <desc-columns />
+    </index>
+    <index id="565" parent="54" name="FKCA9A9244DF08E500">
+      <columns>ticket_id</columns>
+      <desc-columns />
+    </index>
+    <key id="566" parent="54" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="567" parent="55" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="568" parent="55" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="569" parent="55" name="admin">
+      <mandatory>1</mandatory>
+      <data-type>bit(1)|0</data-type>
+    </column>
+    <column id="570" parent="55" name="allowed_modules">
+      <data-type>longtext|0</data-type>
+    </column>
+    <column id="571" parent="55" name="date_created">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="572" parent="55" name="email">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="573" parent="55" name="fax">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="574" parent="55" name="first_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="575" parent="55" name="last_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="576" parent="55" name="last_updated">
+      <mandatory>1</mandatory>
+      <data-type>datetime|0</data-type>
+    </column>
+    <column id="577" parent="55" name="mobile">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="578" parent="55" name="password">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="579" parent="55" name="phone">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="580" parent="55" name="phone_home">
+      <data-type>varchar(40)|0</data-type>
+    </column>
+    <column id="581" parent="55" name="user_name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="582" parent="55" name="user_data_user_name">
+      <columns>user_name</columns>
+      <desc-columns />
+    </index>
+    <key id="583" parent="55" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+    <column id="584" parent="56" name="id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+      <sequence-identity>1</sequence-identity>
+    </column>
+    <column id="585" parent="56" name="version">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="586" parent="56" name="name">
+      <mandatory>1</mandatory>
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <column id="587" parent="56" name="user_id">
+      <mandatory>1</mandatory>
+      <data-type>bigint(20)|0</data-type>
+    </column>
+    <column id="588" parent="56" name="value">
+      <data-type>varchar(255)|0</data-type>
+    </column>
+    <index id="589" parent="56" name="FKD14EA5DC8D1F27AF">
+      <columns>user_id</columns>
+      <desc-columns />
+    </index>
+    <index id="590" parent="56" name="user_setting_name">
+      <columns>user_id
+name</columns>
+      <desc-columns />
+    </index>
+    <key id="591" parent="56" name="PRIMARY">
+      <columns>id</columns>
+      <primary>1</primary>
+    </key>
+  </database-model>
+</dataSource>

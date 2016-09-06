@@ -54,6 +54,8 @@ class Person implements GormEntity<Person>, NumberedDomain {
         birthday nullable: true
         notes nullable: true, widget: 'textarea'
         picture nullable: true, maxSize: 1048576
+        assessmentPositive nullable: true, widget: 'textarea'
+        assessmentNegative nullable: true, widget: 'textarea'
     }
     static belongsTo = [organization: Organization]
     static embedded = ['mailingAddr', 'otherAddr']
@@ -95,6 +97,8 @@ class Person implements GormEntity<Person>, NumberedDomain {
     Date birthday
     byte [] picture
     String notes
+    String assessmentPositive
+    String assessmentNegative
     Date dateCreated
     Date lastUpdated
 
@@ -125,6 +129,8 @@ class Person implements GormEntity<Person>, NumberedDomain {
         birthday = p.birthday
         picture = p.picture
         notes = p.notes
+        assessmentPositive = p.assessmentPositive
+        assessmentNegative = p.assessmentNegative
     }
 
 

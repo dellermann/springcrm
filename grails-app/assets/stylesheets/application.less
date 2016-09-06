@@ -1,7 +1,7 @@
 /*
  * application.less
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@
 
 // Components w/ JavaScript
 @import "bootstrap/modals";
+@import "bootstrap/popovers";
 
 // Utility classes
 @import "bootstrap/utilities";
@@ -193,6 +194,12 @@ h2 {
   }
 }
 
+// popovers
+.popover-variant(success);
+.popover-variant(info);
+.popover-variant(warning);
+.popover-variant(danger);
+
 
 //===============================================
 //
@@ -212,33 +219,61 @@ h2 {
   }
 }
 
+// toolbars below textareas
 .textarea-container {
-  position: relative;
+  > textarea {
+    .transition(border-radius .5s; );
+  }
+  &.focus > textarea {
+    border-bottom-right-radius: 0;
+  }
 }
-.markdown-help-btn {
-  .transition(background-color, border-color, opacity .5s; );
-  border: 1px solid transparent;
-  border-bottom-left-radius: @border-radius-base;
-  border-top-right-radius: @border-radius-base;
-  color: @input-color;
-  cursor: pointer;
-  font-size: @font-size-large;
-  line-height: @line-height-computed;
-  opacity: .15;
-  padding: @padding-base-vertical @padding-base-horizontal;
-  position: absolute;
-  right: 0;
-  top: 0;
+.textarea-toolbar {
+  display: none;
+}
+.textarea-toolbar-content {
+  border: 1px solid @input-border;
+  border-bottom-left-radius: @border-radius-small;
+  border-bottom-right-radius: @border-radius-small;
+  border-top: none;
+  display: table;
+  margin-left: auto;
 
-  &:hover {
-    background: @input-bg;
-    border-color: @input-border;
-    opacity: .9;
+  button {
+    background: transparent;
+    border: none;
+    color: @input-color;
+    display: table-cell;
+    font-size: @font-size-large;
+    height: @input-height-small;
+    padding: 0 @padding-small-horizontal;
+    vertical-align: middle;
+
+    &:hover {
+      color: @link-hover-color;
+    }
   }
-  textarea:focus ~ & {
-    border-color: @input-border-focus;
+  .selectize-control {
+    display: table-cell;
+    font-size: 0;
+    vertical-align: middle;
+  }
+  .selectize-input {
+    border-bottom: none;
+    border-left: none;
+    border-radius: 0;
+    border-top: none;
+    font-size: @font-size-small;
+    height: @input-height-small;
+    line-height: @line-height-small;
+    min-height: 0;
+    padding: @padding-small-vertical @padding-small-horizontal;
+  }
+  .selectize-dropdown {
+    font-size: @font-size-small;
   }
 }
+
 .markdown-help-text {
   font-size: @font-size-small;
   margin-bottom: 0;
@@ -247,6 +282,7 @@ h2 {
     margin: 0;
   }
 }
+
 .html-content {
   dl, ol, ul, p {
     &:last-child {
@@ -340,5 +376,3 @@ h2 {
   padding: 5px (@grid-gutter-width / 2);
   width: 420px;
 }
-
-// vim:set ts=2 sw=2 sts=2:

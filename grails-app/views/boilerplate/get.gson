@@ -1,0 +1,7 @@
+import org.amcworld.springcrm.Boilerplate
+
+model {
+    Boilerplate boilerplateInstance
+}
+
+json g.render(boilerplateInstance)

@@ -51,7 +51,9 @@ class OrganizationSpec extends Specification {
             owner: 'Mr. Smith',
             numEmployees: '5',
             rating: new Rating(name: 'active'),
-            notes: 'whee'
+            notes: 'whee',
+            assessmentPositive: 'friendly company',
+            assessmentNegative: 'a little bit slow'
         )
 
         when: 'I copy that organization using the constructor'
@@ -77,6 +79,8 @@ class OrganizationSpec extends Specification {
         o2.numEmployees == o1.numEmployees
         o2.rating == o1.rating
         o2.notes == o1.notes
+        o2.assessmentPositive == o1.assessmentPositive
+        o2.assessmentNegative == o1.assessmentNegative
 
         and: 'some properties are unset'
         !o2.id
@@ -112,6 +116,7 @@ class OrganizationSpec extends Specification {
         '0123456789' * 4    | '0123456789' * 4
         '0123456789' * 5    | ('0123456789' * 4) + '...'
     }
+
     def 'Check for customer and vendor flags'() {
         given: 'an empty organization'
         def org = new Organization()

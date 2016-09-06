@@ -85,6 +85,27 @@
         </div>
       </section>
       </g:if>
+      <section class="hidden-assessments">
+        <header aria-controls="assessments-content">
+          <h3>
+            <g:message code="person.fieldset.assessment.label"/>
+            <span class="caret"></span>
+          </h3>
+        </header>
+        <div id="assessments-content" class="assessments-content"
+          aria-hidden="true">
+          <div class="column-group">
+            <div class="column">
+              <f:display bean="${personInstance}"
+                property="assessmentPositive" />
+            </div>
+            <div class="column">
+              <f:display bean="${personInstance}"
+                property="assessmentNegative" />
+            </div>
+          </div>
+        </div>
+      </section>
 
       <g:set var="loadParams" value="person=${personInstance.id}" />
       <g:ifModuleAllowed modules="QUOTE">

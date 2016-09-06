@@ -24,6 +24,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../grails-app/i18n" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../grails-app/migrations" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../grails-app/views" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../grails-app/assets" type="java-resource" />
     </content>
     <content url="file://$MODULE_DIR$/../../src/main">
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/groovy" isTestSource="false" />

@@ -28,6 +28,8 @@
 #= require bootstrap/collapse
 #= require bootstrap/dropdown
 #= require bootstrap/modal
+#= require bootstrap/tooltip
+#= require bootstrap/popover
 #= require bootstrap/datepicker
 #= require selectize/selectize
 #= require selectize/plugin-no-delete
@@ -166,7 +168,7 @@ $.extend JQueryUiStaticExt
 #
 # @mixin
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.1
 #
 JQueryUiExt =
 
@@ -218,6 +220,57 @@ JQueryUiExt =
       @each -> $(this).removeAttr 'disabled'
     else
       @disable()
+
+  # Gets the selected text of the input controls in the jQuery object.  For
+  # each input control either the selected text is taken or the whole text if
+  # nothing is selected.  The obtained texts are concatenated by the given
+  # separator.
+  #
+  # @param [string] separator the separator used to concatenate the texts
+  # @return [string]          the selected texts
+  # @since 2.1
+  #
+  getSelection: (separator = '') ->
+    $ = jQuery
+
+    selections = []
+    @each ->
+      if 'selectionStart' of this and 'selectionEnd' of this
+        $input = $(this)
+        text = $input.val()
+        selStart = @selectionStart
+        selEnd = @selectionEnd
+
+        if selStart isnt selEnd
+          text = text.substring selStart, selEnd
+
+        selections.push text
+
+      return
+
+    selections.join separator
+
+  # Replaces the selection of the input controls in the jQuery object by the
+  # given content.
+  #
+  # @param [string] content the given content
+  # @return [jQuery]        this jQuery object
+  # @since 2.1
+  #
+  replaceSelection: (content = '') ->
+    $ = jQuery
+
+    @each ->
+      if 'selectionStart' of this and 'selectionEnd' of this
+        $input = $(this)
+        selStart = @selectionStart
+        selEnd = @selectionEnd
+        text = $input.val()
+
+        text = text.substring(0, selStart) + content + text.substring(selEnd)
+        $input.val text
+
+      return
 
   # Reverses the elements in the jQuery object.
   #
@@ -323,7 +376,7 @@ $.fn.extend JQueryUiExt
 # Class `Page` handles default components of pages in this application.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.1
 #
 class Page
 
@@ -355,14 +408,27 @@ class Page
         $('html, body').scrollTo $(event.currentTarget).attr 'href'
         false
       )
+      .on(
+        'click', '.boilerplate-add-btn',
+        (event) => @_onClickAddBoilerplate event
+      )
       .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
       .on('click', '#spinner', -> $(this).fadeOut())
       .on('click', '.btn-print', -> win.print())
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
       )
+      .on('click', '.hidden-assessments > header > h3', (event) =>
+        @_onClickHiddenAssessmentsHeader event
+      )
+      .on('focusin', '.textarea-container', (event) =>
+        @_onFocusInTextareaContainer event
+      )
       .on('focusin', '.form-control-number', (event) =>
         @_onFocusInNumberControl event
+      )
+      .on('focusout', '.textarea-container', (event) =>
+        @_onFocusOutTextareaContainer event
       )
       .on('focusout', '.form-control-number', (event) =>
         @_onFocusOutNumberControl event
@@ -376,11 +442,10 @@ class Page
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
-    $('select').each (_, element) => @initSelect $(element)
-    autosize $('textarea')
-    $('textarea').each ->
-      $(this).wrap("""<div class="textarea-container"/>""")
-        .after("""<i class="fa fa-question-circle markdown-help-btn"></i>""")
+    $('select')
+      .not('.textarea-toolbar select')
+        .each (_, element) => @initSelect $(element)
+    @_initTextAreas()
 
     $('.data-form').on('change', '.auto-number input:checkbox', (event) =>
         @_onChangeAutoNumberCheckbox event
@@ -449,6 +514,47 @@ class Page
 
   #-- Non-public methods ------------------------
 
+  # Initializes text areas to support boilerplates and auto-sizing.
+  #
+  # @private
+  # @since 2.1
+  #
+  _initTextAreas: ->
+    $ = jq
+    $html = $('html')
+    loadUrl = $html.data 'load-boilerplates-url'
+    getUrl = $html.data 'get-boilerplate-url'
+
+    autosize $('textarea')
+
+    $('.textarea-toolbar select').selectize
+      labelField: 'name'
+      load: (query, callback) ->
+        $.getJSON(loadUrl, name: query)
+          .done((data) -> callback data)
+          .fail(-> callback())
+
+        return
+      onItemAdd: (value) ->
+        selectize = this
+        $.getJSON(getUrl, id: value)
+          .done (data) ->
+            selectize.$wrapper
+              .closest('.textarea-container')
+                .children('textarea')
+                  .replaceSelection data.content
+            selectize.clear()
+
+            return
+
+        return
+      preload: 'focus'
+      searchField: ['name']
+      sortField: 'name'
+      valueField: 'id'
+
+    return
+
   # Initializes the title/toolbar that it may be treated as fixed when
   # scrolling.
   #
@@ -503,8 +609,9 @@ class Page
 
     return
 
-  # Called if the state of the checkbox at auto number fields has been changed.
-  # The method toggles the disabled state of the auto number input field.
+  # Called when the state of the checkbox at auto number fields has been
+  # changed. The method toggles the disabled state of the auto number input
+  # field.
   #
   # @param [Event] event  any event data
   # @private
@@ -515,8 +622,8 @@ class Page
       .find('.input-group input')
         .toggleEnable $target, true
 
-  # Called if either the date or time part of a date/time input field has been
-  # changed. The method computes a formatted composed value in a hidden
+  # Called when either the date or time part of a date/time input field has
+  # been changed. The method computes a formatted composed value in a hidden
   # date/time field.
   #
   # @param [Event] event  any event data
@@ -545,7 +652,7 @@ class Page
 
       elements[baseId].value = val
 
-  # Called if the time value has been changed.  The method parses and formats
+  # Called when the time value has been changed.  The method parses and formats
   # particular time values.
   #
   # @param [Event] event  any event data
@@ -571,7 +678,73 @@ class Page
     $target.val val
     return
 
-  # Called if the user clicks on a link to delete a record.  This method
+  # Called when the button to add a boilerplate has been clicked.  The method
+  # displays a modal window containing a form to submit the boilerplate name
+  # and content, submits the form and displays a popup indicating success or
+  # failure.
+  #
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickAddBoilerplate: (event) ->
+    $ = jq
+    $container = $(event.currentTarget).closest '.textarea-container'
+    $textarea = $container.find 'textarea'
+
+    getPopoverTemplate = (status) ->
+      """
+        <div class="popover popover-#{status}" role="tooltip">
+          <div class="arrow"></div>
+          <h3 class="popover-title"></h3>
+          <div class="popover-content"></div>
+        </div>
+      """
+
+    $('#add-boilerplate-modal')
+      .find('#content')
+        .val($textarea.getSelection())
+      .end()
+      .on('click', '.btn-ok', (event) ->
+        $modal = $(event.delegateTarget)
+        $form = $modal.find 'form'
+
+        return false unless $form[0].reportValidity()
+
+        $.post($form.attr('action'), $form.serialize())
+          .done( ->
+            $textarea
+              .popover(
+                content: $L('default.boilerplate.saved')
+                template: getPopoverTemplate('success')
+              )
+              .popover('show')
+
+            return
+          )
+          .fail( ->
+            $textarea
+              .popover(
+                content: $L('default.boilerplate.error')
+                template: getPopoverTemplate('danger')
+              )
+              .popover('show')
+
+            return
+          )
+          .always( ->
+            $modal.modal 'hide'
+            window.setTimeout (-> $textarea.popover 'hide'), 3000
+
+            return
+          )
+
+        false
+      )
+      .modal()
+
+    false
+
+  # Called when the user clicks on a link to delete a record.  This method
   # displays a deletion confirmation dialog.  If the user confirms the link is
   # loaded to the current window.
   #
@@ -600,7 +773,23 @@ class Page
 
     false
 
-  # Called if the user clicks on the icon to display the Markdown help.
+  # Called when the user clicks on the header of a section with hidden
+  # assessments.  The method opens or closes the assessments content area.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  # @since 2.1
+  #
+  _onClickHiddenAssessmentsHeader: (event) ->
+    $(event.currentTarget)
+      .closest('.hidden-assessments')
+        .find('.assessments-content')
+          .slideToggle()
+
+    false
+
+  # Called when the user clicks on the icon to display the Markdown help.
   #
   # @private
   #
@@ -621,7 +810,7 @@ class Page
 
     return
 
-  # Called if a number control gets the focus.  The method removes all zeros
+  # Called when a number control gets the focus.  The method removes all zeros
   # after the decimal point.
   #
   # @param [Event] event  any event data
@@ -635,7 +824,22 @@ class Page
 
     return
 
-  # Called if a number control looses the focus.  The method formats the
+  # Called when any input control in a text area container receives the focus.
+  # The method displays a toolbar below the text area.
+  #
+  # @param [Event] event  any event data
+  # @private
+  # @since 2.1
+  #
+  _onFocusInTextareaContainer: (event) ->
+    $(event.currentTarget).closest('.textarea-container')
+      .addClass('focus')
+      .find('.textarea-toolbar')
+        .slideDown()
+
+    return
+
+  # Called when a number control looses the focus.  The method formats the
   # number depending on the type of number control (currency, percentage
   # etc.).
   #
@@ -658,7 +862,28 @@ class Page
     val = $target.val().parseNumber()
     $target.val val.format numDigits
 
-  # Called if the window has been finished loading and rendering.
+  # Called when any input control in a text area container loses the focus.
+  # The method hides the toolbar below the text area.
+  #
+  # @param [Event] event  any event data
+  # @private
+  # @since 2.1
+  #
+  _onFocusOutTextareaContainer: (event) ->
+    $ = jq
+
+    $container = $(event.currentTarget).closest '.textarea-container'
+    $focusInput = $(event.relatedTarget)
+
+    if $focusInput.length is 0 or $container.has($focusInput).length is 0
+      $container
+        .removeClass('focus')
+        .find('.textarea-toolbar')
+          .slideUp()
+
+    return
+
+  # Called when the window has been finished loading and rendering.
   #
   # @param [Event] event  any event data
   # @private
@@ -682,7 +907,7 @@ class Page
     $.extend $.fn.datepicker.defaults, datePickerDefaults
     $('.date-input-date-control').datepicker()
 
-  # Called if the window is scrolling.
+  # Called when the window is scrolling.
   #
   # @param [Event] event  any event data
   # @private
@@ -692,8 +917,21 @@ class Page
     @$titleToolbar.toggleClass 'fixed', $target.scrollTop() >= @yToolbar
 
 
+#== Polyfills ===================================
+
+unless HTMLFormElement::reportValidity
+  HTMLFormElement::reportValidity = ->
+    valid = @checkValidity()
+    unless valid
+      for btn in @querySelectorAll 'button, input[type=submit]'
+
+        # Filter out <button type="button">, as querySelectorAll can't
+        # handle :not filtering
+        btn.click() if btn.type is 'submit'
+
+    valid
+
+
 #== Main ========================================
 
 window.SPRINGCRM.page = new Page()
-
-# vim:set ts=2 sw=2 sts=2:

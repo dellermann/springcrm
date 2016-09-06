@@ -37,4 +37,6 @@ databaseChangeLog = {
 	include file: 'big-decimal.xml'
     include file: 'modules-uppercase.xml'
     include file: 'rename-service.xml'
+    include file: 'assessments.xml'
+    include file: 'boilerplate.xml'
 }
