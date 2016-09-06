@@ -4,6 +4,8 @@
 /.gradle
 /.grails
 /.groovy
+/.idea/dataSources
+/.idea/dataSources.local.xml
 /.idea/libraries
 /.idea/tasks.xml
 /.idea/workspace.xml
