@@ -52,7 +52,11 @@ class GoogleContactSyncTask extends TimerTask {
 
     @Override
     void run() {
-        List<User> users = User.list()
+        List<User> users
+        User.withNewSession {
+            users = User.list()
+        }
+
         for (User user : users) {
             try {
                 if (log.debugEnabled) {
