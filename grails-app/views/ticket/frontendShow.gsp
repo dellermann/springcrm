@@ -1,6 +1,7 @@
 <%@ page import="org.amcworld.springcrm.Helpdesk" %>
 <%@ page import="org.amcworld.springcrm.Ticket" %>
 <%@ page import="org.amcworld.springcrm.TicketLogAction" %>
+<%@ page import="org.amcworld.springcrm.TicketLogEntry" %>
 <%@ page import="org.amcworld.springcrm.TicketStage" %>
 
 <html>
@@ -133,18 +134,9 @@
                 <g:hiddenField name="accessCode"
                   value="${helpdeskInstance.accessCode}" />
                 <g:hiddenField name="returnUrl" value="${url()}" />
-                <div class="form-group">
-                  <label for="messageText"
-                    ><g:message code="ticket.messageText.label"
-                  /></label>
-                  <g:textArea name="messageText" class="form-control"
-                    rows="10" required="required" />
-                  <ul class="control-messages"
-                    ><li class="control-message-info"
-                      ><g:message code="default.required"
-                    /></li
-                  ></ul>
-                </div>
+                <f:field bean="${new TicketLogEntry()}" property="message"
+                  required="true" orientation="vertical"
+                  toolbar="markdown-help"/>
                 <div class="form-group">
                   <label for="attachment"
                     ><g:message code="ticket.attachment.label"

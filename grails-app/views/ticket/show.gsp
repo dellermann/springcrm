@@ -1,5 +1,5 @@
 <%@ page import="org.amcworld.springcrm.Ticket" %>
-<%@ page import="org.amcworld.springcrm.TicketLogAction" %>
+<%@ page import="org.amcworld.springcrm.TicketLogEntry" %>
 <%@ page import="org.amcworld.springcrm.TicketStage" %>
 
 <html>
@@ -90,18 +90,8 @@
                 <g:uploadForm action="sendMessage" id="${ticketInstance.id}"
                   method="post">
                   <g:hiddenField name="recipient" value="" />
-                  <div class="form-group">
-                    <label for="messageText"
-                      ><g:message code="ticket.messageText.label"
-                    /></label>
-                    <g:textArea name="messageText" class="form-control"
-                      rows="10" required="required" />
-                    <ul class="control-messages"
-                      ><li class="control-message-info"
-                        ><g:message code="default.required"
-                      /></li
-                    ></ul>
-                  </div>
+                  <f:field bean="${new TicketLogEntry()}" property="message"
+                    orientation="vertical" required="true"/>
                   <div class="form-group">
                     <label for="attachment"
                       ><g:message code="ticket.attachment.label"
