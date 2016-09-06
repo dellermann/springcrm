@@ -33,7 +33,7 @@
 :   ${ticketInstance.email2}
 </g:if>
 
-## <g:message code="ticket.messageText.label" />
+## <g:message code="ticket.initialMessage.label" />
 
 ${ticketInstance.initialMessage}
 

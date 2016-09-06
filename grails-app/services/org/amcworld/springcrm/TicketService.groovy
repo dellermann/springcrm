@@ -109,6 +109,16 @@ class TicketService {
                     model: [ticketInstance: ticket]
                 ]
             )
+        } else if (stage == TicketStage.resubmitted) {
+            mailSystemService.sendMail(
+                to: ticket.helpdesk.users*.email,
+                subject: [key: 'email.ticket.resubmitted.subject'],
+                message: [
+                    controller: 'ticket',
+                    view: 'resubmittedUser',
+                    model: [ticketInstance: ticket]
+                ]
+            )
         } else if (stage == TicketStage.closed) {
             if (ticket.email1 || ticket.email2) {
                 mailSystemService.sendMail(

@@ -95,8 +95,16 @@ class Ticket implements NumberedDomain {
 
     //-- Constructors ---------------------------
 
+    /**
+     * Creates an empty ticket.
+     */
     Ticket() {}
 
+    /**
+     * Creates a new ticket by copying properties of the given one.
+     *
+     * @param ticket    the given ticket
+     */
     Ticket(Ticket ticket) {
         subject = ticket.subject
         stage = ticket.stage
@@ -116,16 +124,27 @@ class Ticket implements NumberedDomain {
 
     //-- Properties -----------------------------
 
+    /**
+     * Gets the name of the customer in the order last name, first name.
+     *
+     * @return  the name of the customer
+     */
     String getCustomerName() {
         "${lastName}, ${firstName}"
     }
 
+    /**
+     * Gets the full name of the customer including salutation.
+     *
+     * @return  the full name of the customer
+     */
     String getFullName() {
         StringBuilder s = new StringBuilder()
         if (salutation) {
             s << salutation.name << ' '
         }
         s << firstName << ' ' << lastName
+
         s.toString()
     }
 
@@ -141,10 +160,11 @@ class Ticket implements NumberedDomain {
             def query = TicketLogEntry.where {
                 ticket == thisTicket && action == TicketLogAction.sendMessage
             }
-            def l = query.list(max: 1, sort: 'dateCreated', order: 'desc')
+            def l = query.list(max: 1, sort: 'dateCreated', order: 'asc')
             assert !l.empty
             messageText = l.first().message
         }
+
         messageText
     }
 
