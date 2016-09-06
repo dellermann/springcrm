@@ -1,0 +1,27 @@
+Number fields produce HTML @<input>@ tags.  Special types of widgets are
+supported:
+
+* default: a simple number field is rendered.  The number is formatted according to the current locale.
+* currency: a widget is produced consisting of the input control and an appended currency symbol.  The number is formatted according to the current locale with two fraction digits.
+* percentage: a widget is produced consisting of the input control and an appended percent sign.  The number is formatted according to the current locale with two fraction digits.
+
+By default, @Number@ properties (and all derived classes) of domain model
+classes produce a default widget (see above).  To produce a currency or
+percentage widget you must define @widget: 'currenty'@ or @widget: 'percent'@,
+respectively, in the constraints closure for that property, for example:
+
+{code}
+static constraints = {
+    unitPrice widget: 'currency'
+    taxRate nullable: true, widget: 'percent'
+}
+{code}
+
+The field tag @<f:field/>@ supports the following attributes:
+
+{table}
+*Attribute*   | *Description*
+@orientation@ | If set to @vertical@ the label and field is placed vertically.
+{table}
+
+Defined in folder @grails-app/views/_fields/number@.

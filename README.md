@@ -38,8 +38,8 @@ Features
 Changelog
 ---------
 
-  * [English](https://github.com/dellermann/springcrm/blob/dev/web-app/WEB-INF/data/changelog.md)
-  * [German](https://github.com/dellermann/springcrm/blob/dev/web-app/WEB-INF/data/changelog_de.md)
+  * [English](https://github.com/dellermann/springcrm/blob/dev/src/main/webapp/WEB-INF/data/changelog.md)
+  * [German](https://github.com/dellermann/springcrm/blob/dev/src/main/webapp/WEB-INF/data/changelog_de.md)
 
 Author
 ------

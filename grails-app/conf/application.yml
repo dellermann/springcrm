@@ -249,3 +249,18 @@ environments:
                 installer: ${springcrm.dir.base}/install
                 log: ${springcrm.dir.base}/log
                 print: ${springcrm.dir.base}/print
+
+
+---
+#================================================
+#
+# Documentation configuration
+#
+#================================================
+
+grails:
+    doc:
+        title: SpringCRM
+        authors:
+            - Daniel Ellermann <d.ellermann@amc-world.de>
+        license: GPL v3

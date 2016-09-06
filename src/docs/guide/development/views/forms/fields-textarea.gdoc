@@ -1,0 +1,39 @@
+Text areas produce HTML @<textarea>@ tags.  Text area offer the following
+features:
+
+* auto-resizing: if the user enters more rows than initially available the height of the text area is resized.
+* boilerplates: an optional toolbar is displayed which contains the option to select from pre-defined boilerplates and insert the text at cursor position or replace the selection.  Furthermore, all or the selected text can be stored as new boilerplate.
+* Markdown support: the user may enter [Markdown|http://daringfireball.net/projects/markdown/] code to do simple formatting.
+* Markdown help: the user may display modal with available Markdown formatting commands.
+
+By default, @String@ properties of domain model classes produce single line
+input controls (@<input type="text"/>@ in HTML).  In order to use text areas
+for string content you must define @widget: 'textarea'@ in the constraints
+closure for that property, for example:
+
+{code}
+static constraints = {
+    message nullable: true, widget: 'textarea'
+}
+{code}
+
+To convert line breaks to @<br/>@ tags when displaying the value you must set
+attribute @nl2br@ in the constraints closure for that property, for example:
+
+{code}
+static constraints = {
+    subject blank: false, widget: 'textarea', attributes: [nl2br: true]
+}
+{code}
+
+In that case no support for Markdown is available.
+
+The field tag @<f:field/>@ supports the following attributes:
+
+{table}
+*Attribute*   | *Description*
+@orientation@ | If set to @vertical@ the label and field is placed vertically.
+@toolbar@     | Defines whether a toolbar is displayed below the text area.  Possible values (space separated): @none@ (no toolbar), @boilerplate@ (display boilerplate selector and store button), @markdown-help@ (display Markdown help button)
+{table}
+
+Defined in folder @grails-app/views/_fields/string@.

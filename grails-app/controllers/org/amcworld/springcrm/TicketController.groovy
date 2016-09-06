@@ -303,7 +303,7 @@ class TicketController {
     }
 
     def sendMessage(Long id) {
-        String message = params.messageText
+        String message = params.message
         if (message) {
             Ticket ticketInstance = Ticket.get(id)
             if (!ticketInstance) {
@@ -494,7 +494,7 @@ class TicketController {
             return
         }
 
-        String message = params.messageText
+        String message = params.message
         if (!message) {
             redirectToFrontendPage ticketInstance.helpdesk
             return

@@ -13,13 +13,13 @@
     <g:layoutBody />
     <ul class="control-messages"
       ><g:if test="${required}"
-      ><li class="control-message-info"
-        ><g:message code="default.required"
-      /></li
+        ><li class="control-message-info"
+          ><g:message code="default.required"
+        /></li
       ></g:if
       ><g:pageProperty name="page.fieldMessages"
       /><g:eachError bean="${bean}" field="${property}"
-      ><li class="control-message-error"><g:message error="${it}" /></li
+        ><li class="control-message-error"><g:message error="${it}" /></li
       ></g:eachError
     ></ul>
   </div>

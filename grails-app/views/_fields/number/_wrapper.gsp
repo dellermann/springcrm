@@ -1,4 +1,4 @@
-<g:applyLayout name="field">
+<g:applyLayout name="${orientation == 'vertical' ? 'field-vertical' : 'field'}">
   <g:if test="${constraints?.widget == 'currency'}">
     <div class="field-text">
       <span class="input">

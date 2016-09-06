@@ -1,0 +1,24 @@
+Text controls produce HTML @<input type="text">@ tags.  By default, @String@
+properties of domain model classes produce single line
+text controls.
+
+The @widget@ declaration in the constraints closure defines the @type@
+attribute of the @<input/>@ tag.  If not specified @text@ is used.
+
+When displaying the value the following @widget@ declarations are handled in a
+special way:
+
+{table}
+*widget* | *Effect*
+@email@ | Renders a link which opens the e-mail in a MUA (@mailto:@ protocol).
+@url@ | Renders a link which opens the URL in a separate window.
+{table}
+
+The field tag @<f:field/>@ supports the following attributes:
+
+{table}
+*Attribute*   | *Description*
+@orientation@ | If set to @vertical@ the label and field is placed vertically.
+{table}
+
+Defined in folder @grails-app/views/_fields/string@.

@@ -1,0 +1,4 @@
+This chapter contains information about form generation in views.
+
+SpringCRM uses the plugin @fields@ to render form fields as an entity.  The
+definitions of fields are stored in @grails-app/views/_fields@.

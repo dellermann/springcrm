@@ -73,7 +73,7 @@
           <input type="hidden" name="noLruRecord" value="true"/>
           <f:field bean="${boilerplateInstance}" property="name"/>
           <f:field bean="${boilerplateInstance}" property="content"
-            noToolbar="true"/>
+            toolbar="none"/>
           <input type="submit" style="display: none;" aria-hidden="true"/>
         </g:form>
       </div>

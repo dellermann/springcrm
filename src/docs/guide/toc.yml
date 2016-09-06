@@ -1,0 +1,12 @@
+introduction:
+  title: Introduction
+development:
+  title: Development
+  views:
+    title: Views
+    forms:
+      title: Form generation
+      fields-text: Text controls
+      fields-password: Password controls
+      fields-textarea: Text areas
+      fields-number: Number fields
