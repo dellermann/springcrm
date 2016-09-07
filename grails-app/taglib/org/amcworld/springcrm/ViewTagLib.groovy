@@ -458,8 +458,8 @@ class ViewTagLib {
             if (inList) {
                 buf << createLink(
                     controller: controller, action: action,
-                    params:
-                        (attrs.params ?: [: ]) + [letter: availableLetters[i]]
+                    params: (attrs.params ?: [:]) +
+                        [letter: availableLetters[i], max: params.max ?: 10]
                 )
             } else {
                 buf << '#'

@@ -113,6 +113,9 @@ class Page
       .on('change', '.date-input-time-control', (event) =>
         @_onChangeTimeInput event
       )
+      .on('change', '.num-items-per-page-form select', (event) =>
+        @_onChangeNumItemsPerPage event
+      )
       .ajaxSend( -> $spinner.fadeIn())
       .ajaxComplete( -> $spinner.fadeOut())
 
@@ -325,6 +328,21 @@ class Page
         val += input.value
 
       elements[baseId].value = val
+
+  # Called when the selector with the number of items per page has been
+  # changed.  The method reloads the current URL with another `max` value.
+  #
+  # @param [Event] event  any event data
+  # @private
+  # @since 2.1
+  #
+  _onChangeNumItemsPerPage: (event) ->
+    url = new HttpUrl(window.location.href)
+    url.overwriteQuery max: $(event.currentTarget).val()
+
+    window.location.href = url.toString()
+
+    return
 
   # Called when the time value has been changed.  The method parses and formats
   # particular time values.

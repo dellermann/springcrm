@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <meta name="layout" content="main" />
+    <meta name="layout" content="main"/>
   </head>
 
   <body>
@@ -44,22 +44,25 @@
               <td class="col-actions">
                 <g:button action="edit" id="${boilerplateInstance.id}"
                   color="success" size="xs" icon="pencil-square-o"
-                  message="default.button.edit.label" />
+                  message="default.button.edit.label"/>
               </td>
             </tr>
           </g:each>
           </tbody>
         </table>
       </div>
-      <nav class="text-center">
-        <div class="visible-xs">
-          <g:paginate total="${boilerplateInstanceTotal}" maxsteps="3"
-            class="pagination-sm" />
-        </div>
-        <div class="hidden-xs">
-          <g:paginate total="${boilerplateInstanceTotal}" />
-        </div>
-      </nav>
+      <div class="row">
+        <nav class="col-xs-12 col-md-9 pagination-container">
+          <div class="visible-xs">
+            <g:paginate total="${boilerplateInstanceTotal}" maxsteps="3"
+              class="pagination-sm"/>
+          </div>
+          <div class="hidden-xs">
+            <g:paginate total="${boilerplateInstanceTotal}"/>
+          </div>
+        </nav>
+        <g:render template="/layouts/numItemsPerPage"/>
+      </div>
     </g:applyLayout>
   </body>
 </html>

@@ -3,6 +3,7 @@
 * Upgrade to Grails 3
 * Positive and negative assessments of organizations and persons
 * Boilerplates for inclusion in text controls
+* Configurable number of items per page in list views
 * Update underlying libraries like Bootstrap and FontAwesome
 * Lot of bug fixes and code optimizations
 

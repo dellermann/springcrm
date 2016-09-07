@@ -1,7 +1,7 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <meta name="stylesheet" content="calendar" />
+    <meta name="layout" content="main"/>
+    <meta name="stylesheet" content="calendar"/>
   </head>
 
   <body>
@@ -11,12 +11,20 @@
         <table class="table data-table">
           <thead>
             <tr>
-              <g:sortableColumn property="subject" title="${message(code: 'calendarEvent.subject.label')}" />
-              <g:sortableColumn property="start" title="${message(code: 'calendarEvent.start.label')}" />
-              <g:sortableColumn property="end" title="${message(code: 'calendarEvent.end.label')}" />
-              <g:sortableColumn property="recurrence.type" title="${message(code: 'calendarEvent.recurrence.label')}" />
-              <g:ifModuleAllowed modules="CONTACT"><g:sortableColumn property="organization.name" title="${message(code: 'calendarEvent.organization.label')}" /></g:ifModuleAllowed>
-              <g:sortableColumn property="location" title="${message(code: 'calendarEvent.location.label')}" />
+              <g:sortableColumn property="subject"
+                title="${message(code: 'calendarEvent.subject.label')}"/>
+              <g:sortableColumn property="start"
+                title="${message(code: 'calendarEvent.start.label')}"/>
+              <g:sortableColumn property="end"
+                title="${message(code: 'calendarEvent.end.label')}"/>
+              <g:sortableColumn property="recurrence.type"
+                title="${message(code: 'calendarEvent.recurrence.label')}"/>
+              <g:ifModuleAllowed modules="CONTACT">
+                <g:sortableColumn property="organization.name"
+                  title="${message(code: 'calendarEvent.organization.label')}"/>
+              </g:ifModuleAllowed>
+              <g:sortableColumn property="location"
+                title="${message(code: 'calendarEvent.location.label')}"/>
               <th></th>
             </tr>
           </thead>
@@ -24,31 +32,57 @@
           <g:each in="${calendarEventInstanceList}" status="i"
             var="calendarEventInstance">
             <tr>
-              <td class="col-type-string calendar-event-subject"><g:link controller="calendarEvent" action="show" id="${calendarEventInstance.id}"><g:fieldValue bean="${calendarEventInstance}" field="subject" /></g:link></td>
-              <td class="col-type-date calendar-event-start"><g:formatDate date="${calendarEventInstance.start}" /></td>
-              <td class="col-type-date calendar-event-end"><g:formatDate date="${calendarEventInstance.end}" /></td>
-              <td class="col-type-string calendar-event-recurrence"><g:message message="${calendarEventInstance.recurrence}" /></td>
-              <g:ifModuleAllowed modules="CONTACT"><td class="col-type-ref calendar-event-organization"><g:link controller="organization" action="show" id="${calendarEventInstance.organization?.id}"><g:fieldValue bean="${calendarEventInstance}" field="organization" /></g:link></td></g:ifModuleAllowed>
-              <td class="col-type-string calendar-event-location"><g:fieldValue bean="${calendarEventInstance}" field="location" /></td>
+              <td class="col-type-string calendar-event-subject">
+                <g:link controller="calendarEvent" action="show"
+                  id="${calendarEventInstance.id}">
+                  <g:fieldValue bean="${calendarEventInstance}"
+                    field="subject"/>
+                </g:link>
+              </td>
+              <td class="col-type-date calendar-event-start">
+                <g:formatDate date="${calendarEventInstance.start}"/>
+              </td>
+              <td class="col-type-date calendar-event-end">
+                <g:formatDate date="${calendarEventInstance.end}"/>
+              </td>
+              <td class="col-type-string calendar-event-recurrence">
+                <g:message message="${calendarEventInstance.recurrence}"/>
+              </td>
+              <g:ifModuleAllowed modules="CONTACT">
+                <td class="col-type-ref calendar-event-organization">
+                  <g:link controller="organization" action="show"
+                    id="${calendarEventInstance.organization?.id}">
+                    <g:fieldValue bean="${calendarEventInstance}"
+                      field="organization"/>
+                  </g:link>
+                </td>
+              </g:ifModuleAllowed>
+              <td class="col-type-string calendar-event-location">
+                <g:fieldValue bean="${calendarEventInstance}"
+                  field="location"/>
+              </td>
               <td class="col-actions">
                 <g:button action="edit" id="${calendarEventInstance.id}"
                   color="success" size="xs" icon="pencil-square-o"
-                  message="default.button.edit.label" />
+                  message="default.button.edit.label"/>
               </td>
             </tr>
           </g:each>
           </tbody>
         </table>
       </div>
-      <nav class="text-center">
-        <div class="visible-xs">
-          <g:paginate total="${calendarEventInstanceList}" maxsteps="3"
-            class="pagination-sm" />
-        </div>
-        <div class="hidden-xs">
-          <g:paginate total="${calendarEventInstanceList}" />
-        </div>
-      </nav>
+      <div class="row">
+        <nav class="col-xs-12 col-md-9 pagination-container">
+          <div class="visible-xs">
+            <g:paginate total="${calendarEventInstanceList}" maxsteps="3"
+              class="pagination-sm"/>
+          </div>
+          <div class="hidden-xs">
+            <g:paginate total="${calendarEventInstanceList}"/>
+          </div>
+        </nav>
+        <g:render template="/layouts/numItemsPerPage"/>
+      </div>
     </g:applyLayout>
   </body>
 </html>
@@ -81,8 +115,8 @@
     </div>
   </div>
   <content tag="scripts">
-    <asset:javascript src="calendar" />
-    <asset:javascript src="lang/fullcalendar/${(org.springframework.web.servlet.support.RequestContextUtils.getLocale(org.grails.web.util.WebUtils.retrieveGrailsWebRequest().currentRequest) ?: Locale.default).language}" />
+    <asset:javascript src="calendar"/>
+    <asset:javascript src="lang/fullcalendar/${(org.springframework.web.servlet.support.RequestContextUtils.getLocale(org.grails.web.util.WebUtils.retrieveGrailsWebRequest().currentRequest) ?: Locale.default).language}"/>
     <asset:script>//<![CDATA[
       (function (window, $L, $) {
 

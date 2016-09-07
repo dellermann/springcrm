@@ -92,6 +92,22 @@
     width: auto !important;
   }
 }
+@media (max-width: @screen-sm-max) {
+  .pagination-container {
+    text-align: center;
+  }
+}
+.num-items-per-page-form {
+  margin: @line-height-computed 0;
+  text-align: right;
+
+  .form-group {
+    text-align: left;
+  }
+  label:after {
+    content: ":";
+  }
+}
 .remote-list {
   .table-responsive, .pagination {
     margin-bottom: 0;
@@ -114,5 +130,3 @@
     margin-top: 0;
   }
 }
-
-// vim:set ts=2 sw=2 sts=2:

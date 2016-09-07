@@ -73,18 +73,13 @@ class PaginationInterceptor extends SettingsInterceptorBase {
             return true
         }
 
-        /* limit offset */
-        int max = Math.min(params.max ? params.int('max') : 10, 100)
-        int maxOffset =
-            count > 0 ? (int) (Math.floor((count - 1) / max) * max) : 0
-        params.offset =
-            Math.max(0, Math.min(maxOffset, params.int('offset') ?: 0))
-        session.setAttribute key, params.offset
-
-        /* store or restore sorting and order */
+        /* store or restore number of items per page, sorting and order */
         Credential credential = (Credential) session?.getAttribute('credential')
         if (credential) {
             User user = credential.loadUser()
+            exchangeSetting(
+                params, 'max', user.settings, getSessionKey('max')
+            )
             exchangeSetting(
                 params, 'sort', user.settings, getSessionKey('sort')
             )
@@ -92,6 +87,14 @@ class PaginationInterceptor extends SettingsInterceptorBase {
                 params, 'order', user.settings, getSessionKey('order')
             )
         }
+
+        /* limit offset */
+        int max = Math.min(params.max ? params.int('max') : 10, 100)
+        int maxOffset =
+            count > 0 ? (int) (Math.floor((count - 1) / max) * max) : 0
+        params.offset =
+            Math.max(0, Math.min(maxOffset, params.int('offset') ?: 0))
+        session.setAttribute key, params.offset
 
         true
     }
