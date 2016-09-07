@@ -1,1 +1,1 @@
-<g:formatDate date="${bean?."${property}"}" formatName="default.format.date" />
+<g:formatDate date="${bean?."${property}"}" formatName="default.format.date"/>

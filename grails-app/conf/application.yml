@@ -264,3 +264,18 @@ grails:
         authors:
             - Daniel Ellermann <d.ellermann@amc-world.de>
         license: GPL v3
+
+
+---
+#================================================
+#
+# Plugin settings
+#
+#================================================
+
+environments:
+    development:
+        grails:
+            plugin:
+                fields:
+                    disableLookupCache: true

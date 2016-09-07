@@ -1,0 +1,1 @@
+<g:fieldValue bean="${bean}" field="fullNumber"/>

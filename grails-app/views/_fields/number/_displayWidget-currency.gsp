@@ -1,0 +1,1 @@
+<g:formatCurrency number="${value}"/>

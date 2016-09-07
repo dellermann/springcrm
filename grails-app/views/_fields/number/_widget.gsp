@@ -1,14 +1,12 @@
-<g:if test="${constraints.range}">
-  <g:field type="range" name="${property}" value="${value}"
-    min="${constraints.range.from}" max="${constraints.range.to}"
-    size="${size ?: 10}" />
+<g:if test="${constraints?.widget == 'currency'}">
+  <g:render template="/_fields/number/widget-currency"/>
 </g:if>
+<g:elseif test="${constraints?.widget == 'percent'}">
+  <g:render template="/_fields/number/widget-percentage"/>
+</g:elseif>
+<g:elseif test="${constraints.range}">
+  <g:render template="/_fields/number/widget-range"/>
+</g:elseif>
 <g:else>
-  <%--
-  Because <input type="number" /> fields do not accept localized number values
-  in HTML 5 we will suppress the default rendering of the fields plugin and
-  render type "text" instead.
-  --%>
-  <g:field type="text" name="${property}" value="${value}"
-    class="form-control" size="${size ?: 10}" />
+  <g:render template="/_fields/number/widget-default"/>
 </g:else>

@@ -1,6 +1,6 @@
 <g:if test="${constraints?.widget == 'autonumber'}">
-<g:fieldValue bean="${bean}" field="fullNumber" />
+  <g:render template="/_fields/int/displayWidget-autonumber"/>
 </g:if>
 <g:else>
-<g:fieldValue bean="${bean}" field="${property}" />
+  <g:render template="/_fields/int/displayWidget-default"/>
 </g:else>
