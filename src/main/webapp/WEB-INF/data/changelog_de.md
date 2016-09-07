@@ -3,6 +3,7 @@
 * Aktualisierung auf Grails 3
 * Positive and negative Bewertungen von Organisationen und Personen
 * Textbausteine für die Verwendung in Eingabefeldern
+* Aktualisierung des Unterbaus wie Bootstrap und FontAwesome
 * Viele Fehlerbehebungen und Codeoptimierungen
 
 ## 2.0.20

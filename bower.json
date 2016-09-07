@@ -29,20 +29,20 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.6",
-    "bootstrap-datepicker": "~1.6.1",
-    "bootstrap-fileinput": "~4.2.8",
-    "font-awesome": "~4.6.1",
+    "bootstrap": "~3.3.7",
+    "bootstrap-datepicker": "~1.6.4",
+    "bootstrap-fileinput": "~4.3.4",
+    "font-awesome": "~4.6.3",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.5",
     "jquery-autosize": "~3.0.14",
-    "jquery-json": "~2.5.1",
-    "jquery-mockjax": "2.1.1",
+    "jquery-json": "~2.6.0",
+    "jquery-mockjax": "2.2.0",
     "jqueryui": "~1.11.4",
     "jqueryui-touch-punch": "",
     "js-calc": "~0.9.10",
     "qunit": "~1.18.0",
-    "selectize": "~0.12.1",
+    "selectize": "~0.12.3",
     "typeahead.js": "~0.11.1",
     "typeahead.js-bootstrap3.less": "~0.2.3",
     "vat-calc": "~0.9.3"
@@ -50,6 +50,7 @@
   "resolutions": {
     "bootstrap": "~3.3.6",
     "jquery": "2.2.0",
-    "typeahead.js": "~0.11.1"
+    "typeahead.js": "~0.11.1",
+    "sifter": "0.5.x"
   }
 }
