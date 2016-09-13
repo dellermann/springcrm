@@ -23,6 +23,12 @@ import java.text.SimpleDateFormat
 import org.apache.tools.ant.filters.ReplaceTokens
 
 
+/*===============================================*\
+ *
+ *  Build process
+ *
+\*===============================================*/
+
 buildscript {
     ext {
         grailsVersion = project.grailsVersion
@@ -47,6 +53,14 @@ buildscript {
 plugins {
     id 'io.spring.dependency-management' version '0.5.4.RELEASE'
 }
+
+
+
+/*===============================================*\
+ *
+ *  Project build
+ *
+\*===============================================*/
 
 version '2.1.1'
 group 'org.amcworld'
@@ -90,14 +104,6 @@ assets {
 }
 
 repositories {
-    // TODO old repositories:
-    // grailsPlugins()
-    // grailsHome()
-    // grailsCentral()
-    // mavenCentral()
-    // mavenRepo 'http://mavenrepo.google-api-java-client.googlecode.com/hg/'
-    // mavenRepo 'http://maven.springframework.org/milestone/'
-
     mavenLocal()
     maven { url 'https://repo.grails.org/grails/core' }
 }
@@ -110,10 +116,10 @@ dependencyManagement {
 }
 
 dependencies {
+
     /* set to "provided" otherwise Tomcat is embedded in WAR file */
     compile 'org.springframework.boot:spring-boot-starter-web'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-//    standaloneLibs 'org.springframework.boot:spring-boot-starter-tomcat'
 
     compile 'org.springframework.boot:spring-boot-starter-actuator'
     compile 'org.springframework.boot:spring-boot-starter-logging'
