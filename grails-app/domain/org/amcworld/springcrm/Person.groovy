@@ -32,6 +32,16 @@ import org.grails.datastore.gorm.GormEntity
  */
 class Person implements GormEntity<Person>, NumberedDomain {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+            'title', 'firstName', 'lastName', 'phone', 'phoneHome', 'mobile',
+            'fax', 'phoneAssistant', 'phoneOther', 'email1', 'email2',
+            'jobTitle', 'department', 'assistant', 'notes',
+            'assessmentPositive', 'assessmentNegative'
+        ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

@@ -129,13 +129,13 @@ dataSource:
 grails:
     plugin:
         databasemigration:
-            autoMigrateScripts:
-                - RunApp
-                - TestApp
-        forceAutoMigrate: true
-        updateOnStart: true
-        updateOnStartFileNames:
-            - changelog.groovy
+#            autoMigrateScripts:
+#                - RunApp
+#                - TestApp
+#            forceAutoMigrate: true
+            updateOnStart: true
+            updateOnStartFileNames:
+                - changelog.groovy
 
 environments:
     development:

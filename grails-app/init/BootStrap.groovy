@@ -47,6 +47,7 @@ class BootStrap {
     GoogleContactSyncTask googleContactSyncTask
     GrailsApplication grailsApplication
     InstallService installService
+    SearchService searchService
     def springcrmConfig
 
 
@@ -98,6 +99,9 @@ class BootStrap {
         opr.initialize(servletContext.getResourceAsStream(
             '/WEB-INF/data/overview-panel-repository.xml'
         ))
+
+        /* search */
+        searchService.bulkIndex()
     }
 
     def destroy = {}

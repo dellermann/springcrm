@@ -39,4 +39,5 @@ databaseChangeLog = {
     include file: 'rename-service.xml'
     include file: 'assessments.xml'
     include file: 'boilerplate.xml'
+    include file: 'search.xml'
 }
