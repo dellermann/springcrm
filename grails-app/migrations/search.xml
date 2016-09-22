@@ -36,6 +36,9 @@
       <column name="content_structured" type="longtext">
         <constraints nullable="false"/>
       </column>
+      <column name="order_id" type="integer">
+        <constraints nullable="false"/>
+      </column>
       <column name="record_id" type="bigint">
         <constraints nullable="false"/>
       </column>

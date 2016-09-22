@@ -49,6 +49,15 @@ class SearchService implements Service {
      */
     public static final String SEARCH_FIELDS_PROPERTY = 'SEARCH_FIELDS'
 
+    /**
+     * The order in which the types of search results should be displayed.
+     */
+    public static final List<String> TYPE_ORDER = [
+        'organization', 'person', 'quote', 'salesOrder', 'invoice', 'dunning',
+        'creditMemo', 'purchaseInvoice', 'product', 'work', 'call', 'note',
+        'calendarEvent', 'project', 'helpdesk', 'ticket', 'user', 'boilerplate'
+    ].asImmutable()
+
 
     //-- Fields -------------------------------------
 
@@ -128,8 +137,12 @@ class SearchService implements Service {
         if (title.length() > 65_535) {
             title = title.substring(0, 65_536)
         }
+        String type = getType(entity.getClass())
+        int order = TYPE_ORDER.indexOf(type)
+        if (order < 0) order = 999
         SearchData data = new SearchData(
-            type: getType(entity.getClass()),
+            type: type,
+            orderId: order,
             recordId: (Long) entity.ident(),
             recordTitle: title
         )
@@ -181,12 +194,14 @@ class SearchService implements Service {
      * @param query     the given query string
      * @param max       the number of items to load
      * @param offset    the offset used to paginate the search results
-     * @return          a list of search occurrences
+     * @return          a map containing the search occurrences grouped by
+     *                  type
      */
-    List<SearchData> search(String query, int max = 10, int offset = 0) {
-        def p = [sort: 'type', max: max, offset: offset]
-
-        SearchData.findAllByContentIlike "%${query}%", p
+    Map<String, List<SearchData>> search(String query, int max = 10,
+                                         int offset = 0)
+    {
+        def p = [sort: 'orderId', max: max, offset: offset]
+        SearchData.findAllByContentIlike("%${query}%", p).groupBy { it.type }
     }
 
 

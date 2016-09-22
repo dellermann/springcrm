@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils" %>
 <%@ page import="org.apache.commons.lang3.StringUtils" %>
 
 <html>
@@ -9,12 +10,14 @@
   </head>
 
   <body>
-    <p><g:message code="search.numHits" args="[numHits]"/></p>
+    <p><g:message code="search.numHits"
+      args="[numHits, StringEscapeUtils.escapeXml10(query)]"/></p>
     <g:each in="${searchResults.entrySet()}" var="group">
       <section class="search-result-group">
         <h2>
           <g:dataTypeIcon controller="${group.key}"/>
           <g:message code="${group.key}.plural"/>
+          <span class="badge"><g:formatNumber number="${group.value.size()}" groupingUsed="true" maxFractionDigits="0"/></span>
         </h2>
         <g:each in="${group.value}" var="item">
           <h3>

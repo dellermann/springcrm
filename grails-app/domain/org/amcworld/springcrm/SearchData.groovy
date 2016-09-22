@@ -50,6 +50,7 @@ class SearchData implements Serializable {
     }
     static mapping = {
         id composite: ['type', 'recordId']
+        sort 'orderId'
         version false
     }
     static transients = ['structuredContent']
@@ -67,6 +68,11 @@ class SearchData implements Serializable {
      * of the indexed record.
      */
     String contentStructured
+
+    /**
+     * A criterion used to sort the types.
+     */
+    int orderId
 
     /**
      * The ID of the indexed record.

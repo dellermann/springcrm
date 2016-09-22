@@ -163,7 +163,7 @@
               /></label>
               <div class="input-group">
                 <g:textField type="search" id="search-xs" name="query"
-                  class="form-control"
+                  value="${query}" class="form-control" required="required"
                   placeholder="${message(code: 'default.search.placeholder')}"/>
                 <span class="input-group-btn">
                   <button type="submit" class="btn btn-default">

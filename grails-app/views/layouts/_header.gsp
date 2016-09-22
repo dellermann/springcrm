@@ -14,8 +14,8 @@
           ><g:message code="default.search.label"
         /></label>
         <div class="input-group input-group-sm">
-          <g:textField type="search" id="search" name="query"
-            class="form-control"
+          <g:textField type="search" id="search" name="query" value="${query}"
+            class="form-control" required="required"
             placeholder="${message(code: 'default.search.placeholder')}"/>
           <span class="input-group-btn">
             <button type="submit" class="btn btn-default">

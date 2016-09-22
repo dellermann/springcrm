@@ -48,14 +48,11 @@ class SearchController {
     def index(String query) {
         int offset = params.int('offset') ?: 0
         int max = params.int('max') ?: 10
-        int numHits = searchService.countHits(query)
-        Map<String, List<SearchData>> results =
-            searchService.search(query, max, offset).groupBy { it.type }
 
         [
             query: query.toLowerCase(),
-            numHits: numHits,
-            searchResults: results
+            numHits: searchService.countHits(query),
+            searchResults: searchService.search(query, max, offset)
         ]
     }
 }
