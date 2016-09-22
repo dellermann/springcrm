@@ -35,6 +35,13 @@ import org.springframework.context.MessageSourceResolvable
  */
 class CalendarEvent implements GormEntity<CalendarEvent> {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'subject', 'location', 'description'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

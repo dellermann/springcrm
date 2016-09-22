@@ -30,6 +30,12 @@ package org.amcworld.springcrm
  */
 class Note implements NumberedDomain {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS =
+        ['title', 'content'].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

@@ -32,6 +32,13 @@ import org.grails.datastore.gorm.GormEntity
  */
 class Work extends SalesItem implements GormEntity<Work> {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'name', 'description', 'pricing.items.*name', 'category.name'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

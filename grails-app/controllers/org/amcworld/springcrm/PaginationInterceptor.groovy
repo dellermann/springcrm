@@ -65,7 +65,9 @@ class PaginationInterceptor extends SettingsInterceptorBase {
 
         /* store or restore offset */
         String key = getSessionKey('offset')
-        exchangeSetting params, 'offset', session, key
+        if (controllerName != 'search') {
+            exchangeSetting params, 'offset', session, key
+        }
 
         /* compute number of entries of the associated domain */
         int count = getCount()
@@ -106,7 +108,9 @@ class PaginationInterceptor extends SettingsInterceptorBase {
      * @return  always {@code true}
      */
     boolean after() {
-        session.setAttribute getSessionKey('offset'), params.offset
+        if (controllerName != 'search') {
+            session.setAttribute getSessionKey('offset'), params.offset
+        }
 
         true
     }
@@ -133,7 +137,7 @@ class PaginationInterceptor extends SettingsInterceptorBase {
         int count = 0
         try {
             count = (Integer) c.getMethod('count').invoke(null)
-        } catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException ignore) {
             log.error "Method count does not exist in domain model class ${cls.name}."
         }
 

@@ -99,6 +99,16 @@ class SearchService implements Service {
     }
 
     /**
+     * Counts the hits for the given query string in the search index.
+     *
+     * @param query the given query string
+     * @return      the number of hits in the search index
+     */
+    int countHits(String query) {
+        SearchData.countByContentIlike "%${query}%"
+    }
+
+    /**
      * Stores the given entity instance in the search index.  The method stores
      * all searchable fields defined by the entity class in the index.
      *
@@ -168,14 +178,15 @@ class SearchService implements Service {
     /**
      * Searches for the given query string in the search index.
      *
-     * @param query the given query string
-     * @return      a list of search occurrences
+     * @param query     the given query string
+     * @param max       the number of items to load
+     * @param offset    the offset used to paginate the search results
+     * @return          a list of search occurrences
      */
-    List<SearchData> search(String query) {
-        (List<SearchData>) SearchData.createCriteria().list {
-            ilike 'content', "%${query}%"
-            groupProperty 'type'
-        }
+    List<SearchData> search(String query, int max = 10, int offset = 0) {
+        def p = [sort: 'type', max: max, offset: offset]
+
+        SearchData.findAllByContentIlike "%${query}%", p
     }
 
 

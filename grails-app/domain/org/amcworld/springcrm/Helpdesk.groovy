@@ -31,6 +31,10 @@ package org.amcworld.springcrm
  */
 class Helpdesk {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = ['name'].asImmutable()
+
     //-- Class fields ---------------------------
 
     static belongsTo = [organization: Organization]

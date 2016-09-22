@@ -1,9 +1,16 @@
-## 2.1.0
+## 2.1.2
 
-* Upgrade to Grails 3
+* Re-implement search feature
+
+## 2.1.1
+
 * Positive and negative assessments of organizations and persons
 * Boilerplates for inclusion in text controls
 * Configurable number of items per page in list views
+
+## 2.1.0
+
+* Upgrade to Grails 3
 * Update underlying libraries like Bootstrap and FontAwesome
 * Lot of bug fixes and code optimizations
 
@@ -14,6 +21,8 @@
 * Lonely "next" button in lists with one item
   ([issue #5](https://github.com/dellermann/springcrm/issues/5))
 
+[comment]: STOP
+
 ## 2.0.19 (RC 2)
 
 * Display changelog at each new version
@@ -23,8 +32,6 @@
 * Bug fix: entering a delivery or payment date in invoices, credit notes and
   reminders didn't change stage to "delivered" or "paid", respectively
   ([issue #82](https://github.com/dellermann/springcrm/issues/82))
-
-[comment]: STOP
 
 ## 2.0.18 (RC 1)
 

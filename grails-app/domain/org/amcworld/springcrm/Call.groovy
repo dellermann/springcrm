@@ -29,6 +29,12 @@ package org.amcworld.springcrm
  */
 class Call {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS =
+        ['subject', 'notes', 'phone'].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

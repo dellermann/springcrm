@@ -1,9 +1,16 @@
-## 2.1.0
+## 2.1.2
 
-* Aktualisierung auf Grails 3
+* Wiedereinbau der Suchfunktionalität
+
+## 2.1.1
+
 * Positive and negative Bewertungen von Organisationen und Personen
 * Textbausteine für die Verwendung in Eingabefeldern
 * Einstellbare Anzahl von Einträgen pro Seite in Listenansichten
+
+## 2.1.0
+
+* Aktualisierung auf Grails 3
 * Aktualisierung des Unterbaus wie Bootstrap und FontAwesome
 * Viele Fehlerbehebungen und Codeoptimierungen
 
@@ -14,6 +21,8 @@
 * Fehler mit verwaister „Nächste“-Schaltfläche bei Listen mit einem Eintrag
   ([Problem #5](https://github.com/dellermann/springcrm/issues/5))
 
+[comment]: STOP
+
 ## 2.0.19 (RC 2)
 
 * Anzeige der letzten Änderungen bei jeder neuen Version
@@ -23,8 +32,6 @@
 * Fehlerbehebung: Eintragung des Versand- oder Zahlungsdatums in Rechnungen,
   Mahnungen und Gutschriften schaltete nicht auf "versendet" bzw. "bezahlt" um
   ([Problem #82](https://github.com/dellermann/springcrm/issues/82))
-
-[comment]: STOP
 
 ## 2.0.18 (RC 1)
 

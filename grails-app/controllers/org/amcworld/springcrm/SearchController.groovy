@@ -21,6 +21,14 @@
 package org.amcworld.springcrm
 
 
+/**
+ * The class {@code SearchController} allows searching for a particular term in
+ * the index.
+ *
+ * @author  Daniel Ellermann
+ * @version 2.1
+ * @since   2.1
+ */
 class SearchController {
 
     //-- Class fields ---------------------------
@@ -30,10 +38,24 @@ class SearchController {
 
     //-- Public methods -------------------------
 
+    /**
+     * Searches in the index for the given query term.
+     *
+     * @param query the given query term
+     * @return      the model containing the query term, the number of hits and
+     *              the search result of one page
+     */
     def index(String query) {
-        Map<String, List<SearchData>> searchData =
-            searchService.search(query).groupBy { it.type }
+        int offset = params.int('offset') ?: 0
+        int max = params.int('max') ?: 10
+        int numHits = searchService.countHits(query)
+        Map<String, List<SearchData>> results =
+            searchService.search(query, max, offset).groupBy { it.type }
 
-        [query: query.toLowerCase(), searchResults: searchData]
+        [
+            query: query.toLowerCase(),
+            numHits: numHits,
+            searchResults: results
+        ]
     }
 }

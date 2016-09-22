@@ -30,6 +30,16 @@ package org.amcworld.springcrm
  */
 class Ticket implements NumberedDomain {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'subject', 'salutation', 'firstName', 'lastName', 'address.street',
+        'address.poBox', 'address.postalCode', 'address.location',
+        'address.state', 'address.country', 'phone', 'phoneHome', 'mobile',
+        'fax', 'email1', 'email2', 'logEntries.*message'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static belongsTo = [helpdesk: Helpdesk]

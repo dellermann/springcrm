@@ -9,6 +9,7 @@
   </head>
 
   <body>
+    <p><g:message code="search.numHits" args="[numHits]"/></p>
     <g:each in="${searchResults.entrySet()}" var="group">
       <section class="search-result-group">
         <h2>
@@ -31,7 +32,7 @@
             </g:link>
           </h3>
           <div class="search-result-fields">
-            <g:each in="${item.structuredContent.values().findAll {StringUtils.containsIgnoreCase(it, query)}.take(3)}"
+            <g:each in="${item.structuredContent.values().findAll {StringUtils.containsIgnoreCase(it, query)}.toUnique().take(3)}"
               var="field">
               <p><g:searchResult text="${field}" query="${query}"/></p>
             </g:each>
@@ -39,5 +40,17 @@
         </g:each>
       </section>
     </g:each>
+    <div class="row">
+      <nav class="col-xs-12 col-md-9 pagination-container">
+        <div class="visible-xs">
+          <g:paginate total="${numHits}" params="[query: query]" maxsteps="3"
+            class="pagination-sm"/>
+        </div>
+        <div class="hidden-xs">
+          <g:paginate total="${numHits}" params="[query: query]"/>
+        </div>
+      </nav>
+      <g:render template="/layouts/numItemsPerPage"/>
+    </div>
   </body>
 </html>

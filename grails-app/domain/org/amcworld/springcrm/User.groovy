@@ -31,6 +31,14 @@ import groovy.transform.CompileStatic
  */
 class User {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'userName', 'firstName', 'lastName', 'phone', 'phoneHome', 'mobile',
+        'fax', 'email'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

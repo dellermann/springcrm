@@ -31,6 +31,12 @@ package org.amcworld.springcrm
  */
 class Boilerplate {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS =
+        ['name', 'content'].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

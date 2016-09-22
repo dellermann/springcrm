@@ -36,6 +36,11 @@ class PurchaseInvoice {
 
     //-- Constants ------------------------------
 
+    public static final List<String> SEARCH_FIELDS = [
+        'number', 'subject', 'vendorName', 'notes', 'items.*name',
+        'items.*description'
+    ].asImmutable()
+
     private static final BigInteger HUNDRED = new BigDecimal(100i)
 
 

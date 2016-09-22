@@ -35,6 +35,14 @@ import org.grails.datastore.gorm.GormEntity
  */
 class Product extends SalesItem implements GormEntity<Product> {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'name', 'description', 'pricing.items.*name', 'category.name',
+        'manufacturer', 'retailer'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {
