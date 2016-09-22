@@ -368,6 +368,7 @@ class CalendarEventController {
             return
         }
 
+        request.calendarEventInstance = calendarEventInstance
         try {
             calendarEventInstance.delete flush: true
             flash.message = message(

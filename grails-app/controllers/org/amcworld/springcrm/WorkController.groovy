@@ -215,6 +215,7 @@ class WorkController {
             return
         }
 
+        request.workInstance = workInstance
         try {
             if (workInstance.pricing) {
                 workInstance.pricing.delete flush: true

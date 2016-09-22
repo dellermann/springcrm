@@ -217,6 +217,7 @@ class QuoteController {
             return
         }
 
+        request.quoteInstance = quoteInstance
         try {
             quoteInstance.delete flush: true
             flash.message = message(

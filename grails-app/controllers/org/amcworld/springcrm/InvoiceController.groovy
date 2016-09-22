@@ -323,6 +323,7 @@ class InvoiceController {
             return
         }
 
+        request.invoiceInstance = invoiceInstance
         try {
             invoiceInstance.delete flush: true
             flash.message = message(

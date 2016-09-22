@@ -231,6 +231,7 @@ class PersonController {
             return
         }
 
+        request.personInstance = personInstance
         try {
             personInstance.delete flush: true
             if (ldapService) {

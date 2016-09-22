@@ -221,6 +221,7 @@ class OrganizationController {
             return
         }
 
+        request.organizationInstance = organizationInstance
         try {
             organizationInstance.delete flush: true
             flash.message = message(

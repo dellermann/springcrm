@@ -40,7 +40,7 @@ class LoginInterceptor implements Interceptor {
     //-- Fields ---------------------------------
 
     InstallService installService
-    int order = 20
+    int order = 30
 
 
     //-- Constructors ---------------------------

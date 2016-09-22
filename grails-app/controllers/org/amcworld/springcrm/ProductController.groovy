@@ -217,6 +217,7 @@ class ProductController {
             return
         }
 
+        request.productInstance = productInstance
         try {
             if (productInstance.pricing) {
                 productInstance.pricing.delete flush: true

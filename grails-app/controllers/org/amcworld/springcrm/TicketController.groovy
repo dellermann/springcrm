@@ -259,6 +259,7 @@ class TicketController {
             return
         }
 
+        request.ticketInstance = ticketInstance
         try {
             ticketInstance.delete flush: true
             flash.message = message(

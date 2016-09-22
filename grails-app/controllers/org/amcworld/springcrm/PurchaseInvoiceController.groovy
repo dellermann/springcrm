@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoiceController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile
  * purchase invoices.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class PurchaseInvoiceController {
 
@@ -38,12 +38,12 @@ class PurchaseInvoiceController {
     public static final DataFileType FILE_TYPE = DataFileType.purchaseInvoice
 
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     DataFileService dataFileService
 
@@ -276,6 +276,7 @@ class PurchaseInvoiceController {
             return
         }
 
+        request.purchaseInvoiceInstance = purchaseInvoiceInstance
         try {
             purchaseInvoiceInstance.delete flush: true
             if (purchaseInvoiceInstance.documentFile) {

@@ -1,7 +1,7 @@
 /*
  * CallController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,19 @@
 
 package org.amcworld.springcrm
 
+import org.springframework.dao.DataIntegrityViolationException
+
 
 /**
  * The class {@code CallController} contains actions which manage phone calls
  * associated to an organization or person.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class CallController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
@@ -220,6 +222,7 @@ class CallController {
             return
         }
 
+        request.callInstance = callInstance
         try {
             callInstance.delete(flush: true)
             flash.message = message(
@@ -232,7 +235,7 @@ class CallController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'call.label')]

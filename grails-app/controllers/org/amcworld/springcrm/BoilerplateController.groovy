@@ -202,6 +202,7 @@ class BoilerplateController {
             return
         }
 
+        request.boilerplateInstance = boilerplateInstance
         try {
             boilerplateInstance.delete flush: true
             flash.message = message(

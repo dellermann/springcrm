@@ -241,6 +241,7 @@ class SalesOrderController {
             return
         }
 
+        request.salesOrderInstance = salesOrderInstance
         try {
             salesOrderInstance.delete flush: true
             flash.message = message(

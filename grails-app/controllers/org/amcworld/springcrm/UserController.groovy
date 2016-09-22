@@ -211,6 +211,7 @@ class UserController implements Controller {
             return
         }
 
+        request.userInstance = userInstance
         try {
             userInstance.delete flush: true
             flash.message = message(

@@ -1,5 +1,5 @@
 /*
- * DeleteConfirmInterceptor.groovy
+ * SearchInterceptor.groovy
  *
  * Copyright (c) 2011-2016, Daniel Ellermann
  *
@@ -20,23 +20,24 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Interceptor
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.GormEntity
 
 
 /**
- * The class {@code DeleteConfirmInterceptor}
+ * The class {@code SearchInterceptor} represents an interceptor which reflect
+ * changes to domain model classes in search index.
  *
  * @author  Daniel Ellermann
  * @version 2.1
  * @since   2.1
  */
 @CompileStatic
-class DeleteConfirmInterceptor implements Interceptor {
+class SearchInterceptor {
 
     //-- Fields ---------------------------------
 
-    int order = 20
+    SearchService searchService
 
 
     //-- Constructors ---------------------------
@@ -44,30 +45,31 @@ class DeleteConfirmInterceptor implements Interceptor {
     /**
      * Creates a new instance of the interceptor.
      */
-    DeleteConfirmInterceptor() {
-        match action: 'delete'
+    SearchInterceptor() {
+        match action: ~/(save|update|delete)/
     }
 
-
-    //-- Public methods -------------------------
-
     /**
-     * Called before the action is executed.  The method does nothing.
+     * Called after the action has been executed.  Depending on the action the
+     * method creates, updates or removes an entry in search index.
      *
      * @return  always {@code true}
      */
-    boolean before() {
-
-        /*
-         * Normally, no delete action request without confirmed parameter should
-         * be received because the JavaScript does not send the request if the
-         * user has not confirmed the deletion.  However, crafted URLs or
-         * programming errors may cause this situation happen.  If so, we simply
-         * redirect to the index view.
-         */
-        if (!params.confirmed) {
-            redirect controller: controllerName, action: 'index'
-            return false
+    boolean after() {
+        def instance = request["${controllerName}Instance"]
+        if (instance instanceof GormEntity) {
+            GormEntity entity = (GormEntity) instance
+            switch (actionName) {
+            case 'save':
+                searchService.index entity
+                break
+            case 'update':
+                searchService.reindex entity
+                break
+            case 'delete':
+                searchService.removeFromIndex entity
+                break
+            }
         }
 
         true

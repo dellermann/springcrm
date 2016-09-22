@@ -251,6 +251,8 @@ class DunningController {
             return
         }
 
+        request.dunningInstance = dunningInstance
+
         Invoice invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)
         invoiceInstance.save flush: true
@@ -335,6 +337,7 @@ class DunningController {
             return
         }
 
+        request.dunningInstance = dunningInstance
         try {
             dunningInstance.delete flush: true
             flash.message = message(

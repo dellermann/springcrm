@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
+import org.springframework.dao.DataIntegrityViolationException
+
 
 /**
  * The class {@code CreditMemoController} contains actions which manage credit
@@ -355,6 +357,7 @@ class CreditMemoController {
             return
         }
 
+        request.creditMemoInstance = creditMemoInstance
         try {
             creditMemoInstance.delete flush: true
             flash.message = message(
@@ -367,7 +370,7 @@ class CreditMemoController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'creditMemo.label')]

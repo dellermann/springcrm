@@ -191,6 +191,7 @@ class HelpdeskController {
             return
         }
 
+        request.helpdeskInstance = helpdeskInstance
         try {
             helpdeskInstance.delete flush: true
             flash.message = message(

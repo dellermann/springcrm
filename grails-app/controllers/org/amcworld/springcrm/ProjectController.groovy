@@ -25,6 +25,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK
 
 import grails.core.GrailsClass
 import org.apache.commons.vfs2.FileObject
+import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -32,16 +33,16 @@ import org.apache.commons.vfs2.FileObject
  * project management.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class ProjectController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
 	DocumentService documentService
 
@@ -246,6 +247,7 @@ class ProjectController {
             return
         }
 
+        request.projectInstance = projectInstance
         try {
             projectInstance.delete flush: true
             flash.message = message(
@@ -258,7 +260,7 @@ class ProjectController {
             } else {
                 redirect action: 'index'
             }
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'project.label')]
