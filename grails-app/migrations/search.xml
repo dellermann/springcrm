@@ -30,9 +30,6 @@
 
   <changeSet author="d.ellermann@amc-world.de" id="20160916-1">
     <createTable tableName="search_data">
-      <column name="class_name" type="varchar(255)">
-        <constraints nullable="false"/>
-      </column>
       <column name="content" type="longtext">
         <constraints nullable="false"/>
       </column>
@@ -42,9 +39,15 @@
       <column name="record_id" type="bigint">
         <constraints nullable="false"/>
       </column>
+      <column name="record_title" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="varchar(100)">
+        <constraints nullable="false"/>
+      </column>
     </createTable>
 
     <addPrimaryKey tableName="search_data" constraintName="search_dataPK"
-      columnNames="class_name, record_id"/>
+      columnNames="type, record_id"/>
   </changeSet>
 </databaseChangeLog>

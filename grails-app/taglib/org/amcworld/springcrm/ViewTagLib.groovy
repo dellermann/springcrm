@@ -22,6 +22,8 @@ package org.amcworld.springcrm
 
 import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
+import org.apache.commons.lang3.StringEscapeUtils
+import org.apache.commons.lang3.StringUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
@@ -819,6 +821,34 @@ class ViewTagLib {
         }
 
         if (laststep > 1) writer << '</ul>'
+    }
+
+    /**
+     * Formats a search result by highlighting the query term.
+     *
+     * @attr text   the text of the search result
+     * @attr query  the query term
+     * @since 2.1
+     */
+    def searchResult = { attrs ->
+        String text = attrs.remove('text')
+        String query = attrs.remove('query')
+
+        text = StringEscapeUtils.escapeXml10(text)
+        query = StringEscapeUtils.escapeXml10(query)
+
+        StringBuilder buf = new StringBuilder()
+        int oldPos = 0
+        int pos = StringUtils.indexOfIgnoreCase(text, query)
+        while (pos >= 0) {
+            buf << text.substring(oldPos, pos) << '<strong>'
+            oldPos = pos + query.length()
+            buf << text.substring(pos, oldPos) << '</strong>'
+            pos = StringUtils.indexOfIgnoreCase(text, query, oldPos)
+        }
+        buf << text.substring(oldPos)
+
+        out << buf
     }
 
     /**

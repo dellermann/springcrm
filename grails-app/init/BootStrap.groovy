@@ -101,7 +101,13 @@ class BootStrap {
         ))
 
         /* search */
-        searchService.bulkIndex()
+        if (!searchService.searchIndexReady) {
+            Thread.start('buildSearchIndex') {
+                SearchData.withNewSession {
+                    searchService.bulkIndex()
+                }
+            }
+        }
     }
 
     def destroy = {}

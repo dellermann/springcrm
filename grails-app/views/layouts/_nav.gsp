@@ -155,29 +155,34 @@
           </div>
         </li>
         <li class="visible-xs">
+          <g:form controller="search" method="get" class="search-form"
+            role="search">
+            <div class="form-group">
+              <label for="search-xs" class="sr-only"
+                ><g:message code="default.search.label"
+              /></label>
+              <div class="input-group">
+                <g:textField type="search" id="search-xs" name="query"
+                  class="form-control"
+                  placeholder="${message(code: 'default.search.placeholder')}"/>
+                <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default">
+                    <i class="fa fa-search"></i>
+                    <span class="sr-only"
+                      ><g:message code="default.search.button.label"
+                    /></span>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </g:form>
+        </li>
+        <li class="visible-xs">
           <g:link controller="user" action="logout"
             class="btn btn-warning navbar-btn" role="button">
             <i class="fa fa-sign-out"></i> <g:message code="default.logout" />
           </g:link>
         </li>
-        <%--
-        <li class="visible-xs">
-          <form role="search">
-            <div class="input-group">
-              <input type="search" class="form-control"
-                placeholder="${message(code: 'default.search.label')}" />
-              <span class="input-group-btn">
-                <button type="submit" class="btn btn-default">
-                  <i class="fa fa-search"></i>
-                  <span class="sr-only"
-                    ><g:message code="default.search.button.label"
-                  /></span>
-                </button>
-              </span>
-            </div>
-          </form>
-        </li>
-        --%>
       </ul>
     </div>
   </div>

@@ -36,6 +36,18 @@ class Invoice extends InvoicingTransaction
     implements GormEntity<Invoice>, PayableAndDue
 {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'subject', 'billingAddr.street', 'billingAddr.poBox',
+        'billingAddr.postalCode', 'billingAddr.location', 'billingAddr.state',
+        'billingAddr.country', 'shippingAddr.street', 'shippingAddr.poBox',
+        'shippingAddr.postalCode', 'shippingAddr.location',
+        'shippingAddr.state', 'shippingAddr.country', 'headerText',
+        'items.*name', 'items.*description', 'footerText', 'notes'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

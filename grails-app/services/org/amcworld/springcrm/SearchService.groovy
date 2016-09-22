@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Service
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.DetachedCriteria
@@ -27,7 +28,6 @@ import grails.transaction.Transactional
 import groovy.transform.CompileStatic
 import java.lang.reflect.Field
 import org.grails.datastore.gorm.GormEntity
-import grails.artefact.Service
 
 
 /**
@@ -66,8 +66,7 @@ class SearchService implements Service {
      *                                  strings
      */
     void bulkIndex() {
-        DetachedCriteria<SearchData> criteria =
-            SearchData.where { className != '' }
+        DetachedCriteria<SearchData> criteria = SearchData.where { type != '' }
         criteria.deleteAll()
 
         for (GrailsClass cls : grailsApplication.getArtefacts('Domain')) {
@@ -78,6 +77,9 @@ class SearchService implements Service {
                 bulkIndex clz
             }
         }
+
+        new Config(name: 'searchIndexReady', value: new Date().toString())
+            .save flush: true, failOnError: true
     }
 
     /**
@@ -85,7 +87,7 @@ class SearchService implements Service {
      * model class.
      *
      * @param cls                       the given domain model class
-     * @throws IllegalStateException    if any domain model class does not
+     * @throws IllegalStateException    if the domain model class does not
      *                                  define the searchable fields as list of
      *                                  strings
      */
@@ -105,26 +107,35 @@ class SearchService implements Service {
      *                                  define the searchable fields as list of
      *                                  strings
      */
-    public <T> void index(GormEntity<T> entity) {
+    @CompileStatic
+    void index(GormEntity<?> entity) {
         List<String> searchFields = getSearchFields(entity.getClass())
         if (searchFields == null) {
             return
         }
 
-        Map<String, String> content = [: ]
-        for (String fieldName : searchFields) {
-            String value = entity."${fieldName}"?.trim()
-            if (value) {
-                content[fieldName] = value
-            }
+        String title = entity.toString()
+        if (title.length() > 65_535) {
+            title = title.substring(0, 65_536)
         }
-
         SearchData data = new SearchData(
-            className: entity.getClass().getName(),
+            type: getType(entity.getClass()),
             recordId: (Long) entity.ident(),
+            recordTitle: title
         )
-        data.structuredContent = content
+        data.structuredContent = extractFields(entity, searchFields)
         data.save insert: true, failOnError: true
+    }
+
+    /**
+     * Checks whether the search index is ready, that is, all domain model
+     * instances have been indexed.
+     *
+     * @return  {@code true} if the search index is ready; {@code false}
+     *          otherwise
+     */
+    boolean isSearchIndexReady() {
+        Config.countByName('searchIndexReady') > 0
     }
 
     /**
@@ -135,7 +146,8 @@ class SearchService implements Service {
      *                                  define the searchable fields as list of
      *                                  strings
      */
-    public <T> void reindex(GormEntity<T> entity) {
+    @CompileStatic
+    void reindex(GormEntity<?> entity) {
         removeFromIndex entity
         index entity
     }
@@ -145,12 +157,11 @@ class SearchService implements Service {
      *
      * @param entity    the entity that should be removed
      */
-    public <T> void removeFromIndex(GormEntity<T> entity) {
-        Class<?> clz = entity.getClass()
+    void removeFromIndex(GormEntity<?> entity) {
+        String t = getType(entity.getClass())
         Long id = (Long) entity.ident()
-        DetachedCriteria<SearchData> criteria = SearchData.where {
-            className == clz.getName() && recordId == id
-        }
+        DetachedCriteria<SearchData> criteria =
+            SearchData.where { type == t && recordId == id }
         criteria.deleteAll()
     }
 
@@ -163,12 +174,43 @@ class SearchService implements Service {
     List<SearchData> search(String query) {
         (List<SearchData>) SearchData.createCriteria().list {
             ilike 'content', "%${query}%"
-            groupProperty 'className'
+            groupProperty 'type'
         }
     }
 
 
     //-- Non-public methods ---------------------
+
+    /**
+     * Extracts the values of the given fields from the stated entity.
+     *
+     * @param entity    the given entity
+     * @param fields    the list of fields that should be extracted
+     * @return          a map containing the field names and their values
+     */
+    private static Map<String, String> extractFields(GormEntity<?> entity,
+                                                     List<String> fields)
+    {
+        Map<String, String> res = [: ]
+        for (String field : fields) {
+            Object obj = field.tokenize('.')
+                .inject(entity) { Object obj, String prop ->
+                    prop.startsWith('*') ? obj*."${prop.substring(1)}"
+                        : obj?."${prop}"
+                }
+            if (obj instanceof Iterable<?>) {
+                int i = 0
+                for (def item : obj) {
+                    storeInMap res, field.replace('*', i + '.'), item
+                    i++
+                }
+            } else {
+                storeInMap res, field, obj
+            }
+        }
+
+        res
+    }
 
     /**
      * Gets the search fields of the given domain model class.
@@ -197,5 +239,34 @@ class SearchService implements Service {
         } catch (NoSuchFieldException ignore) { /* ignored */ }
 
         res
+    }
+
+    /**
+     * Converts the name of the given class to a type name starting with a
+     * lower case letter.
+     *
+     * @param cls   the given class
+     * @return      the type name
+     */
+    private static String getType(Class<?> cls) {
+        String name = cls.simpleName
+        name = name.substring(0, 1).toLowerCase() + name.substring(1)
+
+        name.replaceAll ~/_\$\$.*$/, ''
+    }
+
+    /**
+     * Stores the value of the given field in the stated map if the value is
+     * neither {@code null} nor blank.
+     *
+     * @param map   the stated map
+     * @param field the name of the field
+     * @param value the value which is converted to a string and trimmed
+     */
+    private static void storeInMap(Map<String, String> map, String field,
+                                   Object value)
+    {
+        String s = value?.toString()?.trim()
+        if (s) map[field] = s
     }
 }

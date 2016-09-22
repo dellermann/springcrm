@@ -43,23 +43,19 @@ class SearchData implements Serializable {
     //-- Class fields ---------------------------
 
     static constraints = {
+        type blank: false, maxSize: 100
         content blank: false, maxSize: Integer.MAX_VALUE
         contentStructured blank: false, maxSize: Integer.MAX_VALUE
-        className blank: false, maxSize: 255
+        recordTitle maxSize: 65_535
     }
     static mapping = {
-        id composite: ['className', 'recordId']
+        id composite: ['type', 'recordId']
         version false
     }
     static transients = ['structuredContent']
 
 
     //-- Fields ---------------------------------
-
-    /**
-     * The name of the class that record is indexed.
-     */
-    String className
 
     /**
      * The plain text content of all searchable fields of the indexed record.
@@ -76,6 +72,16 @@ class SearchData implements Serializable {
      * The ID of the indexed record.
      */
     long recordId
+
+    /**
+     * The string representation of the record.
+     */
+    String recordTitle
+
+    /**
+     * The type of the indexed record.
+     */
+    String type
 
 
     //-- Public methods -------------------------

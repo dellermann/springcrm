@@ -1,3 +1,43 @@
-<g:each in="${searchResults}" var="result">
-  <p>${result.content}</p>
-</g:each>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
+
+<html>
+  <head>
+    <meta name="layout" content="main"/>
+    <meta name="caption" content="${message(code: 'search.title')}"/>
+    <title><g:message code="search.title"/></title>
+    <meta name="stylesheet" content="search-results"/>
+  </head>
+
+  <body>
+    <g:each in="${searchResults.entrySet()}" var="group">
+      <section class="search-result-group">
+        <h2>
+          <g:dataTypeIcon controller="${group.key}"/>
+          <g:message code="${group.key}.plural"/>
+        </h2>
+        <g:each in="${group.value}" var="item">
+          <h3>
+            <g:link controller="${item.type}" action="show"
+              id="${item.recordId}"
+              >${item.recordTitle}</g:link
+            >
+            <g:link controller="${item.type}" action="edit"
+              id="${item.recordId}" params="[returnUrl: url()]"
+              class="btn btn-default btn-xs edit-btn">
+              <i class="fa fa-pencil-square-o"></i
+              ><span class="hidden-xs"
+                ><g:message code="default.btn.edit"
+              /></span>
+            </g:link>
+          </h3>
+          <div class="search-result-fields">
+            <g:each in="${item.structuredContent.values().findAll {StringUtils.containsIgnoreCase(it, query)}.take(3)}"
+              var="field">
+              <p><g:searchResult text="${field}" query="${query}"/></p>
+            </g:each>
+          </div>
+        </g:each>
+      </section>
+    </g:each>
+  </body>
+</html>

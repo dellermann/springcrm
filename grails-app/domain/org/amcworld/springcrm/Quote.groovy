@@ -31,6 +31,18 @@ import org.grails.datastore.gorm.GormEntity
  */
 class Quote extends InvoicingTransaction implements GormEntity<Quote> {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS = [
+        'subject', 'billingAddr.street', 'billingAddr.poBox',
+        'billingAddr.postalCode', 'billingAddr.location', 'billingAddr.state',
+        'billingAddr.country', 'shippingAddr.street', 'shippingAddr.poBox',
+        'shippingAddr.postalCode', 'shippingAddr.location',
+        'shippingAddr.state', 'shippingAddr.country', 'headerText',
+        'items.*name', 'items.*description', 'footerText', 'notes'
+    ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

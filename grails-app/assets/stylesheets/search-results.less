@@ -1,5 +1,5 @@
 /*
- * SearchController.groovy
+ * search-results.less
  *
  * Copyright (c) 2011-2016, Daniel Ellermann
  *
@@ -18,22 +18,32 @@
  */
 
 
-package org.amcworld.springcrm
+@import "application";
 
 
-class SearchController {
+.search-result-group {
+  margin-bottom: (2 * @line-height-computed);
 
-    //-- Class fields ---------------------------
+  h3 {
+    font-size: @font-size-base;
+  }
+  .data-type-icon {
+    margin-right: .5em;
+  }
+  .edit-btn {
+    margin-left: 1em;
 
-    SearchService searchService
-
-
-    //-- Public methods -------------------------
-
-    def index(String query) {
-        Map<String, List<SearchData>> searchData =
-            searchService.search(query).groupBy { it.type }
-
-        [query: query.toLowerCase(), searchResults: searchData]
+    @media (min-width: @screen-sm-min) {
+      .fa {
+        padding-right: .5ex;
+      }
     }
+  }
+}
+.search-result-fields {
+  margin-left: 2em;
+
+  strong {
+    color: @brand-primary;
+  }
 }

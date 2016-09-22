@@ -35,11 +35,15 @@ class Person implements GormEntity<Person>, NumberedDomain {
     //-- Constants ----------------------------------
 
     public static final List<String> SEARCH_FIELDS = [
-            'title', 'firstName', 'lastName', 'phone', 'phoneHome', 'mobile',
-            'fax', 'phoneAssistant', 'phoneOther', 'email1', 'email2',
-            'jobTitle', 'department', 'assistant', 'notes',
-            'assessmentPositive', 'assessmentNegative'
-        ].asImmutable()
+        'title', 'firstName', 'lastName', 'mailingAddr.street',
+        'mailingAddr.poBox', 'mailingAddr.postalCode', 'mailingAddr.location',
+        'mailingAddr.state', 'mailingAddr.country', 'otherAddr.street',
+        'otherAddr.poBox', 'otherAddr.postalCode', 'otherAddr.location',
+        'otherAddr.state', 'otherAddr.country', 'phone', 'phoneHome', 'mobile',
+        'fax', 'phoneAssistant', 'phoneOther', 'email1', 'email2', 'jobTitle',
+        'department', 'assistant', 'notes', 'assessmentPositive',
+        'assessmentNegative'
+    ].asImmutable()
 
 
     //-- Class fields ---------------------------

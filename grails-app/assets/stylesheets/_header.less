@@ -1,7 +1,7 @@
 //
 // _header.less
 //
-// Copyright (c) 2011-2015, Daniel Ellermann
+// Copyright (c) 2011-2016, Daniel Ellermann
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -59,10 +59,8 @@ body > .container > header {
 .login-info small {
   padding: @padding-base-horizontal;
 }
-.search-form {
-  margin-left: auto;
-  width: 250px;
+@media (min-width: @screen-sm-min) {
+  .search-form .input-group > .form-control {
+    width: 200px;
+  }
 }
-
-// vim:set ts=2 sw=2 sts=2:
-

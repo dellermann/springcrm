@@ -35,8 +35,13 @@ class Organization implements GormEntity<Organization>, NumberedDomain {
     //-- Constants ----------------------------------
 
     public static final List<String> SEARCH_FIELDS = [
-        'name', 'phone', 'fax', 'phoneOther', 'email1', 'email2', 'website',
-        'legalForm', 'owner', 'notes', 'assessmentPositive',
+        'name', 'billingAddr.street', 'billingAddr.poBox',
+        'billingAddr.postalCode', 'billingAddr.location', 'billingAddr.state',
+        'billingAddr.country', 'shippingAddr.street', 'shippingAddr.poBox',
+        'shippingAddr.postalCode', 'shippingAddr.location',
+        'shippingAddr.state', 'shippingAddr.country', 'phone', 'fax',
+        'phoneOther', 'email1', 'email2', 'website', 'legalForm', 'type.name',
+        'industry.name', 'owner', 'notes', 'assessmentPositive',
         'assessmentNegative'
     ].asImmutable()
 
