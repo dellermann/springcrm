@@ -59,9 +59,9 @@ class ProjectController {
     }
 
     def listEmbedded(Long organization, Long person) {
-        List<Project> l
-        int count
-        Map<String, Object> linkParams
+        List<Project> l = []
+        int count = 0
+        Map<String, Object> linkParams = [: ]
 
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
@@ -114,11 +114,7 @@ class ProjectController {
             args: [message(code: 'project.label'), projectInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: projectInstance.id
-        }
+        redirect action: 'show', id: projectInstance.id
     }
 
     def show(Long id) {
@@ -224,11 +220,7 @@ class ProjectController {
             args: [message(code: 'project.label'), projectInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: projectInstance.id
-        }
+        redirect action: 'show', id: projectInstance.id
     }
 
     def delete(Long id) {
@@ -239,11 +231,7 @@ class ProjectController {
                 args: [message(code: 'project.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -255,16 +243,13 @@ class ProjectController {
                 args: [message(code: 'project.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
         } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'project.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

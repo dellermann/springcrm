@@ -115,11 +115,7 @@ class NoteController {
             args: [message(code: 'note.label'), noteInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: noteInstance.id
-        }
+        redirect action: 'show', id: noteInstance.id
     }
 
     def show(Long id) {
@@ -188,11 +184,7 @@ class NoteController {
             args: [message(code: 'note.label'), noteInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: noteInstance.id
-        }
+        redirect action: 'show', id: noteInstance.id
     }
 
     def delete(Long id) {
@@ -203,11 +195,7 @@ class NoteController {
                 args: [message(code: 'note.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -219,16 +207,13 @@ class NoteController {
                 args: [message(code: 'note.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
         } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'note.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

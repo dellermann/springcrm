@@ -212,11 +212,7 @@ class CalendarEventController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: calendarEventInstance.ident()
-        }
+        redirect action: 'show', id: calendarEventInstance.ident()
     }
 
     def show(Long id) {
@@ -309,11 +305,7 @@ class CalendarEventController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: calendarEventInstance.id
-        }
+        redirect action: 'show', id: calendarEventInstance.id
     }
 
     /**
@@ -358,13 +350,9 @@ class CalendarEventController {
                 args: [message(code: 'calendarEvent.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect(
-                    action: calendarEventService.currentCalendarView ?: 'index'
-                )
-            }
+            redirect(
+                action: calendarEventService.currentCalendarView ?: 'index'
+            )
             return
         }
 
@@ -376,14 +364,10 @@ class CalendarEventController {
                 args: [message(code: 'calendarEvent.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect(
-                    action: calendarEventService.currentCalendarView ?: 'index'
-                )
-            }
-        } catch (DataIntegrityViolationException ignored) {
+            redirect(
+                action: calendarEventService.currentCalendarView ?: 'index'
+            )
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'calendarEvent.label')]

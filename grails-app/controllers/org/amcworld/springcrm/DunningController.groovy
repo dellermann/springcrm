@@ -163,11 +163,7 @@ class DunningController {
             args: [message(code: 'dunning.label'), dunningInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: dunningInstance.id
-        }
+        redirect action: 'show', id: dunningInstance.id
     }
 
     def show(Long id) {
@@ -262,11 +258,7 @@ class DunningController {
             args: [message(code: 'dunning.label'), dunningInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: dunningInstance.id
-        }
+        redirect action: 'show', id: dunningInstance.id
     }
 
     def updatePayment(Long id) {
@@ -310,11 +302,7 @@ class DunningController {
             args: [message(code: 'dunning.label'), dunningInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: dunningInstance.id
-        }
+        redirect action: 'show', id: dunningInstance.id
     }
 
     def delete(Long id) {
@@ -324,11 +312,8 @@ class DunningController {
                 code: 'default.not.found.message',
                 args: [message(code: 'dunning.label'), id]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+
+            redirect action: 'index'
             return
         }
 
@@ -345,12 +330,8 @@ class DunningController {
                 args: [message(code: 'dunning.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignored) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'dunning.label')]

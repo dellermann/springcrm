@@ -110,11 +110,8 @@ class ConfigController implements Controller {
             code: 'default.updated.message',
             args: [message(code: 'config.label', default: 'System setting'), '']
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'index'
-        }
+
+        redirect action: 'index'
     }
 
     def loadClient() {
@@ -165,11 +162,7 @@ class ConfigController implements Controller {
             }
         }
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'index'
-        }
+        redirect action: 'index'
     }
 
     def loadTaxRates() {
@@ -195,11 +188,7 @@ class ConfigController implements Controller {
             }
         }
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'index'
-        }
+        redirect action: 'index'
     }
 
     def loadSeqNumbers() {
@@ -266,11 +255,7 @@ class ConfigController implements Controller {
             return
         }
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'index'
-        }
+        redirect action: 'index'
     }
 
 

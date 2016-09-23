@@ -94,14 +94,10 @@ class BoilerplateController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect(
-                action: 'show', id: boilerplateInstance.id,
-                params: [noLruRecord: params.noLruRecord]
-            )
-        }
+        redirect(
+            action: 'show', id: boilerplateInstance.id,
+            params: [noLruRecord: params.noLruRecord]
+        )
     }
 
     def show(Long id) {
@@ -179,11 +175,7 @@ class BoilerplateController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: boilerplateInstance.id
-        }
+        redirect action: 'show', id: boilerplateInstance.id
     }
 
     def delete(Long id) {
@@ -194,11 +186,7 @@ class BoilerplateController {
                 args: [message(code: 'boilerplate.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -210,12 +198,8 @@ class BoilerplateController {
                 args: [message(code: 'boilerplate.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignored) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'boilerplate.label')]

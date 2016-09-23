@@ -163,11 +163,7 @@ class TicketController {
             args: [message(code: 'ticket.label'), ticketInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: ticketInstance.id
-        }
+        redirect action: 'show', id: ticketInstance.id
     }
 
     def show(Long id) {
@@ -236,11 +232,7 @@ class TicketController {
             args: [message(code: 'ticket.label'), ticketInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: ticketInstance.id
-        }
+        redirect action: 'show', id: ticketInstance.id
     }
 
     def delete(Long id) {
@@ -251,11 +243,7 @@ class TicketController {
                 args: [message(code: 'ticket.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -267,16 +255,13 @@ class TicketController {
                 args: [message(code: 'ticket.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException e) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'ticket.label')]
             )
+
             redirect action: 'show', id: id
         }
     }
@@ -527,7 +512,7 @@ class TicketController {
      * @param id    the ID of the ticket
      * @param stage the stage that should be changed to
      */
-    protected def frontendChangeStage(Long id, TicketStage stage) {
+    private def frontendChangeStage(Long id, TicketStage stage) {
         Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
             redirectToHelpdeskFrontend Helpdesk.read(params.long('helpdesk'))
@@ -544,7 +529,7 @@ class TicketController {
      *
      * @return  the list of helpdesks
      */
-    protected List<Helpdesk> getHelpdesks() {
+    private List<Helpdesk> getHelpdesks() {
         User user = ((Credential) session.credential).loadUser()
 
         user.admin ? Helpdesk.list() : user.helpdesks as List
@@ -556,7 +541,7 @@ class TicketController {
      *
      * @param helpdesk  the given helpdesk
      */
-    protected void redirectToFrontendPage(Helpdesk helpdesk) {
+    private void redirectToFrontendPage(Helpdesk helpdesk) {
         if (params.returnUrl) {
             redirect url: params.returnUrl
         } else {
@@ -569,7 +554,7 @@ class TicketController {
      *
      * @param helpdesk  the given helpdesk
      */
-    protected void redirectToHelpdeskFrontend(Helpdesk helpdesk) {
+    private void redirectToHelpdeskFrontend(Helpdesk helpdesk) {
         def params = [
             accessCode: helpdesk.accessCode,
             urlName: helpdesk.urlName

@@ -122,11 +122,7 @@ class WorkController {
             args: [message(code: 'work.label'), workInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: workInstance.id
-        }
+        redirect action: 'show', id: workInstance.id
     }
 
     def show(Long id) {
@@ -192,11 +188,7 @@ class WorkController {
             args: [message(code: 'work.label'), workInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: workInstance.id
-        }
+        redirect action: 'show', id: workInstance.id
     }
 
     def delete(Long id) {
@@ -207,11 +199,7 @@ class WorkController {
                 args: [message(code: 'work.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -226,16 +214,13 @@ class WorkController {
                 args: [message(code: 'work.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignored) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'work.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

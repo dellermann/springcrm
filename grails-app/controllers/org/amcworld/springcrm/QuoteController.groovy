@@ -125,11 +125,7 @@ class QuoteController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: quoteInstance.id
-        }
+        redirect action: 'show', id: quoteInstance.id
     }
 
     def show(Long id) {
@@ -195,11 +191,7 @@ class QuoteController {
             args: [message(code: 'quote.label'), quoteInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: quoteInstance.id
-        }
+        redirect action: 'show', id: quoteInstance.id
     }
 
     def delete(Long id) {
@@ -209,11 +201,8 @@ class QuoteController {
                 code: 'default.not.found.message',
                 args: [message(code: 'quote.label'), id]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+
+            redirect action: 'index'
             return
         }
 
@@ -224,16 +213,14 @@ class QuoteController {
                 code: 'default.deleted.message',
                 args: [message(code: 'quote.label')]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignored) {
+
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'quote.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

@@ -104,11 +104,7 @@ class UserController implements Controller {
             args: [message(code: 'user.label'), userInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: userInstance.id
-        }
+        redirect action: 'show', id: userInstance.id
     }
 
     def show(Long id) {
@@ -188,11 +184,8 @@ class UserController implements Controller {
             code: 'default.updated.message',
             args: [message(code: 'user.label'), userInstance.toString()]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: userInstance.id
-        }
+
+        redirect action: 'show', id: userInstance.id
     }
 
     def delete(Long id) {
@@ -203,11 +196,7 @@ class UserController implements Controller {
                 args: [message(code: 'user.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -219,16 +208,13 @@ class UserController implements Controller {
                 args: [message(code: 'user.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignored) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'user.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

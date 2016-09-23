@@ -1,7 +1,7 @@
 /*
  * HelpdeskController.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,21 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import org.springframework.dao.DataIntegrityViolationException
 
 
+/**
+ * The class {@code HelpdeskController} handles helpdesks.
+ *
+ * @author  Daniel Ellermann
+ * @version 2.1
+ * @since   1.4
+ */
 class HelpdeskController {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     HelpdeskService helpdeskService
     MailSystemService mailSystemService
@@ -96,11 +103,8 @@ class HelpdeskController {
                 message(code: 'helpdesk.label'), helpdeskInstance.toString()
             ]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: helpdeskInstance.id
-        }
+
+        redirect action: 'show', id: helpdeskInstance.id
     }
 
     def show(Long id) {
@@ -168,11 +172,7 @@ class HelpdeskController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: helpdeskInstance.id
-        }
+        redirect action: 'show', id: helpdeskInstance.id
     }
 
     def delete(Long id) {
@@ -183,11 +183,7 @@ class HelpdeskController {
                 args: [message(code: 'helpdesk.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -199,12 +195,8 @@ class HelpdeskController {
                 args: [message(code: 'helpdesk.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException e) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'helpdesk.label')]

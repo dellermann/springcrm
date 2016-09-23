@@ -125,11 +125,8 @@ class PersonController {
             code: 'default.created.message',
             args: [message(code: 'person.label'), personInstance.toString()]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: personInstance.id
-        }
+
+        redirect action: 'show', id: personInstance.id
     }
 
     def show(Long id) {
@@ -208,11 +205,8 @@ class PersonController {
             code: 'default.updated.message',
             args: [message(code: 'person.label'), personInstance.toString()]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: personInstance.id
-        }
+
+        redirect action: 'show', id: personInstance.id
     }
 
     def delete(Long id) {
@@ -223,11 +217,7 @@ class PersonController {
                 args: [message(code: 'person.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -243,16 +233,13 @@ class PersonController {
                 args: [message(code: 'person.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
         } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'person.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

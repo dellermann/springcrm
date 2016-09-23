@@ -132,11 +132,7 @@ class PurchaseInvoiceController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: purchaseInvoiceInstance.id
-        }
+        redirect action: 'show', id: purchaseInvoiceInstance.id
     }
 
     def show(Long id) {
@@ -254,11 +250,7 @@ class PurchaseInvoiceController {
             ]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: purchaseInvoiceInstance.id
-        }
+        redirect action: 'show', id: purchaseInvoiceInstance.id
     }
 
     def delete(Long id) {
@@ -268,11 +260,8 @@ class PurchaseInvoiceController {
                 code: 'default.not.found.message',
                 args: [message(code: 'purchaseInvoice.label'), id]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+
+            redirect action: 'index'
             return
         }
 
@@ -288,16 +277,13 @@ class PurchaseInvoiceController {
                 args: [message(code: 'purchaseInvoice.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignored) {
+            redirect action: 'index'
+        } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'purchaseInvoice.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

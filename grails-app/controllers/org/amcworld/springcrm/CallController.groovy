@@ -40,13 +40,14 @@ class CallController {
     //-- Public methods -------------------------
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        int max = params.max =
+            Math.min(params.max ? params.int('max') : 10, 100)
 
-        if (params.letter) {
-            int num = Call.countBySubjectLessThan(params.letter)
+        String letter = params.letter?.toString()
+        if (letter) {
+            int num = Call.countBySubjectLessThan(letter)
             params.sort = 'subject'
-            params.offset =
-                (Math.floor(num / params.max) * params.max) as Integer
+            params.offset = (Math.floor(num / max) * max) as int
             params.search = null
         }
 
@@ -65,9 +66,9 @@ class CallController {
     }
 
     def listEmbedded(Long organization, Long person) {
-        List<Call> l
-        int count
-        Map<String, Object> linkParams
+        List<Call> l = []
+        int count = 0
+        Map<String, Object> linkParams = [: ]
 
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
@@ -129,11 +130,7 @@ class CallController {
             args: [message(code: 'call.label'), callInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: callInstance.id
-        }
+        redirect action: 'show', id: callInstance.id
     }
 
     def show(Long id) {
@@ -199,11 +196,7 @@ class CallController {
             args: [message(code: 'call.label'), callInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: callInstance.id
-        }
+        redirect action: 'show', id: callInstance.id
     }
 
     def delete(Long id) {
@@ -214,11 +207,7 @@ class CallController {
                 args: [message(code: 'call.label'), id]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
             return
         }
 
@@ -230,11 +219,7 @@ class CallController {
                 args: [message(code: 'call.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
         } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',

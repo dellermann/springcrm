@@ -154,11 +154,8 @@ class InvoiceController {
             code: 'default.created.message',
             args: [message(code: 'invoice.label'), invoiceInstance.toString()]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: invoiceInstance.id
-        }
+
+        redirect action: 'show', id: invoiceInstance.id
     }
 
     def show(Long id) {
@@ -248,11 +245,7 @@ class InvoiceController {
             args: [message(code: 'invoice.label'), invoiceInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: invoiceInstance.id
-        }
+        redirect action: 'show', id: invoiceInstance.id
     }
 
     def updatePayment(Long id) {
@@ -296,11 +289,7 @@ class InvoiceController {
             args: [message(code: 'invoice.label'), invoiceInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: invoiceInstance.id
-        }
+        redirect action: 'show', id: invoiceInstance.id
     }
 
     def delete(Long id) {
@@ -310,11 +299,8 @@ class InvoiceController {
                 code: 'default.not.found.message',
                 args: [message(code: 'invoice.label'), id]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+
+            redirect action: 'index'
             return
         }
 
@@ -331,16 +317,13 @@ class InvoiceController {
                 args: [message(code: 'invoice.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
         } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'invoice.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

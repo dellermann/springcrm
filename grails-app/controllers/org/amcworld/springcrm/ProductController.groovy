@@ -125,11 +125,7 @@ class ProductController {
             args: [message(code: 'product.label'), productInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: productInstance.id
-        }
+        redirect action: 'show', id: productInstance.id
     }
 
     def show(Long id) {
@@ -195,11 +191,7 @@ class ProductController {
             args: [message(code: 'product.label'), productInstance.toString()]
         )
 
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: productInstance.id
-        }
+        redirect action: 'show', id: productInstance.id
     }
 
     def delete(Long id) {
@@ -209,11 +201,8 @@ class ProductController {
                 code: 'default.not.found.message',
                 args: [message(code: 'product.label'), id]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+
+            redirect action: 'index'
             return
         }
 
@@ -228,16 +217,13 @@ class ProductController {
                 args: [message(code: 'product.label')]
             )
 
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
+            redirect action: 'index'
         } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'product.label')]
             )
+
             redirect action: 'show', id: id
         }
     }

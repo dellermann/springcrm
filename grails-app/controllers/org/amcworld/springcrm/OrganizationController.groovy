@@ -112,14 +112,11 @@ class OrganizationController {
                 organizationInstance.toString()
             ]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect(
-                action: 'show', id: organizationInstance.id,
-                params: [listType: params.listType]
-            )
-        }
+
+        redirect(
+            action: 'show', id: organizationInstance.id,
+            params: [listType: params.listType]
+        )
     }
 
     def show(Long id) {
@@ -196,14 +193,11 @@ class OrganizationController {
                 organizationInstance.toString()
             ]
         )
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect(
-                action: 'show', id: organizationInstance.id,
-                params: [listType: params.listType]
-            )
-        }
+
+        redirect(
+            action: 'show', id: organizationInstance.id,
+            params: [listType: params.listType]
+        )
     }
 
     def delete(Long id, Byte listType) {
@@ -213,11 +207,8 @@ class OrganizationController {
                 code: 'default.not.found.message',
                 args: [message(code: 'organization.label'), id]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index', params: [listType: listType]
-            }
+
+            redirect action: 'index', params: [listType: listType]
             return
         }
 
@@ -228,16 +219,14 @@ class OrganizationController {
                 code: 'default.deleted.message',
                 args: [message(code: 'organization.label')]
             )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index', params: [listType: listType]
-            }
+
+            redirect action: 'index', params: [listType: listType]
         } catch (DataIntegrityViolationException ignored) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'organization.label')]
             )
+
             redirect action: 'show', id: id, params: [listType: listType]
         }
     }
