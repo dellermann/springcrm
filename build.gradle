@@ -133,7 +133,7 @@ dependencies {
     compile 'org.hibernate:hibernate-ehcache'
     compile 'org.liquibase:liquibase-core:3.3.2'
 
-    /* XXX temporary for Grails 3.1.11 */
+    /* XXX temporary for Grails 3.1.11 and 3.1.12 */
 //    profile "org.grails.profiles:web:${grailsVersion}"
     profile "org.grails.profiles:web:3.1.11.BUILD-SNAPSHOT"
 
