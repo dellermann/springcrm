@@ -48,7 +48,7 @@ class EncryptPasswordInterceptor implements Interceptor {
     EncryptPasswordInterceptor() {
         match(
             controller: ~/(user|install)/,
-            action: ~/(save|update|authenticate|create-admin-save)/
+            action: ~/(save|update|authenticate|createAdminSave)/
         )
     }
 

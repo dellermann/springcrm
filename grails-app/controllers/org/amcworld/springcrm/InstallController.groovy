@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.hibernate.SessionFactory
+
 
 /**
  * The class {@code InstallController} handles actions in the installation
@@ -29,13 +31,13 @@ package org.amcworld.springcrm
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
 class InstallController {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def sessionFactory
+    SessionFactory sessionFactory
     InstallService installService
     SecurityService securityService
 
@@ -84,13 +86,20 @@ class InstallController {
         def userInstance = new User(params)
         userInstance.admin = true
 
-        boolean passwordMismatch =
-            params.password != securityService.encryptPassword(params.passwordRepeat)
+        String pwdRepeat = securityService.encryptPassword(
+            params.passwordRepeat.toString()
+        )
+        boolean passwordMismatch = params.password != pwdRepeat
         if (passwordMismatch) {
-            userInstance.errors.rejectValue 'password', 'user.password.doesNotMatch'
+            userInstance.errors.rejectValue(
+                'password', 'user.password.doesNotMatch'
+            )
         }
         if (passwordMismatch || !userInstance.save(flush: true)) {
-            render view: 'createAdmin', model: [userInstance: userInstance, step: 3]
+            render(
+                view: 'createAdmin',
+                model: [userInstance: userInstance, step: 3]
+            )
             return
         }
 
