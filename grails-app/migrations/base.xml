@@ -4,7 +4,7 @@
 
  base.xml
 
- Copyright (c) 2011-2013, Daniel Ellermann
+ Copyright (c) 2011-2016, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -657,10 +657,16 @@
   </changeSet>
 
   <changeSet author="d.ellermann@amc-world.de" id="20120825-19">
+
+    <!--
+      Note: Fix a duplicate index name reported by H2.  Declare the new checksum
+      as valid to prevent break at startup.
+    -->
+    <validCheckSum>7:4f5f358aff6ec95965fd201c97ce279f</validCheckSum>
     <createTable tableName="purchase_invoice_item">
       <column autoIncrement="true" name="id" type="bigint">
         <constraints nullable="false" primaryKey="true"
-          primaryKeyName="purchase_invoPK" />
+          primaryKeyName="purchase_inviPK" />
       </column>
       <column name="version" type="bigint">
         <constraints nullable="false" />

@@ -4,7 +4,7 @@
 
  sales-item-pricing.xml
 
- Copyright (c) 2011-2014, Daniel Ellermann
+ Copyright (c) 2011-2016, Daniel Ellermann
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,12 @@
   <!-- Data structure definitions -->
 
   <changeSet author="d.ellermann@amc-world.de" id="20120731-1">
+
+    <!--
+      Note: Fix a duplicate index name reported by H2.  Declare the new checksum
+      as valid to prevent break at startup.
+    -->
+    <validCheckSum>7:68520e74e80fb0bd8457dcfe6b719b7f</validCheckSum>
     <createTable tableName="sales_item_pricing">
       <column autoIncrement="true" name="id" type="bigint">
         <constraints nullable="false" primaryKey="true"
@@ -53,7 +59,7 @@
     <createTable tableName="sales_item_pricing_item">
       <column autoIncrement="true" name="id" type="bigint">
         <constraints nullable="false" primaryKey="true"
-          primaryKeyName="sales_item_prPK" />
+          primaryKeyName="sales_item_piPK" />
       </column>
       <column name="version" type="bigint">
         <constraints nullable="false" />
