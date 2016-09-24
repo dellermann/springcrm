@@ -60,7 +60,8 @@ if (Environment.isDevelopmentMode() && targetDir) {
 logger 'grails.app.services.org.amcworld.springcrm.InstallService', INFO
 logger 'org.grails.plugins.coffee.compiler', INFO
 
-logger 'grails.app.conf.BootStrap', DEBUG
+//logger 'springcrm.Application', DEBUG
+//logger 'grails.app.conf.BootStrap', INFO
 //logger 'grails.app.controllers.org.amcworld.springcrm.TicketController', DEBUG
 //logger 'grails.artefact.Interceptor', DEBUG, ['STDOUT'], false   // show interceptor order
 //logger 'org.amcworld.springcrm.google.GoogleContactSync', DEBUG

@@ -33,7 +33,6 @@ import org.amcworld.springcrm.xml.XHTMLEntityResolver
 import org.apache.fop.apps.FopFactory
 import org.apache.http.impl.client.HttpClients
 import org.grails.spring.DefaultBeanConfiguration
-import org.springframework.jndi.JndiObjectFactoryBean
 import org.xml.sax.helpers.XMLReaderFactory
 
 
@@ -42,13 +41,6 @@ beans = {
     /*
      * Implementation notes: delegate is an object of grails.spring.BeanBuilder
      */
-
-    /* configuration handling */
-    springcrmConfig(JndiObjectFactoryBean) {
-        defaultObject = ''
-        lookupOnStartup = true
-        jndiName = 'java:comp/env/springcrmConfig'
-    }
 
     /* value converters */
     defaultDateConverter(DateTimeValueConverter) {

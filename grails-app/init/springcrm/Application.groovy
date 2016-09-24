@@ -26,6 +26,12 @@ import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
+import javax.naming.Context
+import javax.naming.InitialContext
+import javax.naming.NameNotFoundException
+import javax.naming.NoInitialContextException
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
 import org.springframework.context.EnvironmentAware
@@ -49,6 +55,11 @@ import org.springframework.core.io.Resource
 @CompileStatic
 class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
+    //-- Class fields ---------------------------
+
+    private static final Log log = LogFactory.getLog(this)
+
+
     //-- Public methods -------------------------
 
     static void main(String [] args) {
@@ -57,23 +68,39 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
 
     @Override
     void setEnvironment(Environment environment) {
-        if (environment instanceof AbstractEnvironment) {
-            AbstractEnvironment env = (AbstractEnvironment) environment
-            parseConfigFile(
-                env, 'system.properties',
-                getUserConfigFile('config.properties')
-            )
-            parseConfigFile(
-                env, 'system.groovy', getUserConfigFile('config.groovy')
-            )
-            parseConfigFile(
-                env, 'system.yaml', getUserConfigFile('config.yml')
-            )
+        if (!(environment instanceof AbstractEnvironment)) {
+            return
+        }
 
-            String path = configSystemPropertyValue
-            if (path) {
-                parseConfigFile env, 'system.system', path
-            }
+        AbstractEnvironment env = (AbstractEnvironment) environment
+        log.debug "Environment: ${env}"
+
+        parseConfigFile(
+            env, 'system.properties', getUserConfigFile('config.properties')
+        )
+        parseConfigFile(
+            env, 'system.groovy', getUserConfigFile('config.groovy')
+        )
+        parseConfigFile(
+            env, 'system.yaml', getUserConfigFile('config.yml')
+        )
+
+        String path = configSystemPropertyValue
+        if (path) {
+            parseConfigFile env, 'system.system', path
+        }
+
+        try {
+            Context jndi =
+                (Context) new InitialContext().lookup('java:comp/env')
+            String springcrmConfig = (String) jndi.lookup('springcrmConfig')
+            parseConfigFile env, 'instance', springcrmConfig
+        } catch (NoInitialContextException ignore) {
+            /* ignored */
+        } catch (NameNotFoundException ignore) {
+            /* ignored */
+        } catch (Exception e) {
+            log.error "Instance configuration lookup failed: ${e}"
         }
     }
 
@@ -129,7 +156,9 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     private static void parseConfigFile(AbstractEnvironment environment,
                                         String name, String path) {
         Resource res = new FileSystemResource(path)
+        log.debug "Trying loading configuration file ${res.path}"
         if (res.exists()) {
+            log.debug "Configuration file ${res.path} found -> load and parse it"
             PropertySource src = null
             if (path.endsWith('.yml') || path.endsWith('.yaml')) {
                 YamlPropertiesFactoryBean ypfb = new YamlPropertiesFactoryBean()

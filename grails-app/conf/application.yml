@@ -120,11 +120,14 @@ endpoints:
 
 dataSource:
     dbCreate: none    # updated by database-migration plugin
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:file:${springcrm.dir.database}/springcrm
+    username: springcrm
+    password:
     pooled: true
     jmxExport: true
-    driverClassName: org.h2.Driver
-    username: sa
-    password:
+    properties:
+        initSQL: SET REFERENTIAL_INTEGRITY FALSE
 
 grails:
     plugin:
@@ -139,40 +142,14 @@ grails:
 
 environments:
     development:
-        dataSource:
-            driverClassName: com.mysql.jdbc.Driver
-            properties:
-                dbProperties:
-                    autoReconnect: true
-                    characterEncoding: UTF-8
-                    useUnicode: true
-            # logSql: true
-
-    production:
-        dataSource:
-            driverClassName: com.mysql.jdbc.Driver
-            properties:
-                dbProperties:
-                    autoReconnect: true
-                    characterEncoding: UTF-8
-                    useUnicode: true
-#            jndiName: java:comp/env/jdbc/springcrmDataSource
-
+        # logSql: true
+        # formatSql: true
     test:
         dataSource:
             dbCreate: update
             url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
             dbunitXmlType: flat
             jndiName: null
-            properties:
-                initSQL: SET REFERENTIAL_INTEGRITY FALSE
-
-    standalone:
-        dataSource:
-            url: jdbc:h2:file:${user.home}/.springcrm/database/springcrm
-            username: springcrm
-            properties:
-                initSQL: SET REFERENTIAL_INTEGRITY FALSE
 
 
 ---
@@ -229,6 +206,7 @@ springcrm:
     cacheDocs: true
     dir:
         data: ${springcrm.dir.base}/data
+        database: ${springcrm.dir.base}/database
         documents: ${springcrm.dir.base}/documents
         installer: ${springcrm.dir.base}/install
         log: ${springcrm.dir.base}/log
