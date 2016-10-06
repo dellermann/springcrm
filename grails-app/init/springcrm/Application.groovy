@@ -22,10 +22,8 @@ package springcrm
 
 import static grails.util.Metadata.current as metaInfo
 
-import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 import groovy.transform.CompileStatic
-import groovy.transform.InheritConstructors
 import javax.naming.Context
 import javax.naming.InitialContext
 import javax.naming.NameNotFoundException
@@ -35,11 +33,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
 import org.springframework.context.EnvironmentAware
-import org.springframework.core.env.AbstractEnvironment
-import org.springframework.core.env.Environment
-import org.springframework.core.env.MapPropertySource
-import org.springframework.core.env.PropertiesPropertySource
-import org.springframework.core.env.PropertySource
+import org.springframework.core.env.*
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 
@@ -63,7 +57,12 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     //-- Public methods -------------------------
 
     static void main(String [] args) {
-        new SpringCrmGrailsApp(Application).run args
+        LauncherFrame frame = new LauncherFrame()
+
+        SpringCrmGrailsApp app = new SpringCrmGrailsApp(Application)
+        app.headless = false
+        app.addListeners frame
+        app.run args
     }
 
     @Override
@@ -178,68 +177,5 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
                 environment.propertySources.addFirst src
             }
         }
-    }
-}
-
-/**
- * The class {@SpringCrmGrailsApp} extends the base {@code GrailsApp} class and
- * outputs a banner at startup.
- *
- * @author  Daniel Ellermann
- * @version 2.1
- * @since   2.1
- */
-@CompileStatic
-@InheritConstructors
-class SpringCrmGrailsApp extends GrailsApp {
-
-    //-- Constants ------------------------------
-
-    /**
-     * The banner graphic.  See
-     * <a href="http://patorjk.com/software/taag/#p=display&f=Standard&t=SpringCRM" target="_blank">AsciiArt</a>
-     * for more information.
-     */
-    private static String BANNER = '''
-  ____             _              ____ ____  __  __
- / ___| _ __  _ __(_)_ __   __ _ / ___|  _ \\|  \\/  |
- \\___ \\| '_ \\| '__| | '_ \\ / _` | |   | |_) | |\\/| |
-  ___) | |_) | |  | | | | | (_| | |___|  _ <| |  | |
- |____/| .__/|_|  |_|_| |_|\\__, |\\____|_| \\_\\_|  |_|
-       |_|                 |___/'''
-
-
-    //-- Non-public methods ---------------------
-
-    @Override
-    protected void printBanner(Environment environment) {
-        PrintStream out = System.out
-        out.println BANNER
-        out.println()
-
-        row 'App version', metaInfo.getApplicationVersion(), out
-        row 'Build number', metaInfo['info.app.buildNumber'], out
-        row 'Environment', metaInfo.getEnvironment(), out
-        row 'Grails version', metaInfo.getGrailsVersion(), out
-        row 'Groovy version', GroovySystem.version, out
-        row 'JVM version', System.getProperty('java.version'), out
-        row 'Servlet version', metaInfo.getServletVersion(), out
-
-        out.println()
-        out.println()
-    }
-
-    /**
-     * Prints a row containing a label and a value.
-     *
-     * @param label the given label
-     * @param value the given value
-     * @param out   the output stream to write to
-     */
-    private static void row(String label, Object value, PrintStream out) {
-        out.print ':: '
-        out.print label.padRight(16)
-        out.print ' :: '
-        out.println value
     }
 }
