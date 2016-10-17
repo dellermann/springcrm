@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+<!--
+
+  invoicing-items-sales-items-rel.xml
+
+  Copyright (c) 2011-2016, Daniel Ellermann
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog dbchangelog-3.4.xsd">
   <changeSet author="d.ellermann@amc-world.de" id="20150202-1">
     <addColumn tableName="invoicing_item">
       <column name="sales_item_id" type="bigint"/>
@@ -16,8 +37,8 @@
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
       referencedTableName="sales_item" referencesUniqueColumn="false"/>
   </changeSet>
-  <changeSet author="d.ellermann@amc-world.de" id="20150202-2"
-    dbms="h2, mysql">
+
+  <changeSet author="d.ellermann@amc-world.de" id="20150202-2" dbms="h2, mysql">
     <sql>
       UPDATE invoicing_item i
         SET sales_item_id = (
@@ -28,9 +49,11 @@
         WHERE i.number LIKE '_-%'
     </sql>
   </changeSet>
+
   <changeSet author="d.ellermann@amc-world.de" id="20150202-3">
     <dropColumn columnName="number" tableName="invoicing_item"/>
   </changeSet>
+
   <changeSet author="d.ellermann@amc-world.de" id="20150225-1">
     <dropColumn columnName="number" tableName="purchase_invoice_item"/>
   </changeSet>
