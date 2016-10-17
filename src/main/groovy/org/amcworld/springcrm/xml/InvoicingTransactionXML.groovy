@@ -50,7 +50,7 @@ class InvoicingTransactionXML extends XML {
     /**
      * A table that is used to declare the XHTML entities used in converted
      * Markdown code.  The table maps public IDs to a file path relative to
-     * {@code WEB-INF/data/print/dtd}.
+     * {@code public/print/dtd}.
      */
     public static final Map<String, String> ENTITY_CATALOG = [
             '-//W3C//ENTITIES Latin 1 for XHTML//EN': 'xhtml-lat1.ent',

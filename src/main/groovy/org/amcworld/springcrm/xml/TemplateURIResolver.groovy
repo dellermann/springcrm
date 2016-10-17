@@ -21,29 +21,31 @@
 package org.amcworld.springcrm.xml
 
 import groovy.transform.CompileStatic
-import javax.servlet.ServletContext
+import javax.validation.constraints.NotNull
 import javax.xml.transform.Source
 import javax.xml.transform.TransformerException
+import javax.xml.transform.URIResolver
 import javax.xml.transform.stream.StreamSource
-import org.apache.fop.servlet.ServletContextURIResolver
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 
 
 /**
  * The class {@code TemplateURIResolver} represents a URI resolver which
- * handles URIs with the prefix {@code user-template:} and
- * {@code servlet-context:}
+ * search in system and user-defined templates.  The class handles URIs without
+ * any prefix and with prefix {@code user-template:}.
  *
  * @author	Daniel Ellermann
  * @version 2.1
  * @since   0.9
  */
 @CompileStatic
-class TemplateURIResolver extends ServletContextURIResolver {
+class TemplateURIResolver implements URIResolver {
 
     //-- Constants ------------------------------
 
     /**
-     * The protocol prefix used to locate user-defined templates.
+     * The protocol prefix used to locate resources in user-defined templates.
      */
     public static final String USER_TEMPLATE_PROTO = 'user-template:'
 
@@ -51,7 +53,12 @@ class TemplateURIResolver extends ServletContextURIResolver {
     //-- Fields ---------------------------------
 
     /**
-     * The path where user-defined templates are located.
+     * The resource loader used to load the resources.
+     */
+    final ResourceLoader resourceLoader
+
+    /**
+     * The path where user-defined template is located.
      */
     final String userTemplatePath
 
@@ -59,22 +66,23 @@ class TemplateURIResolver extends ServletContextURIResolver {
     //-- Constructors ---------------------------
 
     /**
-     * Creates a new resolver which locates templates in servlet context and a
-     * directory containing user-defined templates.
+     * Creates a new resolver which locates resources in system and user-defined
+     * templates.
      *
-     * @param servletContext    the given servlet context
-     * @param userTemplatePath  the directory containing user-defined templates
+     * @param servletContext    the given resource loader
+     * @param userTemplatePath  the directory containing the user-defined
+     *                          template
      */
-    TemplateURIResolver(ServletContext servletContext, String userTemplatePath)
+    TemplateURIResolver(@NotNull ResourceLoader resourceLoader,
+                        @NotNull String userTemplatePath)
     {
-        super(servletContext)
+        this.resourceLoader = resourceLoader
 
-        if (userTemplatePath == null) {
-            throw new IllegalArgumentException(
-                'Parameter userTemplatePath must not be null.'
+        while (userTemplatePath.endsWith('/')) {
+            userTemplatePath = userTemplatePath.substring(
+                0, userTemplatePath.length() - 1
             )
         }
-
         this.userTemplatePath = userTemplatePath
     }
 
@@ -84,43 +92,61 @@ class TemplateURIResolver extends ServletContextURIResolver {
     @Override
     Source resolve(String href, String base) throws TransformerException {
         href.startsWith(USER_TEMPLATE_PROTO) \
-            ? resolveUserTemplate(href.substring(USER_TEMPLATE_PROTO.length()))
-            : super.resolve(href, base)
+            ? resolveInUserTemplate(
+                href.substring(USER_TEMPLATE_PROTO.length())
+            )
+            : resolveInSystemTemplate(href)
     }
 
 
     //-- Non-public methods ---------------------
 
     /**
-     * Resolves the given path as user-defined template.
+     * Resolves the given path in system template.
      *
-     * @param path                  the given path without the protocol prefix
-     *                              as specified in {@code USER_TEMPLATE_PROTO}
-     * @return                      the source representing the template
-     * @throws TransformerException if either the template at the given path
-     *                              could not be found or the given path is
-     *                              malformed
+     * @param path                  the given path
+     * @return                      the resource
+     * @throws TransformerException if the resource with the given path could
+     *                              not be found
      */
-    private Source resolveUserTemplate(String path)
+    private Source resolveInSystemTemplate(String path)
         throws TransformerException
     {
-        while (path.startsWith('//')) {
+        Resource res = resourceLoader.getResource('classpath:' + path)
+        if (!res.exists()) {
+            throw new TransformerException(
+                """Resource does not exist. "${path}" is not available in classpath."""
+            )
+        }
+
+        new StreamSource(res.inputStream)
+    }
+
+    /**
+     * Resolves the given path in the user-defined template.
+     *
+     * @param path                  the given path without the protocol prefix
+     *                              specified in {@code USER_TEMPLATE_PROTO}
+     * @return                      the resource
+     * @throws TransformerException if the resource with the given path could
+     *                              not be found
+     */
+    private Source resolveInUserTemplate(String path)
+        throws TransformerException
+    {
+        while (path.startsWith('/')) {
             path = path.substring(1)
         }
 
-        try {
-            File f = new File(userTemplatePath, path)
-            if (!f.exists()) {
-                throw new TransformerException(
-                    """Resource does not exist. "${path}" is not available in user template directory ${userTemplatePath}."""
-                )
-            }
-
-            new StreamSource(f.newInputStream())
-        } catch (MalformedURLException e) {
+        Resource res = resourceLoader.getResource(
+            "${userTemplatePath}/${path}".toString()
+        )
+        if (!res.exists()) {
             throw new TransformerException(
-                "Error accessing resource using servlet context: ${path}", e
+                """Resource does not exist. "${path}" is not available in user template directory ${userTemplatePath}."""
             )
         }
+
+        new StreamSource(res.inputStream)
     }
 }

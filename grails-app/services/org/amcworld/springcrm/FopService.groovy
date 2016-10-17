@@ -23,9 +23,8 @@ package org.amcworld.springcrm
 import grails.artefact.Service
 import grails.core.GrailsApplication
 import grails.web.context.ServletContextHolder as SCH
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
-import java.util.regex.Matcher
 import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.*
@@ -43,6 +42,8 @@ import org.apache.fop.apps.FopFactory
 import org.apache.fop.apps.MimeConstants
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder as LCH
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 import org.xml.sax.InputSource
 import org.xml.sax.XMLReader
 
@@ -65,7 +66,7 @@ class FopService implements Service {
      * The folder in the web application containing the system-wide print
      * configuration and template files.
      */
-    public static final String SYSTEM_FOLDER = '/WEB-INF/data/print'
+    public static final String SYSTEM_FOLDER = 'classpath:public/print'
 
     private static final Log log = LogFactory.getLog(this)
 
@@ -106,7 +107,7 @@ class FopService implements Service {
         Map<String, String> paths = templatePaths
         String templateDir = paths[template]
         URIResolver uriResolver =
-            new TemplateURIResolver(servletContext, templateDir)
+            new TemplateURIResolver(grailsApplication.mainContext, templateDir)
 
         /*
          * Implementation notes: this sets the URI resolver for XSLT.  The bean
@@ -151,7 +152,7 @@ class FopService implements Service {
     /**
      * Gets all the display names for all print templates.
      *
-     * @return  a map containing the directory names as key and the display
+     * @return  a map containing the directory name as key and the display
      *          name as value
      */
     Map<String, String> getTemplateNames() {
@@ -187,21 +188,13 @@ class FopService implements Service {
      *          paths to the template directory as value
      */
     Map<String, String> getTemplatePaths() {
-        Map<String, String> res = [: ]
-        for (String path : servletContext.getResourcePaths(SYSTEM_FOLDER)) {
-            Matcher m = (path =~ '^.*/([-\\w]+)/$')
-            if (m.matches()) {
-                String id = m.group(1)
-                if (id != 'dtd') {
-                    res[id] = 'SYSTEM:' + path
-                }
-            }
-        }
+        Map<String, String> res = ['default': SYSTEM_FOLDER + '/default']
 
         File dir = userTemplateDir
         if (dir?.exists()) {
-            dir.eachDir { res[it.name] = it.absolutePath }
+            dir.eachDir { res[it.name] = 'file://' + it.absolutePath }
         }
+
         res
     }
 
@@ -211,9 +204,9 @@ class FopService implements Service {
      * @return  the user print template directory; {@code null} if no user
      *          print template directory is defined
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     File getUserTemplateDir() {
-        def dir = grailsApplication.config.springcrm.dir.print
+        String dir = grailsApplication.config.springcrm?.dir?.print?.toString()
 
         dir ? new File(dir) : null
     }
@@ -260,29 +253,33 @@ class FopService implements Service {
     private Configuration getFopConfiguration(String templateDir) {
         InputStream is = getTemplateFile("${templateDir}/fop-conf.xml")
         if (!is) {
-            is = getTemplateFile(
-                "SYSTEM:${SYSTEM_FOLDER}/default/fop-conf.xml"
-            )
+            is = getTemplateFile(SYSTEM_FOLDER + '/default/fop-conf.xml')
         }
 
         new DefaultConfigurationBuilder().build(is)
     }
 
     /**
-     * Gets the input stream to the file with the given path.  The method
-     * handles files from the system folder which must be prefixed by
-     * {@code SYSTEM:}.
+     * Gets the instance to load resources.
+     *
+     * @return  the resource loader
+     * @since   2.1
+     */
+    private ResourceLoader getResourceLoader() {
+        grailsApplication.mainContext
+    }
+
+    /**
+     * Gets the input stream to the file with the given path.
      *
      * @param path  the path to the file to load
      * @return      the input stream of the file; {@code null} if no such file
      *              exists
      */
     private InputStream getTemplateFile(String path) {
-        if (path.startsWith('SYSTEM:')) {
-            return servletContext.getResourceAsStream(path.substring(7))
-        }
+        Resource res = resourceLoader.getResource(path)
 
-        new File(path).newInputStream()
+        res.exists() ? res.inputStream : null
     }
 
     /**
