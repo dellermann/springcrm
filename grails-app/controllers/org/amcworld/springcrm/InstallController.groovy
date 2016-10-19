@@ -58,7 +58,8 @@ class InstallController {
 
     def installBaseDataSave() {
         installService.installBaseDataPackage(
-            sessionFactory.currentSession.connection(), params.'package-select'
+            sessionFactory.currentSession.connection(),
+            params.'package-select'?.toString()
         )
 
         redirect action: 'clientData'

@@ -20,13 +20,16 @@
 
 package org.amcworld.springcrm
 
+import grails.converters.JSON
 import grails.core.GrailsApplication
-import grails.web.context.ServletContextHolder as SCH
 import groovy.sql.Sql
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
 import java.sql.Connection
-import javax.servlet.ServletContext
 import org.amcworld.springcrm.install.diffset.StartupDiffSet
+import org.grails.web.json.JSONArray
 import org.springframework.context.ApplicationContext
+import org.springframework.core.io.Resource
 
 
 /**
@@ -37,6 +40,7 @@ import org.springframework.context.ApplicationContext
  * @author  Daniel Ellermann
  * @version 2.1
  */
+@CompileStatic
 class InstallService {
 
     //-- Constants ------------------------------
@@ -45,7 +49,7 @@ class InstallService {
      * The directory containing the packages with base data which are loaded
      * into the database during installation.
      */
-    private static final String BASE_PACKAGE_DIR = '/WEB-INF/data/install'
+    private static final String BASE_PACKAGE_DIR = 'classpath:public/install'
 
     /**
      * The expiration time of the enable file in milliseconds.  After that time
@@ -63,7 +67,7 @@ class InstallService {
     private static final String ENABLE_FILE_NAME = 'ENABLE_INSTALLER'
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     DataFileService dataFileService
     GrailsApplication grailsApplication
@@ -108,7 +112,7 @@ class InstallService {
         ApplicationContext ctx = grailsApplication.mainContext
         String name = "startupDiffSet${version}"
         if (ctx.containsBean(name)) {
-            StartupDiffSet diffSet = ctx.getBean(name)
+            StartupDiffSet diffSet = (StartupDiffSet) ctx.getBean(name)
             diffSet.execute()
             return
         }
@@ -116,7 +120,12 @@ class InstallService {
         if (!lang) {
             lang = (ConfigHolder.instance['baseDataLocale'] as String) ?: 'de-DE'
         }
-        executeSqlFile connection, loadDiffSet(version, lang)
+
+        InputStream stream = loadDiffSet(version, lang)
+        if (stream != null) {
+            executeSqlFile connection, stream
+            stream.close()
+        }
     }
 
     /**
@@ -142,18 +151,26 @@ class InstallService {
      * Gets a list of package keys containing base data for installation.  The
      * packages must be located in directory specified by
      * {@link #BASE_PACKAGE_DIR} and named {@code base-data-<key>.sql},
-     * where {@code <key>} represents the package key.
+     * where {@code <key>} represents the package key.  The package keys itself
+     * must be stored in file {@code base-data.json} in the same directory.
      *
      * @return  the package keys as defined above
      */
     List<String> getBaseDataPackages() {
-        def files = []
-        SCH.servletContext.getResourcePaths(BASE_PACKAGE_DIR).each {
-                def m = (it =~ /^.*\/base-data-([-\w]+)\.sql$/)
-                if (m.matches()) {
-                    files.add(m[0][1])
-                }
+        List<String> files = []
+
+        Resource res = grailsApplication.mainContext.getResource(
+            BASE_PACKAGE_DIR + '/base-data.json'
+        )
+        if (res.exists()) {
+            JSONArray json = (JSONArray) JSON.parse(
+                new InputStreamReader(res.inputStream)
+            )
+            for (Object elem : json) {
+                files << elem.toString()
             }
+        }
+
         files
     }
 
@@ -164,11 +181,14 @@ class InstallService {
      * @param connection    the SQL connection where to install the base data
      *                      package
      * @param key           the given package key
-     * @see                 #loadPackage(String)
      * @since               1.4
      */
     void installBaseDataPackage(Connection connection, String key) {
-        executeSqlFile connection, loadBaseDataPackage(key)
+        InputStream stream = loadBaseDataPackage(key)
+        if (stream != null) {
+            executeSqlFile connection, stream
+            stream.close()
+        }
     }
 
     /**
@@ -180,7 +200,8 @@ class InstallService {
      */
     boolean isEnableFileExpired() {
         long mod = enableFile.lastModified()
-        mod == 0 ? false
+
+        mod == 0L ? false
             : System.currentTimeMillis() - mod > ENABLE_FILE_EXPIRATION_TIME
     }
 
@@ -205,7 +226,7 @@ class InstallService {
      *              package with the given key exists
      */
     InputStream loadBaseDataPackage(String key) {
-        SCH.servletContext.getResourceAsStream "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
+        getResource "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
     }
 
     /**
@@ -222,14 +243,15 @@ class InstallService {
      */
     InputStream loadDiffSet(int version, String lang) {
         String name1 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}-${lang}.sql"
-        InputStream is = SCH.servletContext.getResourceAsStream(name1)
+        InputStream is = getResource(name1)
         if (is == null) {
             String name2 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}.sql"
-            is = SCH.servletContext.getResourceAsStream(name2)
+            is = getResource(name2)
             if (is == null && log.errorEnabled) {
                 log.error "Can find neither diff set ${name1} nor ${name2}."
             }
         }
+
         is
     }
 
@@ -256,7 +278,7 @@ class InstallService {
      *                      execute
      * @since               1.4
      */
-    protected void executeSqlFile(Connection connection, InputStream is) {
+    private static void executeSqlFile(Connection connection, InputStream is) {
         Sql sql = new Sql(connection)
         sql.withTransaction {
             is.newReader('utf-8').eachLine {
@@ -274,12 +296,29 @@ class InstallService {
      *
      * @return  the installer enable file
      */
-    protected File getEnableFile() {
+    @CompileDynamic
+    private File getEnableFile() {
         def dir = new File(grailsApplication.config.springcrm.dir.installer)
         if (!dir.exists()) {
             dir.mkdirs()
         }
+
         new File(dir, ENABLE_FILE_NAME)
+    }
+
+    /**
+     * Gets the input stream to the resource with the given path.
+     *
+     * @param path  the given path
+     * @return      the input stream or {@code null} if no such resource exists
+     * @since       2.1
+     */
+    private InputStream getResource(CharSequence path) {
+        Resource res = grailsApplication.mainContext.getResource(
+            path.toString()
+        )
+
+        res.exists() ? res.inputStream : null
     }
 
     /**
@@ -290,18 +329,20 @@ class InstallService {
      *                      executed
      * @since               1.4
      */
-    protected void migratePurchaseInvoiceDocuments(Connection connection) {
+    @CompileDynamic
+    private void migratePurchaseInvoiceDocuments(Connection connection) {
         ConfigHolder configHolder = ConfigHolder.instance
         String stage = configHolder['purchaseInvoiceMigrationStage']?.toString()
         if (stage == '1') {
             log.info 'Performing migration of purchase invoice documents…'
 
             File oldBaseDir = dataFileService.getBaseDir('purchase-invoice')
-            File newBaseDir = dataFileService.getBaseDir(DataFileType.purchaseInvoice)
+            File newBaseDir =
+                dataFileService.getBaseDir(DataFileType.purchaseInvoice)
             Sql sql = new Sql(connection)
             sql.withTransaction {
                 sql.eachRow('select id, document_file from purchase_invoice where document_file IS NOT NULL') {
-                    File f = new File(oldBaseDir, it.document_file)
+                    File f = new File(oldBaseDir, it.document_file.toString())
                     if (f.exists()) {
                         DataFile df = new DataFile(f)
                         df.save failOnError: true
