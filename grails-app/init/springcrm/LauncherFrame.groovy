@@ -20,6 +20,7 @@
 
 package springcrm
 
+import groovy.transform.CompileStatic
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
@@ -46,6 +47,7 @@ import org.springframework.context.event.ContextStartedEvent
  * @version 2.1
  * @since   2.1
  */
+@CompileStatic
 class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
 
     //-- Constants ------------------------------
@@ -82,6 +84,10 @@ class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
      */
     LauncherFrame() {
         resourceBundle = ResourceBundle.getBundle('launcher')
+
+        // set some OSX properties
+        System.setProperty 'apple.laf.useScreenMenuBar', 'true'
+        System.setProperty 'apple.awt.textantialiasing', 'true'
 
         initialize()
     }
@@ -133,8 +139,8 @@ class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
             g.color = new Color(0x333333)
             Rectangle2D r =
                 new TextLayout(version, font, g2.fontRenderContext).bounds
-            int x = image.width - r.width
-            int y = image.height - r.height + 2
+            int x = image.width - (int) r.width
+            int y = image.height - (int) r.height + 2
             g.drawString version, x, y
         }
         g.dispose()

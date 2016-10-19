@@ -54,7 +54,6 @@
     <orderEntry type="library" name="Gradle: org.grails.plugins:hibernate4:5.0.11" level="project" />
     <orderEntry type="library" name="Gradle: org.grails.plugins:mail:2.0.0.RC6" level="project" />
     <orderEntry type="library" name="Gradle: org.grails.plugins:scaffolding:3.2.1" level="project" />
-    <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-swing:2.4.7" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-plugin-testing:3.1.12" level="project" />
     <orderEntry type="library" name="Gradle: org.grails.plugins:geb:1.0.2" level="project" />
     <orderEntry type="library" name="Gradle: org.seleniumhq.selenium:selenium-firefox-driver:2.52.0" level="project" />

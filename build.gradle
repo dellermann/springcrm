@@ -42,6 +42,7 @@ buildscript {
         classpath "com.bertramlabs.plugins:coffee-asset-pipeline:$assetPipelineVersion"
         classpath "com.bertramlabs.plugins:handlebars-asset-pipeline:$assetPipelineVersion"
         classpath "com.bertramlabs.plugins:less-asset-pipeline:$assetPipelineVersion"
+        classpath 'gradle.plugin.edu.sc.seis:macAppBundle:2.1.6'
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
         classpath 'org.grails.plugins:hibernate:4.3.10.7'
@@ -51,6 +52,7 @@ buildscript {
 }
 
 plugins {
+    id 'edu.sc.seis.macAppBundle' version '2.1.6'
     id 'io.spring.dependency-management' version '0.5.4.RELEASE'
 }
 
@@ -74,6 +76,7 @@ apply plugin: 'org.grails.grails-web'
 apply plugin: 'org.grails.grails-gsp'
 apply plugin: 'org.grails.grails-doc'
 apply plugin: 'org.grails.plugins.views-json'
+apply plugin: 'edu.sc.seis.macAppBundle'
 
 ext {
     grailsVersion = project.grailsVersion
@@ -223,6 +226,50 @@ task buildInfo << {
     }
 }
 processResources.finalizedBy buildInfo
+
+/* archive building */
+war {
+    from(processResources) {
+        include 'launcher*.properties'
+        include 'logo.png'
+        include 'spinner.gif'
+    }
+}
+bootRepackage.dependsOn jar
+// This doesn't work.  Probably the property is set during execution time.
+//bootRepackage.withJarTask = jar
+bootRepackage.doFirst {
+    bootRepackage.withJarTask = jar
+}
+
+/* deployment */
+macAppBundle {
+    appName = 'SpringCRM'
+    volumeName = "springcrm-${version}"
+    dmgName = 'springcrm'
+    mainClassName = 'org.springframework.boot.loader.PropertiesLauncher'
+//    bundleJRE = true
+    javaProperties.put 'loader.main', 'springcrm.Application'
+    javaProperties.put 'apple.laf.useScreenMenuBar', 'true'
+    javaProperties.put 'apple.awt.brushMetalLook', 'true'
+    backgroundImage = 'background.png'
+    backgroundImageWidth = 600
+    backgroundImageHeight = 400
+    icon = 'springcrm.icns'
+    appIconX = 124
+    appIconY = 192
+    appFolderX = 297
+    appFolderY = 192
+}
+copyToResourcesJava << {
+    FileTree tree = fileTree('build/macApp/SpringCRM.app/Contents/Java') {
+        include '**/*.jar'
+        exclude 'springcrm-*.jar'
+    }
+    tree.each { it.delete() }
+
+    file('build/macApp/SpringCRM.app/Contents/Java/Classes').mkdir()
+}
 
 /* documentation */
 groovydoc {
