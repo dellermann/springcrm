@@ -22,10 +22,8 @@ package org.amcworld.springcrm
 
 import grails.artefact.Service
 import grails.core.GrailsApplication
-import grails.web.context.ServletContextHolder as SCH
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import javax.servlet.ServletContext
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.*
 import javax.xml.transform.sax.SAXResult
@@ -81,7 +79,6 @@ class FopService implements Service {
     FopFactory fopFactory
     GrailsApplication grailsApplication
     MessageSource messageSource
-    ServletContext servletContext = SCH.servletContext
     TransformerFactory transformerFactory
     XMLReader xmlReader
 
@@ -164,7 +161,7 @@ class FopService implements Service {
                 InputStream is = getTemplateFile(
                     "${entry.value}/meta.properties"
                 )
-                if (is) props.load(is)
+                if (is != null) props.load is
             } catch (IOException ignored) { /* ignored */ }
             String name = props.getProperty('name')
             if (!name) {

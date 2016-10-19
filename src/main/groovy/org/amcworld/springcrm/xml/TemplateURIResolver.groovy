@@ -69,7 +69,7 @@ class TemplateURIResolver implements URIResolver {
      * Creates a new resolver which locates resources in system and user-defined
      * templates.
      *
-     * @param servletContext    the given resource loader
+     * @param resourceLoader    the given resource loader
      * @param userTemplatePath  the directory containing the user-defined
      *                          template
      */
@@ -115,7 +115,7 @@ class TemplateURIResolver implements URIResolver {
         Resource res = resourceLoader.getResource('classpath:' + path)
         if (!res.exists()) {
             throw new TransformerException(
-                """Resource does not exist. "${path}" is not available in classpath."""
+                """Resource does not exist. "${res.description}" is not available in classpath."""
             )
         }
 

@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import grails.test.mixin.TestFor
-import javax.servlet.ServletContext
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.Transformer
@@ -46,123 +45,6 @@ class FopServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
 
-    def 'No templates result in an empty template name map'() {
-        given: 'a mocked servlet context'
-        ServletContext ctx = Mock()
-        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> ([] as Set)
-        service.servletContext = ctx
-
-        and: 'an application setting to an non-existing path'
-        config.springcrm.dir.print = '/foo/bar'
-
-        expect:
-        0 == service.templateNames.size()
-    }
-
-    def 'Get template names'() {
-        given: 'some temporary directories'
-        File tempDir = File.createTempDir('springcrm-test-', '')
-        File userDir1 = new File(tempDir, 'bar')
-        userDir1.mkdir()
-        File userDir2 = new File(tempDir, 'whee')
-        userDir2.mkdir()
-        File userDir3 = new File(tempDir, 'foo')
-        userDir3.mkdir()
-        config.springcrm.dir.print = tempDir.absolutePath
-
-        and: 'some meta files'
-        File metaFile2 = new File(userDir2, 'meta.properties')
-        metaFile2.text = 'name = Test template'
-        File metaFile3 = new File(userDir3, 'meta.properties')
-        metaFile3.text = 'foo = bar'
-
-        and: 'a mocked servlet context'
-        ServletContext ctx = Mock()
-        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> ([] as Set)
-        service.servletContext = ctx
-
-        and: 'a mocked message source'
-        MessageSource messageSource = Mock()
-        messageSource.getMessage('print.template.bar', _, _, _) >> 'Drafts'
-        messageSource.getMessage('print.template.whee', _, _, _) >> 'Not used'
-        messageSource.getMessage('print.template.foo', _, _, _) >> 'Branch A'
-        service.messageSource = messageSource
-
-        when: 'I obtain the template names'
-        Map<String, String> res = service.templateNames
-
-        then: 'I get a valid map of names'
-        3 == res.size()
-        'Drafts' == res['bar']
-        'Test template' == res['whee']
-        'Branch A' == res['foo']
-
-        cleanup:
-        userDir1.delete()
-        metaFile2.delete()
-        userDir2.delete()
-        metaFile3.delete()
-        userDir3.delete()
-        tempDir.delete()
-    }
-
-    def 'Get template paths with non-existing user template directory'() {
-        given: 'some resource paths'
-        def paths = [
-            '/WEB-INF/data/foo/', '/WEB-INF/data/bar/', '/WEB-INF/data/dtd/'
-        ] as Set
-
-        and: 'a mocked servlet context'
-        ServletContext ctx = Mock()
-        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> paths
-        service.servletContext = ctx
-
-        and: 'an application setting to an non-existing path'
-        config.springcrm.dir.print = '/foo/bar'
-
-        when: 'I obtains the template paths'
-        Map<String, String> res = service.templatePaths
-
-        then: 'I get a valid map of paths'
-        2 == res.size()
-        'SYSTEM:/WEB-INF/data/foo/' == res['foo']
-        'SYSTEM:/WEB-INF/data/bar/' == res['bar']
-    }
-
-    def 'Get template paths with existing user template directory'() {
-        given: 'some resource paths'
-        def paths = [
-            '/WEB-INF/data/foo/', '/WEB-INF/data/bar/', '/WEB-INF/data/dtd/'
-        ] as Set
-
-        and: 'a mocked servlet context'
-        ServletContext ctx = Mock()
-        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> paths
-        service.servletContext = ctx
-
-        and: 'an application setting to an existing path'
-        File tempDir = File.createTempDir('springcrm-test-', '')
-        File userDir1 = new File(tempDir, 'bar')
-        userDir1.mkdir()
-        File userDir2 = new File(tempDir, 'whee')
-        userDir2.mkdir()
-        config.springcrm.dir.print = tempDir.absolutePath
-
-        when: 'I obtains the template paths'
-        Map<String, String> res = service.templatePaths
-
-        then: 'I get a valid map of paths'
-        3 == res.size()
-        'SYSTEM:/WEB-INF/data/foo/' == res['foo']
-        userDir1.absolutePath == res['bar']
-        userDir2.absolutePath == res['whee']
-
-        cleanup:
-        userDir1.delete()
-        userDir2.delete()
-        tempDir.delete()
-    }
-
     def 'Get non-existing user template directory'() {
         given: 'no print template configuration'
         config.springcrm.dir.print = null
@@ -182,16 +64,167 @@ class FopServiceSpec extends Specification {
         '/foo/bar' == f.path
     }
 
+    def 'Get template paths with non-existing user template directory'() {
+        given: 'an application setting to an non-existing path'
+        config.springcrm.dir.print = '/foo/bar'
+
+        when: 'I obtain the template paths'
+        Map<String, String> res = service.templatePaths
+
+        then: 'I get a valid map of paths'
+        1 == res.size()
+        'classpath:public/print/default' == res['default']
+    }
+
+    def 'Get template paths with existing user template directory'() {
+        given: 'an application setting to an existing path'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File userDir1 = new File(tempDir, 'bar')
+        userDir1.mkdir()
+        File userDir2 = new File(tempDir, 'whee')
+        userDir2.mkdir()
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        when: 'I obtain the template paths'
+        Map<String, String> res = service.templatePaths
+
+        then: 'I get a valid map of paths'
+        3 == res.size()
+        'classpath:public/print/default' == res['default']
+        'file://' + userDir1.absolutePath == res['bar']
+        'file://' + userDir2.absolutePath == res['whee']
+
+        cleanup:
+        userDir1.delete()
+        userDir2.delete()
+        tempDir.delete()
+    }
+
+    def 'Get template paths with overwritten system directory'() {
+        given: 'an application setting to an existing path'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File userDir1 = new File(tempDir, 'bar')
+        userDir1.mkdir()
+        File userDir2 = new File(tempDir, 'default')
+        userDir2.mkdir()
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        when: 'I obtain the template paths'
+        Map<String, String> res = service.templatePaths
+
+        then: 'I get a valid map of paths'
+        2 == res.size()
+        'file://' + userDir1.absolutePath == res['bar']
+        'file://' + userDir2.absolutePath == res['default']
+
+        cleanup:
+        userDir1.delete()
+        userDir2.delete()
+        tempDir.delete()
+    }
+
+    def 'Get template names with non-existing user template directory'() {
+        given: 'an application setting to an non-existing path'
+        config.springcrm.dir.print = '/foo/bar'
+
+        and:
+        MessageSource messageSource = Mock()
+        service.messageSource = messageSource
+
+        when: 'I obtain the template names'
+        Map<String, String> res = service.templateNames
+
+        then: 'I get a valid map of names'
+        1 == res.size()
+        'Default' == res['default']
+
+        and: 'the template name had to be localized'
+        1 * messageSource.getMessage('print.template.default', null, 'default', _) >> 'Default'
+    }
+
+    def 'Get template names with existing user template directory'() {
+        given: 'some temporary directories'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File userDir1 = new File(tempDir, 'bar')
+        userDir1.mkdir()
+        File userDir2 = new File(tempDir, 'whee')
+        userDir2.mkdir()
+        File userDir3 = new File(tempDir, 'foo')
+        userDir3.mkdir()
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        and: 'some meta files'
+        File metaFile2 = new File(userDir2, 'meta.properties')
+        metaFile2.text = 'name = Test template'
+        File metaFile3 = new File(userDir3, 'meta.properties')
+        metaFile3.text = 'foo = bar'
+
+        and: 'a mocked message source'
+        MessageSource messageSource = Mock()
+        1 * messageSource.getMessage('print.template.default', null, 'default', _) >> 'Default'
+        1 * messageSource.getMessage('print.template.bar', null, 'bar', _) >> 'Drafts'
+        0 * messageSource.getMessage('print.template.whee', null, 'whee', _) >> 'Not used'
+        1 * messageSource.getMessage('print.template.foo', null, 'foo', _) >> 'Branch A'
+        service.messageSource = messageSource
+
+        when: 'I obtain the template names'
+        Map<String, String> res = service.templateNames
+
+        then: 'I get a valid map of names'
+        4 == res.size()
+        'Default' == res['default']
+        'Drafts' == res['bar']
+        'Test template' == res['whee']
+        'Branch A' == res['foo']
+
+        cleanup:
+        userDir1.delete()
+        metaFile2.delete()
+        userDir2.delete()
+        metaFile3.delete()
+        userDir3.delete()
+        tempDir.delete()
+    }
+
+    def 'Get template names with overwritten system directory'() {
+        given: 'some temporary directories'
+        File tempDir = File.createTempDir('springcrm-test-', '')
+        File userDir1 = new File(tempDir, 'bar')
+        userDir1.mkdir()
+        File userDir2 = new File(tempDir, 'default')
+        userDir2.mkdir()
+        config.springcrm.dir.print = tempDir.absolutePath
+
+        and: 'some meta files'
+        File metaFile2 = new File(userDir2, 'meta.properties')
+        metaFile2.text = 'name = Test template'
+
+        and: 'a mocked message source'
+        MessageSource messageSource = Mock()
+        0 * messageSource.getMessage('print.template.default', null, 'default', _) >> 'Default'
+        1 * messageSource.getMessage('print.template.bar', null, 'bar', _) >> 'Drafts'
+        service.messageSource = messageSource
+
+        when: 'I obtain the template names'
+        Map<String, String> res = service.templateNames
+
+        then: 'I get a valid map of names'
+        2 == res.size()
+        'Test template' == res['default']
+        'Drafts' == res['bar']
+
+        cleanup:
+        userDir1.delete()
+        metaFile2.delete()
+        userDir2.delete()
+        tempDir.delete()
+    }
+
     def 'Generate PDF of an invoice'() {
         given: 'some necessary values'
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
         Date now = new Date()
         String xml = '<?xml test data?>'
-
-        and: 'a mocked servlet context'
-        ServletContext ctx = Mock()
-        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> []
-        service.servletContext = ctx
 
         and: 'a template directory'
         File tempDir = File.createTempDir('springcrm-test-', '')
@@ -233,7 +266,7 @@ class FopServiceSpec extends Specification {
         and: 'a mocked transformer factory'
         TransformerFactory transformerFactory = Mock()
         1 * transformerFactory.setURIResolver(_) >> { TemplateURIResolver resolver ->
-            assert tplDir.absolutePath == resolver.userTemplatePath
+            assert 'file://' + tplDir.absolutePath == resolver.userTemplatePath
         }
         1 * transformerFactory.newTransformer(_) >> { StreamSource source ->
             assert '<?xslt test file?>' == source.inputStream.text
@@ -288,14 +321,8 @@ class FopServiceSpec extends Specification {
     def 'Output PDF of an invoice'() {
         given: 'some necessary values'
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        Date now = new Date()
         String xml = '<?xml test data?>'
         byte [] result = 'PDF1.1/Test result'.bytes
-
-        and: 'a mocked servlet context'
-        ServletContext ctx = Mock()
-        ctx.getResourcePaths(FopService.SYSTEM_FOLDER) >> []
-        service.servletContext = ctx
 
         and: 'a template directory'
         File tempDir = File.createTempDir('springcrm-test-', '')
