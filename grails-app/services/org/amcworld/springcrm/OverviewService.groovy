@@ -39,7 +39,7 @@ class OverviewService {
 
     //-- Constants ------------------------------
 
-    private static final String CHANGELOG_PATH = 'WEB-INF/data/changelog'
+    private static final String CHANGELOG_PATH = 'classpath:public/changelog'
 
 
     //-- Static variables -----------------------

@@ -23,6 +23,7 @@ import javax.servlet.ServletContext
 import javax.sql.DataSource
 import org.amcworld.springcrm.*
 import org.amcworld.springcrm.google.GoogleContactSyncTask
+import org.springframework.core.io.Resource
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
 
 
@@ -75,10 +76,7 @@ class BootStrap {
         timer.schedule installDisableTask, interval, interval
 
         /* initialize panels on overview page */
-        OverviewPanelRepository opr = OverviewPanelRepository.instance
-        opr.initialize(servletContext.getResourceAsStream(
-            '/WEB-INF/data/overview-panel-repository.xml'
-        ))
+        initializeOverviewPanels()
 
         /* search */
         if (!searchService.searchIndexReady) {
@@ -91,4 +89,27 @@ class BootStrap {
     }
 
     def destroy = {}
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Initializes the available panels of the overview page from an XML file.
+     *
+     * @since 2.1
+     */
+    private void initializeOverviewPanels() {
+        Resource res = grailsApplication.mainContext.getResource(
+            'classpath:public/overview-panel-repository.xml'
+        )
+        if (!res.exists()) {
+            log.error 'Overview panel repository not found in classpath.'
+            return
+        }
+
+        OverviewPanelRepository opr = OverviewPanelRepository.instance
+        InputStream stream = res.inputStream
+        opr.initialize stream
+        stream.close()
+    }
 }
