@@ -27,6 +27,8 @@ import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import java.sql.Connection
 import org.amcworld.springcrm.install.diffset.StartupDiffSet
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.grails.web.json.JSONArray
 import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
@@ -65,6 +67,11 @@ class InstallService {
      * @since 2.0
      */
     private static final String ENABLE_FILE_NAME = 'ENABLE_INSTALLER'
+
+
+    //-- Class fields -------------------------------
+
+    private static final Log log = LogFactory.getLog(this)
 
 
     //-- Fields ---------------------------------

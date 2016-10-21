@@ -118,7 +118,8 @@ class ProxyAuthorizationCodeFlow {
      *                  given user is available
      */
     Credential loadCredential(String userId) {
-        StoredCredential storedCredential = dataStore.get(userId)
+        StoredCredential storedCredential =
+            (StoredCredential) dataStore.get(userId)
         if (!storedCredential) {
             return null
         }
@@ -150,7 +151,7 @@ class ProxyAuthorizationCodeFlow {
         )
         ProxyResponse response = req.execute()
 
-        createAndStoreCredential response.tokenResponse, userId
+        createAndStoreCredential response.tokenResponse as TokenResponse, userId
     }
 
     /**

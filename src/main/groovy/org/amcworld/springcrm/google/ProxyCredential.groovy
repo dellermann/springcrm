@@ -22,9 +22,6 @@ package org.amcworld.springcrm.google
 
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.auth.oauth2.TokenResponse
-import com.google.api.client.auth.oauth2.Credential.AccessMethod
-import com.google.api.client.http.HttpTransport
-import com.google.api.client.json.JsonFactory
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 
@@ -67,7 +64,7 @@ class ProxyCredential extends Credential {
         req.put 'refreshToken', refreshToken
         ProxyResponse response = req.execute()
 
-        response.tokenResponse
+        response.tokenResponse as TokenResponse
     }
 
 

@@ -90,7 +90,7 @@ class DateTimeValueConverter implements ValueConverter {
             }
             try {
                 res = new SimpleDateFormat(fmt).parse(text)
-            } catch (ParseException ignored1) {
+            } catch (ParseException ignore) {
                 throw new IllegalArgumentException()
             }
         }
@@ -137,7 +137,7 @@ class DateTimeValueConverter implements ValueConverter {
             }
             try {
                 res = new SimpleDateFormat(fmt.toString()).parse(text)
-            } catch (ParseException ignored1) {
+            } catch (ParseException ignore) {
                 throw new IllegalArgumentException()
             }
         }

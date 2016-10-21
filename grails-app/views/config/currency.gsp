@@ -16,7 +16,7 @@
     <g:render template="/layouts/errorMessage" />
 
     <form id="config-form"
-      action="${createLink(action: 'save', params: [returnUrl: params.returnUrl])}" params="[returnUrl: params.returnUrl]"
+      action="${createLink(action: 'save', params: [returnUrl: params.returnUrl])}"
       method="post" class="form-horizontal data-form form-view">
       <section>
         <header>

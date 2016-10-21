@@ -546,7 +546,8 @@ class GoogleContactSync extends AbstractGoogleSync<Person, ContactEntry> {
     protected ContactEntry syncInsertGoogle(GoogleService service,
                                             Person localEntry)
     {
-        ContactEntry googleEntry = super.syncInsertGoogle(service, localEntry)
+        ContactEntry googleEntry =
+            (ContactEntry) super.syncInsertGoogle(service, localEntry)
         updatePhoto service, localEntry, googleEntry
 
         googleEntry

@@ -1,1 +1,1 @@
-${bean?."${property}"?.name.join(', ')}
+${bean?."${property}"?.name?.join(', ')}
