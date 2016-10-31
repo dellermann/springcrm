@@ -28,6 +28,7 @@ import grails.test.mixin.support.GrailsUnitTestMixin
 import groovy.util.slurpersupport.GPathResult
 import org.amcworld.springcrm.*
 import org.grails.web.converters.configuration.ConvertersConfigurationInitializer
+import org.springframework.core.io.Resource
 import org.xml.sax.EntityResolver
 import org.xml.sax.InputSource
 import spock.lang.Specification
@@ -247,11 +248,11 @@ class InvoicingTransactionXMLSpec extends Specification {
 
     //-- Non-public methods ---------------------
 
-    private GPathResult getEntry(GPathResult parent, String name) {
-        parent.entry.find { it.@key == name }
+    private static GPathResult getEntry(GPathResult parent, String name) {
+        parent.entry.find { it.@key == name } as GPathResult
     }
 
-    private String getEntryText(GPathResult parent, String name) {
+    private static String getEntryText(GPathResult parent, String name) {
         getEntry(parent, name)?.text()
     }
 
@@ -263,11 +264,10 @@ class InvoicingTransactionXMLSpec extends Specification {
                 return null
             }
 
-            File f = new File(
-                "src/main/webapp${FopService.SYSTEM_FOLDER}/dtd", path
+            Resource res = applicationContext.getResource(
+                "${FopService.SYSTEM_FOLDER}/dtd/${path}"
             )
-            InputStream input = f.newInputStream()
-            new InputSource(input)
+            new InputSource(res.inputStream)
         } as EntityResolver
     }
 
@@ -359,7 +359,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         markdownService
     }
 
-    private User makeUserFixture() {
+    private static User makeUserFixture() {
         new User(
             userName: 'jsmith', password: 'secret', firstName: 'John',
             lastName: 'Smith', email: 'j.smith@example.com',
@@ -367,7 +367,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         )
     }
 
-    private void matchHtmlValues(GPathResult entry) {
+    private static void matchHtmlValues(GPathResult entry) {
         assert '12, Leonardo Rd.' == entry.billingAddrStreetHtml.'html:html'.'html:body'.'html:p'.text()
         assert !entry.shippingAddrStreetHtml.'html:html'.'html:body'.text()
         def el = entry.subjectHtml
@@ -380,7 +380,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 3 == el.size()
     }
 
-    private void matchInvoicingTransaction(GPathResult entry) {
+    private static void matchInvoicingTransaction(GPathResult entry) {
         assert '1' == entry.@id.text()
         def addr = entry.billingAddr
         assert '12, Leonardo Rd.' == addr.street.text()
@@ -397,7 +397,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 'Test invoice\nand more' == entry.subject.text()
     }
 
-    private void matchItems(GPathResult entry) {
+    private static void matchItems(GPathResult entry) {
         assert 3 == entry.invoicingItem.size()
         def item = entry.invoicingItem[0]
         assert 4.0 == item.quantity.toBigDecimal()
@@ -407,19 +407,19 @@ class InvoicingTransactionXMLSpec extends Specification {
         assert 19.0 == item.tax.toBigDecimal()
     }
 
-    private void matchOrganization(GPathResult entry) {
+    private static void matchOrganization(GPathResult entry) {
         assert '1' == entry.@id.text()
         assert 'AMC World Technologies GmbH' == entry.name.text()
         assert '10000' == entry.number.text()
     }
 
-    private void matchTaxRates(GPathResult entry) {
+    private static void matchTaxRates(GPathResult entry) {
         assert 2 == entry.entry.size()
         assert '65.68490000000000' == getEntryText(entry, '19.0')
         assert '0.96915000000000' == getEntryText(entry, '7.0')
     }
 
-    private void matchUser(GPathResult entry) {
+    private static void matchUser(GPathResult entry) {
         assert 'John' == entry.firstName.text()
         assert 'Smith' == entry.lastName.text()
         assert '+49 1 8984466' == entry.phone.text()
@@ -449,7 +449,7 @@ class InvoicingTransactionXMLSpec extends Specification {
         matchHtmlValues map
     }
 
-    private void matchValues(GPathResult entry) {
+    private static void matchValues(GPathResult entry) {
         assert 359.555 == getEntry(entry, 'subtotalNet').toBigDecimal()
         assert 426.20905 == getEntry(entry, 'subtotalGross').toBigDecimal()
         assert 8.524181 == getEntry(entry, 'discountPercentAmount')

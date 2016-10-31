@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import javax.annotation.Nullable
 
 
 /**
@@ -90,7 +91,7 @@ class SearchData implements Serializable {
     String type
 
 
-    //-- Public methods -------------------------
+    //-- Properties -----------------------------
 
     /**
      * Gets the parsed JSON content which contains the name and the value of
@@ -114,8 +115,27 @@ class SearchData implements Serializable {
      *
      * @param content   the name and the value of each field that should be set
      */
-    void setStructuredContent(Map<String, String> content) {
-        this.content = content.values().join('\n')
-        contentStructured = JsonOutput.toJson(content)
+    void setStructuredContent(@Nullable Map<String, String> content) {
+        this.content = content?.values()?.join('\n')
+        contentStructured = content == null ? null : JsonOutput.toJson(content)
+    }
+
+
+    //-- Public methods -------------------------
+
+    @Override
+    boolean equals(Object obj) {
+        obj instanceof SearchData && obj.type == type &&
+            obj.recordId == recordId
+    }
+
+    @Override
+    int hashCode() {
+        "${type}:${recordId}".toString().hashCode()
+    }
+
+    @Override
+    String toString() {
+        "${type}:${recordId}".toString()
     }
 }

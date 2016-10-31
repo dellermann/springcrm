@@ -20,7 +20,9 @@
 
 package org.amcworld.springcrm
 
+import grails.artefact.Interceptor
 import grails.web.mapping.ResponseRedirector
+import groovy.transform.CompileStatic
 
 
 /**
@@ -32,7 +34,8 @@ import grails.web.mapping.ResponseRedirector
  * @version 2.1
  * @since   2.1
  */
-class ReturnUrlInterceptor {
+@CompileStatic
+class ReturnUrlInterceptor implements Interceptor {
 
     //-- Constructors ---------------------------
 
@@ -64,8 +67,8 @@ class ReturnUrlInterceptor {
             String attrName = ResponseRedirector.GRAILS_REDIRECT_ISSUED
             if (request.getAttribute(attrName) != null) {
                 request.removeAttribute attrName
-                redirect url: params.returnUrl
             }
+            redirect url: params.returnUrl
         }
 
         true

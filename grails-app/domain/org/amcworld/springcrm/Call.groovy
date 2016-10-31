@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Call} represents a phone call.
@@ -27,7 +29,7 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.1
  */
-class Call {
+class Call implements GormEntity<Call> {
 
     //-- Constants ----------------------------------
 

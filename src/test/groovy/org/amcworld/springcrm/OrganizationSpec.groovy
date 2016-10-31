@@ -24,7 +24,6 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-
 @TestFor(Organization)
 @Mock([Organization])
 class OrganizationSpec extends Specification {
@@ -430,7 +429,7 @@ class OrganizationSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | true
+        'user@.com'         | false
         'user@mydomain.com' | true
         'user@härbört.com'  | true
     }
@@ -456,7 +455,7 @@ class OrganizationSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | true
+        'user@.com'         | false
         'user@mydomain.com' | true
         'user@härbört.com'  | true
     }

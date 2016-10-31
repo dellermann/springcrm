@@ -74,7 +74,7 @@ class ProxyCredential extends Credential {
      * The class {@code Builder} represents a {@code ProxyCredential} builder.
      *
      * @author  Daniel Ellermann
-     * @version 2.0
+     * @version 2.1
      * @since   1.4
      */
     static class Builder extends Credential.Builder {
@@ -86,7 +86,7 @@ class ProxyCredential extends Credential {
          *
          * @param method    the given access method
          */
-        Builder(AccessMethod method) {
+        Builder(Credential.AccessMethod method) {
             super(method)
         }
 
