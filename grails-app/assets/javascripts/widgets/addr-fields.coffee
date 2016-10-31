@@ -30,7 +30,7 @@ $ = jQuery
 # copying to each other or loading an address from the associated organization.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.1
 #
 class AddrFields
 
@@ -248,7 +248,8 @@ class AddrFields
       promise = promise.then -> $.confirm msg
 
     promise.done ->
-      $fromAddr.find('.column-content :input')
+      $fromAddr
+        .find('.column-content > .form-group > .control-container > :input')
         .each ->
           $this = $(this)
           name = toPrefix + '.' + $this.attr('name').split('.').pop()

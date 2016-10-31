@@ -22,6 +22,7 @@ package springcrm
 
 import static grails.util.Metadata.current as metaInfo
 
+import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 import groovy.transform.CompileStatic
 import javax.naming.Context
@@ -32,6 +33,7 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean
+import org.springframework.boot.Banner
 import org.springframework.context.EnvironmentAware
 import org.springframework.core.env.*
 import org.springframework.core.io.FileSystemResource
@@ -59,7 +61,9 @@ class Application extends GrailsAutoConfiguration implements EnvironmentAware {
     static void main(String [] args) {
         LauncherFrame frame = new LauncherFrame()
 
-        SpringCrmGrailsApp app = new SpringCrmGrailsApp(Application)
+        GrailsApp app = new GrailsApp(Application)
+        app.banner = new SpringCrmBanner()
+        app.bannerMode = Banner.Mode.CONSOLE
         app.headless = false
         app.addListeners frame
         app.run args

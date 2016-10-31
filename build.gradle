@@ -44,10 +44,10 @@ buildscript {
         classpath "com.bertramlabs.plugins:less-asset-pipeline:$assetPipelineVersion"
         classpath 'gradle.plugin.edu.sc.seis:macAppBundle:2.1.6'
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
-        classpath 'org.grails.plugins:hibernate5:6.0.2'
+        classpath 'org.grails.plugins:database-migration:3.0.0'
+        classpath 'org.grails.plugins:hibernate5:6.0.3'
         classpath 'org.grails.plugins:i18n-asset-pipeline:2.0.0'
-        classpath 'org.grails.plugins:views-gradle:1.1.1'
+        classpath 'org.grails.plugins:views-gradle:1.1.2'
     }
 }
 
@@ -72,6 +72,7 @@ apply plugin: 'war'
 apply plugin: 'asset-pipeline'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'project-report'
 apply plugin: 'org.grails.grails-web'
 apply plugin: 'org.grails.grails-gsp'
 apply plugin: 'org.grails.grails-doc'
@@ -131,13 +132,13 @@ dependencies {
     compile 'org.grails:grails-core'
     compile 'org.grails:grails-dependencies'
     compile 'org.grails:grails-web-boot'
-    compile 'org.grails.plugins:views-json:1.1.1'
+    compile 'org.grails.plugins:views-json:1.1.2'
 
     compile 'org.hibernate:hibernate-core:5.1.1.Final'
     compile 'org.hibernate:hibernate-ehcache:5.1.1.Final'
-    compile 'org.liquibase:liquibase-core:3.3.2'
 
-    profile "org.grails.profiles:web:${grailsVersion}"
+//    profile "org.grails.profiles:web:${grailsVersion}"
+    profile "org.grails.profiles:web:3.2.1"
 
     // SpringCRM dependencies
     compile 'com.google.apis:google-api-services-calendar:v3-rev157-1.21.0'
@@ -162,7 +163,7 @@ dependencies {
     runtime "com.bertramlabs.plugins:handlebars-asset-pipeline:$assetPipelineVersion"
     runtime "com.bertramlabs.plugins:less-asset-pipeline:$assetPipelineVersion"
     runtime 'org.grails.plugins:asset-pipeline'
-    runtime 'org.grails.plugins:database-migration:2.0.0.RC1'
+    runtime 'org.grails.plugins:database-migration:3.0.0'
     runtime 'org.grails.plugins:i18n-asset-pipeline:2.0.0'
 
     runtime 'mysql:mysql-connector-java:5.1.27'

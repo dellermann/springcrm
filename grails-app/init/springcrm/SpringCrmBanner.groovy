@@ -1,5 +1,5 @@
 /*
- * SpringCrmGrailsApp.groovy
+ * SpringCrmBanner.groovy
  *
  * Copyright (c) 2011-2016, Daniel Ellermann
  *
@@ -20,32 +20,30 @@
 
 package springcrm
 
-import static grails.util.Metadata.current as metaInfo
-
-import grails.boot.GrailsApp
+import grails.util.Metadata
 import groovy.transform.CompileStatic
-import groovy.transform.InheritConstructors
+import org.springframework.boot.Banner
 import org.springframework.core.env.Environment
 
 
 /**
- * The class {@SpringCrmGrailsApp} extends the base {@code GrailsApp} class and
- * outputs a banner at startup.
+ * The class {@code SpringCrmBanner} prints a banner during application
+ * startup.
  *
  * @author  Daniel Ellermann
  * @version 2.1
  * @since   2.1
  */
 @CompileStatic
-@InheritConstructors
-class SpringCrmGrailsApp extends GrailsApp {
+class SpringCrmBanner implements Banner {
 
     //-- Constants ------------------------------
 
     /**
      * The banner graphic.  See
      * <a href="http://patorjk.com/software/taag/#p=display&f=Standard&t=SpringCRM" target="_blank">AsciiArt</a>
-     * for more information.*/
+     * for more information.
+     */
     private static String BANNER = '''
   ____             _              ____ ____  __  __
  / ___| _ __  _ __(_)_ __   __ _ / ___|  _ \\|  \\/  |
@@ -55,14 +53,16 @@ class SpringCrmGrailsApp extends GrailsApp {
        |_|                 |___/'''
 
 
-    //-- Non-public methods ---------------------
+    //-- Public methods -----------------------------
 
     @Override
-    protected void printBanner(Environment environment) {
-        PrintStream out = System.out
+    void printBanner(Environment environment, Class<?> sourceClass,
+                     PrintStream out)
+    {
         out.println BANNER
         out.println()
 
+        Metadata metaInfo = Metadata.current
         row 'App version', metaInfo.getApplicationVersion(), out
         row 'Build number', metaInfo['info.app.buildNumber'], out
         row 'Environment', metaInfo.getEnvironment(), out
@@ -74,6 +74,9 @@ class SpringCrmGrailsApp extends GrailsApp {
         out.println()
         out.println()
     }
+
+
+    //-- Non-public methods ---------------------
 
     /**
      * Prints a row containing a label and a value.

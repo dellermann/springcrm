@@ -62,7 +62,7 @@ logger 'org.grails.plugins.coffee.compiler', INFO
 
 //logger 'springcrm.Application', DEBUG
 //logger 'springcrm.LauncherFrame', DEBUG
-//logger 'grails.app.conf.BootStrap', INFO
+//logger 'grails.app.conf.springcrm.BootStrap', INFO
 //logger 'grails.app.controllers.org.amcworld.springcrm.TicketController', DEBUG
 //logger 'grails.artefact.Interceptor', DEBUG, ['STDOUT'], false   // show interceptor order
 //logger 'org.amcworld.springcrm.google.GoogleContactSync', DEBUG

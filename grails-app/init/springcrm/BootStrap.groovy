@@ -1,5 +1,5 @@
 /*
- * BootStrap.groovy
+ * springcrm.BootStrap.groovy
  *
  * Copyright (c) 2011-2016, Daniel Ellermann
  *
@@ -18,6 +18,8 @@
  */
 
 
+package springcrm
+
 import grails.core.GrailsApplication
 import javax.servlet.ServletContext
 import javax.sql.DataSource
@@ -28,7 +30,7 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
 
 
 /**
- * The class {@code BootStrap} performs initial operations when booting the
+ * The class {@code springcrm.BootStrap} performs initial operations when booting the
  * application.
  *
  * @author  Daniel Ellermann
