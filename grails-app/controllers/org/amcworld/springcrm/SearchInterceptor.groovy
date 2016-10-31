@@ -49,6 +49,9 @@ class SearchInterceptor {
         match action: ~/(save|update|delete)/
     }
 
+
+    //-- Public methods -------------------------
+
     /**
      * Called after the action has been executed.  Depending on the action the
      * method creates, updates or removes an entry in search index.

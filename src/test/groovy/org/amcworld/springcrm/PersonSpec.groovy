@@ -470,7 +470,7 @@ class PersonSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | true
+        'user@.com'         | false
         'user@mydomain.com' | true
         'user@härbört.com'  | true
 	}
@@ -500,7 +500,7 @@ class PersonSpec extends Specification {
         'foobar@'           | false
         '@mydomain.com'     | false
         'user@mydomain'     | false
-        'user@.com'         | true
+        'user@.com'         | false
         'user@mydomain.com' | true
         'user@härbört.com'  | true
 	}
