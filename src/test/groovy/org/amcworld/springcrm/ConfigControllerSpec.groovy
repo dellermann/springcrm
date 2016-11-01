@@ -163,6 +163,34 @@ class ConfigControllerSpec extends Specification {
         'EUR' == ch['currency'].value
     }
 
+    def 'Save action with return URL'() {
+        given: 'some configuration data'
+        makeConfigFixture()
+
+        and: 'some request parameters and a return URL'
+        params.config = [foo: 'new-foo-value1', 'new-val': 'new', _bar: '25']
+        params.returnUrl = '/organization/show/5'
+
+        when: 'I call the save action'
+        controller.save()
+
+        then: 'I am redirected to the requested URL'
+        '/organization/show/5' == response.redirectedUrl
+
+        and: 'I get a message about the success'
+        'default.updated.message' == flash.message
+
+        and: 'the submitted values are stored'
+        def ch = ConfigHolder.instance
+        'new-foo-value1' == ch['foo'].value
+        'new' == ch['new-val'].value
+        '15' == ch['int-val'].value
+        'false' == ch['bar'].value
+
+        and: 'all other data are unmodified'
+        'EUR' == ch['currency'].value
+    }
+
     def 'Save mail data with no configuration'() {
         given: 'some configuration data'
         makeConfigFixture()

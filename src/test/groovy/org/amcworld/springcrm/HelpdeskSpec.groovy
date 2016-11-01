@@ -186,7 +186,6 @@ class HelpdeskSpec extends Specification {
         '  abc  '       || 'abc'
     }
 
-    @Ignore('Feature method is unstable')
     void 'Create user associations at insert'() {
         given: 'some users'
         User u1 = new User(userName: 'User 1')

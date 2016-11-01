@@ -245,6 +245,40 @@ class PersonControllerSpec extends Specification {
         'Ellermann' == model.personInstance.lastName
     }
 
+    def 'Save action successful with returnUrl'() {
+        given: 'an organization'
+        makeOrganizationFixture()
+        def org = Organization.get(1)
+
+        when: 'I send a form to the save action'
+        params.number = 10000   // prevents use of SeqNumberService
+        params.firstName = 'Daniel'
+        params.lastName = 'Ellermann'
+        params.organization = org
+        params.phone = '123456789'
+        params.mailingAddr = new Address(
+            street: 'Fischerinsel 1', postalCode: '10179', location: 'Berlin',
+            state: 'Berlin', country: 'Deutschland'
+        )
+        params.otherAddr = new Address()
+        params.email1 = 'daniel@example.com'
+        params.email2 = 'info@example.com'
+        params.returnUrl = '/organization/show/5'
+        request.method = 'POST'
+        controller.save()
+
+        then: 'I am redirected to the requested URL'
+        '/organization/show/5' == response.redirectedUrl
+        'default.created.message' == flash.message
+
+        and: 'a person has been created'
+        1 == Person.count()
+        def p = Person.first()
+        matchPerson p
+        null != p.dateCreated
+        null != p.lastUpdated
+    }
+
     // TODO test other actions
 
     def 'Update action with existing person successful'() {
@@ -371,7 +405,7 @@ class PersonControllerSpec extends Specification {
 
     //-- Non-public methods ---------------------
 
-    private void makeOrganizationFixture() {
+    protected void makeOrganizationFixture() {
         mockDomain Organization, [
             [
                 id: 1, number: 10000, recType: 1,
@@ -390,7 +424,7 @@ class PersonControllerSpec extends Specification {
         ]
     }
 
-    private void makePersonFixture(Organization org = null) {
+    protected void makePersonFixture(Organization org = null) {
         if (!org) {
             makeOrganizationFixture()
             org = Organization.first()
@@ -427,18 +461,18 @@ class PersonControllerSpec extends Specification {
         session.credential = new Credential(u)
     }
 
-    private void matchEmptyList(Map model) {
+    protected void matchEmptyList(Map model) {
         assert null != model.personInstanceList
         assert 0 == model.personInstanceList.size()
         assert 0 == model.personInstanceTotal
     }
 
-    private void matchNullList(Map model) {
+    protected void matchNullList(Map model) {
         assert null == model.personInstanceList
         assert 0 == model.personInstanceTotal
     }
 
-    private void matchPerson(Person p) {
+    protected void matchPerson(Person p) {
         assert 'Daniel' == p.firstName
         assert 'Ellermann' == p.lastName
 
@@ -457,7 +491,7 @@ class PersonControllerSpec extends Specification {
         assert 'info@example.com' == p.email2
     }
 
-    private void matchPersonInList(Map model) {
+    protected void matchPersonInList(Map model) {
         assert null != model.personInstanceList
         assert 1 == model.personInstanceList.size()
         assert 1 == model.personInstanceTotal

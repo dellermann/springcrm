@@ -116,7 +116,7 @@ class CallControllerSpec extends Specification {
         def model = controller.listEmbedded()
 
         then:
-        matchEmptyList model
+        matchNullList model
     }
 
     def 'ListEmbedded action without parameters'() {
@@ -127,7 +127,7 @@ class CallControllerSpec extends Specification {
         def model = controller.listEmbedded()
 
         then: 'I get an empty list'
-        matchEmptyList model
+        matchNullList model
     }
 
     def 'ListEmbedded action with a non-existing organization'() {
@@ -139,7 +139,7 @@ class CallControllerSpec extends Specification {
         def model = controller.listEmbedded()
 
         then: 'I get an empty list'
-        matchEmptyList model
+        matchNullList model
     }
 
     def 'ListEmbedded action with an existing organization'() {
@@ -164,7 +164,7 @@ class CallControllerSpec extends Specification {
         def model = controller.listEmbedded()
 
         then: 'I get an empty list'
-        matchEmptyList model
+        matchNullList model
     }
 
     def 'ListEmbedded action with an existing person'() {
@@ -347,6 +347,39 @@ class CallControllerSpec extends Specification {
         'Test' == model.callInstance.subject
     }
 
+    def 'Save action successful with returnUrl'() {
+        given: 'an organization and a person'
+        makeOrganizationFixture()
+        def org = Organization.get(1)
+        makePersonFixture org
+        def person = Person.get(1)
+
+        when: 'I send a form to the save action'
+        def d = new Date()
+        params.subject = 'Test'
+        params.notes = 'Test call'
+        params.organization = org
+        params.person = person
+        params.phone = '+49 30 8321475-0'
+        params.start = d
+        params.type = CallType.incoming
+        params.status = CallStatus.completed
+        params.returnUrl = '/organization/show/5'
+        request.method = 'POST'
+        controller.save()
+
+        then: 'I am redirected to the requested URL'
+        '/organization/show/5' == response.redirectedUrl
+        'default.created.message' == flash.message
+
+        and: 'a phone call has been created'
+        1 == Call.count()
+        def c = Call.first()
+        matchCall c, d
+        null != c.dateCreated
+        null != c.lastUpdated
+    }
+
     def 'Show action with non-existing phone call'() {
         when: 'I call the show action with an invalid ID'
         params.id = 1
@@ -452,6 +485,31 @@ class CallControllerSpec extends Specification {
         'Test call' == c.notes
     }
 
+    def 'Update action with existing phone call successful with returnUrl'() {
+        given: 'a phone call'
+        def d = new Date()
+        makeCallFixture d
+
+        when: 'I send a form to the update action'
+        params.id = 1
+        params.subject = 'Another test'
+        params.returnUrl = '/organization/show/5'
+        request.method = 'POST'
+        controller.update()
+
+        then: 'I am redirected to the requested URL'
+        '/organization/show/5' == response.redirectedUrl
+        'default.updated.message' == flash.message
+
+        and: 'there is still one phone call'
+        1 == Call.count()
+
+        and: 'it has been updated'
+        def c = Call.get(1)
+        null != c
+        'Another test' == c.subject
+    }
+
     def 'Delete action with non-existing phone call'() {
         when: 'I call the delete action with an invalid ID'
         params.id = 1
@@ -474,6 +532,25 @@ class CallControllerSpec extends Specification {
 
         then: 'I am redirected to the list view'
         '/call/index' == response.redirectedUrl
+        'default.deleted.message' == flash.message
+
+        and: 'the phone call has been deleted'
+        0 == Call.count()
+    }
+
+    @Ignore('Call.delete() does not work')
+    def 'Delete action with existing phone call and returnUrl'() {
+        given: 'a phone call'
+        makeCallFixture()
+
+        when: 'I call the delete action with a valid ID'
+        params.id = 1
+        params.returnUrl = '/organization/show/5'
+        params.confirmed = 1
+        controller.delete()
+
+        then: 'I am redirected to the requested URL'
+        '/organization/show/5' == response.redirectedUrl
         'default.deleted.message' == flash.message
 
         and: 'the phone call has been deleted'
@@ -546,7 +623,7 @@ class CallControllerSpec extends Specification {
 
     private void matchEmptyList(Map model) {
         assert null != model.callInstanceList
-        assert model.callInstanceList.empty
+        assert 0 == model.callInstanceList.size()
         assert 0 == model.callInstanceTotal
     }
 

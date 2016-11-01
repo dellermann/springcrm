@@ -1,5 +1,5 @@
 /*
- * SearchService.groovy
+ * SearchData.groovy
  *
  * Copyright (c) 2011-2016, Daniel Ellermann
  *
@@ -220,7 +220,7 @@ class SearchService implements Service {
         Map<String, String> res = [: ]
         for (String field : fields) {
             Object obj = field.tokenize('.')
-                .inject(entity) { GormEntity<?> obj, String prop ->
+                .inject(entity) { Object obj, String prop ->
                     prop.startsWith('*') ? obj*."${prop.substring(1)}"
                         : obj?."${prop}"
                 }

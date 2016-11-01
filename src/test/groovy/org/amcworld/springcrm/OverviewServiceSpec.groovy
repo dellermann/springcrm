@@ -249,12 +249,12 @@ class OverviewServiceSpec extends Specification {
         ApplicationContext ctx = Mock()
         ctx.getResource(_) >> { String path ->
             switch (path) {
-            case 'classpath:public/changelog.md':
+            case 'public/changelog.md':
                 Resource res = Mock()
                 res.inputStream >> new ByteArrayInputStream(contentDefault.bytes)
                 res.exists() >> true
                 return res
-            case 'classpath:public/changelog_de.md':
+            case 'public/changelog_de.md':
                 Resource res = Mock()
                 res.inputStream >> new ByteArrayInputStream(contentDe.bytes)
                 res.exists() >> true

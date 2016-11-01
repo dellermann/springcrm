@@ -45,19 +45,19 @@ class EncryptPasswordInterceptorSpec extends Specification {
         'user'              | 'save'                || true
         'user'              | 'update'              || true
         'user'              | 'authenticate'        || true
-        'user'              | 'createAdminSave'     || true
+        'user'              | 'create-admin-save'   || true
         'install'           | null                  || false
         'install'           | 'index'               || false
         'install'           | 'save'                || true
         'install'           | 'update'              || true
         'install'           | 'authenticate'        || true
-        'install'           | 'createAdminSave'     || true
+        'install'           | 'create-admin-save'   || true
         'foo'               | null                  || false
         'foo'               | 'index'               || false
         'foo'               | 'save'                || false
         'foo'               | 'update'              || false
         'foo'               | 'authenticate'        || false
-        'foo'               | 'createAdminSave'     || false
+        'foo'               | 'create-admin-save'   || false
     }
 
     def 'Interceptor methods return true'() {

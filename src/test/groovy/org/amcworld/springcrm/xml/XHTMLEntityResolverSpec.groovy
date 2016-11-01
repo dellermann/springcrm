@@ -54,7 +54,7 @@ class XHTMLEntityResolverSpec extends Specification {
 
         and: 'a mocked application context'
         ApplicationContext ctx = Mock()
-        1 * ctx.getResource('classpath:public/print/dtd/xhtml-special.ent') >> res
+        1 * ctx.getResource('/WEB-INF/data/print/dtd/xhtml-special.ent') >> res
         instance.applicationContext = ctx
 
         expect:
@@ -69,7 +69,7 @@ class XHTMLEntityResolverSpec extends Specification {
 
         and: 'a mocked application context'
         ApplicationContext ctx = Mock()
-        1 * ctx.getResource('classpath:public/print/dtd/xhtml-special.ent') >> res
+        1 * ctx.getResource('/WEB-INF/data/print/dtd/xhtml-special.ent') >> res
         instance.applicationContext = ctx
 
         when: 'I resolve the entity'

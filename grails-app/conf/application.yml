@@ -103,7 +103,7 @@ hibernate:
         use_second_level_cache: true
         use_query_cache: false
         # cache.provider_class: 'net.sf.ehcache.hibernate.EhCacheProvider'
-        region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+        region.factory_class: 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
         format_sql: true
 
 endpoints:
