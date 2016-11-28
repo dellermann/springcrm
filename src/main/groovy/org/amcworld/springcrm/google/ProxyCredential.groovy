@@ -86,7 +86,7 @@ class ProxyCredential extends Credential {
          *
          * @param method    the given access method
          */
-        Builder(AccessMethod method) {
+        Builder(Credential.AccessMethod method) {
             super(method)
         }
 
