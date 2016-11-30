@@ -28,17 +28,19 @@
     display: table;
     width: 100%;
 
-    h3, h4 {
+    > h3, > h4 {
       color: #FFF;
       display: table-cell;
       vertical-align: middle;
     }
-    .buttons {
+    > .buttons {
       display: table-cell;
       text-align: right;
       vertical-align: middle;
+      white-space: nowrap;
+      width: 1%;
 
-      a, button {
+      > a, > button {
         background: transparent;
         border: none;
         color: #FFF;
@@ -51,6 +53,9 @@
         &:last-child {
           padding-right: 0;
         }
+      }
+      .modal {
+        text-align: left;
       }
     }
   }

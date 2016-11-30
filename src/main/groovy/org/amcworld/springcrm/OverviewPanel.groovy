@@ -35,17 +35,18 @@ import org.springframework.context.ApplicationContext
  */
 class OverviewPanel {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String action
+    String additionalHeaderTemplate
     String controller
     String defDescription
     String defTitle
     String style
 
-    protected Map<Locale, String> localizedDescriptions = [: ]
-    protected Map<Locale, String> localizedTitles = [: ]
-    protected String url
+    private Map<Locale, String> localizedDescriptions = [: ]
+    private Map<Locale, String> localizedTitles = [: ]
+    private String url
 
 
     //-- Properties -----------------------------
@@ -58,7 +59,8 @@ class OverviewPanel {
     String getUrl() {
         if (!url) {
             ApplicationContext ctx = Holders.applicationContext
-            ApplicationTagLib g = ctx.getBean(ApplicationTagLib.class.name)
+            ApplicationTagLib g =
+                (ApplicationTagLib) ctx.getBean(ApplicationTagLib.class.name)
             url = g.createLink(controller: controller, action: action)
         }
 

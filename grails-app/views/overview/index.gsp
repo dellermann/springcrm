@@ -43,6 +43,12 @@
         role="region" aria-labelledby="${panel.panelId}-title">
         <div class="panel-heading">
           <h3 id="${panel.panelId}-title">${panelDef.getTitle(locale)}</h3>
+          <%-- This section is excluded from panel.hbs. START --%>
+          <g:if test="${panelDef.additionalHeaderTemplate}">
+            <g:render template="${panelDef.additionalHeaderTemplate}"
+              model="[user: user]"/>
+          </g:if>
+          <%-- This section is excluded from panel.hbs. END --%>
           <div class="buttons" role="toolbar"
             aria-label="${message(code: 'overview.buttons.label')}">
             <button type="button" class="up-btn"

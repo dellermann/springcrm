@@ -45,6 +45,55 @@ class InvoicingTransactionService implements Service {
     //-- Public methods -------------------------
 
     /**
+     * Finds all unpaid bills filtered and ordered using the settings of the
+     * given credential.
+     *
+     * @param credential    the credential representing the currently logged in
+     *                      user
+     * @return              a list of unpaid bills
+     */
+    List<Invoice> findUnpaidBills(Credential credential) {
+        UserSettings settings = credential.settings
+        String sort = settings.unpaidBillsSort ?: 'docDate'
+        String ord = settings.unpaidBillsOrder ?: 'desc'
+        int max = (settings.unpaidBillsMax ?: '0') as int
+
+        Config conf = (Config) ConfigHolder.instance['numFractionDigitsExt']
+        int precision = conf?.toType(Integer) ?: 2i
+        String setting = settings.unpaidBillsMinimum
+        BigDecimal minimum = setting ? new BigDecimal(setting)
+            : BigDecimal.ONE.movePointLeft(precision)
+
+        List<Object[]> l = Invoice.executeQuery(
+            """
+            select
+                i, 
+                -(round(i.paymentAmount, :prec) - round(i.total, :prec)) 
+                    as stillUnpaid
+            from Invoice as i
+            where i.stage.id between :stageStart and :stageEnd
+                and round(i.paymentAmount, :prec) - round(i.total, :prec) 
+                    <= -:minimum
+                and i.dueDatePayment <= current_timestamp()
+            order by ${sort} ${ord}
+            """,
+            [
+                minimum: minimum,
+                prec: precision,
+                stageStart: 902L,       // sent..
+                stageEnd: 905L,         // ..collection
+            ],
+            [max: max]
+        ) as List<Object[]>
+        List<Invoice> invoiceInstanceList = new ArrayList<Invoice>(l.size())
+        for (Object[] item : l) {
+            invoiceInstanceList.add((Invoice) item[0])
+        }
+
+        invoiceInstanceList
+    }
+
+    /**
      * Generates the XML data structure which is used in XSL transformation
      * using the given invoicing transaction.
      *

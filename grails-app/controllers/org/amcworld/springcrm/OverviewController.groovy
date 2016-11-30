@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
+import java.text.NumberFormat
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
 
@@ -58,7 +59,11 @@ class OverviewController {
             session.dontShowChangelog = true
         }
 
-        [panels: panels, showChangelog: showChangelog]
+        [
+            panels: panels,
+            showChangelog: showChangelog,
+            user: ((Credential) session.credential).loadUser()
+        ]
     }
 
     def listAvailablePanels() {
@@ -138,5 +143,31 @@ class OverviewController {
         overviewService.dontShowAgain((Credential) session.credential)
 
         render status: SC_OK
+    }
+
+    /**
+     * Stores the settings for the list of unpaid bills as user settings.
+     *
+     * @param minimum   the minimum of unpaid amount that should be displayed;
+     *                  the value is parsed as localized formatted number
+     * @param sort      the property used for sorting
+     * @param order     the order of sorting, either {@code asc} or {@code desc}
+     * @param max       the maximum number of items that should be displayed
+     */
+    def settingsUnpaidBillsSave(String minimum, String sort, String order,
+                                String max)
+    {
+        NumberFormat formatter = NumberFormat.getInstance(request.locale)
+        BigDecimal min = formatter.parse(minimum) as BigDecimal
+
+        Credential credential = (Credential) session.credential
+        credential.settings.putAll(
+            unpaidBillsMinimum: min <= BigDecimal.ZERO ? '' : min.toString(),
+            unpaidBillsSort: sort,
+            unpaidBillsMax: max,
+            unpaidBillsOrder: order
+        )
+
+        redirect action: 'index'
     }
 }

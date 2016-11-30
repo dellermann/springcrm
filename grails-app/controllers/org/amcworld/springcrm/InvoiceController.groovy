@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
+import java.math.MathContext
 import org.springframework.dao.DataIntegrityViolationException
 
 
@@ -376,28 +377,16 @@ class InvoiceController {
         fopService.outputPdf xml, 'invoice', template, response, fileName
     }
 
+    /**
+     * Lists all invoices which have unpaid amount.
+     *
+     * @return  a map containing the model for the view
+     */
     def listUnpaidBills() {
-        def c = Invoice.createCriteria()
-        List<Invoice> l = (List<Invoice>) c.list {
-            and {
-                or {
-                    eq 'stage', InvoiceStage.get(902)           // sent
-                    and {
-                        eq 'stage', InvoiceStage.get(903)       // paid
-                        ltProperty 'paymentAmount', 'total'
-                    }
-                    eq 'stage', InvoiceStage.get(904)           // reminded
-                    eq 'stage', InvoiceStage.get(905)           // collection
-                }
-                le 'dueDatePayment', new Date()
-            }
-            order 'docDate', 'desc'
-        }
-
-        /* fix for issue #31 */
-        List<Invoice> invoiceInstanceList = l.findAll {
-            it.stage.id != 903 || it.balance < 0.0
-        }
+        List<Invoice> invoiceInstanceList =
+            invoicingTransactionService.findUnpaidBills(
+                (Credential) session.credential
+            )
 
         [invoiceInstanceList: invoiceInstanceList]
     }

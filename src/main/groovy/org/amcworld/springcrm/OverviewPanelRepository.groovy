@@ -1,7 +1,7 @@
 /*
  * OverviewPanelRepository.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,11 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileDynamic
+import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
+import groovy.util.slurpersupport.GPathResult
+
 
 /**
  * The class {@code OverviewPanelRepository} represents a repository of panels
@@ -27,18 +32,20 @@ package org.amcworld.springcrm
  * by calling method {@code initialize()}.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  */
+@CompileStatic
 class OverviewPanelRepository {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     private Map<String, OverviewPanel> repository
 
 
     //-- Constructors ---------------------------
 
-    private OverviewPanelRepository() {}
+    @PackageScope
+    OverviewPanelRepository() {}
 
 
     //-- Public methods -------------------------
@@ -79,32 +86,38 @@ class OverviewPanelRepository {
      *
      * @param is    the input stream containing the XML repository definitions
      */
+    @CompileDynamic
     void initialize(InputStream is) {
-        def slurper = new XmlSlurper()
-        def rep = slurper.parse(is)
+        XmlSlurper slurper = new XmlSlurper()
+        GPathResult rep = slurper.parse(is)
 
         HashMap<String, OverviewPanel> m =
-            new HashMap<String, OverviewPanel>(rep.panel.size())
-        for (def p in rep.panel) {
+            new HashMap<String, OverviewPanel>((int) rep.panel.size())
+        for (GPathResult p in rep.panel) {
             OverviewPanel panel = new OverviewPanel(
                 controller: p.controller.text(),
                 action: p.action.text(),
                 defTitle: p.title.findAll { !it.@lang.text() }[0].text(),
                 defDescription:
                     p.description.findAll { !it.@lang.text() }[0].text(),
-                style: p.style?.text()
+                style: p.style?.text(),
+                additionalHeaderTemplate: p.additionalHeaderTemplate?.text()
             )
-            p.title.each {
-                if (it.@lang.text()) {
-                    panel.addLocalizedTitle it.@lang.text(), it.text()
+            p.title.each { GPathResult title ->
+                if (title.@lang.text()) {
+                    panel.addLocalizedTitle(
+                        (String) title.@lang.text(), title.text()
+                    )
                 }
             }
-            p.description.each {
-                if (it.@lang.text()) {
-                    panel.addLocalizedDescription it.@lang.text(), it.text()
+            p.description.each { GPathResult description ->
+                if (description.@lang.text()) {
+                    panel.addLocalizedDescription(
+                        (String) description.@lang.text(), description.text()
+                    )
                 }
             }
-            m[p.@id.text()] = panel
+            m[(String) p.@id.text()] = panel
         }
 
         repository = Collections.unmodifiableMap(m)

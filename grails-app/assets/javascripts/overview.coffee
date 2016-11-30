@@ -203,8 +203,7 @@ class OverviewPanels
         $this.remove()
         $.getJSON url, panelId: panelId
         that._refreshPanelList()
-
-    @_updateNoPanelsMessage()
+        that._updateNoPanelsMessage()
 
     false
 

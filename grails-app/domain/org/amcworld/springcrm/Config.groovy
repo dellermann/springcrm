@@ -81,17 +81,16 @@ class Config implements GormEntity<Config> {
      *
      * @param type  the given type
      * @return      the converted object
-     * @see         #asType(Class)
      */
     @CompileStatic
-    public <T> T toType(Class<T> type) {
+    <T> T toType(Class<T> type) {
         switch (type) {
         case Date:
-            return value ? Date.parseToStringDate(value) : null
+            return (T) value ? Date.parseToStringDate(value) : null
         case Calendar:
-            return value ? Date.parseToStringDate(value).toCalendar() : null
+            return (T) value ? Date.parseToStringDate(value).toCalendar() : null
         case Boolean:
-            return (value == null) ? null : Boolean.valueOf(value)
+            return (T) value == null ? null : Boolean.valueOf(value)
         default:
             return value?.asType(type)
         }

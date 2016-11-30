@@ -2,9 +2,9 @@
 
 <!--
 
-  overview-panel-repository-2.0.xsd
+  overview-panel-repository-2.1.xsd
 
-  Copyright (c) 2011-2015, Daniel Ellermann
+  Copyright (c) 2011-2016, Daniel Ellermann
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,9 +31,9 @@
       Schema for the repository of panels which are used on the overview page
       of SpringCRM.
 
-      Version 2.0
+      Version 2.1
 
-      Copyright © 2011-2015, AMC World Technologies GmbH
+      Copyright © 2011-2016, AMC World Technologies GmbH
     </xs:documentation>
   </xs:annotation>
 
@@ -52,6 +52,7 @@
   <xs:element name="title" type="localized-text"/>
   <xs:element name="description" type="localized-text"/>
   <xs:element name="style" type="xs:string"/>
+  <xs:element name="additionalHeaderTemplate" type="xs:string"/>
 
 
   <!-- ==========================================
@@ -89,6 +90,8 @@
           languages.
         - style. Optional CSS style specifications which should be applied to
           the panel.
+        - additionalHeaderTemplate. The path to a GSP template which renders
+          additional header content.
 
         The following attributes may be used:
 
@@ -101,6 +104,7 @@
       <xs:element ref="title" maxOccurs="unbounded"/>
       <xs:element ref="description" maxOccurs="unbounded"/>
       <xs:element ref="style" minOccurs="0"/>
+      <xs:element ref="additionalHeaderTemplate" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="id" type="xs:ID" use="required"/>
   </xs:complexType>

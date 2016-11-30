@@ -4,7 +4,7 @@
 
   overview-panel-repository.xml
 
-  Copyright (c) 2011-2015, Daniel Ellermann
+  Copyright (c) 2011-2016, Daniel Ellermann
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 <overview-panel-repository xmlns="http://www.amc-world.de/data/xml/springcrm"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.amc-world.de/data/xml/springcrm overview-panel-repository-2.0.xsd">
+  xsi:schemaLocation="http://www.amc-world.de/data/xml/springcrm overview-panel-repository-2.1.xsd">
 
   <panel id="lru">
     <controller>overview</controller>
@@ -45,5 +45,6 @@
     amount.</description>
     <description lang="de">Zeigt eine Liste von offenen Rechnungen sowie deren
     unbezahlte Beträge an.</description>
+    <additionalHeaderTemplate>/invoice/listUnpaidBillsHeader</additionalHeaderTemplate>
   </panel>
 </overview-panel-repository>
