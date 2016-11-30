@@ -21,8 +21,8 @@
 package org.amcworld.springcrm.google
 
 import com.google.api.client.util.store.AbstractDataStoreFactory
-import com.google.api.client.util.store.DataStore
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 
 
 /**
@@ -31,11 +31,17 @@ import groovy.transform.CompileStatic
  * credentials.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @since   1.4
  */
 @CompileStatic
 class UserCredentialDataStoreFactory extends AbstractDataStoreFactory {
+
+    //-- Constructors ---------------------------
+
+    @PackageScope
+    UserCredentialDataStoreFactory() {}
+
 
     //-- Public methods -------------------------
 
@@ -52,7 +58,7 @@ class UserCredentialDataStoreFactory extends AbstractDataStoreFactory {
     //-- Non-public methods ---------------------
 
     @Override
-    protected <V extends Serializable> DataStore<V> createDataStore(String id)
+    protected UserCredentialDataStore createDataStore(String id)
         throws IOException
     {
         new UserCredentialDataStore(this, id)
@@ -66,7 +72,7 @@ class UserCredentialDataStoreFactory extends AbstractDataStoreFactory {
      * outer factory class.
      *
      * @author	Daniel Ellermann
-     * @version 2.0
+     * @version 2.1
      * @since   1.4
      */
     private static class InstanceHolder {

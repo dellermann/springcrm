@@ -1,7 +1,7 @@
 /*
  * UserSetting.groovy
  *
- * Copyright (c) 2011-2013, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,12 @@ package org.amcworld.springcrm
  * {@code User} is buggy.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  * @since   1.2
  */
 class UserSetting {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static constraints = {
         name blank: false, unique: 'user'
@@ -40,7 +40,7 @@ class UserSetting {
     }
 
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     String name
     String value
@@ -51,7 +51,7 @@ class UserSetting {
 
     @Override
     boolean equals(Object obj) {
-        (obj instanceof UserSetting) ? name == obj.name : false
+        obj instanceof UserSetting && name == obj.name
     }
 
     @Override
@@ -61,6 +61,6 @@ class UserSetting {
 
     @Override
     String toString() {
-        "${name}: ${value}"
+        "${name}: ${value}".toString()
     }
 }

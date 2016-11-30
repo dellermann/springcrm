@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 
 
 /**
@@ -30,7 +30,7 @@ import groovy.transform.TypeCheckingMode
  * stored in the user session.
  *
  * @author	Daniel Ellermann
- * @version 2.0
+ * @version 2.1
  * @see     User
  * @since   2.0
  */
@@ -91,11 +91,6 @@ final class Credential {
     final boolean admin
 
     /**
-     * The settings of the user with this credential.
-     */
-    final UserSettings settings
-
-    /**
      * A set of allowed modules of the user with this credential.
      */
     final EnumSet<Module> allowedModules
@@ -114,14 +109,13 @@ final class Credential {
 
     //-- Constructors ---------------------------
 
-    @CompileStatic(TypeCheckingMode.SKIP)
     Credential(User user) {
         Long id = user.id
         if (!id) {
             throw new IllegalArgumentException('User has no ID set.')
         }
 
-        this.id = id
+        this.id = (long) id
         userName = user.userName
         firstName = user.firstName
         lastName = user.lastName
@@ -131,7 +125,6 @@ final class Credential {
         fax = user.fax
         email = user.email
         admin = user.admin
-        settings = user.settings
         allowedModules = user.allowedModulesAsSet
         allowedControllers = Module.resolveModules(allowedModules)
         fullName = computeFullName()
@@ -158,6 +151,20 @@ final class Credential {
      */
     EnumSet<Module> getAllowedModules() {
         EnumSet.copyOf(allowedModules)
+    }
+
+    /**
+     * Gets the settings of the user belonging to this credential.
+     * <p>
+     * For performance reasons, you should save the return value in a variable
+     * because it was obtained from data source via {@code loadUser()}.
+     * Furthermore, this method may be used within a Hibernate session, only.
+     *
+     * @return  the settings of the user
+     * @see     #loadUser()
+     */
+    UserSettings getSettings() {
+        loadUser().settings
     }
 
 
@@ -200,10 +207,14 @@ final class Credential {
 
     /**
      * Loads the user instance belonging to this credential.
+     * <p>
+     * For performance reasons, you should save the return value in a variable
+     * because it was obtained from data source via {@code loadUser()}.
+     * Furthermore, this method may be used within a Hibernate session, only.
      *
      * @return  the user instance
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     User loadUser() {
         User.get id
     }

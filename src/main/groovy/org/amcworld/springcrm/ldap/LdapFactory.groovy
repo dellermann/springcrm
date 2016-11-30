@@ -21,6 +21,7 @@
 package org.amcworld.springcrm.ldap
 
 import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 
 
 /**
@@ -44,7 +45,8 @@ class LdapFactory {
     /**
      * Creates a new LDAP factory instance.
      */
-    protected LdapFactory() {}
+    @PackageScope
+    LdapFactory() {}
 
 
     //-- Public methods -------------------------

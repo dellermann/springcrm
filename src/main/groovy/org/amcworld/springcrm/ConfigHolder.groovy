@@ -20,8 +20,9 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
+import groovy.transform.PackageScope
 
 
 /**
@@ -34,17 +35,44 @@ import groovy.transform.TypeCheckingMode
 @CompileStatic
 class ConfigHolder {
 
+    //-- Constructors ---------------------------
+
+    @PackageScope
+    ConfigHolder() {}
+
+
     //-- Public methods -------------------------
 
+    /**
+     * Gets all configurations.
+     *
+     * @return  a list of all configurations
+     */
     List<Config> getAllConfig() {
         Config.list()
     }
 
+    /**
+     * Gets the configuration with the given name.
+     *
+     * @param name  the name of configuration
+     * @return      the configuration; {@code null} if no configuration with
+     *              the given name exists
+     * @see         #getConfig(String)
+     */
     Config getAt(String name) {
         getConfig name
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
+    /**
+     * Gets the configuration with the given name.
+     *
+     * @param name  the name of configuration
+     * @return      the configuration; {@code null} if no configuration with
+     *              the given name exists
+     * @see         #getAt(String)
+     */
+    @CompileDynamic
     Config getConfig(String name) {
         Config.findByName name
     }
@@ -58,6 +86,11 @@ class ConfigHolder {
         InstanceHolder.INSTANCE
     }
 
+    /**
+     * Removes the configuration with the given name.
+     *
+     * @param name  the name of the configuration
+     */
     void removeConfig(String name) {
         Config config = getConfig(name)
         if (config) {
@@ -65,10 +98,24 @@ class ConfigHolder {
         }
     }
 
+    /**
+     * Sets the configuration of the given name to the specified value.
+     *
+     * @param name  the name of the configuration
+     * @param value the value that should be set
+     * @see #setConfig(String, String)
+     */
     void putAt(String name, String value) {
         setConfig name, value
     }
 
+    /**
+     * Sets the configuration of the given name to the specified value.
+     *
+     * @param name  the name of the configuration
+     * @param value the value that should be set
+     * @see #putAt(String, String)
+     */
     void setConfig(String name, String value) {
         Config config = getConfig(name) ?: new Config(name: name)
         config.value = value
