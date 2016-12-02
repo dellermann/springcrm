@@ -3,6 +3,7 @@
 * Settings for the list of unpaid bills: minimum unpaid amount, sort
   criterion and order, maximum number of items.
 * New panel containing currently active projects.
+* Fix wrap and wrong vertical alignment in V.A.T calculator.
 
 ## 2.1.2
 

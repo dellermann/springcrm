@@ -4,6 +4,8 @@
   offenen Betrag, Sortierkriterium und Reihenfolge, Anzahl der Einträge in der
   Liste.
 * Neues Panel mit aktiven Projekten.
+* Textumbruch und falsche vertikale Ausrichtung im Mehrwertsteuerrechner
+  behoben.
 
 ## 2.1.2
 

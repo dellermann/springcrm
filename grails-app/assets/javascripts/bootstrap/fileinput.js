@@ -1,5 +1,5 @@
 /*!
- * bootstrap-fileinput v4.3.4
+ * bootstrap-fileinput v4.3.5
  * http://plugins.krajee.com/file-input
  *
  * Author: Kartik Visweswaran
@@ -1439,6 +1439,7 @@
         },
         _clearFileInput: function () {
             var self = this, $el = self.$element, $srcFrm, $tmpFrm, $tmpEl;
+            self.fileInputCleared = true;
             if (isEmpty($el.val())) {
                 return;
             }
@@ -1460,7 +1461,6 @@
             } else { // normal input clear behavior for other sane browsers
                 $el.val('');
             }
-            self.fileInputCleared = true;
         },
         _resetUpload: function () {
             var self = this;
@@ -1783,6 +1783,7 @@
                 }
             };
             fnSuccess = function (data, textStatus, jqXHR) {
+                var pid = self.showPreview && $thumb.attr('id') ? $thumb.attr('id') : previewId;
                 outData = self._getOutData(jqXHR, data);
                 $.extend(true, params, outData);
                 setTimeout(function () {
@@ -1792,17 +1793,17 @@
                             $btnUpload.hide();
                             self._initUploadSuccess(data, $thumb, allFiles);
                         }
-                        self._raise('fileuploaded', [outData, $thumb.attr('id'), i]);
+                        self._raise('fileuploaded', [outData, pid, i]);
                         if (!allFiles) {
                             self.updateStack(i, undefined);
                         } else {
-                            updateUploadLog(i, previewId);
+                            updateUploadLog(i, pid);
                         }
                     } else {
                         self._showUploadError(data.error, params);
                         self._setPreviewError($thumb, i);
                         if (allFiles) {
-                            updateUploadLog(i, previewId);
+                            updateUploadLog(i, pid);
                         }
                     }
                 }, 100);
@@ -2186,8 +2187,8 @@
                     return;
                 }
                 var node = ctr + i, previewId = previewInitId + "-" + node, isText, isImage, file = files[i],
-                    caption = self.slug(file.name), fileSize = (file.size || 0) / 1000, checkFile, fileExtExpr = '',
-                    previewData = objUrl.createObjectURL(file), fileCount = 0, j, msg, typ, chk,
+                    caption = file.name ? self.slug(file.name) : '', fileSize = (file.size || 0) / 1000, checkFile,
+                    fileExtExpr = '', previewData = objUrl.createObjectURL(file), fileCount = 0, j, msg, typ, chk,
                     fileTypes = self.allowedFileTypes, strTypes = isEmpty(fileTypes) ? '' : fileTypes.join(', '),
                     fileExt = self.allowedFileExtensions, strExt = isEmpty(fileExt) ? '' : fileExt.join(', ');
                 if (!isEmpty(fileExt)) {
