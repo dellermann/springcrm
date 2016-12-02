@@ -1,3 +1,9 @@
+## 2.1.3
+
+* Settings for the list of unpaid bills: minimum unpaid amount, sort
+  criterion and order, maximum number of items.
+* New panel containing currently active projects.
+
 ## 2.1.2
 
 * Re-implement search feature
@@ -14,14 +20,14 @@
 * Update underlying libraries like Bootstrap and FontAwesome
 * Lot of bug fixes and code optimizations
 
+[comment]: STOP
+
 ## 2.0.20
 
 * Wrong character set when displaying changelog on Windows
   ([issue #84](https://github.com/dellermann/springcrm/issues/84))
 * Lonely "next" button in lists with one item
   ([issue #5](https://github.com/dellermann/springcrm/issues/5))
-
-[comment]: STOP
 
 ## 2.0.19 (RC 2)
 

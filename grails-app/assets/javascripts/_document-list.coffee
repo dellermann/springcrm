@@ -507,19 +507,19 @@ class DocumentList
 #
 Plugin = (option) ->
   $ = jQuery
+  args = arguments
 
   if option is 'path' or option is 'selection'
     $dl = $(this).data('bs.documentlist')
-    return $dl[option].apply $dl, $.makeArray(arguments).slice(1)
+    return $dl[option].apply $dl, $.makeArray(args).slice(1)
 
-  args = arguments
   @each ->
     $this = $(this)
     data = $this.data 'bs.documentlist'
 
     unless data
       $this.data 'bs.documentlist', (data = new DocumentList(this, args[0]))
-    if typeof option is 'string'
+    if typeof option is 'string' and typeof data[option] is 'function'
       data[option].apply $this, $.makeArray(args).slice 1
 
 
@@ -541,5 +541,3 @@ $.fn.documentlist.noConflict = ->
 $(window).on 'load', ->
   $('[data-list="document"]').each ->
     Plugin.call $(this)
-
-# vim:set ts=2 sw=2 sts=2:

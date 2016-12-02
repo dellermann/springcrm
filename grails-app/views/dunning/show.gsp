@@ -121,7 +121,7 @@
 
     <content tag="toolbar">
       <g:button action="index" color="default" class="hidden-xs"
-        icon="th-list" message="default.button.list.label" />
+        icon="list" message="default.button.list.label" />
       <g:button action="create" color="success" class="hidden-xs"
         icon="plus-circle" message="default.button.create.label" />
       <g:if test="${session.credential.admin ||

@@ -71,7 +71,7 @@ class OverviewPanelRepository {
     }
 
     /**
-     * Gets all panels of the repository.
+     * Gets all panels of the repository.  The returned map is unmodifiable.
      *
      * @return  a map containing all the panels; the key contains the ID of the
      *          panel, the value the panel definition
@@ -101,6 +101,7 @@ class OverviewPanelRepository {
                 defDescription:
                     p.description.findAll { !it.@lang.text() }[0].text(),
                 style: p.style?.text(),
+                script: p.script?.text(),
                 additionalHeaderTemplate: p.additionalHeaderTemplate?.text()
             )
             p.title.each { GPathResult title ->

@@ -52,6 +52,7 @@
   <xs:element name="title" type="localized-text"/>
   <xs:element name="description" type="localized-text"/>
   <xs:element name="style" type="xs:string"/>
+  <xs:element name="script" type="xs:string"/>
   <xs:element name="additionalHeaderTemplate" type="xs:string"/>
 
 
@@ -88,8 +89,10 @@
         - title. The title of the panel in various languages.
         - description. Any description of what the panel is used for in various
           languages.
-        - style. Optional CSS style specifications which should be applied to
-          the panel.
+        - style. An optional CSS asset which is loaded along the overview page
+          to style the content of the panel.
+        - script. An optional JavaScript asset which is loaded along the
+          overview page to style the content of the panel.
         - additionalHeaderTemplate. The path to a GSP template which renders
           additional header content.
 
@@ -104,6 +107,7 @@
       <xs:element ref="title" maxOccurs="unbounded"/>
       <xs:element ref="description" maxOccurs="unbounded"/>
       <xs:element ref="style" minOccurs="0"/>
+      <xs:element ref="script" minOccurs="0"/>
       <xs:element ref="additionalHeaderTemplate" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="id" type="xs:ID" use="required"/>

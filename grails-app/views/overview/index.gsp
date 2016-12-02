@@ -1,7 +1,14 @@
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
+
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <meta name="stylesheet" content="overview" />
+    <meta name="layout" content="main"/>
+    <meta name="stylesheet" content="overview"/>
+    <g:each in="${allPanelDefs}" var="panelDef">
+      <g:if test="${panelDef.style}">
+        <asset:stylesheet src="${panelDef.style}"/>
+      </g:if>
+    </g:each>
   </head>
 
   <body>
@@ -15,7 +22,7 @@
       <button type="button" class="btn btn-success add-panel-btn"
         disabled="disabled">
         <i class="fa fa-plus-circle"></i>
-        <g:message code="overview.addPanel.label" />
+        <g:message code="overview.addPanel.label"/>
       </button>
     </content>
 
@@ -29,8 +36,8 @@
       data-move-panel-url="${createLink(action: 'movePanel')}"
       data-close-panel-url="${createLink(action: 'removePanel')}">
       <g:each in="${panels}" var="panel">
-      <g:set var="locale" value="${org.springframework.context.i18n.LocaleContextHolder.locale}" />
-      <g:set var="panelDef" value="${panel.panelDef}" />
+      <g:set var="locale" value="${LocaleContextHolder.locale}"/>
+      <g:set var="panelDef" value="${panel.panelDef}"/>
       <%--
           ATTENTION! Don't forget to change
           grails-assets/javascripts/templates/overview/panel.hbs if you
@@ -38,7 +45,6 @@
       --%>
       <div id="${panel.panelId}"
         class="panel panel-default panel-type-${panel.panelId}"
-        style="${panelDef.style}"
         data-panel-url="${createLink(controller: panelDef.controller, action: panelDef.action)}"
         role="region" aria-labelledby="${panel.panelId}-title">
         <div class="panel-heading">
@@ -56,31 +62,32 @@
               ><i class="fa fa-caret-up"></i
               ><span class="sr-only"><g:message code="default.btn.up"
               /></span
-            ></button>
-            <button type="button" class="down-btn"
+            ></button
+            ><button type="button" class="down-btn"
               title="${message(code: 'default.btn.down')}"
               ><i class="fa fa-caret-down"></i
               ><span class="sr-only"><g:message code="default.btn.down"
               /></span
-            ></button>
-            <g:link action="removePanel" class="close-btn"
+            ></button
+            ><g:link action="removePanel" class="close-btn"
               title="${message(code: 'overview.closePanel.label')}"
-              ><span aria-hidden="true">×</span
+              ><i class="fa fa-close"></i
               ><span class="sr-only"
                 ><g:message code="overview.closePanel.label"
               /></span
             ></g:link>
           </div>
         </div>
+        <div class="panel-body"><%-- filled by JavaScript --%></div>
       </div>
       </g:each>
     </div>
     <div class="well well-lg empty-list hidden">
-      <p><g:message code="overview.noPanels" /></p>
+      <p><g:message code="overview.noPanels"/></p>
       <div class="buttons">
         <button type="button" class="btn btn-success add-panel-btn">
           <i class="fa fa-plus-circle"></i>
-          <g:message code="overview.addPanel.label" />
+          <g:message code="overview.addPanel.label"/>
         </button>
       </div>
     </div>
@@ -97,7 +104,7 @@
               ><span aria-hidden="true">×</span
             ></button>
             <h4 id="changelog-modal-title" class="modal-title">
-              <g:message code="overview.changelog.title" />
+              <g:message code="overview.changelog.title"/>
             </h4>
           </div>
           <div class="modal-body">
@@ -108,13 +115,13 @@
           <div class="modal-footer">
             <div class="checkbox">
               <label>
-                <input type="checkbox" id="dont-show-again" />
-                <g:message code="overview.changelog.dontShowAgain" />
+                <input type="checkbox" id="dont-show-again"/>
+                <g:message code="overview.changelog.dontShowAgain"/>
               </label>
             </div>
             <button type="button" class="btn btn-default btn-ok"
               data-dismiss="modal">
-              <span><g:message code="default.btn.close" /></span>
+              <span><g:message code="default.btn.close"/></span>
             </button>
           </div>
         </div>
@@ -123,7 +130,12 @@
     </g:if>
 
     <content tag="scripts">
-      <asset:javascript src="overview" />
+      <asset:javascript src="overview"/>
+      <g:each in="${allPanelDefs}" var="panelDef">
+        <g:if test="${panelDef.script}">
+          <asset:javascript src="${panelDef.script}"/>
+        </g:if>
+      </g:each>
     </content>
   </body>
 </html>

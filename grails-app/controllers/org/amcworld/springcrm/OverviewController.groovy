@@ -60,6 +60,7 @@ class OverviewController {
         }
 
         [
+            allPanelDefs: repository.panels.values(),
             panels: panels,
             showChangelog: showChangelog,
             user: ((Credential) session.credential).loadUser()

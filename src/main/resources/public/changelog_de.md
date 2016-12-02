@@ -1,3 +1,10 @@
+## 2.1.3
+
+* Einstellungen für die Liste der unbezahlten Rechnungen: Mindestwert für noch
+  offenen Betrag, Sortierkriterium und Reihenfolge, Anzahl der Einträge in der
+  Liste.
+* Neues Panel mit aktiven Projekten.
+
 ## 2.1.2
 
 * Wiedereinbau der Suchfunktionalität
@@ -14,14 +21,14 @@
 * Aktualisierung des Unterbaus wie Bootstrap und FontAwesome
 * Viele Fehlerbehebungen und Codeoptimierungen
 
+[comment]: STOP
+
 ## 2.0.20
 
 * Fehler bei Darstellung der Änderungshistorie unter Windows
   ([Problem #84](https://github.com/dellermann/springcrm/issues/84))
 * Fehler mit verwaister „Nächste“-Schaltfläche bei Listen mit einem Eintrag
   ([Problem #5](https://github.com/dellermann/springcrm/issues/5))
-
-[comment]: STOP
 
 ## 2.0.19 (RC 2)
 

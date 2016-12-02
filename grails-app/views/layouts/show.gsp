@@ -1,6 +1,6 @@
 <content tag="toolbar">
   <g:button action="index" params="${listParams}" color="default"
-    class="hidden-xs" icon="th-list" message="default.button.list.label" />
+    class="hidden-xs" icon="list" message="default.button.list.label" />
   <g:button action="create" params="${listParams}" color="success"
     class="hidden-xs" icon="plus-circle"
     message="default.button.create.label" />

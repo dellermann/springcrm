@@ -295,7 +295,7 @@ Plugin = (option) ->
 
     unless data
       $this.data 'springcrm.addrfields', (data = new AddrFields(this, options))
-    if typeof option is 'string'
+    if typeof option is 'string' and typeof data[option] is 'function'
       args.shift()
       data[option].apply data, args
 

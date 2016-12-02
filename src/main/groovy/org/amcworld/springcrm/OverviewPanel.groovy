@@ -42,6 +42,7 @@ class OverviewPanel {
     String controller
     String defDescription
     String defTitle
+    String script
     String style
 
     private Map<Locale, String> localizedDescriptions = [: ]

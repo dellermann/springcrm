@@ -1,7 +1,7 @@
 /*
  * project.less
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,50 +21,67 @@
 @import "application";
 
 
-@project-status-colors: #77B753 #E85752 #FFEB55 #F29B68 #555 #000718;
-@project-status-start-id: 2600;
-@project-status-end-id: (
-    @project-status-start-id + length(@project-status-colors) - 1
-  );
+//===============================================
+//
+// Mixins
+//
+//===============================================
 
-.make-project-status(@id) {
-  @status-item: ~".project-status-@{id}";
-  @selectize-item:
-    ~".project-status .selectize-input .item[data-value='@{id}']";
-  @selectize-option:
-    ~".project-status .selectize-dropdown .option[data-value='@{id}']";
-  @index: @id - @project-status-start-id + 1;
-  @bg-color: extract(@project-status-colors, @index);
+.color-project-status {
+  .color-item(@index) {
+    @id: (@index + @project-status-start-id - 1);
+    @color: extract(@project-status-colors, @index);
 
-  .change-color() when (luma(@bg-color) < 10%) {
-    color: #FFF;
+    @status-item: ~".project-status-@{id}";
+    @selectize-item:
+      ~".project-status .selectize-input .item[data-value='@{id}']";
+    @selectize-option:
+      ~".project-status .selectize-dropdown .option[data-value='@{id}']";
+
+    .change-color() when (luma(@color) < 10%) {
+      color: #FFF;
+    }
+
+    @{status-item} {
+      .change-color();
+      background: fade(@color, 60%);
+    }
+    @{selectize-item}, @{selectize-option} {
+      border-left-color: @color;
+    }
+  }
+  .color-items(@index) when (@index > 1) {
+    .color-item(@index);
+    .color-items(@index - 1);
+  }
+  .color-items(@index) when (@index = 1) {
+    .color-item(@index);
   }
 
-  @{status-item} {
-    .change-color();
-    background: fade(@bg-color, 60%);
-  }
-  @{selectize-item} {
-    border-left: @project-status-indicator-width solid
-      extract(@project-status-colors, @index);
+  .color-items(length(@project-status-colors));   // bootstrap it!
+}
+
+
+//===============================================
+//
+// Style rules
+//
+//===============================================
+
+.project-status {
+  .selectize-input .item {
+    border-left-style: solid;
+    border-left-width: @project-status-indicator-width;
     padding-left: @project-status-indicator-padding;
   }
-  @{selectize-option} {
-    border-left: @project-status-indicator-width solid
-      extract(@project-status-colors, @index);
+  .selectize-dropdown .option {
+    border-left-style: solid;
+    border-left-width: @project-status-indicator-width;
     margin-left: @project-status-indicator-padding;
   }
 }
-.loop-project-status(@id) when (@id >= @project-status-start-id) {
-  .make-project-status(@id);
-  .loop-project-status((@id - 1));
-}
-
-.loop-project-status(@project-status-end-id);
+.color-project-status();
 
 .project-phase {
   text-align: center;
 }
-
-// vim:set ts=2 sw=2 sts=2:
-

@@ -347,4 +347,19 @@ class ProjectController {
 		projectDocumentInstance.delete flush: true
 		render status: SC_OK
 	}
+
+    /**
+     * Renders a list of all active projects in a panel of the overview page.
+     *
+     * @return  any model data for the view
+     * @since   2.1
+     */
+    def listCurrentProjects() {
+        List<Project> projectInstanceList = Project.findAll(
+            'from Project as p where p.status.id BETWEEN 2600 AND 2603 ' +
+                'order by p.status'
+        )
+
+        [projectInstanceList: projectInstanceList]
+    }
 }

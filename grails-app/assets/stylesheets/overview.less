@@ -20,6 +20,7 @@
 
 @import "application";
 @import "_data-type-list";
+@import "project";
 
 
 .overview-panel-defaults() {
@@ -44,7 +45,7 @@
         background: transparent;
         border: none;
         color: #FFF;
-        font-size: @font-size-large;
+        font-size: (@font-size-base + 2px);
         padding: 0 @padding-small-horizontal 0 0;
 
         &:hover {
@@ -54,8 +55,11 @@
           padding-right: 0;
         }
       }
-      .modal {
+      .modal {    // modals in additional panel header content
         text-align: left;
+      }
+      & + .buttons {
+        padding-left: (2 * @padding-small-horizontal);
       }
     }
   }
@@ -87,9 +91,10 @@
     &:last-child .panel-heading .down-btn {
       display: none;
     }
-    > .panel-body, > ul {
+    > .panel-body {
       height: 300px;
       overflow-y: scroll;
+      padding: 0;
     }
   }
   ul .buttons {
@@ -110,74 +115,6 @@
   }
   @media (min-width: @screen-md-min) {
     .content-columns(3);
-  }
-}
-
-.panel-type-lru {
-  > .panel-body {
-    padding: 0;
-
-    > ul {
-      display: table;
-      margin-bottom: 0;
-      padding: 0;
-      width: 100%;
-
-      > li {
-        display: table-row;
-
-        &:hover {
-          background: #EEE;
-        }
-        > .data-type-icon, > .text, > .buttons {
-          border-top: 1px solid @list-group-border;
-          display: table-cell;
-          padding: 10px 0;
-        }
-        &:first-child {
-          > .data-type-icon, > .text, > .buttons {
-            border-top: none;
-          }
-        }
-        > .data-type-icon {
-          font-size: @font-size-large;
-          line-height: @line-height-base;
-          padding-left: 15px;
-          padding-right: 15px;
-          width: 1px;     // make column as small as possible
-        }
-        > .buttons {
-          padding-left: 15px;
-          padding-right: 15px;
-          text-align: right;
-        }
-      }
-    }
-  }
-}
-.panel-type-unpaid-bills {
-  position: relative;
-
-  ul {
-    > li {
-      border-left: 2px solid transparent !important;
-      padding-left: (15px - 2px);
-    }
-    > .due-danger {
-      border-left-color: @brand-danger !important;
-    }
-    > .due-warning {
-      border-left-color: @brand-warning !important;
-    }
-    .text {
-      margin-left: (@grid-gutter-width / 2);
-      padding-right: 30px;
-    }
-    .buttons {
-      bottom: 10px;
-      position: absolute;
-      right: 15px;
-    }
   }
 }
 

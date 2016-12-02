@@ -61,18 +61,20 @@ class CommonViewDataInterceptor implements Interceptor {
      */
     boolean after() {
         if (model != null) {
-            Locale l = userService.currentLocale
-            model.locale = l.toString().replace('_', '-')
-            model.lang = l.language
-            model.currencySymbol = userService.currencySymbol
-            model.numFractionDigits = userService.numFractionDigits
-            model.numFractionDigitsExt = userService.numFractionDigitsExt
-            model.decimalSeparator = userService.decimalSeparator
-            model.groupingSeparator = userService.groupingSeparator
+            Config.withNewSession {
+                Locale l = userService.currentLocale
+                model.locale = l.toString().replace('_', '-')
+                model.lang = l.language
+                model.currencySymbol = userService.currencySymbol
+                model.numFractionDigits = userService.numFractionDigits
+                model.numFractionDigitsExt = userService.numFractionDigitsExt
+                model.decimalSeparator = userService.decimalSeparator
+                model.groupingSeparator = userService.groupingSeparator
 
-            List<TaxRate> taxRates = TaxRate.list(sort: 'orderId')
-            model.taxRatesString =
-                taxRates.collect { it.taxValue * 100 }.join ','
+                List<TaxRate> taxRates = TaxRate.list(sort: 'orderId')
+                model.taxRatesString =
+                    taxRates.collect { it.taxValue * 100 }.join ','
+            }
         }
 
         true

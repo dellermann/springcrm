@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import grails.transaction.Transactional
 import java.text.DecimalFormatSymbols
 import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
@@ -33,16 +34,12 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * @version 2.1
  * @since   1.3
  */
+@Transactional
 class UserService {
 
     //-- Constants ------------------------------
 
     private static final String [] AVAILABLE_LANGUAGES = ['de', 'en']
-
-
-    //-- Class variables ------------------------
-
-    static transactional = false
 
 
     //-- Public methods -------------------------

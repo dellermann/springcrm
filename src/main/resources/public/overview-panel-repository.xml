@@ -34,6 +34,7 @@
     access.</description>
     <description lang="de">Zeigt eine Liste von kürzlich verwendeten Einträgen
     an.</description>
+    <style>panel/lru</style>
   </panel>
 
   <panel id="unpaid-bills">
@@ -45,6 +46,20 @@
     amount.</description>
     <description lang="de">Zeigt eine Liste von offenen Rechnungen sowie deren
     unbezahlte Beträge an.</description>
+    <style>panel/unpaid-bills</style>
     <additionalHeaderTemplate>/invoice/listUnpaidBillsHeader</additionalHeaderTemplate>
+  </panel>
+
+  <panel id="projects">
+    <controller>project</controller>
+    <action>listCurrentProjects</action>
+    <title>Current projects</title>
+    <title lang="de">Aktuelle Projekte</title>
+    <description>Displays a list of currently processed projects.</description>
+    <description lang="de">Zeigt eine Liste von aktuell bearbeiteten
+    Projekten.</description>
+    <style>panel/projects</style>
+    <script>panel/projects</script>
+    <additionalHeaderTemplate>/project/listCurrentProjectsHeader</additionalHeaderTemplate>
   </panel>
 </overview-panel-repository>

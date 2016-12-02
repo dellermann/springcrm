@@ -80,6 +80,18 @@ class OverviewPanels
     @_initChangelogModal()
 
 
+  #-- Public methods ----------------------------
+
+  # Reloads the panel with the given ID.
+  #
+  # @param [String] id  the given panel ID
+  #
+  reloadPanel: (id) ->
+    @_initPanel @$element.find "##{id}"
+
+    return
+
+
   #-- Non-public methods ------------------------
 
   # Enables or disables the button to add panels depending on the number of
@@ -138,7 +150,9 @@ class OverviewPanels
       $.ajax
         dataType: 'html'
         success: (html) ->
-          $panel.find('> .panel-heading').after html
+          $panel.find('> .panel-body')
+            .empty()
+            .html html
         url: url
 
     null
@@ -301,6 +315,9 @@ class OverviewPanels
 
 
 Plugin = (option) ->
+  $ = jQuery
+  args = arguments
+
   @each ->
     $this = $(this)
     data = $this.data 'springcrm.overviewpanels'
@@ -310,7 +327,8 @@ Plugin = (option) ->
     unless data
       $this.data 'springcrm.overviewpanels',
         (data = new OverviewPanels(this, options))
-    data[option]() if typeof option is 'string'
+    if typeof option is 'string' and typeof data[option] is 'function'
+      data[option].apply data, $.makeArray(args).slice 1
 
 old = $.fn.overviewpanels
 
