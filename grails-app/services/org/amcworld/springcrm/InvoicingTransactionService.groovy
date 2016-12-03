@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import static java.util.Calendar.YEAR
+
 import grails.artefact.Service
 import grails.core.GrailsApplication
 import org.amcworld.springcrm.xml.InvoicingTransactionXML
@@ -43,6 +45,50 @@ class InvoicingTransactionService implements Service {
 
 
     //-- Public methods -------------------------
+
+    /**
+     * Computes a list of turnover of all organizations optionally filtered by
+     * the given year.
+     *
+     * @param year      the given year; if zero the total turnover is computed
+     * @param orderAsc  if {@code true} the turnover values are sorted
+     *                  ascending; if {@code false} they are sorted descending
+     * @return          a sorted map containing the organizations and their
+     *                  turnover
+     * @since 2.1
+     */
+    Map<Organization, BigDecimal> computeTurnoverList(int year = 0,
+                                                      boolean orderAsc = false)
+    {
+        String sql = """
+            select
+                i.organization, 
+                sum(i.total) - ifnull((
+                    select
+                        sum(c.total)
+                    from
+                        CreditMemo c
+                    where
+                        c.organization = i.organization
+                        ${getTurnoverWhere(year, 'c', 'and ')}
+                    group by
+                        c.organization
+                ), 0) as turnover
+            from Invoice i
+            ${getTurnoverWhere(year, 'i', 'where ')}
+            group by i.organization
+            order by turnover ${orderAsc ? 'asc' : 'desc'}
+            """
+        Map<String, Object> args = year > 0 ? [year: year] : [: ]
+        List<Object[]> l = Invoice.executeQuery(sql, args) as List<Object[]>
+
+        Map<Organization, BigDecimal> res = new LinkedHashMap<>(l.size())
+        for (Object[] item : l) {
+            res[(Organization) item[0]] = (BigDecimal) item[1]
+        }
+
+        res
+    }
 
     /**
      * Finds all unpaid bills filtered and ordered using the settings of the
@@ -94,6 +140,84 @@ class InvoicingTransactionService implements Service {
     }
 
     /**
+     * Finds the first year in which invoices, credit notes or reminders have
+     * been written.
+     *
+     * @return  the first year with invoices, credit notes or reminders; -1 if
+     *          no such elements exist
+     * @since   2.0
+     */
+    int findYearEnd() {
+        InvoicingTransaction transaction = InvoicingTransaction.find(
+            '''
+            from InvoicingTransaction as i 
+            where i.type in ('I', 'D', 'C') 
+            order by docDate desc
+            ''',
+            [: ],
+            [max: 1]
+        )
+
+        ((Integer) transaction?.docDate[YEAR]) ?: -1
+    }
+
+    /**
+     * Finds the last year in which invoices for the given organization have
+     * been written.
+     *
+     * @param organization  the given organization
+     * @return              the last year with invoices; -1 if no invoices for
+     *                      the given organization have been found
+     * @since               2.0
+     */
+    int findYearEndByOrganization(Organization organization) {
+        Invoice invoice = Invoice.findByOrganization(
+            organization, [sort: 'docDate', order: 'desc', max: 1]
+        )
+
+        invoice?.docDate[YEAR] ?: -1
+    }
+
+    /**
+     * Finds the first year in which invoices, credit notes or reminders have
+     * been written.
+     *
+     * @return  the first year with invoices, credit notes or reminders; -1 if
+     *          no such elements exist
+     * @since   2.0
+     */
+    int findYearStart() {
+        InvoicingTransaction transaction = InvoicingTransaction.find(
+            '''
+            from InvoicingTransaction as i 
+            where i.type in ('I', 'D', 'C') 
+            order by docDate asc
+            ''',
+            [: ],
+            [max: 1]
+        )
+
+        ((Integer) transaction?.docDate[YEAR]) ?: -1
+    }
+
+    /**
+     * Finds the first year in which invoices for the given organization have
+     * been written.
+     *
+     * @param organization  the given organization
+     * @return              the first year with invoices; -1 if no invoices for
+     *                      the given organization have been found
+     * @since               2.0
+     */
+    int findYearStartByOrganization(Organization organization) {
+        Invoice invoice = Invoice.findByOrganization(
+            organization, [sort: 'docDate', max: 1]
+        )
+
+        invoice?.docDate[YEAR] ?: -1
+    }
+
+    /**
      * Generates the XML data structure which is used in XSL transformation
      * using the given invoicing transaction.
      *
@@ -134,7 +258,7 @@ class InvoicingTransactionService implements Service {
      * @return                      {@code true} if validating and saving was
      *                              successful; {@code false} otherwise
      */
-    boolean save(InvoicingTransaction invoicingTransaction, def params) {
+    boolean save(InvoicingTransaction invoicingTransaction, params) {
         boolean create = !invoicingTransaction.id
         if (params.autoNumber) {
             params.number = invoicingTransaction.number
@@ -174,5 +298,23 @@ class InvoicingTransactionService implements Service {
         }
 
         invoicingTransaction.save flush: true, failOnError: true
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Computes a WHERE clause for method {@code computeTurnoverList}.
+     *
+     * @param year      the given year as criterion
+     * @param alias     the name of the SQL alias
+     * @param prefix    any string which is used as prefix, such as {@code and}
+     * @return          the computed WHERE clause
+     * @see #computeTurnoverList(int)
+     */
+    private static String getTurnoverWhere(int year, String alias,
+                                           String prefix)
+    {
+        year > 0 ? "${prefix}year(${alias}.docDate) = :year" : ''
     }
 }

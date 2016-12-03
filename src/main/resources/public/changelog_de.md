@@ -1,3 +1,7 @@
+## 2.1.4
+
+* Umsatzgesamtübersicht, optional filterbar anhand des Jahres.
+
 ## 2.1.3
 
 * Einstellungen für die Liste der unbezahlten Rechnungen: Mindestwert für noch

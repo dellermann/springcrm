@@ -32,6 +32,11 @@ import static java.util.Calendar.*
  */
 class ReportController {
 
+    //-- Fields ---------------------------------
+
+    InvoicingTransactionService invoicingTransactionService
+
+
     //-- Public methods -------------------------
 
     /**
@@ -50,8 +55,11 @@ class ReportController {
         Calendar end = computeEnd(year, month)
 
         /* find first and last year of all customer accounts */
-        int yearStart = model.yearStart = findYearStart()
-        int yearEnd = model.yearEnd = Math.max(findYearEnd(), currentYear)
+        int yearStart = model.yearStart =
+            invoicingTransactionService.findYearStart()
+        int yearEnd = model.yearEnd = Math.max(
+            invoicingTransactionService.findYearEnd(), currentYear
+        )
 
         /* load customer accounts of the given period */
         if (yearStart >= 0 && yearEnd >= 0) {
@@ -106,8 +114,9 @@ class ReportController {
 
             l = l.findAll { it.closingBalance < 0 }
             if (l) {
-                total = l*.payable.sum 0.0
-                totalPaymentAmount = l*.paymentAmount.sum { it ?: 0.0 }
+                total = l*.payable.sum(0.0) as BigDecimal
+                totalPaymentAmount =
+                    l*.paymentAmount.sum { it ?: 0.0 } as BigDecimal
             }
         }
 
@@ -115,6 +124,32 @@ class ReportController {
             organizationInstance: organization,
             invoicingTransactionInstanceList: l,
             total: total, totalPaymentAmount: totalPaymentAmount
+        ]
+    }
+
+    /**
+     * Displays an overview of all turnover optionally filtered by the given
+     * year.
+     *
+     * @return  a map containing the model data for the view
+     * @since   2.1
+     */
+    def turnoverOverview() {
+        int year = params.year as Integer ?: 0i
+        String order = params.order ?: 'desc'
+
+        Map<Organization, BigDecimal> turnoverList =
+            invoicingTransactionService.computeTurnoverList(
+                year, order == 'asc'
+            )
+
+        /* find first and last year of all customer accounts */
+        int yearStart = invoicingTransactionService.findYearStart()
+        int yearEnd = invoicingTransactionService.findYearEnd()
+
+        [
+            turnoverList: turnoverList, yearStart: yearStart, yearEnd: yearEnd,
+            year: year, order: order
         ]
     }
 
@@ -135,9 +170,15 @@ class ReportController {
             int currentYear = model.currentYear = Calendar.instance[YEAR]
 
             /* find first and last year of all invoices of the organization */
-            model.yearStart = findYearStartByOrganization(organization)
+            model.yearStart =
+                invoicingTransactionService.findYearStartByOrganization(
+                    organization
+                )
             model.yearEnd = Math.max(
-                findYearEndByOrganization(organization), currentYear
+                invoicingTransactionService.findYearEndByOrganization(
+                    organization
+                ),
+                currentYear
             )
 
             List<Invoice> l
@@ -229,7 +270,7 @@ class ReportController {
      * @return      the start of the period
      * @since       2.0
      */
-    private Calendar computeStart(int year, int month) {
+    private static Calendar computeStart(int year, int month) {
         Calendar cal = Calendar.instance
         cal[YEAR] = year
         cal[MONTH] = month > 0 ? month - 1 : cal.getMinimum(MONTH)
@@ -240,81 +281,5 @@ class ReportController {
         cal[MILLISECOND] = cal.getMinimum(MILLISECOND)
 
         cal
-    }
-
-    /**
-     * Finds the first year in which invoices, credit notes or reminders have
-     * been written.
-     *
-     * @return  the first year with invoices, credit notes or reminders; -1 if
-     *          no such elements exist
-     * @since   2.0
-     */
-    private int findYearEnd() {
-        List<Integer> years = new ArrayList<Integer>(3)
-        List<InvoicingTransaction> l = Invoice.list(
-            sort: 'docDate', order: 'desc', max: 1
-        )
-        if (l) years << l[0].docDate[YEAR]
-        l = Dunning.list(sort: 'docDate', order: 'desc', max: 1)
-        if (l) years << l[0].docDate[YEAR]
-        l = CreditMemo.list(sort: 'docDate', order: 'desc', max: 1)
-        if (l) years << l[0].docDate[YEAR]
-
-        years ? years.min() : -1
-    }
-
-    /**
-     * Finds the last year in which invoices for the given organization have
-     * been written.
-     *
-     * @param organization  the given organization
-     * @return              the last year with invoices; -1 if no invoices for
-     *                      the given organization have been found
-     * @since               2.0
-     */
-    private int findYearEndByOrganization(Organization organization) {
-        List<Invoice> l = Invoice.findAllByOrganization(
-            organization, [sort: 'docDate', order: 'desc', max: 1]
-        )
-
-        l ? l[0].docDate[YEAR] : -1
-    }
-
-    /**
-     * Finds the first year in which invoices, credit notes or reminders have
-     * been written.
-     *
-     * @return  the first year with invoices, credit notes or reminders; -1 if
-     *          no such elements exist
-     * @since   2.0
-     */
-    private int findYearStart() {
-        List<Integer> years = new ArrayList<Integer>(3)
-        List<InvoicingTransaction> l = Invoice.list(sort: 'docDate', max: 1)
-        if (l) years << l[0].docDate[YEAR]
-        l = Dunning.list(sort: 'docDate', max: 1)
-        if (l) years << l[0].docDate[YEAR]
-        l = CreditMemo.list(sort: 'docDate', max: 1)
-        if (l) years << l[0].docDate[YEAR]
-
-        years ? years.max() : -1
-    }
-
-    /**
-     * Finds the first year in which invoices for the given organization have
-     * been written.
-     *
-     * @param organization  the given organization
-     * @return              the first year with invoices; -1 if no invoices for
-     *                      the given organization have been found
-     * @since               2.0
-     */
-    private int findYearStartByOrganization(Organization organization) {
-        List<Invoice> l = Invoice.findAllByOrganization(
-            organization, [sort: 'docDate', max: 1]
-        )
-
-        l ? l[0].docDate[YEAR] : -1
     }
 }

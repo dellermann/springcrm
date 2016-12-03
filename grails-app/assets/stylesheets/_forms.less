@@ -1,7 +1,7 @@
 //
 // _forms.less
 //
-// Copyright (c) 2011-2015, Daniel Ellermann
+// Copyright (c) 2011-2016, Daniel Ellermann
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -170,12 +170,16 @@
 .form-horizontal .control-label {
   text-align: left;
 }
-.form-inline > .form-group > {
+.form-inline > .form-group {
+  & + .form-group {
+    padding-left: @padding-large-horizontal;
+  }
   label {
     padding-right: 1em;
   }
   .selectize-input {
     overflow: inherit;
+    padding-right: 35px;
   }
 }
 .input-group {

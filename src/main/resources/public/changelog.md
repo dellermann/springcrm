@@ -1,3 +1,7 @@
+## 2.1.4
+
+* Turnover overview for all organizations, optionally filterable by year.
+
 ## 2.1.3
 
 * Settings for the list of unpaid bills: minimum unpaid amount, sort
