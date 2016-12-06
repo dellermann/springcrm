@@ -30,6 +30,8 @@
 
     <g:render template="/layouts/flashMessage"/>
     <g:form action="turnoverOverview" method="get" class="form-inline">
+      <g:hiddenField name="sort" value="${params.sort}"/>
+      <g:hiddenField name="order" value="${params.order}"/>
       <div class="form-group">
         <label for="year"
           ><g:message code="report.turnoverOverview.year.label"
@@ -37,14 +39,6 @@
         <g:select from="${yearEnd..yearStart}" id="year" name="year"
           value="${year}" class="form-control"
           noSelection="[0: message(code: 'report.turnoverOverview.year.overview')]"/>
-      </div>
-      <div class="form-group">
-        <label for="order"
-          ><g:message code="report.turnoverOverview.order.label"
-        /></label>
-        <g:select from="['asc', 'desc']" id="order" name="order"
-          value="${order}" class="form-control"
-          valueMessagePrefix="report.turnoverOverview.order"/>
       </div>
       <button type="submit" class="btn btn-primary">
         <g:message code="report.turnoverOverview.btn.submit"/>
@@ -61,17 +55,21 @@
         <table class="table data-table price-table report report-turnover">
           <thead>
             <tr>
-              <th>
-                <g:message code="invoicingTransaction.organization.label"/>
-              </th>
-              <th><g:message code="report.turnover.turnover.total"/></th>
+              <th></th>
+              <g:sortableColumn property="organization" params="[year: year]"
+                title="${message(code: 'invoicingTransaction.organization.label')}"/>
+              <g:sortableColumn property="turnover" params="[year: year]"
+                title="${message(code: 'report.turnover.turnover.total')}"/>
             </tr>
           </thead>
           <tbody>
-          <g:each in="${turnoverList}" var="entry">
+          <g:each in="${turnoverList}" var="entry" status="i">
           <tr>
+            <td class="col-type-number turnover-overview-index">${i + 1}.</td>
             <td class="col-type-ref turnover-overview-organization">
-              ${entry.key.name}
+              <g:link action="turnoverReport"
+                params="['organization.id': entry.key.id]"
+                >${entry.key.name}</g:link>
             </td>
             <td class="col-type-currency turnover-overview-turnover">
               <g:formatCurrency number="${entry.value}" displayZero="true"

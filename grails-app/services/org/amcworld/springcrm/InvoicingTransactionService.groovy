@@ -50,34 +50,43 @@ class InvoicingTransactionService implements Service {
      * Computes a list of turnover of all organizations optionally filtered by
      * the given year.
      *
-     * @param year      the given year; if zero the total turnover is computed
-     * @param orderAsc  if {@code true} the turnover values are sorted
-     *                  ascending; if {@code false} they are sorted descending
-     * @return          a sorted map containing the organizations and their
-     *                  turnover
+     * @param year  the given year; if zero the total turnover is computed
+     * @param sort  the property to sort by; must be either {@code turnover} or
+     *              {@code organization}
+     * @param order the sort order; either {@code asc} or {@code desc}
+     * @return      a sorted map containing the organizations and their
+     *              turnover
      * @since 2.1
      */
     Map<Organization, BigDecimal> computeTurnoverList(int year = 0,
-                                                      boolean orderAsc = false)
+                                                      String sort = 'turnover',
+                                                      String order = 'desc')
     {
+        if (sort != 'turnover') {
+            sort = 'ii.invoicingTransaction.organization.name'
+        }
         String sql = """
             select
-                i.organization, 
-                sum(i.total) - ifnull((
+                ii.invoicingTransaction.organization, 
+                sum(ii.quantity * ii.unitPrice) - ifnull((
                     select
-                        sum(c.total)
+                        sum(ci.quantity * ci.unitPrice)
                     from
-                        CreditMemo c
+                        InvoicingItem ci
                     where
-                        c.organization = i.organization
-                        ${getTurnoverWhere(year, 'c', 'and ')}
+                        ci.invoicingTransaction.type = 'C' and
+                        ci.invoicingTransaction.organization = 
+                            ii.invoicingTransaction.organization
+                        ${getTurnoverWhere(year, 'ci.invoicingTransaction', 'and ')}
                     group by
-                        c.organization
+                        ci.invoicingTransaction.organization
                 ), 0) as turnover
-            from Invoice i
-            ${getTurnoverWhere(year, 'i', 'where ')}
-            group by i.organization
-            order by turnover ${orderAsc ? 'asc' : 'desc'}
+            from InvoicingItem ii
+            where
+                ii.invoicingTransaction.type = 'I'
+                ${getTurnoverWhere(year, 'ii.invoicingTransaction', 'and ')}
+            group by ii.invoicingTransaction.organization
+            order by ${sort} ${order}
             """
         Map<String, Object> args = year > 0 ? [year: year] : [: ]
         List<Object[]> l = Invoice.executeQuery(sql, args) as List<Object[]>

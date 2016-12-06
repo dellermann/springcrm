@@ -136,11 +136,10 @@ class ReportController {
      */
     def turnoverOverview() {
         int year = params.year as Integer ?: 0i
-        String order = params.order ?: 'desc'
 
         Map<Organization, BigDecimal> turnoverList =
             invoicingTransactionService.computeTurnoverList(
-                year, order == 'asc'
+                year, params.sort ?: 'turnover', params.order ?: 'desc'
             )
 
         /* find first and last year of all customer accounts */
@@ -149,7 +148,7 @@ class ReportController {
 
         [
             turnoverList: turnoverList, yearStart: yearStart, yearEnd: yearEnd,
-            year: year, order: order
+            year: year
         ]
     }
 
