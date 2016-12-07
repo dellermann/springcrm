@@ -194,16 +194,9 @@ task wrapper(type: Wrapper) {
 
 /* compiling */
 task buildInfo << {
-    def buildNumberFile = file('grails-app/conf/buildNumber')
-    String buildNumber = '0'
-    if (buildNumberFile.exists()) {
-        buildNumber = buildNumberFile.text.trim()
-        buildNumber = ((buildNumber as long) + 1L).toString()
-    }
-    buildNumberFile.text = buildNumber
     def formatter = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
     def replaceTokens = [
-        'info.app.buildNumber': buildNumber,
+        'info.app.buildNumber': computeBuildNumber(1L).toString(),
         'info.app.buildDate': formatter.format(new Date())
     ]
 
@@ -229,11 +222,27 @@ processResources.finalizedBy buildInfo
 
 /* archive building */
 war {
+    doFirst {
+        copy {
+            from(sourceSets.main.resources) {
+                include 'web.xml'
+            }
+            into temporaryDir
+            filter(
+                ReplaceTokens,
+                tokens: [
+                    version: project.version,
+                    buildNumber: computeBuildNumber().toString()
+                ]
+            )
+        }
+    }
     from(processResources) {
         include 'launcher*.properties'
         include 'logo.png'
         include 'spinner.gif'
     }
+    webXml = new File(temporaryDir, 'web.xml')
 }
 bootRepackage.dependsOn jar
 // This doesn't work.  Probably the property is set during execution time.
@@ -309,4 +318,18 @@ eclipse {
     project {
         natures 'org.springsource.ide.eclipse.gradle.core.nature'
     }
+}
+
+
+long computeBuildNumber(long offset = 0L) {
+    long buildNumber = 0L
+
+    File buildNumberFile = file('grails-app/conf/buildNumber')
+    if (buildNumberFile.exists()) {
+        buildNumber = buildNumberFile.text.trim() as long
+        if (offset > 0L) buildNumber += offset
+    }
+    if (offset > 0L) buildNumberFile.text = buildNumber.toString()
+
+    buildNumber
 }
