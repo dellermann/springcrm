@@ -47,7 +47,7 @@ buildscript {
         classpath 'org.grails.plugins:database-migration:2.0.0.RC1'
         classpath 'org.grails.plugins:hibernate:4.3.10.7'
         classpath 'org.grails.plugins:i18n-asset-pipeline:2.0.0'
-        classpath 'org.grails.plugins:views-gradle:1.0.12'
+        classpath 'org.grails.plugins:views-gradle:1.1.2'
     }
 }
 
@@ -64,7 +64,7 @@ plugins {
  *
 \*===============================================*/
 
-version '2.1.4'
+version '2.1.5'
 group 'org.amcworld'
 
 apply plugin: 'spring-boot'
@@ -131,12 +131,12 @@ dependencies {
     compile 'org.grails:grails-core'
     compile 'org.grails:grails-dependencies'
     compile 'org.grails:grails-web-boot'
-    compile 'org.grails.plugins:views-json:1.0.12'
+    compile 'org.grails.plugins:views-json:1.1.2'
 
     compile 'org.hibernate:hibernate-ehcache'
     compile 'org.liquibase:liquibase-core:3.3.2'
 
-    /* XXX temporary for Grails 3.1.11 and 3.1.12 */
+    /* XXX temporary for Grails 3.1.14 */
 //    profile "org.grails.profiles:web:${grailsVersion}"
     profile "org.grails.profiles:web:3.1.11.BUILD-SNAPSHOT"
 

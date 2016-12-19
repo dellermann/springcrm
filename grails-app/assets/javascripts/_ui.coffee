@@ -590,7 +590,7 @@ class Page
     # I initialize the Bootstrap datepicker widget here because before, the
     # l18n file in lang/bootstrap-datepicker hasn't been loaded yet.
     datePickerDefaults =
-      #autoclose: true
+      autoclose: true
       clearBtn: true
       daysOfWeekHighlighted: '0'
       language: $I.lang.split('-')[0]

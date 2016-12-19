@@ -504,7 +504,7 @@ class InvoicingItems
           $this = $(this)
 
           p = pos
-          $this.find("td:first-child")
+          $this.find("td:first-child > span")
             .text String(p + i + 1) + "."
 
           prefix = fieldPrefix
