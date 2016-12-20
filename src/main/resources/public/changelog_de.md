@@ -1,6 +1,8 @@
 ## 2.1.5
 
 * Behebung der folgenden Probleme: [#19](https://github.com/dellermann/springcrm/issues/19), [#63](https://github.com/dellermann/springcrm/issues/63), [#88](https://github.com/dellermann/springcrm/issues/88), [#90](https://github.com/dellermann/springcrm/issues/90), [#91](https://github.com/dellermann/springcrm/issues/91) und [#93](https://github.com/dellermann/springcrm/issues/93)
+* Fehlerbehebung: Inhalt wurde gelöscht nachdem bestimmte Felder mit der 
+  Tabulatortaste verlassen wurden.
 
 ## 2.1.4
 

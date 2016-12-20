@@ -6,5 +6,5 @@ model {
 
 json {
     fullNumber workInstance.fullNumber
-    inventoryItem g.render(workInstance)
+    inventoryItem g.render(workInstance, [deep: true])
 }

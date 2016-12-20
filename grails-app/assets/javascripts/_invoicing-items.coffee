@@ -540,7 +540,7 @@ class InvoicingItems
         qty = item.quantity
         els[prefix + 'quantity'].value = qty.format()
         unit = item.unit.name ? item.pricing.unit.name
-        els[prefix + 'unit'].value = unit
+        $(els[prefix + 'unit']).typeahead 'val', unit
         els[prefix + 'salesItem.id'].value = item.id
         els[prefix + 'name'].value = item.name
         textArea = els[prefix + 'description']
@@ -552,7 +552,9 @@ class InvoicingItems
         total = (qty * unitPrice).formatCurrencyValue()
         $(textArea).closest('tr')
           .find('.col-total-price input').val total
-        els[prefix + 'tax'].value = (item.taxRate.taxValue * 100.0).format(1)
+        $(els[prefix + 'tax']).typeahead(
+          'val', (item.taxRate.taxValue * 100.0).format(1)
+        )
 
         @_computeFooterValues()
         $modal.modal 'hide'
