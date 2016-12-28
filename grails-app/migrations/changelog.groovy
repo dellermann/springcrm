@@ -18,6 +18,9 @@
  */
 
 
+package org.amcworld.springcrm
+
+
 databaseChangeLog = {
     include file: 'base.xml'
     include file: 'user-settings.xml'
@@ -40,4 +43,5 @@ databaseChangeLog = {
     include file: 'assessments.xml'
     include file: 'boilerplate.xml'
     include file: 'search.xml'
+    include file: 'helpdesk-for-end-users.xml'
 }

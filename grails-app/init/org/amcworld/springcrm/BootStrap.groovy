@@ -18,6 +18,8 @@
  */
 
 
+package org.amcworld.springcrm
+
 import grails.core.GrailsApplication
 import javax.servlet.ServletContext
 import javax.sql.DataSource

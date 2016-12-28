@@ -64,7 +64,7 @@ plugins {
  *
 \*===============================================*/
 
-version '2.1.5'
+version '2.1.6'
 group 'org.amcworld'
 
 apply plugin: 'spring-boot'

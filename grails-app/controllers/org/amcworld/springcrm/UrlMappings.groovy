@@ -1,7 +1,7 @@
 /*
  * UrlMappings.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2016, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,20 @@
  */
 
 
+package org.amcworld.springcrm
+
+import org.amcworld.springcrm.google.GoogleAuthException
+
+
 /**
  * The class {@code UrlMappings} defines URL mappings.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.1
  */
 class UrlMappings {
 
-    //-- Class variables ------------------------
+    //-- Class fields ---------------------------
 
     static mappings = {
 
@@ -51,7 +56,7 @@ class UrlMappings {
         '404'(controller: 'error', action: 'notFound')
         '500'(
             controller: 'error', action: 'googleAuthException',
-            exception: org.amcworld.springcrm.google.GoogleAuthException
+            exception: GoogleAuthException
         )
         '500'(view: '/error/error')
     }

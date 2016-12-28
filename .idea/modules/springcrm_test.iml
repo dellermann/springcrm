@@ -37,7 +37,7 @@
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.3.8.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-core:3.1.14" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-boot:3.1.14" level="project" />
-    <orderEntry type="library" name="Gradle: org.grails.plugins:views-json:1.0.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.grails.plugins:views-json:1.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.hibernate:hibernate-ehcache:4.3.11.Final" level="project" />
     <orderEntry type="library" name="Gradle: org.liquibase:liquibase-core:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: com.google.apis:google-api-services-calendar:v3-rev157-1.21.0" level="project" />
@@ -100,7 +100,7 @@
     <orderEntry type="library" name="Gradle: org.grails:grails-plugin-async:3.1.14" level="project" />
     <orderEntry type="library" name="Gradle: com.h2database:h2:1.4.192" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-common:3.1.14" level="project" />
-    <orderEntry type="library" name="Gradle: org.grails:views-core:1.0.12" level="project" />
+    <orderEntry type="library" name="Gradle: org.grails:views-core:1.1.2" level="project" />
     <orderEntry type="library" name="Gradle: org.jboss.logging:jboss-logging:3.3.0.Final" level="project" />
     <orderEntry type="library" name="Gradle: org.jboss.logging:jboss-logging-annotations:1.2.0.Beta1" level="project" />
     <orderEntry type="library" name="Gradle: org.hibernate:hibernate-core:4.3.11.Final" level="project" />
@@ -157,8 +157,8 @@
     <orderEntry type="library" name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:8.0.37" level="project" />
     <orderEntry type="library" name="Gradle: org.hibernate:hibernate-validator:5.2.4.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.github.sommeri:less4j-javascript:0.0.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.liquibase.ext:liquibase-hibernate4:3.5" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.6.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.liquibase.ext:liquibase-hibernate4:3.5" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.6.7" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-aop:4.2.8.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-expression:4.2.8.RELEASE" level="project" />
@@ -252,14 +252,14 @@
     <orderEntry type="library" name="Gradle: commons-validator:commons-validator:1.4.1" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-json:2.4.7" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-taglib:3.1.14" level="project" />
-    <orderEntry type="library" name="Gradle: com.google.http-client:google-http-client:1.21.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.w3c.css:sac:1.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.http-client:google-http-client:1.21.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-util:9.2.19.v20160908" level="project" />
     <orderEntry type="library" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" level="project" />
-    <orderEntry type="library" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty:jetty-io:9.2.19.v20160908" level="project" />
-    <orderEntry type="library" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" level="project" />
+    <orderEntry type="library" name="Gradle: org.mortbay.jetty:servlet-api:2.5-20081211" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.eclipse.jetty.websocket:websocket-common:9.2.19.v20160908" level="project" />
+    <orderEntry type="library" name="Gradle: org.apache.xmlgraphics:batik-js:1.7" level="project" />
     <orderEntry type="library" name="Gradle: org.parboiled:parboiled-core:1.1.7" level="project" />
     <orderEntry type="library" name="Gradle: org.ow2.asm:asm:5.0.3" level="project" />
     <orderEntry type="library" name="Gradle: org.ow2.asm:asm-tree:5.0.3" level="project" />

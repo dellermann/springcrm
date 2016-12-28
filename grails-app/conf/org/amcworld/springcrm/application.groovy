@@ -18,6 +18,9 @@
  */
 
 
+package org.amcworld.springcrm
+
+
 //== Build settings =============================
 
 /* Scaffolding templates configuration */
