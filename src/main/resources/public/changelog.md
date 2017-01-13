@@ -1,3 +1,7 @@
+## 2.1.6
+
+* Support for helpdesks for end users
+
 ## 2.1.5
 
 * Fixed issues [#19](https://github.com/dellermann/springcrm/issues/19), [#63](https://github.com/dellermann/springcrm/issues/63), [#88](https://github.com/dellermann/springcrm/issues/88), [#90](https://github.com/dellermann/springcrm/issues/90), [#91](https://github.com/dellermann/springcrm/issues/91) and [#93](https://github.com/dellermann/springcrm/issues/93) 
@@ -14,6 +18,8 @@
 * New panel containing currently active projects.
 * Fix wrap and wrong vertical alignment in V.A.T calculator.
 
+[comment]: STOP
+
 ## 2.1.2
 
 * Re-implement search feature
@@ -29,8 +35,6 @@
 * Upgrade to Grails 3
 * Update underlying libraries like Bootstrap and FontAwesome
 * Lot of bug fixes and code optimizations
-
-[comment]: STOP
 
 ## 2.0.20
 

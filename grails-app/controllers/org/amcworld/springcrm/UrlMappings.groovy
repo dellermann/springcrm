@@ -50,6 +50,10 @@ class UrlMappings {
             controller = 'helpdesk'
             action = 'frontendIndex'
         }
+        name ticketFrontendShow: "/ticket/${helpdesk}-${accessCode}/${id}" {
+            controller = 'ticket'
+            action = 'frontendShow'
+        }
 
         /* error handling */
         '403'(controller: 'error', action: 'forbidden')

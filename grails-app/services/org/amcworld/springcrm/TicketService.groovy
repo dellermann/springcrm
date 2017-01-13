@@ -198,8 +198,8 @@ class TicketService {
             subject: [key: 'email.ticket.create.subject'],
             message: [
                 controller: 'ticket',
-                view      : 'createdUsers',
-                model     : [ticketInstance: ticket, messageText: message]
+                view: 'createdUsers',
+                model: [ticketInstance: ticket, messageText: message]
             ]
         )
 

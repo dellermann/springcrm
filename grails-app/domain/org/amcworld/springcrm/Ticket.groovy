@@ -72,6 +72,9 @@ class Ticket implements NumberedDomain {
     }
     static embedded = ['address']
     static hasMany = [logEntries: TicketLogEntry]
+    static mapping = {
+        sort lastUpdated: 'desc'
+    }
     static transients = [
         'customerName', 'fullName', 'fullNumber', 'initialMessage',
         'messageText'

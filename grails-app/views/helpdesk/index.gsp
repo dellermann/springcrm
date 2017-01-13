@@ -41,11 +41,13 @@
                 <g:fieldValue bean="${helpdeskInstance}" field="accessCode"/>
               </td>
               <td class="col-type-ref helpdesk-organization">
-                <g:link controller="organization" action="show"
-                  id="${helpdeskInstance.organization.id}">
-                  <g:fieldValue bean="${helpdeskInstance}"
-                    field="organization"/>
-                </g:link>
+                <g:if test="${helpdeskInstance.organization}">
+                  <g:link controller="organization" action="show"
+                    id="${helpdeskInstance.organization.id}">
+                    <g:fieldValue bean="${helpdeskInstance}"
+                      field="organization"/>
+                  </g:link>
+                </g:if>
               </td>
               <td class="col-type-string helpdesk-users">
                 ${helpdeskInstance.users*.toString().join(', ')}

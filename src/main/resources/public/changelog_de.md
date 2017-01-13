@@ -1,3 +1,7 @@
+## 2.1.6
+
+* Unterstützung für Helpdesks für Endbenutzer
+
 ## 2.1.5
 
 * Behebung der folgenden Probleme: [#19](https://github.com/dellermann/springcrm/issues/19), [#63](https://github.com/dellermann/springcrm/issues/63), [#88](https://github.com/dellermann/springcrm/issues/88), [#90](https://github.com/dellermann/springcrm/issues/90), [#91](https://github.com/dellermann/springcrm/issues/91) und [#93](https://github.com/dellermann/springcrm/issues/93)
@@ -17,6 +21,8 @@
 * Textumbruch und falsche vertikale Ausrichtung im Mehrwertsteuerrechner
   behoben.
 
+[comment]: STOP
+
 ## 2.1.2
 
 * Wiedereinbau der Suchfunktionalität
@@ -32,8 +38,6 @@
 * Aktualisierung auf Grails 3
 * Aktualisierung des Unterbaus wie Bootstrap und FontAwesome
 * Viele Fehlerbehebungen und Codeoptimierungen
-
-[comment]: STOP
 
 ## 2.0.20
 

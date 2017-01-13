@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.validation.BindingResult
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -99,7 +100,7 @@ class TicketController {
                 'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
                 'and h.organization = :o',
             [u: user, o: organizationInstance],
-        )[0]
+        )[0] as int
 
         [
             ticketInstanceList: ticketList,
@@ -118,7 +119,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -161,7 +162,7 @@ class TicketController {
         flash.message = message(
             code: 'default.created.message',
             args: [message(code: 'ticket.label'), ticketInstance.toString()]
-        )
+        ) as Object
 
         redirect action: 'show', id: ticketInstance.id
     }
@@ -172,7 +173,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -186,7 +187,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -200,13 +201,13 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
 
         if (params.version) {
-            def version = params.version.toLong()
+            long version = params.version.toLong()
             if (ticketInstance.version > version) {
                 ticketInstance.errors.rejectValue(
                     'version', 'default.optimistic.locking.failure',
@@ -218,7 +219,7 @@ class TicketController {
             }
         }
 
-        ticketInstance.properties = params
+        ticketInstance.properties = params as BindingResult
         if (!ticketInstance.save(flush: true)) {
             render view: 'edit', model: [
                 ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks
@@ -230,7 +231,7 @@ class TicketController {
         flash.message = message(
             code: 'default.updated.message',
             args: [message(code: 'ticket.label'), ticketInstance.toString()]
-        )
+        ) as Object
 
         redirect action: 'show', id: ticketInstance.id
     }
@@ -241,7 +242,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
 
             redirect action: 'index'
             return
@@ -253,14 +254,14 @@ class TicketController {
             flash.message = message(
                 code: 'default.deleted.message',
                 args: [message(code: 'ticket.label')]
-            )
+            ) as Object
 
             redirect action: 'index'
         } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'ticket.label')]
-            )
+            ) as Object
 
             redirect action: 'show', id: id
         }
@@ -272,7 +273,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -289,27 +290,27 @@ class TicketController {
     }
 
     def sendMessage(Long id) {
-        String message = params.message
-        if (message) {
+        String msg = params.message
+        if (msg) {
             Ticket ticketInstance = Ticket.get(id)
             if (!ticketInstance) {
-                flash.message = g.message(
+                flash.message = message(
                     code: 'default.not.found.message',
-                    args: [g.message(code: 'ticket.label'), id]
-                )
+                    args: [message(code: 'ticket.label'), id]
+                ) as Object
                 redirect action: 'index'
                 return
             }
 
-            User creator = session.credential.loadUser()
+            User creator = ((Credential) session.credential).loadUser()
             User recipient =
-                params.recipient ? User.get(params.recipient) : null
+                params.recipient ? User.get(params.long('recipient')) : null
             if (recipient || creator.admin ||
                 (creator == ticketInstance.assignedUser &&
                 ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]))
             {
                 ticketService.sendMessage(
-                    ticketInstance, message, (MultipartFile) params.attachment,
+                    ticketInstance, msg, (MultipartFile) params.attachment,
                     creator, recipient
                 )
             }
@@ -326,7 +327,7 @@ class TicketController {
                 flash.message = g.message(
                     code: 'default.not.found.message',
                     args: [g.message(code: 'ticket.label'), id]
-                )
+                ) as Object
                 redirect action: 'index'
                 return
             }
@@ -346,7 +347,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -386,7 +387,7 @@ class TicketController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'ticket.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -412,7 +413,14 @@ class TicketController {
             return
         }
 
-        [helpdeskInstance: helpdeskInstance, ticketInstance: new Ticket()]
+        Organization organization = helpdeskInstance.organization
+        Ticket ticketInstance = new Ticket(
+            address: organization?.shippingAddr, phone: organization?.phone,
+            fax: organization?.fax, email1: organization?.email1,
+            email2: organization?.email2
+        )
+
+        [helpdeskInstance: helpdeskInstance, ticketInstance: ticketInstance]
     }
 
     def frontendSave() {
@@ -438,7 +446,7 @@ class TicketController {
                 )
             }
 
-            render view: '/helpdesk/frontendIndex', model: [
+            render view: '/ticket/frontendCreate', model: [
                 ticketInstance: ticketInstance,
                 helpdeskInstance: helpdeskInstance
             ]
@@ -460,8 +468,17 @@ class TicketController {
         flash.message = message(
             code: 'default.created.message',
             args: [message(code: 'ticket.label'), ticketInstance.toString()]
-        )
-        redirectToHelpdeskFrontend helpdeskInstance
+        ) as Object
+        if (helpdeskInstance.forEndUsers) {
+            def params = [
+                accessCode: helpdeskInstance.accessCode,
+                helpdesk: helpdeskInstance.id,
+                id: ticketInstance.id
+            ]
+            redirect mapping: 'ticketFrontendShow', params: params
+        } else {
+            redirectToHelpdeskFrontend helpdeskInstance
+        }
     }
 
     def frontendShow(Long id) {
@@ -480,17 +497,17 @@ class TicketController {
             return
         }
 
-        String message = params.message
-        if (!message) {
+        String msg = params.message
+        if (!msg) {
             redirectToFrontendPage ticketInstance.helpdesk
             return
         }
 
         ticketService.sendMessage(
-            ticketInstance, message, (MultipartFile) params.attachment
+            ticketInstance, msg, (MultipartFile) params.attachment
         )
 
-        flash.message = g.message(code: 'ticket.sendMessage.flash')
+        flash.message = message(code: 'ticket.sendMessage.flash') as Object
         redirectToFrontendPage ticketInstance.helpdesk
     }
 
@@ -512,7 +529,7 @@ class TicketController {
      * @param id    the ID of the ticket
      * @param stage the stage that should be changed to
      */
-    private def frontendChangeStage(Long id, TicketStage stage) {
+    private frontendChangeStage(Long id, TicketStage stage) {
         Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
             redirectToHelpdeskFrontend Helpdesk.read(params.long('helpdesk'))
@@ -520,7 +537,7 @@ class TicketController {
         }
 
         ticketService.changeStage ticketInstance, stage
-        flash.message = message(code: "ticket.${stage}.flash")
+        flash.message = message(code: "ticket.${stage}.flash") as Object
         redirectToFrontendPage ticketInstance.helpdesk
     }
 

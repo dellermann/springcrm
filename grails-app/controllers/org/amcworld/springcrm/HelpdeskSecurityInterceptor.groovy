@@ -78,6 +78,6 @@ class HelpdeskSecurityInterceptor implements Interceptor {
 
     @CompileStatic(TypeCheckingMode.SKIP)
     private Helpdesk loadHelpdesk() {
-        Helpdesk.findByUrlName params.urlName
+        Helpdesk.findByUrlName params.urlName?.toString()
     }
 }

@@ -204,6 +204,16 @@ class Page
 
     autosize $('textarea')
 
+    $('.no-textarea-toolbar')
+      .find('.textarea-toolbar')
+        .remove()
+      .end()
+      .find('textarea')
+      .removeAttr(
+        'aria-controls aria-live aria-relevant data-toggle data-placement ' +
+        'data-container data-trigger'
+      )
+
     $('.textarea-toolbar select').selectize
       labelField: 'name'
       load: (query, callback) ->

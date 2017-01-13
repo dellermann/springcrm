@@ -5,7 +5,8 @@
   args="[ticketInstance.helpdesk.name]" />
 
 > [<g:message code="email.ticket.link.show" />](${showLink})
-> [<g:message code="email.ticket.link.list" />](${overviewLink})
+<g:if test="ticketInstance.helpdesk.forEndUsers">> [<g:message code="email.ticket.link.create" />](${overviewLink})</g:if
+><g:else>> [<g:message code="email.ticket.link.list" />](${overviewLink})</g:else>
 
 * * *
 

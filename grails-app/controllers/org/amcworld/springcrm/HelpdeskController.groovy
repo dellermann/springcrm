@@ -80,7 +80,7 @@ class HelpdeskController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'helpdesk.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -102,7 +102,7 @@ class HelpdeskController {
             args: [
                 message(code: 'helpdesk.label'), helpdeskInstance.toString()
             ]
-        )
+        ) as Object
 
         redirect action: 'show', id: helpdeskInstance.id
     }
@@ -113,7 +113,7 @@ class HelpdeskController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'helpdesk.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -127,7 +127,7 @@ class HelpdeskController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'helpdesk.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
@@ -141,13 +141,13 @@ class HelpdeskController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'helpdesk.label'), id]
-            )
+            ) as Object
             redirect action: 'index'
             return
         }
 
         if (params.version) {
-            def version = params.version.toLong()
+            long version = params.version.toLong()
             if (helpdeskInstance.version > version) {
                 helpdeskInstance.errors.rejectValue(
                     'version', 'default.optimistic.locking.failure',
@@ -170,7 +170,7 @@ class HelpdeskController {
             args: [
                 message(code: 'helpdesk.label'), helpdeskInstance.toString()
             ]
-        )
+        ) as Object
 
         redirect action: 'show', id: helpdeskInstance.id
     }
@@ -181,7 +181,7 @@ class HelpdeskController {
             flash.message = message(
                 code: 'default.not.found.message',
                 args: [message(code: 'helpdesk.label'), id]
-            )
+            ) as Object
 
             redirect action: 'index'
             return
@@ -193,14 +193,14 @@ class HelpdeskController {
             flash.message = message(
                 code: 'default.deleted.message',
                 args: [message(code: 'helpdesk.label')]
-            )
+            ) as Object
 
             redirect action: 'index'
         } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
                 args: [message(code: 'helpdesk.label')]
-            )
+            ) as Object
             redirect action: 'show', id: id
         }
     }
@@ -209,6 +209,17 @@ class HelpdeskController {
         Helpdesk helpdeskInstance = Helpdesk.findByUrlName(urlName)
         if (!helpdeskInstance) {
             render status: SC_NOT_FOUND
+            return
+        }
+
+        if (helpdeskInstance.forEndUsers) {
+            redirect(
+                controller: 'ticket', action: 'frontendCreate',
+                params: [
+                    helpdesk: helpdeskInstance.id,
+                    accessCode: helpdeskInstance.accessCode
+                ]
+            )
             return
         }
 

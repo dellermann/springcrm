@@ -35,6 +35,7 @@ class Helpdesk {
 
     public static final List<String> SEARCH_FIELDS = ['name'].asImmutable()
 
+
     //-- Class fields ---------------------------
 
     static belongsTo = [organization: Organization]
@@ -42,6 +43,7 @@ class Helpdesk {
         name blank: false, unique: true
         urlName blank: false, unique: true
         accessCode blank: false, matches: /[A-Z0-9]+/, maxSize: 10
+        organization nullable: true
         users minSize: 1
     }
     static hasMany = [tickets: Ticket]
@@ -183,6 +185,17 @@ class Helpdesk {
      */
     boolean hasUser(User user) {
         HelpdeskUser.countByHelpdeskAndUser(this, user) > 0
+    }
+
+    /**
+     * Checks whether or not this helpdesk is dedicated to end users.
+     *
+     * @return  {@code true} if this helpdesk is dedicated to end users;
+     *          {@code false} otherwise
+     * @since   2.1
+     */
+    boolean isForEndUsers() {
+        organization == null
     }
 
     @Override
