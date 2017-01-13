@@ -1,6 +1,8 @@
 ## 2.1.6
 
 * Unterstützung für Helpdesks für Endbenutzer
+* Speichern- und Abbruch-Schaltflächen unterhalb von Formularen hinzugefügt
+  ([Problem #58](https://github.com/dellermann/springcrm/issues/58))
 
 ## 2.1.5
 

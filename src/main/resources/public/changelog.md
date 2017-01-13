@@ -1,6 +1,8 @@
 ## 2.1.6
 
 * Support for helpdesks for end users
+* Add save and cancel button to bottom of forms
+  ([issue #58](https://github.com/dellermann/springcrm/issues/58))
 
 ## 2.1.5
 

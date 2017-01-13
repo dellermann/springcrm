@@ -24,4 +24,13 @@
   <g:render template="/layouts/errorMessage" />
   <g:layoutBody />
   <g:render template="/${type}/form" />
+  <footer class="buttons buttons-bottom">
+    <button type="submit" form="${formName}" class="btn btn-success">
+      <i class="fa fa-save"></i>
+      <g:message code="default.button.save.label" />
+    </button>
+    <g:button action="index" params="${listParams}" color="danger"
+      back="true" icon="close" class="hidden-xs"
+      message="default.button.cancel.label" />
+  </footer>
 </form>
