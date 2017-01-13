@@ -321,6 +321,9 @@ h2 {
 .file-preview-thumbnails {
   .clearfix();
 }
+.file-preview-frame:not(.file-preview-error):hover {
+  box-shadow: none;
+}
 .file-preview-frame-image {
   .box-shadow(none);
   border: none;
@@ -329,10 +332,6 @@ h2 {
   height: auto;
   margin: 0;
   padding: 0;
-
-  &:hover {
-    .box-shadow(none);
-  }
 }
 .file-caption-name {
   .file-preview & {
@@ -351,11 +350,18 @@ h2 {
   word-break: break-all;
   word-wrap: break-word;
 }
+.file-actions {
+  display: none;
+  margin-top: 0;
+}
 .file-other-error {
   text-align: inherit;
 }
 .fileinput-remove {
   margin-top: 10px;
+}
+.file-loading, .file-thumb-loading {
+  background-image: none;
 }
 
 // tools

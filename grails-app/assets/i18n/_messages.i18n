@@ -61,11 +61,13 @@ default.fileinput.msg.filePreviewAborted
 default.fileinput.msg.filePreviewError
 default.fileinput.msg.filesTooMany
 default.fileinput.msg.invalidFileExtension
+default.fileinput.msg.invalidFileName
 default.fileinput.msg.invalidFileType
 default.fileinput.msg.loading
 default.fileinput.msg.progress
 default.fileinput.msg.selected
 default.fileinput.msg.sizeTooLarge
+default.fileinput.msg.sizeTooSmall
 default.fileinput.msg.validationError
 default.fileinput.remove.label
 default.fileinput.remove.title

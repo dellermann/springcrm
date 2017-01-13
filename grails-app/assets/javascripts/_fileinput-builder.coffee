@@ -57,6 +57,7 @@ class FileinputBuilder
       removeTitle: $L('default.fileinput.remove.label')
       uploadIcon: '<i class="fa fa-upload"></i>'
       uploadTitle: $L('default.fileinput.upload.label')
+      zoomIcon: '<i class="fa fa-search-plus"></i>'
     layoutTemplates:
       icon: ''
     msgFileNotFound: $L('default.fileinput.msg.fileNotFound')
@@ -65,14 +66,23 @@ class FileinputBuilder
     msgFilePreviewError: $L('default.fileinput.msg.filePreviewError')
     msgFilesTooMany: $L('default.fileinput.msg.filesTooMany')
     msgInvalidFileExtension: $L('default.fileinput.msg.invalidFileExtension')
+    msgInvalidFileName: $L('default.fileinput.msg.invalidFileName')
     msgInvalidFileType: $L('default.fileinput.msg.invalidFileType')
     msgLoading: $L('default.fileinput.msg.loading')
     msgProgress: $L('default.fileinput.msg.progress')
     msgSelected: $L('default.fileinput.msg.selected')
     msgSizeTooLarge: $L('default.fileinput.msg.sizeTooLarge')
+    msgSizeTooSmall: $L('default.fileinput.msg.sizeTooSmall')
     msgValidationError: '<span class="text-danger">' +
       '<i class="fa fa-warning"></i> ' +
       $L('default.fileinput.msg.validationError') + '</span>'
+    previewZoomButtonIcons:
+      prev: '<i class="fa fa-caret-left"></i>',
+      next: '<i class="fa fa-caret-right"></i>',
+      toggleheader: '<i class="fa fa-arrows-v"></i>',
+      fullscreen: '<i class="fa fa-arrows-alt"></i>',
+      borderless: '<i class="fa fa-expand"></i>',
+      close: '<i class="fa fa-close"></i>'
     removeIcon: '<i class="fa fa-trash"></i>'
     removeLabel: $L('default.fileinput.remove.label')
     removeTitle: $L('default.fileinput.remove.title')
