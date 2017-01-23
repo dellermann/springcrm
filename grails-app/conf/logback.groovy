@@ -72,6 +72,7 @@ logger 'org.grails.plugins.coffee.compiler', INFO
 //logger 'org.amcworld.springcrm.google.AbstractGoogleSync', DEBUG
 //logger 'org.springframework.boot', DEBUG
 //logger 'liquibase', DEBUG
+//logger 'org.grails.plugins.databasemigration.liquibase', DEBUG
 
 if (Environment.isDevelopmentMode()) {
     logger 'org.amcworld.springcrm.xml.InvoicingTransactionXML', DEBUG
