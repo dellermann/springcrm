@@ -1,7 +1,7 @@
 /*
  * SeqNumberService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,19 @@ import org.springframework.transaction.annotation.Transactional
 @CompileStatic
 class SeqNumberService {
 
+    //-- Constants ------------------------------
+
+    /**
+     * The controllers which should be checked for suitable sequence numbers.
+     *
+     * @since 2.1
+     */
+    private static final List<Class<? extends InvoicingTransaction>> \
+        CONTROLLERS_TO_CHECK = [
+            Quote, SalesOrder, Invoice, Dunning, CreditMemo
+        ].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static transactional = false
@@ -50,6 +63,208 @@ class SeqNumberService {
 
 
     //-- Public methods -------------------------
+
+    /**
+     * Checks whether the start values of the sequence numbers of invoicing
+     * transactions such as quotes, sales order, invoices etc. matches the
+     * current year.
+     *
+     * @return  {@code true} if all sequence numbers are suitable;
+     *          {@code false} otherwise
+     * @since   2.1
+     */
+    @CompileStatic
+    @Transactional(readOnly = true)
+    boolean checkNumberScheme() {
+        String year = new Date().format('YY')
+
+        boolean res = true
+        for (Class<? extends InvoicingTransaction> c : CONTROLLERS_TO_CHECK) {
+            res &= checkControllerNumberScheme(c, year)
+        }
+
+        res
+    }
+
+    /**
+     * Gets a list of sequence numbers where the numbers of invoicing
+     * transactions such as quotes, sales order, invoices etc. have been fixed
+     * to match the current year.
+     *
+     * @return  a list of sequence numbers with partially fixed start values
+     * @since   2.1
+     */
+    @CompileStatic
+    List<SeqNumber> getFixedSeqNumbers() {
+        String year = new Date().format('YY')
+        int num = year.toInteger() * 1000
+
+        List<SeqNumber> res = SeqNumber.list(readOnly: true)
+        for (SeqNumber sn : res) {
+            Class<?> cls = domainNameToClass(sn.controllerName)
+            if (InvoicingTransaction.isAssignableFrom(cls)) {
+                Class<? extends InvoicingTransaction> c =
+                    (Class<? extends InvoicingTransaction>) cls
+                if (c in CONTROLLERS_TO_CHECK && sn.startValue < num) {
+                    sn.startValue = num
+                }
+            }
+        }
+
+        res
+    }
+
+    /**
+     * Checks whether or not to display the hint about changing the sequence
+     * numbers for the user with the given credential.  The hint is displayed
+     * for administrators, only.
+     *
+     * @param credential    the given credential of the user
+     * @return              {@code true} if the hint should be displayed;
+     *                      {@code false} otherwise
+     * @since 2.1
+     */
+    @CompileStatic
+    @Transactional(readOnly = true)
+    boolean getShowHint(Credential credential) {
+        if (checkNumberScheme() || !credential.admin) return false
+
+        String year = credential.settings['seqNumberHintYear']
+
+        !year || new Date().format('YYYY').toInteger() > year.toInteger()
+    }
+
+    /**
+     * Formats the given sequence number as specified in the number schema for
+     * the given controller.
+     *
+     * @param controllerName    the given controller name
+     * @param number            the given number
+     * @return                  the formatted number
+     */
+    @Transactional(readOnly = true)
+    String format(String controllerName, int number) {
+        formatNumber controllerName: controllerName, number: number
+    }
+
+    /**
+     * Formats the given sequence number as specified in the number schema for
+     * the controller which is associated to the given class.
+     *
+     * @param cls       the given class
+     * @param number    the given number
+     * @return          the formatted number
+     */
+    @Transactional(readOnly = true)
+    String format(Class cls, int number) {
+        format classToDomainName(cls), number
+    }
+
+    /**
+     * Formats the given sequence number with the prefix which is defined for
+     * the given controller.
+     *
+     * @param controllerName    the given controller name
+     * @param number            the given number
+     * @return                  the formatted number
+     */
+    @Transactional(readOnly = true)
+    String formatWithPrefix(String controllerName, int number) {
+        formatNumber(
+            controllerName: controllerName, number: number, withSuffix: false
+        )
+    }
+
+    /**
+     * Formats the given sequence number with the prefix which is defined for
+     * the controller which is associated to the given class.
+     *
+     * @param cls       the given class
+     * @param number    the given number
+     * @return          the formatted number
+     */
+    @Transactional(readOnly = true)
+    String formatWithPrefix(Class cls, int number) {
+        formatWithPrefix classToDomainName(cls), number
+    }
+
+    /**
+     * Formats the given sequence number with the suffix which is defined for
+     * the given controller.
+     *
+     * @param controllerName    the given controller name
+     * @param number            the given number
+     * @return                  the formatted number
+     */
+    @Transactional(readOnly = true)
+    String formatWithSuffix(String controllerName, int number) {
+        formatNumber(
+            controllerName: controllerName, number: number, withPrefix: false
+        )
+    }
+
+    /**
+     * Formats the given sequence number with the suffix which is defined for
+     * the controller which is associated to the given class.
+     *
+     * @param cls       the given class
+     * @param number    the given number
+     * @return          the formatted number
+     */
+    @Transactional(readOnly = true)
+    String formatWithSuffix(Class cls, int number) {
+        formatWithSuffix classToDomainName(cls), number
+    }
+
+    /**
+     * Loads the sequence number data for the given controller.
+     *
+     * @param controllerName    the given controller name
+     * @return                  the sequence number data; {@code null} if no
+     *                          such data are stored for the given controller
+     */
+    @Transactional(readOnly = true)
+    @CompileStatic(TypeCheckingMode.SKIP)
+    SeqNumber loadSeqNumber(String controllerName) {
+        SeqNumber.findByControllerName controllerName
+    }
+
+    /**
+     * Loads the sequence number data for the controller which is associated to
+     * the given class.
+     *
+     * @param controllerName    the given class
+     * @return                  the sequence number data; {@code null} if no
+     *                          such data are stored for the controller
+     */
+    @Transactional(readOnly = true)
+    SeqNumber loadSeqNumber(Class cls) {
+        loadSeqNumber classToDomainName(cls)
+    }
+
+    /**
+     * Returns the next sequence number for the given controller formatted with
+     * prefix and suffix, if any.
+     *
+     * @param controllerName    the given controller name
+     * @return                  the formatted next sequence number
+     */
+    @Transactional(readOnly = true)
+    String nextFullNumber(String controllerName) {
+        formatNumber controllerName: controllerName
+    }
+
+    /**
+     * Returns the next sequence number for the controller which is associated
+     * to the given class formatted with prefix and suffix, if any.
+     *
+     * @param cls   the given class
+     * @return      the formatted next sequence number
+     */
+    @Transactional(readOnly = true)
+    String nextFullNumber(Class cls) {
+        nextFullNumber classToDomainName(cls)
+    }
 
     /**
      * Retrieves the next available sequence number for the given controller
@@ -90,156 +305,86 @@ class SeqNumberService {
      */
     @Transactional(readOnly = true)
     int nextNumber(Class cls) {
-        nextNumber classToControllerName(cls)
+        nextNumber classToDomainName(cls)
     }
 
     /**
-     * Returns the next sequence number for the given controller formatted with
-     * prefix and suffix, if any.
+     * Stores the current year in the user settings to prevent display of the
+     * hint about changing the sequence number scheme for this year.
      *
-     * @param controllerName    the given controller name
-     * @return                  the formatted next sequence number
+     * @param credential    the credential representing the currently logged in
+     *                      user
      */
-    @Transactional(readOnly = true)
-    String nextFullNumber(String controllerName) {
-        formatNumber controllerName: controllerName
+    @CompileStatic
+    void setDontShowAgain(Credential credential) {
+        credential.settings['seqNumberHintYear'] = new Date().format('YYYY')
     }
 
     /**
-     * Returns the next sequence number for the controller which is associated
-     * to the given class formatted with prefix and suffix, if any.
+     * Stores in the user settings that the hint about changing the sequence
+     * number scheme should no longer be displayed.
      *
-     * @param cls   the given class
-     * @return      the formatted next sequence number
+     * @param credential    the credential representing the currently logged in
+     *                      user
      */
-    @Transactional(readOnly = true)
-    String nextFullNumber(Class cls) {
-        nextFullNumber classToControllerName(cls)
-    }
-
-    /**
-     * Loads the sequence number data for the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @return                  the sequence number data; {@code null} if no
-     *                          such data are stored for the given controller
-     */
-    @Transactional(readOnly = true)
-    @CompileStatic(TypeCheckingMode.SKIP)
-    SeqNumber loadSeqNumber(String controllerName) {
-        SeqNumber.findByControllerName controllerName
-    }
-
-    /**
-     * Loads the sequence number data for the controller which is associated to
-     * the given class.
-     *
-     * @param controllerName    the given class
-     * @return                  the sequence number data; {@code null} if no
-     *                          such data are stored for the controller
-     */
-    @Transactional(readOnly = true)
-    SeqNumber loadSeqNumber(Class cls) {
-        loadSeqNumber classToControllerName(cls)
-    }
-
-    /**
-     * Formats the given sequence number as specified in the number schema for
-     * the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @param number            the given number
-     * @return                  the formatted number
-     */
-    @Transactional(readOnly = true)
-    String format(String controllerName, int number) {
-        formatNumber controllerName: controllerName, number: number
-    }
-
-    /**
-     * Formats the given sequence number as specified in the number schema for
-     * the controller which is associated to the given class.
-     *
-     * @param cls       the given class
-     * @param number    the given number
-     * @return          the formatted number
-     */
-    @Transactional(readOnly = true)
-    String format(Class cls, int number) {
-        format classToControllerName(cls), number
-    }
-
-    /**
-     * Formats the given sequence number with the prefix which is defined for
-     * the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @param number            the given number
-     * @return                  the formatted number
-     */
-    @Transactional(readOnly = true)
-    String formatWithPrefix(String controllerName, int number) {
-        formatNumber(
-            controllerName: controllerName, number: number, withSuffix: false
-        )
-    }
-
-    /**
-     * Formats the given sequence number with the prefix which is defined for
-     * the controller which is associated to the given class.
-     *
-     * @param cls       the given class
-     * @param number    the given number
-     * @return          the formatted number
-     */
-    @Transactional(readOnly = true)
-    String formatWithPrefix(Class cls, int number) {
-        formatWithPrefix classToControllerName(cls), number
-    }
-
-    /**
-     * Formats the given sequence number with the suffix which is defined for
-     * the given controller.
-     *
-     * @param controllerName    the given controller name
-     * @param number            the given number
-     * @return                  the formatted number
-     */
-    @Transactional(readOnly = true)
-    String formatWithSuffix(String controllerName, int number) {
-        formatNumber(
-            controllerName: controllerName, number: number, withPrefix: false
-        )
-    }
-
-    /**
-     * Formats the given sequence number with the suffix which is defined for
-     * the controller which is associated to the given class.
-     *
-     * @param cls       the given class
-     * @param number    the given number
-     * @return          the formatted number
-     */
-    @Transactional(readOnly = true)
-    String formatWithSuffix(Class cls, int number) {
-        formatWithSuffix classToControllerName(cls), number
+    @CompileStatic
+    void setNeverShowAgain(Credential credential) {
+        credential.settings['seqNumberHintYear'] = '9999'
     }
 
 
     //-- Non-public methods ---------------------
 
     /**
-     * Obtains the name of the controller which is associated to the given
+     * Checks whether the start value of the sequence number of the given
+     * controller matches the stated year.
+     *
+     * @param controller    the controller to check
+     * @param year          the two digit year number (for example, {@code 17}
+     *                      for 2017)
+     * @return              {@code true} if the sequence number is suitable;
+     *                      {@code false} otherwise
+     * @since 2.1
+     */
+    @CompileStatic
+    private boolean checkControllerNumberScheme(
+        Class<? extends InvoicingTransaction> controller, String year
+    ) {
+        SeqNumber seqNumber = loadSeqNumber(controller)
+
+        seqNumber != null && (seqNumber.startValue as String).startsWith(year)
+    }
+
+    /**
+     * Obtains the name of the domain model which is associated to the given
      * class.
      *
      * @param cls   the given class
-     * @return      the associated controller name
+     * @return      the associated domain model name; {@code null} if no domain
+     *              model with the given class exists
+     * @since 2.1
      */
-    private String classToControllerName(Class cls) {
+    private String classToDomainName(Class cls) {
         ArtefactHandler handler = grailsApplication.getArtefactType(cls)
         GrailsClass gc = grailsApplication.getArtefact(handler.type, cls.name)
 
         gc?.logicalPropertyName
+    }
+
+    /**
+     * Obtains the class of the domain model with the given name.
+     *
+     * @param domainName    the given domain name such as {@code organization}
+     * @return              the associated domain model class; {@code null} if
+     *                      no domain model with the given name exists
+     * @since 2.1
+     */
+    private Class<?> domainNameToClass(String domainName) {
+        GrailsClass gc = grailsApplication.getArtefactByLogicalPropertyName(
+            'Domain', domainName
+        )
+
+        gc?.clazz
     }
 
     /**

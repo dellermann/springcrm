@@ -1,7 +1,7 @@
 /*
  * ConfigController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,12 @@ class ConfigController implements Controller {
     public static final List<Long> READONLY_IDS = [
         *600L..604L, *800L..804L, *900L..907L, *2100L..2103L, *2200L..2206L,
         *2500L..2504L, *2600L..2605L
-    ].asImmutable()
+    ].asImmutable() as List<Long>
 
 
     //-- Fields ---------------------------------
 
+    SeqNumberService seqNumberService
     UserService userService
 
 
@@ -109,7 +110,7 @@ class ConfigController implements Controller {
         flash.message = message(
             code: 'default.updated.message',
             args: [message(code: 'config.label', default: 'System setting'), '']
-        )
+        ) as Object
 
         redirect action: 'index'
     }
@@ -144,7 +145,7 @@ class ConfigController implements Controller {
             int orderId = 10
             Class<?> cls = getTypeClass(entry.key.toString())
             def list = JSON.parse(entry.value.toString())
-            for (def item in list) {
+            for (item in list) {
                 Long id = item.id as Long
                 def selValue = (id < 0L) ? cls.newInstance() : cls.get(id)
                 if (item.remove) {
@@ -174,7 +175,7 @@ class ConfigController implements Controller {
         if (taxRates) {
             int orderId = 10
             def list = JSON.parse(taxRates)
-            for (def item in list) {
+            for (item in list) {
                 def entry = (item.id < 0) ? new TaxRate() : TaxRate.get(item.id)
                 if (item.isNull('name')) {
                     entry.delete flush: true
@@ -191,8 +192,24 @@ class ConfigController implements Controller {
         redirect action: 'index'
     }
 
+    def fixSeqNumbers() {
+        List<SeqNumber> list = seqNumberService.getFixedSeqNumbers()
+
+        flash.message = message(code: 'config.seqNumbers.fixed') as Object
+
+        render(view: 'seqNumbers', model: prepareLoadSeqNumberModel(list))
+    }
+
     def loadSeqNumbers() {
-        List<SeqNumber> list = SeqNumber.list()
+        render(
+            view: 'seqNumbers',
+            model: prepareLoadSeqNumberModel(SeqNumber.list())
+        )
+    }
+
+    private static Map<String, Object> \
+        prepareLoadSeqNumberModel(List<SeqNumber> list)
+    {
 
         ConfigHolder ch = ConfigHolder.instance
         Long id = ch['workIdDunningCharge']?.toType(Long)
@@ -200,7 +217,7 @@ class ConfigController implements Controller {
         id = ch['workIdDefaultInterest']?.toType(Long)
         Work workDefaultInterest = Work.read(id)
 
-        render view: 'seqNumbers', model: [
+        [
             seqNumberList: list,
             workDunningCharge: workDunningCharge,
             workDefaultInterest: workDefaultInterest
@@ -210,7 +227,7 @@ class ConfigController implements Controller {
     def saveSeqNumbers() {
         def l = []
         boolean hasErrors = false
-        for (def entry in params.seqNumbers) {
+        for (entry in params.seqNumbers) {
             try {
                 Long id = Long.valueOf(entry.key.toString())
                 SeqNumber seqNumber = SeqNumber.get(id)

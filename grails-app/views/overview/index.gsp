@@ -92,6 +92,52 @@
       </div>
     </div>
 
+    <g:if test="${showSeqNumberChangeHint}">
+    <div id="change-seq-number-hint-modal" class="modal fade" role="dialog"
+      aria-labelledby="change-seq-number-hint-modal-title" aria-hidden="false"
+      data-url="${createLink(action: 'seqNumberHintDontShowAgain')}">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+              aria-label="${message(code: 'default.btn.close')}"
+              ><span aria-hidden="true">×</span
+            ></button>
+            <h4 id="change-seq-number-hint-modal-title" class="modal-title">
+              <g:message code="overview.changeSequenceNumber.title"/>
+            </h4>
+          </div>
+          <div class="modal-body">
+            <p><g:message code="overview.changeSequenceNumber.message1"/></p>
+            <p><g:message code="overview.changeSequenceNumber.message2"/></p>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="dont-show-again"/>
+                <g:message code="overview.changeSequenceNumber.dontShowAgain"/>
+              </label>
+            </div>
+            <div class="checkbox disabled">
+              <label>
+                <input type="checkbox" class="never-show-again"
+                  disabled="disabled"/>
+                <g:message code="overview.changeSequenceNumber.neverShowAgain"/>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <g:link controller="config" action="fixSeqNumbers"
+              class="btn btn-primary btn-yes">
+              <span><g:message code="default.btn.yes"/></span>
+            </g:link>
+            <button type="button" class="btn btn-default btn-no"
+              data-dismiss="modal">
+              <span><g:message code="default.btn.no"/></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </g:if>
     <g:if test="${showChangelog}">
     <div id="changelog-modal" class="modal fade" role="dialog"
       aria-labelledby="changelog-modal-title" aria-hidden="false"
@@ -115,7 +161,7 @@
           <div class="modal-footer">
             <div class="checkbox">
               <label>
-                <input type="checkbox" id="dont-show-again"/>
+                <input type="checkbox" class="dont-show-again"/>
                 <g:message code="overview.changelog.dontShowAgain"/>
               </label>
             </div>

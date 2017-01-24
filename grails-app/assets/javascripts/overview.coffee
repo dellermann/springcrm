@@ -1,7 +1,7 @@
 #
 # overview.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2017, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@ class OverviewPanels
     $.getJSON url, (data) => @_onLoadedPanels data
 
     @_initChangelogModal()
+    @_initSeqNumberHintModal()
 
 
   #-- Public methods ----------------------------
@@ -131,7 +132,7 @@ class OverviewPanels
       .modal()
       .on('hide.bs.modal', (event) ->
         $modal = $(event.currentTarget)
-        if $modal.find('#dont-show-again:checked').length
+        if $modal.find('.dont-show-again:checked').length
           $.get $modal.data('url')
 
         return
@@ -156,6 +157,41 @@ class OverviewPanels
         url: url
 
     null
+
+  # Initializes the modal about changing the sequence numbers.
+  #
+  # @private
+  # @since 2.1
+  #
+  _initSeqNumberHintModal: ->
+    $ = jq
+
+    $('#change-seq-number-hint-modal')
+      .modal()
+      .on('change', '.dont-show-again', (event) ->
+        checked = $(event.currentTarget).is ':checked'
+        $container = $(event.delegateTarget)
+          .find('.never-show-again')
+            .enable(checked)
+            .closest '.checkbox'
+        if checked
+          $container.removeClass 'disabled'
+        else
+          $container.attr 'disabled', 'disabled'
+
+        return
+      )
+      .on('hide.bs.modal', (event) ->
+        $modal = $(event.currentTarget)
+        if $modal.find('.modal-body .checkbox input:checkbox:checked').length
+          val = if $modal.find('.dont-show-again').is ':checked' then 1 else 0
+          val += if $modal.find('.never-show-again').is ':checked' then 1 else 0
+          $.get $modal.data('url'), value: val
+
+        return
+      )
+
+    return
 
   # Called if a panel should be added to the overview page.
   #

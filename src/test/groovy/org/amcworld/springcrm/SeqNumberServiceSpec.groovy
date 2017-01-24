@@ -1,7 +1,7 @@
 /*
  * SeqNumberServiceSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,12 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-
 @TestFor(SeqNumberService)
 @Mock([
-    Invoice, InvoiceController, Organization, OrganizationController, Quote,
-    SeqNumber
+    CreditMemo, CreditMemoController, Dunning, DunningController, Invoice,
+    InvoiceController, Organization, OrganizationController, Quote,
+    QuoteController, SalesOrder, SalesOrderController, SeqNumber, User,
+    UserSetting
 ])
 class SeqNumberServiceSpec extends Specification {
 
@@ -44,6 +45,221 @@ class SeqNumberServiceSpec extends Specification {
 
 
     //-- Feature methods ------------------------
+
+    def 'Check suitable sequence numbers'() {
+        given: 'the current year'
+        String year = new Date().format('YY')
+
+        and: 'a suitable start value'
+        int start = (year + '000').toInteger()
+
+        and: 'some sequence numbers'
+        mockDomain SeqNumber, [
+            new SeqNumber(
+                controllerName: 'quote', prefix: 'Q', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'salesOrder', prefix: 'S', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'creditMemo', prefix: 'R', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'dunning', prefix: 'D', startValue: start
+            )
+        ]
+
+        and: 'an already existing sequence number'
+        SeqNumber seqNumber = service.loadSeqNumber('invoice')
+        seqNumber.startValue = start
+        seqNumber.save()
+
+        and: 'a user with mocked settings'
+        User user = makeUser()
+        UserSettings settings = Mock()
+        user.settings = settings
+
+        and: 'a credential of that user'
+        Credential cred = new Credential(user)
+
+        expect: 'the sequence number scheme is suitable'
+        service.checkNumberScheme()
+        !service.getShowHint(cred)
+    }
+
+    def 'Check not suitable sequence numbers'() {
+        given: 'the current year'
+        String year = new Date().format('YY')
+
+        and: 'a suitable start value'
+        int start = (year + '000').toInteger()
+
+        and: 'some sequence numbers'
+        mockDomain SeqNumber, [
+            new SeqNumber(
+                controllerName: 'quote', prefix: 'Q', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'salesOrder', prefix: 'S', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'creditMemo', prefix: 'R', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'dunning', prefix: 'D', startValue: start
+            )
+        ]
+        /* leave sequence number for invoices at start value 10000 */
+
+        expect: 'the sequence number scheme is suitable'
+        !service.checkNumberScheme()
+    }
+
+    def 'Don\'t show again hint for this year'(int year, boolean res) {
+        given: 'a user with mocked settings'
+        User user = makeUser()
+
+        and: 'a credential of that user'
+        Credential cred = new Credential(user)
+
+        /* leave sequence number for invoices at start value 10000 */
+
+        when:
+        Date d = new Date()
+        d.set(date: 31, month: Calendar.MARCH, year: year)
+        new UserSetting(
+                user: user, name: 'seqNumberHintYear', value: d.format('YYYY')
+            ).save failOnError: true
+        user.afterLoad()
+
+        then:
+        res == service.getShowHint(cred)
+
+        where:
+        year                            || res
+        new Date()[Calendar.YEAR] - 4   || true
+        new Date()[Calendar.YEAR] - 2   || true
+        new Date()[Calendar.YEAR] - 1   || true
+        new Date()[Calendar.YEAR]       || false
+        new Date()[Calendar.YEAR] + 1   || false
+        new Date()[Calendar.YEAR] + 2   || false
+        new Date()[Calendar.YEAR] + 4   || false
+        9999i                           || false
+    }
+
+    def 'Don\'t show again hint for non-admins'(int year) {
+        given: 'a non-admin user with mocked settings'
+        User user = makeUser()
+        user.admin = false
+        user.save failOnError: true
+
+        and: 'a credential of that user'
+        Credential cred = new Credential(user)
+
+        /* leave sequence number for invoices at start value 10000 */
+
+        when:
+        Date d = new Date()
+        d.set(date: 31, month: Calendar.MARCH, year: year)
+        new UserSetting(
+                user: user, name: 'seqNumberHintYear', value: d.format('YYYY')
+            ).save failOnError: true
+        user.afterLoad()
+
+        then:
+        !service.getShowHint(cred)
+
+        where:
+        year                            || _
+        new Date()[Calendar.YEAR] - 4   || _
+        new Date()[Calendar.YEAR] - 2   || _
+        new Date()[Calendar.YEAR] - 1   || _
+        new Date()[Calendar.YEAR]       || _
+        new Date()[Calendar.YEAR] + 1   || _
+        new Date()[Calendar.YEAR] + 2   || _
+        new Date()[Calendar.YEAR] + 4   || _
+        9999i                           || _
+    }
+
+    def 'Get fixed sequence numbers'() {
+        given: 'the current year and another year'
+        int year = new Date().format('YY').toInteger()
+        int otherYear = year - 5
+        int futureYear = year + 8
+
+        and: 'suitable start values'
+        int start = year * 1000
+        int otherStart = otherYear * 1000
+        int futureStart = futureYear * 1000
+
+        and: 'some sequence numbers'
+        mockDomain SeqNumber, [
+            new SeqNumber(
+                controllerName: 'quote', prefix: 'Q', startValue: otherStart
+            ),
+            new SeqNumber(
+                controllerName: 'salesOrder', prefix: 'S', startValue: start
+            ),
+            new SeqNumber(
+                controllerName: 'creditMemo', prefix: 'R',
+                startValue: futureStart
+            ),
+            new SeqNumber(
+                controllerName: 'dunning', prefix: 'D', startValue: otherStart
+            )
+        ]
+        /* leave sequence number for invoices at start value 10000 */
+
+        when: 'I obtain the fixed sequence numbers'
+        List<SeqNumber> l = service.getFixedSeqNumbers()
+
+        then: 'this list contains all sequence numbers'
+        6 == l.size()
+
+        and: 'all old customer accounts have the correct start value'
+        start == l.find { it.controllerName == 'quote' }.startValue
+        start == l.find { it.controllerName == 'salesOrder' }.startValue
+        start == l.find { it.controllerName == 'invoice' }.startValue
+        start == l.find { it.controllerName == 'dunning' }.startValue
+
+        and: 'future customer accounts are untouched'
+        futureStart == l.find { it.controllerName == 'creditMemo' }.startValue
+
+        and: 'all other sequence numbers are untouched'
+        10000 == l.find { it.controllerName == 'organization' }.startValue
+    }
+
+    def 'Store year for sequence number hint'() {
+        given: 'a user with mocked settings'
+        User user = makeUser()
+        UserSettings settings = Mock()
+        user.settings = settings
+
+        and: 'a credential of that user'
+        Credential cred = new Credential(user)
+
+        when: 'I store the year'
+        service.dontShowAgain = cred
+
+        then: 'the current year has been stored'
+        1 * settings.put('seqNumberHintYear', new Date().format('YYYY'))
+    }
+
+    def 'Store never show again for sequence number hint'() {
+        given: 'a user with mocked settings'
+        User user = makeUser()
+        UserSettings settings = Mock()
+        user.settings = settings
+
+        and: 'a credential of that user'
+        Credential cred = new Credential(user)
+
+        when: 'I store the selection'
+        service.neverShowAgain = cred
+
+        then: 'a year in the future has been stored'
+        1 * settings.put('seqNumberHintYear', '9999')
+    }
 
     def 'Load sequence number of a known class'() {
         when: 'I load a sequence number by an artifact type'
@@ -352,5 +568,24 @@ class SeqNumberServiceSpec extends Specification {
         mockDomain Quote, [q]
 
         q
+    }
+
+    private User makeUser() {
+        def u = new User(
+            userName: 'jsmith',
+            password: 'abcd',
+            firstName: 'John',
+            lastName: 'Smith',
+            phone: '+49 30 1234567',
+            phoneHome: '+49 30 9876543',
+            mobile: '+49 172 3456789',
+            fax: '+49 30 1234568',
+            email: 'j.smith@example.com',
+            admin: true,
+            allowedModules: 'CALL, TICKET, NOTE'
+        )
+        u.id = 1704L
+
+        u.save failOnError: true
     }
 }

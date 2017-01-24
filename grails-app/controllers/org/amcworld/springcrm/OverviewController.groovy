@@ -1,7 +1,7 @@
 /*
  * OverviewController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ class OverviewController {
 
     LruService lruService
     OverviewService overviewService
+    SeqNumberService seqNumberService
 
 
     //-- Public methods -------------------------
@@ -53,6 +54,12 @@ class OverviewController {
             panel.panelDef = repository.getPanel(panel.panelId)
         }
 
+        boolean showSeqNumberChangeHint =
+            !session.dontShowSeqNumberChangeHint &&
+            !seqNumberService.checkNumberScheme()
+        if (showSeqNumberChangeHint) {
+            session.dontShowSeqNumberChangeHint = true
+        }
         boolean showChangelog = !session.dontShowChangelog &&
             overviewService.showChangelog(credential)
         if (showChangelog) {
@@ -62,6 +69,7 @@ class OverviewController {
         [
             allPanelDefs: repository.panels.values(),
             panels: panels,
+            showSeqNumberChangeHint: showSeqNumberChangeHint,
             showChangelog: showChangelog,
             user: ((Credential) session.credential).loadUser()
         ]
@@ -142,6 +150,30 @@ class OverviewController {
      */
     def changelogDontShowAgain() {
         overviewService.dontShowAgain((Credential) session.credential)
+
+        render status: SC_OK
+    }
+
+    /**
+     * Stores the selection whether or not to show the hint about changing the
+     * sequence number scheme.
+     *
+     * @param value the selection what to not show again: possible values are
+     *              0 (show again), 1 (don't show again for this year) and 2
+     *              (never show again)
+     * @return      always HTTP status code 200 (OK)
+     * @since 2.1
+     */
+    def seqNumberHintDontShowAgain(int value) {
+        Credential credential = (Credential) session.credential
+        switch (value) {
+        case 1:
+            seqNumberService.setDontShowAgain credential
+            break
+        case 2:
+            seqNumberService.setNeverShowAgain credential
+            break
+        }
 
         render status: SC_OK
     }

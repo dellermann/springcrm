@@ -1,22 +1,22 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <title><g:message code="config.seqNumbers.title" /> -
-    <g:message code="config.title" /></title>
-    <meta name="caption" content="${message(code: 'config.title')}" />
-    <meta name="subcaption" content="${message(code: 'config.seqNumbers.title')}" />
-    <meta name="stylesheet" content="config" />
+    <meta name="layout" content="main"/>
+    <title><g:message code="config.seqNumbers.title"/> -
+    <g:message code="config.title"/></title>
+    <meta name="caption" content="${message(code: 'config.title')}"/>
+    <meta name="subcaption" content="${message(code: 'config.seqNumbers.title')}"/>
+    <meta name="stylesheet" content="config"/>
   </head>
 
   <body>
     <content tag="toolbar">
-      <g:render template="/layouts/toolbarForm" model="[formName: 'config']" />
+      <g:render template="/layouts/toolbarForm" model="[formName: 'config']"/>
     </content>
 
-    <g:render template="/layouts/flashMessage" />
+    <g:render template="/layouts/flashMessage"/>
     <g:if test="${seqNumberList.any { it.hasErrors() }}">
     <div class="alert alert-danger" role="alert">
-      <g:message code="default.form.errorHint" />
+      <g:message code="default.form.errorHint"/>
     </div>
     </g:if>
 
@@ -25,7 +25,7 @@
       method="post" class="form-horizontal data-form form-view">
       <section>
         <header>
-          <h3><g:message code="config.fieldset.seqNumbers.label" /></h3>
+          <h3><g:message code="config.fieldset.seqNumbers.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
@@ -35,11 +35,11 @@
                 <thead>
                   <tr>
                     <th></th>
-                    <th><g:message code="config.seqNumbers.prefix.label" /></th>
-                    <th><g:message code="config.seqNumbers.startValue.label" /></th>
-                    <th><g:message code="config.seqNumbers.endValue.label" /></th>
-                    <th><g:message code="config.seqNumbers.suffix.label" /></th>
-                    <th><g:message code="config.seqNumbers.example.label" /></th>
+                    <th><g:message code="config.seqNumbers.prefix.label"/></th>
+                    <th><g:message code="config.seqNumbers.startValue.label"/></th>
+                    <th><g:message code="config.seqNumbers.endValue.label"/></th>
+                    <th><g:message code="config.seqNumbers.suffix.label"/></th>
+                    <th><g:message code="config.seqNumbers.example.label"/></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -48,7 +48,7 @@
                     <td>
                       <label for="seqnumber-${seqNumber.ident()}-prefix"
                         class="control-label">
-                        <g:message code="${seqNumber.controllerName}.plural" />
+                        <g:message code="${seqNumber.controllerName}.plural"/>
                       </label>
                     </td>
                     <td>
@@ -56,10 +56,10 @@
                         id="seqnumber-${seqNumber.ident()}-prefix"
                         name="seqNumbers.${seqNumber.ident()}.prefix"
                         value="${seqNumber.prefix}" class="form-control"
-                        maxlength="5" />
+                        maxlength="5"/>
                       <ul class="control-messages"
                         ><g:eachError bean="${seqNumber}" field="prefix"
-                        ><li class="control-message-error"><g:message error="${it}" /></li
+                        ><li class="control-message-error"><g:message error="${it}"/></li
                         ></g:eachError
                       ></ul>
                     </td>
@@ -67,10 +67,10 @@
                       <input type="number"
                         name="seqNumbers.${seqNumber.ident()}.startValue"
                         value="${seqNumber.startValue}" class="form-control"
-                        min="0" />
+                        min="0"/>
                       <ul class="control-messages"
                         ><g:eachError bean="${seqNumber}" field="startValue"
-                        ><li class="control-message-error"><g:message error="${it}" /></li
+                        ><li class="control-message-error"><g:message error="${it}"/></li
                         ></g:eachError
                       ></ul>
                     </td>
@@ -78,10 +78,10 @@
                       <input type="number"
                         name="seqNumbers.${seqNumber.ident()}.endValue"
                         value="${seqNumber.endValue}" class="form-control"
-                        min="0" />
+                        min="0"/>
                       <ul class="control-messages"
                         ><g:eachError bean="${seqNumber}" field="endValue"
-                        ><li class="control-message-error"><g:message error="${it}" /></li
+                        ><li class="control-message-error"><g:message error="${it}"/></li
                         ></g:eachError
                       ></ul>
                     </td>
@@ -89,7 +89,7 @@
                       <input type="text"
                         name="seqNumbers.${seqNumber.ident()}.suffix"
                         value="${seqNumber.suffix}" class="form-control"
-                        maxlength="5" />
+                        maxlength="5"/>
                     </td>
                     <td class="seq-number-example">
                      <output class="form-static-control"></output>
@@ -105,14 +105,14 @@
 
       <section>
         <header>
-          <h3><g:message code="config.fieldset.specialWorks.label" /></h3>
+          <h3><g:message code="config.fieldset.specialWorks.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
-            <p><g:message code="config.fieldset.specialWorks.description" /></p>
+            <p><g:message code="config.fieldset.specialWorks.description"/></p>
             <div class="form-group">
               <label for="workDunningCharge" class="control-label">
-                <g:message code="config.workIdDunningCharge.label" />
+                <g:message code="config.workIdDunningCharge.label"/>
               </label>
               <div class="control-container">
                 <select id="workDunningCharge-select"
@@ -126,7 +126,7 @@
             </div>
             <div class="form-group">
               <label for="workDefaultInterest" class="control-label">
-                <g:message code="config.workIdDefaultInterest.label" />
+                <g:message code="config.workIdDefaultInterest.label"/>
               </label>
               <div class="control-container">
                 <select id="workDefaultInterest-select"
@@ -144,7 +144,7 @@
     </form>
 
     <content tag="scripts">
-      <asset:javascript src="config-seq-numbers" />
+      <asset:javascript src="config-seq-numbers"/>
     </content>
   </body>
 </html>
