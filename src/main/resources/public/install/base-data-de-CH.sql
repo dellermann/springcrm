@@ -2,7 +2,7 @@
 -- base-data-de-CH.sql
 -- Base data for installer, German (Switzerland)
 --
--- Copyright (c) 2011-2013, Daniel Ellermann
+-- Copyright (c) 2011-2017, Daniel Ellermann
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -191,18 +191,18 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3000, 0, 'Har
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory')
 
 -- insert sequence number predefinitions
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (1, 0, 'quote', 99999, 'A', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (2, 0, 'salesOrder', 99999, 'B', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (3, 0, 'invoice', 99999, 'R', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (4, 0, 'dunning', 99999, 'M', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (5, 0, 'service', 99999, 'S', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (6, 0, 'product', 99999, 'P', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (7, 0, 'organization', 99999, 'O', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (8, 0, 'person', 99999, 'E', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (9, 0, 'note', 99999, 'N', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (10, 0, 'creditMemo', 99999, 'G', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (11, 0, 'project', 99999, 'J', 10000, '')
-INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix) VALUES (12, 0, 'ticket', 99999, 'T', 10000, '')
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (1, 0, 'quote', 99999, 'A', 10000, '', 100)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (2, 0, 'salesOrder', 99999, 'B', 10000, '', 110)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (3, 0, 'invoice', 99999, 'R', 10000, '', 120)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (4, 0, 'dunning', 99999, 'M', 10000, '', 130)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (5, 0, 'work', 99999, 'S', 10000, '', 210)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (6, 0, 'product', 99999, 'P', 10000, '', 200)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (7, 0, 'organization', 99999, 'O', 10000, '', 10)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (8, 0, 'person', 99999, 'E', 10000, '', 20)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (9, 0, 'note', 99999, 'N', 10000, '', 300)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (10, 0, 'creditMemo', 99999, 'G', 10000, '', 140)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (11, 0, 'project', 99999, 'J', 10000, '', 310)
+INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (12, 0, 'ticket', 99999, 'T', 10000, '', 400)
 
 -- insert basic configurations
 INSERT INTO config (version, name, value) VALUES (0, 'baseDataLocale', 'de-CH')

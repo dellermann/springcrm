@@ -1,8 +1,17 @@
+## 2.1.7
+
+* Remind administrator to change the sequence numbers if they are not suitable
+  for the current year
+  ([issue #79](https://github.com/dellermann/springcrm/issues/79))
+* Display sequence numbers in correct order
+
 ## 2.1.6
 
 * Support for helpdesks for end users
 * Add save and cancel button to bottom of forms
   ([issue #58](https://github.com/dellermann/springcrm/issues/58))
+* Submitting forms does not work in Microsoft Edge
+  ([issue #94](https://github.com/dellermann/springcrm/issues/94))
 
 ## 2.1.5
 
@@ -13,14 +22,14 @@
 
 * Turnover overview for all organizations, optionally filterable by year.
 
+[comment]: STOP
+
 ## 2.1.3
 
 * Settings for the list of unpaid bills: minimum unpaid amount, sort
   criterion and order, maximum number of items.
 * New panel containing currently active projects.
 * Fix wrap and wrong vertical alignment in V.A.T calculator.
-
-[comment]: STOP
 
 ## 2.1.2
 

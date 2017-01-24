@@ -1,7 +1,7 @@
 /*
  * SeqNumber.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,11 @@ class SeqNumber implements GormEntity<SeqNumber> {
         suffix maxSize: 5
         startValue min: 0
         endValue min: 0
+        orderId min: 0
     }
     static mapping = {
         controllerName index: 'controller_name'
+        sort 'orderId'
     }
 
 
@@ -53,6 +55,7 @@ class SeqNumber implements GormEntity<SeqNumber> {
     String suffix = ''
     int startValue = 10000i
     int endValue = 99999i
+    int orderId
 
 
     //-- Public methods -------------------------

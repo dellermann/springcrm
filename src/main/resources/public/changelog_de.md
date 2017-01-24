@@ -1,8 +1,17 @@
+## 2.1.7
+
+* Erinnerung für Administratoren, das Nummernschema zu ändern, wenn es nicht zum
+  aktuellen Jahr passt
+  ([Problem #79](https://github.com/dellermann/springcrm/issues/79))
+* Nummernschemata werden nun in der richtigen Reihenfolge angezeigt
+
 ## 2.1.6
 
 * Unterstützung für Helpdesks für Endbenutzer
 * Speichern- und Abbruch-Schaltflächen unterhalb von Formularen hinzugefügt
   ([Problem #58](https://github.com/dellermann/springcrm/issues/58))
+* Abschicken von Formularen funktionierte nicht in Microsoft Edge
+  ([Problem #94](https://github.com/dellermann/springcrm/issues/94))
 
 ## 2.1.5
 
@@ -14,6 +23,8 @@
 
 * Umsatzgesamtübersicht, optional filterbar anhand des Jahres.
 
+[comment]: STOP
+
 ## 2.1.3
 
 * Einstellungen für die Liste der unbezahlten Rechnungen: Mindestwert für noch
@@ -22,8 +33,6 @@
 * Neues Panel mit aktiven Projekten.
 * Textumbruch und falsche vertikale Ausrichtung im Mehrwertsteuerrechner
   behoben.
-
-[comment]: STOP
 
 ## 2.1.2
 
