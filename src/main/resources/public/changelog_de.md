@@ -3,7 +3,11 @@
 * Erinnerung für Administratoren, das Nummernschema zu ändern, wenn es nicht zum
   aktuellen Jahr passt
   ([Problem #79](https://github.com/dellermann/springcrm/issues/79))
+* Behebung des Fehlers, dass Formulare in Microsoft Edge nicht gespeichert
+  werden konnten
+  ([Problem #94](https://github.com/dellermann/springcrm/issues/94))
 * Nummernschemata werden nun in der richtigen Reihenfolge angezeigt
+* Unterstützung für Aufruf der Webanwendung unter Unix und Linux
 
 ## 2.1.6
 

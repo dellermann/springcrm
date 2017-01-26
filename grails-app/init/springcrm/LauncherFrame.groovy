@@ -1,7 +1,7 @@
 /*
  * LauncherFrame.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,17 +191,22 @@ class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
         launchBtn.icon = icon
         launchBtn.disabledIcon = icon
         launchBtn.iconTextGap = 20
-        launchBtn.font = launchBtn.font.deriveFont(18.0f)
+        launchBtn.font = launchBtn.font.deriveFont(12.0f)
         launchBtn.minimumSize = new Dimension(100, 50)
         launchBtn.addActionListener(new ActionListener() {
             @Override
             void actionPerformed(ActionEvent e) {
                 Desktop desktop = Desktop.desktop
                 if (!desktop.isSupported(Desktop.Action.BROWSE)) {
+                    if (browseUrl("kde-open") || browseUrl("gnome-open") ||
+                        browseUrl("xdg-open"))
+                    {
+                        return
+                    }
+
                     JOptionPane.showMessageDialog(
                         frame, getString('message.url', BROWSER_URL)
                     )
-                    return
                 }
 
                 desktop.browse new URI(BROWSER_URL)
@@ -211,5 +216,42 @@ class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
 
         frame.pack()
         frame.visible = true
+    }
+
+    /**
+     * Runs the given platform specific command in order to display the URL of
+     * the web application in a browser when starting a browser is not
+     * supported.
+     *
+     * @param command   the given command
+     * @return          {@code true} if the command has been started
+     *                  successfully; {@code false} otherwise
+     */
+    private static boolean browseUrl(String command) {
+        if (log.debugEnabled) {
+            log.debug "Trying to execute ${command}"
+        }
+
+        String [] parts = [command, BROWSER_URL] as String[]
+
+        try {
+            Process p = Runtime.runtime.exec(parts)
+            if (p != null) {
+                try {
+                    log.warn(
+                        (p.exitValue() == 0) \
+                            ? 'Process ended immediately.'
+                            : 'Process crashed.'
+                    )
+                } catch (IllegalThreadStateException ignored) {
+                    log.debug 'Process is running.'
+                    return true
+                }
+            }
+        } catch (IOException e) {
+            log.error 'Error running command.', e
+        }
+
+        false
     }
 }

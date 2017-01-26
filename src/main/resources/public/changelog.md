@@ -3,7 +3,10 @@
 * Remind administrator to change the sequence numbers if they are not suitable
   for the current year
   ([issue #79](https://github.com/dellermann/springcrm/issues/79))
+* Fixed issue that forms could not be saved in Microsoft Edge
+  ([issue #94](https://github.com/dellermann/springcrm/issues/94))
 * Display sequence numbers in correct order
+* Support for launching web site on Unix and Linux
 
 ## 2.1.6
 
