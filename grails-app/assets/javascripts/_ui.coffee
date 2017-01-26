@@ -1,7 +1,7 @@
 #
 # _ui.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2017, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #= require selectize/selectize
 #= require selectize/plugin-no-delete
 #= require selectize/plugin-disable-options
+#= require polyfills/form-attr.js
 #= require _handlebars-ext
 #= require templates/tools/js-calc
 #= require templates/tools/vat-calc
