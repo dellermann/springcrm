@@ -315,6 +315,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.javascript:closure-compiler-unshaded:v20160713" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.javascript:closure-compiler-externs:v20160713" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: args4j:args4j:2.0.26" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: xerces:xercesImpl:2.11.0" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -325,6 +326,5 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: xerces:xercesImpl:2.11.0" level="project" />
   </component>
 </module>

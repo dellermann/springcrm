@@ -43,9 +43,9 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:1.4.2.RELEASE" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.5.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-el:8.5.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:8.5.6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.5.6" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.4.2.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-actuator:1.4.2.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.4.2.RELEASE" level="project" />
@@ -277,6 +277,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.javascript:closure-compiler-unshaded:v20160713" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.javascript:closure-compiler-externs:v20160713" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: args4j:args4j:2.0.26" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.guava:guava:19.0" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -286,6 +287,5 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.guava:guava:19.0" level="project" />
   </component>
 </module>
