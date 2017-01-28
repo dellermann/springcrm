@@ -88,6 +88,7 @@ assets {
     configOptions = [
         less: [compiler: 'standard']
     ]
+    enableSourceMaps = true
     excludes = [
         // stylesheets
         'bootstrap/**.less',
@@ -100,6 +101,7 @@ assets {
         'bootstrap/*.js',
         'jquery/*.js',
         'jqueryui/*.js',
+        'polyfilles/*.js',
         'selectize/*.js',
         'widgets/**'
     ]
