@@ -197,29 +197,31 @@ task wrapper(type: Wrapper) {
 }
 
 /* compiling */
-task buildInfo << {
-    def formatter = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
-    def replaceTokens = [
-        'info.app.buildNumber': computeBuildNumber(1L).toString(),
-        'info.app.buildDate': formatter.format(new Date())
-    ]
+task buildInfo {
+    doLast {
+        def formatter = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
+        def replaceTokens = [
+            'info.app.buildNumber': computeBuildNumber(1L).toString(),
+            'info.app.buildDate': formatter.format(new Date())
+        ]
 
-    copy {
-        from(sourceSets.main.output.resourcesDir) {
-            filter(ReplaceTokens, tokens: replaceTokens)
-            include '**/*.groovy'
-            include '**/*.yml'
-            include '**/*.xml'
+        copy {
+            from(sourceSets.main.output.resourcesDir) {
+                filter(ReplaceTokens, tokens: replaceTokens)
+                include '**/*.groovy'
+                include '**/*.yml'
+                include '**/*.xml'
+            }
+            into temporaryDir
         }
-        into temporaryDir
-    }
-    copy {
-        from(temporaryDir) {
-            include '**/*.groovy'
-            include '**/*.yml'
-            include '**/*.xml'
+        copy {
+            from(temporaryDir) {
+                include '**/*.groovy'
+                include '**/*.yml'
+                include '**/*.xml'
+            }
+            into sourceSets.main.output.resourcesDir
         }
-        into sourceSets.main.output.resourcesDir
     }
 }
 processResources.finalizedBy buildInfo
@@ -247,11 +249,11 @@ war {
         }
         war.webXml = new File(temporaryDir, 'web.xml')
     }
-    from(processResources) {
-        include 'launcher*.properties'
-        include 'logo.png'
-        include 'spinner.gif'
-    }
+//    from(processResources) {
+//        include 'launcher*.properties'
+//        include 'logo.png'
+//        include 'spinner.gif'
+//    }
 }
 bootRepackage.dependsOn jar
 // This doesn't work.  Probably the property is set during execution time.
@@ -279,7 +281,7 @@ macAppBundle {
     appFolderX = 297
     appFolderY = 192
 }
-copyToResourcesJava << {
+copyToResourcesJava.doLast {
     FileTree tree = fileTree('build/macApp/SpringCRM.app/Contents/Java') {
         include '**/*.jar'
         exclude 'springcrm-*.jar'

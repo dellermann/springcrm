@@ -1,3 +1,7 @@
+## 2.1.8
+
+* Upgrade to Grails 3.2.4, Groovy 2.4.8 and Gradle 3.3
+
 ## 2.1.7
 
 * Remind administrator to change the sequence numbers if they are not suitable
@@ -16,6 +20,8 @@
 * Submitting forms does not work in Microsoft Edge
   ([issue #94](https://github.com/dellermann/springcrm/issues/94))
 
+[comment]: STOP
+
 ## 2.1.5
 
 * Fixed issues [#19](https://github.com/dellermann/springcrm/issues/19), [#63](https://github.com/dellermann/springcrm/issues/63), [#88](https://github.com/dellermann/springcrm/issues/88), [#90](https://github.com/dellermann/springcrm/issues/90), [#91](https://github.com/dellermann/springcrm/issues/91) and [#93](https://github.com/dellermann/springcrm/issues/93) 
@@ -24,8 +30,6 @@
 ## 2.1.4
 
 * Turnover overview for all organizations, optionally filterable by year.
-
-[comment]: STOP
 
 ## 2.1.3
 

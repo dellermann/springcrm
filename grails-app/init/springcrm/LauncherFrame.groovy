@@ -179,13 +179,13 @@ class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
         frame.layout = new BorderLayout()
 
         Icon icon = new ImageIcon(
-            applyVersionToImage(System.getResource('/logo.png'), version)
+            applyVersionToImage(this.class.getResource('/logo.png'), version)
         )
         JLabel logo = new JLabel(icon)
         logo.border = BorderFactory.createEmptyBorder(30, 50, 30, 50)
         frame.add logo, BorderLayout.PAGE_START
 
-        icon = new ImageIcon(System.getResource('/spinner.gif'))
+        icon = new ImageIcon(this.class.getResource('/spinner.gif'))
         launchBtn = new JButton(getString('btn.launching'))
         launchBtn.enabled = false
         launchBtn.icon = icon
