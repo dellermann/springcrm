@@ -1,7 +1,7 @@
 /*
  * EncryptPasswordInterceptorSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,19 +45,19 @@ class EncryptPasswordInterceptorSpec extends Specification {
         'user'              | 'save'                || true
         'user'              | 'update'              || true
         'user'              | 'authenticate'        || true
-        'user'              | 'create-admin-save'   || true
+        'user'              | 'createAdminSave'     || true
         'install'           | null                  || false
         'install'           | 'index'               || false
         'install'           | 'save'                || true
         'install'           | 'update'              || true
         'install'           | 'authenticate'        || true
-        'install'           | 'create-admin-save'   || true
+        'install'           | 'createAdminSave'     || true
         'foo'               | null                  || false
         'foo'               | 'index'               || false
         'foo'               | 'save'                || false
         'foo'               | 'update'              || false
         'foo'               | 'authenticate'        || false
-        'foo'               | 'create-admin-save'   || false
+        'foo'               | 'createAdminSave'     || false
     }
 
     def 'Interceptor methods return true'() {

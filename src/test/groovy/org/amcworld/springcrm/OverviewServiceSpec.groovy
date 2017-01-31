@@ -1,7 +1,7 @@
 /*
  * OverviewServiceSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.core.GrailsApplication
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
@@ -28,6 +29,7 @@ import spock.lang.Specification
 
 
 @TestFor(OverviewService)
+@Mock([User, UserSetting])
 class OverviewServiceSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -197,9 +199,9 @@ class OverviewServiceSpec extends Specification {
 
         and: 'a user with mocked settings'
         User user = makeUser()
-        UserSettings settings = Mock()
-        1 * settings.get('changelogVersion') >> v
-        user.settings = settings
+        new UserSetting(name: 'changelogVersion', value: v, user: user)
+            .save failOnError: true
+        user.afterLoad()
 
         and: 'a credential of that user'
         Credential cred = new Credential(user)
@@ -240,21 +242,21 @@ class OverviewServiceSpec extends Specification {
             admin: true,
             allowedModules: 'CALL, TICKET, NOTE'
         )
-        u.id = 1704L
 
-        u
+        u.id = 1704L
+        u.save failOnError: true
     }
 
     private void mockApplication(String contentDefault, String contentDe) {
         ApplicationContext ctx = Mock()
         ctx.getResource(_) >> { String path ->
             switch (path) {
-            case 'public/changelog.md':
+            case 'classpath:public/changelog.md':
                 Resource res = Mock()
                 res.inputStream >> new ByteArrayInputStream(contentDefault.bytes)
                 res.exists() >> true
                 return res
-            case 'public/changelog_de.md':
+            case 'classpath:public/changelog_de.md':
                 Resource res = Mock()
                 res.inputStream >> new ByteArrayInputStream(contentDe.bytes)
                 res.exists() >> true

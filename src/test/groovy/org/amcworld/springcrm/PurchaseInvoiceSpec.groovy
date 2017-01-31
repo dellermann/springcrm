@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoiceSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1190,7 +1190,10 @@ class PurchaseInvoiceSpec extends Specification {
         )
 
         when: 'I set the items'
-        pi.items = [new PurchaseInvoiceItem(unit: 'h', name: 'Service')]
+        pi.items = [
+            new PurchaseInvoiceItem(unit: 'h', name: 'Service', invoice: pi)
+                .save(failOnError: true)
+        ]
 
         then: 'the instance is valid'
         pi.validate()

@@ -27,7 +27,7 @@ import spock.lang.Specification
 
 
 @TestFor(Helpdesk)
-@Mock([Helpdesk, HelpdeskUser])
+@Mock([Helpdesk, HelpdeskUser, User, UserSetting])
 class HelpdeskSpec extends Specification {
 
     //-- Feature methods ------------------------
@@ -188,8 +188,20 @@ class HelpdeskSpec extends Specification {
 
     void 'Create user associations at insert'() {
         given: 'some users'
-        User u1 = new User(userName: 'User 1')
-        User u2 = new User(userName: 'User 2')
+        User u1 = new User(
+            userName: 'User 1',
+            password: 'verysecret',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'j.doe@example.com'
+        ).save failOnError: true
+        User u2 = new User(
+            userName: 'User 2',
+            password: 'alsoverysecret',
+            firstName: 'Mark',
+            lastName: 'Smith',
+            email: 'm.smith@example.com'
+        ).save failOnError: true
 
         and: 'a helpdesk'
         Helpdesk h = new Helpdesk(
@@ -431,26 +443,5 @@ class HelpdeskSpec extends Specification {
         'abc'   || true
         'a  x ' || true
         ' name' || true
-    }
-
-    def 'Organization must not be null'() {
-        given: 'a quite valid helpdesk'
-        Helpdesk h = new Helpdesk(
-            name: 'My helpdesk',
-            accessCode: 'ABC123',
-            users: [new User(userName: 'jsmith')] as Set<User>,
-        )
-
-        when: 'I set the organization'
-        h.organization = new Organization(name: 'My company, ltd.')
-
-        then: 'the instance is valid'
-        h.validate()
-
-        when: 'I unset the organization'
-        h.organization = null
-
-        then: 'the instance is not valid'
-        !h.validate()
     }
 }

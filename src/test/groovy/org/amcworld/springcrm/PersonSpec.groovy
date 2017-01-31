@@ -1,7 +1,7 @@
 /*
  * PersonSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -455,24 +455,23 @@ class PersonSpec extends Specification {
 			firstName: 'John', lastName: 'Doe', email1: email,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
-		p.validate()
 
 		then:
-		!valid == p.hasErrors()
+		valid == p.validate()
 
 		where:
-		email               | valid
-        null                | true
-        ''                  | true
-        ' '                 | true
-        'foo'               | false
-        'any name'          | false
-        'foobar@'           | false
-        '@mydomain.com'     | false
-        'user@mydomain'     | false
-        'user@.com'         | true
-        'user@mydomain.com' | true
-        'user@härbört.com'  | true
+		email               || valid
+        null                || true
+        ''                  || true
+        ' '                 || true
+        'foo'               || false
+        'any name'          || false
+        'foobar@'           || false
+        '@mydomain.com'     || false
+        'user@mydomain'     || false
+        'user@.com'         || false
+        'user@mydomain.com' || true
+        'user@härbört.com'  || true
 	}
 
 	def 'Email2 constraints'(String email, boolean valid) {
@@ -485,24 +484,23 @@ class PersonSpec extends Specification {
 			firstName: 'John', lastName: 'Doe', email2: email,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
-		p.validate()
 
 		then:
-		!valid == p.hasErrors()
+		valid == p.validate()
 
 		where:
-		email               | valid
-		null                | true
-        ''                  | true
-        ' '                 | true
-        'foo'               | false
-        'any name'          | false
-        'foobar@'           | false
-        '@mydomain.com'     | false
-        'user@mydomain'     | false
-        'user@.com'         | true
-        'user@mydomain.com' | true
-        'user@härbört.com'  | true
+		email               || valid
+		null                || true
+        ''                  || true
+        ' '                 || true
+        'foo'               || false
+        'any name'          || false
+        'foobar@'           || false
+        '@mydomain.com'     || false
+        'user@mydomain'     || false
+        'user@.com'         || false
+        'user@mydomain.com' || true
+        'user@härbört.com'  || true
 	}
 
 	def 'Job title constraints'() {
@@ -515,21 +513,20 @@ class PersonSpec extends Specification {
 			firstName: 'John', lastName: 'Doe', jobTitle: jobTitle,
 			mailingAddr: new Address(), otherAddr: new Address()
 		)
-		p.validate()
 
 		then:
-		!valid == p.hasErrors()
+		valid == p.validate()
 
 		where:
-		jobTitle		| valid
-		null			| true
-		''				| true
-		' '				| true
-		1003			| true
-		'Title'			| true
-		'Title 1003'	| true
-		'abc'*100		| true
-		'abc'*1000		| true
+		jobTitle		|| valid
+		null			|| true
+		''				|| true
+		' '				|| true
+		1003			|| true
+		'Title'			|| true
+		'Title 1003'	|| true
+		'abc'*100		|| true
+		'abc'*1000		|| true
 	}
 
 	def 'Department constraints'() {

@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXMLSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -263,10 +263,9 @@ class InvoicingTransactionXMLSpec extends Specification {
                 return null
             }
 
-            File f = new File(
-                "src/main/webapp${FopService.SYSTEM_FOLDER}/dtd", path
+            InputStream input = this.class.getResourceAsStream(
+                "/public/print/dtd/${path}".toString()
             )
-            InputStream input = f.newInputStream()
             new InputSource(input)
         } as EntityResolver
     }
@@ -381,7 +380,6 @@ class InvoicingTransactionXMLSpec extends Specification {
     }
 
     private void matchInvoicingTransaction(GPathResult entry) {
-        assert '1' == entry.@id.text()
         def addr = entry.billingAddr
         assert '12, Leonardo Rd.' == addr.street.text()
         assert 'NY-39830' == addr.postalCode.text()

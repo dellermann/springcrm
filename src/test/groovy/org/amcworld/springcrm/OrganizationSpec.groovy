@@ -1,7 +1,7 @@
 /*
  * OrganizationSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -415,24 +415,23 @@ class OrganizationSpec extends Specification {
             recType: 1, name: 'foo', billingAddr: new Address(),
             shippingAddr: new Address(), email1: email
         )
-        org.validate()
 
         then:
-        !valid == org.hasErrors()
+        valid == org.validate()
 
         where:
-        email               | valid
-        null                | true
-        ''                  | true
-        ' '                 | true
-        'foo'               | false
-        'any name'          | false
-        'foobar@'           | false
-        '@mydomain.com'     | false
-        'user@mydomain'     | false
-        'user@.com'         | true
-        'user@mydomain.com' | true
-        'user@härbört.com'  | true
+        email               || valid
+        null                || true
+        ''                  || true
+        ' '                 || true
+        'foo'               || false
+        'any name'          || false
+        'foobar@'           || false
+        '@mydomain.com'     || false
+        'user@mydomain'     || false
+        'user@.com'         || false
+        'user@mydomain.com' || true
+        'user@härbört.com'  || true
     }
 
     def 'E-mail 2 constraints'(String email, boolean valid) {
@@ -441,53 +440,51 @@ class OrganizationSpec extends Specification {
             recType: 1, name: 'foo', billingAddr: new Address(),
             shippingAddr: new Address(), email2: email
         )
-        org.validate()
 
         then:
-        !valid == org.hasErrors()
+        valid == org.validate()
 
         where:
-        email               | valid
-        null                | true
-        ''                  | true
-        ' '                 | true
-        'foo'               | false
-        'any name'          | false
-        'foobar@'           | false
-        '@mydomain.com'     | false
-        'user@mydomain'     | false
-        'user@.com'         | true
-        'user@mydomain.com' | true
-        'user@härbört.com'  | true
+        email               || valid
+        null                || true
+        ''                  || true
+        ' '                 || true
+        'foo'               || false
+        'any name'          || false
+        'foobar@'           || false
+        '@mydomain.com'     || false
+        'user@mydomain'     || false
+        'user@.com'         || false
+        'user@mydomain.com' || true
+        'user@härbört.com'  || true
     }
 
-    def 'Website constraints'() {
+    def 'Website constraints'(String url, boolean valid) {
         when:
         def org = new Organization(
             recType: 1, name: 'foo', billingAddr: new Address(),
             shippingAddr: new Address(), website: url
         )
-        org.validate()
 
         then:
-        !valid == org.hasErrors()
+        valid == org.validate()
 
         where:
-        url                                         | valid
-        null                                        | true
-        ''                                          | true
-        ' '                                         | true
-        'foobar'                                    | true
-        'any name'                                  | true      // XXX should be false
-        'mydomain.com'                              | true
-        'www.mydomain.com'                          | true
-        'http://www.mydomain.com'                   | true
-        'https://www.mydomain.com'                  | true
-        'ftp://www.mydomain.com'                    | true
-        'file:///foo/bar/whee'                      | true
-        'www.mydomain.com/foo/bar.html?id=5'        | true
-        'http://www.mydomain.com/foo/bar.html?id=5' | true
-        'http://www.mydomain.com/foo.html#bar'      | true
-        'http://www.härbört.com'                    | true
+        url                                         || valid
+        null                                        || true
+        ''                                          || true
+        ' '                                         || true
+        'foobar'                                    || true
+        'any name'                                  || true      // XXX should be false
+        'mydomain.com'                              || true
+        'www.mydomain.com'                          || true
+        'http://www.mydomain.com'                   || true
+        'https://www.mydomain.com'                  || true
+        'ftp://www.mydomain.com'                    || true
+        'file:///foo/bar/whee'                      || true
+        'www.mydomain.com/foo/bar.html?id=5'        || true
+        'http://www.mydomain.com/foo/bar.html?id=5' || true
+        'http://www.mydomain.com/foo.html#bar'      || true
+        'http://www.härbört.com'                    || true
     }
 }

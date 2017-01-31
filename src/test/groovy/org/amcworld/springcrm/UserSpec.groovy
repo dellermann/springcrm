@@ -433,13 +433,13 @@ class UserSpec extends Specification {
     }
 
     def 'Persisted instances are equal if they have the same ID'() {
-        given: 'three instances with different properties but same IDs'
+        given: 'three instances with different IDs but same name'
         def u1 = new User(userName: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'bwayne')
-        u2.id = 7403L
-        def u3 = new User(userName: 'mdoe')
-        u3.id = 7403L
+        def u2 = new User(userName: 'jsmith')
+        u2.id = 7404L
+        def u3 = new User(userName: 'jsmith')
+        u3.id = 8473L
 
         expect: 'equals() is reflexive'
         u1 == u1
@@ -458,13 +458,13 @@ class UserSpec extends Specification {
     }
 
     def 'Persisted instances are unequal if they have the different ID'() {
-        given: 'three instances with same properties but different IDs'
+        given: 'three instances with same IDs but different names'
         def u1 = new User(userName: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'jsmith')
-        u2.id = 7404L
-        def u3 = new User(userName: 'jsmith')
-        u3.id = 8473L
+        def u2 = new User(userName: 'bwayne')
+        u2.id = 7403L
+        def u3 = new User(userName: 'mdoe')
+        u3.id = 7403L
 
         expect: 'equals() is reflexive'
         u1 == u1
@@ -495,7 +495,7 @@ class UserSpec extends Specification {
         def u = new User(userName: 'jsmith')
 
         expect:
-        0i == u.hashCode()
+        'jsmith'.hashCode() == u.hashCode()
     }
 
     def 'Hash codes are consistent'() {
@@ -515,13 +515,13 @@ class UserSpec extends Specification {
     }
 
     def 'Equal instances produce the same hash code'() {
-        given: 'three instances with different properties but same IDs'
+        given: 'three instances with different IDs but same names'
         def u1 = new User(userName: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'bwayne')
-        u2.id = 7403L
-        def u3 = new User(userName: 'mdoe')
-        u3.id = 7403L
+        def u2 = new User(userName: 'jsmith')
+        u2.id = 7404L
+        def u3 = new User(userName: 'jsmith')
+        u3.id = 8473L
 
         expect:
         u1.hashCode() == u2.hashCode()
@@ -529,13 +529,13 @@ class UserSpec extends Specification {
     }
 
     def 'Different instances produce different hash codes'() {
-        given: 'three instances with same properties but different IDs'
+        given: 'three instances with same IDs but different names'
         def u1 = new User(userName: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'jsmith')
-        u2.id = 7404L
-        def u3 = new User(userName: 'jsmith')
-        u3.id = 8473L
+        def u2 = new User(userName: 'bwayne')
+        u2.id = 7403L
+        def u3 = new User(userName: 'mdoe')
+        u3.id = 7403L
 
         expect:
         u1.hashCode() != u2.hashCode()

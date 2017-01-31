@@ -1,7 +1,7 @@
 /*
  * ProjectItemUpdateInterceptorSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,15 +139,15 @@ class ProjectItemUpdateInterceptorSpec extends Specification {
         p.items = [
             new ProjectItem(
                 phase: ProjectPhase.planning, controller: 'call',
-                itemId: 456, title: 'Call to client'
+                itemId: 456, title: 'Call to client', project: p
             ),
             new ProjectItem(
                 phase: ProjectPhase.ordering, controller: 'salesOrder',
-                itemId: 4730, title: 'Order #3'
+                itemId: 4730, title: 'Order #3', project: p
             ),
             new ProjectItem(
                 phase: ProjectPhase.implementation, controller: 'call',
-                itemId: 456, title: 'Call to client'
+                itemId: 456, title: 'Call to client', project: p
             )
         ]
         p.save failOnError: true

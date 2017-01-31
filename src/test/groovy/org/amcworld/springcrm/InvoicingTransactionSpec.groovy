@@ -1161,7 +1161,11 @@ class InvoicingTransactionSpec extends Specification {
         )
 
         when: 'I set the items'
-        i.items = [new InvoicingItem(unit: 'h', name: 'Administration')]
+        i.items = [
+            new InvoicingItem(
+                unit: 'h', name: 'Administration', invoicingTransaction: i
+            )
+        ]
 
         then: 'the instance is valid'
         i.validate()

@@ -1360,6 +1360,13 @@ class SalesItemPricingSpec extends Specification {
             unit: new Unit(name: 'h')
         )
 
+        and: 'a pricing item'
+        def pi = new SalesItemPricingItem(
+            unit: 'h',
+            name: 'Service',
+            pricing: s
+        ).save(failOnError: true)
+
         when: 'I unset the items'
         s.items = null
 
@@ -1373,7 +1380,7 @@ class SalesItemPricingSpec extends Specification {
         !s.validate()
 
         when: 'I add an item'
-        s.items << new SalesItemPricingItem(unit: 'h', name: 'Service')
+        s.items << pi
 
         then: 'the instance is valid'
         s.validate()
