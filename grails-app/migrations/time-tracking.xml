@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  time-tracking.xml
+
+  Copyright (c) 2011-2017, Daniel Ellermann
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+  <!-- table and index definitions -->
+  <changeSet author="d.ellermann@amc-world.de" id="20170203-2">
+    <createTable tableName="department">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints primaryKey="true" primaryKeyName="departmentPK"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="cost_center" type="VARCHAR(40)"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="manager_id" type="BIGINT"/>
+      <column name="name" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createTable tableName="staff">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints primaryKey="true" primaryKeyName="staffPK"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="civil_status_id" type="BIGINT"/>
+      <column name="date_created" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="date_of_birth" type="date"/>
+      <column name="date_of_employment" type="date"/>
+      <column name="department_id" type="BIGINT"/>
+      <column name="email1" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="email2" type="VARCHAR(255)"/>
+      <column name="first_name" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="gender_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="graduation_id" type="BIGINT"/>
+      <column name="health_insurance_id" type="BIGINT"/>
+      <column name="health_insurance_private" type="BIT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_name" type="VARCHAR(50)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="last_updated" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="mobile" type="VARCHAR(40)"/>
+      <column name="nationality" type="VARCHAR(255)"/>
+      <column name="num_children" type="INT"/>
+      <column name="number" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="phone" type="VARCHAR(40)"/>
+      <column name="phone_home" type="VARCHAR(40)"/>
+      <column name="social_security_number" type="VARCHAR(255)"/>
+      <column name="tax_bracket_id" type="BIGINT"/>
+      <column name="user_id" type="BIGINT"/>
+      <column name="weekly_working_time" type="DECIMAL(5, 2)"/>
+      <column name="address_country" type="VARCHAR(255)"/>
+      <column name="address_location" type="VARCHAR(255)"/>
+      <column name="address_po_box" type="VARCHAR(255)"/>
+      <column name="address_postal_code" type="VARCHAR(255)"/>
+      <column name="address_state" type="VARCHAR(255)"/>
+      <column name="address_street" type="VARCHAR(255)"/>
+      <column name="bank_details_bank_name" type="VARCHAR(50)"/>
+      <column name="bank_details_bic" type="VARCHAR(11)"/>
+      <column name="bank_details_iban" type="VARCHAR(34)"/>
+      <column name="bank_details_owner" type="VARCHAR(50)"/>
+    </createTable>
+    <createTable tableName="time_slice">
+      <column autoIncrement="true" name="id" type="BIGINT">
+        <constraints primaryKey="true" primaryKeyName="time_slicePK"/>
+      </column>
+      <column name="version" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="LONGTEXT"/>
+      <column name="end" type="datetime"/>
+      <column name="project_id" type="BIGINT"/>
+      <column name="staff_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="start" type="datetime">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ticket_id" type="BIGINT"/>
+      <column name="type" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addUniqueConstraint columnNames="number"
+      constraintName="UC_STAFFNUMBER_COL" tableName="staff"/>
+
+    <createIndex indexName="name" tableName="department">
+      <column name="name"/>
+    </createIndex>
+    <createIndex indexName="end" tableName="time_slice">
+      <column name="end"/>
+    </createIndex>
+    <createIndex indexName="start" tableName="time_slice">
+      <column name="start"/>
+    </createIndex>
+
+    <addForeignKeyConstraint baseColumnNames="manager_id"
+      baseTableName="department" constraintName="FKabnmkeg4m7dxsh937ojlu8htw"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="staff"/>
+    <addForeignKeyConstraint baseColumnNames="department_id"
+      baseTableName="staff" constraintName="FK686rqn8cpu4ncey4odd8cw3hm"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="department"/>
+    <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="staff"
+      constraintName="FK9lmmm8klq7xi6wjliimaehlq4" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="user_data"/>
+    <addForeignKeyConstraint baseColumnNames="graduation_id"
+      baseTableName="staff" constraintName="FKbcpnch51fpwghf1hh8x89ibim"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value"/>
+    <addForeignKeyConstraint baseColumnNames="health_insurance_id"
+      baseTableName="staff" constraintName="FKcws8xc8c6d7v56ibnoewapudp"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value"/>
+    <addForeignKeyConstraint baseColumnNames="gender_id" baseTableName="staff"
+      constraintName="FKmxpwavn13h6ldovnr1nyt3c7s" deferrable="false"
+      initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value"/>
+    <addForeignKeyConstraint baseColumnNames="civil_status_id"
+      baseTableName="staff" constraintName="FKow0nqjxo3oiw1nq6od9qjs592"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value"/>
+    <addForeignKeyConstraint baseColumnNames="tax_bracket_id"
+      baseTableName="staff" constraintName="FKtkvqwoduucdnhkxj2oepew9nn"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value"/>
+    <addForeignKeyConstraint baseColumnNames="ticket_id"
+      baseTableName="time_slice" constraintName="FK127eax4h6tgbrk8c8wm96nla9"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="ticket"/>
+    <addForeignKeyConstraint baseColumnNames="project_id"
+      baseTableName="time_slice" constraintName="FK81y1wcy4ho3v0krdt4rksmtmm"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="project"/>
+    <addForeignKeyConstraint baseColumnNames="staff_id"
+      baseTableName="time_slice" constraintName="FKcslby1rlpd3p7qpiu63xy1h4s"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="staff"/>
+  </changeSet>
+</databaseChangeLog>

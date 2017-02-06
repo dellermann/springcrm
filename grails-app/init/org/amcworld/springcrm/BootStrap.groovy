@@ -40,7 +40,7 @@ class BootStrap {
 
     //-- Constants ------------------------------
 
-    public static final int CURRENT_DB_VERSION = 4i
+    public static final int CURRENT_DB_VERSION = 5i
 
 
     //-- Fields ---------------------------------

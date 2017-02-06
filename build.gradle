@@ -64,8 +64,10 @@ plugins {
  *
 \*===============================================*/
 
-version '2.1.8'
+version '3.0.0'
 group 'org.amcworld'
+
+sourceCompatibility = '1.8'
 
 apply plugin: 'project-report'
 apply plugin: 'war'
@@ -138,6 +140,7 @@ dependencies {
 
     compile 'org.hibernate:hibernate-core:5.1.2.Final'
     compile 'org.hibernate:hibernate-ehcache:5.1.2.Final'
+    compile 'org.hibernate:hibernate-java8:5.1.2.Final'
     compile 'org.liquibase:liquibase-core:3.5.3'    // XXX change along database-migration!
 
     /* XXX temporary for Grails 3.2.4 */

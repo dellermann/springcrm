@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  mysql-engine.xml
+
+  Copyright (c) 2011-2017, Daniel Ellermann
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+  <!-- database changes -->
+  <changeSet author="d.ellermann@amc-world.de" id="20170203-1">
+    <sql dbms="mysql">
+      ALTER TABLE `boilerplate` ENGINE = INNODB;
+      ALTER TABLE `calendar_event` ENGINE = INNODB;
+      ALTER TABLE `config` ENGINE = INNODB;
+      ALTER TABLE `DATABASECHANGELOG` ENGINE = INNODB;
+      ALTER TABLE `DATABASECHANGELOGLOCK` ENGINE = INNODB;
+      ALTER TABLE `data_file` ENGINE = INNODB;
+      ALTER TABLE `google_data_sync_status` ENGINE = INNODB;
+      ALTER TABLE `helpdesk` ENGINE = INNODB;
+      ALTER TABLE `helpdesk_users` ENGINE = INNODB;
+      ALTER TABLE `hibernate_sequence` ENGINE = INNODB;
+      ALTER TABLE `invoicing_item` ENGINE = INNODB;
+      ALTER TABLE `invoicing_transaction` ENGINE = INNODB;
+      ALTER TABLE `invoicing_transaction_terms_and_conditions` ENGINE = INNODB;
+      ALTER TABLE `ldap_sync_status` ENGINE = INNODB;
+      ALTER TABLE `lru_entry` ENGINE = INNODB;
+      ALTER TABLE `note` ENGINE = INNODB;
+      ALTER TABLE `organization` ENGINE = INNODB;
+      ALTER TABLE `panel` ENGINE = INNODB;
+      ALTER TABLE `person` ENGINE = INNODB;
+      ALTER TABLE `phone_call` ENGINE = INNODB;
+      ALTER TABLE `project` ENGINE = INNODB;
+      ALTER TABLE `project_document` ENGINE = INNODB;
+      ALTER TABLE `project_item` ENGINE = INNODB;
+      ALTER TABLE `purchase_invoice` ENGINE = INNODB;
+      ALTER TABLE `purchase_invoice_item` ENGINE = INNODB;
+      ALTER TABLE `reminder` ENGINE = INNODB;
+      ALTER TABLE `sales_item` ENGINE = INNODB;
+      ALTER TABLE `sales_item_pricing` ENGINE = INNODB;
+      ALTER TABLE `sales_item_pricing_item` ENGINE = INNODB;
+      ALTER TABLE `search_data` ENGINE = INNODB;
+      ALTER TABLE `sel_value` ENGINE = INNODB;
+      ALTER TABLE `seq_number` ENGINE = INNODB;
+      ALTER TABLE `ticket` ENGINE = INNODB;
+      ALTER TABLE `ticket_log_entry` ENGINE = INNODB;
+      ALTER TABLE `user_data` ENGINE = INNODB;
+      ALTER TABLE `user_setting` ENGINE = INNODB;
+    </sql>
+  </changeSet>
+</databaseChangeLog>

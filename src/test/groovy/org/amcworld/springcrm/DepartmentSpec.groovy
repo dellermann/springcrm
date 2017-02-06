@@ -38,6 +38,7 @@ class DepartmentSpec extends Specification {
             firstName: 'John',
             lastName: 'Doe'
         )
+
         and: 'a department'
         def d1 = new Department(
             name: 'Field service',
@@ -57,72 +58,157 @@ class DepartmentSpec extends Specification {
         !d2.id
     }
 
-    def 'Check for equality'() {
-        given: 'two department with different content'
-        def d1 = new Department(name: 'foo')
-        def d2 = new Department(name: 'bar')
-
-        and: 'the same IDs'
-        d1.id = 4903
-        d2.id = 4903
-
-        expect: 'both these departments are equal'
-        d2 == d1
-        d1 == d2
-    }
-
-    def 'Check for inequality'() {
-        given: 'two departments with the same content'
-        def d1 = new Department(name: 'foo')
-        def d2 = new Department(name: 'foo')
-
-        and: 'both the IDs set to different values'
-        d1.id = 4903
-        d2.id = 4904
-
-        when: 'I compare both these departments'
-        boolean b1 = (d2 != d1)
-        boolean b2 = (d1 != d2)
-
-        then: 'they are not equal'
-        b1
-        b2
-
-        when: 'I compare to null'
-        d2 = null
-
-        then: 'they are not equal'
-        d2 != d1
-        d1 != d2
-
-        when: 'I compare to another type'
-        String s = 'foo'
-
-        then: 'they are not equal'
-        d1 != s
-    }
-
-    def 'Compute hash code'() {
-        when: 'I create a department with no ID'
+    def 'Equals is null-safe'() {
+        given: 'a department'
         def d = new Department()
 
-        then: 'I get a valid hash code'
-        0 == d.hashCode()
+        expect:
+        null != d
+        d != null
+        !d.equals(null)
+    }
 
-        when: 'I create a department with discrete IDs'
-        d.id = id
+    def 'Instances of other types are always unequal'() {
+        given: 'a department'
+        def d = new Department()
 
-        then: 'I get a hash code using this ID'
-        e == d.hashCode()
+        expect:
+        d != 'foo'
+        d != 45
+        d != 45.3
+        d != new Date()
+    }
 
-        where:
-        id      ||     e
-        0       ||     0
-        1       ||     1
-        10      ||    10
-        105     ||   105
-        9404    ||  9404
-        37603   || 37603
+    def 'Not persisted instances are equal'() {
+        given: 'three instances without ID'
+        def d1 = new Department(name: 'Field service')
+        def d2 = new Department(name: 'IT')
+        def d3 = new Department(name: 'Management')
+
+        expect: 'equals() is reflexive'
+        d1 == d1
+        d2 == d2
+        d3 == d3
+
+        and: 'all instances are equal and equals() is symmetric'
+        d1 == d2
+        d2 == d1
+        d2 == d3
+        d3 == d2
+
+        and: 'equals() is transitive'
+        d1 == d3
+        d3 == d1
+    }
+
+    def 'Persisted instances are equal if they have the same ID'() {
+        given: 'three instances with different properties but same IDs'
+        def d1 = new Department(name: 'Field service')
+        d1.id = 7403L
+        def d2 = new Department(name: 'IT')
+        d2.id = 7403L
+        def d3 = new Department(name: 'Management')
+        d3.id = 7403L
+
+        expect: 'equals() is reflexive'
+        d1 == d1
+        d2 == d2
+        d3 == d3
+
+        and: 'all instances are equal and equals() is symmetric'
+        d1 == d2
+        d2 == d1
+        d2 == d3
+        d3 == d2
+
+        and: 'equals() is transitive'
+        d1 == d3
+        d3 == d1
+    }
+
+    def 'Persisted instances are unequal if they have the different ID'() {
+        given: 'three instances with same properties but different IDs'
+        def d1 = new Department(name: 'Field service')
+        d1.id = 7403L
+        def d2 = new Department(name: 'Field service')
+        d2.id = 7404L
+        def d3 = new Department(name: 'Field service')
+        d3.id = 8473L
+
+        expect: 'equals() is reflexive'
+        d1 == d1
+        d2 == d2
+        d3 == d3
+
+        and: 'all instances are unequal and equals() is symmetric'
+        d1 != d2
+        d2 != d1
+        d2 != d3
+        d3 != d2
+
+        and: 'equals() is transitive'
+        d1 != d3
+        d3 != d1
+    }
+
+    def 'Can compute hash code of an empty instance'() {
+        given: 'an empty instance'
+        def d = new Department()
+
+        expect:
+        0i == d.hashCode()
+    }
+
+    def 'Can compute hash code of a not persisted instance'() {
+        given: 'an instance without ID'
+        def d = new Department(name: 'Field service')
+
+        expect:
+        0i == d.hashCode()
+    }
+
+    def 'Hash codes are consistent'() {
+        given: 'an instance with ID'
+        def d = new Department(name: 'Field service')
+        d.id = 7403L
+
+        when: 'I compute the hash code'
+        int h = d.hashCode()
+
+        then: 'the hash code remains consistent'
+        for (int j = 0; j < 500; j++) {
+            d = new Department(name: 'IT')
+            d.id = 7403L
+            h == d.hashCode()
+        }
+    }
+
+    def 'Equal instances produce the same hash code'() {
+        given: 'three instances with different properties but same IDs'
+        def d1 = new Department(name: 'Field service')
+        d1.id = 7403L
+        def d2 = new Department(name: 'IT')
+        d2.id = 7403L
+        def d3 = new Department(name: 'Management')
+        d3.id = 7403L
+
+        expect:
+        d1.hashCode() == d2.hashCode()
+        d2.hashCode() == d3.hashCode()
+    }
+
+    def 'Different instances produce different hash codes'() {
+        given: 'three instances with same properties but different IDs'
+        def d1 = new Department(name: 'Field service')
+        d1.id = 7403L
+        def d2 = new Department(name: 'Field service')
+        d2.id = 7404L
+        def d3 = new Department(name: 'Field service')
+        d3.id = 8473L
+
+        expect:
+        d1.hashCode() != d2.hashCode()
+        d2.hashCode() != d3.hashCode()
     }
 
     def 'Convert to string'() {
@@ -151,10 +237,9 @@ class DepartmentSpec extends Specification {
     def 'Name must not be null or blank'(String name, boolean valid) {
         when:
         def d = new Department(name: name)
-        d.validate()
 
         then:
-        !valid == d.hasErrors()
+        valid == d.validate()
 
         where:
         name            || valid
@@ -170,10 +255,9 @@ class DepartmentSpec extends Specification {
     def 'Name must not be too long'(String name, boolean valid) {
         when:
         def d = new Department(name: name)
-        d.validate()
 
         then:
-        !valid == d.hasErrors()
+        valid == d.validate()
 
         where:
         name            || valid
@@ -186,10 +270,9 @@ class DepartmentSpec extends Specification {
     def 'Cost center must not be too long'(String cc, boolean valid) {
         when:
         def d = new Department(name: 'Field service', costCenter: cc)
-        d.validate()
 
         then:
-        !valid == d.hasErrors()
+        valid == d.validate()
 
         where:
         cc              || valid

@@ -42,4 +42,6 @@ databaseChangeLog = {
     include file: 'search.xml'
     include file: 'helpdesk-for-end-users.xml'
     include file: 'seq-number-order.xml'
+    include file: 'mysql-engine.xml'
+    include file: 'time-tracking.xml'
 }
