@@ -42,7 +42,7 @@ class Staff implements GormEntity<Staff> {
         'address.postalCode', 'address.location', 'address.state',
         'address.country', 'phone', 'phoneHome', 'mobile', 'phoneOther',
         'email1', 'email2', 'bankDetails.bankName', 'bankDetails.bic',
-        'bankDetails.iban', 'bankDetails.owner', 'socialSecurityNumber',
+        'bankDetails.iban', 'bankDetails.owner', 'socialSecurityNumber'
     ].asImmutable()
 
 

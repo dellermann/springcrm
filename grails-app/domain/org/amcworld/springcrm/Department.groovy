@@ -32,6 +32,12 @@ import org.grails.datastore.gorm.GormEntity
  */
 class Department implements GormEntity<Department> {
 
+    //-- Constants ----------------------------------
+
+    public static final List<String> SEARCH_FIELDS =
+        ['name', 'costCenter'].asImmutable()
+
+
     //-- Class fields ---------------------------
 
     static constraints = {

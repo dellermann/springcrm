@@ -110,6 +110,19 @@
           </ul>
         </li>
         </g:ifControllerAllowed>
+        <g:ifControllerAllowed controllers="department staff">
+        <li>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+            role="menuitem" aria-haspopup="true" aria-owns="menu-staff">
+            <g:message code="menu.staff"/> <span class="caret"></span>
+          </a>
+          <ul id="menu-staff" class="dropdown-menu" role="menu"
+            aria-expanded="false">
+            <g:ifControllerAllowed controllers="department"><li role="menuitem"><g:link controller="department"><g:message code="department.plural"/></g:link></li></g:ifControllerAllowed>
+            %{--<g:ifControllerAllowed controllers="staff"><li role="menuitem"><g:link controller="staff"><g:message code="staff.plural"/></g:link></li></g:ifControllerAllowed>--}%
+          </ul>
+        </li>
+        </g:ifControllerAllowed>
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-settings">
