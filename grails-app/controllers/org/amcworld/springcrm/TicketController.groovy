@@ -1,7 +1,7 @@
 /*
  * TicketController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ package org.amcworld.springcrm
 
 import javax.servlet.http.HttpServletResponse
 import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.validation.BindingResult
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -31,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile
  * helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.4
  */
 class TicketController {
@@ -219,7 +218,7 @@ class TicketController {
             }
         }
 
-        ticketInstance.properties = params as BindingResult
+        ticketInstance.properties = params
         if (!ticketInstance.save(flush: true)) {
             render view: 'edit', model: [
                 ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks

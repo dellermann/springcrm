@@ -27,7 +27,7 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
   <!-- table and index definitions -->
-  <changeSet author="d.ellermann@amc-world.de" id="20170203-2">
+  <changeSet author="d.ellermann@amc-world.de" id="20170206-1">
     <createTable tableName="department">
       <column autoIncrement="true" name="id" type="BIGINT">
         <constraints primaryKey="true" primaryKeyName="departmentPK"/>
@@ -90,8 +90,10 @@
       </column>
       <column name="phone" type="VARCHAR(40)"/>
       <column name="phone_home" type="VARCHAR(40)"/>
+      <column name="salutation_id" type="BIGINT"/>
       <column name="social_security_number" type="VARCHAR(255)"/>
       <column name="tax_bracket_id" type="BIGINT"/>
+      <column name="title" type="VARCHAR(20)"/>
       <column name="user_id" type="BIGINT"/>
       <column name="weekly_working_time" type="DECIMAL(5, 2)"/>
       <column name="address_country" type="VARCHAR(255)"/>
@@ -144,6 +146,10 @@
       baseTableName="department" constraintName="FKabnmkeg4m7dxsh937ojlu8htw"
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
       referencedTableName="staff"/>
+    <addForeignKeyConstraint baseColumnNames="salutation_id"
+      baseTableName="staff" constraintName="FK7s8vwkuh3v530vmp2fq3joi4g"
+      deferrable="false" initiallyDeferred="false" referencedColumnNames="id"
+      referencedTableName="sel_value"/>
     <addForeignKeyConstraint baseColumnNames="department_id"
       baseTableName="staff" constraintName="FK686rqn8cpu4ncey4odd8cw3hm"
       deferrable="false" initiallyDeferred="false" referencedColumnNames="id"

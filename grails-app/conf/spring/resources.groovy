@@ -1,7 +1,7 @@
 /*
  * resources.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,14 @@
  */
 
 
+package spring
+
 import javax.xml.transform.TransformerFactory
+import org.amcworld.springcrm.converter.BigDecimalValueConverter
 import org.amcworld.springcrm.converter.DateTimeValueConverter
+import org.amcworld.springcrm.converter.LocalDateTimeValueConverter
+import org.amcworld.springcrm.converter.LocalDateValueConverter
+import org.amcworld.springcrm.converter.LocalTimeValueConverter
 import org.amcworld.springcrm.converter.PrimitiveNumberValueConverter
 import org.amcworld.springcrm.google.GoogleCalendarSync
 import org.amcworld.springcrm.google.GoogleContactSync
@@ -45,6 +51,18 @@ beans = {
     /* value converters */
     defaultDateConverter(DateTimeValueConverter) {
         messageSource = ref('messageSource')
+    }
+    defaultLocalDateConverter(LocalDateValueConverter) {
+        messageSource = ref('messageSource')
+    }
+    defaultLocalDateTimeConverter(LocalDateTimeValueConverter) {
+        messageSource = ref('messageSource')
+    }
+    defaultLocalTimeConverter(LocalTimeValueConverter) {
+        messageSource = ref('messageSource')
+    }
+    defaultBigDecimalConverter(BigDecimalValueConverter) {
+        targetType = BigDecimal
     }
     [Short.TYPE, Integer.TYPE, Float.TYPE, Long.TYPE, Double.TYPE].each { numberType ->
         "defaultGrails${numberType.name}Converter"(PrimitiveNumberValueConverter) {

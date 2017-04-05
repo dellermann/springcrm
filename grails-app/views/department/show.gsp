@@ -15,9 +15,7 @@
             <f:display bean="${departmentInstance}" property="costCenter"/>
           </div>
           <div class="column">
-            <g:ifModuleAllowed modules="STAFF">
             <f:display bean="${departmentInstance}" property="manager"/>
-            </g:ifModuleAllowed>
           </div>
         </div>
       </section>

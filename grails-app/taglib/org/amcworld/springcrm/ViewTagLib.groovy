@@ -22,6 +22,10 @@ package org.amcworld.springcrm
 
 import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.StringUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
@@ -290,7 +294,9 @@ class ViewTagLib {
         if (attrs.precision) {
             precision = PRECISION_RANKINGS[attrs.precision]
         } else if (grailsApplication.config.grails.tags.dateInput.default.precision) {
-            precision = PRECISION_RANKINGS[grailsApplication.config.grails.tags.dateInput.default.precision]
+            precision = PRECISION_RANKINGS[
+                grailsApplication.config.grails.tags.dateInput.default.precision
+            ]
         }
 
         /* obtain attribute values */
@@ -300,12 +306,17 @@ class ViewTagLib {
         if (value.toString() == 'none') {
             value = null
         }
-        Calendar c = null
+        LocalDateTime dt = null
         if (value instanceof Calendar) {
-            c = value
-        } else if (value != null) {
-            c = new GregorianCalendar()
+            dt = LocalDateTime.from(((Calendar) value).toInstant())
+        } else if (value instanceof LocalDateTime) {
+            dt = value
+        } else if (value instanceof LocalDate) {
+            dt = LocalDateTime.of((LocalDate) value, LocalTime.MIDNIGHT)
+        } else if (value instanceof Date) {
+            Calendar c = new GregorianCalendar()
             c.setTime(value)
+            dt = LocalDateTime.from(((Calendar) value).toInstant())
         }
 
         def formatName
@@ -314,6 +325,7 @@ class ViewTagLib {
         } else {
             formatName = 'default.format.date'
         }
+        String format = message(code: formatName)
         boolean useTime = precision >= PRECISION_RANKINGS['hour']
 
         /*
@@ -322,24 +334,30 @@ class ViewTagLib {
          * date/time strings we use type "text" here. Maybe in future this will
          * be corrected in the HTML 5 standard.
          */
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format)
         out << """\
-<input type="hidden" name="${name}"
-  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />
+<input type="hidden" name="${name}" value="${dt ? dt.format(dtf) : ''}"/>
 """
         if (useTime) {
             out << '<div class="input-group date-time-control">'
         }
+        dtf = DateTimeFormatter.ofPattern(
+            message(code: "default.format.date") as String
+        )
         out << """\
 <input type="text" id="${id}-date" name="${name}_date"
-  value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
+  value="${dt ? dt.format(dtf) : ''}"
   class="form-control date-input-control date-input-date-control"
   maxlength="10" />
 """
 
         if (useTime) {
+            dtf = DateTimeFormatter.ofPattern(
+                message(code: "default.format.time") as String
+            )
             out << """\
 <input type="text" id="${id}-time" name="${name}_time"
-  value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
+  value="${dt ? dt.format(dtf) : ''}"
   class="form-control date-input-control date-input-time-control"
   maxlength="5" />
 </div>

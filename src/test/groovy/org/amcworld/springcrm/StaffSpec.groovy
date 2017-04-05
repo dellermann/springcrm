@@ -55,6 +55,8 @@ class StaffSpec extends Specification {
         and: 'a staff'
         def s1 = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
+            title: 'Dr.',
             firstName: 'John',
             lastName: 'Doe',
             address: new Address(
@@ -94,6 +96,7 @@ class StaffSpec extends Specification {
 
         then: 'I have some properties of the first staff in the second one'
         s2.number == s1.number
+        s2.salutation.is s1.salutation
         s2.phone == s1.phone
         s2.email1 == s1.email1
         s2.department.is s1.department
@@ -108,6 +111,7 @@ class StaffSpec extends Specification {
 
         and: 'some properties are unset'
         !s2.id
+        !s2.title
         !s2.firstName
         !s2.lastName
         !s2.phoneHome
@@ -334,6 +338,7 @@ class StaffSpec extends Specification {
     def 'Number must not be blank and max 30 char long'(String n, boolean v) {
         given: 'a quite valid staff'
         def s = new Staff(
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',
@@ -360,11 +365,66 @@ class StaffSpec extends Specification {
         'a' * 31	|| false
     }
 
+    def 'Salutation must not null'() {
+        given: 'a quite valid staff'
+        def s = new Staff(
+            number: '4379',
+            firstName: 'John',
+            lastName: 'Doe',
+            email1: 'j.doe@example.com',
+            gender: new Gender(name: 'male'),
+        )
+
+        when: 'I set the salutation'
+        s.salutation = new Salutation(name: 'Mr.')
+
+        then: 'the instance is valid'
+        s.validate()
+
+        when: 'I unset the salutation'
+        s.salutation = null
+
+        then: 'the instance is not valid'
+        !s.validate()
+    }
+
+    def 'Title must max 20 char long'(String t, boolean v) {
+        given: 'a quite valid staff'
+        def s = new Staff(
+            number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
+            firstName: 'John',
+            lastName: 'Doe',
+            email1: 'j.doe@example.com',
+            gender: new Gender(name: 'male'),
+        )
+
+        when: 'I set the title'
+        s.title = t
+
+        then: 'the instance is valid or not'
+        v == s.validate()
+
+        where:
+        t       	|| v
+        null    	|| true
+        ''      	|| true
+        '  \t ' 	|| true
+        'a'     	|| true
+        'S'     	|| true
+        'abc'   	|| true
+        'a  x ' 	|| true
+        ' name' 	|| true
+        'a' * 20	|| true
+        'a' * 21	|| false
+    }
+
     def 'First name must not be blank and max 50 char long'(String n, boolean v)
     {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             lastName: 'Doe',
             email1: 'j.doe@example.com',
             gender: new Gender(name: 'male'),
@@ -395,6 +455,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             email1: 'j.doe@example.com',
             gender: new Gender(name: 'male'),
@@ -424,6 +485,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',
@@ -454,6 +516,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',
@@ -484,6 +547,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',
@@ -514,6 +578,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             gender: new Gender(name: 'male'),
@@ -543,6 +608,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',
@@ -573,6 +639,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',
@@ -603,6 +670,7 @@ class StaffSpec extends Specification {
         given: 'a quite valid staff'
         def s = new Staff(
             number: '4379',
+            salutation: new Salutation(name: 'Mr.'),
             firstName: 'John',
             lastName: 'Doe',
             email1: 'j.doe@example.com',

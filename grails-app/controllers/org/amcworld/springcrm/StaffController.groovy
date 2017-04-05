@@ -1,5 +1,5 @@
 /*
- * DepartmentController.groovy
+ * StaffController.groovy
  *
  * Copyright (c) 2011-2017, Daniel Ellermann
  *
@@ -24,14 +24,14 @@ import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
- * The class {@code DepartmentController} contains actions which manage
- * departments of a company.
+ * The class {@code StaffController} contains actions which manage personnel
+ * of a company.
  *
  * @author  Daniel Ellermann
  * @version 3.0
  * @since   3.0
  */
-class DepartmentController {
+class StaffController {
 
     //-- Class fields ---------------------------
 
@@ -46,100 +46,95 @@ class DepartmentController {
 
         String letter = params.letter?.toString()
         if (letter) {
-            int num = Department.countByNameLessThan(letter)
+            int num = Staff.countByLastNameLessThan(letter)
             params.sort = 'name'
             params.offset = (Math.floor(num / max) * max) as int
             params.search = null
         }
 
-        List<Department> list
+        List<Staff> list
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Department.findAllByNameLike(searchFilter, params)
-            count = Department.countByNameLike(searchFilter)
+            list = Staff.findAllByLastNameLike(searchFilter, params)
+            count = Staff.countByLastNameLike(searchFilter)
         } else {
-            list = Department.list(params)
-            count = Department.count()
+            list = Staff.list(params)
+            count = Staff.count()
         }
 
-        [departmentInstanceList: list, departmentInstanceTotal: count]
+        [staffInstanceList: list, staffInstanceTotal: count]
     }
 
     def create() {
-        [departmentInstance: new Department(params)]
+        [staffInstance: new Staff(params)]
     }
 
     def copy(Long id) {
-        Department departmentInstance = Department.get(id)
-        if (!departmentInstance) {
+        Staff staffInstance = Staff.get(id)
+        if (!staffInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'department.label'), id]
+                args: [message(code: 'staff.label'), id]
             ) as Object
             redirect action: 'index'
             return
         }
 
-        departmentInstance = new Department(departmentInstance)
-        render view: 'create', model: [departmentInstance: departmentInstance]
+        staffInstance = new Staff(staffInstance)
+        render view: 'create', model: [staffInstance: staffInstance]
     }
 
     def save() {
-        Department departmentInstance = new Department(params)
-        if (!departmentInstance.save(flush: true)) {
-            render(
-                view: 'create', model: [departmentInstance: departmentInstance]
-            )
+        Staff staffInstance = new Staff(params)
+        if (!staffInstance.save(flush: true)) {
+            render view: 'create', model: [staffInstance: staffInstance]
             return
         }
 
-        request.departmentInstance = departmentInstance
+        request.staffInstance = staffInstance
         flash.message = message(
             code: 'default.created.message',
-            args: [
-                message(code: 'department.label'),
-                departmentInstance.toString()
-            ]
+            args: [message(code: 'staff.label'), staffInstance.toString()]
         ) as Object
 
-        redirect action: 'show', id: departmentInstance.id
+        redirect action: 'show', id: staffInstance.id
     }
 
     def show(Long id) {
-        Department departmentInstance = Department.get(id)
-        if (!departmentInstance) {
+        Staff staffInstance = Staff.get(id)
+        if (!staffInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'department.label'), id]
+                args: [message(code: 'staff.label'), id]
             ) as Object
             redirect action: 'index'
             return
         }
 
-        [departmentInstance: departmentInstance]
+        [staffInstance: staffInstance]
     }
 
     def edit(Long id) {
-        Department departmentInstance = Department.get(id)
-        if (!departmentInstance) {
+        Staff staffInstance = Staff.get(id)
+        if (!staffInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'department.label'), id]
+                args: [message(code: 'staff.label'), id]
             ) as Object
             redirect action: 'index'
             return
         }
 
-        [departmentInstance: departmentInstance]
+        [staffInstance: staffInstance]
     }
 
     def update(Long id) {
-        Department departmentInstance = Department.get(id)
-        if (!departmentInstance) {
+        Staff staffInstance = Staff.get(id)
+        if (!staffInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'department.label'), id]
+                args: [message(code: 'staff.label'), id]
             ) as Object
             redirect action: 'index', id: id
             return
@@ -147,65 +142,58 @@ class DepartmentController {
 
         if (params.version) {
             def version = params.version.toLong()
-            if (departmentInstance.version > version) {
-                departmentInstance.errors.rejectValue(
+            if (staffInstance.version > version) {
+                staffInstance.errors.rejectValue(
                     'version', 'default.optimistic.locking.failure',
-                    [
-                        message(code: 'department.label', default: 'Department')
-                    ] as Object[],
-                    'Another user has updated this department while you were ' +
-                        'editing'
+                    [message(code: 'staff.label', default: 'Staff')]
+                        as Object[],
+                    'Another user has updated this staff while you were editing'
                 )
-                render(
-                    view: 'edit',
-                    model: [departmentInstance: departmentInstance]
-                )
+                render view: 'edit', model: [staffInstance: staffInstance]
                 return
             }
         }
-        departmentInstance.properties = params
-        if (!departmentInstance.save(flush: true)) {
-            render view: 'edit', model: [departmentInstance: departmentInstance]
+        staffInstance.properties = params
+        println "time: ${params.weeklyWorkingTime} // ${staffInstance.weeklyWorkingTime}"
+        if (!staffInstance.save(flush: true)) {
+            render view: 'edit', model: [staffInstance: staffInstance]
             return
         }
 
-        request.departmentInstance = departmentInstance
+        request.staffInstance = staffInstance
         flash.message = message(
             code: 'default.updated.message',
-            args: [
-                message(code: 'department.label'),
-                departmentInstance.toString()
-            ]
+            args: [message(code: 'staff.label'), staffInstance.toString()]
         ) as Object
 
-        redirect action: 'show', id: departmentInstance.id
+        redirect action: 'show', id: staffInstance.id
     }
 
     def delete(Long id) {
-        def departmentInstance = Department.get(id)
-        if (!departmentInstance) {
+        Staff staffInstance = Staff.get(id)
+        if (!staffInstance) {
             flash.message = message(
                 code: 'default.not.found.message',
-                args: [message(code: 'department.label'), id]
+                args: [message(code: 'staff.label'), id]
             ) as Object
 
             redirect action: 'index'
             return
         }
 
-        request.departmentInstance = departmentInstance
+        request.staffInstance = staffInstance
         try {
-            departmentInstance.delete(flush: true)
+            staffInstance.delete(flush: true)
             flash.message = message(
                 code: 'default.deleted.message',
-                args: [message(code: 'department.label')]
+                args: [message(code: 'staff.label')]
             ) as Object
 
             redirect action: 'index'
         } catch (DataIntegrityViolationException ignore) {
             flash.message = message(
                 code: 'default.not.deleted.message',
-                args: [message(code: 'department.label')]
+                args: [message(code: 'staff.label')]
             ) as Object
             redirect action: 'show', id: id
         }

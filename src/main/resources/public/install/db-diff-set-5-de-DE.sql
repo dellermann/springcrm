@@ -34,7 +34,7 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3101, 0, 'wei
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3102, 0, 'drittes Geschlecht', 20, 'org.amcworld.springcrm.Gender')
 
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3120, 0, 'ledig', 0, 'org.amcworld.springcrm.CivilStatus')
-INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3121, 0, 'verheirated', 10, 'org.amcworld.springcrm.CivilStatus')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3121, 0, 'verheiratet', 10, 'org.amcworld.springcrm.CivilStatus')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3122, 0, 'verwitwet', 20, 'org.amcworld.springcrm.CivilStatus')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3123, 0, 'geschieden', 30, 'org.amcworld.springcrm.CivilStatus')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3124, 0, 'Ehe aufgehoben', 40, 'org.amcworld.springcrm.CivilStatus')

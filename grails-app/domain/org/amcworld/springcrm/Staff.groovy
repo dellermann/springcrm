@@ -40,7 +40,7 @@ class Staff implements GormEntity<Staff> {
     public static final List<String> SEARCH_FIELDS = [
         'number', 'firstName', 'lastName', 'address.street', 'address.poBox',
         'address.postalCode', 'address.location', 'address.state',
-        'address.country', 'phone', 'phoneHome', 'mobile', 'phoneOther',
+        'address.country', 'phone', 'phoneHome', 'mobile',
         'email1', 'email2', 'bankDetails.bankName', 'bankDetails.bic',
         'bankDetails.iban', 'bankDetails.owner', 'socialSecurityNumber'
     ].asImmutable()
@@ -50,6 +50,7 @@ class Staff implements GormEntity<Staff> {
 
     static constraints = {
         number blank: false, maxSize: 30, unique: true
+        title nullable: true, maxSize: 20
         firstName blank: false, maxSize: 50
         lastName blank: false, maxSize: 50
         phone nullable: true, maxSize: 40
@@ -80,9 +81,19 @@ class Staff implements GormEntity<Staff> {
     //-- Fields -------------------------------------
 
     /**
-     * The staff number of this staff.
+     * The number of this staff.
      */
     String number
+
+    /**
+     * The salutation of this staff.
+     */
+    Salutation salutation
+
+    /**
+     * The title of this staff.
+     */
+    String title
 
     /**
      * The first name of this staff.
@@ -217,6 +228,7 @@ class Staff implements GormEntity<Staff> {
 
     Staff(Staff staff) {
         number = staff.number
+        salutation = staff.salutation
         phone = staff.phone
         email1 = staff.email1
         department = staff.department

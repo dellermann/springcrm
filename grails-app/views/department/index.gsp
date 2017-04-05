@@ -26,10 +26,8 @@
                 title="${message(code: 'department.name.label')}"/>
               <g:sortableColumn property="costCenter"
                 title="${message(code: 'department.costCenter.label')}"/>
-              <g:ifModuleAllowed modules="STAFF">
-                <g:sortableColumn property="manager.fullName"
-                  title="${message(code: 'department.manager.label')}"/>
-              </g:ifModuleAllowed>
+              <g:sortableColumn property="manager.fullName"
+                title="${message(code: 'department.manager.label')}"/>
               <th></th>
             </tr>
           </thead>
@@ -45,14 +43,12 @@
               <td class="col-type-string department-cost-center">
                 <g:fieldValue bean="${departmentInstance}" field="costCenter"/>
               </td>
-              <g:ifModuleAllowed modules="STAFF">
-                <td class="col-type-ref department-manager">
-                  <g:link controller="staff" action="show"
-                    id="${departmentInstance.manager?.id}">
-                    <g:fieldValue bean="${departmentInstance}" field="manager"/>
-                  </g:link>
-                </td>
-              </g:ifModuleAllowed>
+              <td class="col-type-ref department-manager">
+                <g:link controller="staff" action="show"
+                  id="${departmentInstance.manager?.id}">
+                  <g:fieldValue bean="${departmentInstance}" field="manager"/>
+                </g:link>
+              </td>
               <td class="col-actions">
                 <g:button action="edit" id="${departmentInstance.id}"
                   color="success" size="xs" icon="pencil-square-o"

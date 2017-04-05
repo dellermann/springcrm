@@ -8,9 +8,7 @@
       <f:field bean="${departmentInstance}" property="costCenter"/>
     </div>
     <div class="column">
-      <g:ifModuleAllowed modules="STAFF">
       <f:field bean="${departmentInstance}" property="manager"/>
-      </g:ifModuleAllowed>
     </div>
   </div>
 </section>
