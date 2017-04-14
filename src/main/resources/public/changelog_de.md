@@ -1,6 +1,6 @@
 ## 2.1.8
 
-* Aktualisierung auf Grails 3.2.4, Groovy 2.4.8 und Gradle 3.3
+* Aktualisierung auf Grails 3.2.8, Groovy 2.4.10 und Gradle 3.5
 
 ## 2.1.7
 
