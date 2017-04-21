@@ -42,4 +42,5 @@ databaseChangeLog = {
     include file: 'search.xml'
     include file: 'helpdesk-for-end-users.xml'
     include file: 'seq-number-order.xml'
+    include file: 'orders.xml'
 }

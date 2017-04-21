@@ -136,8 +136,8 @@
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-controllers:3.2.8" />
           <element id="library" level="project" name="Gradle: com.bertramlabs.plugins:asset-pipeline-core:2.13.0" />
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-datasource:3.2.8" />
-          <element id="library" level="project" name="Gradle: org.mozilla:rhino:1.7R4" />
           <element id="library" level="project" name="Gradle: commons-lang:commons-lang:2.6" />
+          <element id="library" level="project" name="Gradle: org.mozilla:rhino:1.7R4" />
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-codecs:3.2.8" />
           <element id="library" level="project" name="Gradle: com.github.sommeri:less4j:1.17.2" />
           <element id="library" level="project" name="Gradle: org.grails:grails-logging:3.2.8" />
@@ -200,10 +200,10 @@
           <element id="library" level="project" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" />
           <element id="library" level="project" name="Gradle: io.projectreactor:reactor-bus:2.0.8.RELEASE" />
           <element id="library" level="project" name="Gradle: com.google.protobuf:protobuf-java:2.5.0" />
-          <element id="library" level="project" name="Gradle: commons-validator:commons-validator:1.5.1" />
           <element id="library" level="project" name="Gradle: junit:junit:4.12" />
-          <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy-json:2.4.10" />
+          <element id="library" level="project" name="Gradle: commons-validator:commons-validator:1.5.1" />
           <element id="library" level="project" name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1" />
+          <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy-json:2.4.10" />
           <element id="library" level="project" name="Gradle: org.grails:grails-taglib:3.2.8" />
           <element id="library" level="project" name="Gradle: com.google.http-client:google-http-client:1.21.0" />
           <element id="library" level="project" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" />

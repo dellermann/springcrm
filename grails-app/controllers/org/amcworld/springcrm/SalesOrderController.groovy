@@ -1,7 +1,7 @@
 /*
  * SalesOrderController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.web.multipart.MultipartFile
 
 
 /**
@@ -30,9 +31,14 @@ import org.springframework.dao.DataIntegrityViolationException
  * orders.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
 class SalesOrderController {
+
+    //-- Constants ------------------------------
+
+    public static final DataFileType FILE_TYPE = DataFileType.salesOrder
+
 
     //-- Class fields ---------------------------
 
@@ -41,6 +47,7 @@ class SalesOrderController {
 
     //-- Fields ---------------------------------
 
+    DataFileService dataFileService
     FopService fopService
     InvoicingTransactionService invoicingTransactionService
 
@@ -124,6 +131,8 @@ class SalesOrderController {
 
     def save() {
         SalesOrder salesOrderInstance = new SalesOrder(params)
+        salesOrderInstance.orderDocument =
+            dataFileService.storeFile(FILE_TYPE, params.file)
         if (!invoicingTransactionService.save(salesOrderInstance, params)) {
             render view: 'create',
                 model: [salesOrderInstance: salesOrderInstance]
@@ -201,10 +210,23 @@ class SalesOrderController {
             }
         }
 
+        DataFile df = salesOrderInstance.orderDocument
+        if (params.fileRemove == '1') {
+            salesOrderInstance.orderDocument = null
+        } else if (!params.file?.empty) {
+            df = dataFileService.updateFile(
+                FILE_TYPE, df, (MultipartFile) params.file
+            )
+            salesOrderInstance.orderDocument = df
+        }
+
         if (!invoicingTransactionService.save(salesOrderInstance, params)) {
             render view: 'edit',
                 model: [salesOrderInstance: salesOrderInstance]
             return
+        }
+        if (params.fileRemove == '1' && df) {
+            dataFileService.removeFile FILE_TYPE, df
         }
 
         request.salesOrderInstance = salesOrderInstance

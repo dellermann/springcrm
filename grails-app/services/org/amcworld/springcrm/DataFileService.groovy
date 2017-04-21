@@ -1,7 +1,7 @@
 /*
  * DataFileService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ import org.springframework.web.multipart.MultipartFile
 @Transactional
 class DataFileService {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     GrailsApplication grailsApplication
 
@@ -62,10 +62,13 @@ class DataFileService {
      * @return      the base directory
      */
     File getBaseDir(String type) {
-        File dir = new File(grailsApplication.config.springcrm.dir.data, type)
+        File dir = new File(
+            grailsApplication.config.springcrm.dir.data.toString(), type
+        )
         if (!dir.exists()) {
             dir.mkdirs()
         }
+
         dir
     }
 
@@ -79,8 +82,7 @@ class DataFileService {
      *                  {@code false} otherwise
      */
     boolean removeFile(DataFileType type, DataFile dataFile) {
-        boolean res = retrieveFile(type, dataFile).delete()
-        res && dataFile.delete()
+        retrieveFile(type, dataFile).delete() && dataFile.delete()
     }
 
     /**
@@ -113,6 +115,7 @@ class DataFileService {
             dataFile.save failOnError: true
             f.transferTo retrieveFile(type, dataFile)
         }
+
         dataFile
     }
 
@@ -135,6 +138,7 @@ class DataFileService {
             dataFile.save failOnError: true
             f.transferTo retrieveFile(type, dataFile)
         }
+
         dataFile
     }
 }

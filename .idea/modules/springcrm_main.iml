@@ -42,9 +42,9 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:1.4.5.RELEASE" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.5.11" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-el:8.5.11" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:8.5.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:8.5.11" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-web:1.4.5.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-actuator:1.4.5.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.4.5.RELEASE" level="project" />
@@ -174,8 +174,8 @@
     <orderEntry type="library" name="Gradle: org.grails:grails-plugin-controllers:3.2.8" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.bertramlabs.plugins:asset-pipeline-core:2.13.0" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-plugin-datasource:3.2.8" level="project" />
-    <orderEntry type="library" name="Gradle: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: org.mozilla:rhino:1.7R4" level="project" />
+    <orderEntry type="library" name="Gradle: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-plugin-codecs:3.2.8" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.github.sommeri:less4j:1.17.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-logging:3.2.8" level="project" />
@@ -238,10 +238,10 @@
     <orderEntry type="library" scope="RUNTIME" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" level="project" />
     <orderEntry type="library" name="Gradle: io.projectreactor:reactor-bus:2.0.8.RELEASE" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: com.google.protobuf:protobuf-java:2.5.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Gradle: commons-validator:commons-validator:1.5.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-json:2.4.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-taglib:3.2.8" level="project" />
     <orderEntry type="library" name="Gradle: com.google.http-client:google-http-client:1.21.0" level="project" />
     <orderEntry type="library" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" level="project" />

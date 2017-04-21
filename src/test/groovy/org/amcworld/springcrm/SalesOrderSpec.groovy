@@ -1,7 +1,7 @@
 /*
  * SalesOrderSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,9 @@ class SalesOrderSpec extends Specification {
         null == so.quote
         null == so.invoices
         null == so.stage
+        null == so.orderDate
+        null == so.orderDocument
+        null == so.signature
         null == so.dueDate
         null == so.deliveryDate
     }
@@ -98,6 +101,9 @@ class SalesOrderSpec extends Specification {
         null == so2.quote
         null == so2.invoices
         null == so2.stage
+        null == so2.orderDate
+        null == so2.orderDocument
+        null == so2.signature
         null == so2.dueDate
         null == so2.deliveryDate
     }
@@ -161,6 +167,9 @@ class SalesOrderSpec extends Specification {
             quote: new Quote(),
             invoices: [new Invoice(), new Invoice()],
             stage: new SalesOrderStage(),
+            orderDate: new Date(),
+            orderDocument: new DataFile(),
+            signature: 'xml+svg',
             dueDate: dueDate,
             deliveryDate: deliveryDate
         )
@@ -207,6 +216,9 @@ class SalesOrderSpec extends Specification {
         null == so2.dateCreated
         null == so2.lastUpdated
         null == so2.invoices
+        null == so2.orderDate
+        null == so2.orderDocument
+        null == so2.signature
         null == so2.dueDate
         null == so2.deliveryDate
     }

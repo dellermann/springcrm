@@ -1,7 +1,7 @@
 /*
  * SalesOrder.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import org.grails.datastore.gorm.GormEntity
  * The class {@code SalesOrder} represents a sales order.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
 class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
 {
@@ -47,6 +47,9 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     //-- Class fields ---------------------------
 
     static constraints = {
+        orderDate nullable: true
+        orderDocument nullable: true
+        signature nullable: true
         dueDate nullable: true
         deliveryDate nullable: true
         quote nullable: true
@@ -55,6 +58,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
     static hasMany = [invoices: Invoice]
     static mapping = {
         stage column: 'so_stage_id'
+        signature type: 'text'
     }
 
 
@@ -64,6 +68,27 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
      * The stage of this sales order.
      */
     SalesOrderStage stage
+
+    /**
+     * The date when the client placed the order.
+     *
+     * @since 2.2
+     */
+    Date orderDate
+
+    /**
+     * A document containing the order of the client.
+     *
+     * @since 2.2
+     */
+    DataFile orderDocument
+
+    /**
+     * The signature of the client in SVG format.
+     *
+     * @since 2.2
+     */
+    String signature
 
     /**
      * The date when the delivery should take place.

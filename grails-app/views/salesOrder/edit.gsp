@@ -1,22 +1,24 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
+    <meta name="layout" content="main"/>
     <title>
       <g:message code="invoicingTransaction.edit.label"
-        args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]" /> -
-      <g:message code="salesOrder.plural" />
+        args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]"/> -
+      <g:message code="salesOrder.plural"/>
     </title>
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="stylesheet" content="invoicing-transaction"/>
   </head>
 
   <body>
-    <g:applyLayout name="edit"
-      model="[type: 'salesOrder', instance: salesOrderInstance]" />
+    <g:applyLayout name="edit" model="[
+      type: 'salesOrder', instance: salesOrderInstance,
+      enctype: 'multipart/form-data'
+    ]"/>
 
     <content tag="scripts">
-      <asset:javascript src="invoicing-transaction-form" />
+      <asset:javascript src="sales-order-form"/>
       <asset:script>//<![CDATA[
-        new SPRINGCRM.InvoicingTransaction(
+        new SPRINGCRM.SalesOrder(
           $("#sales-order-form"), {
               checkStageTransition: false,
               stageValues: {

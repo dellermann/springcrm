@@ -1,7 +1,7 @@
 /*
  * DataFile.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,10 +150,11 @@ class DataFile {
  * which can be stored in the system.
  *
  * @author  Daniel Ellermann
- * @version 1.4
+ * @version 2.2
  * @since   1.4
  */
 enum DataFileType {
     purchaseInvoice,
+    salesOrder,
     ticketMessage
 }
