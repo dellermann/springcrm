@@ -1,7 +1,7 @@
 /*
  * PurchaseInvoiceController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,6 +230,7 @@ class PurchaseInvoiceController {
             df = dataFileService.updateFile(
                 FILE_TYPE, df, (MultipartFile) params.file
             )
+            purchaseInvoiceInstance.documentFile = df
         }
 
         if (!purchaseInvoiceInstance.save(failOnError: true, flush: true)) {
