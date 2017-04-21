@@ -1,6 +1,6 @@
 {
   "name": "springcrm",
-  "version": "2.1.8",
+  "version": "2.2.0",
   "homepage": "https://www.springcrm.de",
   "authors": [
     {
@@ -31,7 +31,7 @@
   "dependencies": {
     "bootstrap": "~3.3.7",
     "bootstrap-datepicker": "~1.6.4",
-    "bootstrap-fileinput": "~4.3.6",
+    "bootstrap-fileinput": "~4.3.8",
     "font-awesome": "~4.7.0",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.5",
