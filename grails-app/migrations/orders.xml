@@ -26,13 +26,48 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <!-- Table definitions -->
-
   <changeSet author="d.ellermann@amc-world.de" id="20170421-1">
     <addColumn tableName="invoicing_transaction">
       <column name="order_date" type="datetime" afterColumn="so_stage_id"/>
-      <column name="order_document_id" type="bigint" afterColumn="order_date"/>
+      <column name="order_method_id" type="bigint" afterColumn="order_date"/>
+      <column name="order_document_id" type="bigint"
+        afterColumn="order_method_id"/>
       <column name="signature" type="longtext" afterColumn="order_document_id"/>
     </addColumn>
+    <insert tableName="sel_value">
+      <column name="id" value="4000"/>
+      <column name="version" value="0"/>
+      <column name="name" value="E-Mail"/>
+      <column name="order_id" value="10"/>
+      <column name="class" value="org.amcworld.springcrm.OrderMethod"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" value="4001"/>
+      <column name="version" value="0"/>
+      <column name="name" value="Post"/>
+      <column name="order_id" value="20"/>
+      <column name="class" value="org.amcworld.springcrm.OrderMethod"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" value="4002"/>
+      <column name="version" value="0"/>
+      <column name="name" value="Telefax"/>
+      <column name="order_id" value="30"/>
+      <column name="class" value="org.amcworld.springcrm.OrderMethod"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" value="4003"/>
+      <column name="version" value="0"/>
+      <column name="name" value="Telefon"/>
+      <column name="order_id" value="40"/>
+      <column name="class" value="org.amcworld.springcrm.OrderMethod"/>
+    </insert>
+    <insert tableName="sel_value">
+      <column name="id" value="4004"/>
+      <column name="version" value="0"/>
+      <column name="name" value="Kunde direkt"/>
+      <column name="order_id" value="50"/>
+      <column name="class" value="org.amcworld.springcrm.OrderMethod"/>
+    </insert>
   </changeSet>
 </databaseChangeLog>

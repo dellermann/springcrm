@@ -1,3 +1,8 @@
+## 2.2.0
+
+* Add information about orders (date, document, signature of client) to sales
+  orders
+
 ## 2.1.8
 
 * Upgrade to Grails 3.2.8, Groovy 2.4.10 and Gradle 3.5
@@ -12,6 +17,8 @@
 * Display sequence numbers in correct order
 * Support for launching web site on Unix and Linux
 
+[comment]: STOP
+
 ## 2.1.6
 
 * Support for helpdesks for end users
@@ -19,8 +26,6 @@
   ([issue #58](https://github.com/dellermann/springcrm/issues/58))
 * Submitting forms does not work in Microsoft Edge
   ([issue #94](https://github.com/dellermann/springcrm/issues/94))
-
-[comment]: STOP
 
 ## 2.1.5
 

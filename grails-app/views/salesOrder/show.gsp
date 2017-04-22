@@ -49,6 +49,7 @@
           </div>
           <div class="column">
             <f:display bean="${salesOrderInstance}" property="orderDate"/>
+            <f:display bean="${salesOrderInstance}" property="orderMethod"/>
             <f:display bean="${salesOrderInstance}" property="orderDocument"/>
             <f:display bean="${salesOrderInstance}" property="docDate" />
             <f:display bean="${salesOrderInstance}" property="dueDate" />

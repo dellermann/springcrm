@@ -1,3 +1,8 @@
+## 2.2.0
+
+* Information über Aufträge (Datum, Dokument, Unterschrift des Kunden) zu
+  Verkaufsbestellungen
+
 ## 2.1.8
 
 * Aktualisierung auf Grails 3.2.8, Groovy 2.4.10 und Gradle 3.5

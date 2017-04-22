@@ -48,6 +48,7 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
 
     static constraints = {
         orderDate nullable: true
+        orderMethod nullable: true
         orderDocument nullable: true
         signature nullable: true
         dueDate nullable: true
@@ -75,6 +76,13 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
      * @since 2.2
      */
     Date orderDate
+
+    /**
+     * The way the order has been placed.
+     *
+     * @since 2.2
+     */
+    OrderMethod orderMethod
 
     /**
      * A document containing the order of the client.

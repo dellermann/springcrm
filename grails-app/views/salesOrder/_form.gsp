@@ -16,6 +16,7 @@
     </div>
     <div class="column">
       <f:field bean="${salesOrderInstance}" property="orderDate"/>
+      <f:field bean="${salesOrderInstance}" property="orderMethod"/>
       <f:field bean="${salesOrderInstance}" property="orderDocument"/>
       <f:field bean="${salesOrderInstance}" property="docDate"/>
       <f:field bean="${salesOrderInstance}" property="dueDate"/>

@@ -63,6 +63,7 @@ class SalesOrderSpec extends Specification {
         null == so.invoices
         null == so.stage
         null == so.orderDate
+        null == so.orderMethod
         null == so.orderDocument
         null == so.signature
         null == so.dueDate
@@ -102,6 +103,7 @@ class SalesOrderSpec extends Specification {
         null == so2.invoices
         null == so2.stage
         null == so2.orderDate
+        null == so2.orderMethod
         null == so2.orderDocument
         null == so2.signature
         null == so2.dueDate
@@ -168,6 +170,7 @@ class SalesOrderSpec extends Specification {
             invoices: [new Invoice(), new Invoice()],
             stage: new SalesOrderStage(),
             orderDate: new Date(),
+            orderMethod: new OrderMethod(),
             orderDocument: new DataFile(),
             signature: 'xml+svg',
             dueDate: dueDate,
@@ -217,6 +220,7 @@ class SalesOrderSpec extends Specification {
         null == so2.lastUpdated
         null == so2.invoices
         null == so2.orderDate
+        null == so2.orderMethod
         null == so2.orderDocument
         null == so2.signature
         null == so2.dueDate

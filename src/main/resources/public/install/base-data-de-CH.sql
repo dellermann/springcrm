@@ -189,6 +189,11 @@ INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2604, 0, 'abg
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (2605, 0, 'abgebrochen', 60, 'org.amcworld.springcrm.ProjectStatus');
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3000, 0, 'Hardware', 0, 'org.amcworld.springcrm.ProductCategory')
 INSERT INTO sel_value (id, version, name, order_id, class) VALUES (3001, 0, 'Software', 0, 'org.amcworld.springcrm.ProductCategory')
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (4000, 0, 'E-Mail', 10, 'org.amcworld.springcrm.OrderMethod');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (4001, 0, 'Post', 20, 'org.amcworld.springcrm.OrderMethod');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (4002, 0, 'Telefax', 30, 'org.amcworld.springcrm.OrderMethod');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (4003, 0, 'Telefon', 40, 'org.amcworld.springcrm.OrderMethod');
+INSERT INTO sel_value (id, version, name, order_id, class) VALUES (4004, 0, 'Kunde direkt', 50, 'org.amcworld.springcrm.OrderMethod');
 
 -- insert sequence number predefinitions
 INSERT INTO seq_number (id, version, controller_name, end_value, prefix, start_value, suffix, order_id) VALUES (1, 0, 'quote', 99999, 'A', 10000, '', 100)
