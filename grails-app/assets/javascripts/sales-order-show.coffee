@@ -1,5 +1,5 @@
 #
-# sales-order-form.coffee
+# sales-order-show.coffee
 #
 # Copyright (c) 2011-2017, Daniel Ellermann
 #
@@ -17,19 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
-#= require _document-file-input
 #= require _sales-order-signature
-#= require invoicing-transaction-form
 
 
 #== Classes =====================================
 
-# Class `SalesOrder` represents a sales order form.
+# Class `SalesOrderShow` represents a sales order show view.
 #
 # @author   Daniel Ellermann
 # @version  2.2
 #
-class SalesOrder
+class SalesOrderShow
 
   #-- Internal variables ------------------------
 
@@ -42,18 +40,26 @@ class SalesOrder
   # Creates a new widget which handles the actions within a sales order form.
   #
   # @param [jQuery] $element  the element containing the form
-  # @param [Object] [options] any options
   #
-  constructor: ($element, options = {}) ->
-    S = SPRINGCRM
+  constructor: ($element) ->
+    new SPRINGCRM.SalesOrderSignature $element,
+      onChangeSignature: ($input) => @_onChangeSignature $input
 
-    $element.find('#file')
-      .each -> new SPRINGCRM.DocumentFileInput $(this)
 
-    new S.SalesOrderSignature $element
-    new S.InvoicingTransaction $element, options
+  #-- Non-public methods ------------------------
+
+  # Called when a new signature should be saved.  The method submits the form
+  # containing the signature data.
+  #
+  # @param [jQuery] $input  the input where the signature data is stored
+  # @private
+  #
+  _onChangeSignature: ($input) ->
+    $input.closest('form').submit()
+
+    return
 
 
 #== Main ========================================
 
-SPRINGCRM.SalesOrder = SalesOrder
+new SalesOrderShow $('#sales-order-show')

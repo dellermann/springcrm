@@ -43,6 +43,7 @@
     "js-calc": "~0.9.10",
     "qunit": "~1.18.0",
     "selectize": "~0.12.4",
+    "signature_pad": "~2.1.0",
     "typeahead.js": "~0.11.1",
     "typeahead.js-bootstrap3.less": "~0.2.3",
     "vat-calc": "~0.9.5"

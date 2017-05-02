@@ -1,7 +1,7 @@
 #
 # document.coffee
 #
-# Copyright (c) 2011-2015, Daniel Ellermann
+# Copyright (c) 2011-2017, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require _document-file-input
 #= require _document-list
-#= require _fileinput-builder
-#= require templates/widgets/file-upload-document
 
 
 $ = jQuery
@@ -27,79 +26,88 @@ $ = jQuery
 
 #== Classes =====================================
 
-# Class `DocumentFileinput` represents a file input widget for setting the
-# document of a purchase invoice.
+# Class `DocumentList` handles the document list.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.2
+# @since    2.2
 #
-class DocumentFileinput
+class DocumentList
 
   #-- Internal variables ------------------------
 
   # @nodoc
-  $ = jQuery
-
-  # @nodoc
-  $LANG = $L
+  $ = jq = jQuery
 
 
   #-- Constructor -------------------------------
 
-  # Creates a new file input widget for setting the document of a purchase
-  # invoice.
+  # Creates a new handler for the document list.
   #
-  # @param [jQuery] $element  the file input control which is augmented as widget
+  constructor: ->
+    $ = jq
+
+    @$currentPath = $('#current-path')
+    @$documentList = $documentList = $('#document-list').documentlist
+      pathChanged: (path) => @_onPathChanged path
+    @createFolderUrl = $documentList.data 'create-folder-url'
+
+    new SPRINGCRM.DocumentFileInput $('#upload-file'),
+      builderOptions:
+        showUpload: true
+
+    $('#create-folder-dialog').on(
+        'click', '.create-btn', (event) => @_onClickCreateFolderDialog event
+      )
+
+
+  #-- Non-public methods ------------------------
+
+  # Called when the button to create a new folder has been clicked.  The method
+  # displays a dialog which allows entering the folder name.
   #
-  constructor: ($element) ->
-    $L = $LANG
-    tmpl = Handlebars.templates['widgets/file-upload-document']
+  # @param [Event] event  any event data
+  # @private
+  #
+  _onClickCreateFolderDialog: (event) ->
+    $dialog = $(event.delegateTarget)
+    $input = $dialog.find '.modal-body .form-control'
 
-    builder = new SPRINGCRM.FileinputBuilder
-      browseIcon: '<i class="fa fa-file-o"></i> '
-      browseLabel: $L('purchaseInvoice.documentFile.select')
-      layoutTemplates:
-        main1: tmpl section: 'main1'
-      removeClass: 'btn btn-danger btn-sm'
-      removeIcon: '<i class="fa fa-trash-o"></i> '
-      removeLabel: $L('purchaseInvoice.documentFile.delete')
-      showPreview: false
-      showRemove: true
-      showUpload: true
+    name = $input.val()
+    if name
+      data =
+        name: name
+        path: @$currentPath.val()
+      $.get(@createFolderUrl, data).done => @_onFolderCreated()
 
-    previewOptions = {}
-    url = $element.data 'initial-file'
-    if url
-      previewOptions.initialPreview = [url]
-    builder.addOptions previewOptions
+    $input.val ''
+    $dialog.modal 'hide'
 
-    builder.build $element
+    return
+
+  # Called when the folder has been created on the server.
+  #
+  # @private
+  #
+  _onFolderCreated: ->
+    @$documentList.documentlist 'addFolder',
+      name: name
+      readable: true
+      writeable: true
+
+    return
+
+  # Called when the path of the document list has been changed.
+  #
+  # @param [String] path  the current path
+  # @private
+  #
+  _onPathChanged: (path) ->
+    @$currentPath.val path
+
+    return
 
 
 #== Main ========================================
 
-$documentList = $('#document-list').documentlist
-  pathChanged: (path) -> $('#current-path').val path
-
-new DocumentFileinput $('#upload-file')
-
-$('#create-folder-dialog').on 'click', '.create-btn', (event) ->
-  $dialog = $(event.delegateTarget)
-  $input = $dialog.find '.modal-body .form-control'
-
-  name = $input.val()
-  if name
-    data =
-      path: $('#current-path').val(),
-      name: name
-    $.get($documentList.data('create-folder-url'), data).done ->
-      $documentList.documentlist 'addFolder',
-        name: name
-        readable: true
-        writeable: true
-
-  $input.val ''
-  $dialog.modal 'hide'
-
-# vim:set ts=2 sw=2 sts=2:
-
+new DocumentList()

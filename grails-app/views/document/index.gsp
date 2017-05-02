@@ -66,7 +66,7 @@
           </div>
         </div>
       </div>
-     </div>
+    </div>
 
     <content tag="scripts">
       <asset:javascript src="document" />

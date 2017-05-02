@@ -18,6 +18,7 @@
       <f:field bean="${salesOrderInstance}" property="orderDate"/>
       <f:field bean="${salesOrderInstance}" property="orderMethod"/>
       <f:field bean="${salesOrderInstance}" property="orderDocument"/>
+      <f:field bean="${salesOrderInstance}" property="signature"/>
       <f:field bean="${salesOrderInstance}" property="docDate"/>
       <f:field bean="${salesOrderInstance}" property="dueDate"/>
       <f:field bean="${salesOrderInstance}" property="shippingDate"/>
@@ -91,3 +92,4 @@
     </div>
   </div>
 </section>
+<g:render template="signatureDialog"/>

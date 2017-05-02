@@ -1,7 +1,7 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <meta name="stylesheet" content="invoicing-transaction" />
+    <meta name="layout" content="main"/>
+    <meta name="stylesheet" content="sales-order"/>
   </head>
 
   <body>

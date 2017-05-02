@@ -65,7 +65,7 @@
   </div>
 </content>
 
-<div class="form-horizontal data-form detail-view">
+<div id="${formId}" class="form-horizontal data-form detail-view">
   <g:render template="/layouts/flashMessage" />
   <g:layoutBody />
   <p class="last-modified">

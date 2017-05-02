@@ -1,7 +1,7 @@
 #
 # Gruntfile.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2017, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ module.exports = (grunt) ->
         '<%= dirs.src.javascripts %>/selectize/selectize.js'
         '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
         '<%= dirs.src.javascripts %>/_js-calc.coffee'
+        '<%= dirs.src.javascripts %>/_signature-pad.js'
         '<%= dirs.src.javascripts %>/_typeahead.js'
         '<%= dirs.src.stylesheets %>/bootstrap/'
         '<%= dirs.src.stylesheets %>/font-awesome/'
@@ -43,6 +44,7 @@ module.exports = (grunt) ->
         '<%= dirs.src.stylesheets %>/selectize/plugins/'
         '<%= dirs.src.stylesheets %>/selectize/selectize.bootstrap3.less'
         '<%= dirs.src.stylesheets %>/selectize/selectize.less'
+        '<%= dirs.src.stylesheets %>/signature-pad.css'
       ]
       test: ['<%= dirs.target.test.base %>']
     codo:
@@ -148,6 +150,12 @@ module.exports = (grunt) ->
           ,
             dest: '<%= dirs.src.javascripts %>/jquery/json.js'
             src: '<%= dirs.bower.jqueryJson %>/src/jquery.json.js'
+          ,
+            dest: '<%= dirs.src.stylesheets %>/signature-pad.css'
+            src: '<%= dirs.bower.signaturePad %>/example/css/signature-pad.css'
+          ,
+            dest: '<%= dirs.src.javascripts %>/_signature-pad.js'
+            src: '<%= dirs.bower.signaturePad %>/example/js/signature_pad.js'
           ,
             dest: '<%= dirs.src.javascripts %>/jquery/storage-api.js'
             src: '<%= dirs.bower.jqueryStorageAPI %>/jquery.storageapi.js'
@@ -308,6 +316,7 @@ module.exports = (grunt) ->
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         qunit: '<%= dirs.bower.base %>/qunit'
         selectize: '<%= dirs.bower.base %>/selectize'
+        signaturePad: '<%= dirs.bower.base %>/signature_pad'
         typeahead: '<%= dirs.bower.base %>/typeahead.js'
         typeaheadBootstrap:
           '<%= dirs.bower.base %>/typeahead.js-bootstrap3.less'

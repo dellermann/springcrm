@@ -17,72 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #= require application
+#= require _document-file-input
 #= require _typeahead
-#= require _fileinput-builder
-#= require _handlebars-ext
-#= require templates/widgets/file-upload-document
 #= require invoicing-transaction-form
 
 
 #== Classes =====================================
 
-# Class `DocumentFileinput` represents a file input widget for setting the
-# document of a purchase invoice.
-#
-# @author   Daniel Ellermann
-# @version  2.0
-#
-class DocumentFileinput
-
-  #-- Internal variables ------------------------
-
-  # @nodoc
-  $ = jQuery
-
-  # @nodoc
-  $LANG = $L
-
-
-  #-- Constructor -------------------------------
-
-  # Creates a new file input widget for setting the document of a purchase
-  # invoice.
-  #
-  # @param [jQuery] $element  the file input control which is augmented as widget
-  #
-  constructor: ($element) ->
-    $L = $LANG
-    tmpl = Handlebars.templates['widgets/file-upload-document']
-
-    builder = new SPRINGCRM.FileinputBuilder
-      browseIcon: '<i class="fa fa-file-o"></i> '
-      browseLabel: $L('purchaseInvoice.documentFile.select')
-      layoutTemplates:
-        main1: tmpl section: 'main1'
-      removeClass: 'btn btn-danger btn-sm'
-      removeIcon: '<i class="fa fa-trash-o"></i> '
-      removeLabel: $L('purchaseInvoice.documentFile.delete')
-      showPreview: false
-      showRemove: true
-
-    previewOptions = {}
-    url = $element.data 'initial-file'
-    if url
-      previewOptions.initialPreview = [url]
-    builder.addOptions previewOptions
-
-    builder.build $element
-
-    $fileRemove = $('#fileRemove')
-    $element
-      .on('filecleared', => $fileRemove.val '1')
-      .on('fileloaded', => $fileRemove.val '0')
-
-
 # Class `PurchaseInvoice` represents a purchase invoice form.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.2
 #
 class PurchaseInvoice
 
@@ -106,7 +51,8 @@ class PurchaseInvoice
     @$element = $element
 
     @_initVendorTypeahead()
-    $('#file').each -> new DocumentFileinput $(this)
+    $('#file').each -> new SPRINGCRM.DocumentFileInput $(this),
+      removeLabelKey: 'purchaseInvoice.documentFile.delete'
 
     new SPRINGCRM.InvoicingTransaction $element, options
 
@@ -129,7 +75,7 @@ class PurchaseInvoice
           url = new HttpUrl(settings.url)
           url.query.name = query
           settings.url = url.toString()
-          
+
           settings
         url: $vendorName.data 'load-url'
     vendors.initialize()
@@ -151,6 +97,3 @@ class PurchaseInvoice
 
 
 SPRINGCRM.PurchaseInvoice = PurchaseInvoice
-
-# vim:set ts=2 sw=2 sts=2:
-

@@ -6,7 +6,7 @@
         args="[message(code: 'salesOrder.label'), salesOrderInstance.fullNumber]"/> -
       <g:message code="salesOrder.plural"/>
     </title>
-    <meta name="stylesheet" content="invoicing-transaction"/>
+    <meta name="stylesheet" content="sales-order"/>
   </head>
 
   <body>

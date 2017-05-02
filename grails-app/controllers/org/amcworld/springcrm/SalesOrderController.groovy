@@ -320,4 +320,14 @@ class SalesOrderController {
 
         fopService.outputPdf xml, 'sales-order', template, response, fileName
     }
+
+    def setSignature(Long id) {
+        SalesOrder salesOrderInstance = SalesOrder.get(id)
+        if (salesOrderInstance) {
+            salesOrderInstance.signature = params.signature
+            salesOrderInstance.save failOnError: true, flush: true
+        }
+
+        redirect action: 'show', id: id
+    }
 }
