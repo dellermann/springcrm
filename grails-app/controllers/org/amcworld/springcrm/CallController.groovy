@@ -1,7 +1,7 @@
 /*
  * CallController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,31 +20,55 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code CallController} contains actions which manage phone calls
  * associated to an organization or person.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class CallController {
+class CallController extends GeneralController<Call> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+    CallController() {
+        super(Call)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        int max = params.max =
-            Math.min(params.max ? params.int('max') : 10, 100)
+    def copy(Long id) {
+        super.copy id
+    }
 
+    def create() {
+        Map<String, Object> model = super.create()
+
+        Call callInstance = model[domainInstanceName] as Call
+        if (callInstance.person) {
+            callInstance.phone = callInstance.person.phone
+            callInstance.organization = callInstance.person.organization
+        } else if (callInstance.organization) {
+            callInstance.phone = callInstance.organization.phone
+        }
+
+        model
+    }
+
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def index() {
         String letter = params.letter?.toString()
         if (letter) {
+            int max = params.int('max')
             int num = Call.countBySubjectLessThan(letter)
             params.sort = 'subject'
             params.offset = (Math.floor(num / max) * max) as int
@@ -62,170 +86,42 @@ class CallController {
             count = Call.count()
         }
 
-        [callInstanceList: list, callInstanceTotal: count]
+        getIndexModel list, count
     }
 
     def listEmbedded(Long organization, Long person) {
-        List<Call> l = []
+        List<Call> list = []
         int count = 0
         Map<String, Object> linkParams = [: ]
 
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
             def organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-                l = Call.findAllByOrganization(organizationInstance, params)
+                list = Call.findAllByOrganization(organizationInstance, params)
                 count = Call.countByOrganization(organizationInstance)
                 linkParams = [organization: organizationInstance.id]
             }
         } else if (person) {
             def personInstance = Person.get(person)
             if (personInstance) {
-                l = Call.findAllByPerson(personInstance, params)
+                list = Call.findAllByPerson(personInstance, params)
                 count = Call.countByPerson(personInstance)
                 linkParams = [person: personInstance.id]
             }
         }
 
-        [callInstanceList: l, callInstanceTotal: count, linkParams: linkParams]
-    }
-
-    def create() {
-        Call callInstance = new Call(params)
-        if (callInstance.person) {
-            callInstance.phone = callInstance.person.phone
-            callInstance.organization = callInstance.person.organization
-        } else if (callInstance.organization) {
-            callInstance.phone = callInstance.organization.phone
-        }
-
-        [callInstance: callInstance]
-    }
-
-    def copy(Long id) {
-        Call callInstance = Call.get(id)
-        if (!callInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'call.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        callInstance = new Call(callInstance)
-        render view: 'create', model: [callInstance: callInstance]
+        getListEmbeddedModel list, count, linkParams
     }
 
     def save() {
-        Call callInstance = new Call(params)
-        if (!callInstance.save(flush: true)) {
-            render view: 'create', model: [callInstance: callInstance]
-            return
-        }
-
-        request.callInstance = callInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'call.label'), callInstance.toString()]
-        )
-
-        redirect action: 'show', id: callInstance.id
+        super.save()
     }
 
     def show(Long id) {
-        Call callInstance = Call.get(id)
-        if (!callInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'call.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [callInstance: callInstance]
-    }
-
-    def edit(Long id) {
-        Call callInstance = Call.get(id)
-        if (!callInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'call.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [callInstance: callInstance]
+        super.show id
     }
 
     def update(Long id) {
-        Call callInstance = Call.get(id)
-        if (!callInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'call.label'), id]
-            )
-            redirect action: 'index', id: id
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (callInstance.version > version) {
-                callInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'call.label', default: 'Call')] as Object[],
-                    'Another user has updated this Call while you were editing'
-                )
-                render view: 'edit', model: [callInstance: callInstance]
-                return
-            }
-        }
-        callInstance.properties = params
-        if (!callInstance.save(flush: true)) {
-            render view: 'edit', model: [callInstance: callInstance]
-            return
-        }
-
-        request.callInstance = callInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'call.label'), callInstance.toString()]
-        )
-
-        redirect action: 'show', id: callInstance.id
-    }
-
-    def delete(Long id) {
-        def callInstance = Call.get(id)
-        if (!callInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'call.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        request.callInstance = callInstance
-        try {
-            callInstance.delete(flush: true)
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'call.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'call.label')]
-            )
-            redirect action: 'show', id: id
-        }
+        super.update id
     }
 }

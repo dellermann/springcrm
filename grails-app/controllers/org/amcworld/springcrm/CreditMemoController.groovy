@@ -1,7 +1,7 @@
 /*
  * CreditMemoController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,36 +20,26 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code CreditMemoController} contains actions which manage credit
  * memos.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class CreditMemoController {
+class CreditMemoController extends InvoicingController<CreditMemo> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
-
-    //-- Fields ---------------------------------
-
-    FopService fopService
-    InvoicingTransactionService invoicingTransactionService
+    CreditMemoController() {
+        super(CreditMemo)
+    }
 
 
     //-- Public methods -------------------------
 
     def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
         List<CreditMemo> list
         int count
         if (params.search) {
@@ -61,350 +51,132 @@ class CreditMemoController {
             count = CreditMemo.count()
         }
 
-        [creditMemoInstanceList: list, creditMemoInstanceTotal: count]
+        getIndexModel list, count
     }
 
     def listEmbedded(Long organization, Long person, Long invoice,
                      Long dunning)
     {
-        List<CreditMemo> l
-        int count
-        def linkParams
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        List<CreditMemo> list = null
+        int count = 0
+        Map<String, Object> linkParams = null
         if (organization) {
-            def organizationInstance = Organization.get(organization)
+            Organization organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-                l = CreditMemo.findAllByOrganization(organizationInstance, params)
+                list = CreditMemo.findAllByOrganization(
+                    organizationInstance, params
+                )
                 count = CreditMemo.countByOrganization(organizationInstance)
                 linkParams = [organization: organizationInstance.id]
             }
         } else if (person) {
-            def personInstance = Person.get(person)
+            Person personInstance = Person.get(person)
             if (personInstance) {
-                l = CreditMemo.findAllByPerson(personInstance, params)
+                list = CreditMemo.findAllByPerson(personInstance, params)
                 count = CreditMemo.countByPerson(personInstance)
                 linkParams = [person: personInstance.id]
             }
         } else if (invoice) {
-            def invoiceInstance = Invoice.get(invoice)
+            Invoice invoiceInstance = Invoice.get(invoice)
             if (invoiceInstance) {
-                l = CreditMemo.findAllByInvoice(invoiceInstance, params)
+                list = CreditMemo.findAllByInvoice(invoiceInstance, params)
                 count = CreditMemo.countByInvoice(invoiceInstance)
                 linkParams = [invoice: invoiceInstance.id]
             }
         } else if (dunning) {
-            def dunningInstance = Dunning.get(dunning)
+            Dunning dunningInstance = Dunning.get(dunning)
             if (dunningInstance) {
-                l = CreditMemo.findAllByDunning(dunningInstance, params)
+                list = CreditMemo.findAllByDunning(dunningInstance, params)
                 count = CreditMemo.countByDunning(dunningInstance)
                 linkParams = [dunning: dunningInstance.id]
             }
         }
 
-        [
-            creditMemoInstanceList: l, creditMemoInstanceTotal: count,
-            linkParams: linkParams
-        ]
-  }
+        getListEmbeddedModel list, count, linkParams
+    }
+
+    def copy(Long id) {
+        super.copy id
+    }
 
     def create() {
         CreditMemo creditMemoInstance
         if (params.invoice) {
-            def invoiceInstance = Invoice.get(params.invoice)
+            Invoice invoiceInstance = Invoice.get(params.long('invoice'))
             creditMemoInstance = new CreditMemo(invoiceInstance)
         } else if (params.dunning) {
-            def dunningInstance = Dunning.get(params.dunning)
+            Dunning dunningInstance = Dunning.get(params.long('dunning'))
             creditMemoInstance = new CreditMemo(dunningInstance)
         } else {
             creditMemoInstance = new CreditMemo(params)
         }
 
-        creditMemoInstance.copyAddressesFromOrganization()
-
-        [creditMemoInstance: creditMemoInstance]
-    }
-
-    def copy(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        creditMemoInstance = new CreditMemo(creditMemoInstance)
-        render view: 'create', model: [creditMemoInstance: creditMemoInstance]
-    }
-
-    def save() {
-        CreditMemo creditMemoInstance = new CreditMemo(params)
-        if (!invoicingTransactionService.save(creditMemoInstance, params)) {
-            render view: 'create',
-                model: [creditMemoInstance: creditMemoInstance]
-            return
-        }
-
-        request.creditMemoInstance = creditMemoInstance
-
-        Invoice invoiceInstance = creditMemoInstance.invoice
-        if (invoiceInstance) {
-            invoiceInstance.stage = InvoiceStage.get(907)
-            invoiceInstance.save flush: true
-        }
-        Dunning dunningInstance = creditMemoInstance.dunning
-        if (dunningInstance) {
-            dunningInstance.stage = DunningStage.get(2206)
-            dunningInstance.save flush: true
-        }
-
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'creditMemo.label'),
-                creditMemoInstance.toString()
-            ]
-        )
-
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: creditMemoInstance.id
-        }
-    }
-
-    def show(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [creditMemoInstance: creditMemoInstance]
-    }
-
-    def edit(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && creditMemoInstance.stage.id >= 2502) {
-            redirect action: 'index'
-            return
-        }
-
-        [creditMemoInstance: creditMemoInstance]
-    }
-
-    def editPayment(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [creditMemoInstance: creditMemoInstance]
-    }
-
-    def update(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && creditMemoInstance.stage.id >= 2502) {
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (creditMemoInstance.version > version) {
-                creditMemoInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'creditMemo.label')] as Object[],
-                    'Another user has updated this CreditMemo while you were editing'
-                )
-                render view: 'edit',
-                    model: [creditMemoInstance: creditMemoInstance]
-                return
-            }
-        }
-
-        if (!invoicingTransactionService.save(creditMemoInstance, params)) {
-            render view: 'edit',
-                model: [creditMemoInstance: creditMemoInstance]
-            return
-        }
-
-        request.creditMemoInstance = creditMemoInstance
-
-        Invoice invoiceInstance = creditMemoInstance.invoice
-        if (invoiceInstance) {
-            invoiceInstance.stage = InvoiceStage.get(907)
-            invoiceInstance.save flush: true
-        }
-        Dunning dunningInstance = creditMemoInstance.dunning
-        if (dunningInstance) {
-            dunningInstance.stage = DunningStage.get(2206)
-            dunningInstance.save flush: true
-        }
-
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'creditMemo.label'),
-                creditMemoInstance.toString()
-            ]
-        )
-
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: creditMemoInstance.id
-        }
-    }
-
-    def updatePayment(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (creditMemoInstance.version > version) {
-                creditMemoInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'creditMemo.label')] as Object[],
-                    'Another user has updated this CreditMemo while you were editing'
-                )
-                render view: 'edit',
-                    model: [creditMemoInstance: creditMemoInstance]
-                return
-            }
-        }
-
-        creditMemoInstance.properties[
-            'stage', 'paymentDate', 'paymentAmount', 'paymentMethod'
-        ] = params
-
-        if (!creditMemoInstance.save(flush: true)) {
-            render view: 'edit',
-                model: [creditMemoInstance: creditMemoInstance]
-            return
-        }
-
-        request.creditMemoInstance = creditMemoInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'creditMemo.label'),
-                creditMemoInstance.toString()
-            ]
-        )
-
-        if (params.returnUrl) {
-            redirect url: params.returnUrl
-        } else {
-            redirect action: 'show', id: creditMemoInstance.id
-        }
+        getCreateModel creditMemoInstance
     }
 
     def delete(Long id) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'creditMemo.label'), id]
-            )
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-            return
-        }
+        super.delete id
+    }
 
-        if (!session.credential.admin && creditMemoInstance.stage.id >= 2502) {
-            redirect action: 'index'
-            return
-        }
+    def edit(Long id) {
+        super.edit(id)
+    }
 
-        request.creditMemoInstance = creditMemoInstance
-        try {
-            creditMemoInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'creditMemo.label')]
-            )
-
-            if (params.returnUrl) {
-                redirect url: params.returnUrl
-            } else {
-                redirect action: 'index'
-            }
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'creditMemo.label')]
-            )
-            redirect action: 'show', id: params.id
-        }
+    def editPayment(Long id) {
+        super.editPayment id
     }
 
     def print(Long id, String template) {
-        CreditMemo creditMemoInstance = CreditMemo.get(id)
-        if (!creditMemoInstance) {
-            render status: SC_NOT_FOUND
-            return
+        CreditMemo creditMemoInstance = getDomainInstanceWithStatus(id)
+        if (creditMemoInstance != null) {
+            printDocument(
+                creditMemoInstance, template,
+                [
+                    invoice: creditMemoInstance.invoice,
+                    invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
+                    dunning: creditMemoInstance.dunning,
+                    dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
+                    paymentMethod: creditMemoInstance.paymentMethod?.name
+                ]
+            )
         }
+    }
 
-        String xml = invoicingTransactionService.generateXML(
-            creditMemoInstance,
-            creditMemoInstance.createUser ?: session.credential.loadUser(),
-            params.boolean('duplicate') ?: false,
-            [
-                invoice: creditMemoInstance.invoice,
-                invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
-                dunning: creditMemoInstance.dunning,
-                dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
-                paymentMethod: creditMemoInstance.paymentMethod?.name
-            ]
-        )
-        GString fileName =
-            "${message(code: 'creditMemo.label')} ${creditMemoInstance.fullNumber}"
-        if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
+    def save() {
+        super.save()
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+    def updatePayment(Long id) {
+        super.updatePayment id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected boolean checkAccess(CreditMemo creditMemoInstance) {
+        admin || creditMemoInstance.stage.id < 2502
+    }
+
+    @Override
+    protected void updateAssociated(CreditMemo creditMemoInstance) {
+        Invoice invoiceInstance = creditMemoInstance.invoice
+        if (invoiceInstance) {
+            invoiceInstance.stage = InvoiceStage.get(907)
+            invoiceInstance.save failOnError: true, flush: true
         }
-        fileName += '.pdf'
-
-        fopService.outputPdf xml, 'credit-memo', template, response, fileName
+        Dunning dunningInstance = creditMemoInstance.dunning
+        if (dunningInstance) {
+            dunningInstance.stage = DunningStage.get(2206)
+            dunningInstance.save failOnError: true, flush: true
+        }
     }
 }

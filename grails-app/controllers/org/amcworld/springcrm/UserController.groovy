@@ -1,7 +1,7 @@
 /*
  * UserController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,8 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Controller
 import javax.servlet.http.HttpServletResponse
 import org.apache.commons.lang.LocaleUtils
-import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
@@ -31,14 +29,9 @@ import org.springframework.dao.DataIntegrityViolationException
  * the application.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class UserController implements Controller {
-
-    //-- Class fields ---------------------------
-
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
+class UserController extends GeneralController<User> {
 
     //-- Fields ---------------------------------
 
@@ -48,208 +41,131 @@ class UserController implements Controller {
     UserService userService
 
 
+    //-- Constructors ---------------------------
+
+    UserController() {
+        super(User)
+    }
+
+
     //-- Public methods -------------------------
-
-    def index() {
-        int max = params.max =
-            Math.min(params.max ? params.int('max') : 10, 100)
-        if (params.letter) {
-            int num = User.countByUserNameLessThan(params.letter.toString())
-            params.sort = 'userName'
-            params.offset = Math.floor(num / max) * max
-        }
-
-        [userInstanceList: User.list(params), userInstanceTotal: User.count()]
-    }
-
-    def create() {
-        [userInstance: new User(params)]
-    }
-
-    def copy(Long id) {
-        User userInstance = User.get(id)
-        if (!userInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'user.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        userInstance = new User(userInstance)
-        render view: 'create', model: [userInstance: userInstance]
-    }
-
-    def save() {
-        User userInstance = new User()
-        bindData userInstance, params, [exclude: ['allowedModulesNames']]
-        userInstance.allowedModulesNames = params.list('allowedModulesNames') as Set
-
-        boolean passwordMismatch =
-            params.password != securityService.encryptPassword(params.passwordRepeat)
-        if (passwordMismatch) {
-            userInstance.errors.rejectValue(
-                'password', 'user.password.doesNotMatch'
-            )
-        }
-        if (passwordMismatch || !userInstance.save(flush: true)) {
-            render view: 'create', model: [userInstance: userInstance]
-            return
-        }
-
-        request.userInstance = userInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'user.label'), userInstance.toString()]
-        )
-
-        redirect action: 'show', id: userInstance.id
-    }
-
-    def show(Long id) {
-        User userInstance = User.get(id)
-        if (!userInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'user.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [userInstance: userInstance]
-    }
-
-    def edit(Long id) {
-        User userInstance = User.get(id)
-        if (!userInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'user.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [userInstance: userInstance]
-    }
-
-    def update(Long id) {
-        User userInstance = User.get(id)
-        if (!userInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'user.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (userInstance.version > version) {
-                userInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'user.label')] as Object[],
-                    'Another user has updated this User while you were editing'
-                )
-                render view: 'edit', model: [userInstance: userInstance]
-                return
-            }
-        }
-
-        String passwd = userInstance.password
-        bindData userInstance, params, [exclude: ['allowedModulesNames']]
-        userInstance.allowedModulesNames = params.list('allowedModulesNames') as Set
-
-        boolean passwordMismatch = false
-        if (params.password) {
-            passwordMismatch = params.password != securityService.encryptPassword(params.passwordRepeat)
-            if (passwordMismatch) {
-                userInstance.errors.rejectValue(
-                    'password', 'user.password.doesNotMatch'
-                )
-            }
-        } else {
-            userInstance.password = passwd
-        }
-        if (passwordMismatch || !userInstance.save(flush: true)) {
-            render view: 'edit', model: [userInstance: userInstance]
-            return
-        }
-
-        request.userInstance = userInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'user.label'), userInstance.toString()]
-        )
-
-        redirect action: 'show', id: userInstance.id
-    }
-
-    def delete(Long id) {
-        User userInstance = User.get(id)
-        if (!userInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'user.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        request.userInstance = userInstance
-        try {
-            userInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'user.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'user.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
-    }
-
-    def login() {}
 
     def authenticate() {
         User userInstance = User.findByUserNameAndPassword(
             params.userName.toString(), params.password.toString()
         )
-        if (!userInstance) {
-            flash.message = message(code: 'user.authenticate.failed.message')
+        if (userInstance == null) {
+            flash.message =
+                message(code: 'user.authenticate.failed.message') as Object
             redirect action: 'login'
             return
         }
 
-        session.credential = new Credential(userInstance)
+        session['credential'] = new Credential(userInstance)
         setUserLocale()
 
         redirect controller: 'overview', action: 'index'
     }
 
+    def copy(Long id) {
+        super.copy id
+    }
+
+    def create() {
+        super.create()
+    }
+
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def index() {
+        if (params.letter) {
+            int max = params.int('max')
+            int num = User.countByUserNameLessThan(params.letter.toString())
+            params.sort = 'userName'
+            params.offset = Math.floor(num / max) * max
+        }
+
+        super.index()
+    }
+
+    def login() {}
+
     def logout() {
-        flash.message = message(code: 'user.logout.message')
-        session.credential = null
+        flash.message = message(code: 'user.logout.message') as Object
+        session['credential'] = null
         session.invalidate()
 
         redirect action: 'login'
     }
 
-    def storeSetting() {
-        Credential credential = (Credential) session.credential
-        credential.settings[params.key] = params.value
+    def save() {
+        super.save()
+    }
 
-        render status: HttpServletResponse.SC_OK
+    def settingsGoogleAuth() {
+        com.google.api.client.auth.oauth2.Credential cred =
+            googleOAuthService.loadCredential(credential.userName)
+
+        [authorized: cred != null]
+    }
+
+    def settingsGoogleAuthRequest() {
+        String uri = googleOAuthService.registerAtProxy(
+            createLink(
+                controller: controllerName,
+                action: 'settingsGoogleAuthResponse', absolute: true
+            ) as CharSequence
+        )
+        if (uri == null) {
+            flash.message = message(
+                code: 'user.settings.googleAuth.failed.message'
+            ) as Object
+            redirect action: 'settingsIndex'
+            return
+        }
+
+        redirect uri: uri
+    }
+
+    def settingsGoogleAuthResponse() {
+        if (params.success.toString() != '200') {
+            flash.message = message(
+                code: 'user.settings.googleAuth.failed.message'
+            ) as Object
+            redirect action: 'settingsGoogleAuth'
+            return
+        }
+
+        boolean res = googleOAuthService.obtainAndStoreCredential(
+            credential.userName,
+            params.clientId.toString()
+        )
+        if (!res) {
+            flash.message = message(
+                code: 'user.settings.googleAuth.failed.message'
+            ) as Object
+            redirect action: 'settingsGoogleAuth'
+            return
+        }
+
+        flash.message = message(
+            code: 'user.settings.googleAuth.succeeded.message'
+        ) as Object
+        redirect action: 'settingsIndex'
+    }
+
+    def settingsGoogleAuthRevoke() {
+        googleOAuthService.revokeAtProxy credential.userName
+
+        flash.message =
+            message(code: 'user.settings.googleAuth.revoked.message') as Object
+        redirect action: 'settingsIndex'
     }
 
     def settingsIndex() {}
@@ -270,97 +186,92 @@ class UserController implements Controller {
         redirect action: 'settingsIndex'
     }
 
-    def settingsGoogleAuth() {
-        com.google.api.client.auth.oauth2.Credential cred =
-            googleOAuthService.loadCredential(session.credential.userName)
-
-        [authorized: cred != null]
-    }
-
-    def settingsGoogleAuthRequest() {
-        String uri = googleOAuthService.registerAtProxy(
-            createLink(
-                controller: controllerName,
-                action: 'settingsGoogleAuthResponse', absolute: true
-            )
-        )
-        if (uri == null) {
-            flash.message = message(
-                code: 'user.settings.googleAuth.failed.message'
-            )
-            redirect action: 'settingsIndex'
-            return
-        }
-
-        redirect uri: uri
-    }
-
-    def settingsGoogleAuthResponse() {
-        if (params.success.toString() != '200') {
-            flash.message = message(
-                code: 'user.settings.googleAuth.failed.message'
-            )
-            redirect action: 'settingsGoogleAuth'
-            return
-        }
-
-        boolean res = googleOAuthService.obtainAndStoreCredential(
-            ((Credential) session.credential).userName,
-            params.clientId.toString()
-        )
-        if (!res) {
-            flash.message = message(
-                code: 'user.settings.googleAuth.failed.message'
-            )
-            redirect action: 'settingsGoogleAuth'
-            return
-        }
-
-        flash.message = message(
-            code: 'user.settings.googleAuth.succeeded.message'
-        )
-        redirect action: 'settingsIndex'
-    }
-
-    def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy(
-            ((Credential) session.credential).userName
-        )
-
-        flash.message = message(
-            code: 'user.settings.googleAuth.revoked.message'
-        )
-        redirect action: 'settingsIndex'
-    }
-
     def settingsSync() {
-        Credential credential = (Credential) session.credential
         List<Long> values =
             credential.settings.excludeFromSync?.split(/,/)?.collect {
                 it as Long
             }
 
-        [
-            ratings: Rating.list(),
-            excludeFromSync: values
-        ]
+        [ratings: Rating.list(), excludeFromSync: values]
     }
 
     def settingsSyncSave() {
-        Credential credential = (Credential) session.credential
         credential.settings.excludeFromSync = params.excludeFromSync.join ','
 
         redirect action: 'settingsIndex'
     }
 
+    def show(Long id) {
+        super.show id
+    }
+
+    def storeSetting() {
+        credential.settings.put params.key.toString(), params.value.toString()
+
+        render status: HttpServletResponse.SC_OK
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
 
     //-- Non-public methods ---------------------
 
+    /**
+     * Checks whether or not the submitted password has been repeated
+     * correctly.
+     *
+     * @return  {@code} if the password has been repeated correctly;
+     *          {@code false} otherwise
+     * @since   2.2
+     */
+    private boolean isPasswordMatch() {
+        params.password ==
+            securityService.encryptPassword(params.passwordRepeat?.toString())
+    }
+
+    @Override
+    protected User lowLevelSave() {
+        User userInstance = new User()
+        bindData userInstance, params, [exclude: ['allowedModulesNames']]
+        userInstance.allowedModulesNames =
+            params.list('allowedModulesNames') as Set
+
+        if (!passwordMatch) {
+            userInstance.errors.rejectValue(
+                'password', 'user.password.doesNotMatch'
+            )
+            return null
+        }
+
+        userInstance.save failOnError: true, flush: true
+    }
+
+    @Override
+    protected User lowLevelUpdate(User userInstance) {
+        String oldPassword = userInstance.password
+        bindData userInstance, params, [exclude: ['allowedModulesNames']]
+        userInstance.allowedModulesNames =
+            params.list('allowedModulesNames') as Set
+
+        if (params.password && !passwordMatch) {
+            userInstance.errors.rejectValue(
+                'password', 'user.password.doesNotMatch'
+            )
+            return null
+        }
+
+        userInstance.password = params.password ?: oldPassword
+
+        userInstance.save failOnError: true, flush: true
+    }
+
     private void setUserLocale(String locale = null) {
         if (locale) {
-            session.credential.settings.locale = locale
+            credential.settings.locale = locale
         } else {
-            locale = session.credential.settings.locale
+            locale = credential.settings.locale
         }
         if (locale) {
             session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] =

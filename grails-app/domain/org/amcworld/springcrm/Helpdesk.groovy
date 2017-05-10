@@ -1,7 +1,7 @@
 /*
  * Helpdesk.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ package org.amcworld.springcrm
  * organization can be submitted.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   2.0
  */
 class Helpdesk {
@@ -169,6 +169,17 @@ class Helpdesk {
     @Override
     boolean equals(Object obj) {
         obj instanceof Helpdesk && urlName == obj.urlName
+    }
+
+    /**
+     * Gets all helpdesk the given user is assigned to.
+     *
+     * @param user  the given user
+     * @return      a list of helpdesks
+     * @since 2.2
+     */
+    static List<Helpdesk> findByUser(User user) {
+        HelpdeskUser.findByUser(user)*.helpdesk.unique()
     }
 
     @Override

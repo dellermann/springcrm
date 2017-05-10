@@ -1,7 +1,7 @@
 /*
  * WorkController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-
-import org.springframework.dao.DataIntegrityViolationException
+import org.grails.datastore.mapping.query.api.BuildableCriteria
 
 
 /**
@@ -30,209 +28,33 @@ import org.springframework.dao.DataIntegrityViolationException
  * (services).
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class WorkController {
+class WorkController extends SalesItemController<Work> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
-
-    //-- Fields ---------------------------------
-
-    SalesItemService salesItemService
+    WorkController() {
+        super(Work)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        int max = params.max =
-            Math.min(params.max ? params.int('max') : 10, 100)
-        if (params.letter) {
-            int num = Work.countByNameLessThan(params.letter.toString())
-            params.sort = 'name'
-            params.offset = Math.floor(num / max) * max
-        }
-
-        [workInstanceList: Work.list(params), workInstanceTotal: Work.count()]
-    }
-
-    def selectorList() {
-        int max = params.max =
-            Math.min(params.max ? params.int('max') : 10, 100)
-        String searchFilter =
-            params.search ? "%${params.search}%".toString() : ''
-        String letter = params.letter?.toString()
-        if (letter) {
-            int num
-            if (params.search) {
-                num = Work.countByNameLessThanAndNameLike(
-                    letter, searchFilter
-                )
-            } else {
-                num = Work.countByNameLessThan(letter)
-            }
-            params.sort = 'name'
-            params.offset = Math.floor(num / max) * max
-        }
-
-        List<Work> list
-        int count
-        if (params.search) {
-            list = Work.findAllByNameLike(searchFilter, params)
-            count = Work.countByNameLike(searchFilter)
-        } else {
-            list = Work.list(params)
-            count = Work.count()
-        }
-
-        [workInstanceList: list, workInstanceTotal: count]
+    def copy(Long id) {
+        super.copy id
     }
 
     def create() {
-        [workInstance: new Work(params)]
-    }
-
-    def copy(Long id) {
-        def workInstance = Work.get(id)
-        if (!workInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'work.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        workInstance = new Work(workInstance)
-        render view: 'create', model: [workInstance: workInstance]
-    }
-
-    def save() {
-        def workInstance = new Work(params)
-        if (!salesItemService.saveSalesItemPricing(workInstance, params)) {
-            render view: 'create', model: [workInstance: workInstance]
-            return
-        }
-
-        request.workInstance = workInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'work.label'), workInstance.toString()]
-        )
-
-        redirect action: 'show', id: workInstance.id
-    }
-
-    def show(Long id) {
-        def workInstance = Work.get(id)
-        if (!workInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'work.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [workInstance: workInstance]
-    }
-
-    def edit(Long id) {
-        def workInstance = Work.get(id)
-        if (!workInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'work.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [workInstance: workInstance]
-    }
-
-    def update(Long id) {
-        def workInstance = Work.get(id)
-        if (!workInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'work.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (workInstance.version > version) {
-                workInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'work.label')] as Object[],
-                    'Another user has updated this Work while you were editing'
-                )
-                render view: 'edit', model: [workInstance: workInstance]
-                return
-            }
-        }
-
-        if (!salesItemService.saveSalesItemPricing(workInstance, params)) {
-            render view: 'edit', model: [workInstance: workInstance]
-            return
-        }
-
-        request.workInstance = workInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'work.label'), workInstance.toString()]
-        )
-
-        redirect action: 'show', id: workInstance.id
+        super.create()
     }
 
     def delete(Long id) {
-        def workInstance = Work.get(id)
-        if (!workInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'work.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        request.workInstance = workInstance
-        try {
-            if (workInstance.pricing) {
-                workInstance.pricing.delete flush: true
-            }
-            workInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'work.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'work.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
+        super.delete id
     }
 
-    def get(Long id) {
-        def workInstance = Work.read(id)
-        if (!workInstance) {
-            render status: SC_NOT_FOUND
-            return
-        }
-
-        [workInstance: workInstance]
+    def edit(Long id) {
+        super.edit id
     }
 
     def find(String name) {
@@ -241,7 +63,7 @@ class WorkController {
             number = name as Integer
         } catch (NumberFormatException ignored) { /* ignored */ }
 
-        def c = Work.createCriteria()
+        BuildableCriteria c = Work.createCriteria()
         List<Work> list = (List<Work>) c.list {
             or {
                 eq 'number', number
@@ -250,6 +72,30 @@ class WorkController {
             order 'number', 'asc'
         }
 
-        [workInstanceList: list]
+        [(getDomainInstanceName('List')): list]
+    }
+
+    def get(Long id) {
+        super.get id
+    }
+
+    def index() {
+        super.index()
+    }
+
+    def save() {
+        super.save()
+    }
+
+    def selectorList() {
+        super.selectorList()
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
     }
 }

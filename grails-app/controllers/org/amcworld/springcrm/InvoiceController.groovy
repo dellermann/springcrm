@@ -1,7 +1,7 @@
 /*
  * InvoiceController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,37 +20,73 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-
-import java.math.MathContext
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code InvoiceController} contains actions which manage invoices.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class InvoiceController {
-
-    //-- Class fields ---------------------------
-
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
+class InvoiceController extends InvoicingController<Invoice> {
 
     //-- Fields ---------------------------------
 
-    FopService fopService
-    InvoicingTransactionService invoicingTransactionService
     UserService userService
+
+
+    //-- Constructors ---------------------------
+
+    InvoiceController() {
+        super(Invoice)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    def copy(Long id) {
+        super.copy id
+    }
 
+    def create() {
+        Invoice invoiceInstance
+        if (params.quote) {
+            Quote quoteInstance = Quote.get(params.long('quote'))
+            invoiceInstance = new Invoice(quoteInstance)
+            invoiceInstance.userService = userService
+        } else if (params.salesOrder) {
+            SalesOrder salesOrderInstance =
+            SalesOrder.get(params.long('salesOrder'))
+            invoiceInstance = new Invoice(salesOrderInstance)
+            invoiceInstance.quote = salesOrderInstance.quote
+            invoiceInstance.userService = userService
+        } else {
+            invoiceInstance = new Invoice(params)
+        }
+
+        getCreateModel invoiceInstance
+    }
+
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def editPayment(Long id) {
+        super.editPayment id
+    }
+
+    def find() {
+        super.find()
+    }
+
+    def getClosingBalance(Long id) {
+        super.getClosingBalance id
+    }
+
+    def index() {
         List<Invoice> list
         int count
         if (params.search) {
@@ -62,319 +98,39 @@ class InvoiceController {
             count = Invoice.count()
         }
 
-        [invoiceInstanceList: list, invoiceInstanceTotal: count]
+        getIndexModel list, count
     }
 
     def listEmbedded(Long organization, Long person, Long quote,
                      Long salesOrder)
     {
-        List<Invoice> l = null
+        List<Invoice> list = null
         int count = 0
         Map<String, Object> linkParams = null
 
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
             def organizationInstance = Organization.get(organization)
-            l = Invoice.findAllByOrganization(organizationInstance, params)
+            list = Invoice.findAllByOrganization(organizationInstance, params)
             count = Invoice.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
             def personInstance = Person.get(person)
-            l = Invoice.findAllByPerson(personInstance, params)
+            list = Invoice.findAllByPerson(personInstance, params)
             count = Invoice.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         } else if (quote) {
             def quoteInstance = Quote.get(params.long('quote'))
-            l = Invoice.findAllByQuote(quoteInstance, params)
+            list = Invoice.findAllByQuote(quoteInstance, params)
             count = Invoice.countByQuote(quoteInstance)
             linkParams = [quote: quoteInstance.id]
         } else if (salesOrder) {
             def salesOrderInstance = SalesOrder.get(salesOrder)
-            l = Invoice.findAllBySalesOrder(salesOrderInstance, params)
+            list = Invoice.findAllBySalesOrder(salesOrderInstance, params)
             count = Invoice.countBySalesOrder(salesOrderInstance)
             linkParams = [salesOrder: salesOrderInstance.id]
         }
 
-        [
-            invoiceInstanceList: l, invoiceInstanceTotal: count,
-            linkParams: linkParams
-        ]
-    }
-
-    def create() {
-        Invoice invoiceInstance
-        if (params.quote) {
-            def quoteInstance = Quote.get(params.long('quote'))
-            invoiceInstance = new Invoice(quoteInstance)
-            invoiceInstance.userService = userService
-        } else if (params.salesOrder) {
-            def salesOrderInstance = SalesOrder.get(params.long('salesOrder'))
-            invoiceInstance = new Invoice(salesOrderInstance)
-            invoiceInstance.quote = salesOrderInstance.quote
-            invoiceInstance.userService = userService
-        } else {
-            invoiceInstance = new Invoice(params)
-        }
-
-        invoiceInstance.copyAddressesFromOrganization()
-
-        [invoiceInstance: invoiceInstance]
-    }
-
-    def copy(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        invoiceInstance = new Invoice(invoiceInstance)
-        render view: 'create', model: [invoiceInstance: invoiceInstance]
-    }
-
-    def save() {
-        Invoice invoiceInstance = new Invoice(params)
-        if (!invoicingTransactionService.save(invoiceInstance, params)) {
-            render view: 'create', model: [invoiceInstance: invoiceInstance]
-            return
-        }
-
-        Quote quoteInstance = invoiceInstance.quote ?:
-            invoiceInstance.salesOrder?.quote
-        if (quoteInstance) {
-            quoteInstance.stage = QuoteStage.get(603L)
-            quoteInstance.save flush: true
-        }
-
-        request.invoiceInstance = invoiceInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'invoice.label'), invoiceInstance.toString()]
-        )
-
-        redirect action: 'show', id: invoiceInstance.id
-    }
-
-    def show(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [invoiceInstance: invoiceInstance]
-    }
-
-    def edit(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && invoiceInstance.stage.id >= 902) {
-            redirect action: 'index'
-            return
-        }
-
-        [invoiceInstance: invoiceInstance]
-    }
-
-    def editPayment(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [invoiceInstance: invoiceInstance]
-    }
-
-    def update(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && invoiceInstance.stage.id >= 902) {
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (invoiceInstance.version > version) {
-                invoiceInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'invoice.label')] as Object[],
-                    'Another user has updated this Invoice while you were editing'
-                )
-                render view: 'edit', model: [invoiceInstance: invoiceInstance]
-                return
-            }
-        }
-
-        if (!invoicingTransactionService.save(invoiceInstance, params)) {
-            render view: 'edit', model: [invoiceInstance: invoiceInstance]
-            return
-        }
-
-        request.invoiceInstance = invoiceInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'invoice.label'), invoiceInstance.toString()]
-        )
-
-        redirect action: 'show', id: invoiceInstance.id
-    }
-
-    def updatePayment(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (invoiceInstance.version > version) {
-                invoiceInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'invoice.label')] as Object[],
-                    'Another user has updated this Invoice while you were editing'
-                )
-                render view: 'edit', model: [invoiceInstance: invoiceInstance]
-                return
-            }
-        }
-
-        invoiceInstance.properties = params.findAll {
-            it.key.toString() in [
-                'stage', 'paymentDate', 'paymentAmount', 'paymentMethod'
-            ]
-        }
-
-        if (!invoiceInstance.save(flush: true)) {
-            render view: 'edit', model: [invoiceInstance: invoiceInstance]
-            return
-        }
-
-        request.invoiceInstance = invoiceInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'invoice.label'), invoiceInstance.toString()]
-        )
-
-        redirect action: 'show', id: invoiceInstance.id
-    }
-
-    def delete(Long id) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'invoice.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && invoiceInstance.stage.id >= 902) {
-            redirect action: 'index'
-            return
-        }
-
-        request.invoiceInstance = invoiceInstance
-        try {
-            invoiceInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'invoice.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignored) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'invoice.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
-    }
-
-    def find() {
-        Integer number = null
-        try {
-            number = params.name as Integer
-        } catch (NumberFormatException ignored) { /* ignored */ }
-        Organization organization = params.organization \
-            ? Organization.get(params.long('organization')) \
-            : null
-
-        def c = Invoice.createCriteria()
-        List<Invoice> list = (List<Invoice>) c.list {
-            or {
-                eq('number', number)
-                ilike('subject', "%${params.name}%")
-            }
-            if (organization) {
-                and {
-                    eq('organization', organization)
-                }
-            }
-            order('number', 'desc')
-        }
-
-        [invoiceInstanceList: list]
-    }
-
-    def print(Long id, String template) {
-        Invoice invoiceInstance = Invoice.get(id)
-        if (!invoiceInstance) {
-            render status: SC_NOT_FOUND
-            return
-        }
-
-        String xml = invoicingTransactionService.generateXML(
-            invoiceInstance,
-            invoiceInstance.createUser ?: session.credential.loadUser(),
-            params.boolean('duplicate') ?: false
-        )
-        GString fileName =
-            "${message(code: 'invoice.label')} ${invoiceInstance.fullNumber}"
-        if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-        }
-        fileName += ".pdf"
-
-        fopService.outputPdf xml, 'invoice', template, response, fileName
+        getListEmbeddedModel list, count, linkParams
     }
 
     /**
@@ -384,14 +140,49 @@ class InvoiceController {
      */
     def listUnpaidBills() {
         List<Invoice> invoiceInstanceList =
-            invoicingTransactionService.findUnpaidBills(
-                (Credential) session.credential
-            )
+            invoicingTransactionService.findUnpaidBills(credential)
 
-        [invoiceInstanceList: invoiceInstanceList]
+        [(getDomainInstanceName('List')): invoiceInstanceList]
     }
 
-    def getClosingBalance(Long id) {
-        [invoiceInstance: Invoice.get(id)]
+    def print(Long id, String template) {
+        Invoice invoiceInstance = getDomainInstanceWithStatus(id)
+        if (invoiceInstance != null) {
+            printDocument invoiceInstance, template
+        }
+    }
+
+    def save() {
+        super.save()
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+    def updatePayment(Long id) {
+        super.updatePayment id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected boolean checkAccess(Invoice invoiceInstance) {
+        admin || invoiceInstance.stage.id < 902
+    }
+
+    @Override
+    protected void updateAssociated(Invoice invoiceInstance) {
+        Quote quoteInstance =
+            invoiceInstance.quote ?: invoiceInstance.salesOrder?.quote
+        if (quoteInstance != null) {
+            quoteInstance.stage = QuoteStage.get(603L)
+            quoteInstance.save flush: true
+        }
     }
 }

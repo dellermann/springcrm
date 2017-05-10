@@ -1,7 +1,7 @@
 /*
  * HelpdeskController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,15 @@ package org.amcworld.springcrm
 
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code HelpdeskController} handles helpdesks.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   1.4
  */
-class HelpdeskController {
-
-    //-- Class fields ---------------------------
-
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
+class HelpdeskController extends GeneralController<Helpdesk> {
 
     //-- Fields ---------------------------------
 
@@ -45,164 +38,29 @@ class HelpdeskController {
     MailSystemService mailSystemService
 
 
-    //-- Public methods -------------------------
+    //-- Constructors ---------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
-        [
-            helpdeskInstanceList: Helpdesk.list(params),
-            helpdeskInstanceTotal: Helpdesk.count(),
-            mailSystemConfigured: mailSystemService.configured
-        ]
+    HelpdeskController() {
+        super(Helpdesk)
     }
 
-    def listEmbedded(Long organization) {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        Organization organizationInstance = Organization.get(organization)
-        List<Helpdesk> l =
-            Helpdesk.findAllByOrganization(organizationInstance, params)
-        int count = Helpdesk.countByOrganization(organizationInstance)
 
-        [
-            helpdeskInstanceList: l, helpdeskInstanceTotal: count,
-            linkParams: [organization: organizationInstance.id]
-        ]
+    //-- Public methods -------------------------
+
+    def copy(Long id) {
+        super.copy id
     }
 
     def create() {
-        [helpdeskInstance: new Helpdesk(params)]
-    }
-
-    def copy(Long id) {
-        Helpdesk helpdeskInstance = Helpdesk.get(id)
-        if (!helpdeskInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'helpdesk.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        helpdeskInstance = new Helpdesk(helpdeskInstance)
-        render view: 'create', model: [helpdeskInstance: helpdeskInstance]
-    }
-
-    def save() {
-        Helpdesk helpdeskInstance = new Helpdesk()
-        if (!helpdeskService.saveHelpdesk(helpdeskInstance, params)) {
-            render view: 'create', model: [helpdeskInstance: helpdeskInstance]
-            return
-        }
-
-        request.helpdeskInstance = helpdeskInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'helpdesk.label'), helpdeskInstance.toString()
-            ]
-        ) as Object
-
-        redirect action: 'show', id: helpdeskInstance.id
-    }
-
-    def show(Long id) {
-        Helpdesk helpdeskInstance = Helpdesk.get(id)
-        if (!helpdeskInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'helpdesk.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        [helpdeskInstance: helpdeskInstance]
-    }
-
-    def edit(Long id) {
-        Helpdesk helpdeskInstance = Helpdesk.get(id)
-        if (!helpdeskInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'helpdesk.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        [helpdeskInstance: helpdeskInstance]
-    }
-
-    def update(Long id) {
-        Helpdesk helpdeskInstance = Helpdesk.get(id)
-        if (!helpdeskInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'helpdesk.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            long version = params.version.toLong()
-            if (helpdeskInstance.version > version) {
-                helpdeskInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'helpdesk.label')] as Object[],
-                    'Another user has updated this Helpdesk while you were editing'
-                )
-                render view: 'edit', model: [helpdeskInstance: helpdeskInstance]
-                return
-            }
-        }
-
-        if (!helpdeskService.saveHelpdesk(helpdeskInstance, params)) {
-            render view: 'edit', model: [helpdeskInstance: helpdeskInstance]
-            return
-        }
-
-        request.helpdeskInstance = helpdeskInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'helpdesk.label'), helpdeskInstance.toString()
-            ]
-        ) as Object
-
-        redirect action: 'show', id: helpdeskInstance.id
+        super.create()
     }
 
     def delete(Long id) {
-        Helpdesk helpdeskInstance = Helpdesk.get(id)
-        if (!helpdeskInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'helpdesk.label'), id]
-            ) as Object
+        super.delete id
+    }
 
-            redirect action: 'index'
-            return
-        }
-
-        request.helpdeskInstance = helpdeskInstance
-        try {
-            helpdeskInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'helpdesk.label')]
-            ) as Object
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'helpdesk.label')]
-            ) as Object
-            redirect action: 'show', id: id
-        }
+    def edit(Long id) {
+        super.edit id
     }
 
     def frontendIndex(String urlName) {
@@ -227,8 +85,51 @@ class HelpdeskController {
             Ticket.findAllByHelpdesk(helpdeskInstance, params)
 
         [
-            helpdeskInstance: helpdeskInstance,
+            (domainInstanceName): helpdeskInstance,
             ticketInstanceList: ticketInstanceList
         ]
+    }
+
+    def index() {
+        Map<String, Object> model = super.index()
+        model['mailSystemConfigured'] = mailSystemService.configured
+
+        model
+    }
+
+    def listEmbedded(Long organization) {
+        Organization organizationInstance = Organization.get(organization)
+        List<Helpdesk> list =
+            Helpdesk.findAllByOrganization(organizationInstance, params)
+        int count = Helpdesk.countByOrganization(organizationInstance)
+
+        getListEmbeddedModel(
+            list, count, [organization: organizationInstance.id]
+        )
+    }
+
+    def save() {
+        super.save()
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected Helpdesk lowLevelSave() {
+        helpdeskService.saveHelpdesk new Helpdesk(), params
+    }
+
+    @Override
+    protected Helpdesk lowLevelUpdate(Helpdesk helpdeskInstance) {
+        helpdeskService.saveHelpdesk helpdeskInstance, params
     }
 }

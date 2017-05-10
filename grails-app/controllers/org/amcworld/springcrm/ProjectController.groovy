@@ -1,7 +1,7 @@
 /*
  * ProjectController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK
 
 import grails.core.GrailsClass
 import org.apache.commons.vfs2.FileObject
-import org.springframework.dao.DataIntegrityViolationException
+import org.grails.datastore.mapping.query.api.BuildableCriteria
 
 
 /**
@@ -33,320 +33,91 @@ import org.springframework.dao.DataIntegrityViolationException
  * project management.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class ProjectController {
-
-    //-- Class fields ---------------------------
-
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
+class ProjectController extends GeneralController<Project> {
 
     //-- Fields ---------------------------------
 
 	DocumentService documentService
 
 
+    //-- Constructors ---------------------------
+
+    ProjectController() {
+        super(Project)
+    }
+
+
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
-        [
-            projectInstanceList: Project.list(params),
-            projectInstanceTotal: Project.count()
-        ]
-    }
-
-    def listEmbedded(Long organization, Long person) {
-        List<Project> l = []
-        int count = 0
-        Map<String, Object> linkParams = [: ]
-
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            l = Project.findAllByOrganization(organizationInstance, params)
-            count = Project.countByOrganization(organizationInstance)
-            linkParams = [organization: organizationInstance.id]
-        } else if (person) {
-            Person personInstance = Person.get(person)
-            l = Project.findAllByPerson(personInstance, params)
-            count = Project.countByPerson(personInstance)
-            linkParams = [person: personInstance.id]
-        }
-
-        [
-            projectInstanceList: l, projectInstanceTotal: count,
-            linkParams: linkParams
-        ]
-    }
-
-    def create() {
-        [projectInstance: new Project(params)]
-    }
-
-    def copy(Long id) {
-        def projectInstance = Project.get(id)
-        if (!projectInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'project.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        projectInstance = new Project(projectInstance)
-        render view: 'create', model: [projectInstance: projectInstance]
-    }
-
-    def save() {
-        def projectInstance = new Project(params)
-        if (!projectInstance.save(flush: true)) {
-            render view: 'create', model: [projectInstance: projectInstance]
-            return
-        }
-
-        request.projectInstance = projectInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'project.label'), projectInstance.toString()]
-        )
-
-        redirect action: 'show', id: projectInstance.id
-    }
-
-    def show(Long id) {
-        def projectInstance = Project.get(id)
-        if (!projectInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'project.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        def c = ProjectItem.createCriteria()
-        def l = c.list {
-            eq('project', projectInstance)
-            and {
-                order('phase', 'asc')
-                order('controller', 'asc')
-            }
-        }
-
-        def projectItems = [: ]
-        l.each {
-            def phase = it.phase
-            def items = projectItems[phase]
-            if (!items) {
-                items = []
-                projectItems[phase] = items
-            }
-            items << it
-        }
-
-        def projectDocuments = [: ]
-        l = ProjectDocument.findAllByProject(
-            projectInstance, [sort: 'phase', order: 'asc']
-        )
-        l.each {
-            def phase = it.phase
-            def docs = projectDocuments[phase]
-            if (!docs) {
-                docs = []
-                projectDocuments[phase] = docs
-            }
-            docs << it
-        }
-
-        [
-            projectInstance: projectInstance, projectItems: projectItems,
-            projectDocuments: projectDocuments
-        ]
-    }
-
-    def edit(Long id) {
-        def projectInstance = Project.get(id)
-        if (!projectInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'project.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [projectInstance: projectInstance]
-    }
-
-    def update(Long id) {
-        def projectInstance = Project.get(id)
-        if (!projectInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'project.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (projectInstance.version > version) {
-                projectInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'project.label')] as Object[],
-                    'Another user has updated this Project while you were editing'
-                )
-                render view: 'edit', model: [projectInstance: projectInstance]
-                return
-            }
-        }
-        if (params.autoNumber) {
-            params.number = projectInstance.number
-        }
-        projectInstance.properties = params
-        if (!projectInstance.save(flush: true)) {
-            render view: 'edit', model: [projectInstance: projectInstance]
-            return
-        }
-
-        request.projectInstance = projectInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'project.label'), projectInstance.toString()]
-        )
-
-        redirect action: 'show', id: projectInstance.id
-    }
-
-    def delete(Long id) {
-        def projectInstance = Project.get(id)
-        if (!projectInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'project.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        request.projectInstance = projectInstance
-        try {
-            projectInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'project.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'project.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
-    }
-
-    def setPhase(Long id, String phase) {
-        def projectInstance = Project.get(id)
-        if (projectInstance) {
-            projectInstance.phase = ProjectPhase.valueOf(phase)
-            projectInstance.save flush: true
-        }
-
-		render status: SC_OK
-    }
-
-    def setStatus(Long id, Long status) {
-        def projectInstance = Project.get(id)
-        if (projectInstance) {
-            def ps = ProjectStatus.get(status)
-            if (ps) {
-                projectInstance.status = ps
-                projectInstance.save flush: true
-            }
-        }
-
-		render status: SC_OK
-    }
-
     def addSelectedItems(Long id, String projectPhase, String itemIds) {
-        def projectInstance = Project.get(id)
-        if (!projectInstance) {
-            render status: SC_NOT_FOUND
+        Project projectInstance = getDomainInstanceWithStatus(id)
+        if (projectInstance == null) {
             return
         }
 
         ProjectPhase pp = ProjectPhase.valueOf(projectPhase)
 
         if (itemIds) {
-			String controllerName = params.controllerName
+            String controllerName = params.controllerName
             GrailsClass cls =
-				grailsApplication.getArtefactByLogicalPropertyName(
-					'Domain', controllerName
-				)
+                grailsApplication.getArtefactByLogicalPropertyName(
+                    'Domain', controllerName
+                )
             itemIds.split(',').each {
                 long itemId = it as long
                 def itemInstance = cls.clazz.'get'(itemId)
-                if (itemInstance) {
+                if (itemInstance != null) {
                     new ProjectItem(
-	                        project: projectInstance, phase: pp,
-	                        controller: controllerName, itemId: itemId,
-	                        title: itemInstance.toString()
-	                    )
-                    	.save flush: true
+                        project: projectInstance, phase: pp,
+                        controller: controllerName, itemId: itemId,
+                        title: itemInstance.toString()
+                    )
+                    .save failOnError: true, flush: true
                 }
             }
         }
 
-		List<String> documents = params.list('documents[]')
+        List<String> documents = params.list('documents[]')
         if (documents) {
-			for (String path in documents) {
-				FileObject fo = documentService.getFile(path)
-				if (fo.exists()) {
-					new ProjectDocument(
-							project: projectInstance, phase: pp,
-							path: path, title: fo.name.baseName
-						)
-						.save flush: true
-				}
-			}
+            for (String path : documents) {
+                FileObject fo = documentService.getFile(path)
+                if (fo.exists()) {
+                    new ProjectDocument(
+                        project: projectInstance, phase: pp,
+                        path: path, title: fo.name.baseName
+                    )
+                    .save failOnError: true, flush: true
+                }
+            }
         }
 
         projectInstance.phase = pp
-        projectInstance.save flush: true
+        projectInstance.save failOnError: true, flush: true
 
         render status: SC_OK
     }
 
-    def removeItem(Long id) {
-        def projectItemInstance = ProjectItem.get(id)
-        if (!projectItemInstance) {
-            render status: SC_NOT_FOUND
-            return
-        }
-
-        projectItemInstance.delete flush: true
-        render status: SC_OK
+    def copy(Long id) {
+        super.copy id
     }
 
-	def removeDocument(Long id) {
-		def projectDocumentInstance = ProjectDocument.get(id)
-		if (!projectDocumentInstance) {
-			render status: SC_NOT_FOUND
-			return
-		}
+    def create() {
+        super.create()
+    }
 
-		projectDocumentInstance.delete flush: true
-		render status: SC_OK
-	}
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def index() {
+        super.index()
+    }
 
     /**
      * Renders a list of all active projects in a panel of the overview page.
@@ -357,9 +128,159 @@ class ProjectController {
     def listCurrentProjects() {
         List<Project> projectInstanceList = Project.findAll(
             'from Project as p where p.status.id BETWEEN 2600 AND 2603 ' +
-                'order by p.status'
+            'order by p.status'
         )
 
-        [projectInstanceList: projectInstanceList]
+        [(getDomainInstanceName('List')): projectInstanceList]
+    }
+
+    def listEmbedded(Long organization, Long person) {
+        List<Project> list = null
+        int count = 0
+        Map<String, Object> linkParams = null
+
+        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        if (organization) {
+            Organization organizationInstance = Organization.get(organization)
+            list = Project.findAllByOrganization(organizationInstance, params)
+            count = Project.countByOrganization(organizationInstance)
+            linkParams = [organization: organizationInstance.id]
+        } else if (person) {
+            Person personInstance = Person.get(person)
+            list = Project.findAllByPerson(personInstance, params)
+            count = Project.countByPerson(personInstance)
+            linkParams = [person: personInstance.id]
+        }
+
+        getListEmbeddedModel list, count, linkParams
+    }
+
+    def removeDocument(Long id) {
+        ProjectDocument projectDocumentInstance = ProjectDocument.get(id)
+        if (projectDocumentInstance == null) {
+            render status: SC_NOT_FOUND
+            return
+        }
+
+        projectDocumentInstance.delete flush: true
+        render status: SC_OK
+    }
+
+    def removeItem(Long id) {
+        ProjectItem projectItemInstance = ProjectItem.get(id)
+        if (projectItemInstance == null) {
+            render status: SC_NOT_FOUND
+            return
+        }
+
+        projectItemInstance.delete flush: true
+        render status: SC_OK
+    }
+
+    def save() {
+        super.save()
+    }
+
+    def setPhase(Long id, String phase) {
+        Project projectInstance = Project.get(id)
+        if (projectInstance != null) {
+            projectInstance.phase = ProjectPhase.valueOf(phase)
+            projectInstance.save failOnError: true, flush: true
+        }
+
+        render status: SC_OK
+    }
+
+    def setStatus(Long id, Long status) {
+        Project projectInstance = Project.get(id)
+        if (projectInstance != null) {
+            ProjectStatus projectStatus = ProjectStatus.get(status)
+            if (projectStatus) {
+                projectInstance.status = projectStatus
+                projectInstance.save failOnError: true, flush: true
+            }
+        }
+
+        render status: SC_OK
+    }
+
+    def show(Long id) {
+        Map<String, Object> model = super.show(id) as Map<String, Object>
+        Project projectInstance = model[domainInstanceName] as Project
+        if (projectInstance != null) {
+            model['projectItems'] = getProjectItems(projectInstance)
+            model['projectDocuments'] = getProjectDocuments(projectInstance)
+        }
+
+        model
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets a list of items of the given project grouped by project phase.
+     *
+     * @param projectInstance   the given project instance
+     * @return                  the project items grouped by phase
+     * @since 2.2
+     */
+    private static EnumMap<ProjectPhase, List<ProjectDocument>> \
+        getProjectDocuments(Project projectInstance)
+    {
+        EnumMap<ProjectPhase, List<ProjectDocument>> res =
+            new EnumMap<>(ProjectPhase)
+        List<ProjectDocument> l = ProjectDocument.findAllByProject(
+            projectInstance, [sort: 'phase', order: 'asc']
+        )
+        for (ProjectDocument doc : l) {
+            ProjectPhase phase = doc.phase
+            List<ProjectDocument> docs = res[phase]
+            if (docs == null) {
+                docs = []
+                res[phase] = docs
+            }
+            docs << doc
+        }
+
+        res
+    }
+
+    /**
+     * Gets a list of documents of the given project grouped by project phase.
+     *
+     * @param projectInstance   the given project instance
+     * @return                  the project documents grouped by phase
+     * @since 2.2
+     */
+    private static EnumMap<ProjectPhase, List<ProjectItem>> \
+        getProjectItems(Project projectInstance)
+    {
+        BuildableCriteria c = ProjectItem.createCriteria()
+        List<ProjectItem> l = (List<ProjectItem>) c.list {
+            eq('project', projectInstance)
+            and {
+                order('phase', 'asc')
+                order('controller', 'asc')
+            }
+        }
+
+        EnumMap<ProjectPhase, List<ProjectItem>> res =
+            new EnumMap<>(ProjectPhase)
+        for (ProjectItem item : l) {
+            ProjectPhase phase = item.phase
+            List<ProjectItem> items = res[phase]
+            if (items == null) {
+                items = []
+                res[phase] = items
+            }
+            items << item
+        }
+
+        res
     }
 }

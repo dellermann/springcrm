@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -29,18 +28,13 @@ import org.springframework.web.multipart.MultipartFile
  * purchase invoices.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class PurchaseInvoiceController {
+class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
 
     //-- Constants ------------------------------
 
     public static final DataFileType FILE_TYPE = DataFileType.purchaseInvoice
-
-
-    //-- Class fields ---------------------------
-
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
 
 
     //-- Fields ---------------------------------
@@ -48,11 +42,32 @@ class PurchaseInvoiceController {
     DataFileService dataFileService
 
 
+    //-- Constructors ---------------------------
+
+    PurchaseInvoiceController() {
+        super(PurchaseInvoice)
+    }
+
+
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    def copy(Long id) {
+        super.copy id
+    }
 
+    def create() {
+        super.create()
+    }
+
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def index() {
         List<PurchaseInvoice> list
         int count
         if (params.search) {
@@ -64,134 +79,63 @@ class PurchaseInvoiceController {
             count = PurchaseInvoice.count()
         }
 
-        [
-            purchaseInvoiceInstanceList: list,
-            purchaseInvoiceInstanceTotal: count
-        ]
+        getIndexModel list, count
     }
 
     def listEmbedded(Long organization) {
         Organization organizationInstance = Organization.get(organization)
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
 
-        [
-            purchaseInvoiceInstanceList: PurchaseInvoice.findAllByVendor(
-                organizationInstance, params
-            ),
-            purchaseInvoiceInstanceTotal: PurchaseInvoice.countByVendor(
-                organizationInstance
-            ),
-            linkParams: [organization: organizationInstance.id]
-        ]
-    }
-
-    def create() {
-        [purchaseInvoiceInstance: new PurchaseInvoice(params)]
-    }
-
-    def copy(Long id) {
-        PurchaseInvoice purchaseInvoiceInstance = PurchaseInvoice.get(id)
-        if (!purchaseInvoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'purchaseInvoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        purchaseInvoiceInstance = new PurchaseInvoice(purchaseInvoiceInstance)
-        render view: 'create',
-            model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
+        getListEmbeddedModel(
+            PurchaseInvoice.findAllByVendor(organizationInstance, params),
+            PurchaseInvoice.countByVendor(organizationInstance),
+            [organization: organizationInstance.id]
+        )
     }
 
     def save() {
+        super.save()
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected void lowLevelDelete(PurchaseInvoice invoiceInstance) {
+        super.lowLevelDelete invoiceInstance
+        if (invoiceInstance.documentFile != null) {
+            dataFileService.removeFile FILE_TYPE, invoiceInstance.documentFile
+        }
+    }
+
+    @Override
+    protected PurchaseInvoice lowLevelSave() {
         PurchaseInvoice purchaseInvoiceInstance = new PurchaseInvoice(params)
         if (purchaseInvoiceInstance.items?.find { it.hasErrors() } ||
             !purchaseInvoiceInstance.validate())
         {
-            render view: 'create',
-                model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
-            return
+            return null
         }
 
         purchaseInvoiceInstance.documentFile =
-            dataFileService.storeFile(FILE_TYPE, params.file)
-        if (!purchaseInvoiceInstance.save(failOnError: true, flush: true)) {
-            render view: 'create',
-                model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
-            return
-        }
+            dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
 
-        request.purchaseInvoiceInstance = purchaseInvoiceInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'purchaseInvoice.label'),
-                purchaseInvoiceInstance.toString()
-            ]
-        )
-
-        redirect action: 'show', id: purchaseInvoiceInstance.id
+        purchaseInvoiceInstance.save failOnError: true, flush: true
     }
 
-    def show(Long id) {
-        PurchaseInvoice purchaseInvoiceInstance = PurchaseInvoice.get(id)
-        if (!purchaseInvoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'purchaseInvoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [purchaseInvoiceInstance: purchaseInvoiceInstance]
-    }
-
-    def edit(Long id) {
-        PurchaseInvoice purchaseInvoiceInstance = PurchaseInvoice.get(id)
-        if (!purchaseInvoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'purchaseInvoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [purchaseInvoiceInstance: purchaseInvoiceInstance]
-    }
-
-    def update(Long id) {
-        PurchaseInvoice purchaseInvoiceInstance = PurchaseInvoice.get(id)
-        if (!purchaseInvoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'purchaseInvoice.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (purchaseInvoiceInstance.version > version) {
-                purchaseInvoiceInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'purchaseInvoice.label')] as Object[],
-                    'Another user has updated this PurchaseInvoice while you were editing'
-                )
-                render view: 'edit',
-                    model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
-                return
-            }
-        }
-
+    @Override
+    protected PurchaseInvoice lowLevelUpdate(PurchaseInvoice invoiceInstance) {
         /*
          * The original implementation which worked in Grails 2.0.0.
          */
-        purchaseInvoiceInstance.properties = params
+        invoiceInstance.properties = params
 //        purchaseInvoiceInstance.items?.retainAll { it != null }
 
         /*
@@ -206,87 +150,36 @@ class PurchaseInvoiceController {
          *      In future, this problem hopefully will be fixed in Grails
          *      so we can remove these lines.
          */
-        purchaseInvoiceInstance.items?.clear()
+        invoiceInstance.items?.clear()
         boolean itemErrors = false
         for (int i = 0; params."items[${i}]"; i++) {
             if (params."items[${i}]".id != 'null') {
                 PurchaseInvoiceItem item = params."items[${i}]"
                 itemErrors |= item.hasErrors()
-                purchaseInvoiceInstance.addToItems item
+                invoiceInstance.addToItems item
             }
         }
 
-        if (itemErrors || !purchaseInvoiceInstance.validate()) {
-            purchaseInvoiceInstance.discard()
-            render view: 'edit',
-                model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
-            return
+        if (itemErrors || !invoiceInstance.validate()) {
+            invoiceInstance.discard()
+            return null
         }
 
-        DataFile df = purchaseInvoiceInstance.documentFile
+        DataFile df = invoiceInstance.documentFile
         if (params.fileRemove == '1') {
-            purchaseInvoiceInstance.documentFile = null
+            invoiceInstance.documentFile = null
         } else if (!params.file?.empty) {
             df = dataFileService.updateFile(
-                FILE_TYPE, df, (MultipartFile) params.file
+                FILE_TYPE, df, params.file as MultipartFile
             )
-            purchaseInvoiceInstance.documentFile = df
+            invoiceInstance.documentFile = df
         }
 
-        if (!purchaseInvoiceInstance.save(failOnError: true, flush: true)) {
-            render view: 'edit',
-                model: [purchaseInvoiceInstance: purchaseInvoiceInstance]
-            return
-        }
-        if (params.fileRemove == '1' && df) {
+        invoiceInstance = invoiceInstance.save(failOnError: true, flush: true)
+        if (invoiceInstance != null && params.fileRemove == '1' && df) {
             dataFileService.removeFile FILE_TYPE, df
         }
 
-        request.purchaseInvoiceInstance = purchaseInvoiceInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'purchaseInvoice.label'),
-                purchaseInvoiceInstance.toString()
-            ]
-        )
-
-        redirect action: 'show', id: purchaseInvoiceInstance.id
-    }
-
-    def delete(Long id) {
-        PurchaseInvoice purchaseInvoiceInstance = PurchaseInvoice.get(id)
-        if (!purchaseInvoiceInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'purchaseInvoice.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        request.purchaseInvoiceInstance = purchaseInvoiceInstance
-        try {
-            purchaseInvoiceInstance.delete flush: true
-            if (purchaseInvoiceInstance.documentFile) {
-                dataFileService.removeFile FILE_TYPE,
-                    purchaseInvoiceInstance.documentFile
-            }
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'purchaseInvoice.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'purchaseInvoice.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
+        invoiceInstance
     }
 }
-

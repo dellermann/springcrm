@@ -1,7 +1,7 @@
 /*
- * HelpdeskService.groovy
+ * ListInterceptor.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,23 +21,38 @@
 package org.amcworld.springcrm
 
 
-class HelpdeskService {
+/**
+ * The class {@code ListInterceptor} limits the maximum number of items which
+ * are visible in a list.
+ *
+ * @author  Daniel Ellermann
+ * @version 2.2
+ * @since   2.2
+ */
+class ListInterceptor {
+
+    //-- Constructors ---------------------------
+
+    /**
+     * Creates a new instance of the interceptor.
+     */
+    ListInterceptor() {
+        match action: ~/(index|listEmbedded)/
+    }
+
 
     //-- Public methods -------------------------
 
-    Helpdesk saveHelpdesk(Helpdesk helpdesk, Map params, boolean flush = true) {
-        Map props = params
+    /**
+     * Limits the maximum number of items in a list to be in range 10 til 100.
+     *
+     * @return  always {@code true}
+     */
+    boolean before() {
+        params.max = Math.max(
+            Math.min(params.max ? params.int('max') : 10, 100), 10
+        )
 
-        String [] userIds = props.remove('users')
-        Set<User> users = [] as Set
-        if (userIds) {
-            for (String userId in userIds) {
-                users << User.get(userId as Long)
-            }
-        }
-        helpdesk.users = users
-
-        helpdesk.properties = props
-        helpdesk.save flush: flush
+        true
     }
 }

@@ -1,7 +1,7 @@
 /*
  * BoilerplateController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,202 +20,74 @@
 
 package org.amcworld.springcrm
 
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code BoilerplateController} contains actions which manage
  * boilerplates which are used in text fields.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   2.1
  */
-class BoilerplateController {
+class BoilerplateController extends GeneralController<Boilerplate> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+    BoilerplateController() {
+        super(Boilerplate)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        int max = params.max =
-            Math.min(params.max ? params.int('max') : 10, 100)
-
-        if (params.letter) {
-            int num = Boilerplate.countByNameLessThan(params.letter.toString())
-            params.sort = 'name'
-            params.offset = (Math.floor(num / max) * max) as Integer
-        }
-
-        List<Boilerplate> list = Boilerplate.list(params)
-        int count = Boilerplate.count()
-
-        [boilerplateInstanceList: list, boilerplateInstanceTotal: count]
+    def copy(Long id) {
+        super.copy id
     }
 
     def create() {
-        [boilerplateInstance: new Boilerplate(params)]
-    }
-
-    def copy(Long id) {
-        Boilerplate boilerplateInstance = Boilerplate.get(id)
-        if (!boilerplateInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'boilerplate.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        boilerplateInstance = new Boilerplate(boilerplateInstance)
-        render view: 'create', model: [boilerplateInstance: boilerplateInstance]
-    }
-
-    def save() {
-        Boilerplate boilerplateInstance = new Boilerplate(params)
-        if (!boilerplateInstance.save(flush: true)) {
-            render(
-                view: 'create',
-                model: [boilerplateInstance: boilerplateInstance]
-            )
-            return
-        }
-
-        request.boilerplateInstance = boilerplateInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'boilerplate.label'),
-                boilerplateInstance.toString()
-            ]
-        )
-
-        redirect(
-            action: 'show', id: boilerplateInstance.id,
-            params: [noLruRecord: params.noLruRecord]
-        )
-    }
-
-    def show(Long id) {
-        Boilerplate boilerplateInstance = Boilerplate.get(id)
-        if (!boilerplateInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'boilerplate.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [boilerplateInstance: boilerplateInstance]
-    }
-
-    def edit(Long id) {
-        Boilerplate boilerplateInstance = Boilerplate.get(id)
-        if (!boilerplateInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'boilerplate.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [boilerplateInstance: boilerplateInstance]
-    }
-
-    def update(Long id) {
-        Boilerplate boilerplateInstance = Boilerplate.get(id)
-        if (!boilerplateInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'boilerplate.label'), id]
-            )
-            redirect action: 'index', id: id
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (boilerplateInstance.version > version) {
-                boilerplateInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [
-                        message(
-                            code: 'boilerplate.label', default: 'Boilerplate'
-                        )
-                    ] as Object[],
-                    'Another user has updated this Boilerplate while you were editing'
-                )
-                render(
-                    view: 'edit',
-                    model: [boilerplateInstance: boilerplateInstance]
-                )
-                return
-            }
-        }
-        boilerplateInstance.properties = params
-        if (!boilerplateInstance.save(flush: true)) {
-            render(
-                view: 'edit', model: [boilerplateInstance: boilerplateInstance]
-            )
-            return
-        }
-
-        request.boilerplateInstance = boilerplateInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'boilerplate.label'),
-                boilerplateInstance.toString()
-            ]
-        )
-
-        redirect action: 'show', id: boilerplateInstance.id
+        super.create()
     }
 
     def delete(Long id) {
-        Boilerplate boilerplateInstance = Boilerplate.get(id)
-        if (!boilerplateInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'boilerplate.label'), id]
-            )
+        super.delete id
+    }
 
-            redirect action: 'index'
-            return
-        }
+    def edit(Long id) {
+        super.edit id
+    }
 
-        request.boilerplateInstance = boilerplateInstance
-        try {
-            boilerplateInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'boilerplate.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'boilerplate.label')]
-            )
-            redirect action: 'show', id: id
-        }
+    def get(Long id) {
+        super.get id
     }
 
     def find(String name) {
         List<Boilerplate> boilerplateInstanceList =
             Boilerplate.findAllByNameIlike("%${name}%")
 
-        [boilerplateInstanceList: boilerplateInstanceList]
+        [(getDomainInstanceName('List')): boilerplateInstanceList]
     }
 
-    def get(Long id) {
-        [boilerplateInstance: Boilerplate.get(id)]
+    def index() {
+        if (params.letter) {
+            int max = params.int('max')
+            int num = Boilerplate.countByNameLessThan(params.letter.toString())
+            params.sort = 'name'
+            params.offset = (Math.floor(num / max) * max) as Integer
+        }
+
+        super.index()
+    }
+
+    def save() {
+        super.save()
+        request['redirectParams'] = [noLruRecord: params.noLruRecord]
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
     }
 }

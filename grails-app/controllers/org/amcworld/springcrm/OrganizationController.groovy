@@ -1,7 +1,7 @@
 /*
  * OrganizationController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,215 +20,39 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code OrganizationController} contains actions which manage
  * organizations.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class OrganizationController {
+class OrganizationController extends GeneralController<Organization> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+    OrganizationController() {
+        super(Organization)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index(Byte listType) {
-        int max = params.max =
-            Math.min(params.max ? params.int('max') : 10, 100)
-
-        List<Byte> types = [listType, 3 as byte]
-        String letter = params.letter?.toString()
-        if (letter) {
-            int num
-            if (listType) {
-                num = Organization.countByNameLessThanAndRecTypeInList(
-                    letter, types
-                )
-            } else {
-                num = Organization.countByNameLessThan(letter)
-            }
-            params.sort = 'name'
-            params.offset = Math.floor(num / max) * max
-        }
-
-        List<Organization> list
-        int count
-        if (listType) {
-            list = Organization.findAllByRecTypeInList(types, params)
-            count = Organization.countByRecTypeInList(types)
-        } else {
-            list = Organization.list(params)
-            count = Organization.count()
-        }
-
-        [organizationInstanceList: list, organizationInstanceTotal: count]
+    def copy(Long id) {
+        super.copy id
     }
 
     def create() {
-        [organizationInstance: new Organization(params)]
+        super.create()
     }
 
-    def copy(Long id) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'organization.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        organizationInstance = new Organization(organizationInstance)
-        render(
-            view: 'create',
-            model: [organizationInstance: organizationInstance]
-        )
-    }
-
-    def save() {
-        Organization organizationInstance = new Organization(params)
-        if (!organizationInstance.save(flush: true)) {
-            render(
-                view: 'create',
-                model: [organizationInstance: organizationInstance]
-            )
-            return
-        }
-
-        request.organizationInstance = organizationInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'organization.label'),
-                organizationInstance.toString()
-            ]
-        )
-
-        redirect(
-            action: 'show', id: organizationInstance.id,
-            params: [listType: params.listType]
-        )
-    }
-
-    def show(Long id) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'organization.label'), id]
-            )
-            redirect action: 'index', params: [listType: params.listType]
-            return
-        }
-
-        [organizationInstance: organizationInstance]
+    def delete(Long id) {
+        super.delete id
     }
 
     def edit(Long id) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'organization.label'), id]
-            )
-            redirect action: 'index', params: [listType: params.listType]
-            return
-        }
-
-        [organizationInstance: organizationInstance]
-    }
-
-    def update(Long id) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'organization.label'), id]
-            )
-            redirect action: 'index', params: [listType: params.listType]
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (organizationInstance.version > version) {
-                organizationInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'organization.label')] as Object[],
-                    'Another user has updated this Organization while you were editing'
-                )
-                render(
-                    view: 'edit',
-                    model: [organizationInstance: organizationInstance]
-                )
-                return
-            }
-        }
-        if (params.autoNumber) {
-            params.number = organizationInstance.number
-        }
-        organizationInstance.properties = params
-        if (!organizationInstance.save(flush: true)) {
-            render(
-                view: 'edit',
-                model: [organizationInstance: organizationInstance]
-            )
-            return
-        }
-
-        request.organizationInstance = organizationInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'organization.label'),
-                organizationInstance.toString()
-            ]
-        )
-
-        redirect(
-            action: 'show', id: organizationInstance.id,
-            params: [listType: params.listType]
-        )
-    }
-
-    def delete(Long id, Byte listType) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'organization.label'), id]
-            )
-
-            redirect action: 'index', params: [listType: listType]
-            return
-        }
-
-        request.organizationInstance = organizationInstance
-        try {
-            organizationInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'organization.label')]
-            )
-
-            redirect action: 'index', params: [listType: listType]
-        } catch (DataIntegrityViolationException ignored) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'organization.label')]
-            )
-
-            redirect action: 'show', id: id, params: [listType: listType]
-        }
+        super.edit id
     }
 
     def find(Byte type) {
@@ -244,23 +68,16 @@ class OrganizationController {
             )
         }
 
-        [organizationInstanceList: list]
+        [(getDomainInstanceName('List')): list]
     }
 
     def get(Long id) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
-            return
-        }
-
-        [organizationInstance: organizationInstance]
+        super.get id
     }
 
     def getPhoneNumbers(Long id) {
-        Organization organizationInstance = Organization.get(id)
-        if (!organizationInstance) {
-            render status: HttpServletResponse.SC_NOT_FOUND
+        Organization organizationInstance = getDomainInstanceWithStatus(id)
+        if (organizationInstance == null) {
             return
         }
 
@@ -285,5 +102,60 @@ class OrganizationController {
         }
 
         [termOfPayment: termOfPayment]
+    }
+
+    def index(Byte listType) {
+        List<Byte> types = [listType, 3 as byte]
+        String letter = params.letter?.toString()
+        if (letter) {
+            int max = params.int('max')
+            int num
+            if (listType) {
+                num = Organization.countByNameLessThanAndRecTypeInList(
+                    letter, types
+                )
+            } else {
+                num = Organization.countByNameLessThan(letter)
+            }
+            params.sort = 'name'
+            params.offset = Math.floor(num / max) * max
+        }
+
+        List<Organization> list
+        int count
+        if (listType) {
+            list = Organization.findAllByRecTypeInList(types, params)
+            count = Organization.countByRecTypeInList(types)
+        } else {
+            list = Organization.list(params)
+            count = Organization.count()
+        }
+
+        getIndexModel list, count
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def save() {
+        super.save()
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected Map<String, Object> getIndexActionParams() {
+        [listType: params.listType]
+    }
+
+    @Override
+    protected Map<String, Object> getShowActionParams() {
+        [listType: params.listType]
     }
 }

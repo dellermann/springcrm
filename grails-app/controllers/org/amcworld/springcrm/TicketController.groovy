@@ -1,7 +1,7 @@
 /*
  * TicketController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 package org.amcworld.springcrm
 
 import javax.servlet.http.HttpServletResponse
-import org.springframework.dao.DataIntegrityViolationException
-import org.springframework.validation.BindingResult
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -31,14 +29,19 @@ import org.springframework.web.multipart.MultipartFile
  * helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   1.4
  */
-class TicketController {
+class TicketController extends GeneralController<Ticket> {
 
-    //-- Class fields ---------------------------
+    //-- Constants ------------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
+    private static final EnumSet<TicketStage> REQ_STAGES_ASSIGN =
+        EnumSet.of(TicketStage.assigned, TicketStage.inProcess)
+    private static final EnumSet<TicketStage> REQ_STAGES_SEND_MESSAGE =
+        REQ_STAGES_ASSIGN
+    private static final EnumSet<TicketStage> REQ_STAGES_TAKE_ON =
+        EnumSet.of(TicketStage.created, TicketStage.resubmitted)
 
 
     //-- Fields ---------------------------------
@@ -47,312 +50,41 @@ class TicketController {
     TicketService ticketService
 
 
+    //-- Constructors ---------------------------
+
+    TicketController(Class<? extends Ticket> domainType) {
+        super(domainType)
+    }
+
+
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
-        List<Ticket> ticketInstanceList
-        int ticketInstanceTotal
-        User user = session.credential.loadUser()
-
-        if (params.helpdesk) {
-            Helpdesk helpdesk = Helpdesk.get(params.helpdesk as Long)
-            ticketInstanceList = Ticket.findAllByHelpdesk(helpdesk)
-            ticketInstanceTotal = Ticket.countByHelpdesk(helpdesk)
-        } else if (user.admin) {
-            ticketInstanceList = Ticket.list(params)
-            ticketInstanceTotal = Ticket.count()
-        } else {
-            List<HelpdeskUser> helpdeskUsers = HelpdeskUser.findAllByUser(user)
-            if (!helpdeskUsers) {
-                render view: 'noHelpdesks'
-                return
-            }
-
-            List<Helpdesk> helpdesks = helpdeskUsers*.helpdesk
-            ticketInstanceList =
-                Ticket.findAllByHelpdeskInList(helpdesks, params)
-            ticketInstanceTotal = Ticket.countByHelpdeskInList(helpdesks)
-        }
-
-        [
-            ticketInstanceList: ticketInstanceList,
-            ticketInstanceTotal: ticketInstanceTotal,
-            mailSystemConfigured: mailSystemService.configured
-        ]
-    }
-
-    def listEmbedded(Long organization) {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        Organization organizationInstance = Organization.get(organization)
-        User user = session.credential.loadUser()
-
-        List<Ticket> ticketList = Ticket.executeQuery(
-            'select t from Ticket as t inner join t.helpdesk as h, ' +
-                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
-                'and h.organization = :o',
-            [u: user, o: organizationInstance],
-            params
-        )
-        int count = Ticket.executeQuery(
-            'select count(*) from Ticket as t inner join t.helpdesk as h, ' +
-                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
-                'and h.organization = :o',
-            [u: user, o: organizationInstance],
-        )[0] as int
-
-        [
-            ticketInstanceList: ticketList,
-            ticketInstanceTotal: count,
-            linkParams: [organization: organizationInstance.id]
-        ]
-    }
-
-    def create() {
-        [ticketInstance: new Ticket(params), helpdeskInstanceList: helpdesks]
-    }
-
-    def copy(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
+    def assignToUser(Long id, Long user) {
+        Ticket ticketInstance = getDomainInstance(id)
+        if (ticketInstance == null) {
             return
         }
 
-        ticketInstance = new Ticket(ticketInstance)
-        render view: 'create', model: [
-            ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks
-        ]
-    }
-
-    def save() {
-        Ticket ticketInstance = new Ticket(params)
-        String messageText = ticketInstance.messageText = params.messageText
-
-        if (!ticketInstance.validate() || !messageText) {
-            if (!messageText) {
-                ticketInstance.errors.rejectValue(
-                    'messageText', 'default.blank.message'
-                )
-            }
-            render view: 'create', model: [
-                ticketInstance: ticketInstance,
-                helpdeskInstanceList: helpdesks
-            ]
-            return
-        }
-
-        ticketInstance = ticketService.createTicket(
-            ticketInstance, messageText, (MultipartFile) params.attachment
-        )
-        if (!ticketInstance) {
-            render view: 'create', model: [
-                ticketInstance: ticketInstance,
-                helpdeskInstanceList: helpdesks
-            ]
-            return
-        }
-
-        request.ticketInstance = ticketInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'ticket.label'), ticketInstance.toString()]
-        ) as Object
-
-        redirect action: 'show', id: ticketInstance.id
-    }
-
-    def show(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        [ticketInstance: ticketInstance]
-    }
-
-    def edit(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        [ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks]
-    }
-
-    def update(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            long version = params.version.toLong()
-            if (ticketInstance.version > version) {
-                ticketInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'ticket.label')] as Object[],
-                    'Another user has updated this Ticket while you were editing'
-                )
-                render view: 'edit', model: [ticketInstance: ticketInstance]
-                return
-            }
-        }
-
-        ticketInstance.properties = params as BindingResult
-        if (!ticketInstance.save(flush: true)) {
-            render view: 'edit', model: [
-                ticketInstance: ticketInstance, helpdeskInstanceList: helpdesks
-            ]
-            return
-        }
-
-        request.ticketInstance = ticketInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'ticket.label'), ticketInstance.toString()]
-        ) as Object
-
-        redirect action: 'show', id: ticketInstance.id
-    }
-
-    def delete(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-
-            redirect action: 'index'
-            return
-        }
-
-        request.ticketInstance = ticketInstance
-        try {
-            ticketInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'ticket.label')]
-            ) as Object
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'ticket.label')]
-            ) as Object
-
-            redirect action: 'show', id: id
-        }
-    }
-
-    def takeOn(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
-
-        User user = session.credential.loadUser()
-        if ((user.admin || user in ticketInstance.helpdesk.users) &&
-            ticketInstance.stage in [TicketStage.created, TicketStage.resubmitted])
+        User creator = getUser()
+        User recipient = User.get(user)
+        if (recipient &&
+            (recipient in ticketInstance.helpdesk.users) &&
+            creator != recipient &&
+            (creator.admin || creator == ticketInstance.assignedUser) &&
+            ticketInstance.stage in REQ_STAGES_ASSIGN)
         {
-            ticketInstance.stage = TicketStage.assigned
-            ticketService.assignUser ticketInstance, user, user
-        }
-
-        redirect action: 'show', id: id
-    }
-
-    def sendMessage(Long id) {
-        String msg = params.message
-        if (msg) {
-            Ticket ticketInstance = Ticket.get(id)
-            if (!ticketInstance) {
-                flash.message = message(
-                    code: 'default.not.found.message',
-                    args: [message(code: 'ticket.label'), id]
-                ) as Object
-                redirect action: 'index'
-                return
-            }
-
-            User creator = ((Credential) session.credential).loadUser()
-            User recipient =
-                params.recipient ? User.get(params.long('recipient')) : null
-            if (recipient || creator.admin ||
-                (creator == ticketInstance.assignedUser &&
-                ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess]))
-            {
-                ticketService.sendMessage(
-                    ticketInstance, msg, (MultipartFile) params.attachment,
-                    creator, recipient
-                )
-            }
-        }
-
-        redirect action: 'show', id: id
-    }
-
-    def createNote(Long id) {
-        String message = params.messageText
-        if (message) {
-            Ticket ticketInstance = Ticket.get(id)
-            if (!ticketInstance) {
-                flash.message = g.message(
-                    code: 'default.not.found.message',
-                    args: [g.message(code: 'ticket.label'), id]
-                ) as Object
-                redirect action: 'index'
-                return
-            }
-
-            ticketService.createNote(
-                ticketInstance, message, (MultipartFile) params.attachment,
-                ((Credential) session.credential).loadUser()
-            )
+            ticketService.assignUser ticketInstance, creator, recipient
         }
 
         redirect action: 'show', id: id
     }
 
     def changeStage(Long id, String stage) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
+        Ticket ticketInstance = getDomainInstance(id)
+        if (ticketInstance == null) {
             return
         }
 
-        User user = session.credential.loadUser()
         if (user.admin || user == ticketInstance.assignedUser) {
             EnumSet<TicketStage> allowedStages
             switch (ticketInstance.stage) {
@@ -381,34 +113,46 @@ class TicketController {
         redirect action: 'show', id: id
     }
 
-    def assignToUser(Long id, Long user) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'ticket.label'), id]
-            ) as Object
-            redirect action: 'index'
-            return
-        }
+    def copy(Long id) {
+        super.copy id
+    }
 
-        User creator = session.credential.loadUser()
-        User recipient = User.get(user)
-        if (recipient &&
-            (recipient in ticketInstance.helpdesk.users) &&
-            creator != recipient &&
-            (creator.admin || creator == ticketInstance.assignedUser) &&
-            ticketInstance.stage in [TicketStage.assigned, TicketStage.inProcess])
-        {
-            ticketService.assignUser ticketInstance, creator, recipient
+    def create() {
+        super.create()
+    }
+
+    def createNote(Long id) {
+        String message = params.messageText
+        if (message) {
+            Ticket ticketInstance = getDomainInstance(id)
+            if (ticketInstance == null) {
+                return
+            }
+
+            ticketService.createNote(
+                ticketInstance, message, (MultipartFile) params.attachment,
+                user
+            )
         }
 
         redirect action: 'show', id: id
     }
 
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def frontendCloseTicket(Long id) {
+        frontendChangeStage id, TicketStage.closed
+    }
+
     def frontendCreate() {
-        Helpdesk helpdeskInstance = Helpdesk.get(params.long('helpdesk'))
-        if (!helpdeskInstance) {
+        Helpdesk helpdeskInstance = helpdesk
+        if (helpdeskInstance == null) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return
         }
@@ -420,12 +164,16 @@ class TicketController {
             email2: organization?.email2
         )
 
-        [helpdeskInstance: helpdeskInstance, ticketInstance: ticketInstance]
+        getFrontendModel ticketInstance, helpdeskInstance
+    }
+
+    def frontendResubmitTicket(Long id) {
+        frontendChangeStage id, TicketStage.resubmitted
     }
 
     def frontendSave() {
-        Helpdesk helpdeskInstance = Helpdesk.get(params.long('helpdesk'))
-        if (!helpdeskInstance) {
+        Helpdesk helpdeskInstance = helpdesk
+        if (helpdeskInstance == null) {
             render status: HttpServletResponse.SC_NOT_FOUND
             return
         }
@@ -446,28 +194,28 @@ class TicketController {
                 )
             }
 
-            render view: '/ticket/frontendCreate', model: [
-                ticketInstance: ticketInstance,
-                helpdeskInstance: helpdeskInstance
-            ]
+            render(
+                view: '/ticket/frontendCreate',
+                model: getFrontendModel(ticketInstance, helpdeskInstance)
+            )
             return
         }
 
         ticketInstance = ticketService.createTicket(
-            ticketInstance, messageText, (MultipartFile) params.attachment
+            ticketInstance, messageText, params.attachment as MultipartFile
         )
-        if (!ticketInstance) {
+        if (ticketInstance == null) {
             log.debug 'No ticket created.'
-            render view: '/helpdesk/frontendIndex', model: [
-                ticketInstance: ticketInstance,
-                helpdeskInstance: helpdeskInstance
-            ]
+            render(
+                view: '/helpdesk/frontendIndex',
+                model: getFrontendModel(ticketInstance, helpdeskInstance)
+            )
             return
         }
 
         flash.message = message(
             code: 'default.created.message',
-            args: [message(code: 'ticket.label'), ticketInstance.toString()]
+            args: [label, ticketInstance.toString()]
         ) as Object
         if (helpdeskInstance.forEndUsers) {
             def params = [
@@ -481,19 +229,10 @@ class TicketController {
         }
     }
 
-    def frontendShow(Long id) {
-        Ticket ticketInstance = Ticket.read(id)
-
-        [
-            ticketInstance: ticketInstance,
-            helpdeskInstance: ticketInstance.helpdesk
-        ]
-    }
-
     def frontendSendMessage(Long id) {
         Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
-            redirectToHelpdeskFrontend Helpdesk.read(params.long('helpdesk'))
+        if (ticketInstance == null) {
+            redirectToHelpdeskFrontend helpdesk
             return
         }
 
@@ -504,19 +243,119 @@ class TicketController {
         }
 
         ticketService.sendMessage(
-            ticketInstance, msg, (MultipartFile) params.attachment
+            ticketInstance, msg, params.attachment as MultipartFile
         )
 
         flash.message = message(code: 'ticket.sendMessage.flash') as Object
         redirectToFrontendPage ticketInstance.helpdesk
     }
 
-    def frontendCloseTicket(Long id) {
-        frontendChangeStage id, TicketStage.closed
+    def frontendShow(Long id) {
+        Ticket ticketInstance = Ticket.read(id)
+
+        getFrontendModel ticketInstance, ticketInstance.helpdesk
     }
 
-    def frontendResubmitTicket(Long id) {
-        frontendChangeStage id, TicketStage.resubmitted
+    def index() {
+        List<Ticket> list
+        int count
+
+        if (params.helpdesk) {
+            Helpdesk helpdesk = Helpdesk.get(params.long('helpdesk'))
+            list = Ticket.findAllByHelpdesk(helpdesk)
+            count = Ticket.countByHelpdesk(helpdesk)
+        } else if (admin) {
+            list = Ticket.list(params)
+            count = Ticket.count()
+        } else {
+            List<HelpdeskUser> helpdeskUsers = HelpdeskUser.findAllByUser(user)
+            if (!helpdeskUsers) {
+                render view: 'noHelpdesks'
+                return
+            }
+
+            List<Helpdesk> helpdesks = helpdeskUsers*.helpdesk
+            list = Ticket.findAllByHelpdeskInList(helpdesks, params)
+            count = Ticket.countByHelpdeskInList(helpdesks)
+        }
+
+        Map<String, Object> model = getIndexModel(list, count)
+        model['mailSystemConfigured'] = mailSystemService.configured
+
+        model
+    }
+
+    def listEmbedded(Long organization) {
+        Organization organizationInstance = Organization.get(organization)
+
+        List<Ticket> list = Ticket.executeQuery(
+            'select t from Ticket as t inner join t.helpdesk as h, ' +
+                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
+                'and h.organization = :o',
+            [u: user, o: organizationInstance],
+            params
+        )
+        int count = Ticket.executeQuery(
+            'select count(*) from Ticket as t inner join t.helpdesk as h, ' +
+                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
+                'and h.organization = :o',
+            [u: user, o: organizationInstance],
+        )[0] as int
+
+        getListEmbeddedModel(
+            list, count, [organization: organizationInstance.id]
+        )
+    }
+
+    def save() {
+        super.save()
+    }
+
+    def sendMessage(Long id) {
+        String msg = params.message
+        if (msg) {
+            Ticket ticketInstance = getDomainInstance(id)
+            if (ticketInstance == null) {
+                return
+            }
+
+            User creator = user
+            User recipient =
+                params.recipient ? User.get(params.long('recipient')) : null
+            if (recipient || creator.admin ||
+                (creator == ticketInstance.assignedUser &&
+                ticketInstance.stage in REQ_STAGES_SEND_MESSAGE))
+            {
+                ticketService.sendMessage(
+                    ticketInstance, msg, (MultipartFile) params.attachment,
+                    creator, recipient
+                )
+            }
+        }
+
+        redirect action: 'show', id: id
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def takeOn(Long id) {
+        Ticket ticketInstance = getDomainInstance(id)
+        if (ticketInstance != null) {
+            if ((admin || user in ticketInstance.helpdesk.users) &&
+                ticketInstance.stage in REQ_STAGES_TAKE_ON)
+            {
+                ticketInstance.stage = TicketStage.assigned
+                ticketService.assignUser ticketInstance, user, user
+            }
+
+            redirect action: 'show', id: id
+        }
+    }
+
+    def update(Long id) {
+        super.update id
     }
 
 
@@ -529,10 +368,10 @@ class TicketController {
      * @param id    the ID of the ticket
      * @param stage the stage that should be changed to
      */
-    private frontendChangeStage(Long id, TicketStage stage) {
+    private void frontendChangeStage(Long id, TicketStage stage) {
         Ticket ticketInstance = Ticket.get(id)
         if (!ticketInstance) {
-            redirectToHelpdeskFrontend Helpdesk.read(params.long('helpdesk'))
+            redirectToHelpdeskFrontend helpdesk
             return
         }
 
@@ -541,15 +380,76 @@ class TicketController {
         redirectToFrontendPage ticketInstance.helpdesk
     }
 
+    @Override
+    protected Map<String, Object> getCreateModel(Ticket instance) {
+        Map<String, Object> res = super.getCreateModel(instance)
+        res['helpdeskInstanceList'] = helpdesks
+
+        res
+    }
+
+    @Override
+    protected Map<String, Object> getEditModel(Ticket instance) {
+        Map<String, Object> res = super.getEditModel(instance)
+        res['helpdeskInstanceList'] = helpdesks
+
+        res
+    }
+
+    /**
+     * Gets the model which is used in frontend views containing the given
+     * ticket and helpdesk instance.
+     *
+     * @param ticketInstance    the given ticket instance
+     * @param helpdeskInstance  the associated helpdesk
+     * @return                  the model for the frontend views
+     * @since 2.2
+     */
+    private Map<String, Object> getFrontendModel(Ticket ticketInstance,
+                                                 Helpdesk helpdeskInstance)
+    {
+        [
+            (domainInstanceName): ticketInstance,
+            helpdeskInstance: helpdeskInstance
+        ]
+    }
+
+    /**
+     * Gets the helpdesk with the ID submitted in parameter {@code helpdesk}.
+     *
+     * @return  the helpdesk or {@code null} if no such a helpdesk exists
+     * @since   2.2
+     */
+    private Helpdesk getHelpdesk() {
+        Helpdesk.get params.long('helpdesk')
+    }
+
     /**
      * Gets the helpdesks the current user may access.
      *
      * @return  the list of helpdesks
      */
     private List<Helpdesk> getHelpdesks() {
-        User user = ((Credential) session.credential).loadUser()
+        user.admin ? Helpdesk.list() : Helpdesk.findByUser(user)
+    }
 
-        user.admin ? Helpdesk.list() : user.helpdesks as List
+    @Override
+    protected Ticket lowLevelSave() {
+        Ticket ticketInstance = new Ticket(params)
+        String messageText = ticketInstance.messageText = params.messageText
+
+        if (!ticketInstance.validate() || !messageText) {
+            if (!messageText) {
+                ticketInstance.errors.rejectValue(
+                    'messageText', 'default.blank.message'
+                )
+            }
+            return null
+        }
+
+        ticketService.createTicket(
+            ticketInstance, messageText, (MultipartFile) params.attachment
+        )
     }
 
     /**
@@ -572,10 +472,9 @@ class TicketController {
      * @param helpdesk  the given helpdesk
      */
     private void redirectToHelpdeskFrontend(Helpdesk helpdesk) {
-        def params = [
-            accessCode: helpdesk.accessCode,
-            urlName: helpdesk.urlName
-        ]
-        redirect mapping: 'helpdeskFrontend', params: params
+        redirect(
+            mapping: 'helpdeskFrontend',
+            params: [accessCode: helpdesk.accessCode, urlName: helpdesk.urlName]
+        )
     }
 }

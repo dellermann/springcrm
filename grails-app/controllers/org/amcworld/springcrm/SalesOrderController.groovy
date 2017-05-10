@@ -20,9 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-
-import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
 
@@ -33,71 +30,29 @@ import org.springframework.web.multipart.MultipartFile
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class SalesOrderController {
+class SalesOrderController extends InvoicingController<SalesOrder> {
 
     //-- Constants ------------------------------
 
     public static final DataFileType FILE_TYPE = DataFileType.salesOrder
 
 
-    //-- Class fields ---------------------------
-
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
-
     //-- Fields ---------------------------------
 
     DataFileService dataFileService
-    FopService fopService
-    InvoicingTransactionService invoicingTransactionService
+
+
+    //-- Constructors ---------------------------
+
+    SalesOrderController() {
+        super(SalesOrder)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
-        List<SalesOrder> list
-        int count
-        if (params.search) {
-            String searchFilter = "%${params.search}%".toString()
-            list = SalesOrder.findAllBySubjectLike(searchFilter, params)
-            count = SalesOrder.countBySubjectLike(searchFilter)
-        } else {
-            list = SalesOrder.list(params)
-            count = SalesOrder.count()
-        }
-
-        [salesOrderInstanceList: list, salesOrderInstanceTotal: count]
-    }
-
-    def listEmbedded(Long organization, Long person, Long quote) {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
-        List<SalesOrder> l = null
-        int count = 0
-        def linkParams = null
-        if (organization) {
-            def organizationInstance = Organization.get(organization)
-            l = SalesOrder.findAllByOrganization(organizationInstance, params)
-            count = SalesOrder.countByOrganization(organizationInstance)
-            linkParams = [organization: organizationInstance.id]
-        } else if (person) {
-            def personInstance = Person.get(person)
-            l = SalesOrder.findAllByPerson(personInstance, params)
-            count = SalesOrder.countByPerson(personInstance)
-            linkParams = [person: personInstance.id]
-        } else if (quote) {
-            def quoteInstance = Quote.get(quote)
-            l = SalesOrder.findAllByQuote(quoteInstance, params)
-            count = SalesOrder.countByQuote(quoteInstance)
-            linkParams = [quote: quoteInstance.id]
-        }
-
-        [
-            salesOrderInstanceList: l, salesOrderInstanceTotal: count,
-            linkParams: linkParams
-        ]
+    def copy(Long id) {
+        super.copy id
     }
 
     def create() {
@@ -109,216 +64,69 @@ class SalesOrderController {
             salesOrderInstance = new SalesOrder(params)
         }
 
-        salesOrderInstance.copyAddressesFromOrganization()
-
-        [salesOrderInstance: salesOrderInstance]
-    }
-
-    def copy(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (!salesOrderInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'salesOrder.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        salesOrderInstance = new SalesOrder(salesOrderInstance)
-        render view: 'create', model: [salesOrderInstance: salesOrderInstance]
-    }
-
-    def save() {
-        SalesOrder salesOrderInstance = new SalesOrder(params)
-        salesOrderInstance.orderDocument =
-            dataFileService.storeFile(FILE_TYPE, params.file)
-        if (!invoicingTransactionService.save(salesOrderInstance, params)) {
-            render view: 'create',
-                model: [salesOrderInstance: salesOrderInstance]
-            return
-        }
-
-        Quote quoteInstance = salesOrderInstance.quote
-        if (quoteInstance) {
-            quoteInstance.stage = QuoteStage.get(603L)
-            quoteInstance.save flush: true
-        }
-
-        request.salesOrderInstance = salesOrderInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'salesOrder.label'),
-                salesOrderInstance.toString()
-            ]
-        )
-
-        redirect action: 'show', id: salesOrderInstance.id
-    }
-
-    def show(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (!salesOrderInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'salesOrder.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [salesOrderInstance: salesOrderInstance]
-    }
-
-    def edit(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (!salesOrderInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'salesOrder.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [salesOrderInstance: salesOrderInstance]
-    }
-
-    def update(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (!salesOrderInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'salesOrder.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (salesOrderInstance.version > version) {
-                salesOrderInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'salesOrder.label')] as Object[],
-                    'Another user has updated this SalesOrder while you were editing'
-                )
-                render view: 'edit',
-                    model: [salesOrderInstance: salesOrderInstance]
-                return
-            }
-        }
-
-        DataFile df = salesOrderInstance.orderDocument
-        if (params.fileRemove == '1') {
-            salesOrderInstance.orderDocument = null
-        } else if (!params.file?.empty) {
-            df = dataFileService.updateFile(
-                FILE_TYPE, df, (MultipartFile) params.file
-            )
-            salesOrderInstance.orderDocument = df
-        }
-
-        if (!invoicingTransactionService.save(salesOrderInstance, params)) {
-            render view: 'edit',
-                model: [salesOrderInstance: salesOrderInstance]
-            return
-        }
-        if (params.fileRemove == '1' && df) {
-            dataFileService.removeFile FILE_TYPE, df
-        }
-
-        request.salesOrderInstance = salesOrderInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [
-                message(code: 'salesOrder.label'),
-                salesOrderInstance.toString()
-            ]
-        )
-
-        redirect action: 'show', id: salesOrderInstance.id
+        getCreateModel salesOrderInstance
     }
 
     def delete(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (!salesOrderInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'salesOrder.label'), id]
-            )
+        super.delete id
+    }
 
-            redirect action: 'index'
-            return
-        }
-
-        request.salesOrderInstance = salesOrderInstance
-        try {
-            salesOrderInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'salesOrder.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'salesOrder.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
+    def edit(Long id) {
+        super.edit id
     }
 
     def find() {
-        Integer number = null
-        try {
-            number = params.name as Integer
-        } catch (NumberFormatException ignored) { /* ignored */ }
-        Organization organization = params.organization \
-            ? Organization.get(params.long('organization')) \
-            : null
+        super.find()
+    }
 
-        def c = SalesOrder.createCriteria()
-        List<SalesOrder> list = (List<SalesOrder>) c.list {
-            or {
-                eq('number', number)
-                ilike('subject', "%${params.name}%")
-            }
-            if (organization) {
-                and {
-                    eq('organization', organization)
-                }
-            }
-            order('number', 'desc')
+    def index() {
+        List<SalesOrder> list
+        int count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = SalesOrder.findAllBySubjectLike(searchFilter, params)
+            count = SalesOrder.countBySubjectLike(searchFilter)
+        } else {
+            list = SalesOrder.list(params)
+            count = SalesOrder.count()
         }
 
-        [salesOrderInstanceList: list]
+        getIndexModel list, count
+    }
+
+    def listEmbedded(Long organization, Long person, Long quote) {
+        List<SalesOrder> l = null
+        int count = 0
+        Map<String, Object> linkParams = null
+        if (organization) {
+            Organization organizationInstance = Organization.get(organization)
+            l = SalesOrder.findAllByOrganization(organizationInstance, params)
+            count = SalesOrder.countByOrganization(organizationInstance)
+            linkParams = [organization: organizationInstance.id]
+        } else if (person) {
+            Person personInstance = Person.get(person)
+            l = SalesOrder.findAllByPerson(personInstance, params)
+            count = SalesOrder.countByPerson(personInstance)
+            linkParams = [person: personInstance.id]
+        } else if (quote) {
+            Quote quoteInstance = Quote.get(quote)
+            l = SalesOrder.findAllByQuote(quoteInstance, params)
+            count = SalesOrder.countByQuote(quoteInstance)
+            linkParams = [quote: quoteInstance.id]
+        }
+
+        getListEmbeddedModel l, count, linkParams
     }
 
     def print(Long id, String template) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
-        if (!salesOrderInstance) {
-            render status: SC_NOT_FOUND
-            return
+        SalesOrder salesOrderInstance = getDomainInstanceWithStatus(id)
+        if (salesOrderInstance != null) {
+            printDocument salesOrderInstance, template
         }
+    }
 
-        String xml = invoicingTransactionService.generateXML(
-            salesOrderInstance,
-            salesOrderInstance.createUser
-                ?: ((Credential) session.credential).loadUser(),
-            params.boolean('duplicate') ?: false
-        )
-        GString fileName =
-            "${message(code: 'salesOrder.label')} ${salesOrderInstance.fullNumber}"
-        if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-        }
-        fileName += ".pdf"
-
-        fopService.outputPdf xml, 'sales-order', template, response, fileName
+    def save() {
+        super.save()
     }
 
     def setSignature(Long id) {
@@ -329,5 +137,57 @@ class SalesOrderController {
         }
 
         redirect action: 'show', id: id
+    }
+
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected SalesOrder lowLevelSave() {
+        SalesOrder salesOrderInstance = new SalesOrder(params)
+        salesOrderInstance.orderDocument =
+            dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
+
+        invoicingTransactionService.save(salesOrderInstance, params) \
+            ? salesOrderInstance
+            : null
+    }
+
+    @Override
+    protected SalesOrder lowLevelUpdate(SalesOrder salesOrderInstance) {
+        DataFile df = salesOrderInstance.orderDocument
+        if (params.fileRemove == '1') {
+            salesOrderInstance.orderDocument = null
+        } else if (!params.file?.empty) {
+            df = dataFileService.updateFile(
+                FILE_TYPE, df, params.file as MultipartFile
+            )
+            salesOrderInstance.orderDocument = df
+        }
+
+        boolean res =
+            invoicingTransactionService.save(salesOrderInstance, params)
+        if (res && params.fileRemove == '1' && df) {
+            dataFileService.removeFile FILE_TYPE, df
+        }
+
+        res ? salesOrderInstance : null
+    }
+
+    @Override
+    protected void updateAssociated(SalesOrder salesOrderInstance) {
+        Quote quoteInstance = salesOrderInstance.quote
+        if (quoteInstance) {
+            quoteInstance.stage = QuoteStage.get(603L)
+            quoteInstance.save failOnError: true, flush: true
+        }
     }
 }

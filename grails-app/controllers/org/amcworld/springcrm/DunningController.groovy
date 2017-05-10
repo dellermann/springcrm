@@ -1,7 +1,7 @@
 /*
  * DunningController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,35 +20,66 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code DunningController} contains actions which manage dunnings.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class DunningController {
+class DunningController extends InvoicingController<Dunning> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
-
-    //-- Fields ---------------------------------
-
-    FopService fopService
-    InvoicingTransactionService invoicingTransactionService
+    DunningController() {
+        super(Dunning)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    def create() {
+        Dunning dunningInstance
+        if (params.invoice) {
+            Invoice invoiceInstance = Invoice.get(params.long('invoice'))
+            invoiceInstance.items?.clear()
+            dunningInstance = new Dunning(invoiceInstance)
+        } else {
+            dunningInstance = new Dunning()
+            dunningInstance.setProperties params
+        }
 
+        addWorkItem dunningInstance, 'workIdDunningCharge'
+        addWorkItem dunningInstance, 'workIdDefaultInterest'
+
+        getCreateModel dunningInstance
+    }
+
+    def copy(Long id) {
+        super.copy id
+    }
+
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit(id)
+    }
+
+    def editPayment(Long id) {
+        super.editPayment id
+    }
+
+    def find() {
+        super.find()
+    }
+
+    def getClosingBalance(Long id) {
+        super.getClosingBalance id
+    }
+
+    def index() {
         List<Dunning> list
         int count
         if (params.search) {
@@ -60,347 +91,104 @@ class DunningController {
             count = Dunning.count()
         }
 
-        [dunningInstanceList: list, dunningInstanceTotal: count]
+        getIndexModel list, count
     }
 
     def listEmbedded(Long organization, Long person, Long invoice) {
-        List<Dunning> l = null
+        List<Dunning> list = null
         int count = 0
-        def linkParams = null
+        Map<String, Object> linkParams = null
 
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
-            def organizationInstance = Organization.get(organization)
+            Organization organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-                l = Dunning.findAllByOrganization(organizationInstance, params)
+                list = Dunning.findAllByOrganization(organizationInstance, params)
                 count = Dunning.countByOrganization(organizationInstance)
                 linkParams = [organization: organizationInstance.id]
             }
         } else if (person) {
-            def personInstance = Person.get(person)
+            Person personInstance = Person.get(person)
             if (personInstance) {
-                l = Dunning.findAllByPerson(personInstance, params)
+                list = Dunning.findAllByPerson(personInstance, params)
                 count = Dunning.countByPerson(personInstance)
                 linkParams = [person: personInstance.id]
             }
         } else if (invoice) {
-            def invoiceInstance = Invoice.get(invoice)
+            Invoice invoiceInstance = Invoice.get(invoice)
             if (invoiceInstance) {
-                l = Dunning.findAllByInvoice(invoiceInstance, params)
+                list = Dunning.findAllByInvoice(invoiceInstance, params)
                 count = Dunning.countByInvoice(invoiceInstance)
                 linkParams = [invoice: invoiceInstance.id]
             }
         }
 
-        [
-            dunningInstanceList: l, dunningInstanceTotal: count,
-            linkParams: linkParams
-        ]
-    }
-
-    def create() {
-        Dunning dunningInstance
-        if (params.invoice) {
-            def invoiceInstance = Invoice.get(params.long('invoice'))
-            invoiceInstance.items?.clear()
-            dunningInstance = new Dunning(invoiceInstance)
-        } else {
-            dunningInstance = new Dunning()
-            dunningInstance.setProperties params
-        }
-
-        dunningInstance.copyAddressesFromOrganization()
-
-        ConfigHolder config = ConfigHolder.instance
-        def workId = config['workIdDunningCharge']
-        if (workId) {
-            Work work = Work.get(workId.toType(Long))
-            if (work) {
-                dunningInstance.addToItems workToItem(work)
-            }
-        }
-        workId = config['workIdDefaultInterest']
-        if (workId) {
-            Work work = Work.get(workId.toType(Long))
-            if (work) {
-                dunningInstance.addToItems workToItem(work)
-            }
-        }
-
-        [dunningInstance: dunningInstance]
-    }
-
-    def copy(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        dunningInstance = new Dunning(dunningInstance)
-        render view: 'create', model: [dunningInstance: dunningInstance]
+        getListEmbeddedModel list, count, linkParams
     }
 
     def save() {
-        Dunning dunningInstance = new Dunning(params)
-        if (!invoicingTransactionService.save(dunningInstance, params)) {
-            render view: 'create', model: [quoteInstance: dunningInstance]
-            return
-        }
-
-        request.dunningInstance = dunningInstance
-
-        Invoice invoiceInstance = dunningInstance.invoice
-        invoiceInstance.stage = InvoiceStage.get(904)
-        invoiceInstance.save flush: true
-
-        flash.message = message(
-            code: 'default.created.message',
-            args: [message(code: 'dunning.label'), dunningInstance.toString()]
-        )
-
-        redirect action: 'show', id: dunningInstance.id
+        super.save()
     }
 
     def show(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [dunningInstance: dunningInstance]
-    }
-
-    def edit(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && dunningInstance.stage.id >= 2202) {
-            redirect action: 'index'
-            return
-        }
-
-        [dunningInstance: dunningInstance]
-    }
-
-    def editPayment(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [dunningInstance: dunningInstance]
+        super.show id
     }
 
     def update(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && dunningInstance.stage.id >= 2202) {
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (dunningInstance.version > version) {
-                dunningInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'dunning.label')] as Object[],
-                    'Another user has updated this Dunning while you were editing'
-                )
-                render view: 'edit', model: [dunningInstance: dunningInstance]
-                return
-            }
-        }
-
-        if (!invoicingTransactionService.save(dunningInstance, params)) {
-            render view: 'edit', model: [dunningInstance: dunningInstance]
-            return
-        }
-
-        request.dunningInstance = dunningInstance
-
-        Invoice invoiceInstance = dunningInstance.invoice
-        invoiceInstance.stage = InvoiceStage.get(904)
-        invoiceInstance.save flush: true
-
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'dunning.label'), dunningInstance.toString()]
-        )
-
-        redirect action: 'show', id: dunningInstance.id
+        super.update id
     }
 
     def updatePayment(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (dunningInstance.version > version) {
-                dunningInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'dunning.label')] as Object[],
-                    'Another user has updated this Dunning while you were editing'
-                )
-                render view: 'edit', model: [dunningInstance: dunningInstance]
-                return
-            }
-        }
-
-        dunningInstance.properties = params.findAll {
-            it.key in [
-                'stage', 'paymentDate', 'paymentAmount', 'paymentMethod'
-            ]
-        }
-
-        if (!dunningInstance.save(flush: true)) {
-            render view: 'edit', model: [dunningInstance: dunningInstance]
-            return
-        }
-
-        request.dunningInstance = dunningInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'dunning.label'), dunningInstance.toString()]
-        )
-
-        redirect action: 'show', id: dunningInstance.id
-    }
-
-    def delete(Long id) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'dunning.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        if (!session.credential.admin && dunningInstance.stage.id >= 2202) {
-            redirect action: 'index'
-            return
-        }
-
-        request.dunningInstance = dunningInstance
-        try {
-            dunningInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'dunning.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'dunning.label')]
-            )
-            redirect action: 'show', id: id
-        }
-    }
-
-    def find() {
-        Integer number = null
-        try {
-            number = params.name as Integer
-        } catch (NumberFormatException ignored) { /* ignored */ }
-        Organization organization = params.organization \
-            ? Organization.get(params.long('organization')) \
-            : null
-
-        def c = Dunning.createCriteria()
-        List<Dunning> list = (List<Dunning>) c.list {
-            or {
-                eq('number', number)
-                ilike('subject', "%${params.name}%")
-            }
-            if (organization) {
-                and {
-                    eq('organization', organization)
-                }
-            }
-            order('number', 'desc')
-        }
-
-        [dunningInstanceList: list]
+        super.updatePayment id
     }
 
     def print(Long id, String template) {
-        Dunning dunningInstance = Dunning.get(id)
-        if (!dunningInstance) {
-            render status: SC_NOT_FOUND
-            return
+        Dunning dunningInstance = getDomainInstanceWithStatus(id)
+        if (dunningInstance != null) {
+            printDocument(
+                dunningInstance, template,
+                [
+                    invoice: dunningInstance.invoice,
+                    invoiceFullNumber: dunningInstance.invoice.fullNumber,
+                ]
+            )
         }
-
-        String xml = invoicingTransactionService.generateXML(
-            dunningInstance,
-            dunningInstance.createUser ?:
-                ((Credential) session.credential).loadUser(),
-            params.boolean('duplicate') ?: false,
-            [
-                invoice: dunningInstance.invoice,
-                invoiceFullNumber: dunningInstance.invoice.fullNumber,
-            ]
-        )
-        GString fileName =
-            "${message(code: 'dunning.label')} ${dunningInstance.fullNumber}"
-        if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-        }
-        fileName += ".pdf"
-
-        fopService.outputPdf xml, 'dunning', template, response, fileName
-    }
-
-    def getClosingBalance(Long id) {
-        [dunningInstance: Dunning.get(id)]
     }
 
 
     //-- Non-public methods ---------------------
 
-    private InvoicingItem workToItem(Work w) {
+    /**
+     * Adds a work item which is configured under the given name to the
+     * dunning instance.
+     *
+     * @param dunningInstance   the given dunning instance
+     * @param name              the name of the configuration containing the ID
+     *                          of the work
+     * @since 2.2
+     */
+    private static void addWorkItem(Dunning dunningInstance, String name) {
+        Config workId = ConfigHolder.instance.getConfig(name)
+        if (workId != null) {
+            Work work = Work.get(workId.toType(Long))
+            if (work != null) {
+                dunningInstance.addToItems workToItem(work)
+            }
+        }
+    }
+
+    @Override
+    protected boolean checkAccess(Dunning dunningInstance) {
+        admin || dunningInstance.stage.id < 2202
+    }
+
+    @Override
+    protected void updateAssociated(Dunning dunningInstance) {
+        Invoice invoiceInstance = dunningInstance.invoice
+        invoiceInstance.stage = InvoiceStage.get(904)
+        invoiceInstance.save flush: true
+    }
+
+    private static InvoicingItem workToItem(Work w) {
         new InvoicingItem(
             number: w.fullNumber, quantity: w.quantity,
             unit: w.unit.toString(), name: w.name, description: w.description,

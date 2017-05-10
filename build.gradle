@@ -226,6 +226,12 @@ task buildInfo {
 }
 processResources.finalizedBy buildInfo
 
+test {
+    filter {
+        includeTestsMatching '*Spec'
+    }
+}
+
 /* running */
 bootRun {
     jvmArgs '-Dspring.output.ansi.enabled=always'

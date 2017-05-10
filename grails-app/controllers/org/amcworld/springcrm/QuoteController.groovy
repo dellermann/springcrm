@@ -1,7 +1,7 @@
 /*
  * QuoteController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,35 +20,45 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-
-import org.springframework.dao.DataIntegrityViolationException
-
 
 /**
  * The class {@code QuoteController} contains actions which manage quotes.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class QuoteController {
+class QuoteController extends InvoicingController<Quote> {
 
-    //-- Class fields ---------------------------
+    //-- Constructors ---------------------------
 
-    static allowedMethods = [save: 'POST', update: 'POST', delete: 'GET']
-
-
-    //-- Fields ---------------------------------
-
-    FopService fopService
-    InvoicingTransactionService invoicingTransactionService
+    QuoteController() {
+        super(Quote)
+    }
 
 
     //-- Public methods -------------------------
 
-    def index() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+    def copy(Long id) {
+        super.copy id
+    }
 
+    def create() {
+        getCreateModel new Quote(params)
+    }
+
+    def delete(Long id) {
+        super.delete id
+    }
+
+    def edit(Long id) {
+        super.edit id
+    }
+
+    def find() {
+        super.find()
+    }
+
+    def index() {
         List<Quote> list
         int count
         if (params.search) {
@@ -60,217 +70,44 @@ class QuoteController {
             count = Quote.count()
         }
 
-        [quoteInstanceList: list, quoteInstanceTotal: count]
+        getIndexModel list, count
     }
 
     def listEmbedded(Long organization, Long person) {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-
-        List<Quote> l = null
+        List<Quote> list = null
         int count = 0
-        def linkParams = null
+        Map<String, Object> linkParams = null
         if (organization) {
-            def organizationInstance = Organization.get(organization)
-            l = Quote.findAllByOrganization(organizationInstance, params)
+            Organization organizationInstance = Organization.get(organization)
+            list = Quote.findAllByOrganization(organizationInstance, params)
             count = Quote.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
-            def personInstance = Person.get(person)
-            l = Quote.findAllByPerson(personInstance, params)
+            Person personInstance = Person.get(person)
+            list = Quote.findAllByPerson(personInstance, params)
             count = Quote.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
 
-        [
-            quoteInstanceList: l, quoteInstanceTotal: count,
-            linkParams: linkParams
-        ]
-    }
-
-    def create() {
-        Quote quoteInstance = new Quote(params)
-        quoteInstance.copyAddressesFromOrganization()
-
-        [quoteInstance: quoteInstance]
-    }
-
-    def copy(Long id) {
-        Quote quoteInstance = Quote.get(id)
-        if (!quoteInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'quote.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        quoteInstance = new Quote(quoteInstance)
-        render view: 'create', model: [quoteInstance: quoteInstance]
-    }
-
-    def save() {
-        Quote quoteInstance = new Quote()
-        if (!invoicingTransactionService.save(quoteInstance, params)) {
-            render view: 'create', model: [quoteInstance: quoteInstance]
-            return
-        }
-
-        request.quoteInstance = quoteInstance
-        flash.message = message(
-            code: 'default.created.message',
-            args: [
-                message(code: 'quote.label'),
-                quoteInstance.toString()
-            ]
-        )
-
-        redirect action: 'show', id: quoteInstance.id
-    }
-
-    def show(Long id) {
-        Quote quoteInstance = Quote.get(id)
-        if (!quoteInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'quote.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [quoteInstance: quoteInstance]
-    }
-
-    def edit(Long id) {
-        Quote quoteInstance = Quote.get(id)
-        if (!quoteInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'quote.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        [quoteInstance: quoteInstance]
-    }
-
-    def update(Long id) {
-        Quote quoteInstance = Quote.get(id)
-        if (!quoteInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'quote.label'), id]
-            )
-            redirect action: 'index'
-            return
-        }
-
-        if (params.version) {
-            def version = params.version.toLong()
-            if (quoteInstance.version > version) {
-                quoteInstance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [message(code: 'quote.label')] as Object[],
-                    'Another user has updated this Quote while you were editing'
-                )
-                render view: 'edit', model: [quoteInstance: quoteInstance]
-                return
-            }
-        }
-
-        if (!invoicingTransactionService.save(quoteInstance, params)) {
-            render view: 'edit', model: [quoteInstance: quoteInstance]
-            return
-        }
-
-        request.quoteInstance = quoteInstance
-        flash.message = message(
-            code: 'default.updated.message',
-            args: [message(code: 'quote.label'), quoteInstance.toString()]
-        )
-
-        redirect action: 'show', id: quoteInstance.id
-    }
-
-    def delete(Long id) {
-        Quote quoteInstance = Quote.get(id)
-        if (!quoteInstance) {
-            flash.message = message(
-                code: 'default.not.found.message',
-                args: [message(code: 'quote.label'), id]
-            )
-
-            redirect action: 'index'
-            return
-        }
-
-        request.quoteInstance = quoteInstance
-        try {
-            quoteInstance.delete flush: true
-            flash.message = message(
-                code: 'default.deleted.message',
-                args: [message(code: 'quote.label')]
-            )
-
-            redirect action: 'index'
-        } catch (DataIntegrityViolationException ignore) {
-            flash.message = message(
-                code: 'default.not.deleted.message',
-                args: [message(code: 'quote.label')]
-            )
-
-            redirect action: 'show', id: id
-        }
-    }
-
-    def find() {
-        Integer number = null
-        try {
-            number = params.name as Integer
-        } catch (NumberFormatException ignored) { /* ignored */ }
-        Organization organization = params.organization \
-            ? Organization.get(params.long('organization')) \
-            : null
-
-        def c = Quote.createCriteria()
-        List<Quote> list = (List<Quote>) c.list {
-            or {
-                eq('number', number)
-                ilike('subject', "%${params.name}%")
-            }
-            if (organization) {
-                and {
-                    eq('organization', organization)
-                }
-            }
-            order('number', 'desc')
-        }
-
-        [quoteInstanceList: list]
+        getListEmbeddedModel list, count, linkParams
     }
 
     def print(Long id, String template) {
-        Quote quoteInstance = Quote.get(id)
-        if (!quoteInstance) {
-            render status: SC_NOT_FOUND
-            return
+        Quote quoteInstance = getDomainInstanceWithStatus(id)
+        if (quoteInstance != null) {
+            printDocument quoteInstance, template
         }
+    }
 
-        String xml = invoicingTransactionService.generateXML(
-            quoteInstance,
-            quoteInstance.createUser ?:
-                ((Credential) session.credential).loadUser(),
-            params.boolean('duplicate') ?: false
-        )
-        GString fileName =
-            "${message(code: 'quote.label')} ${quoteInstance.fullNumber}"
-        if (params.duplicate) {
-            fileName += " (${message(code: 'invoicingTransaction.duplicate')})"
-        }
-        fileName += ".pdf"
+    def save() {
+        super.save()
+    }
 
-        fopService.outputPdf xml, 'quote', template, response, fileName
+    def show(Long id) {
+        super.show id
+    }
+
+    def update(Long id) {
+        super.update id
     }
 }
