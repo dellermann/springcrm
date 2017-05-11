@@ -1,7 +1,7 @@
 #
 # addr-fields.coffee
 #
-# Copyright (c) 2011-2016, Daniel Ellermann
+# Copyright (c) 2011-2017, Daniel Ellermann
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ $ = jQuery
 # copying to each other or loading an address from the associated organization.
 #
 # @author   Daniel Ellermann
-# @version  2.0
+# @version  2.2
 #
 class AddrFields
 
@@ -249,6 +249,7 @@ class AddrFields
 
     promise.done ->
       $fromAddr.find('.column-content :input')
+        .not('.textarea-toolbar :input')
         .each ->
           $this = $(this)
           name = toPrefix + '.' + $this.attr('name').split('.').pop()

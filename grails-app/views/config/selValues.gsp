@@ -1,84 +1,86 @@
 <html>
   <head>
-    <meta name="layout" content="main" />
-    <title><g:message code="config.selValues.title" /> -
-    <g:message code="config.title" /></title>
-    <meta name="caption" content="${message(code: 'config.title')}" />
-    <meta name="subcaption" content="${message(code: 'config.selValues.title')}" />
-    <meta name="stylesheet" content="config" />
+    <meta name="layout" content="main"/>
+    <title><g:message code="config.selValues.title"/> -
+    <g:message code="config.title"/></title>
+    <meta name="caption" content="${message(code: 'config.title')}"/>
+    <meta name="subcaption"
+      content="${message(code: 'config.selValues.title')}"/>
+    <meta name="stylesheet" content="config"/>
   </head>
 
   <body>
     <content tag="toolbar">
-      <g:render template="/layouts/toolbarForm" model="[formName: 'config']" />
+      <g:render template="/layouts/toolbarFormSimple"
+        model="[formName: 'config-form']"/>
     </content>
 
-    <g:render template="/layouts/flashMessage" />
-    <g:render template="/layouts/errorMessage" />
+    <g:render template="/layouts/flashMessage"/>
+    <g:render template="/layouts/errorMessage"/>
 
     <form action="${createLink(action: 'saveSelValues', params: [returnUrl: params.returnUrl])}"
       id="config-form" method="post"
       class="form-horizontal data-form form-view">
       <section>
         <header>
-          <h3><g:message code="config.fieldset.selValues.general.label" /></h3>
+          <h3><g:message code="config.fieldset.selValues.general.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
             <g:render template="/config/selValuesList"
-              model="[type: 'salutation']" />
+              model="[type: 'salutation']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'orgType']" />
+              model="[type: 'orgType']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'rating']" />
+              model="[type: 'rating']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'unit']" />
+              model="[type: 'unit']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'paymentMethod']" />
+              model="[type: 'paymentMethod']"/>
           </div>
           <div class="column">
             <g:render template="/config/selValuesList"
-              model="[type: 'carrier']" />
+              model="[type: 'carrier']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'industry']" />
+              model="[type: 'industry']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'termsAndConditions']" />
+              model="[type: 'termsAndConditions']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'productCategory']" />
+              model="[type: 'productCategory']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'workCategory']" />
+              model="[type: 'workCategory']"/>
           </div>
         </div>
       </section>
       <section>
         <header>
-          <h3><g:message code="config.fieldset.selValues.invoicing.label" /></h3>
+          <h3><g:message code="config.fieldset.selValues.invoicing.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
             <g:render template="/config/selValuesList"
-              model="[type: 'quoteStage']" />
+              model="[type: 'quoteStage']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'salesOrderStage']" />
+              model="[type: 'salesOrderStage']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'invoiceStage']" />
+              model="[type: 'invoiceStage']"/>
           </div>
           <div class="column">
             <g:render template="/config/selValuesList"
-              model="[type: 'dunningStage']" />
+              model="[type: 'dunningStage']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'dunningLevel']" />
+              model="[type: 'dunningLevel']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'creditMemoStage']" />
+              model="[type: 'creditMemoStage']"/>
             <g:render template="/config/selValuesList"
-              model="[type: 'purchaseInvoiceStage']" />
+              model="[type: 'purchaseInvoiceStage']"/>
           </div>
         </div>
       </section>
     </form>
 
     <content tag="scripts">
-      <asset:javascript src="config-sel-values" />
+      <asset:javascript src="config-sel-values"/>
     </content>
   </body>
 </html>

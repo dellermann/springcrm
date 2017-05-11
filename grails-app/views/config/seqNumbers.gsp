@@ -4,13 +4,15 @@
     <title><g:message code="config.seqNumbers.title"/> -
     <g:message code="config.title"/></title>
     <meta name="caption" content="${message(code: 'config.title')}"/>
-    <meta name="subcaption" content="${message(code: 'config.seqNumbers.title')}"/>
+    <meta name="subcaption"
+      content="${message(code: 'config.seqNumbers.title')}"/>
     <meta name="stylesheet" content="config"/>
   </head>
 
   <body>
     <content tag="toolbar">
-      <g:render template="/layouts/toolbarForm" model="[formName: 'config']"/>
+      <g:render template="/layouts/toolbarFormSimple"
+        model="[formName: 'config-form']"/>
     </content>
 
     <g:render template="/layouts/flashMessage"/>

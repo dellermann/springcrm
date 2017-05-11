@@ -89,6 +89,7 @@ class Page
       )
       .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
       .on('click', '#spinner', -> $(this).fadeOut())
+      .on('click', '.save-and-close', (event) => @_onClickSaveAndClose event)
       .on('click', '.btn-print', -> win.print())
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
@@ -512,6 +513,26 @@ class Page
           $(this).modal()
 
     return
+
+  # Called when the user clicks the link to save and close the form.  The
+  # method stores a value in the form indicating that the form should be
+  # closed.  After that the form is submitted.
+  #
+  # @param [Event] event  any event data
+  # @return [Boolean]     always `false` to prevent event bubbling
+  # @private
+  # @since 2.2
+  #
+  _onClickSaveAndClose: (event) ->
+    $ = jq
+
+    $('#close-form').attr 'value', '1'
+    $(event.currentTarget)
+      .closest('.btn-group')
+        .find('button[type=submit]')
+          .click()
+
+    false
 
   # Called when a number control gets the focus.  The method removes all zeros
   # after the decimal point.

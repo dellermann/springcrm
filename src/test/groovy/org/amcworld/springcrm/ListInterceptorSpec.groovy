@@ -52,6 +52,7 @@ class ListInterceptorSpec extends Specification {
         expect:
         interceptor.after()
         interceptor.afterView()
+        interceptor.before()
     }
 
     def 'A default maximum value is set'() {

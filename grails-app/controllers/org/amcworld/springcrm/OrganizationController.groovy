@@ -139,10 +139,12 @@ class OrganizationController extends GeneralController<Organization> {
     }
 
     def save() {
+        request['redirectParams'] = [listType: params.listType]
         super.save()
     }
 
     def update(Long id) {
+        request['redirectParams'] = [listType: params.listType]
         super.update id
     }
 
