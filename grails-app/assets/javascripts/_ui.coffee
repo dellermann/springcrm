@@ -51,7 +51,7 @@ $ = jQuery
 # Class `Page` handles default components of pages in this application.
 #
 # @author   Daniel Ellermann
-# @version  2.1
+# @version  2.2
 #
 class Page
 
@@ -89,7 +89,11 @@ class Page
       )
       .on('click', '.markdown-help-btn', => @_onClickMarkdownHelpBtn())
       .on('click', '#spinner', -> $(this).fadeOut())
-      .on('click', '.save-and-close', (event) => @_onClickSaveAndClose event)
+      .on('click', '.save-link', (event) => @_onClickSaveLink event, false)
+      .on(
+        'click', '.save-and-close-link',
+        (event) => @_onClickSaveLink event, true
+      )
       .on('click', '.btn-print', -> win.print())
       .on('click', '.btn-action-delete[href]', (event) =>
         @_onClickDeleteBtn event
@@ -514,19 +518,19 @@ class Page
 
     return
 
-  # Called when the user clicks the link to save and close the form.  The
-  # method stores a value in the form indicating that the form should be
-  # closed.  After that the form is submitted.
+  # Called when the user clicks the link to save and optionally close the form.
+  # The method submits the form.
   #
-  # @param [Event] event  any event data
-  # @return [Boolean]     always `false` to prevent event bubbling
+  # @param [Event] event    any event data
+  # @param [Boolean] close  if `true` the form is closed; `false` otherwise
+  # @return [Boolean]       always `false` to prevent event bubbling
   # @private
   # @since 2.2
   #
-  _onClickSaveAndClose: (event) ->
+  _onClickSaveLink: (event, close) ->
     $ = jq
 
-    $('#close-form').attr 'value', '1'
+    $('#close-form').attr 'value', if close then '1' else ''
     $(event.currentTarget)
       .closest('.btn-group')
         .find('button[type=submit]')

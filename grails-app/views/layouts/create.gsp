@@ -11,7 +11,8 @@
 <form action="${createLink(action: 'save')}" id="${formName}"
   class="form-horizontal data-form form-view" method="post"
   enctype="${enctype ?: 'application/x-www-form-urlencoded'}">
-  <input type="hidden" id="close-form" name="close" value=""/>
+  <g:hiddenField name="close" id="close-form"
+    value="${session.credential.settings['saveType'] == 'save' ? '' : '1'}"/>
   <g:hiddenField name="returnUrl" value="${params.returnUrl}"/>
   <g:hiddenField name="project" value="${project}"/>
   <g:hiddenField name="projectPhase" value="${projectPhase}"/>

@@ -46,6 +46,32 @@
   }
 }
 
+// Generates rules to size the labels and control containers for column groups
+// depending on the screen size.
+//
+// @param class   the name of the screen size class, e. g. sm, md, or lg
+// @param cols    the number of columns which should be used for the label
+// @param suffix  any suffix which should be appended to the control-label and
+//                control-container selectors
+//
+.make-control-sizes(@class, @cols, @suffix) {
+  @var: "screen-@{class}-min";
+  @d: (2 * @grid-columns);
+  @label-selector: ~".control-label@{suffix}";
+  @container-selector: ~".control-container@{suffix}";
+
+  @media (min-width: @@var) {
+    .column-group > .column:only-child {
+      @{label-selector} {
+        width: percentage(@cols / @d);
+      }
+      @{container-selector} {
+        width: percentage((@d - @cols) / @d);
+      }
+    }
+  }
+}
+
 // Generates a rule that specifies the width of the fixed toolbar for the given
 // screen size class.
 //

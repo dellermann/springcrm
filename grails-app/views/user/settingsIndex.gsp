@@ -26,6 +26,22 @@
             </p>
           </li>
           <li>
+            <g:link action="settingsControl" class="configuration-icon"
+              role="presentation">
+              <i class="fa fa-cogs"></i>
+            </g:link>
+            <g:link action="settingsControl" class="configuration-title">
+              <g:message code="user.settings.control.title" />
+            </g:link>
+            <p class="configuration-description">
+              <g:message code="user.settings.control.description" />
+            </p>
+          </li>
+        </ul>
+      </div>
+      <div class="col-xs-12 col-sm-6">
+        <ul>
+          <li>
             <g:link action="settingsSync" class="configuration-icon"
               role="presentation">
               <i class="fa fa-refresh"></i>
@@ -37,10 +53,6 @@
               <g:message code="user.settings.sync.description" />
             </p>
           </li>
-        </ul>
-      </div>
-      <div class="col-xs-12 col-sm-6">
-        <ul>
           <li>
             <g:link action="settingsGoogleAuth" class="configuration-icon"
               role="presentation">

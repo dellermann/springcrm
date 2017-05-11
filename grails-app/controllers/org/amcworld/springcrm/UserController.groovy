@@ -108,6 +108,16 @@ class UserController extends GeneralController<User> {
         super.save()
     }
 
+    def settingsControl() {
+        [saveType: credential.settings['saveType'] ?: 'saveAndClose']
+    }
+
+    def settingsControlSave(String saveType) {
+        credential.settings['saveType'] = saveType
+
+        redirect action: 'settingsIndex'
+    }
+
     def settingsGoogleAuth() {
         com.google.api.client.auth.oauth2.Credential cred =
             googleOAuthService.loadCredential(credential.userName)
