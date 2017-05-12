@@ -131,7 +131,7 @@ class InvoicingTransactionService implements Service {
                     <= -:minimum
                 and i.dueDatePayment <= current_timestamp()
             order by ${sort} ${ord}
-            """,
+            """.toString(),
             [
                 minimum: minimum,
                 prec: precision,

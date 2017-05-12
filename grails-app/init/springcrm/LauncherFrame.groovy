@@ -139,7 +139,7 @@ class LauncherFrame implements ApplicationListener<ApplicationContextEvent> {
             g.color = new Color(0x333333)
             Rectangle2D r =
                 new TextLayout(version, font, g2.fontRenderContext).bounds
-            int x = image.width - (int) r.width
+            int x = image.width - (int) r.width - 2
             int y = image.height - (int) r.height + 2
             g.drawString version, x, y
         }

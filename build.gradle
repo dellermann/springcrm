@@ -80,6 +80,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'edu.sc.seis.macAppBundle'
 
 ext {
+    dateFormat = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
     grailsVersion = project.grailsVersion
     gradleWrapperVersion = project.gradleWrapperVersion
 }
@@ -197,35 +198,18 @@ task wrapper(type: Wrapper) {
 }
 
 /* compiling */
-task buildInfo {
-    doLast {
-        def formatter = new SimpleDateFormat('''yyyy-MM-dd'T'HH:mm:ssZ''')
-        def replaceTokens = [
-            'info.app.buildNumber': computeBuildNumber(1L).toString(),
-            'info.app.buildDate': formatter.format(new Date())
-        ]
-
-        copy {
-            from(sourceSets.main.output.resourcesDir) {
-                filter(ReplaceTokens, tokens: replaceTokens)
-                include '**/*.groovy'
-                include '**/*.yml'
-                include '**/*.xml'
-            }
-            into temporaryDir
-        }
-        copy {
-            from(temporaryDir) {
-                include '**/*.groovy'
-                include '**/*.yml'
-                include '**/*.xml'
-            }
-            into sourceSets.main.output.resourcesDir
-        }
+processResources
+    .filesMatching(['**/*.groovy', '**/*.properties', '**/*.xml', '**/*.yml']) {
+        filter(
+            ReplaceTokens, tokens: [
+                'info.app.buildNumber': computeBuildNumber(1L).toString(),
+                'info.app.buildDate': ext.dateFormat.format(new Date()),
+                'app.version': project.version
+            ]
+        )
     }
-}
-processResources.finalizedBy buildInfo
 
+/* testing */
 test {
     filter {
         includeTestsMatching '*Spec'
