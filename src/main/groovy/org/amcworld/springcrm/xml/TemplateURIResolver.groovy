@@ -1,7 +1,7 @@
 /*
  * TemplateURIResolver.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 package org.amcworld.springcrm.xml
 
 import groovy.transform.CompileStatic
-import javax.validation.constraints.NotNull
 import javax.xml.transform.Source
 import javax.xml.transform.TransformerException
 import javax.xml.transform.URIResolver
@@ -36,7 +35,7 @@ import org.springframework.core.io.ResourceLoader
  * any prefix and with prefix {@code user-template:}.
  *
  * @author	Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   0.9
  */
 @CompileStatic
@@ -73,8 +72,7 @@ class TemplateURIResolver implements URIResolver {
      * @param userTemplatePath  the directory containing the user-defined
      *                          template
      */
-    TemplateURIResolver(@NotNull ResourceLoader resourceLoader,
-                        @NotNull String userTemplatePath)
+    TemplateURIResolver(ResourceLoader resourceLoader, String userTemplatePath)
     {
         this.resourceLoader = resourceLoader
 

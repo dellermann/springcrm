@@ -1,7 +1,7 @@
 /*
  * LdapService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,10 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Service
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 import javax.naming.NameAlreadyBoundException
 import org.amcworld.springcrm.ldap.LdapFactory
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.apache.directory.groovyldap.LDAP
 
 
@@ -35,15 +32,10 @@ import org.apache.directory.groovyldap.LDAP
  * server and store person data.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 @CompileStatic
-class LdapService implements Service {
-
-    //-- Constants ------------------------------
-
-    private static final Log log = LogFactory.getLog(this)
-
+class LdapService {
 
     //-- Class fields ---------------------------
 
@@ -135,7 +127,7 @@ class LdapService implements Service {
      * @return  the attribute map containing the person property values
      *          suitable for LDAP
      */
-    private Map convertPersonToAttrs(Person p) {
+    private static Map convertPersonToAttrs(Person p) {
         def attrs = [
             cn: "${p.lastName} ${p.firstName}".toString(),
             displayname: "${p.firstName} ${p.lastName}".toString(),
@@ -241,7 +233,7 @@ class LdapService implements Service {
      * @since   2.1
      */
     @CompileStatic(TypeCheckingMode.SKIP)
-    private LdapSyncStatus createByPerson(Person p) {
+    private static LdapSyncStatus createByPerson(Person p) {
         new LdapSyncStatus(itemId: p.id)
     }
 
@@ -253,7 +245,7 @@ class LdapService implements Service {
      * @since   2.1
      */
     @CompileStatic(TypeCheckingMode.SKIP)
-    private LdapSyncStatus getByPerson(Person p) {
+    private static LdapSyncStatus getByPerson(Person p) {
         LdapSyncStatus.findByItemId p.id
     }
 
@@ -263,7 +255,7 @@ class LdapService implements Service {
      *
      * @return  the configuration holder
      */
-    private ConfigHolder getConfig() {
+    private static ConfigHolder getConfig() {
         ConfigHolder.instance
     }
 

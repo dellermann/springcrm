@@ -23,6 +23,17 @@ grails:
     profile: web
     codegen:
         defaultPackage: org.amcworld.springcrm
+    gorm:
+        # Whether to autowire entities.
+        # Disabled by default for performance reasons.
+        autowire: false
+        reactor:
+            # Whether to translate GORM events into Reactor events
+            # Disabled by default for performance reasons
+            events: false
+    spring:
+        transactionManagement:
+            proxies: false
 info:
     app:
         name: '@info.app.name@'
@@ -34,6 +45,14 @@ spring:
     groovy:
         template:
             check-template-location: false
+    main:
+        banner-mode: "off"
+
+# Spring Actuator Endpoints are disabled by default
+endpoints:
+    enabled: false
+    jmx:
+        enabled: true
 
 ---
 grails:
@@ -91,11 +110,15 @@ grails:
             htmlcodec: xml
             codecs:
                 expression: html
-                scriptlets: html      # TODO was 'none' in old config
+                scriptlets: html
                 taglib: none
                 staticparts: none
             sitemesh:
                 preprocess: true
+endpoints:
+    jmx:
+        unique-names: true
+
 ---
 grails:
     gorm:
@@ -121,35 +144,32 @@ endpoints:
 #
 #================================================
 
-dataSource:
-    dbCreate: none    # updated by database-migration plugin
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:file:${springcrm.dir.database}/springcrm
-    username: springcrm
-    password:
-    pooled: true
-    jmxExport: true
-    properties:
-        initSQL: SET REFERENTIAL_INTEGRITY FALSE
-
+#
+# Use docker for a mongodb database:
+# docker run --name mongo-test -p 27017:27017 -d mongo
+#
+# In order to connect using mongoshell use:
+# docker run -it --link mongo-test:mongo --rm \
+#   mongo sh -c 'exec mongo \
+#   "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/springcrm"'
 grails:
-    plugin:
-        databasemigration:
-            updateOnStart: true
-            updateOnStartFileNames:
-                - changelog.groovy
+    mongodb:
+        port: 27017
+        databaseName: springcrm
+        engine: codec
+        default:
+            mapping:
+                version: false
 
 environments:
     development:
-        # logSql: true
-        # formatSql: true
-    test:
-        dataSource:
-            dbCreate: update
-            url: jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-            dbunitXmlType: flat
-            jndiName: null
-
+        grails:
+            mongodb:
+                host: localhost
+    production:
+        grails:
+            mongodb:
+                host: mongodb
 
 ---
 #================================================
@@ -162,21 +182,19 @@ grails:
     assets:
         excludes:
             # stylesheets
-            - bootstrap/**.less
-            - font-awesome/**.less
-            - js-calc/**.less
-            - selectize/**.less
-            - vat-calc/**.less
+            - bootstrap/**.scss
+            - font-awesome/**.scss
+            - js-calc/**.scss
+            - selectize/**.scss
+            - vat-calc/**.scss
 
             # scripts
             - bootstrap/*.js
             - jquery/*.js
             - jqueryui/*.js
+            - polyfilles/*.js
             - selectize/*.js
             - widgets/**
-        less:
-            compiler: standard
-
 
 ---
 #================================================
@@ -192,7 +210,6 @@ markdown:
     removeHtml: true
     smartPunctuation: true
     tables: true
-
 
 ---
 #================================================
@@ -217,7 +234,6 @@ springcrm:
 
 environments:
     test:
-        grails.plugin.databasemigration.dropOnStart: true
         springcrm:
             dir:
                 base: ${java.io.tmpdir}/springcrm
@@ -249,6 +265,42 @@ grails:
 # Plugin settings
 #
 #================================================
+
+grails:
+    plugin:
+        springsecurity:
+            userLookup:
+                userDomainClassName: org.amcworld.springcrm.User
+            authority:
+                className: org.amcworld.springcrm.Role
+            roleHierarchy: |-
+                ROLE_CONTENT_MANAGER > ROLE_USER
+                ROLE_ADMIN > ROLE_CONTENT_MANAGER
+            controllerAnnotations:
+                staticRules:
+                    - pattern: /
+                      access:
+                          - permitAll
+                    - pattern: /error
+                      access:
+                          - permitAll
+                    - pattern: /assets/**
+                      access:
+                          - permitAll
+                    - pattern: /**/favicon.ico
+                      access:
+                          - permitAll
+            filterChain:
+                chainMap:
+                    - pattern: /assets/**
+                      filters: none
+                    - pattern: /**/favicon.ico
+                      filters: none
+                    - pattern: /**
+                      filters: JOINED_FILTERS
+            logout:
+                afterLogoutUrl: /admin
+            printStatusMessages: false
 
 environments:
     development:

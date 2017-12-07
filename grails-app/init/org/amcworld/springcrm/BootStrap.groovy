@@ -1,7 +1,7 @@
 /*
  * BootStrap.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,6 @@ package org.amcworld.springcrm
 
 import grails.core.GrailsApplication
 import javax.servlet.ServletContext
-import javax.sql.DataSource
-import org.amcworld.springcrm.*
-import org.amcworld.springcrm.google.GoogleContactSyncTask
 import org.springframework.core.io.Resource
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
 
@@ -34,23 +31,17 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver
  * application.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class BootStrap {
 
-    //-- Constants ------------------------------
-
-    public static final int CURRENT_DB_VERSION = 4i
-
-
     //-- Fields ---------------------------------
 
-    DataSource dataSource
     SimpleMappingExceptionResolver exceptionHandler
-    GoogleContactSyncTask googleContactSyncTask
+//    GoogleContactSyncTask googleContactSyncTask
     GrailsApplication grailsApplication
     InstallService installService
-    SearchService searchService
+//    SearchService searchService
 
 
     //-- Public methods -------------------------
@@ -60,19 +51,11 @@ class BootStrap {
             'java.lang.Exception': '/error'
         ]
 
-        /* apply difference sets */
-        installService.applyAllDiffSets(
-            dataSource.connection, CURRENT_DB_VERSION
-        )
-
-        /* perform data migration */
-        installService.migrateData dataSource.connection
-
         /* start tasks */
         Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
         long interval = (config ? (config.value as Long) : 5L) * 60000L
         Timer timer = new Timer('tasks')
-        timer.schedule googleContactSyncTask, interval, interval
+//        timer.schedule googleContactSyncTask, interval, interval
         InstallerDisableTask installDisableTask =
             new InstallerDisableTask(installService: installService)
         timer.schedule installDisableTask, interval, interval
@@ -80,14 +63,14 @@ class BootStrap {
         /* initialize panels on overview page */
         initializeOverviewPanels()
 
-        /* search */
-        if (!searchService.searchIndexReady) {
-            Thread.start('buildSearchIndex') {
-                SearchData.withNewSession {
-                    searchService.bulkIndex()
-                }
-            }
-        }
+//        /* search */
+//        if (!searchService.searchIndexReady) {
+//            Thread.start('buildSearchIndex') {
+//                SearchData.withNewSession {
+//                    searchService.bulkIndex()
+//                }
+//            }
+//        }
     }
 
     def destroy = {}

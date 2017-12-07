@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import org.hibernate.SessionFactory
+//import org.hibernate.SessionFactory
 
 
 /**
@@ -37,7 +37,7 @@ class InstallController {
 
     //-- Fields ---------------------------------
 
-    SessionFactory sessionFactory
+//    SessionFactory sessionFactory
     InstallService installService
     SecurityService securityService
 
@@ -57,10 +57,10 @@ class InstallController {
     }
 
     def installBaseDataSave() {
-        installService.installBaseDataPackage(
-            sessionFactory.currentSession.connection(),
-            params.'package-select'?.toString()
-        )
+//        installService.installBaseDataPackage(
+//            sessionFactory.currentSession.connection(),
+//            params.'package-select'?.toString()
+//        )
 
         redirect action: 'clientData'
     }

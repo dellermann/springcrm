@@ -1,7 +1,7 @@
 /*
  * PaginationInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@ package org.amcworld.springcrm
 
 import grails.core.GrailsClass
 import groovy.transform.CompileStatic
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -32,16 +30,11 @@ import org.grails.datastore.gorm.GormEntity
  * pagination and sorting and stores these settings in user session.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
 class PaginationInterceptor extends SettingsInterceptorBase {
-
-    //-- Constants ------------------------------
-
-    private static final Log log = LogFactory.getLog(this)
-
 
     //-- Constructors ---------------------------
 
@@ -93,7 +86,7 @@ class PaginationInterceptor extends SettingsInterceptorBase {
         /* limit offset */
         int max = Math.min(params.max ? params.int('max') : 10, 100)
         int maxOffset =
-            count > 0 ? (int) (Math.floor((count - 1) / max) * max) : 0
+            count > 0 ? (int) (Math.floor((count - 1i) / (float) max) * max) : 0
         params.offset =
             Math.max(0, Math.min(maxOffset, params.int('offset') ?: 0))
         session.setAttribute key, params.offset

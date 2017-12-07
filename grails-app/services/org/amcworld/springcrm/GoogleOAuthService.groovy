@@ -1,7 +1,7 @@
 /*
  * GoogleOAuthService.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,6 @@ import com.google.api.client.http.HttpResponseException
 import groovy.transform.CompileStatic
 import org.amcworld.springcrm.google.GoogleSync
 import org.amcworld.springcrm.google.ProxyAuthorizationCodeFlow
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
 
 /**
@@ -36,16 +34,11 @@ import org.apache.commons.logging.LogFactory
  * authentication.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 3.0
  * @since   1.0
  */
 @CompileStatic
 class GoogleOAuthService implements GoogleSync {
-
-    //-- Class fields ---------------------------
-
-    private static final Log log = LogFactory.getLog(this)
-
 
     //-- Public methods -------------------------
 

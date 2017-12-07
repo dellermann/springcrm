@@ -1,7 +1,7 @@
 /*
  * logback.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 import static ch.qos.logback.classic.Level.*
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import ch.qos.logback.core.ConsoleAppender
-import ch.qos.logback.core.FileAppender
 import grails.util.BuildSettings
 import grails.util.Environment
 
@@ -62,8 +60,6 @@ if (Environment.isDevelopmentMode() && targetDir) {
 logger 'grails.app.services.org.amcworld.springcrm.InstallService', INFO
 logger 'org.grails.plugins.coffee.compiler', INFO
 
-//logger 'springcrm.Application', DEBUG
-//logger 'springcrm.LauncherFrame', DEBUG
 //logger 'grails.app.conf.org.amcworld.springcrm.BootStrap', INFO
 //logger 'grails.app.controllers.org.amcworld.springcrm.TicketController', DEBUG
 //logger 'grails.artefact.Interceptor', DEBUG, ['STDOUT'], false   // show interceptor order

@@ -1,7 +1,7 @@
 /*
  * FopService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 
 package org.amcworld.springcrm
 
-import grails.artefact.Service
 import grails.core.GrailsApplication
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
@@ -32,8 +31,6 @@ import javax.xml.transform.stream.StreamSource
 import org.amcworld.springcrm.xml.TemplateURIResolver
 import org.apache.avalon.framework.configuration.Configuration
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.apache.fop.apps.FOUserAgent
 import org.apache.fop.apps.Fop
 import org.apache.fop.apps.FopFactory
@@ -53,10 +50,10 @@ import org.xml.sax.XMLReader
  * directory.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 @CompileStatic
-class FopService implements Service {
+class FopService {
 
     //-- Constants ------------------------------
 
@@ -65,8 +62,6 @@ class FopService implements Service {
      * configuration and template files.
      */
     public static final String SYSTEM_FOLDER = 'classpath:public/print'
-
-    private static final Log log = LogFactory.getLog(this)
 
 
     //-- Class fields ---------------------------

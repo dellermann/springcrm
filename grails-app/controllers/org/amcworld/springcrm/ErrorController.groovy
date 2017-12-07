@@ -23,8 +23,6 @@ package org.amcworld.springcrm
 import grails.artefact.Controller
 import groovy.transform.CompileStatic
 import java.security.MessageDigest
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
 import org.apache.http.NameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -38,15 +36,10 @@ import org.apache.http.message.BasicNameValuePair
  * The class {@code ErrorController} handles errors in the application.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.4
  */
 class ErrorController implements Controller {
-
-    //-- Constants ------------------------------
-
-    private static final Log log = LogFactory.getLog(this)
-
 
     //-- Fields ---------------------------------
 
@@ -139,7 +132,7 @@ class ErrorController implements Controller {
      */
     @CompileStatic
     def reportError() {
-        String xml = params.xml
+        String xml = params.xml.toString()
         MessageDigest messageDigest = MessageDigest.getInstance('SHA1')
         messageDigest.update xml.getBytes('UTF-8')
         StringWriter sw = new StringWriter()

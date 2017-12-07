@@ -1,7 +1,7 @@
 /*
  * InstallService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,7 @@ import groovy.sql.Sql
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import java.sql.Connection
-import org.amcworld.springcrm.install.diffset.StartupDiffSet
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.grails.web.json.JSONArray
-import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
 
 
@@ -40,7 +36,7 @@ import org.springframework.core.io.Resource
  * reasons or obtaining the available base data packages.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 @CompileStatic
 class InstallService {
@@ -69,71 +65,12 @@ class InstallService {
     private static final String ENABLE_FILE_NAME = 'ENABLE_INSTALLER'
 
 
-    //-- Class fields -------------------------------
-
-    private static final Log log = LogFactory.getLog(this)
-
-
     //-- Fields ---------------------------------
 
-    DataFileService dataFileService
     GrailsApplication grailsApplication
 
 
     //-- Public methods -------------------------
-
-    /**
-     * Applies all difference sets from the current version to the given
-     * database version.
-     *
-     * @param connection    the SQL connection of the database where to apply
-     *                      the difference sets
-     * @param upToVersion   the number of the last difference set to include
-     * @since               1.4
-     */
-    void applyAllDiffSets(Connection connection, int upToVersion) {
-        ConfigHolder configHolder = ConfigHolder.instance
-        String lang = configHolder['baseDataLocale']?.toString() ?: 'de-DE'
-        int fromVersion = configHolder['dbVersion']?.toType(Integer) ?: 0i
-        for (int i = fromVersion + 1; i <= upToVersion; i++) {
-            applyDiffSet connection, i, lang
-        }
-        configHolder.setConfig 'dbVersion', upToVersion.toString()
-    }
-
-    /**
-     * Applies the difference set with the given version and language.  The
-     * method first looks for a bean definition of the form "startupDiffSet#",
-     * where # is the given version number.  If found, it is instantiated and
-     * executed.  Otherwise, it looks for a SQL file to execute.
-     *
-     * @param connection    the SQL connection of the database where to apply
-     *                      the difference set
-     * @param version       the given number of the difference set
-     * @param lang          the given language of the difference set in the
-     *                      form {@code lang-COUNTRY}; if {@code null} the
-     *                      current base data language is used
-     * @since               1.4
-     */
-    void applyDiffSet(Connection connection, int version, String lang = null) {
-        ApplicationContext ctx = grailsApplication.mainContext
-        String name = "startupDiffSet${version}"
-        if (ctx.containsBean(name)) {
-            StartupDiffSet diffSet = (StartupDiffSet) ctx.getBean(name)
-            diffSet.execute()
-            return
-        }
-
-        if (!lang) {
-            lang = (ConfigHolder.instance['baseDataLocale'] as String) ?: 'de-DE'
-        }
-
-        InputStream stream = loadDiffSet(version, lang)
-        if (stream != null) {
-            executeSqlFile connection, stream
-            stream.close()
-        }
-    }
 
     /**
      * Disables the installer by deleting the installer enable file
@@ -150,7 +87,7 @@ class InstallService {
      * configuration file in key {@code springcrm.dir.installer}.
      */
     void enableInstaller() {
-        log.info enableFile
+        log.info enableFile.toString()
         enableFile.createNewFile()
     }
 
@@ -236,43 +173,6 @@ class InstallService {
         getResource "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
     }
 
-    /**
-     * Loads the difference set for the given version and language.  The method
-     * first looks for a difference set with the given language.  If not found,
-     * it falls back to a general difference set for the given version.
-     *
-     * @param version   the given version of the difference set
-     * @param lang      the given language of the difference set in the form
-     *                  {@code lang-COUNTRY}
-     * @return          an input stream to the difference set; {@code null} if
-     *                  no such difference set exists
-     * @since           1.4
-     */
-    InputStream loadDiffSet(int version, String lang) {
-        String name1 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}-${lang}.sql"
-        InputStream is = getResource(name1)
-        if (is == null) {
-            String name2 = "${BASE_PACKAGE_DIR}/db-diff-set-${version}.sql"
-            is = getResource(name2)
-            if (is == null && log.errorEnabled) {
-                log.error "Can find neither diff set ${name1} nor ${name2}."
-            }
-        }
-
-        is
-    }
-
-    /**
-     * Performs all needed data migrations.
-     *
-     * @param connection    the SQL connection where the SQL commands should be
-     *                      executed
-     * @since               1.4
-     */
-    void migrateData(Connection connection) {
-        migratePurchaseInvoiceDocuments connection
-    }
-
 
     //-- Non-public methods ---------------------
 
@@ -326,44 +226,5 @@ class InstallService {
         )
 
         res.exists() ? res.inputStream : null
-    }
-
-    /**
-     * Migrates all documents stored in purchase invoice records to
-     * {@code DataFile} records.
-     *
-     * @param connection    the SQL connection where the SQL commands should be
-     *                      executed
-     * @since               1.4
-     */
-    @CompileDynamic
-    private void migratePurchaseInvoiceDocuments(Connection connection) {
-        ConfigHolder configHolder = ConfigHolder.instance
-        String stage = configHolder['purchaseInvoiceMigrationStage']?.toString()
-        if (stage == '1') {
-            log.info 'Performing migration of purchase invoice documents…'
-
-            File oldBaseDir = dataFileService.getBaseDir('purchase-invoice')
-            File newBaseDir =
-                dataFileService.getBaseDir(DataFileType.purchaseInvoice)
-            Sql sql = new Sql(connection)
-            sql.withTransaction {
-                sql.eachRow('select id, document_file from purchase_invoice where document_file IS NOT NULL') {
-                    File f = new File(oldBaseDir, it.document_file.toString())
-                    if (f.exists()) {
-                        DataFile df = new DataFile(f)
-                        df.save failOnError: true
-                        PurchaseInvoice p = PurchaseInvoice.get(it.id)
-                        p.documentFile = df
-                        p.save failOnError: true
-                        f.renameTo new File(newBaseDir, df.storageName)
-                    }
-                }
-            }
-            oldBaseDir.delete()
-
-            log.info 'Migration of purchase invoice documents finished.'
-            configHolder.setConfig 'purchaseInvoiceMigrationStage', '2'
-        }
     }
 }
