@@ -1,7 +1,7 @@
 /*
  * UserService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,22 +20,181 @@
 
 package org.amcworld.springcrm
 
-import grails.transaction.Transactional
+import grails.gorm.services.Service
 import java.text.DecimalFormatSymbols
+import javax.servlet.http.HttpServletRequest
 import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
 /**
- * The class {@code UserService} contains methods for working with users and
- * user settings.
+ * The interface {@code UserService} contains methods for working with users
+ * and user settings.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   1.3
  */
-@Transactional
-class UserService {
+interface UserService {
+
+    //-- Public methods -------------------------
+
+    /**
+     * Counts all users.
+     *
+     * @return  the number of all users
+     */
+    int count()
+
+    /**
+     * Counts the users with a user name alphabetically before the given user
+     * name.
+     *
+     * @param userName  the given user name
+     * @return          the number of users
+     */
+    int countByUserNameLessThan(String userName)
+
+    /**
+     * Deletes the user with the given ID.
+     *
+     * @param id    the given ID
+     */
+    void delete(Serializable id)
+
+    /**
+     * Finds the user with the given user name and encrypted password.
+     *
+     * @param userName  the given user name
+     * @param password  the given encrypted password
+     * @return          the matching user or {@code null} if no such user
+     *                  exists
+     */
+    User findByUserNameAndPassword(String userName, String password)
+
+    /**
+     * Gets the user with the given ID.
+     *
+     * @param id    the given ID
+     * @return      the user or {@code null} if no such user with the given ID
+     *              exists
+     */
+    User get(Serializable id)
+
+    /**
+     * Gets all available currencies.
+     *
+     * @return  the available currencies
+     */
+    Set<Currency> getAvailableCurrencies()
+
+    /**
+     * Gets a list of languages which are fully supported by this application.
+     *
+     * @return  the list of supported languages; the returned list is
+     *          immutable
+     */
+    List<String> getAvailableLanguages()
+
+    /**
+     * Gets a list of locales which are fully supported by this application.
+     *
+     * @return  the list of supported locales; the returned list is
+     *          immutable
+     */
+    List<Locale> getAvailableLocales()
+
+    /**
+     * Gets the currency defined in the application configuration.
+     *
+     * @return  the currency
+     * @since   1.3
+     */
+    Currency getCurrency()
+
+    /**
+     * Gets the currency symbol defined in the application configuration
+     * localized for the current locale.
+     *
+     * @return  the localized currency symbol
+     * @see     #getCurrentLocale()
+     * @since   1.3
+     */
+    String getCurrencySymbol()
+
+    /**
+     * Gets the currently selected locale or the locale from the request.
+     *
+     * @return  the current locale
+     */
+    Locale getCurrentLocale()
+
+    /**
+     * Gets the decimal separator for the current locale.
+     *
+     * @return  the decimal separator
+     * @see     #getCurrentLocale()
+     * @see     #getGroupingSeparator()
+     * @since   1.3
+     */
+    String getDecimalSeparator()
+
+    /**
+     * Gets the grouping separator for the current locale.
+     *
+     * @return  the grouping separator
+     * @see     #getDecimalSeparator()
+     * @see     #getCurrentLocale()
+     * @since   1.3
+     */
+    String getGroupingSeparator()
+
+    /**
+     * Gets the number of fraction digits for internal prices as defined in the
+     * application configuration.
+     *
+     * @return  the number of fraction digits
+     * @since   1.3
+     */
+    int getNumFractionDigits()
+
+    /**
+     * Gets the number of fraction digits for external purpose as defined in
+     * the application configuration.
+     *
+     * @return  the number of fraction digits
+     * @since   1.4
+     */
+    int getNumFractionDigitsExt()
+
+    /**
+     * Gets a list of all users.
+     *
+     * @param args  any arguments used for retrieval (sort, order etc.)
+     * @return      a list of users
+     */
+    List<User> list(Map args)
+
+    /**
+     * Saves the given user.
+     *
+     * @param instance  the given user
+     * @return          the saved user
+     */
+    User save(User instance)
+}
+
+
+/**
+ * The class {@code UserServiceImpl} implements methods for working with users
+ * and user settings.
+ *
+ * @author  Daniel Ellermann
+ * @version 2.2
+ * @since   1.3
+ */
+@Service(value = User, name = 'userService')
+abstract class UserServiceImpl implements UserService {
 
     //-- Constants ------------------------------
 
@@ -44,13 +203,8 @@ class UserService {
 
     //-- Public methods -------------------------
 
-    /**
-     * Gets all available currencies.
-     *
-     * @return  the available currencies
-     */
     Set<Currency> getAvailableCurrencies() {
-        Set<Currency> res = new HashSet()
+        Set<Currency> res = new HashSet<>()
         for (Locale l in Locale.availableLocales) {
             if (l.country) {
                 Currency currency = Currency.getInstance(l)
@@ -59,15 +213,10 @@ class UserService {
                 }
             }
         }
+
         res
     }
 
-    /**
-     * Gets a list of languages which are fully supported by this application.
-     *
-     * @return  the list of supported languages; the returned list is
-     *          immutable
-     */
     List<String> getAvailableLanguages() {
         Collections.unmodifiableList(AVAILABLE_LANGUAGES as List)
     }
@@ -79,22 +228,16 @@ class UserService {
      *          immutable
      */
     List<Locale> getAvailableLocales() {
-        def availLangs = availableLanguages
+        List<String> languages = availableLanguages
         List<Locale> res = []
-        for (Locale l in Locale.availableLocales) {
-            if (l.country && availLangs.contains(l.language)) {
+        for (Locale l : Locale.availableLocales) {
+            if (l.country && languages.contains(l.language)) {
                 res << l
             }
         }
         Collections.unmodifiableList res
     }
 
-    /**
-     * Gets the currency defined in the application configuration.
-     *
-     * @return  the currency
-     * @since   1.3
-     */
     Currency getCurrency() {
         Currency currency = null
         try {
@@ -102,63 +245,30 @@ class UserService {
             if (currencyCode) {
                 currency = Currency.getInstance(currencyCode)
             }
-        } catch (IllegalArgumentException e) { /* ignored */ }
+        } catch (IllegalArgumentException ignored) { /* ignored */ }
+
         currency ?: Currency.getInstance('EUR')
     }
 
-    /**
-     * Gets the currency symbol defined in the application configuration
-     * localized for the current locale.
-     *
-     * @return  the localized currency symbol
-     * @see     #getCurrentLocale()
-     * @since   1.3
-     */
     String getCurrencySymbol() {
         currency.getSymbol currentLocale
     }
 
-    /**
-     * Gets the currently selected locale or the locale from the request.
-     *
-     * @return  the current locale
-     */
     Locale getCurrentLocale() {
-        def request = WebUtils.retrieveGrailsWebRequest().currentRequest
+        HttpServletRequest request =
+            WebUtils.retrieveGrailsWebRequest().currentRequest
+
         RCU.getLocale(request) ?: Locale.default
     }
 
-    /**
-     * Gets the decimal separator for the current locale.
-     *
-     * @return  the decimal separator
-     * @see     #getCurrentLocale()
-     * @see     #getGroupingSeparator()
-     * @since   1.3
-     */
     String getDecimalSeparator() {
         DecimalFormatSymbols.getInstance(currentLocale).decimalSeparator
     }
 
-    /**
-     * Gets the grouping separator for the current locale.
-     *
-     * @return  the grouping separator
-     * @see     #getDecimalSeparator()
-     * @see     #getCurrentLocale()
-     * @since   1.3
-     */
     String getGroupingSeparator() {
         DecimalFormatSymbols.getInstance(currentLocale).groupingSeparator
     }
 
-    /**
-     * Gets the number of fraction digits for internal prices as defined in the
-     * application configuration.
-     *
-     * @return  the number of fraction digits
-     * @since   1.3
-     */
     int getNumFractionDigits() {
         Integer numFractionDigits =
             ConfigHolder.instance['numFractionDigits']?.toType(Integer)
@@ -166,19 +276,12 @@ class UserService {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
             numFractionDigits = 2
         }
         numFractionDigits
     }
 
-    /**
-     * Gets the number of fraction digits for external purpose as defined in
-     * the application configuration.
-     *
-     * @return  the number of fraction digits
-     * @since   1.4
-     */
     int getNumFractionDigitsExt() {
         Integer numFractionDigits =
             ConfigHolder.instance['numFractionDigitsExt']?.toType(Integer)
@@ -186,7 +289,7 @@ class UserService {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
             numFractionDigits = 2
         }
         numFractionDigits

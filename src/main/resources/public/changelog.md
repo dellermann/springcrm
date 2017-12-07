@@ -1,7 +1,9 @@
 ## 2.2.0
 
+* Save & close feature for all forms (configurable).
 * Add information about orders (date, document, signature of client) to sales
   orders
+* Upgrade to Grails 3.2.9 and Groovy 2.4.11.
 
 ## 2.1.8
 

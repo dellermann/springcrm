@@ -30,7 +30,7 @@ import org.springframework.web.multipart.MultipartFile
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
+class PurchaseInvoiceController extends GenericDomainController<PurchaseInvoice> {
 
     //-- Constants ------------------------------
 
@@ -40,6 +40,8 @@ class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
     //-- Fields ---------------------------------
 
     DataFileService dataFileService
+    OrganizationService organizationService
+    PurchaseInvoiceService purchaseInvoiceService
 
 
     //-- Constructors ---------------------------
@@ -55,7 +57,7 @@ class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -72,22 +74,27 @@ class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = PurchaseInvoice.findAllBySubjectLike(searchFilter, params)
-            count = PurchaseInvoice.countBySubjectLike(searchFilter)
+            list = purchaseInvoiceService.findAllBySubjectLike(
+                searchFilter, params
+            )
+            count = purchaseInvoiceService.countBySubjectLike(searchFilter)
         } else {
-            list = PurchaseInvoice.list(params)
-            count = PurchaseInvoice.count()
+            list = purchaseInvoiceService.list(params)
+            count = purchaseInvoiceService.count()
         }
 
         getIndexModel list, count
     }
 
     def listEmbedded(Long organization) {
-        Organization organizationInstance = Organization.get(organization)
+        Organization organizationInstance =
+            organizationService.get(organization)
 
         getListEmbeddedModel(
-            PurchaseInvoice.findAllByVendor(organizationInstance, params),
-            PurchaseInvoice.countByVendor(organizationInstance),
+            purchaseInvoiceService.findAllByVendor(
+                organizationInstance, params
+            ),
+            purchaseInvoiceService.countByVendor(organizationInstance),
             [organization: organizationInstance.id]
         )
     }
@@ -108,34 +115,41 @@ class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
     //-- Non-public methods ---------------------
 
     @Override
-    protected void lowLevelDelete(PurchaseInvoice invoiceInstance) {
-        super.lowLevelDelete invoiceInstance
-        if (invoiceInstance.documentFile != null) {
-            dataFileService.removeFile FILE_TYPE, invoiceInstance.documentFile
+    protected void lowLevelDelete(PurchaseInvoice instance) {
+        purchaseInvoiceService.delete instance.id
+        if (instance.documentFile != null) {
+            dataFileService.removeFile FILE_TYPE, instance.documentFile
         }
     }
 
     @Override
-    protected PurchaseInvoice lowLevelSave() {
-        PurchaseInvoice purchaseInvoiceInstance = new PurchaseInvoice(params)
-        if (purchaseInvoiceInstance.items?.find { it.hasErrors() } ||
-            !purchaseInvoiceInstance.validate())
-        {
+    protected PurchaseInvoice lowLevelGet(Long id) {
+        purchaseInvoiceService.get id
+    }
+
+    @Override
+    protected PurchaseInvoice lowLevelSave(PurchaseInvoice instance) {
+        purchaseInvoiceService.save instance
+    }
+
+    @Override
+    protected PurchaseInvoice saveInstance(PurchaseInvoice instance) {
+        if (instance.items?.find { it.hasErrors() } || !instance.validate()) {
             return null
         }
 
-        purchaseInvoiceInstance.documentFile =
+        instance.documentFile =
             dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
 
-        purchaseInvoiceInstance.save failOnError: true, flush: true
+        lowLevelSave instance
     }
 
     @Override
-    protected PurchaseInvoice lowLevelUpdate(PurchaseInvoice invoiceInstance) {
+    protected PurchaseInvoice updateInstance(PurchaseInvoice instance) {
         /*
          * The original implementation which worked in Grails 2.0.0.
          */
-        invoiceInstance.properties = params
+        bindData instance, params
 //        purchaseInvoiceInstance.items?.retainAll { it != null }
 
         /*
@@ -150,36 +164,36 @@ class PurchaseInvoiceController extends GeneralController<PurchaseInvoice> {
          *      In future, this problem hopefully will be fixed in Grails
          *      so we can remove these lines.
          */
-        invoiceInstance.items?.clear()
+        instance.items?.clear()
         boolean itemErrors = false
         for (int i = 0; params."items[${i}]"; i++) {
             if (params."items[${i}]".id != 'null') {
                 PurchaseInvoiceItem item = params."items[${i}]"
                 itemErrors |= item.hasErrors()
-                invoiceInstance.addToItems item
+                instance.addToItems item
             }
         }
 
-        if (itemErrors || !invoiceInstance.validate()) {
-            invoiceInstance.discard()
+        if (itemErrors || !instance.validate()) {
+            instance.discard()
             return null
         }
 
-        DataFile df = invoiceInstance.documentFile
+        DataFile df = instance.documentFile
         if (params.fileRemove == '1') {
-            invoiceInstance.documentFile = null
+            instance.documentFile = null
         } else if (!params.file?.empty) {
             df = dataFileService.updateFile(
                 FILE_TYPE, df, params.file as MultipartFile
             )
-            invoiceInstance.documentFile = df
+            instance.documentFile = df
         }
 
-        invoiceInstance = invoiceInstance.save(failOnError: true, flush: true)
-        if (invoiceInstance != null && params.fileRemove == '1' && df) {
+        instance = lowLevelSave(instance)
+        if (instance != null && params.fileRemove == '1' && df) {
             dataFileService.removeFile FILE_TYPE, df
         }
 
-        invoiceInstance
+        instance
     }
 }

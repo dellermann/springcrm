@@ -1,7 +1,7 @@
 /*
  * InvoicingTransaction.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * accounts such as invoices, quotes etc.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
 class InvoicingTransaction
     implements GormEntity<InvoicingTransaction>, NumberedDomain
@@ -453,8 +453,8 @@ class InvoicingTransaction
     }
 
     /**
-     * Called before this customer account is validated.  The method computes the
-     * total value.
+     * Called before this customer account is validated.  The method computes
+     * the total value.
      */
     def beforeValidate() {
         total = computeTotal()
@@ -477,8 +477,9 @@ class InvoicingTransaction
      * @param org   the given organization; if {@code null} the organization is
      *              taken from this invoicing transaction
      */
+    @CompileStatic
     void copyAddressesFromOrganization(Organization org = organization) {
-        if (org) {
+        if (org != null) {
             billingAddr = new Address(org.billingAddr)
             shippingAddr = new Address(org.shippingAddr)
         }

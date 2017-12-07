@@ -1,7 +1,7 @@
 /*
  * TicketService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,190 @@
 
 package org.amcworld.springcrm
 
+import grails.gorm.services.Query
+import grails.gorm.services.Service
 import grails.web.mapping.LinkGenerator
 import org.springframework.web.multipart.MultipartFile
+
+
+interface TicketService {
+
+    //-- Public methods -------------------------
+
+    /**
+     * Assigns the given ticket to the specified user.
+     *
+     * @param ticket    the given ticket
+     * @param creator   the user who assigns a user
+     * @param assignTo  the user the ticket is assigned to
+     * @return          the modified ticket
+     */
+    Ticket assignUser(Ticket ticket, User creator, User assignTo)
+
+    /**
+     * Changes the stage of the given ticket and uses the customer as trigger.
+     *
+     * @param ticket    the given ticket
+     * @param stage     the stage to change to
+     * @return          the modified ticket
+     */
+    Ticket changeStage(Ticket ticket, TicketStage stage)
+
+    /**
+     * Changes the stage of the given ticket.
+     *
+     * @param ticket    the given ticket
+     * @param stage     the stage to change to
+     * @param creator   the user who triggers the stage change; {@code null} if
+     *                  the customer changes the stage
+     * @return          the modified ticket
+     */
+    Ticket changeStage(Ticket ticket, TicketStage stage, User creator)
+
+    /**
+     * Counts all tickets.
+     *
+     * @return  the number of all tickets
+     */
+    int count()
+
+    /**
+     * Counts the tickets which belong to the given helpdesk.
+     *
+     * @param helpdesk  the given helpdesk
+     * @return          the number of tickets
+     */
+    int countByHelpdesk(Helpdesk helpdesk)
+
+    /**
+     * Counts the tickets which belong to the given helpdesks.
+     *
+     * @param helpdesks the given helpdesks
+     * @return          the number of tickets
+     */
+    int countByHelpdeskInList(Iterable<Helpdesk> helpdesks)
+
+    @Query("select count(*) from $Ticket as t inner join t.helpdesk as h, HelpdeskUser as hu where hu.helpdesk = h and hu.user = $user and h.organization = $organization")
+    int countByUserAndOrganization(User user, Organization organization)
+
+    /**
+     * Creates a note for the given ticket.
+     *
+     * @param ticket        the given ticket to store
+     * @param message       the message text of the note
+     * @param attachment    an optional attachment to store along the note
+     * @param creator       the user who creates the note
+     * @return              the modified ticket
+     */
+    Ticket createNote(Ticket ticket, String message, MultipartFile attachment,
+                      User creator)
+
+    /**
+     * Creates the given ticket in the underlying database and stores the given
+     * message and attachment along this.
+     *
+     * @param ticket        the given ticket to store
+     * @param message       the message text to store along the ticket
+     * @param attachment    an optional attachment to store along the ticket
+     * @return              the stored ticket
+     */
+    Ticket createTicket(Ticket ticket, String message, MultipartFile attachment)
+
+    /**
+     * Deletes the ticket with the given ID.
+     *
+     * @param id    the given ID
+     */
+    void delete(Serializable id)
+
+    /**
+     * Finds the tickets which belong to the given helpdesk.
+     *
+     * @param helpdesk  the given helpdesk
+     * @return          a list of tickets
+     */
+    List<Ticket> findAllByHelpdesk(Helpdesk helpdesk)
+
+    @Query("select t from $Ticket as t inner join t.helpdesk as h, HelpdeskUser as hu where hu.helpdesk = h and hu.user = $user and h.organization = $organization")
+    List<Ticket> findAllByUserAndOrganization(User user,
+                                              Organization organization,
+                                              Map args)
+
+    /**
+     * Finds the tickets which belong to the given helpdesks.
+     *
+     * @param helpdesks the given helpdesks
+     * @param args      any arguments used for retrieval (sort, order etc.)
+     * @return          a list of tickets
+     */
+    List<Ticket> findAllByHelpdeskInList(Iterable<Helpdesk> helpdesks, Map args)
+
+    /**
+     * Gets the ticket with the given ID.
+     *
+     * @param id    the given ID
+     * @return      the ticket or {@code null} if no such ticket with the given
+     *              ID exists
+     */
+    Ticket get(Serializable id)
+
+    /**
+     * Gets a list of all tickets.
+     *
+     * @param args  any arguments used for retrieval (sort, order etc.)
+     * @return      a list of tickets
+     */
+    List<Ticket> list(Map args)
+
+    /**
+     * Saves the given ticket.
+     *
+     * @param instance  the given ticket
+     * @return          the saved ticket
+     */
+    Ticket save(Ticket instance)
+
+    /**
+     * Records sending a message concerning the given ticket from the customer
+     * to the opposite site.
+     *
+     * @param ticket        the ticket the given message belongs to
+     * @param message       the message to send
+     * @param attachment    an optional attachment to send along the message
+     * @return              the modified ticket
+     */
+    Ticket sendMessage(Ticket ticket, String message, MultipartFile attachment)
+
+    /**
+     * Records sending a message concerning the given ticket from the specified
+     * sender to the opposite site.
+     *
+     * @param ticket        the ticket the given message belongs to
+     * @param message       the message to send
+     * @param attachment    an optional attachment to send along the message
+     * @param sender        the sending user; if {@code null} the customer
+     *                      sends the message
+     * @return              the modified ticket
+     */
+    Ticket sendMessage(Ticket ticket, String message, MultipartFile attachment,
+                       User sender)
+
+    /**
+     * Records sending a message concerning the given ticket from the specified
+     * sender to the specified recipient.
+     *
+     * @param ticket        the ticket the given message belongs to
+     * @param message       the message to send
+     * @param attachment    an optional attachment to send along the message
+     * @param sender        the sending user; if {@code null} the customer
+     *                      sends the message
+     * @param recipient     the receiving user; if {@code null} to opposite
+     *                      site is the recipient
+     * @return              the modified ticket
+     */
+    Ticket sendMessage(Ticket ticket, String message, MultipartFile attachment,
+                       User sender, User recipient)
+}
 
 
 /**
@@ -29,10 +211,11 @@ import org.springframework.web.multipart.MultipartFile
  * tickets in a helpdesk.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   1.4
  */
-class TicketService {
+@Service(value = Ticket, name = 'ticketService')
+abstract class TicketServiceImpl implements TicketService {
 
     //-- Constants ------------------------------
 
@@ -48,22 +231,14 @@ class TicketService {
 
     //-- Public methods -------------------------
 
-    /**
-     * Assigns the given ticket to the specified user.
-     *
-     * @param ticket    the given ticket
-     * @param creator   the user who assigns a user
-     * @param assignTo  the user the ticket is assigned to
-     * @return          the modified ticket
-     */
     Ticket assignUser(Ticket ticket, User creator, User assignTo) {
         ticket.assignedUser = assignTo
         ticket.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.assign,
-                creator: creator,
-                recipient: assignTo
-            ))
-            .save()
+            action: TicketLogAction.assign,
+            creator: creator,
+            recipient: assignTo
+        ))
+        save ticket
 
         if (creator != assignTo) {
             mailSystemService.sendMail(
@@ -80,23 +255,18 @@ class TicketService {
         ticket
     }
 
-    /**
-     * Changes the stage of the given ticket.
-     *
-     * @param ticket    the given ticket
-     * @param stage     the stage to change to
-     * @param creator   the user who triggers the stage change; {@code null} if
-     *                  the customer changes the stage
-     * @return          the modified ticket
-     */
-    Ticket changeStage(Ticket ticket, TicketStage stage, User creator = null) {
+    Ticket changeStage(Ticket ticket, TicketStage stage) {
+        changeStage ticket, stage, null
+    }
+
+    Ticket changeStage(Ticket ticket, TicketStage stage, User creator) {
         ticket.stage = stage
         ticket.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.changeStage,
-                creator: creator,
-                stage: stage
-            ))
-            .save()
+            action: TicketLogAction.changeStage,
+            creator: creator,
+            stage: stage
+        ))
+        save ticket
 
         if (stage == TicketStage.assigned && (ticket.email1 || ticket.email2))
         {
@@ -131,7 +301,7 @@ class TicketService {
                     ]
                 )
             }
-            if (!creator) {
+            if (creator != null) {
                 mailSystemService.sendMail(
                     to: ticket.assignedUser?.email ?: ticket.helpdesk.users*.email,
                     subject: [key: 'email.ticket.closed.subject'],
@@ -147,50 +317,31 @@ class TicketService {
         ticket
     }
 
-    /**
-     * Creates a note for the given ticket.
-     *
-     * @param ticket        the given ticket to store
-     * @param message       the message text of the note
-     * @param attachment    an optional attachment to store along the note
-     * @param creator       the user who creates the note
-     * @return              the modified ticket
-     */
     Ticket createNote(Ticket ticket, String message, MultipartFile attachment,
                       User creator)
     {
         DataFile dataFile = dataFileService.storeFile(FILE_TYPE, attachment)
         ticket.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.note,
-                creator: creator,
-                message: message,
-                attachment: dataFile
-            ))
-            .save()
+            action: TicketLogAction.note,
+            creator: creator,
+            message: message,
+            attachment: dataFile
+        ))
+        save ticket
     }
 
-    /**
-     * Creates the given ticket in the underlying database and stores the given
-     * message and attachment along this.
-     *
-     * @param ticket        the given ticket to store
-     * @param message       the message text to store along the ticket
-     * @param attachment    an optional attachment to store along the ticket
-     * @return              the stored ticket
-     */
-    Ticket createTicket(Ticket ticket, String message,
-                        MultipartFile attachment)
+    Ticket createTicket(Ticket ticket, String message, MultipartFile attachment)
     {
         DataFile dataFile = dataFileService.storeFile(FILE_TYPE, attachment)
         ticket.stage = TicketStage.created
         ticket.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.create
-            )).addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.sendMessage,
-                message: message,
-                attachment: dataFile
-            ))
-            .save()
+            action: TicketLogAction.create
+        )).addToLogEntries(new TicketLogEntry(
+            action: TicketLogAction.sendMessage,
+            message: message,
+            attachment: dataFile
+        ))
+        save ticket
 
         /* send mail to helpdesk team */
         mailSystemService.sendMail(
@@ -220,31 +371,29 @@ class TicketService {
         ticket
     }
 
-    /**
-     * Records sending a message concerning the given ticket from the specified
-     * sender to the specified recipient.
-     *
-     * @param ticket        the ticket the given message belongs to
-     * @param message       the message to send
-     * @param attachment    an optional attachment to send along the message
-     * @param sender        the sending user; if {@code null} the customer
-     *                      sends the message
-     * @param recipient     the receiving user; if {@code null} to opposite
-     *                      site is the recipient
-     * @return              the modified ticket
-     */
+    Ticket sendMessage(Ticket ticket, String message, MultipartFile attachment)
+    {
+        sendMessage ticket, message, attachment, null
+    }
+
     Ticket sendMessage(Ticket ticket, String message, MultipartFile attachment,
-                       User sender = null, User recipient = null)
+                       User sender)
+    {
+        sendMessage ticket, message, attachment, sender, null
+    }
+
+    Ticket sendMessage(Ticket ticket, String message, MultipartFile attachment,
+                       User sender, User recipient)
     {
         DataFile dataFile = dataFileService.storeFile(FILE_TYPE, attachment)
         ticket.addToLogEntries(new TicketLogEntry(
-                action: TicketLogAction.sendMessage,
-                creator: sender,
-                recipient: recipient,
-                message: message,
-                attachment: dataFile
-            ))
-            .save()
+            action: TicketLogAction.sendMessage,
+            creator: sender,
+            recipient: recipient,
+            message: message,
+            attachment: dataFile
+        ))
+        save ticket
 
         def toAddr
         String msgView = 'sendMessageUser'
@@ -289,7 +438,7 @@ class TicketService {
      * @param ticket    the ticket referred to in the links
      * @return          a map containing these links
      */
-    protected Map getCustomerEmailLinks(Ticket ticket) {
+    private Map getCustomerEmailLinks(Ticket ticket) {
 
         /*
          * IMPLEMENTATION NOTES:
@@ -317,6 +466,7 @@ class TicketService {
             ],
             absolute: true
         )
+
         [showLink: showLink, overviewLink: overviewLink]
     }
 }

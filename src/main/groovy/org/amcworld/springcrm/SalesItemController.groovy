@@ -29,65 +29,14 @@ package org.amcworld.springcrm
  * @version 2.2
  * @since   2.2
  */
-class SalesItemController<T extends SalesItem> extends GeneralController<T> {
-
-    //-- Fields ---------------------------------
-
-    SalesItemService salesItemService
-
+abstract class SalesItemController<T extends SalesItem>
+    extends GenericDomainController<T>
+{
 
     //-- Constructors ---------------------------
 
     SalesItemController(Class<? extends T> domainType) {
         super(domainType)
-    }
-
-
-    //-- Public methods -------------------------
-
-    def index() {
-        if (params.letter) {
-            int max = params.int('max')
-            int num = domainType.countByNameLessThan(params.letter.toString())
-            params.sort = 'name'
-            params.offset = Math.floor(num / max) * max
-        }
-
-        super.index()
-    }
-
-    def selectorList() {
-        String searchFilter =
-            params.search ? "%${params.search}%".toString() : ''
-        String letter = params.letter?.toString()
-        if (letter) {
-            int max = params.int('max')
-            int num
-            if (params.search) {
-                num = domainType.countByNameLessThanAndNameLike(
-                    letter, searchFilter
-                )
-            } else {
-                num = domainType.countByNameLessThan(letter)
-            }
-            params.sort = 'name'
-            params.offset = Math.floor(num / max) * max
-        }
-
-        List<T> list
-        int count
-        if (params.search) {
-            list = domainType.findAllByNameLike(searchFilter, params)
-            count = domainType.countByNameLike(searchFilter)
-        } else {
-            list = domainType.list(params)
-            count = domainType.count()
-        }
-
-        [
-            (getDomainInstanceName('List')): list,
-            (getDomainInstanceName('Total')): count
-        ]
     }
 
 
@@ -102,15 +51,69 @@ class SalesItemController<T extends SalesItem> extends GeneralController<T> {
     }
 
     @Override
-    protected T lowLevelSave() {
-        T instance = domainType.newInstance()
+    protected <D extends T> D saveInstance(T instance) {
+        saveOrUpdateInstance instance
+    }
 
-        salesItemService.saveSalesItemPricing(instance, params) ? instance
-            : null
+    private <D extends T> D saveOrUpdateInstance(T instance) {
+        if (params.autoNumber) {
+            params.number = instance.number
+        }
+
+        List<String> excludeList = ['pricing']
+        for (String name : params.keySet()) {
+            if (name.startsWith('pricing.')) {
+                excludeList << name
+            }
+        }
+        bindData instance, params, [exclude: excludeList]
+
+        /*
+         * Implementation notes:
+         *
+         * There are a lot of problems when we try to simply use data binding
+         * and 1:n relation storage in GORM.  It simply doesn't work, at least
+         * in Grails 2.1.1.
+         *
+         * I change the way data binding works.  The client submits the items
+         * as array (items[...]) with subsequent indices.  The client must
+         * ensure that no gaps (i. e. items[0], items[1], items[3], ...) are
+         * submitted.  The following implementation simply clears the items
+         * list and adds all submitted items, which itself undergo data
+         * binding, to the list.  A disadvantage of this way is that GORM
+         * deletes all previous items and then adds back all new items which is
+         * somewhat inefficient and permanently allocates new IDs.
+         */
+        SalesItemPricing pricing = instance.pricing
+        if (params.pricingEnabled) {
+            if (pricing == null) {
+                pricing = new SalesItemPricing()
+                instance.pricing = pricing
+            }
+            pricing.properties = params.pricing
+            if (pricing.items == null) {
+                pricing.items = []
+            } else {
+                pricing.items.clear()
+            }
+            for (int i = 0; params.pricing?."items[${i}]"; i++) {
+                pricing.addToItems params.pricing."items[${i}]"
+            }
+            if (!instance.validate() || !pricing.save(flush: true)) {
+                instance.discard()
+                pricing.discard()
+                return null
+            }
+        } else if (pricing) {
+            pricing.delete flush: true
+            instance.pricing = null
+        }
+
+        lowLevelSave instance
     }
 
     @Override
-    protected T lowLevelUpdate(T instance) {
-        salesItemService.saveSalesItemPricing instance, params
+    protected <D extends T> D updateInstance(T instance) {
+        saveOrUpdateInstance instance
     }
 }

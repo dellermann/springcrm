@@ -34,6 +34,8 @@ import grails.test.mixin.TestFor
 @TestFor(UserService)
 class UserServiceTests {
 
+    /*
+
     //-- Public methods -------------------------
 
     void testGetAvailableCurrencies() {
@@ -58,4 +60,5 @@ class UserServiceTests {
             assert l.country
         }
     }
+    */
 }

@@ -30,7 +30,7 @@ import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
  * @version 2.2
  * @since   1.4
  */
-class HelpdeskController extends GeneralController<Helpdesk> {
+class HelpdeskController extends GenericDomainController<Helpdesk> {
 
     //-- Fields ---------------------------------
 
@@ -51,7 +51,7 @@ class HelpdeskController extends GeneralController<Helpdesk> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -64,8 +64,8 @@ class HelpdeskController extends GeneralController<Helpdesk> {
     }
 
     def frontendIndex(String urlName) {
-        Helpdesk helpdeskInstance = Helpdesk.findByUrlName(urlName)
-        if (!helpdeskInstance) {
+        Helpdesk helpdeskInstance = helpdeskService.findByUrlName(urlName)
+        if (helpdeskInstance == null) {
             render status: SC_NOT_FOUND
             return
         }
@@ -91,17 +91,21 @@ class HelpdeskController extends GeneralController<Helpdesk> {
     }
 
     def index() {
-        Map<String, Object> model = super.index()
-        model['mailSystemConfigured'] = mailSystemService.configured
+        Map model = getIndexModel(
+            helpdeskService.list(params), helpdeskService.count()
+        )
+        model.mailSystemConfigured = mailSystemService.configured
 
         model
     }
 
     def listEmbedded(Long organization) {
         Organization organizationInstance = Organization.get(organization)
-        List<Helpdesk> list =
-            Helpdesk.findAllByOrganization(organizationInstance, params)
-        int count = Helpdesk.countByOrganization(organizationInstance)
+        List<Helpdesk> list = helpdeskService.findAllByOrganization(
+            organizationInstance, params
+        )
+        int count =
+            helpdeskService.countByOrganization(organizationInstance)
 
         getListEmbeddedModel(
             list, count, [organization: organizationInstance.id]
@@ -124,12 +128,42 @@ class HelpdeskController extends GeneralController<Helpdesk> {
     //-- Non-public methods ---------------------
 
     @Override
-    protected Helpdesk lowLevelSave() {
-        helpdeskService.saveHelpdesk new Helpdesk(), params
+    protected void lowLevelDelete(Helpdesk instance) {
+        helpdeskService.delete instance.id
     }
 
     @Override
-    protected Helpdesk lowLevelUpdate(Helpdesk helpdeskInstance) {
-        helpdeskService.saveHelpdesk helpdeskInstance, params
+    protected Helpdesk lowLevelGet(Long id) {
+        helpdeskService.get id
+    }
+
+    @Override
+    protected Helpdesk lowLevelSave(Helpdesk instance) {
+        helpdeskService.save instance
+    }
+
+    @Override
+    protected Helpdesk saveInstance(Helpdesk instance) {
+        saveOrUpdateInstance new Helpdesk()
+    }
+
+    private Helpdesk saveOrUpdateInstance(Helpdesk instance) {
+        String [] userIds = params.remove('users')
+        Set<User> users = [] as Set
+        if (userIds) {
+            for (String userId : userIds) {
+                users << User.get(userId as Long)
+            }
+        }
+        helpdesk.users = users
+
+        bindData instance, params
+
+        lowLevelSave instance
+    }
+
+    @Override
+    protected Helpdesk updateInstance(Helpdesk instance) {
+        saveOrUpdateInstance instance
     }
 }

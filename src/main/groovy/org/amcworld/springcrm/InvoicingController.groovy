@@ -32,8 +32,8 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * @version 2.2
  * @since   2.2
  */
-class InvoicingController<T extends InvoicingTransaction>
-    extends GeneralController<T>
+abstract class InvoicingController<T extends InvoicingTransaction>
+    extends GenericDomainController<T>
 {
 
     //-- Fields ---------------------------------
@@ -64,7 +64,7 @@ class InvoicingController<T extends InvoicingTransaction>
      * @return      the model for the view
      */
     def editPayment(Long id) {
-        [(domainInstanceName): getDomainInstance(id)]
+        getEditModel getDomainInstance(id)
     }
 
     /**
@@ -107,12 +107,12 @@ class InvoicingController<T extends InvoicingTransaction>
      * @return      the model for the view
      */
     def getClosingBalance(Long id) {
-        [(domainInstanceName): domainType.get(id)]
+        [(domainInstanceName): lowLevelGet(id)]
     }
 
     @Override
     def save() {
-        T instance = saveInstance()
+        T instance = doSave()
         if (instance) {
             updateAssociated instance
         }
@@ -120,7 +120,7 @@ class InvoicingController<T extends InvoicingTransaction>
 
     @Override
     def update(Long id) {
-        T instance = updateInstance(id)
+        T instance = doUpdate(id)
         if (instance) {
             updateAssociated instance
         }
@@ -143,22 +143,10 @@ class InvoicingController<T extends InvoicingTransaction>
     //-- Non-public methods ---------------------
 
     @Override
-    protected Map<String, Object> getCreateModel(T instance) {
+    protected Map getCreateModel(T instance) {
         instance.copyAddressesFromOrganization()
 
         super.getCreateModel instance
-    }
-
-    @Override
-    protected <D extends T> D lowLevelSave() {
-        D instance = newInstance(params)
-
-        invoicingTransactionService.save(instance, params) ? instance : null
-    }
-
-    @Override
-    protected <D extends T> D lowLevelUpdate(T instance) {
-        invoicingTransactionService.save instance, params
     }
 
     /**
@@ -192,6 +180,56 @@ class InvoicingController<T extends InvoicingTransaction>
         fopService.outputPdf xml, type, template, response, buf.toString()
     }
 
+    @Override
+    protected <D extends T> D saveInstance(T instance) {
+        saveOrUpdateInstance instance
+    }
+
+    /**
+     * Saves or updates the given invoicing transaction instance.  The method
+     * handles the items of the invoicing transaction.
+     *
+     * @param instance  the given invoicing transaction instance
+     * @return          the saved or updated invoicing transaction instance
+     */
+    protected <D extends T> D saveOrUpdateInstance(T instance) {
+        boolean create = !instance.id
+//        instance.items?.retainAll { it != null }
+
+        /*
+         * XXX  This code is necessary because the default implementation
+         *      in Grails does not work.  The above lines worked in Grails
+         *      2.0.0.  Now, either data binding or saving does not work
+         *      correctly if items were deleted and gaps in the indices
+         *      occurred (e. g. 0, 1, null, null, 4) or the items were
+         *      re-ordered.  Then I observed cluttering in saved data
+         *      columns.
+         *      The following lines do not make me happy but they work.
+         *      In future, this problem hopefully will be fixed in Grails
+         *      so we can remove these lines.
+         */
+        if (instance.items == null) {
+            instance.items = []
+        } else {
+            instance.items.clear()
+        }
+        boolean itemErrors = false
+        for (int i = 0; params."items[${i}]"; i++) {
+            if (create || params."items[${i}]".id != 'null') {
+                InvoicingItem item = params."items[${i}]"
+                itemErrors |= item.hasErrors()
+                instance.addToItems item
+            }
+        }
+
+        if (itemErrors || !instance.validate()) {
+            instance.discard()
+            return null
+        }
+
+        lowLevelSave instance
+    }
+
     /**
      * Updates associated instances after the invoicing transaction instance
      * has been updated.
@@ -200,22 +238,21 @@ class InvoicingController<T extends InvoicingTransaction>
      */
     protected void updateAssociated(T instance) {}
 
+    @Override
+    protected <D extends T> D updateInstance(T instance) {
+        bindData instance, params, [exclude: ['items']]
+
+        saveOrUpdateInstance instance
+    }
+
     /**
      * Updates the payment fields of the given invoicing transaction instance.
      *
      * @param instance  the given invoicing transaction instance
      */
     protected void updatePayment(T instance) {
-        if (params.version) {
-            long version = params.version.toLong()
-            if (instance.version > version) {
-                instance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [label] as Object[], ''
-                )
-                render view: 'edit', model: [(domainInstanceName): instance]
-                return
-            }
+        if (!checkVersion(instance)) {
+            return
         }
 
         bindData(
@@ -227,7 +264,7 @@ class InvoicingController<T extends InvoicingTransaction>
             ]
         )
 
-        if (!instance.save(failOnError: true, flush: true)) {
+        if (lowLevelSave(instance) == null) {
             render view: 'edit', model: [(domainInstanceName): instance]
             return
         }

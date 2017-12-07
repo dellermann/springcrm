@@ -14,7 +14,7 @@
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="springcrm_main" />
-          <element id="dir-copy" path="$PROJECT_DIR$/build/resources/main" />
+          <element id="dir-copy" path="$PROJECT_DIR$/out/production/resources" />
         </element>
         <element id="directory" name="lib">
           <element id="file-copy" path="$PROJECT_DIR$/lib/groovy-ldap.jar" />
@@ -90,7 +90,6 @@
           <element id="library" level="project" name="Gradle: com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta" />
           <element id="library" level="project" name="Gradle: javax.mail:mail:1.4" />
           <element id="library" level="project" name="Gradle: oro:oro:2.0.8" />
-          <element id="library" level="project" name="Gradle: xerces:xerces:2.4.0" />
           <element id="library" level="project" name="Gradle: xerces:xercesImpl:2.7.1" />
           <element id="library" level="project" name="Gradle: xml-apis:xml-apis:1.4.01" />
           <element id="library" level="project" name="Gradle: xml-apis:xmlParserAPIs:2.0.2" />
@@ -192,18 +191,18 @@
           <element id="library" level="project" name="Gradle: org.grails:grails-plugin-domain-class:3.2.9" />
           <element id="library" level="project" name="Gradle: org.apache.tomcat.embed:tomcat-embed-logging-log4j:8.5.2" />
           <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy-sql:2.4.10" />
-          <element id="library" level="project" name="Gradle: com.google.javascript:closure-compiler-unshaded:v20160713" />
           <element id="library" level="project" name="Gradle: org.apache.tomcat:tomcat-jdbc:8.5.13" />
+          <element id="library" level="project" name="Gradle: com.google.javascript:closure-compiler-unshaded:v20160713" />
           <element id="library" level="project" name="Gradle: org.antlr:antlr-runtime:3.5.2" />
           <element id="library" level="project" name="Gradle: org.grails:grails-codecs:3.2.9" />
-          <element id="library" level="project" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" />
           <element id="library" level="project" name="Gradle: io.projectreactor.spring:reactor-spring-context:2.0.7.RELEASE" />
-          <element id="library" level="project" name="Gradle: com.google.protobuf:protobuf-java:2.5.0" />
+          <element id="library" level="project" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" />
           <element id="library" level="project" name="Gradle: io.projectreactor:reactor-bus:2.0.8.RELEASE" />
+          <element id="library" level="project" name="Gradle: com.google.protobuf:protobuf-java:2.5.0" />
           <element id="library" level="project" name="Gradle: commons-validator:commons-validator:1.5.1" />
           <element id="library" level="project" name="Gradle: junit:junit:4.12" />
-          <element id="library" level="project" name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1" />
           <element id="library" level="project" name="Gradle: org.codehaus.groovy:groovy-json:2.4.10" />
+          <element id="library" level="project" name="Gradle: ro.isdc.wro4j:rhino:1.7R5-20130223-1" />
           <element id="library" level="project" name="Gradle: org.grails:grails-taglib:3.2.9" />
           <element id="library" level="project" name="Gradle: com.google.http-client:google-http-client:1.21.0" />
           <element id="library" level="project" name="Gradle: org.mortbay.jetty:jetty-util:6.1.26" />

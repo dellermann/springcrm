@@ -83,6 +83,7 @@ class Ticket implements NumberedDomain {
 
     //-- Fields ---------------------------------
 
+    Helpdesk helpdesk
     String subject
     TicketStage stage = TicketStage.created
     Salutation salutation

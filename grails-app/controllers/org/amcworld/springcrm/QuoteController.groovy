@@ -29,6 +29,13 @@ package org.amcworld.springcrm
  */
 class QuoteController extends InvoicingController<Quote> {
 
+    //-- Fields -------------------------------------
+
+    OrganizationService organizationService
+    PersonService personService
+    QuoteService quoteService
+
+
     //-- Constructors ---------------------------
 
     QuoteController() {
@@ -42,7 +49,7 @@ class QuoteController extends InvoicingController<Quote> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         getCreateModel new Quote(params)
     }
 
@@ -63,11 +70,11 @@ class QuoteController extends InvoicingController<Quote> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Quote.findAllBySubjectLike(searchFilter, params)
-            count = Quote.countBySubjectLike(searchFilter)
+            list = quoteService.findAllBySubjectLike(searchFilter, params)
+            count = quoteService.countBySubjectLike(searchFilter)
         } else {
-            list = Quote.list(params)
-            count = Quote.count()
+            list = quoteService.list(params)
+            count = quoteService.count()
         }
 
         getIndexModel list, count
@@ -76,16 +83,19 @@ class QuoteController extends InvoicingController<Quote> {
     def listEmbedded(Long organization, Long person) {
         List<Quote> list = null
         int count = 0
-        Map<String, Object> linkParams = null
+        Map linkParams = null
         if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            list = Quote.findAllByOrganization(organizationInstance, params)
-            count = Quote.countByOrganization(organizationInstance)
+            Organization organizationInstance =
+                organizationService.get(organization)
+            list = quoteService.findAllByOrganization(
+                organizationInstance, params
+            )
+            count = quoteService.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
-            Person personInstance = Person.get(person)
-            list = Quote.findAllByPerson(personInstance, params)
-            count = Quote.countByPerson(personInstance)
+            Person personInstance = personService.get(person)
+            list = quoteService.findAllByPerson(personInstance, params)
+            count = quoteService.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
 
@@ -109,5 +119,23 @@ class QuoteController extends InvoicingController<Quote> {
 
     def update(Long id) {
         super.update id
+    }
+
+
+    //-- Non-public methods -------------------------
+
+    @Override
+    protected void lowLevelDelete(Quote instance) {
+        quoteService.delete instance.id
+    }
+
+    @Override
+    protected Quote lowLevelSave(Quote instance) {
+        quoteService.save instance
+    }
+
+    @Override
+    protected Quote lowLevelGet(Long id) {
+        quoteService.get id
     }
 }

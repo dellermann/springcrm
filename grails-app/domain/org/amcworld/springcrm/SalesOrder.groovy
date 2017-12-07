@@ -108,6 +108,11 @@ class SalesOrder extends InvoicingTransaction implements GormEntity<SalesOrder>
      */
     Date deliveryDate
 
+    /**
+     * The quote this sales order belongs to.
+     */
+    Quote quote
+
 
     //-- Constructors ---------------------------
 

@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
 import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.StringUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
@@ -32,7 +33,7 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * views.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   2.0
  */
 class ViewTagLib {
@@ -65,7 +66,7 @@ class ViewTagLib {
     //-- Fields ---------------------------------
 
     CalendarEventService calendarEventService
-    UserService userService
+    @Autowired UserService userService
 
 
     //-- Public methods -------------------------
@@ -442,7 +443,7 @@ class ViewTagLib {
             sql += " where ${attrs.where}"
         }
         sql += " group by upper(substring(o.${prop}, 1, 1))"
-        List<String> letters = cls.'executeQuery'(sql)
+        List<String> letters = cls.'executeQuery'(sql.toString())
 
         String availableLetters = message(
             code: 'default.letterBar.letters',

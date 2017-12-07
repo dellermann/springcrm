@@ -92,6 +92,11 @@ class PurchaseInvoice {
     String subject
 
     /**
+     * The vendor.
+     */
+    Organization vendor
+
+    /**
      * The name of the vendor if property {@code vendor} is not used.
      */
     String vendorName

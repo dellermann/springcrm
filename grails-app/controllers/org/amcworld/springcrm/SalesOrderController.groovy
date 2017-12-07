@@ -40,6 +40,10 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
     //-- Fields ---------------------------------
 
     DataFileService dataFileService
+    OrganizationService organizationService
+    PersonService personService
+    QuoteService quoteService
+    SalesOrderService salesOrderService
 
 
     //-- Constructors ---------------------------
@@ -55,10 +59,10 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         SalesOrder salesOrderInstance
         if (params.quote) {
-            Quote quoteInstance = Quote.get(params.long('quote'))
+            Quote quoteInstance = quoteService.get(params.long('quote'))
             salesOrderInstance = new SalesOrder(quoteInstance)
         } else {
             salesOrderInstance = new SalesOrder(params)
@@ -84,11 +88,11 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = SalesOrder.findAllBySubjectLike(searchFilter, params)
-            count = SalesOrder.countBySubjectLike(searchFilter)
+            list = salesOrderService.findAllBySubjectLike(searchFilter, params)
+            count = salesOrderService.countBySubjectLike(searchFilter)
         } else {
-            list = SalesOrder.list(params)
-            count = SalesOrder.count()
+            list = salesOrderService.list(params)
+            count = salesOrderService.count()
         }
 
         getIndexModel list, count
@@ -99,19 +103,22 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
         int count = 0
         Map<String, Object> linkParams = null
         if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            l = SalesOrder.findAllByOrganization(organizationInstance, params)
-            count = SalesOrder.countByOrganization(organizationInstance)
+            Organization organizationInstance =
+                organizationService.get(organization)
+            l = salesOrderService.findAllByOrganization(
+                organizationInstance, params
+            )
+            count = salesOrderService.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
-            Person personInstance = Person.get(person)
-            l = SalesOrder.findAllByPerson(personInstance, params)
-            count = SalesOrder.countByPerson(personInstance)
+            Person personInstance = personService.get(person)
+            l = salesOrderService.findAllByPerson(personInstance, params)
+            count = salesOrderService.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         } else if (quote) {
-            Quote quoteInstance = Quote.get(quote)
-            l = SalesOrder.findAllByQuote(quoteInstance, params)
-            count = SalesOrder.countByQuote(quoteInstance)
+            Quote quoteInstance = quoteService.get(quote)
+            l = salesOrderService.findAllByQuote(quoteInstance, params)
+            count = salesOrderService.countByQuote(quoteInstance)
             linkParams = [quote: quoteInstance.id]
         }
 
@@ -130,10 +137,10 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
     }
 
     def setSignature(Long id) {
-        SalesOrder salesOrderInstance = SalesOrder.get(id)
+        SalesOrder salesOrderInstance = lowLevelGet(id)
         if (salesOrderInstance) {
             salesOrderInstance.signature = params.signature
-            salesOrderInstance.save failOnError: true, flush: true
+            salesOrderService.save salesOrderInstance
         }
 
         redirect action: 'show', id: id
@@ -151,18 +158,31 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
     //-- Non-public methods ---------------------
 
     @Override
-    protected SalesOrder lowLevelSave() {
-        SalesOrder salesOrderInstance = new SalesOrder(params)
-        salesOrderInstance.orderDocument =
-            dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
-
-        invoicingTransactionService.save(salesOrderInstance, params) \
-            ? salesOrderInstance
-            : null
+    protected void lowLevelDelete(SalesOrder instance) {
+        salesOrderService.delete instance.id
     }
 
     @Override
-    protected SalesOrder lowLevelUpdate(SalesOrder salesOrderInstance) {
+    protected SalesOrder lowLevelGet(Long id) {
+        salesOrderService.get id
+    }
+
+    @Override
+    protected SalesOrder lowLevelSave(SalesOrder instance) {
+        salesOrderService.save instance
+    }
+
+    @Override
+    protected SalesOrder saveInstance(SalesOrder instance = null) {
+        SalesOrder salesOrderInstance = newInstance(params)
+        salesOrderInstance.orderDocument =
+            dataFileService.storeFile(FILE_TYPE, params.file as MultipartFile)
+
+        saveOrUpdateInstance salesOrderInstance
+    }
+
+    @Override
+    protected SalesOrder updateInstance(SalesOrder salesOrderInstance) {
         DataFile df = salesOrderInstance.orderDocument
         if (params.fileRemove == '1') {
             salesOrderInstance.orderDocument = null
@@ -173,13 +193,12 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
             salesOrderInstance.orderDocument = df
         }
 
-        boolean res =
-            invoicingTransactionService.save(salesOrderInstance, params)
-        if (res && params.fileRemove == '1' && df) {
+        SalesOrder res = saveOrUpdateInstance(salesOrderInstance)
+        if (res != null && params.fileRemove == '1' && df) {
             dataFileService.removeFile FILE_TYPE, df
         }
 
-        res ? salesOrderInstance : null
+        res
     }
 
     @Override
@@ -187,7 +206,7 @@ class SalesOrderController extends InvoicingController<SalesOrder> {
         Quote quoteInstance = salesOrderInstance.quote
         if (quoteInstance) {
             quoteInstance.stage = QuoteStage.get(603L)
-            quoteInstance.save failOnError: true, flush: true
+            quoteService.save quoteInstance
         }
     }
 }

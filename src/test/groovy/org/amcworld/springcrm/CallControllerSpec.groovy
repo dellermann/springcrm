@@ -1,7 +1,7 @@
 /*
  * CallControllerSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,615 +20,781 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Ignore
+import org.springframework.dao.DataIntegrityViolationException
 import spock.lang.Specification
 
 
 @TestFor(CallController)
-@Mock([Call, Organization, Person])
 class CallControllerSpec extends Specification {
+
+    //-- Fields -------------------------------------
+
+    CallService callService
+
+
+    //-- Fixture methods ------------------------
+
+    def setup() {
+        callService = Mock(CallService)
+        controller.callService = callService
+    }
+
 
     //-- Feature methods ------------------------
 
-    def 'Index action without parameters'() {
-        when:
-        def model = controller.index()
+    def 'Copy shows a copy in edit view'() {
+        when: 'I call the action method'
+        controller.copy(5L)
 
-        then:
-        matchEmptyList model
+        then: 'the service method is called'
+        1 * callService.get(5L) >> fixtureCall(5L)
+
+        and: 'the create view is rendered'
+        '/call/create' == view
+
+        and: 'the copied instance is in the model'
+        verifyCall model.callInstance
     }
 
-    def 'Index action with content'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Copy non-existing instance redirect to index view'() {
+        when: 'I call the action method'
+        controller.copy(5L)
 
-        when: 'I call the list action'
-        def model = controller.index()
+        then: 'the service method is called'
+        1 * callService.get(5L) >> null
 
-        then: 'I get a list of phone calls with one correct entry'
-        matchCallInList model, d
+        and: 'the user is redirected to index view'
+        '/call/index' == response.redirectedUrl
+
+        and: 'a message in the flash scope is set'
+        'default.not.found.message' == flash.message
     }
 
-    def 'Index action with a letter'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Create without presets'() {
+        when: 'I call the action method'
+        Map model = controller.create()
 
-        when: 'I call the list action with a letter of an existing subject'
-        params.letter = 'T'
-        def model = controller.index()
-
-        then: 'I get one correct entry in the list'
-        matchCallInList model, d
-
-        when: 'I call the list action with another letter'
-        params.letter = 'S'
-        model = controller.index()
-
-        then: 'I get also one correct entry in the list'
-        matchCallInList model, d
-
-        when: 'I call the list action with just another letter'
-        params.letter = 'U'
-        model = controller.index()
-
-        then: 'I get also one correct entry in the list'
-        matchCallInList model, d
+        then: 'the model contains an empty instance'
+        null != model.callInstance
+        null == model.callInstance.id
+        null == model.callInstance.subject
     }
 
-    def 'Index action with search term'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Create with presets'() {
+        given: 'some presets'
+        params.subject = 'My phone call'
+        params.phone = '+1 5739 948377'
 
-        when: 'I call the list action with an existing search term'
-        params.search = term
-        def model = controller.index()
+        when: 'I call the action method'
+        Map model = controller.create()
 
-        then: 'I get or not one correct entry in the list'
-        if (matches) matchCallInList model, d
-        else matchEmptyList model
+        then: 'the model contains a pre-filled instance'
+        null != model.callInstance
+        null == model.callInstance.id
+        'My phone call' == model.callInstance.subject
+        null == model.callInstance.notes
+        '+1 5739 948377' == model.callInstance.phone
+    }
+
+    def 'Create with person'() {
+        given: 'an organization'
+        def org = new Organization(
+            name: 'MyOrganization Ltd.', phone: '+1 5739 948000'
+        )
+
+        and: 'a person'
+        def p = new Person(
+            firstName: 'John', lastName: 'Smith', organization: org,
+            phone: '+1 5739 948377'
+        )
+
+        and: 'some presets'
+        params.person = p
+
+        when: 'I call the action method'
+        Map model = controller.create()
+
+        then: 'the model contains a pre-filled instance'
+        null != model.callInstance
+        null == model.callInstance.id
+        null == model.callInstance.subject
+        '+1 5739 948377' == model.callInstance.phone
+        model.callInstance.organization.is org
+    }
+
+    def 'Create with organization'() {
+        given: 'an organization'
+        def org = new Organization(
+            name: 'MyOrganization Ltd.', phone: '+1 5739 948000'
+        )
+
+        and: 'some presets'
+        params.organization = org
+
+        when: 'I call the action method'
+        Map model = controller.create()
+
+        then: 'the model contains a pre-filled instance'
+        null != model.callInstance
+        null == model.callInstance.id
+        null == model.callInstance.subject
+        null == model.callInstance.person
+        '+1 5739 948000' == model.callInstance.phone
+    }
+
+    def 'Delete existing instance'() {
+        given: 'an instance'
+        def call = fixtureCall(5L)
+
+        when: 'I call the action method'
+        controller.delete(5L)
+
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> call
+
+        and: 'the deletion method is called'
+        1 * callService.delete(5L)
+
+        and: 'a flash message has been set'
+        'default.deleted.message' == flash.message
+
+        and: 'the instance has been stored in request context'
+        request.callInstance.is call
+
+        and: 'no redirection has been set'
+        null == response.redirectedUrl
+    }
+
+    def 'Delete existing instance with versioning conflict'() {
+        when: 'I call the action method'
+        controller.delete(5L)
+
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> fixtureCall(5L)
+
+        and: 'the deletion method is called'
+        1 * callService.delete(5L) >> {
+            throw new DataIntegrityViolationException('')
+        }
+
+        and: 'a flash message has been set'
+        'default.not.deleted.message' == flash.message
+
+        and: 'the user is redirected to show view'
+        '/call/show/5' == response.redirectedUrl
+    }
+
+    def 'Delete non-existing instance'() {
+        when: 'I call the action method'
+        controller.delete(5L)
+
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> null
+
+        and: 'the deletion method is not called'
+        0 * callService.delete(_)
+
+        and: 'a flash message has been set'
+        'default.not.found.message' == flash.message
+
+        and: 'the instance has not been stored in request context'
+        null == request.callInstance
+
+        and: 'the user is redirected to index view'
+        '/call/index' == response.redirectedUrl
+    }
+
+    def 'Edit existing instance'() {
+        when: 'I call the action method'
+        Map model = controller.edit(5L)
+
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> fixtureCall(5L)
+
+        and: 'the model contains an empty instance'
+        verifyCall model.callInstance, 5L
+    }
+
+    def 'Edit non-existing instance'() {
+        when: 'I call the action method'
+        controller.edit(5L)
+
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> null
+
+        and: 'a flash message has been set'
+        'default.not.found.message' == flash.message
+
+        and: 'the user is redirected to index view'
+        '/call/index' == response.redirectedUrl
+    }
+
+    def 'Index with empty instance list'() {
+        given: 'some method stubs'
+        1 * callService.list(_ as Map) >> []
+        1 * callService.count() >> 0
+
+        when: 'I call the action method'
+        Map model = controller.index()
+
+        then: 'I get an empty list'
+        model.callInstanceList.isEmpty()
+        0 == model.callInstanceTotal
+    }
+
+    def 'Index with non-empty instance list'() {
+        given: 'some method stubs'
+        1 * callService.list(_ as Map) >> fixtureCalls()
+        1 * callService.count() >> 3
+
+        when: 'I call the action method'
+        Map model = controller.index()
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+
+        and: 'the items are correct'
+        verifyCalls model
+    }
+
+    def 'Index with non-empty instance list and params'() {
+        given: 'some method stubs'
+        1 * callService.list({
+            it.offset == 60 && it.max == 20 && it.sort == 'phone' &&
+                it.order == 'desc'
+        }) >> fixtureCalls()
+        1 * callService.count() >> 3
+
+        and: 'some parameters'
+        params.offset = 60
+        params.max = 20
+        params.sort = 'phone'
+        params.order = 'desc'
+
+        when: 'I call the action method'
+        Map model = controller.index()
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+
+        and: 'the items are correct'
+        verifyCalls model
+    }
+
+    def 'Index with empty list and letter'() {
+        given: 'some method stubs'
+        1 * callService.list(_ as Map) >> []
+        1 * callService.count() >> 0
+
+        and: 'a given letter'
+        params.letter = 'M'
+
+        when: 'I call the action method'
+        Map model = controller.index()
+
+        then: 'I get an empty list'
+        model.callInstanceList.isEmpty()
+        0 == model.callInstanceTotal
+    }
+
+    def 'Index with non-empty list and letter'(int n, int max, int offset) {
+        given: 'some method stubs'
+        1 * callService.countBySubjectLessThan('M') >> n
+        1 * callService.list({
+            it.offset == offset && it.max == max && it.search == null
+        }) >> fixtureCalls()
+        1 * callService.count() >> 3
+
+        and: 'a given letter and maximum value'
+        params.letter = 'M'
+        params.max = max
+
+        and: 'an offset which will be overwritten'
+        params.offset = 1234
+
+        and: 'a search pattern which will be reset'
+        params.search = 'phone'
+
+        when: 'I call the action method'
+        Map model = controller.index()
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+
+        and: 'the items are correct'
+        verifyCalls model
 
         where:
-        term            | matches
-        'Test'          | true
-        'Tes'           | true
-        'Te'            | true
-        'T'             | true
-        'est'           | true
-        'es'            | true
-        'e'             | true
-        'st'            | true
-        's'             | true
-        't'             | true
-        ''              | true
-        'e'             | true
-        'TEST'          | false     // XXX should actually be true (case insensitive!)
-        'x'             | false
-        'tseT'          | false
+        n       | max       || offset
+        0       | 10        || 0
+        1       | 10        || 0
+        5       | 10        || 0
+        9       | 10        || 0
+        10      | 10        || 10
+        99      | 10        || 90
+        100     | 10        || 100
+        0       | 20        || 0
+        19      | 20        || 0
+        20      | 20        || 20
+        99      | 100       || 0
+        100     | 100       || 100
+        101     | 100       || 100
+        999     | 100       || 900
+        1000    | 100       || 1000
     }
 
-    def 'ListEmbedded action with empty content'() {
-        when:
-        def model = controller.listEmbedded()
+    def 'Index with search string'() {
+        given: 'some method stubs'
+        1 * callService.findAllBySubjectLike(
+            '%phone%', { it.offset == 200 && it.max == 50}
+        ) >> fixtureCalls()
+        1 * callService.countBySubjectLike('%phone%') >> 3
 
-        then:
-        matchNullList model
+        and: 'a given search pattern and other parameters'
+        params.search = 'phone'
+        params.offset = 200
+        params.max = 50
+
+        when: 'I call the action method'
+        Map model = controller.index()
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+
+        and: 'the items are correct'
+        verifyCalls model
     }
 
-    def 'ListEmbedded action without parameters'() {
-        given: 'a phone call'
-        makeCallFixture()
-
-        when: 'I call the listEmbedded action'
-        def model = controller.listEmbedded()
+    def 'Embedded list without parameters'() {
+        when: 'I call the action method'
+        Map model = controller.listEmbedded(null, null)
 
         then: 'I get an empty list'
-        matchNullList model
+        model.callInstanceList.isEmpty()
+        0 == model.callInstanceTotal
+        model.linkParams.isEmpty()
     }
 
-    def 'ListEmbedded action with a non-existing organization'() {
-        given: 'a phone call'
-        makeCallFixture()
+    def 'Embedded list with non-existing organization'() {
+        given: 'an organization service'
+        OrganizationService organizationService = Mock(OrganizationService)
+        controller.organizationService = organizationService
 
-        when: 'I call the listEmbedded action'
-        params.organization = 2
-        def model = controller.listEmbedded()
+        when: 'I call the action method'
+        Map model = controller.listEmbedded(5L, null)
 
-        then: 'I get an empty list'
-        matchNullList model
+        then: 'the organization retrieval method is called'
+        1 * organizationService.get(5L) >> null
+
+        and: 'I get an empty list'
+        model.callInstanceList.isEmpty()
+        0 == model.callInstanceTotal
+        model.linkParams.isEmpty()
     }
 
-    def 'ListEmbedded action with an existing organization'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Embedded list with existing organization'() {
+        given: 'an organization service'
+        OrganizationService organizationService = Mock(OrganizationService)
+        controller.organizationService = organizationService
 
-        when: 'I call the listEmbedded action'
-        params.organization = 1
-        def model = controller.listEmbedded()
+        and: 'an organization'
+        def org = new Organization(name: 'MyCompany Ltd.')
+        org.id = 5L
 
-        then: 'I get one correct entry in the list'
-        matchCallInList model, d
+        and: 'some method stubs'
+        1 * callService.findAllByOrganization(
+            org,
+            {it.offset == 60 && it.max == 20 && it.sort == 'phone' &&
+                it.order == 'desc'}
+        ) >> fixtureCalls()
+        1 * callService.countByOrganization(org) >> 3
+
+        and: 'some parameters'
+        params.offset = 60
+        params.max = 20
+        params.sort = 'phone'
+        params.order = 'desc'
+
+        when: 'I call the action method'
+        Map model = controller.listEmbedded(5L, null)
+
+        then: 'the organization retrieval method is called'
+        1 * organizationService.get(5L) >> org
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+        1 == model.linkParams.size()
+        5L == model.linkParams.organization
+
+        and: 'the items are correct'
+        verifyCalls model
     }
 
-    def 'ListEmbedded action with a non-existing person'() {
-        given: 'a phone call'
-        makeCallFixture()
+    def 'Embedded list with non-existing person'() {
+        given: 'an person service'
+        PersonService personService = Mock(PersonService)
+        controller.personService = personService
 
-        when: 'I call the listEmbedded action'
-        params.person = 2
-        def model = controller.listEmbedded()
+        when: 'I call the action method'
+        Map model = controller.listEmbedded(null, 35L)
 
-        then: 'I get an empty list'
-        matchNullList model
+        then: 'the person retrieval method is called'
+        1 * personService.get(35L) >> null
+
+        and: 'I get an empty list'
+        model.callInstanceList.isEmpty()
+        0 == model.callInstanceTotal
+        model.linkParams.isEmpty()
     }
 
-    def 'ListEmbedded action with an existing person'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Embedded list with existing person'() {
+        given: 'an person service'
+        PersonService personService = Mock(PersonService)
+        controller.personService = personService
 
-        when: 'I call the listEmbedded action'
-        params.person = 1
-        def model = controller.listEmbedded()
+        and: 'a person'
+        def p = new Person(firstName: 'John', lastName: 'Doe')
+        p.id = 35L
 
-        then: 'I get one correct entry in the list'
-        matchCallInList model, d
+        and: 'some method stubs'
+        1 * callService.findAllByPerson(
+            p,
+            {it.offset == 60 && it.max == 20 && it.sort == 'phone' &&
+                it.order == 'desc'}
+        ) >> fixtureCalls()
+        1 * callService.countByPerson(p) >> 3
+
+        and: 'some parameters'
+        params.offset = 60
+        params.max = 20
+        params.sort = 'phone'
+        params.order = 'desc'
+
+        when: 'I call the action method'
+        Map model = controller.listEmbedded(null, 35L)
+
+        then: 'the person retrieval method is called'
+        1 * personService.get(35L) >> p
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+        1 == model.linkParams.size()
+        35L == model.linkParams.person
+
+        and: 'the items are correct'
+        verifyCalls model
     }
 
-    def 'Create action without parameters'() {
-        when:
-        def model = controller.create()
+    def 'Embedded list with existing organization and person'() {
+        given: 'an organization service'
+        OrganizationService organizationService = Mock(OrganizationService)
+        controller.organizationService = organizationService
 
-        then:
-        Call c = model.callInstance
-        null != c
-        null != c.start
+        and: 'an person service'
+        PersonService personService = Mock(PersonService)
+        controller.personService = personService
+
+        and: 'an organization'
+        def org = new Organization(name: 'MyCompany Ltd.')
+        org.id = 5L
+
+        and: 'a person'
+        def p = new Person(firstName: 'John', lastName: 'Doe')
+        p.id = 35L
+
+        and: 'some method stubs'
+        1 * callService.findAllByOrganization(
+            org,
+            {it.offset == 60 && it.max == 20 && it.sort == 'phone' &&
+                it.order == 'desc'}
+        ) >> fixtureCalls()
+        1 * callService.countByOrganization(org) >> 3
+
+        and: 'some parameters'
+        params.offset = 60
+        params.max = 20
+        params.sort = 'phone'
+        params.order = 'desc'
+
+        when: 'I call the action method'
+        Map model = controller.listEmbedded(5L, 35L)
+
+        then: 'the organization retrieval method is called'
+        1 * organizationService.get(5L) >> org
+
+        then: 'I get a non-empty list'
+        3 == model.callInstanceList.size()
+        3 == model.callInstanceTotal
+        1 == model.linkParams.size()
+        5L == model.linkParams.organization
+
+        and: 'the items are correct'
+        verifyCalls model
     }
 
-    def 'Create action with parameters'() {
-        when: 'I call the create action with Call properties'
-        params.subject = 'foo'
-        params.notes = 'bar'
-        def model = controller.create()
+    def 'Save successful'() {
+        given: 'some method stubs'
+        1 * callService.save(_ as Call) >> { Call call ->
+            assert 'My phone call' == call.subject
+            assert 'A client called me' == call.notes
+            assert '+1 4759 4859743' == call.phone
 
-        then: 'I get a Call object using these properties'
-        Call c = model.callInstance
-        null != c
-        'foo' == c.subject
-        'bar' == c.notes
-        null != c.start
-    }
+            call.id = 47L
 
-    def 'Create action with existing organization'() {
-        given: 'an organization'
-        makeOrganizationFixture()
+            call
+        }
 
-        when: 'I call the create action with an organization ID'
-        params.organization = 1
-        def model = controller.create()
+        and: 'some form data'
+        params.subject = 'My phone call'
+        params.notes = 'A client called me'
+        params.phone = '+1 4759 4859743'
 
-        then: 'I get a Call object using this organization and its phone number'
-        Call c = model.callInstance
-        null != c
-        null != c.organization
-        'AMC World Technologies GmbH' == c.organization.name
-        '987654321' == c.phone
-        null != c.start
-    }
+        when: 'I call the action method'
+        controller.testSave()   // XXX temporary hack, see testSave()
 
-    def 'Create action with non-existing organization'() {
-        when: 'I call the create action with an invalid organization ID'
-        params.organization = 5
-        def model = controller.create()
+        then: 'the instance has been stored in request context'
+        47L == request.callInstance.id
+        'My phone call' == request.callInstance.subject
+        'A client called me' == request.callInstance.notes
+        '+1 4759 4859743' == request.callInstance.phone
 
-        then: 'I get a Call object without organization'
-        Call c = model.callInstance
-        null != c
-        null == c.organization
-        null == c.phone
-        null != c.start
-    }
-
-    def 'Create action with existing person'() {
-        given: 'an organization and a person'
-        makeOrganizationFixture()
-        def org = Organization.get(1)
-        makePersonFixture org
-
-        when: 'I call the create action with a person ID'
-        params.person = 1
-        def model = controller.create()
-
-        then: 'I get a Call object using this person, its organization, and its phone number'
-        Call c = model.callInstance
-        null != c
-        null != c.organization
-        'AMC World Technologies GmbH' == c.organization.name
-        null != c.person
-        'Ellermann' == c.person.lastName
-        'Daniel' == c.person.firstName
-        '123456789' == c.phone
-        null != c.start
-    }
-
-    def 'Create action with non-existing person'() {
-        when: 'I call the create action with an invalid person ID'
-        params.person = 1
-        def model = controller.create()
-
-        then: 'I get a Call object without person'
-        Call c = model.callInstance
-        null != c
-        null == c.organization
-        null == c.person
-        null == c.phone
-        null != c.start
-    }
-
-    def 'Copy action with non-existing phone call'() {
-        when: 'I call the copy action with an invalid call ID'
-        params.id = 1
-        controller.copy()
-
-        then: 'I are redirected to an error page'
-        '/call/index' == response.redirectedUrl
-        'default.not.found.message' == flash.message
-    }
-
-    def 'Copy action with existing phone call'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
-
-        when: 'I call the copy action with a valid call ID'
-        params.id = 1
-        controller.copy()
-
-        then: 'I get the create view'
-        '/call/create' == view
-
-        and: 'a copy of that phone call'
-        matchCall model.callInstance, d
-    }
-
-    def 'Save action successful'() {
-        given: 'an organization and a person'
-        makeOrganizationFixture()
-        def org = Organization.get(1)
-        makePersonFixture org
-        def person = Person.get(1)
-
-        when: 'I send a form to the save action'
-        def d = new Date()
-        params.subject = 'Test'
-        params.notes = 'Test call'
-        params.organization = org
-        params.person = person
-        params.phone = '+49 30 8321475-0'
-        params.start = d
-        params.type = CallType.incoming
-        params.status = CallStatus.completed
-        request.method = 'POST'
-        controller.save()
-
-        then: 'I am redirected to the show view'
-        '/call/show/1' == response.redirectedUrl
+        and: 'a message has been set in flash context'
         'default.created.message' == flash.message
 
-        and: 'a phone call has been created'
-        1 == Call.count()
-        def c = Call.first()
-        matchCall c, d
-        null != c.dateCreated
-        null != c.lastUpdated
+        and: 'no redirection has been set'
+        null == response.redirectedUrl
     }
 
-    def 'Save action unsuccessful'() {
-        given: 'an organization and a person'
-        makeOrganizationFixture()
-        def org = Organization.get(1)
-        makePersonFixture org
-        def person = Person.get(1)
+    def 'Save not successful'() {
+        given: 'some method stubs'
+        1 * callService.save(_ as Call) >> { Call call ->
+            assert 'My phone call' == call.subject
+            assert 'A client called me' == call.notes
+            assert '+1 4759 4859743' == call.phone
 
-        when: 'I send an quite empty form to the save action'
-        params.subject = 'Test'
-        request.method = 'POST'
-        controller.save()
+            null
+        }
 
-        then: 'I get the create form again'
+        and: 'some form data'
+        params.subject = 'My phone call'
+        params.notes = 'A client called me'
+        params.phone = '+1 4759 4859743'
+
+        when: 'I call the action method'
+        controller.testSave()   // XXX temporary hack, see testSave()
+
+        then: 'the create view is rendered'
         '/call/create' == view
 
-        and: 'the entered values are set again'
-        'Test' == model.callInstance.subject
+        and: 'the model contains the instance'
+        null != model.callInstance
+        null == model.callInstance.id
+        'My phone call' == model.callInstance.subject
+        'A client called me' == model.callInstance.notes
+        '+1 4759 4859743' == model.callInstance.phone
+
+        and: 'the no instance has been stored in request context'
+        null == request.callInstance
+
+        and: 'no message has been set in flash context'
+        null == flash.message
+
+        and: 'no redirection has been set'
+        null == response.redirectedUrl
     }
 
-    def 'Save action successful with returnUrl'() {
-        given: 'an organization and a person'
-        makeOrganizationFixture()
-        def org = Organization.get(1)
-        makePersonFixture org
-        def person = Person.get(1)
+    def 'Show existing instance'() {
+        when: 'I call the action method'
+        Map model = controller.show(5L)
 
-        when: 'I send a form to the save action'
-        def d = new Date()
-        params.subject = 'Test'
-        params.notes = 'Test call'
-        params.organization = org
-        params.person = person
-        params.phone = '+49 30 8321475-0'
-        params.start = d
-        params.type = CallType.incoming
-        params.status = CallStatus.completed
-        params.returnUrl = '/organization/show/5'
-        request.method = 'POST'
-        controller.save()
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> fixtureCall(5L)
 
-        then: 'I am redirected to the requested URL'
-        '/organization/show/5' == response.redirectedUrl
-        'default.created.message' == flash.message
-
-        and: 'a phone call has been created'
-        1 == Call.count()
-        def c = Call.first()
-        matchCall c, d
-        null != c.dateCreated
-        null != c.lastUpdated
+        and: 'the model contains an instance'
+        null != model.callInstance
+        5L == model.callInstance.id
+        'My phone call' == model.callInstance.subject
+        '+1 5739 948377' == model.callInstance.phone
     }
 
-    def 'Show action with non-existing phone call'() {
-        when: 'I call the show action with an invalid ID'
-        params.id = 1
-        controller.show()
+    def 'Show non-existing instance'() {
+        when: 'I call the action method'
+        controller.show(5L)
 
-        then: 'I am redirected to the list view'
-        '/call/index' == response.redirectedUrl
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> null
+
+        and: 'a flash message has been set'
         'default.not.found.message' == flash.message
-    }
 
-    def 'Show action with existing phone call'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
-
-        when: 'I call the show action with a valid ID'
-        params.id = 1
-        def model = controller.show()
-
-        then: 'I get the show view with the phone call'
-        1L == model.callInstance.id
-        matchCall model.callInstance, d
-    }
-
-    def 'Edit action with non-existing phone call'() {
-        when: 'I call the edit action with an invalid ID'
-        params.id = 1
-        controller.edit()
-
-        then: 'I am redirected to the list view'
+        and: 'the user is redirected to index view'
         '/call/index' == response.redirectedUrl
-        'default.not.found.message' == flash.message
     }
 
-    def 'Edit action with existing phone call'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Update successful'() {
+        given: 'some method stubs'
+        1 * callService.get(5L) >> fixtureCall(5L, 14L)
+        1 * callService.save(_ as Call) >> { Call c ->
+            assert 5L == c.id
+            assert 14L == c.version
+            assert 'My other phone call' == c.subject
+            assert 'A client called me' == c.notes
+            assert '+1 4759 4859000' == c.phone
 
-        when: 'I call the edit action with a valid ID'
-        params.id = 1
-        def model = controller.edit()
+            c
+        }
 
-        then: 'I get the edit view with the phone call'
-        1L == model.callInstance.id
-        matchCall model.callInstance, d
-    }
+        and: 'some form data'
+        params.version = 14L
+        params.subject = 'My other phone call'
+        params.notes = 'A client called me'
+        params.phone = '+1 4759 4859000'
 
-    def 'Update action with non-existing phone call'() {
-        when: 'I call the update action with an invalid ID'
-        params.id = 1
-        controller.edit()
+        when: 'I call the action method'
+        controller.testUpdate(5L)   // XXX temporary hack, see testUpdate()
 
-        then: 'I am redirected to the list view'
-        '/call/index' == response.redirectedUrl
-        'default.not.found.message' == flash.message
-    }
+        then: 'the instance has been stored in request context'
+        null != request.callInstance
+        5L == request.callInstance.id
+        14L == request.callInstance.version
+        'My other phone call' == request.callInstance.subject
+        'A client called me' == request.callInstance.notes
+        '+1 4759 4859000' == request.callInstance.phone
 
-    def 'Update action with existing phone call successful'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
-
-        when: 'I send a form to the update action'
-        params.id = 1
-        params.subject = 'Another test'
-        request.method = 'POST'
-        controller.update()
-
-        then: 'I am redirected to the show view'
-        '/call/show/1' == response.redirectedUrl
+        and: 'a message has been set in flash context'
         'default.updated.message' == flash.message
 
-        and: 'there is still one phone call'
-        1 == Call.count()
-
-        and: 'it has been updated'
-        def c = Call.get(1)
-        null != c
-        'Another test' == c.subject
+        and: 'no redirection has been set'
+        null == response.redirectedUrl
     }
 
-    def 'Update action with existing phone call unsuccessful'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Update not successful'() {
+        given: 'some method stubs'
+        1 * callService.get(5L) >> fixtureCall(5L, 14L)
+        1 * callService.save(_ as Call) >> { Call c ->
+            assert 'My other phone call' == c.subject
+            assert 'A client called me' == c.notes
+            assert '+1 4759 4859000' == c.phone
 
-        when: 'I send a form with invalid content to the update action'
-        params.id = 1
-        params.subject = ''
-        request.method = 'POST'
-        controller.update()
+            null
+        }
 
-        then: 'I am redirected to the edit view'
+        and: 'some form data'
+        params.version = 14L
+        params.subject = 'My other phone call'
+        params.notes = 'A client called me'
+        params.phone = '+1 4759 4859000'
+
+        when: 'I call the action method'
+        controller.testUpdate(5L)   // XXX temporary hack, see testUpdate()
+
+        then: 'the edit view is rendered'
         '/call/edit' == view
 
-        and: 'there is still one phone call'
-        1 == Call.count()
+        and: 'the model contains the instance'
+        null != model.callInstance
+        5L == model.callInstance.id
+        'My other phone call' == model.callInstance.subject
+        'A client called me' == model.callInstance.notes
+        '+1 4759 4859000' == model.callInstance.phone
 
-        and: 'the entered values are set again'
-        def c = model.callInstance
-        !c.subject
-        'Test call' == c.notes
+        and: 'no instance has been stored in request context'
+        null == request.callInstance
+
+        and: 'no message has been set in flash context'
+        null == flash.message
+
+        and: 'no redirection has been set'
+        null == response.redirectedUrl
     }
 
-    def 'Update action with existing phone call successful with returnUrl'() {
-        given: 'a phone call'
-        def d = new Date()
-        makeCallFixture d
+    def 'Update existing instance with version conflict'() {
+        given: 'some method stubs'
+        1 * callService.get(5L) >> fixtureCall(5L, 14L)
 
-        when: 'I send a form to the update action'
-        params.id = 1
-        params.subject = 'Another test'
-        params.returnUrl = '/organization/show/5'
-        request.method = 'POST'
-        controller.update()
+        and: 'some form data'
+        params.version = '13'
+        params.subject = 'My other phone call'
+        params.notes = 'A client called me'
+        params.phone = '+1 4759 4859000'
 
-        then: 'I am redirected to the requested URL'
-        '/organization/show/5' == response.redirectedUrl
-        'default.updated.message' == flash.message
+        when: 'I call the action method'
+        controller.testUpdate(5L)   // XXX temporary hack, see testUpdate()
 
-        and: 'there is still one phone call'
-        1 == Call.count()
+        then: 'the edit view is rendered'
+        '/call/edit' == view
 
-        and: 'it has been updated'
-        def c = Call.get(1)
-        null != c
-        'Another test' == c.subject
+        and: 'the model contains the instance unmodified'
+        verifyCall model.callInstance, 5L, 14L
+
+        and: 'a field error has been set'
+        'default.optimistic.locking.failure' == model.callInstance.errors['version'].code
+
+        and: 'the save method has not been called'
+        0 * callService.save(_)
+
+        and: 'no redirect has been set'
+        null == response.redirectedUrl
     }
 
-    def 'Delete action with non-existing phone call'() {
-        when: 'I call the delete action with an invalid ID'
-        params.id = 1
-        controller.delete()
+    def 'Update non-existing instance'() {
+        when: 'I call the action method'
+        controller.testUpdate(5L)   // XXX temporary hack, see testUpdate()
 
-        then: 'I am redirected to the list view'
-        '/call/index' == response.redirectedUrl
+        then: 'the retrieval method is called'
+        1 * callService.get(5L) >> null
+
+        and: 'a flash message has been set'
         'default.not.found.message' == flash.message
-    }
 
-    @Ignore('Call.delete() does not work')
-    def 'Delete action with existing phone call'() {
-        given: 'a phone call'
-        makeCallFixture()
-
-        when: 'I call the delete action with a valid ID'
-        params.id = 1
-        params.confirmed = 1
-        controller.delete()
-
-        then: 'I am redirected to the list view'
+        and: 'the user is redirected to index view'
         '/call/index' == response.redirectedUrl
-        'default.deleted.message' == flash.message
-
-        and: 'the phone call has been deleted'
-        0 == Call.count()
-    }
-
-    @Ignore('Call.delete() does not work')
-    def 'Delete action with existing phone call and returnUrl'() {
-        given: 'a phone call'
-        makeCallFixture()
-
-        when: 'I call the delete action with a valid ID'
-        params.id = 1
-        params.returnUrl = '/organization/show/5'
-        params.confirmed = 1
-        controller.delete()
-
-        then: 'I am redirected to the requested URL'
-        '/organization/show/5' == response.redirectedUrl
-        'default.deleted.message' == flash.message
-
-        and: 'the phone call has been deleted'
-        0 == Call.count()
     }
 
 
-    //-- Non-public methods ---------------------
+    //-- Non-public methods -------------------------
 
-    private void makeCallFixture(Date d = new Date()) {
-        makeOrganizationFixture()
-        def org = Organization.get(1)
-        makePersonFixture org
-        def person = Person.get(1)
-        mockDomain Call, [
-            [
-                subject: 'Test', notes: 'Test call', organization: org,
-                person: person, phone: '+49 30 8321475-0', start: d,
-                type: CallType.incoming, status: CallStatus.completed
-            ]
-        ]
+    private static Call fixtureCall(Long id = null, Long version = null) {
+        def call = new Call(
+            subject: 'My phone call', phone: '+1 5739 948377'
+        )
+        if (id != null) call.id = id
+        if (version != null) call.version = version
+
+        call
     }
 
-    private void makeOrganizationFixture() {
-        mockDomain Organization, [
-            [
-                id: 1, number: 10000, recType: 1,
-                name: 'AMC World Technologies GmbH', legalForm: 'GmbH',
-                billingAddr: new Address(), shippingAddr: new Address(),
-                phone: '987654321'
-            ]
-        ]
-    }
-
-    private void makePersonFixture(Organization org) {
-        mockDomain Person, [
-            [
-                id: 1, number: 10000, organization: org, firstName: 'Daniel',
-                lastName: 'Ellermann',
-                mailingAddr: new Address(), otherAddr: new Address(),
-                phone: '123456789'
-            ]
-        ]
-    }
-
-    private void matchCall(Call c, Date d = null) {
-        assert 'Test' == c.subject
-        assert 'Test call' == c.notes
-        assert '+49 30 8321475-0' == c.phone
-        if (d) {
-            assert d == c.start
+    private static List<Call> fixtureCalls(int n = 3) {
+        List<Call> res = []
+        for (int i = 0; i < n; i++) {
+            Call c = new Call(subject: 'My phone call ' + (i + 1))
+            res << c
         }
-        assert CallType.incoming == c.type
-        assert CallStatus.completed == c.status
 
-        assert null != c.organization
-        assert 'AMC World Technologies GmbH' == c.organization.name
-        assert null != c.person
-        assert 'Daniel' == c.person.firstName
-        assert 'Ellermann' == c.person.lastName
+        res
     }
 
-    private void matchCallInList(Map model, Date d = null) {
-        assert null != model.callInstanceList
-        assert 1 == model.callInstanceList.size()
-        assert 1 == model.callInstanceTotal
-
-        matchCall model.callInstanceList[0], d
+    private static void verifyCall(Call instance, Long id = null,
+                                   Long version = null)
+    {
+        assert null != instance
+        assert id == instance.id
+        assert version == instance.version
+        assert 'My phone call' == instance.subject
+        assert '+1 5739 948377' == instance.phone
     }
 
-    private void matchEmptyList(Map model) {
-        assert null != model.callInstanceList
-        assert 0 == model.callInstanceList.size()
-        assert 0 == model.callInstanceTotal
-    }
-
-    private void matchNullList(Map model) {
-        assert null == model.callInstanceList
-        assert 0 == model.callInstanceTotal
+    private static void verifyCalls(Map model, int n = 3) {
+        for (int i = 0; i < n; i++) {
+            String subject = 'My phone call ' + (i + 1)
+            assert subject == model.callInstanceList[i].subject
+        }
     }
 }

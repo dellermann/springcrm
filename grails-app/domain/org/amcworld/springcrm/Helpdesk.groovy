@@ -74,6 +74,11 @@ class Helpdesk {
     Set<User> users
 
     /**
+     * The organization this helpdesk belongs to.
+     */
+    Organization organization
+
+    /**
      * The timestamp when this helpdesk has been created.
      */
     Date dateCreated

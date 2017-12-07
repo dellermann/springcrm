@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
+
 
 /**
  * The class {@code NoteController} contains actions which manage notes.
@@ -27,7 +29,13 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class NoteController extends GeneralController<Note> {
+@CompileStatic
+class NoteController extends GenericDomainController<Note> {
+
+    //-- Fields ---------------------------------
+
+    NoteService noteService
+
 
     //-- Constructors ---------------------------
 
@@ -42,7 +50,7 @@ class NoteController extends GeneralController<Note> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -54,10 +62,16 @@ class NoteController extends GeneralController<Note> {
         super.edit id
     }
 
+    /**
+     * Loads all notes which are defined by the request parameters and shows
+     * them in the index view.
+     *
+     * @return  the model for the view
+     */
     def index() {
         if (params.letter) {
             int max = params.int('max')
-            int num = Note.countByTitleLessThan(params.letter.toString())
+            int num = noteService.countByTitleLessThan(params.letter.toString())
             params.sort = 'title'
             params.offset = Math.floor(num / max) * max
             params.search = null
@@ -67,30 +81,42 @@ class NoteController extends GeneralController<Note> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Note.findAllByTitleLike(searchFilter, params)
-            count = Note.countByTitleLike(searchFilter)
+            list = noteService.findAllByTitleLike(searchFilter, params)
+            count = noteService.countByTitleLike(searchFilter)
         } else {
-            list = Note.list(params)
-            count = Note.count()
+            list = noteService.list(params)
+            count = noteService.count()
         }
 
         getIndexModel list, count
     }
 
+    /**
+     * Loads all notes which are defined by the request parameters and shows
+     * them in the embedded list view.
+     *
+     * @param organization  an optional organization the notes must belong to;
+     *                      may be {@code null}
+     * @param person        an optional person the notes must belong to; may be
+     *                      {@code null}
+     * @return              the model for the view
+     */
     def listEmbedded(Long organization, Long person) {
         List<Note> list = null
         int count = 0
-        Map<String, Object> linkParams = null
+        Map linkParams = null
 
         if (organization) {
             Organization organizationInstance = Organization.get(organization)
-            list = Note.findAllByOrganization(organizationInstance, params)
-            count = Note.countByOrganization(organizationInstance)
+            list = noteService.findAllByOrganization(
+                organizationInstance, params
+            )
+            count = noteService.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
             Person personInstance = Person.get(person)
-            list = Note.findAllByPerson(personInstance, params)
-            count = Note.countByPerson(personInstance)
+            list = noteService.findAllByPerson(personInstance, params)
+            count = noteService.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
 
@@ -107,5 +133,23 @@ class NoteController extends GeneralController<Note> {
 
     def update(Long id) {
         super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected void lowLevelDelete(Note instance) {
+        noteService.delete instance.id
+    }
+
+    @Override
+    protected Note lowLevelGet(Long id) {
+        noteService.get id
+    }
+
+    @Override
+    protected Note lowLevelSave(Note instance) {
+        noteService.save instance
     }
 }

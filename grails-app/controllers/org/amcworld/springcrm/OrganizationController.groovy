@@ -28,7 +28,12 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class OrganizationController extends GeneralController<Organization> {
+class OrganizationController extends GenericDomainController<Organization> {
+
+    //-- Fields -------------------------------------
+
+    OrganizationService organizationService
+
 
     //-- Constructors ---------------------------
 
@@ -43,7 +48,7 @@ class OrganizationController extends GeneralController<Organization> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -59,11 +64,11 @@ class OrganizationController extends GeneralController<Organization> {
         List<Organization> list
         if (type) {
             List<Byte> types = [type, 3 as byte]
-            list = Organization.findAllByRecTypeInListAndNameLike(
+            list = organizationService.findAllByRecTypeInListAndNameLike(
                 types, "%${params.name}%", [sort: 'name']
             )
         } else {
-            list = Organization.findAllByNameLike(
+            list = organizationService.findAllByNameLike(
                 "%${params.name}%", [sort: 'name']
             )
         }
@@ -96,7 +101,7 @@ class OrganizationController extends GeneralController<Organization> {
         int termOfPayment =
             ConfigHolder.instance['termOfPayment'].toType(Integer) ?: 14
 
-        Organization organizationInstance = Organization.get(id)
+        Organization organizationInstance = organizationService.get(id)
         if (organizationInstance?.termOfPayment != null) {
             termOfPayment = organizationInstance.termOfPayment
         }
@@ -108,27 +113,27 @@ class OrganizationController extends GeneralController<Organization> {
         List<Byte> types = [listType, 3 as byte]
         String letter = params.letter?.toString()
         if (letter) {
-            int max = params.int('max')
             int num
             if (listType) {
-                num = Organization.countByNameLessThanAndRecTypeInList(
-                    letter, types
+                num = organizationService.countByRecTypeInListAndNameLessThan(
+                    types, letter
                 )
             } else {
-                num = Organization.countByNameLessThan(letter)
+                num = organizationService.countByNameLessThan(letter)
             }
             params.sort = 'name'
+            int max = params.int('max')
             params.offset = Math.floor(num / max) * max
         }
 
         List<Organization> list
         int count
         if (listType) {
-            list = Organization.findAllByRecTypeInList(types, params)
-            count = Organization.countByRecTypeInList(types)
+            list = organizationService.findAllByRecTypeInList(types, params)
+            count = organizationService.countByRecTypeInList(types)
         } else {
-            list = Organization.list(params)
-            count = Organization.count()
+            list = organizationService.list(params)
+            count = organizationService.count()
         }
 
         getIndexModel list, count
@@ -159,5 +164,20 @@ class OrganizationController extends GeneralController<Organization> {
     @Override
     protected Map<String, Object> getShowActionParams() {
         [listType: params.listType]
+    }
+
+    @Override
+    protected void lowLevelDelete(Organization instance) {
+        organizationService.delete instance.id
+    }
+
+    @Override
+    protected Organization lowLevelGet(Long id) {
+        organizationService.get id
+    }
+
+    @Override
+    protected Organization lowLevelSave(Organization instance) {
+        organizationService.save instance
     }
 }

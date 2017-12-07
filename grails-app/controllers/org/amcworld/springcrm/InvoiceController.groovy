@@ -31,6 +31,7 @@ class InvoiceController extends InvoicingController<Invoice> {
 
     //-- Fields ---------------------------------
 
+    InvoiceService invoiceService
     UserService userService
 
 
@@ -47,7 +48,7 @@ class InvoiceController extends InvoicingController<Invoice> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         Invoice invoiceInstance
         if (params.quote) {
             Quote quoteInstance = Quote.get(params.long('quote'))
@@ -60,7 +61,7 @@ class InvoiceController extends InvoicingController<Invoice> {
             invoiceInstance.quote = salesOrderInstance.quote
             invoiceInstance.userService = userService
         } else {
-            invoiceInstance = new Invoice(params)
+            invoiceInstance = newInstance(params)
         }
 
         getCreateModel invoiceInstance
@@ -91,42 +92,42 @@ class InvoiceController extends InvoicingController<Invoice> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Invoice.findAllBySubjectLike(searchFilter, params)
-            count = Invoice.countBySubjectLike(searchFilter)
+            list = invoiceService.findAllBySubjectLike(
+                searchFilter, params
+            )
+            count = invoiceService.countBySubjectLike(searchFilter)
         } else {
-            list = Invoice.list(params)
-            count = Invoice.count()
+            list = invoiceService.list(params)
+            count = invoiceService.count()
         }
 
         getIndexModel list, count
     }
 
-    def listEmbedded(Long organization, Long person, Long quote,
-                     Long salesOrder)
-    {
+    def listEmbedded(Long organization, Long person, Long quote, Long salesOrder) {
         List<Invoice> list = null
         int count = 0
-        Map<String, Object> linkParams = null
+        Map linkParams = null
 
         if (organization) {
             def organizationInstance = Organization.get(organization)
-            list = Invoice.findAllByOrganization(organizationInstance, params)
-            count = Invoice.countByOrganization(organizationInstance)
+            list = invoiceService.findAllByOrganization(organizationInstance, params)
+            count = invoiceService.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
             def personInstance = Person.get(person)
-            list = Invoice.findAllByPerson(personInstance, params)
-            count = Invoice.countByPerson(personInstance)
+            list = invoiceService.findAllByPerson(personInstance, params)
+            count = invoiceService.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         } else if (quote) {
             def quoteInstance = Quote.get(params.long('quote'))
-            list = Invoice.findAllByQuote(quoteInstance, params)
-            count = Invoice.countByQuote(quoteInstance)
+            list = invoiceService.findAllByQuote(quoteInstance, params)
+            count = invoiceService.countByQuote(quoteInstance)
             linkParams = [quote: quoteInstance.id]
         } else if (salesOrder) {
             def salesOrderInstance = SalesOrder.get(salesOrder)
-            list = Invoice.findAllBySalesOrder(salesOrderInstance, params)
-            count = Invoice.countBySalesOrder(salesOrderInstance)
+            list = invoiceService.findAllBySalesOrder(salesOrderInstance, params)
+            count = invoiceService.countBySalesOrder(salesOrderInstance)
             linkParams = [salesOrder: salesOrderInstance.id]
         }
 
@@ -174,6 +175,21 @@ class InvoiceController extends InvoicingController<Invoice> {
     @Override
     protected boolean checkAccess(Invoice invoiceInstance) {
         admin || invoiceInstance.stage.id < 902
+    }
+
+    @Override
+    protected void lowLevelDelete(Invoice instance) {
+        invoiceService.delete instance.id
+    }
+
+    @Override
+    protected Invoice lowLevelGet(Long id) {
+        invoiceService.get id
+    }
+
+    @Override
+    protected Invoice lowLevelSave(Invoice instance) {
+        invoiceService.save instance
     }
 
     @Override

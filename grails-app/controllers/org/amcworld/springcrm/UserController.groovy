@@ -31,7 +31,7 @@ import org.apache.commons.lang.LocaleUtils
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class UserController extends GeneralController<User> {
+class UserController extends GenericDomainController<User> {
 
     //-- Fields ---------------------------------
 
@@ -51,7 +51,7 @@ class UserController extends GeneralController<User> {
     //-- Public methods -------------------------
 
     def authenticate() {
-        User userInstance = User.findByUserNameAndPassword(
+        User userInstance = userService.findByUserNameAndPassword(
             params.userName.toString(), params.password.toString()
         )
         if (userInstance == null) {
@@ -71,7 +71,7 @@ class UserController extends GeneralController<User> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -85,13 +85,14 @@ class UserController extends GeneralController<User> {
 
     def index() {
         if (params.letter) {
-            int max = params.int('max')
-            int num = User.countByUserNameLessThan(params.letter.toString())
+            int num =
+                userService.countByUserNameLessThan(params.letter.toString())
             params.sort = 'userName'
+            int max = params.int('max')
             params.offset = Math.floor(num / max) * max
         }
 
-        super.index()
+        getIndexModel userService.list(params), userService.count()
     }
 
     def login() {}
@@ -242,7 +243,22 @@ class UserController extends GeneralController<User> {
     }
 
     @Override
-    protected User lowLevelSave() {
+    protected void lowLevelDelete(User instance) {
+        userService.delete instance.id
+    }
+
+    @Override
+    protected User lowLevelGet(Long id) {
+        userService.get id
+    }
+
+    @Override
+    protected User lowLevelSave(User instance) {
+        userService.save instance
+    }
+
+    @Override
+    protected User saveInstance(User instance) {
         User userInstance = new User()
         bindData userInstance, params, [exclude: ['allowedModulesNames']]
         userInstance.allowedModulesNames =
@@ -255,11 +271,11 @@ class UserController extends GeneralController<User> {
             return null
         }
 
-        userInstance.save failOnError: true, flush: true
+        lowLevelSave userInstance
     }
 
     @Override
-    protected User lowLevelUpdate(User userInstance) {
+    protected User updateInstance(User userInstance) {
         String oldPassword = userInstance.password
         bindData userInstance, params, [exclude: ['allowedModulesNames']]
         userInstance.allowedModulesNames =
@@ -274,7 +290,7 @@ class UserController extends GeneralController<User> {
 
         userInstance.password = params.password ?: oldPassword
 
-        userInstance.save failOnError: true, flush: true
+        lowLevelSave userInstance
     }
 
     private void setUserLocale(String locale = null) {

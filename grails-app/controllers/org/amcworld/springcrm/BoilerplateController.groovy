@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.CompileStatic
+
 
 /**
  * The class {@code BoilerplateController} contains actions which manage
@@ -29,7 +31,13 @@ package org.amcworld.springcrm
  * @version 2.2
  * @since   2.1
  */
-class BoilerplateController extends GeneralController<Boilerplate> {
+@CompileStatic
+class BoilerplateController extends GenericDomainController<Boilerplate> {
+
+    //-- Fields ---------------------------------
+
+    BoilerplateService boilerplateService
+
 
     //-- Constructors ---------------------------
 
@@ -44,7 +52,7 @@ class BoilerplateController extends GeneralController<Boilerplate> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -56,31 +64,31 @@ class BoilerplateController extends GeneralController<Boilerplate> {
         super.edit id
     }
 
-    def get(Long id) {
-        super.get id
-    }
-
     def find(String name) {
         List<Boilerplate> boilerplateInstanceList =
-            Boilerplate.findAllByNameIlike("%${name}%")
+            boilerplateService.findAllByNameIlike("%${name}%")
 
         [(getDomainInstanceName('List')): boilerplateInstanceList]
     }
 
+    def get(Long id) {
+        super.get id
+    }
+
     def index() {
-        if (params.letter) {
-            int max = params.int('max')
-            int num = Boilerplate.countByNameLessThan(params.letter.toString())
-            params.sort = 'name'
-            params.offset = (Math.floor(num / max) * max) as Integer
+        String letter = params.letter?.toString()
+        if (letter) {
+            handleLetter 'name', boilerplateService.countByNameLessThan(letter)
         }
 
-        super.index()
+        getIndexModel(
+            boilerplateService.list(params), boilerplateService.count()
+        )
     }
 
     def save() {
         super.save()
-        request['redirectParams'] = [noLruRecord: params.noLruRecord]
+        request['redirectParams'] = [noLruRecord: params.noLruRecord] as HashMap
     }
 
     def show(Long id) {
@@ -89,5 +97,23 @@ class BoilerplateController extends GeneralController<Boilerplate> {
 
     def update(Long id) {
         super.update id
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    @Override
+    protected void lowLevelDelete(Boilerplate instance) {
+        boilerplateService.delete instance.id
+    }
+
+    @Override
+    protected Boilerplate lowLevelSave(Boilerplate instance) {
+        boilerplateService.save instance
+    }
+
+    @Override
+    protected Boilerplate lowLevelGet(Long id) {
+        boilerplateService.get id
     }
 }

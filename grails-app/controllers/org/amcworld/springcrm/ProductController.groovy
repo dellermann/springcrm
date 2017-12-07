@@ -29,6 +29,11 @@ package org.amcworld.springcrm
  */
 class ProductController extends SalesItemController<Product> {
 
+    //-- Fields -------------------------------------
+
+    ProductService productService
+
+
     //-- Constructors ---------------------------
 
     ProductController() {
@@ -42,7 +47,7 @@ class ProductController extends SalesItemController<Product> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -59,7 +64,15 @@ class ProductController extends SalesItemController<Product> {
     }
 
     def index() {
-        super.index()
+        if (params.letter) {
+            int num =
+                productService.countByNameLessThan(params.letter.toString())
+            params.sort = 'name'
+            int max = params.int('max')
+            params.offset = Math.floor(num / max) * max
+        }
+
+        getIndexModel productService.list(params), productService.count()
     }
 
     def save() {
@@ -67,7 +80,34 @@ class ProductController extends SalesItemController<Product> {
     }
 
     def selectorList() {
-        super.selectorList()
+        String searchFilter =
+            params.search ? "%${params.search}%".toString() : ''
+        String letter = params.letter?.toString()
+        if (letter) {
+            int num
+            if (params.search) {
+                num = productService.countByNameLessThanAndNameLike(
+                    letter, searchFilter
+                )
+            } else {
+                num = productService.countByNameLessThan(letter)
+            }
+            params.sort = 'name'
+            int max = params.int('max')
+            params.offset = Math.floor(num / max) * max
+        }
+
+        List<Product> list
+        int count
+        if (params.search) {
+            list = productService.findAllByNameLike(searchFilter, params)
+            count = productService.countByNameLike(searchFilter)
+        } else {
+            list = productService.list(params)
+            count = productService.count()
+        }
+
+        getIndexModel list, count
     }
 
     def show(Long id) {
@@ -76,5 +116,18 @@ class ProductController extends SalesItemController<Product> {
 
     def update(Long id) {
         super.update id
+    }
+
+
+    //-- Non-public methods -------------------------
+
+    @Override
+    protected Product lowLevelGet(Long id) {
+        productService.get id
+    }
+
+    @Override
+    protected Product lowLevelSave(Product instance) {
+        productService.save instance
     }
 }

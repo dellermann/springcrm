@@ -1,7 +1,7 @@
 /*
  * CreditMemo.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,15 +23,18 @@ package org.amcworld.springcrm
 import static java.math.BigDecimal.ZERO
 
 import java.math.RoundingMode
+import org.grails.datastore.gorm.GormEntity
 
 
 /**
  * The class {@code CreditMemo} represents a credit note.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class CreditMemo extends InvoicingTransaction implements Payable {
+class CreditMemo extends InvoicingTransaction
+    implements GormEntity<CreditMemo>, Payable
+{
 
     //-- Constants ----------------------------------
 
@@ -66,17 +69,15 @@ class CreditMemo extends InvoicingTransaction implements Payable {
 
     //-- Fields ---------------------------------
 
-    def userService
+    /**
+     * The dunning which belongs to this credit memo.
+     */
+    Dunning dunning
 
     /**
-     * The stage of this credit note.
+     * The invoice which belongs to this credit memo.
      */
-    CreditMemoStage stage
-
-    /**
-     * The date of payment.
-     */
-    Date paymentDate
+    Invoice invoice
 
     /**
      * The payment amount.
@@ -84,9 +85,21 @@ class CreditMemo extends InvoicingTransaction implements Payable {
     BigDecimal paymentAmount = ZERO
 
     /**
+     * The date of payment.
+     */
+    Date paymentDate
+
+    /**
      * The payment method.
      */
     PaymentMethod paymentMethod
+
+    /**
+     * The stage of this credit note.
+     */
+    CreditMemoStage stage
+
+    def userService
 
 
     //-- Constructors ---------------------------

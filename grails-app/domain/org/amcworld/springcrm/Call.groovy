@@ -1,7 +1,7 @@
 /*
  * Call.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,16 @@
 
 package org.amcworld.springcrm
 
+import org.grails.datastore.gorm.GormEntity
+
 
 /**
  * The class {@code Call} represents a phone call.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
-class Call {
+class Call implements GormEntity<Call> {
 
     //-- Constants ----------------------------------
 
@@ -61,6 +63,8 @@ class Call {
     Date start = new Date()
     CallType type
     CallStatus status
+    Organization organization
+    Person person
     Date dateCreated
     Date lastUpdated
 

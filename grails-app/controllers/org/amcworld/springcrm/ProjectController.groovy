@@ -35,11 +35,15 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class ProjectController extends GeneralController<Project> {
+class ProjectController extends GenericDomainController<Project> {
 
     //-- Fields ---------------------------------
 
 	DocumentService documentService
+    OrganizationService organizationService
+    PersonService personService
+    ProjectItemService projectItemService
+    ProjectService projectService
 
 
     //-- Constructors ---------------------------
@@ -69,12 +73,12 @@ class ProjectController extends GeneralController<Project> {
                 long itemId = it as long
                 def itemInstance = cls.clazz.'get'(itemId)
                 if (itemInstance != null) {
-                    new ProjectItem(
+                    ProjectItem item = new ProjectItem(
                         project: projectInstance, phase: pp,
                         controller: controllerName, itemId: itemId,
                         title: itemInstance.toString()
                     )
-                    .save failOnError: true, flush: true
+                    projectItemService.save item
                 }
             }
         }
@@ -94,7 +98,7 @@ class ProjectController extends GeneralController<Project> {
         }
 
         projectInstance.phase = pp
-        projectInstance.save failOnError: true, flush: true
+        lowLevelSave projectInstance
 
         render status: SC_OK
     }
@@ -103,7 +107,7 @@ class ProjectController extends GeneralController<Project> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -116,7 +120,7 @@ class ProjectController extends GeneralController<Project> {
     }
 
     def index() {
-        super.index()
+        getIndexModel projectService.list(params), projectService.count()
     }
 
     /**
@@ -126,10 +130,8 @@ class ProjectController extends GeneralController<Project> {
      * @since   2.1
      */
     def listCurrentProjects() {
-        List<Project> projectInstanceList = Project.findAll(
-            'from Project as p where p.status.id BETWEEN 2600 AND 2603 ' +
-            'order by p.status'
-        )
+        List<Project> projectInstanceList =
+            projectService.findAllCurrentProjects()
 
         [(getDomainInstanceName('List')): projectInstanceList]
     }
@@ -137,18 +139,20 @@ class ProjectController extends GeneralController<Project> {
     def listEmbedded(Long organization, Long person) {
         List<Project> list = null
         int count = 0
-        Map<String, Object> linkParams = null
+        Map linkParams = null
 
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            list = Project.findAllByOrganization(organizationInstance, params)
-            count = Project.countByOrganization(organizationInstance)
+            Organization organizationInstance =
+                organizationService.get(organization)
+            list = projectService.findAllByOrganization(
+                organizationInstance, params
+            )
+            count = projectService.countByOrganization(organizationInstance)
             linkParams = [organization: organizationInstance.id]
         } else if (person) {
-            Person personInstance = Person.get(person)
-            list = Project.findAllByPerson(personInstance, params)
-            count = Project.countByPerson(personInstance)
+            Person personInstance = personService.get(person)
+            list = projectService.findAllByPerson(personInstance, params)
+            count = projectService.countByPerson(personInstance)
             linkParams = [person: personInstance.id]
         }
 
@@ -167,13 +171,13 @@ class ProjectController extends GeneralController<Project> {
     }
 
     def removeItem(Long id) {
-        ProjectItem projectItemInstance = ProjectItem.get(id)
+        ProjectItem projectItemInstance = projectItemService.get(id)
         if (projectItemInstance == null) {
             render status: SC_NOT_FOUND
             return
         }
 
-        projectItemInstance.delete flush: true
+        projectItemService.delete id
         render status: SC_OK
     }
 
@@ -182,22 +186,22 @@ class ProjectController extends GeneralController<Project> {
     }
 
     def setPhase(Long id, String phase) {
-        Project projectInstance = Project.get(id)
+        Project projectInstance = lowLevelGet(id)
         if (projectInstance != null) {
             projectInstance.phase = ProjectPhase.valueOf(phase)
-            projectInstance.save failOnError: true, flush: true
+            lowLevelSave projectInstance
         }
 
         render status: SC_OK
     }
 
     def setStatus(Long id, Long status) {
-        Project projectInstance = Project.get(id)
+        Project projectInstance = lowLevelGet(id)
         if (projectInstance != null) {
             ProjectStatus projectStatus = ProjectStatus.get(status)
             if (projectStatus) {
                 projectInstance.status = projectStatus
-                projectInstance.save failOnError: true, flush: true
+                lowLevelSave projectInstance
             }
         }
 
@@ -205,11 +209,12 @@ class ProjectController extends GeneralController<Project> {
     }
 
     def show(Long id) {
-        Map<String, Object> model = super.show(id) as Map<String, Object>
-        Project projectInstance = model[domainInstanceName] as Project
+        Map model = null
+        Project projectInstance = lowLevelGet(id)
         if (projectInstance != null) {
-            model['projectItems'] = getProjectItems(projectInstance)
-            model['projectDocuments'] = getProjectDocuments(projectInstance)
+            model = getDomainInstanceModel(projectInstance)
+            model.projectItems = getProjectItems(projectInstance)
+            model.projectDocuments = getProjectDocuments(projectInstance)
         }
 
         model
@@ -220,7 +225,7 @@ class ProjectController extends GeneralController<Project> {
     }
 
 
-    //-- Non-public methods ---------------------
+    //-- Non-public methods -------------------------
 
     /**
      * Gets a list of items of the given project grouped by project phase.
@@ -282,5 +287,20 @@ class ProjectController extends GeneralController<Project> {
         }
 
         res
+    }
+
+    @Override
+    protected void lowLevelDelete(Project instance) {
+        projectService.delete instance.id
+    }
+
+    @Override
+    protected Project lowLevelGet(Long id) {
+        projectService.get id
+    }
+
+    @Override
+    protected Project lowLevelSave(Project instance) {
+        projectService.save instance
     }
 }

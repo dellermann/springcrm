@@ -52,6 +52,7 @@ trait NumberedDomain {
      * @return  the formatted full number with prefix and suffix
      */
     String getFullNumber() {
+        println("getFullNumber ${getClass()} ${number}")
         seqNumberService.format getClass(), number
     }
 

@@ -58,6 +58,8 @@ class Note implements NumberedDomain {
 
     String title
     String content
+    Organization organization
+    Person person
     Date dateCreated
     Date lastUpdated
 

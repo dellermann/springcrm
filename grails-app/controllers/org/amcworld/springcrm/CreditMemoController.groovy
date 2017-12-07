@@ -22,13 +22,22 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code CreditMemoController} contains actions which manage credit
- * memos.
+ * The class {@code CreditMemoController} contains actions which manage
+ * credit memos.
  *
  * @author  Daniel Ellermann
  * @version 2.2
  */
 class CreditMemoController extends InvoicingController<CreditMemo> {
+
+    //-- Fields -------------------------------------
+
+    CreditMemoService creditMemoService
+    DunningService dunningService
+    InvoiceService invoiceService
+    OrganizationService organizationService
+    PersonService personService
+
 
     //-- Constructors ---------------------------
 
@@ -39,73 +48,19 @@ class CreditMemoController extends InvoicingController<CreditMemo> {
 
     //-- Public methods -------------------------
 
-    def index() {
-        List<CreditMemo> list
-        int count
-        if (params.search) {
-            String searchFilter = "%${params.search}%".toString()
-            list = CreditMemo.findAllBySubjectLike(searchFilter, params)
-            count = CreditMemo.countBySubjectLike(searchFilter)
-        } else {
-            list = CreditMemo.list(params)
-            count = CreditMemo.count()
-        }
-
-        getIndexModel list, count
-    }
-
-    def listEmbedded(Long organization, Long person, Long invoice,
-                     Long dunning)
-    {
-        List<CreditMemo> list = null
-        int count = 0
-        Map<String, Object> linkParams = null
-        if (organization) {
-            Organization organizationInstance = Organization.get(organization)
-            if (organizationInstance) {
-                list = CreditMemo.findAllByOrganization(
-                    organizationInstance, params
-                )
-                count = CreditMemo.countByOrganization(organizationInstance)
-                linkParams = [organization: organizationInstance.id]
-            }
-        } else if (person) {
-            Person personInstance = Person.get(person)
-            if (personInstance) {
-                list = CreditMemo.findAllByPerson(personInstance, params)
-                count = CreditMemo.countByPerson(personInstance)
-                linkParams = [person: personInstance.id]
-            }
-        } else if (invoice) {
-            Invoice invoiceInstance = Invoice.get(invoice)
-            if (invoiceInstance) {
-                list = CreditMemo.findAllByInvoice(invoiceInstance, params)
-                count = CreditMemo.countByInvoice(invoiceInstance)
-                linkParams = [invoice: invoiceInstance.id]
-            }
-        } else if (dunning) {
-            Dunning dunningInstance = Dunning.get(dunning)
-            if (dunningInstance) {
-                list = CreditMemo.findAllByDunning(dunningInstance, params)
-                count = CreditMemo.countByDunning(dunningInstance)
-                linkParams = [dunning: dunningInstance.id]
-            }
-        }
-
-        getListEmbeddedModel list, count, linkParams
-    }
-
     def copy(Long id) {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         CreditMemo creditMemoInstance
         if (params.invoice) {
-            Invoice invoiceInstance = Invoice.get(params.long('invoice'))
+            Invoice invoiceInstance =
+                invoiceService.get(params.long('invoice'))
             creditMemoInstance = new CreditMemo(invoiceInstance)
         } else if (params.dunning) {
-            Dunning dunningInstance = Dunning.get(params.long('dunning'))
+            Dunning dunningInstance =
+                dunningService.get(params.long('dunning'))
             creditMemoInstance = new CreditMemo(dunningInstance)
         } else {
             creditMemoInstance = new CreditMemo(params)
@@ -126,6 +81,72 @@ class CreditMemoController extends InvoicingController<CreditMemo> {
         super.editPayment id
     }
 
+    def index() {
+        List<CreditMemo> list
+        int count
+        if (params.search) {
+            String searchFilter = "%${params.search}%".toString()
+            list = creditMemoService.findAllBySubjectLike(
+                searchFilter, params
+            )
+            count = creditMemoService.countBySubjectLike(searchFilter)
+        } else {
+            list = creditMemoService.list(params)
+            count = creditMemoService.count()
+        }
+
+        getIndexModel list, count
+    }
+
+    def listEmbedded(Long organization, Long person, Long invoice,
+                     Long dunning)
+    {
+        List<CreditMemo> list = null
+        int count = 0
+        Map linkParams = null
+        if (organization) {
+            Organization organizationInstance =
+                organizationService.get(organization)
+            if (organizationInstance) {
+                list = creditMemoService.findAllByOrganization(
+                    organizationInstance, params
+                )
+                count =
+                    creditMemoService.countByOrganization(organizationInstance)
+                linkParams = [organization: organizationInstance.id]
+            }
+        } else if (person) {
+            Person personInstance = personService.get(person)
+            if (personInstance) {
+                list = creditMemoService.findAllByPerson(
+                    personInstance, params
+                )
+                count = creditMemoService.countByPerson(personInstance)
+                linkParams = [person: personInstance.id]
+            }
+        } else if (invoice) {
+            Invoice invoiceInstance = invoiceService.get(invoice)
+            if (invoiceInstance) {
+                list = creditMemoService.findAllByInvoice(
+                    invoiceInstance, params
+                )
+                count = creditMemoService.countByInvoice(invoiceInstance)
+                linkParams = [invoice: invoiceInstance.id]
+            }
+        } else if (dunning) {
+            Dunning dunningInstance = dunningService.get(dunning)
+            if (dunningInstance) {
+                list = creditMemoService.findAllByDunning(
+                    dunningInstance, params
+                )
+                count = creditMemoService.countByDunning(dunningInstance)
+                linkParams = [dunning: dunningInstance.id]
+            }
+        }
+
+        getListEmbeddedModel list, count, linkParams
+    }
+
     def print(Long id, String template) {
         CreditMemo creditMemoInstance = getDomainInstanceWithStatus(id)
         if (creditMemoInstance != null) {
@@ -133,9 +154,11 @@ class CreditMemoController extends InvoicingController<CreditMemo> {
                 creditMemoInstance, template,
                 [
                     invoice: creditMemoInstance.invoice,
-                    invoiceFullNumber: creditMemoInstance.invoice?.fullNumber,
+                    invoiceFullNumber:
+                        creditMemoInstance.invoice?.fullNumber,
                     dunning: creditMemoInstance.dunning,
-                    dunningFullNumber: creditMemoInstance.dunning?.fullNumber,
+                    dunningFullNumber:
+                        creditMemoInstance.dunning?.fullNumber,
                     paymentMethod: creditMemoInstance.paymentMethod?.name
                 ]
             )
@@ -167,14 +190,29 @@ class CreditMemoController extends InvoicingController<CreditMemo> {
     }
 
     @Override
+    protected void lowLevelDelete(CreditMemo instance) {
+        creditMemoService.delete instance.id
+    }
+
+    @Override
+    protected CreditMemo lowLevelSave(CreditMemo instance) {
+        creditMemoService.save instance
+    }
+
+    @Override
+    protected CreditMemo lowLevelGet(Long id) {
+        creditMemoService.get id
+    }
+
+    @Override
     protected void updateAssociated(CreditMemo creditMemoInstance) {
         Invoice invoiceInstance = creditMemoInstance.invoice
-        if (invoiceInstance) {
+        if (invoiceInstance != null) {
             invoiceInstance.stage = InvoiceStage.get(907)
             invoiceInstance.save failOnError: true, flush: true
         }
         Dunning dunningInstance = creditMemoInstance.dunning
-        if (dunningInstance) {
+        if (dunningInstance != null) {
             dunningInstance.stage = DunningStage.get(2206)
             dunningInstance.save failOnError: true, flush: true
         }

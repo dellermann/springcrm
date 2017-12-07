@@ -1,7 +1,7 @@
 /*
  * Dunning.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,11 @@ import org.grails.datastore.gorm.GormEntity
 
 
 /**
- * The class {@code Dunning} represents a reminder which belongs to an invoice.
+ * The class {@code Dunning} represents a reminder which belongs to an
+ * invoice.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  */
 class Dunning extends InvoicingTransaction
     implements GormEntity<Dunning>, PayableAndDue
@@ -61,24 +62,12 @@ class Dunning extends InvoicingTransaction
         stage column: 'dunning_stage_id'
     }
     static transients = [
-        'balance', 'balanceColor', 'closingBalance', 'modifiedClosingBalance',
-        'payable', 'paymentStateColor'
+        'balance', 'balanceColor', 'closingBalance',
+        'modifiedClosingBalance', 'payable', 'paymentStateColor'
     ]
 
 
     //-- Fields ---------------------------------
-
-    def userService
-
-    /**
-     * The level of this reminder (1st reminder, 2nd reminder etc.).
-     */
-    DunningLevel level
-
-    /**
-     * The stage of this reminder.
-     */
-    DunningStage stage
 
     /**
      * The due date of payment.
@@ -86,9 +75,14 @@ class Dunning extends InvoicingTransaction
     Date dueDatePayment
 
     /**
-     * The date of payment.
+     * The invoice this dunning belongs to.
      */
-    Date paymentDate
+    Invoice invoice
+
+    /**
+     * The level of this reminder (1st reminder, 2nd reminder etc.).
+     */
+    DunningLevel level
 
     /**
      * The payment amount.
@@ -96,9 +90,21 @@ class Dunning extends InvoicingTransaction
     BigDecimal paymentAmount = ZERO
 
     /**
+     * The date of payment.
+     */
+    Date paymentDate
+
+    /**
      * The payment method.
      */
     PaymentMethod paymentMethod
+
+    /**
+     * The stage of this reminder.
+     */
+    DunningStage stage
+
+    def userService
 
 
     //-- Constructors ---------------------------

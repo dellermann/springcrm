@@ -8,11 +8,29 @@
         <option name="HTML_ELEMENTS_TO_INSERT_NEW_LINE_BEFORE" value="body,form,h1,h2,h3,section,div,p,td" />
         <option name="HTML_DO_NOT_INDENT_CHILDREN_OF" value="" />
         <option name="HTML_ENFORCE_QUOTES" value="true" />
+        <GroovyCodeStyleSettings>
+          <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+            <value />
+          </option>
+          <option name="IMPORT_LAYOUT_TABLE">
+            <value>
+              <package name="" withSubpackages="true" static="true" />
+              <emptyLine />
+              <package name="" withSubpackages="true" static="false" />
+              <emptyLine />
+            </value>
+          </option>
+        </GroovyCodeStyleSettings>
         <codeStyleSettings language="GSP">
           <indentOptions>
             <option name="INDENT_SIZE" value="2" />
             <option name="CONTINUATION_INDENT_SIZE" value="2" />
             <option name="TAB_SIZE" value="2" />
+          </indentOptions>
+        </codeStyleSettings>
+        <codeStyleSettings language="Groovy">
+          <indentOptions>
+            <option name="CONTINUATION_INDENT_SIZE" value="4" />
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="HTML">
@@ -31,6 +49,6 @@
         </codeStyleSettings>
       </value>
     </option>
-    <option name="PREFERRED_PROJECT_CODE_STYLE" value="Default (1)" />
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
   </component>
 </project>

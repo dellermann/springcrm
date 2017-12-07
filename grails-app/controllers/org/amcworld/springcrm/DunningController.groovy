@@ -22,12 +22,18 @@ package org.amcworld.springcrm
 
 
 /**
- * The class {@code DunningController} contains actions which manage dunnings.
+ * The class {@code DunningController} contains actions which manage
+ * dunnings.
  *
  * @author  Daniel Ellermann
  * @version 2.2
  */
 class DunningController extends InvoicingController<Dunning> {
+
+    //-- Fields -------------------------------------
+
+    DunningService dunningService
+
 
     //-- Constructors ---------------------------
 
@@ -38,7 +44,7 @@ class DunningController extends InvoicingController<Dunning> {
 
     //-- Public methods -------------------------
 
-    def create() {
+    Map create() {
         Dunning dunningInstance
         if (params.invoice) {
             Invoice invoiceInstance = Invoice.get(params.long('invoice'))
@@ -84,11 +90,13 @@ class DunningController extends InvoicingController<Dunning> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Dunning.findAllBySubjectLike(searchFilter, params)
-            count = Dunning.countBySubjectLike(searchFilter)
+            list = dunningService.findAllBySubjectLike(
+                searchFilter, params
+            )
+            count = dunningService.countBySubjectLike(searchFilter)
         } else {
-            list = Dunning.list(params)
-            count = Dunning.count()
+            list = dunningService.list(params)
+            count = dunningService.count()
         }
 
         getIndexModel list, count
@@ -102,22 +110,30 @@ class DunningController extends InvoicingController<Dunning> {
         if (organization) {
             Organization organizationInstance = Organization.get(organization)
             if (organizationInstance) {
-                list = Dunning.findAllByOrganization(organizationInstance, params)
-                count = Dunning.countByOrganization(organizationInstance)
+                list = dunningService.findAllByOrganization(
+                    organizationInstance, params
+                )
+                count = dunningService.countByOrganization(
+                    organizationInstance
+                )
                 linkParams = [organization: organizationInstance.id]
             }
         } else if (person) {
             Person personInstance = Person.get(person)
             if (personInstance) {
-                list = Dunning.findAllByPerson(personInstance, params)
-                count = Dunning.countByPerson(personInstance)
+                list = dunningService.findAllByPerson(
+                    personInstance, params
+                )
+                count = dunningService.countByPerson(personInstance)
                 linkParams = [person: personInstance.id]
             }
         } else if (invoice) {
             Invoice invoiceInstance = Invoice.get(invoice)
             if (invoiceInstance) {
-                list = Dunning.findAllByInvoice(invoiceInstance, params)
-                count = Dunning.countByInvoice(invoiceInstance)
+                list = dunningService.findAllByInvoice(
+                    invoiceInstance, params
+                )
+                count = dunningService.countByInvoice(invoiceInstance)
                 linkParams = [invoice: invoiceInstance.id]
             }
         }
@@ -182,12 +198,33 @@ class DunningController extends InvoicingController<Dunning> {
     }
 
     @Override
+    protected void lowLevelDelete(Dunning instance) {
+        dunningService.delete instance.id
+    }
+
+    @Override
+    protected Dunning lowLevelSave(Dunning instance) {
+        dunningService.save instance
+    }
+
+    @Override
+    protected Dunning lowLevelGet(Long id) {
+        dunningService.get id
+    }
+
+    @Override
     protected void updateAssociated(Dunning dunningInstance) {
         Invoice invoiceInstance = dunningInstance.invoice
         invoiceInstance.stage = InvoiceStage.get(904)
         invoiceInstance.save flush: true
     }
 
+    /**
+     * Creates an dunning item for the given service (work).
+     *
+     * @param w the given service (work)
+     * @return  the created dunning item
+     */
     private static InvoicingItem workToItem(Work w) {
         new InvoicingItem(
             number: w.fullNumber, quantity: w.quantity,

@@ -32,6 +32,11 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  */
 class WorkController extends SalesItemController<Work> {
 
+    //-- Fields -------------------------------------
+
+    WorkService workService
+
+
     //-- Constructors ---------------------------
 
     WorkController() {
@@ -45,7 +50,7 @@ class WorkController extends SalesItemController<Work> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -64,13 +69,9 @@ class WorkController extends SalesItemController<Work> {
         } catch (NumberFormatException ignored) { /* ignored */ }
 
         BuildableCriteria c = Work.createCriteria()
-        List<Work> list = (List<Work>) c.list {
-            or {
-                eq 'number', number
-                ilike 'name', "%${name}%"
-            }
-            order 'number', 'asc'
-        }
+        List<Work> list = workService.findAllByNumberOrNameIlike(
+            number, "%${name}%", [sort: 'number', order: 'asc']
+        )
 
         [(getDomainInstanceName('List')): list]
     }
@@ -80,7 +81,14 @@ class WorkController extends SalesItemController<Work> {
     }
 
     def index() {
-        super.index()
+        if (params.letter) {
+            int num = workService.countByNameLessThan(params.letter.toString())
+            params.sort = 'name'
+            int max = params.int('max')
+            params.offset = Math.floor(num / max) * max
+        }
+
+        getIndexModel workService.list(params), workService.count()
     }
 
     def save() {
@@ -88,7 +96,34 @@ class WorkController extends SalesItemController<Work> {
     }
 
     def selectorList() {
-        super.selectorList()
+        String searchFilter =
+            params.search ? "%${params.search}%".toString() : ''
+        String letter = params.letter?.toString()
+        if (letter) {
+            int num
+            if (params.search) {
+                num = workService.countByNameLessThanAndNameLike(
+                    letter, searchFilter
+                )
+            } else {
+                num = workService.countByNameLessThan(letter)
+            }
+            params.sort = 'name'
+            int max = params.int('max')
+            params.offset = Math.floor(num / max) * max
+        }
+
+        List<Product> list
+        int count
+        if (params.search) {
+            list = workService.findAllByNameLike(searchFilter, params)
+            count = workService.countByNameLike(searchFilter)
+        } else {
+            list = workService.list(params)
+            count = workService.count()
+        }
+
+        getIndexModel list, count
     }
 
     def show(Long id) {
@@ -97,5 +132,18 @@ class WorkController extends SalesItemController<Work> {
 
     def update(Long id) {
         super.update id
+    }
+
+
+    //-- Non-public methods -------------------------
+
+    @Override
+    protected Work lowLevelGet(Long id) {
+        workService.get id
+    }
+
+    @Override
+    protected Work lowLevelSave(Work instance) {
+        workService.save instance
     }
 }

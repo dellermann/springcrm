@@ -27,14 +27,16 @@ import org.springframework.dao.DataIntegrityViolationException
 
 
 /**
- * The class {@code GeneralController} represents a generic base class for all
- * controllers of this application.
+ * The class {@code GenericDomainController} represents a generic base class
+ * for all controllers of this application.
  *
  * @author  Daniel Ellermann
  * @version 2.2
  * @since   2.2
  */
-class GeneralController<T extends GormEntity<? super T>> implements Controller {
+abstract class GenericDomainController<T extends GormEntity<? super T>>
+    implements Controller
+{
 
     //-- Class fields ---------------------------
 
@@ -67,7 +69,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @param domainType    the given domain model type
      */
-    GeneralController(Class<? extends T> domainType) {
+    GenericDomainController(Class<? extends T> domainType) {
         this.domainType = domainType
 
         cachedDomainInstanceNames = new HashMap<>()
@@ -85,7 +87,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      */
     def copy(Long id) {
         T instance = getDomainInstance(id)
-        if (instance) {
+        if (instance != null) {
             instance = domainType.newInstance(instance)
             render view: 'create', model: [(domainInstanceName): instance]
         }
@@ -97,7 +99,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @return  the model for the view
      */
-    def create() {
+    Map create() {
         getCreateModel newInstance(params)
     }
 
@@ -110,7 +112,11 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      */
     def delete(Long id) {
         T instance = getDomainInstance(id)
-        if (instance != null && !checkAccess(instance)) {
+        if (instance == null) {
+            return
+        }
+
+        if (!checkAccess(instance)) {
             redirect action: 'index', params: indexActionParams
             return
         }
@@ -127,6 +133,9 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      */
     def edit(Long id) {
         T instance = getDomainInstance(id)
+        if (instance == null) {
+            return
+        }
 
         if (!checkAccess(instance)) {
             redirect action: 'index', params: indexActionParams
@@ -144,17 +153,9 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @return      the model for the view
      */
     def get(Long id) {
-        [(domainInstanceName): getDomainInstanceWithStatus(id)]
-    }
+        T instance = getDomainInstanceWithStatus(id)
 
-    /**
-     * Loads all domain model instances which are defined by the request
-     * parameters and shows them in the index view.
-     *
-     * @return  the model for the view
-     */
-    def index() {
-        getIndexModel domainType.list(params), domainType.count()
+        instance == null ? null : [(domainInstanceName): instance]
     }
 
     /**
@@ -164,7 +165,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @return  any rendering information
      */
     def save() {
-        saveInstance()
+        doSave()
     }
 
     /**
@@ -179,6 +180,38 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
     }
 
     /**
+     * Does the same as the {@code save} method but is used in test cases where
+     * the {@code save} method does not work.
+     *
+     * @return  any rendering information
+     */
+    def testSave() {
+
+        /*
+         * XXX This method acts as a workaround because action "save" cannot be
+         * called from test cases.  I found no error in GitHub but all attempts
+         * failed.
+         */
+        doSave()
+    }
+
+    /**
+     * Does the same as the {@code update} method but is used in test cases
+     * where the {@code update} method does not work.
+     *
+     * @return  any rendering information
+     */
+    def testUpdate(Long id) {
+
+        /*
+         * XXX This method acts as a workaround because action "update" cannot
+         * be called from test cases.  I found no error in GitHub but all
+         * attempts failed.
+         */
+        doUpdate id
+    }
+
+    /**
      * Updates an existing instance of the domain model with the given ID using
      * the form data in the request parameters.
      *
@@ -186,7 +219,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @return      any rendering information
      */
     def update(Long id) {
-        updateInstance id
+        doUpdate id
     }
 
 
@@ -203,6 +236,30 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *                  otherwise
      */
     protected boolean checkAccess(T instance) {
+        true
+    }
+
+    /**
+     * Checks the version of the given domain model instance for concurrent
+     * modification.
+     *
+     * @param instance  the given domain model instance
+     * @return          {@code true} if the instance hasn't been modified
+     *                  concurrently; {@code false} otherwise
+     */
+    protected boolean checkVersion(T instance) {
+        if (params.containsKey('version')) {
+            long version = params.long('version')
+            if (instance.version > version) {
+                instance.errors.rejectValue(
+                    'version', 'default.optimistic.locking.failure',
+                    [label] as Object[], ''
+                )
+                render view: 'edit', model: getEditModel(instance)
+                return false
+            }
+        }
+
         true
     }
 
@@ -227,14 +284,72 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
     }
 
     /**
+     * Saves a new instance of the domain model using the form data in the
+     * request parameters.  In case of an error it renders the create view.
+     * In case of success it sets a message in flash scope.
+     *
+     * @return  the saved instance or {@code null} if an error occurred
+     */
+    protected <D extends T> D doSave() {
+        D instance = newInstance(params)
+        if (saveInstance(instance) == null) {
+            render view: 'create', model: getCreateModel(instance)
+            return null
+        }
+
+        request[domainInstanceName] = instance
+        flash.message = message(
+            code: 'default.created.message', args: [label, instance.toString()]
+        ) as Object
+
+        instance
+    }
+
+    /**
+     * Updates an existing instance of the domain model with the given ID using
+     * the form data in the request parameters.  In case of an error it renders
+     * the edit view.  In case of success it sets a message in flash scope.
+     *
+     * @param id    the ID of the domain model instance
+     * @return      the saved instance or {@code null} if an error occurred
+     */
+    protected <D extends T> D doUpdate(Long id) {
+        D instance = getDomainInstance(id)
+        if (instance != null && !checkAccess(instance)) {
+            redirect action: 'index', params: indexActionParams
+        }
+        if (instance == null || !checkAccess(instance)
+            || !checkVersion(instance))
+        {
+            return null
+        }
+
+        if (instance instanceof NumberedDomain && params.autoNumber) {
+            params.number = ((NumberedDomain) instance).number
+        }
+
+        if (updateInstance(instance) == null) {
+            render view: 'edit', model: getEditModel(instance)
+            return null
+        }
+
+        request[domainInstanceName] = instance
+        flash.message = message(
+            code: 'default.updated.message', args: [label, instance.toString()]
+        ) as Object
+
+        instance
+    }
+
+    /**
      * Gets the model for the create view containing the given domain model
      * instance.
      *
      * @param instance  the given domain model instance
      * @return          the model for the create view
      */
-    protected Map<String, Object> getCreateModel(T instance) {
-        [(domainInstanceName): instance]
+    protected Map getCreateModel(T instance) {
+        getDomainInstanceModel instance
     }
 
     /**
@@ -257,7 +372,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *              domain model exists
      */
     protected <D extends T> D getDomainInstance(Long id) {
-        D instance = domainType.get(id)
+        D instance = lowLevelGet(id)
         if (!instance) {
             flash.message = message(
                 code: 'default.not.found.message', args: [label, id]
@@ -266,6 +381,20 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
         }
 
         instance
+    }
+
+    /**
+     * Gets the model for the particular views containing the given domain
+     * model instance.
+     *
+     * @param instance  the given domain model instance
+     * @return          the model for the edit view
+     */
+    protected Map getDomainInstanceModel(T instance) {
+        Map res = new HashMap()
+        res.put(getDomainInstanceName(), instance)
+
+        res
     }
 
     /**
@@ -306,7 +435,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *              domain model exists
      */
     protected T getDomainInstanceWithStatus(Long id) {
-        T instance = domainType.get(id)
+        T instance = lowLevelGet(id)
         if (instance == null) {
             render status: HttpServletResponse.SC_NOT_FOUND
         }
@@ -321,8 +450,8 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @param instance  the given domain model instance
      * @return          the model for the edit view
      */
-    protected Map<String, Object> getEditModel(T instance) {
-        [(domainInstanceName): instance]
+    protected Map getEditModel(T instance) {
+        getDomainInstanceModel instance
     }
 
     /**
@@ -333,7 +462,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @return  any additional parameters
      */
-    protected Map<String, Object> getIndexActionParams() {
+    protected Map getIndexActionParams() {
         null
     }
 
@@ -345,7 +474,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @param count the count of items
      * @return      the model for the view
      */
-    protected Map<String, Object> getIndexModel(List<T> list, int count) {
+    protected Map getIndexModel(List<T> list, int count) {
         [
             (getDomainInstanceName('List')): list,
             (getDomainInstanceName('Total')): count
@@ -358,7 +487,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @return  the label of this domain model type
      */
     protected String getLabel() {
-        message(code: labelCode)
+        message code: labelCode
     }
 
     /**
@@ -380,9 +509,8 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @param linkParams    any link parameters
      * @return              the model for the view
      */
-    protected Map<String, Object> getListEmbeddedModel(
-        List<T> list, int count, Map<String, Object> linkParams
-    ) {
+    protected Map getListEmbeddedModel(List<T> list, int count, Map linkParams)
+    {
         [
             (getDomainInstanceName('List')): list,
             (getDomainInstanceName('Total')): count,
@@ -412,7 +540,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @return  the plural label of this domain model type
      */
     protected String getPlural() {
-        message(code: pluralCode)
+        message code: pluralCode
     }
 
     /**
@@ -432,7 +560,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @return  any additional parameters
      */
-    protected Map<String, Object> getShowActionParams() {
+    protected Map getShowActionParams() {
         null
     }
 
@@ -443,6 +571,22 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      */
     protected User getUser() {
         credential.loadUser()
+    }
+
+    /**
+     * Handles the case a letter from a letter bar has been submitted.  The
+     * method computes the offset of the page where the first item with the
+     * letter is located.
+     *
+     * @param sort              the name of the property to sort by; this is
+     *                          the property referenced by the letter bar
+     * @param numItemsBefore    the number of items before the particular
+     *                          letter
+     */
+    protected void handleLetter(String sort, int numItemsBefore) {
+        params.sort = sort
+        int max = params.containsKey('max') ? params.int('max') : 10
+        params.offset = (Math.floor(numItemsBefore / max) * max) as int
     }
 
     /**
@@ -460,9 +604,17 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @param instance  the given domain model instance
      */
-    protected void lowLevelDelete(T instance) {
-        instance.delete flush: true
-    }
+    protected abstract void lowLevelDelete(T instance)
+
+    /**
+     * Gets the domain model instance with the given ID from the underlying
+     * layer.
+     *
+     * @param id    the given ID
+     * @return      the domain model instance or {@code null} if no such
+     *              instance with the given ID exists
+     */
+    protected abstract <D extends T> D lowLevelGet(Long id)
 
     /**
      * Creates a new instance from the submitted form data and saves the domain
@@ -470,22 +622,7 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      *
      * @return  the generated and saved domain model instance
      */
-    protected <D extends T> D lowLevelSave() {
-        newInstance(params).save failOnError: true, flush: true
-    }
-
-    /**
-     * Updates the given domain model instance with the submitted form data and
-     * updates it in the underlying layer.
-     *
-     * @param instance  the given domain model instance or {@code null} if an
-     *                  error occurred
-     */
-    protected <D extends T> D lowLevelUpdate(T instance) {
-        instance.properties = params
-
-        instance.save failOnError: true, flush: true
-    }
+    protected abstract <D extends T> D lowLevelSave(T instance)
 
     /**
      * Creates a new instance of the domain model and initializes its
@@ -494,71 +631,31 @@ class GeneralController<T extends GormEntity<? super T>> implements Controller {
      * @param params    any parameters used for object initialization
      * @return          the new instance
      */
-    protected <D extends T> D newInstance(Map<String, Object> params) {
+    protected <D extends T> D newInstance(Map params) {
         domainType.newInstance params
     }
 
     /**
-     * Saves a new instance of the domain model using the form data in the
-     * request parameters.
+     * Saves and creates the given instance of the domain model.
      *
-     * @return  the saved instance or {@code null} if an error occurred
+     * @param instance  the instance which should be saved
+     * @return          the saved instance or {@code null} if an error occurred
      */
-    protected <D extends T> D saveInstance() {
-        D instance = lowLevelSave()
-        if (instance == null) {
-            render view: 'create', model: getCreateModel(instance)
-            return null
-        }
-
-        request[domainInstanceName] = instance
-        flash.message = message(
-            code: 'default.created.message', args: [label, instance.toString()]
-        ) as Object
-
-        instance
+    protected <D extends T> D saveInstance(T instance) {
+        lowLevelSave instance
     }
 
     /**
-     * Updates an existing instance of the domain model with the given ID using
-     * the form data in the request parameters.
+     * Updates the given instance of the domain model using the form data in
+     * the request parameters.
      *
-     * @param id    the ID of the domain model instance
-     * @return      the saved instance or {@code null} if an error occurred
+     * @param instance  the given domain model instance
+     * @return          the updated instance or {@code null} if an error
+     *                  occurred
      */
-    protected <D extends T> D updateInstance(Long id) {
-        D instance = getDomainInstance(id)
-        if (instance == null || !checkAccess(instance)) {
-            redirect action: 'index', params: indexActionParams
-            return null
-        }
+    protected <D extends T> D updateInstance(T instance) {
+        bindData instance, params
 
-        if (params.version) {
-            long version = params.long('version')
-            if (instance.version > version) {
-                instance.errors.rejectValue(
-                    'version', 'default.optimistic.locking.failure',
-                    [label] as Object[], ''
-                )
-                render view: 'edit', model: getEditModel(instance)
-                return null
-            }
-        }
-
-        if (instance instanceof NumberedDomain && params.autoNumber) {
-            params.number = instance.number
-        }
-
-        if (lowLevelUpdate(instance) == null) {
-            render view: 'edit', model: getEditModel(instance)
-            return null
-        }
-
-        request[domainInstanceName] = instance
-        flash.message = message(
-            code: 'default.updated.message', args: [label, instance.toString()]
-        ) as Object
-
-        instance
+        lowLevelSave instance
     }
 }

@@ -28,7 +28,14 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class CallController extends GeneralController<Call> {
+class CallController extends GenericDomainController<Call> {
+
+    //-- Fields -------------------------------------
+
+    CallService callService
+    OrganizationService organizationService
+    PersonService personService
+
 
     //-- Constructors ---------------------------
 
@@ -43,18 +50,16 @@ class CallController extends GeneralController<Call> {
         super.copy id
     }
 
-    def create() {
-        Map<String, Object> model = super.create()
-
-        Call callInstance = model[domainInstanceName] as Call
-        if (callInstance.person) {
+    Map create() {
+        Call callInstance = newInstance(params)
+        if (callInstance.person != null) {
             callInstance.phone = callInstance.person.phone
             callInstance.organization = callInstance.person.organization
-        } else if (callInstance.organization) {
+        } else if (callInstance.organization != null) {
             callInstance.phone = callInstance.organization.phone
         }
 
-        model
+        getCreateModel callInstance
     }
 
     def delete(Long id) {
@@ -68,10 +73,7 @@ class CallController extends GeneralController<Call> {
     def index() {
         String letter = params.letter?.toString()
         if (letter) {
-            int max = params.int('max')
-            int num = Call.countBySubjectLessThan(letter)
-            params.sort = 'subject'
-            params.offset = (Math.floor(num / max) * max) as int
+            handleLetter 'subject', callService.countBySubjectLessThan(letter)
             params.search = null
         }
 
@@ -79,11 +81,11 @@ class CallController extends GeneralController<Call> {
         int count
         if (params.search) {
             String searchFilter = "%${params.search}%".toString()
-            list = Call.findAllBySubjectLike(searchFilter, params)
-            count = Call.countBySubjectLike(searchFilter)
+            list = callService.findAllBySubjectLike(searchFilter, params)
+            count = callService.countBySubjectLike(searchFilter)
         } else {
-            list = Call.list(params)
-            count = Call.count()
+            list = callService.list(params)
+            count = callService.count()
         }
 
         getIndexModel list, count
@@ -92,20 +94,23 @@ class CallController extends GeneralController<Call> {
     def listEmbedded(Long organization, Long person) {
         List<Call> list = []
         int count = 0
-        Map<String, Object> linkParams = [: ]
+        Map linkParams = [: ]
 
         if (organization) {
-            def organizationInstance = Organization.get(organization)
-            if (organizationInstance) {
-                list = Call.findAllByOrganization(organizationInstance, params)
-                count = Call.countByOrganization(organizationInstance)
+            Organization organizationInstance =
+                organizationService.get(organization)
+            if (organizationInstance != null) {
+                list = callService.findAllByOrganization(
+                    organizationInstance, params
+                )
+                count = callService.countByOrganization(organizationInstance)
                 linkParams = [organization: organizationInstance.id]
             }
         } else if (person) {
-            def personInstance = Person.get(person)
-            if (personInstance) {
-                list = Call.findAllByPerson(personInstance, params)
-                count = Call.countByPerson(personInstance)
+            Person personInstance = personService.get(person)
+            if (personInstance != null) {
+                list = callService.findAllByPerson(personInstance, params)
+                count = callService.countByPerson(personInstance)
                 linkParams = [person: personInstance.id]
             }
         }
@@ -123,5 +128,23 @@ class CallController extends GeneralController<Call> {
 
     def update(Long id) {
         super.update id
+    }
+
+
+    //-- Non-public methods -------------------------
+
+    @Override
+    protected void lowLevelDelete(Call instance) {
+        callService.delete instance.id
+    }
+
+    @Override
+    protected Call lowLevelSave(Call instance) {
+        callService.save instance
+    }
+
+    @Override
+    protected Call lowLevelGet(Long id) {
+        callService.get id
     }
 }

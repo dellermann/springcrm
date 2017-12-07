@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,11 @@ import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
 
 
 /**
- * The class {@code InvoicingTransactionService} contains methods to work with
- * invoicing transactions such as quotes, sales order, invoices etc.
+ * The class {@code InvoicingTransactionService} contains methods to work
+ * with invoicing transactions such as quotes, sales order, invoices etc.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   1.2
  */
 class InvoicingTransactionService implements Service {

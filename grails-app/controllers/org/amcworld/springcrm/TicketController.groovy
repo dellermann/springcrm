@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile
  * @version 2.2
  * @since   1.4
  */
-class TicketController extends GeneralController<Ticket> {
+class TicketController extends GenericDomainController<Ticket> {
 
     //-- Constants ------------------------------
 
@@ -46,14 +46,17 @@ class TicketController extends GeneralController<Ticket> {
 
     //-- Fields ---------------------------------
 
+    HelpdeskService helpdeskService
+    HelpdeskUserService helpdeskUserService
     MailSystemService mailSystemService
+    OrganizationService organizationService
     TicketService ticketService
 
 
     //-- Constructors ---------------------------
 
-    TicketController(Class<? extends Ticket> domainType) {
-        super(domainType)
+    TicketController() {
+        super(Ticket)
     }
 
 
@@ -117,7 +120,7 @@ class TicketController extends GeneralController<Ticket> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -230,7 +233,7 @@ class TicketController extends GeneralController<Ticket> {
     }
 
     def frontendSendMessage(Long id) {
-        Ticket ticketInstance = Ticket.get(id)
+        Ticket ticketInstance = lowLevelGet(id)
         if (ticketInstance == null) {
             redirectToHelpdeskFrontend helpdesk
             return
@@ -251,7 +254,7 @@ class TicketController extends GeneralController<Ticket> {
     }
 
     def frontendShow(Long id) {
-        Ticket ticketInstance = Ticket.read(id)
+        Ticket ticketInstance = ticketService.get(id)
 
         getFrontendModel ticketInstance, ticketInstance.helpdesk
     }
@@ -261,46 +264,42 @@ class TicketController extends GeneralController<Ticket> {
         int count
 
         if (params.helpdesk) {
-            Helpdesk helpdesk = Helpdesk.get(params.long('helpdesk'))
-            list = Ticket.findAllByHelpdesk(helpdesk)
-            count = Ticket.countByHelpdesk(helpdesk)
+            Helpdesk helpdesk =
+                helpdeskService.get(params.long('helpdesk'))
+            list = ticketService.findAllByHelpdesk(helpdesk)
+            count = ticketService.countByHelpdesk(helpdesk)
         } else if (admin) {
-            list = Ticket.list(params)
-            count = Ticket.count()
+            list = ticketService.list(params)
+            count = ticketService.count()
         } else {
-            List<HelpdeskUser> helpdeskUsers = HelpdeskUser.findAllByUser(user)
+            List<HelpdeskUser> helpdeskUsers =
+                helpdeskUserService.findAllByUser(user)
             if (!helpdeskUsers) {
                 render view: 'noHelpdesks'
                 return
             }
 
             List<Helpdesk> helpdesks = helpdeskUsers*.helpdesk
-            list = Ticket.findAllByHelpdeskInList(helpdesks, params)
-            count = Ticket.countByHelpdeskInList(helpdesks)
+            list = ticketService.findAllByHelpdeskInList(helpdesks, params)
+            count = ticketService.countByHelpdeskInList(helpdesks)
         }
 
-        Map<String, Object> model = getIndexModel(list, count)
-        model['mailSystemConfigured'] = mailSystemService.configured
+        Map model = getIndexModel(list, count)
+        model.mailSystemConfigured = mailSystemService.configured
 
         model
     }
 
     def listEmbedded(Long organization) {
-        Organization organizationInstance = Organization.get(organization)
+        Organization organizationInstance =
+            organizationService.get(organization)
 
-        List<Ticket> list = Ticket.executeQuery(
-            'select t from Ticket as t inner join t.helpdesk as h, ' +
-                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
-                'and h.organization = :o',
-            [u: user, o: organizationInstance],
-            params
+        List<Ticket> list = ticketService.findAllByUserAndOrganization(
+            user, organizationInstance, params
         )
-        int count = Ticket.executeQuery(
-            'select count(*) from Ticket as t inner join t.helpdesk as h, ' +
-                'HelpdeskUser as hu where hu.helpdesk = h and hu.user = :u ' +
-                'and h.organization = :o',
-            [u: user, o: organizationInstance],
-        )[0] as int
+        int count = ticketService.countByUserAndOrganization(
+            user, organizationInstance
+        )
 
         getListEmbeddedModel(
             list, count, [organization: organizationInstance.id]
@@ -369,8 +368,8 @@ class TicketController extends GeneralController<Ticket> {
      * @param stage the stage that should be changed to
      */
     private void frontendChangeStage(Long id, TicketStage stage) {
-        Ticket ticketInstance = Ticket.get(id)
-        if (!ticketInstance) {
+        Ticket ticketInstance = lowLevelGet(id)
+        if (ticketInstance == null) {
             redirectToHelpdeskFrontend helpdesk
             return
         }
@@ -381,19 +380,34 @@ class TicketController extends GeneralController<Ticket> {
     }
 
     @Override
-    protected Map<String, Object> getCreateModel(Ticket instance) {
-        Map<String, Object> res = super.getCreateModel(instance)
-        res['helpdeskInstanceList'] = helpdesks
+    protected Map getCreateModel(Ticket instance) {
+        Map res = super.getCreateModel(instance)
+        res.helpdeskInstanceList = helpdesks
 
         res
     }
 
     @Override
-    protected Map<String, Object> getEditModel(Ticket instance) {
-        Map<String, Object> res = super.getEditModel(instance)
-        res['helpdeskInstanceList'] = helpdesks
+    protected Map getEditModel(Ticket instance) {
+        Map res = super.getEditModel(instance)
+        res.helpdeskInstanceList = helpdesks
 
         res
+    }
+
+    @Override
+    protected void lowLevelDelete(Ticket instance) {
+        ticketService.delete instance.id
+    }
+
+    @Override
+    protected Ticket lowLevelGet(Long id) {
+        ticketService.get id
+    }
+
+    @Override
+    protected Ticket lowLevelSave(Ticket instance) {
+        ticketService.save instance
     }
 
     /**
@@ -421,7 +435,7 @@ class TicketController extends GeneralController<Ticket> {
      * @since   2.2
      */
     private Helpdesk getHelpdesk() {
-        Helpdesk.get params.long('helpdesk')
+        helpdeskService.get params.long('helpdesk')
     }
 
     /**
@@ -430,17 +444,17 @@ class TicketController extends GeneralController<Ticket> {
      * @return  the list of helpdesks
      */
     private List<Helpdesk> getHelpdesks() {
-        user.admin ? Helpdesk.list() : Helpdesk.findByUser(user)
+        user.admin ? helpdeskService.list()
+            : helpdeskUserService.findAllByUser(user)*.helpdesk.unique()
     }
 
     @Override
-    protected Ticket lowLevelSave() {
-        Ticket ticketInstance = new Ticket(params)
-        String messageText = ticketInstance.messageText = params.messageText
+    protected Ticket saveInstance(Ticket instance) {
+        String messageText = instance.messageText = params.messageText
 
-        if (!ticketInstance.validate() || !messageText) {
+        if (!instance.validate() || !messageText) {
             if (!messageText) {
-                ticketInstance.errors.rejectValue(
+                instance.errors.rejectValue(
                     'messageText', 'default.blank.message'
                 )
             }
@@ -448,7 +462,7 @@ class TicketController extends GeneralController<Ticket> {
         }
 
         ticketService.createTicket(
-            ticketInstance, messageText, (MultipartFile) params.attachment
+            instance, messageText, (MultipartFile) params.attachment
         )
     }
 

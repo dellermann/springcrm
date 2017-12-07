@@ -1,7 +1,7 @@
 /*
  * CommonViewDataInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import grails.artefact.Interceptor
 import groovy.transform.CompileStatic
+import org.springframework.beans.factory.annotation.Autowired
 
 
 /**
@@ -29,7 +30,7 @@ import groovy.transform.CompileStatic
  * model of each view, if any.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 2.2
  * @since   2.1
  */
 @CompileStatic
@@ -38,7 +39,7 @@ class CommonViewDataInterceptor implements Interceptor {
     //-- Fields ---------------------------------
 
     int order = 10
-    UserService userService
+    @Autowired UserService userService
 
 
     //-- Constructors ---------------------------

@@ -35,12 +35,14 @@ import org.grails.datastore.mapping.query.api.BuildableCriteria
  * @author  Daniel Ellermann
  * @version 2.2
  */
-class PersonController extends GeneralController<Person> {
+class PersonController extends GenericDomainController<Person> {
 
     //-- Fields ---------------------------------
 
     GoogleContactSync googleContactSync
     LdapService ldapService
+    OrganizationService organizationService
+    PersonService personService
 
 
     //-- Constructors ---------------------------
@@ -56,7 +58,7 @@ class PersonController extends GeneralController<Person> {
         super.copy id
     }
 
-    def create() {
+    Map create() {
         super.create()
     }
 
@@ -69,18 +71,12 @@ class PersonController extends GeneralController<Person> {
     }
 
     def find(Long organization) {
-        Organization organizationInstance = Organization.get(organization)
-        BuildableCriteria c = Person.createCriteria()
-        List<Person> list = (List<Person>) c.list {
-            eq('organization', organizationInstance)
-            and {
-                or {
-                    ilike('lastName', "${params.name}%")
-                    ilike('firstName', "${params.name}%")
-                }
-            }
-            order('lastName', 'asc')
-        }
+        Organization organizationInstance =
+            organizationService.get(organization)
+        List<Person> list = personService.searchPersons(
+            organizationInstance, "${params.name}%".toString(),
+            [sort: 'lastName', order: 'asc']
+        )
 
         [(getDomainInstanceName('List')): list]
     }
@@ -149,18 +145,20 @@ class PersonController extends GeneralController<Person> {
 
     def index() {
         if (params.letter) {
-            int max = params.int('max')
-            int num = Person.countByLastNameLessThan(params.letter.toString())
+            int num = personService.countByLastNameLessThan(
+                params.letter.toString()
+            )
             params.sort = 'lastName'
+            int max = params.int('max')
             params.offset = Math.floor(num / max) * max
         }
 
-        super.index()
+        getIndexModel personService.list(params), personService.count()
     }
 
     def ldapdelete(Long id) {
         if (ldapService && id) {
-            Person personInstance = Person.get(id)
+            Person personInstance = personService.get(id)
             if (personInstance) {
                 ldapService.delete personInstance
             }
@@ -173,8 +171,8 @@ class PersonController extends GeneralController<Person> {
         if (ldapService) {
             List<Long> excludeIds = excludeFromSyncValues
             if (id) {
-                Person personInstance = Person.get(id)
-                if (personInstance
+                Person personInstance = personService.get(id)
+                if (personInstance != null
                     && !isExcludeFromSync(personInstance, excludeIds))
                 {
                     ldapService.save personInstance
@@ -191,7 +189,7 @@ class PersonController extends GeneralController<Person> {
                 return
             }
 
-            List<Person> personInstanceList = Person.list()
+            List<Person> personInstanceList = personService.list()
             for (Person personInstance : personInstanceList) {
                 if (!isExcludeFromSync(personInstance, excludeIds)) {
                     ldapService.save personInstance
@@ -212,14 +210,16 @@ class PersonController extends GeneralController<Person> {
     def listEmbedded(Long organization) {
         List<Person> list = null
         int count = 0
-        Map<String, Object> linkParams = null
+        Map linkParams = null
 
         if (organization) {
-            def organizationInstance = Organization.get(organization)
+            def organizationInstance = organizationService.get(organization)
             if (organizationInstance) {
-                list =
-                    Person.findAllByOrganization(organizationInstance, params)
-                count = Person.countByOrganization(organizationInstance)
+                list = personService.findAllByOrganization(
+                    organizationInstance, params
+                )
+                count =
+                    personService.countByOrganization(organizationInstance)
                 linkParams = [organization: organizationInstance.id]
             }
         }
@@ -228,9 +228,9 @@ class PersonController extends GeneralController<Person> {
     }
 
     def save() {
-        Person personInstance = saveInstance()
+        Person personInstance = doSave()
 
-        if (ldapService && !isExcludeFromSync(personInstance)) {
+        if (ldapService != null && !isExcludeFromSync(personInstance)) {
             ldapService.save personInstance
         }
     }
@@ -287,7 +287,7 @@ class PersonController extends GeneralController<Person> {
      * synchronization.
      *
      * @param p     the given person
-     * @param ids   a list of IDs of {@code Rating} instance that should be
+     * @param ids   a list of IDs of {@code Rating} instances that should be
      *              excluded from synchronization
      * @return      {@code true} if the given person should be excluded from
      *              synchronization; {@code false} otherwise
@@ -300,25 +300,35 @@ class PersonController extends GeneralController<Person> {
     }
 
     @Override
-    protected void lowLevelDelete(Person personInstance) {
-        super.lowLevelDelete personInstance
+    protected void lowLevelDelete(Person instance) {
+        personService.delete instance.id
 
         if (ldapService) {
-            ldapService.delete personInstance
+            ldapService.delete instance
         }
     }
 
     @Override
-    protected Person lowLevelUpdate(Person personInstance) {
-        byte [] picture = personInstance.picture
-        personInstance.properties = params
+    protected Person lowLevelGet(Long id) {
+        personService.get id
+    }
+
+    @Override
+    protected Person lowLevelSave(Person instance) {
+        personService.save instance
+    }
+
+    @Override
+    protected Person updateInstance(Person instance) {
+        byte [] picture = instance.picture
+        bindData instance, params
 
         if (params.pictureRemove == '1') {
-            personInstance.picture = null
+            instance.picture = null
         } else if (params.picture?.isEmpty()) {
-            personInstance.picture = picture
+            instance.picture = picture
         }
 
-        personInstance.save failOnError: true, flush: true
+        lowLevelSave instance
     }
 }

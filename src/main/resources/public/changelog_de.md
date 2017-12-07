@@ -1,7 +1,9 @@
 ## 2.2.0
 
+* Funktion Speichern & Schließen für alle Formulare (einstellbar).
 * Information über Aufträge (Datum, Dokument, Unterschrift des Kunden) zu
   Verkaufsbestellungen
+* Aktualisierung auf Grails 3.2.9 und Groovy 2.4.11.
 
 ## 2.1.8
 
