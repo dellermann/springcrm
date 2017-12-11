@@ -58,7 +58,7 @@ class SettingsInterceptorBase implements Interceptor {
      *                      performed
      */
     protected void exchangeSetting(Map<?, ?> params, String paramName,
-                                   Map<String, String> settings,
+                                   Map<String, Object> settings,
                                    String settingKey, Closure convert = null)
     {
         if (params[paramName] == null) {

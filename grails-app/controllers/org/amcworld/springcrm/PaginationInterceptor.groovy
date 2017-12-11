@@ -81,6 +81,7 @@ class PaginationInterceptor extends SettingsInterceptorBase {
             exchangeSetting(
                 params, 'order', user.settings, getSessionKey('order')
             )
+            user.save flush: true
         }
 
         /* limit offset */

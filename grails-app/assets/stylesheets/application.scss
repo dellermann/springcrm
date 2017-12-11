@@ -21,7 +21,7 @@
 
 // Bootstrap core variables and mixins
 @import "bootstrap/variables";
-@import "_variables";
+@import "variables";
 @import "bootstrap/mixins";
 
 // Reset and dependencies
@@ -83,20 +83,20 @@ $fa-sass-asset-helper: true;
 //@import "vat-calc/core";
 
 // Application variables and mixins
-@import "_mixins";
+@import "mixins";
 
 // Page parts
-@import "_header";
-@import "_bars";
-@import "_footer";
+@import "header";
+@import "bars";
+@import "footer";
 
 // Component redefinitions
-@import "_nav";
-@import "_lists";
-@import "_forms";
+@import "nav";
+@import "lists";
+@import "forms";
 
 // Print
-@import "_print";
+@import "print";
 
 
 //===============================================

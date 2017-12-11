@@ -26,7 +26,6 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import grails.converters.JSON
 import grails.core.GrailsApplication
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.bson.Document as MDocument
 import org.grails.web.json.JSONArray
@@ -196,9 +195,11 @@ class InstallService {
      *
      * @return  the installer enable file
      */
-    @CompileDynamic
     private File getEnableFile() {
-        def dir = new File(grailsApplication.config.springcrm.dir.installer)
+        File dir = new File(
+            grailsApplication.config.getProperty('springcrm.dir.installer')
+        )
+        println dir
         if (!dir.exists()) {
             dir.mkdirs()
         }

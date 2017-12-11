@@ -41,28 +41,8 @@ class InstallController {
 
     //-- Public methods -------------------------
 
-    def index() {}
-
-    def installBaseData() {
-        def installStatus = Config.findByName('installStatus')
-
-        [
-            existingData: installStatus?.value,
-            packages: installService.getBaseDataPackages(),
-            step: 1
-        ]
-    }
-
-    def installBaseDataSave() {
-        installService.installBaseDataPackage(
-            params['package-select']?.toString()
-        )
-
-        redirect action: 'clientData'
-    }
-
     def clientData() {
-        [client: Client.load(), step: 2]
+        respond([client: Client.load(), step: 2])
     }
 
     def clientDataSave(Client client) {
@@ -76,26 +56,24 @@ class InstallController {
     }
 
     def createAdmin() {
-        [userInstance: new User(), step: 3]
+        respond([userInstance: new User(), step: 3])
     }
 
     def createAdminSave() {
-        def userInstance = new User(params)
-        userInstance.admin = true
+        User user = new User(params)
+        user.admin = true
 
         String pwdRepeat = securityService.encryptPassword(
             params.passwordRepeat.toString()
         )
         boolean passwordMismatch = params.password != pwdRepeat
         if (passwordMismatch) {
-            userInstance.errors.rejectValue(
-                'password', 'user.password.doesNotMatch'
-            )
+            user.errors.rejectValue 'password', 'user.password.doesNotMatch'
         }
-        if (passwordMismatch || !userInstance.save(flush: true)) {
+        if (passwordMismatch || !user.save(flush: true)) {
             render(
                 view: 'createAdmin',
-                model: [userInstance: userInstance, step: 3]
+                model: [userInstance: user, step: 3]
             )
             return
         }
@@ -104,14 +82,34 @@ class InstallController {
     }
 
     def finish() {
-        [step: 4]
+        respond([step: 4])
     }
 
     def finishSave() {
         installService.disableInstaller()
-        Config installStatus = new Config(name: 'installStatus', value: 1)
-        installStatus.save flush: true
+        Config config = new Config(name: 'installStatus', value: 1)
+        config.save flush: true
 
         redirect controller: 'overview', action: 'index'
+    }
+
+    def index() {}
+
+    def installBaseData() {
+        def installStatus = Config.findByName('installStatus')
+
+        respond([
+            existingData: installStatus?.value,
+            packages: installService.getBaseDataPackages(),
+            step: 1
+        ])
+    }
+
+    def installBaseDataSave() {
+        installService.installBaseDataPackage(
+            params['package-select']?.toString()
+        )
+
+        redirect action: 'clientData'
     }
 }

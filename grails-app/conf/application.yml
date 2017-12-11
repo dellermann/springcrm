@@ -221,6 +221,7 @@ markdown:
 springcrm:
     cacheDocs: true
     dir:
+        base: ${user.home}/.springcrm
         data: ${springcrm.dir.base}/data
         database: ${springcrm.dir.base}/database
         documents: ${springcrm.dir.base}/documents

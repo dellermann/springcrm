@@ -66,7 +66,7 @@ public class UserSettings extends AbstractMap<String, String> {
      */
     public UserSettings(User user) {
         this.user = user;
-        List<UserSetting> rawSettings = user.getRawSettings();
+        List<UserSetting> rawSettings = null; //user.getRawSettings();
         if (rawSettings == null) {
             this.settings = new HashMap<>();
         } else {

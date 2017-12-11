@@ -163,6 +163,7 @@ class AbstractUserCredentialDataStore
             if (user) {
                 user.settings[SETTINGS_KEY] =
                     convertCredentialToJson(credential)
+                user.save flush: true
             }
         }
 

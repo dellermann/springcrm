@@ -54,13 +54,13 @@ class User {
         email blank: false, email: true
         allowedModules nullable: true
     }
+    static embedded = ['settings']
     static mapping = {
         sort 'userName'
         userName index: 'user_name'
     }
     static transients = [
-        'allowedModulesAsSet', 'allowedModulesNames', 'fullName',
-        'rawSettings', 'settings'
+        'allowedModulesAsSet', 'allowedModulesNames', 'fullName'
     ]
 
 
@@ -139,10 +139,9 @@ class User {
     Date lastUpdated
 
     /**
-     * The underlying user settings which allow accessing the settings of this
-     * user as a {@code Map}.
+     * The settings of this user.
      */
-    private UserSettings settings
+    Map<String, Object> settings
 
 
     //-- Constructors ---------------------------
@@ -247,49 +246,8 @@ class User {
         buf.toString()
     }
 
-    /**
-     * Gets the raw settings associated to this user.
-     *
-     * @return  the list of raw settings objects
-     */
-    List<UserSetting> getRawSettings() {
-        UserSetting.findAllByUser this
-    }
-
-    /**
-     * Gets the settings of this user.
-     *
-     * @return  the user settings
-     */
-    @CompileStatic
-    UserSettings getSettings() {
-        settings
-    }
-
 
     //-- Public methods -------------------------
-
-    /**
-     * Called after this user object has been inserted into the underlying
-     * persistence layer.  The method initializes the embedded
-     * {@code UserSettings} object.
-     *
-     * @since 2.1
-     */
-    @CompileStatic
-    def afterInsert() {
-        settings = new UserSettings(this)
-    }
-
-    /**
-     * Called after this user object has been loaded completely from
-     * persistence layer.  The method initializes the embedded
-     * {@code UserSettings} object.
-     */
-    @CompileStatic
-    def afterLoad() {
-        settings = new UserSettings(this)
-    }
 
     @Override
     boolean equals(Object o) {

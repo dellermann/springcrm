@@ -20,6 +20,7 @@
 
 package org.amcworld.springcrm
 
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -28,7 +29,7 @@ import org.grails.datastore.gorm.GormEntity
  * number various content items.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class SeqNumber implements GormEntity<SeqNumber> {
 
@@ -50,12 +51,40 @@ class SeqNumber implements GormEntity<SeqNumber> {
 
     //-- Fields ---------------------------------
 
+    /**
+     * The name of the controller the sequence numbers belong to.
+     */
     String controllerName
-    String prefix = ''
-    String suffix = ''
-    int startValue = 10000i
+
+    /**
+     * The end of the number range.
+     */
     int endValue = 99999i
+
+    /**
+     * The ID of the sequence number.
+     */
+    ObjectId id
+
+    /**
+     * A value specifying the order of the sequence number in a list.
+     */
     int orderId
+
+    /**
+     * Any prefix which should be used to format the sequence number.
+     */
+    String prefix = ''
+
+    /**
+     * The start of the number range.
+     */
+    int startValue = 10000i
+
+    /**
+     * Any suffix which should be used to format the sequence number.
+     */
+    String suffix = ''
 
 
     //-- Public methods -------------------------

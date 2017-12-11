@@ -41,8 +41,8 @@ $fa-sass-asset-helper: true;
 @import "font-awesome/core";
 @import "font-awesome/icons";
 
-@import "_variables.scss";
-@import "_mixins.scss";
+@import "variables";
+@import "mixins";
 
 
 .alert-container {

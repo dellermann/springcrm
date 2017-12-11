@@ -107,6 +107,11 @@ final class Credential {
      */
     final String fullName
 
+    /**
+     * The settings of this user.
+     */
+    Map<String, Object> settings
+
 
     //-- Constructors ---------------------------
 
@@ -129,6 +134,7 @@ final class Credential {
         allowedModules = user.allowedModulesAsSet
         allowedControllers = Module.resolveModules(allowedModules)
         fullName = computeFullName()
+        settings = user.settings
     }
 
 
@@ -152,20 +158,6 @@ final class Credential {
      */
     EnumSet<Module> getAllowedModules() {
         EnumSet.copyOf(allowedModules)
-    }
-
-    /**
-     * Gets the settings of the user belonging to this credential.
-     * <p>
-     * For performance reasons, you should save the return value in a variable
-     * because it was obtained from data source via {@code loadUser()}.
-     * Furthermore, this method may be used within a Hibernate session, only.
-     *
-     * @return  the settings of the user
-     * @see     #loadUser()
-     */
-    UserSettings getSettings() {
-        loadUser().settings
     }
 
 
