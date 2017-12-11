@@ -1,0 +1,59 @@
+/*
+ * lru.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "../bootstrap/variables";
+
+
+.panel-type-lru > .panel-body > ul {
+  display: table;
+  margin-bottom: 0;
+  padding: 0;
+  width: 100%;
+
+  > li {
+    display: table-row;
+
+    &:hover {
+      background: $gray-lighter;
+    }
+    > .data-type-icon, > .text, > .buttons {
+      border-top: 1px solid $list-group-border;
+      display: table-cell;
+      padding: $padding-large-vertical 0;
+    }
+    &:first-child {
+      > .data-type-icon, > .text, > .buttons {
+        border-top: none;
+      }
+    }
+    > .data-type-icon {
+      font-size: $font-size-large;
+      line-height: $line-height-base;
+      padding-left: ($grid-gutter-width / 2);
+      padding-right: ($grid-gutter-width / 2);
+      width: 1px;     // make column as small as possible
+    }
+    > .buttons {
+      padding-left: ($grid-gutter-width / 2);
+      padding-right: ($grid-gutter-width / 2);
+      text-align: right;
+    }
+  }
+}

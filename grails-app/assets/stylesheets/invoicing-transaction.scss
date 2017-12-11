@@ -1,0 +1,233 @@
+/*
+ * invoicing-transaction.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "application";
+@import "_typeahead";
+
+
+// control styles
+.invoicing-transaction-selector .number {
+  color: $gray-light;
+  padding-right: .5em;
+}
+
+// price tables (forms)
+.price-table {
+  .row-subtotal-net {
+    border-top: 1px double $spring-gray;        // displayed as 1px solid
+  }
+  .row-subtotal-gross {
+    border-bottom: 1px double $spring-gray;     // displayed as 1px solid
+  }
+  .row-total {
+    border-bottom: 3px double $spring-gray;
+    //border-top: 1px double $spring-gray;      // displayed as 1px solid
+    border-top: 2px solid $spring-gray;
+  }
+  td {
+    vertical-align: top;
+  }
+  .input-group {
+    margin-left: auto;
+    width: 1%;
+  }
+  .form-control {
+    padding-left: $padding-xs-horizontal;
+    padding-right: $padding-xs-horizontal;
+  }
+  .col-type-label, .col-pos {
+    > span {
+      display: block;
+      height: $input-height-base;
+      line-height: $input-height-base;
+    }
+  }
+  .col-type-number {
+    .form-control {
+      text-align: right;
+      width: auto;
+
+      &:focus {
+        text-align: left;
+      }
+    }
+    .tt-hint {
+      text-align: left;
+    }
+  }
+  .col-unit {
+    width: 1%;    // shrink to fit
+
+    .form-control {
+      width: auto;
+    }
+  }
+  .col-name {
+    width: 100%;
+
+    .input-group {
+      width: 100%;
+    }
+    textarea {
+      margin-top: 5px;
+    }
+  }
+  .col-actions {
+    width: 1%;    // shrink to fit
+
+    .btn {
+      color: $brand-primary;
+      display: block;
+      font-size: $font-size-large;
+      height: $input-height-base;
+      padding: 0;
+      text-align: center;
+    }
+    .remove-btn {
+      color: $brand-danger;
+    }
+  }
+  > tbody > tr:first-child .col-actions .up-btn,
+    > tbody > tr:last-child .col-actions .down-btn,
+    > tbody > tr:only-child .col-actions .remove-btn
+  {
+    display: none;
+  }
+  output {
+    color: $text-color;
+    display: inline;
+    padding-top: 0;
+  }
+
+  @media (max-width: $screen-sm-max) {
+    .col-name .col-content {
+      width: 200px;
+    }
+  }
+}
+.price-table-buttons {
+  margin-top: $line-height-computed;
+  text-align: right;
+}
+.inventory-selector {
+  .letter-bar, .search-form {
+    margin-bottom: ($line-height-computed / 2);
+  }
+  .search-form {
+    width: auto;
+  }
+  .pagination {
+    margin-bottom: 0;
+    margin-top: ($line-height-computed / 2);
+  }
+}
+
+// price tables (detail view)
+.detail-view .price-table {
+  .item-name {
+    font-weight: bold;
+  }
+  .item-description {
+    margin-top: $margin-small-vertical;
+
+    li {
+      margin-bottom: $margin-xs-vertical;
+    }
+    ol, ul {
+      margin-bottom: $margin-small-vertical;
+      margin-top: $margin-small-vertical;
+    }
+    p {
+      margin-bottom: $margin-small-vertical;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .row-total, .row-subtotal {
+    font-weight: bold;
+  }
+}
+
+// balance markers
+.balance-state-green {
+  color: $state-success-text;
+}
+.balance-state-red {
+  color: $state-danger-text;
+}
+
+// payment markers
+.payment-state-green {
+  background: rgba(#77B753, 0.6);
+}
+.payment-state-yellow {
+  background: rgba(#FFEB55, 0.6);
+}
+.payment-state-orange {
+  background: rgba(#F29B68, 0.6);
+}
+.payment-state-red {
+  background: rgba(#E85752, 0.6);
+}
+.payment-state-purple {
+  background: rgba(#C080FF, 0.6);
+}
+.payment-state-blue {
+  background: rgba(#2C72C7, 0.6);
+}
+.payment-state-black {
+  background: rgba(#555, 0.6);
+  color: #FFF;
+}
+
+// markers for still unpaid text
+.still-unpaid {
+  color: $text-color;
+  cursor: pointer;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+  output {
+    display: inline;
+    font-weight: bold;
+  }
+}
+.still-unpaid-unpaid {
+  &, &:hover, &:active, &:focus, output {
+    color: $state-danger-text;
+  }
+}
+.still-unpaid-paid {
+  &, &:hover, &:active, &:focus, output {
+    color: $state-success-text;
+  }
+}
+.still-unpaid-too-much {
+  &, &:hover, &:active, &:focus, output {
+    color: $state-warning-text;
+    cursor: default;
+  }
+}

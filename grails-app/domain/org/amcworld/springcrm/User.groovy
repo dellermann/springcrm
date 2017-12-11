@@ -1,7 +1,7 @@
 /*
  * User.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,14 @@
 package org.amcworld.springcrm
 
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 
 
 /**
  * The class {@code User} represents a user which can authorize at the system.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class User {
 
@@ -54,9 +55,7 @@ class User {
         allowedModules nullable: true
     }
     static mapping = {
-        allowedModules type: 'text'
         sort 'userName'
-        table 'user_data'
         userName index: 'user_name'
     }
     static transients = [
@@ -66,6 +65,11 @@ class User {
 
 
     //-- Fields ---------------------------------
+
+    /**
+     * The ID of the user.
+     */
+    ObjectId id
 
     /**
      * The user name of this user used for authentication.

@@ -1,0 +1,131 @@
+/*
+ * install.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "application";
+
+
+body > .container > header {
+  margin-bottom: 0;
+}
+
+@media (max-width: $screen-xs-max) {
+  h1 {
+    font-size: $font-size-h2;
+  }
+}
+
+.install-progress {
+  margin: $line-height-computed (-$grid-gutter-width / 2) 0;
+
+  ol {
+    @include clearfix;
+    background: $install-progress-bg;
+    list-style: none;
+    margin-bottom: 0;
+    padding-left: 0;
+  }
+  li {
+    float: left;
+    height: $install-progress-height;
+
+    &:hover, &.active {
+      + li a:after {
+        border-left-color: $navbar-default-sm-link-active-bg;
+      }
+    }
+    &.active a {
+      background: $navbar-default-sm-link-active-bg;
+    }
+  }
+  a {
+    color: #FFF;
+    display: block;
+    height: $navbar-height;
+    line-height: $navbar-height;
+    padding-left: ($install-progress-height / 4 + $grid-gutter-width / 4 + 1px);
+    padding-right: ($grid-gutter-width / 4);
+    position: relative;
+    text-align: center;
+
+    &:focus, &:active {
+      text-decoration: none;
+    }
+    &:hover {
+      background: $navbar-default-sm-link-active-bg;
+      text-decoration: none;
+    }
+    &:before {
+      border-bottom: ($install-progress-height / 2) solid transparent;
+      border-left: ($install-progress-height / 4) solid #FFF;
+      border-top: ($install-progress-height / 2) solid transparent;
+      content: "";
+      height: 0;
+      left: 1px;
+      position: absolute;
+      top: 0;
+    }
+    &:after {
+      border-bottom: ($install-progress-height / 2) solid transparent;
+      border-left: ($install-progress-height / 4) solid $install-progress-bg;
+      border-top: ($install-progress-height / 2) solid transparent;
+      content: "";
+      float: right;
+      height: 0;
+      left: 0;
+      position: absolute;
+      top: 0;
+    }
+  }
+
+  @media (min-width: $screen-md-min) {
+    a {
+      padding-left:
+        ($install-progress-height / 2 + $grid-gutter-width / 2 + 1px);
+      padding-right: ($grid-gutter-width / 2);
+
+      &:before {
+        border-left-width: ($install-progress-height / 2);
+      }
+      &:after {
+        border-left-width: ($install-progress-height / 2);
+      }
+    }
+  }
+}
+@media (min-width: $screen-sm-min) {
+  .install-description {
+    width: 75%;
+  }
+}
+
+/**
+.warning {
+  -khtml-border-radius: .3em;
+  -moz-border-radius: .3em;
+  -webkit-border-radius: .3em;
+  background: $color-default-bg-1;
+  border: 1px solid $color-error;
+  border-radius: .3em;
+  color: $color-error;
+  margin-top: 2em;
+  padding: 1em;
+  width: 75%;
+}
+*/

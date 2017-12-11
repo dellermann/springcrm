@@ -1,6 +1,6 @@
 {
   "name": "springcrm",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "homepage": "https://www.springcrm.de",
   "authors": [
     {
@@ -29,10 +29,10 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.7",
+    "bootstrap-sass": "~3.3.7",
     "bootstrap-datepicker": "~1.6.4",
     "bootstrap-fileinput": "~4.3.8",
-    "font-awesome": "~4.7.0",
+    "font-awesome-sass": "~4.7.0",
     "handlebars": "~3.0.3",
     "jQuery-Storage-API": "~1.7.5",
     "jquery-autosize": "~3.0.14",
@@ -42,7 +42,7 @@
     "jqueryui-touch-punch": "",
     "js-calc": "~0.9.10",
     "qunit": "~1.18.0",
-    "selectize": "~0.12.4",
+    "selectize-scss": "~0.10.1",
     "signature_pad": "~2.1.0",
     "typeahead.js": "~0.11.1",
     "typeahead.js-bootstrap3.less": "~0.2.3",
@@ -52,6 +52,7 @@
     "bootstrap": "~3.3.7",
     "jquery": "2.2.0",
     "typeahead.js": "~0.11.1",
-    "sifter": "0.5.x"
+    "sifter": "0.5.x",
+    "selectize": "0.12.3"
   }
 }

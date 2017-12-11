@@ -1,0 +1,103 @@
+//
+// _mixins.scss
+//
+// Copyright (c) 2011-2017, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
+@import "bootstrap/variables";
+
+
+// Generates rules to size the labels and control containers for column groups
+// depending on the screen size.
+//
+// $param class   the name of the screen size class, e. g. sm, md, or lg
+// $param cols    the number of columns which should be used for the label
+// $param suffix  any suffix which should be appended to the control-label and
+//                control-container selectors
+//
+@mixin make-control-sizes($class, $cols, $suffix: "") {
+  $d: 2 * $grid-columns;
+
+  @media (min-width: #{"screen-#{$class}-min"}) {
+    .column-group > .column:only-child {
+      #{".control-label#{$suffix}"} {
+        width: percentage($cols / $d);
+      }
+      #{".control-container#{$suffix}"} {
+        width: percentage(($d - $cols) / $d);
+      }
+    }
+    @if $suffix != "" {
+      .control-label {
+        width: percentage($cols / $grid-columns);
+      }
+      .control-container {
+        width: percentage(($grid-columns - $cols) / $grid-columns);
+      }
+    }
+  }
+}
+
+// Generates a rule that specifies the width of the fixed toolbar for the given
+// screen size class.
+//
+// $param class the given screen size class, e. g. "sm", "md" etc.
+//
+@mixin make-fixed-title-toolbar($class) {
+  $container-widths: (sm: $container-sm, md: $container-md, lg: $container-lg);
+  $width: map-get($container-widths, $class);
+
+  @media (min-width: #{"$#{screen-#{$class}-min}"}) {
+    .title-toolbar.fixed {
+      margin-left: (-$width / 2);
+      width: $width;
+    }
+  }
+}
+
+// Sets the color of the given border side to generate an arrow.
+//
+// $param class the given class, e. g. "success", "warning", "danger" etc.
+// $param side  the given side, e. g. "top", "right", "bottom", "left"
+//
+@mixin arrow-variant($class, $side) {
+  $property: #{"border-#{$side}-color"};
+
+  &.#{$side} > .arrow {
+    #{$property}: #{"alert-#{$class}-border"};
+
+    &:after {
+      #{$property}: #{"alert-#{$class}-bg"};
+    }
+  }
+}
+
+// Generates a colored variant of a popover using the given class.
+//
+// $param class the given class, e. g. "success", "warning", "danger" etc.
+//
+@mixin popover-variant($class) {
+  .popover-#{$class} {
+    background-color: #{"alert-${class}-bg"};
+    border-color: #{"alert-${class}-border"};
+    color: #{"alert-${class}-text"};
+
+    @each $side in top, right, bottom, left {
+      @include arrow-variant($class, $side);
+    }
+  }
+}

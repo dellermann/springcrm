@@ -1,7 +1,7 @@
 /*
  * InstallController.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-//import org.hibernate.SessionFactory
-
 
 /**
  * The class {@code InstallController} handles actions in the installation
@@ -31,13 +29,12 @@ package org.amcworld.springcrm
  * named {@code ENABLE_INSTALLER} in folder {@code WEB-INF/data/install}.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class InstallController {
 
     //-- Fields ---------------------------------
 
-//    SessionFactory sessionFactory
     InstallService installService
     SecurityService securityService
 
@@ -57,10 +54,9 @@ class InstallController {
     }
 
     def installBaseDataSave() {
-//        installService.installBaseDataPackage(
-//            sessionFactory.currentSession.connection(),
-//            params.'package-select'?.toString()
-//        )
+        installService.installBaseDataPackage(
+            params['package-select']?.toString()
+        )
 
         redirect action: 'clientData'
     }

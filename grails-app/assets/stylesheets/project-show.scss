@@ -1,0 +1,173 @@
+/*
+ * project-show.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+@import "_data-type-list";
+@import "project";
+@import "document";
+
+
+.project-phases {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+
+  &:after {
+    @include scale(0.9999);
+
+    border-left: ($project-phases-arrow-width / 2) solid transparent;
+    border-right: ($project-phases-arrow-width / 2) solid transparent;
+    border-top: ($project-phases-arrow-section-height / 2) solid
+      $project-phases-arrow-bg;
+    content: " ";
+    display: block;
+    height: 0;
+    width: 0;
+  }
+  > section {
+    display: table-row;
+  }
+  h4 {
+    background: $project-phases-arrow-bg;
+    border-bottom: 1px solid #FFF;
+    color: $project-phases-arrow-color;
+    cursor: pointer;
+    display: table-cell;
+    height: $project-phases-arrow-section-height;
+    padding: ($grid-gutter-width / 2);
+    vertical-align: middle;
+    width: $project-phases-arrow-width;
+  }
+  .active h4 {
+    background: $project-phases-arrow-active-bg;
+  }
+}
+.project-phase-content {
+  border-bottom: 1px dotted $project-phases-arrow-bg;
+  display: table-cell;
+  padding: ($grid-gutter-width / 2);
+}
+.project-phase-actions {
+  margin-bottom: ($line-height-computed / 2);
+  text-align: right;
+}
+.project-phase-items {
+  padding-left: 0;
+
+  li {
+    list-style: none;
+    margin-bottom: .5em;
+
+    > a {
+      display: inline-block;
+
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+      }
+    }
+  }
+  .item-actions > a {
+    padding-left: 1ex;
+  }
+  .item-delete-btn i {
+    color: $state-danger-text;
+  }
+}
+
+#create-project-item-dialog {
+  ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+  }
+  li {
+    margin-bottom: .2em;
+  }
+}
+#select-project-item-dialog {
+  .type-selector-form {
+    display: table;
+    width: 100%;
+
+    > label {
+      display: table-cell;
+      padding-right: 1em;
+      padding-top: ($padding-base-vertical + 1);
+      vertical-align: top;
+      width: 1%;
+    }
+    > .control-container {
+      display: table-cell;
+      padding: 0;
+      width: 100%;
+    }
+  }
+  h2 {
+    margin-top: $line-height-computed;
+  }
+
+  @media (max-width: $screen-xs-max) {
+    .selector-search-form {
+      margin-bottom: $form-group-margin-bottom;
+    }
+  }
+}
+
+@media (max-width: $screen-xs-max) {
+  .project-phases-section .column {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .project-phases {
+    &:after {
+      border-left-width: ($project-phases-arrow-width-xs / 2);
+      border-right-width: ($project-phases-arrow-width-xs / 2);
+      border-top-width: ($project-phases-arrow-section-height / 4);
+    }
+    h4 {
+      @include hyphens();
+      font-weight: normal;
+      overflow-x: hidden;
+      padding-left: 5px;
+      padding-right: 5px;
+      text-overflow: ellipsis;
+      width: $project-phases-arrow-width-xs;
+    }
+  }
+  .project-phase-content {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .project-phase-actions {
+    text-align: left;
+
+    > button:first-child {
+      margin-bottom: 5px;
+    }
+  }
+  .item-actions {
+    display: block;
+    margin-top: 5px;
+
+    > a:first-child {
+      padding-left: 0;
+    }
+  }
+}

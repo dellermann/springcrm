@@ -44,8 +44,8 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-autoconfigure:1.5.8.RELEASE" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-devtools:1.5.8.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-actuator:1.5.8.RELEASE" level="project" />
-    <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.5.8.RELEASE" level="project" />
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
@@ -55,6 +55,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-logging:1.5.8.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:1.5.8.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-core:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-logging:3.3.2" level="project" />
@@ -145,6 +146,7 @@
     <orderEntry type="library" name="Gradle: com.google.oauth-client:google-oauth-client-jetty:1.11.0-beta" level="project" />
     <orderEntry type="library" name="Gradle: javax.mail:mail:1.4" level="project" />
     <orderEntry type="library" name="Gradle: oro:oro:2.0.8" level="project" />
+    <orderEntry type="library" name="Gradle: xerces:xerces:2.4.0" level="project" />
     <orderEntry type="library" name="Gradle: xerces:xercesImpl:2.7.1" level="project" />
     <orderEntry type="library" name="Gradle: xml-apis:xml-apis:1.4.01" level="project" />
     <orderEntry type="library" name="Gradle: xml-apis:xmlParserAPIs:2.0.2" level="project" />
@@ -170,8 +172,8 @@
     <orderEntry type="library" name="Gradle: org.springframework:spring-expression:4.3.12.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-xml:2.4.13" level="project" />
     <orderEntry type="library" name="Gradle: org.codehaus.groovy:groovy-templates:2.4.13" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.grails.plugins:asset-pipeline:3.1.0" level="project" />
     <orderEntry type="library" name="Gradle: javax.transaction:jta:1.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.grails.plugins:asset-pipeline:3.1.0" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-databinding:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-url-mappings:3.3.2" level="project" />
     <orderEntry type="library" name="Gradle: org.grails:grails-web-mvc:3.3.2" level="project" />

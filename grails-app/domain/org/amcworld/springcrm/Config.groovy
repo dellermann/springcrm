@@ -1,7 +1,7 @@
 /*
  * Config.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -28,7 +29,7 @@ import org.grails.datastore.gorm.GormEntity
  * The class {@code Config} represents a system configuration information.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class Config implements GormEntity<Config> {
 
@@ -44,6 +45,11 @@ class Config implements GormEntity<Config> {
 
 
     //-- Fields ---------------------------------
+
+    /**
+     * The ID of the configuration value.
+     */
+    ObjectId id
 
     /**
      * The name of the configuration setting.

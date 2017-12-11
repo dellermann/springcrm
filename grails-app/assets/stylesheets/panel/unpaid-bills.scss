@@ -1,0 +1,64 @@
+/*
+ * unpaid-bills.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "../bootstrap/variables";
+@import "../variables";
+
+
+.panel-type-unpaid-bills {
+  position: relative;
+
+  ul {
+    margin-bottom: 0;
+
+    > li {
+      border: none;
+      border-left-style: solid;
+      border-left-width: $overview-panel-unpaid-bills-indicator-width;
+      border-top: 1px solid $list-group-border;
+      padding-left: (
+          $grid-gutter-width / 2 - $overview-panel-unpaid-bills-indicator-width
+        );
+
+      &:first-child {
+        border-radius: 0;
+        border-top: none;
+      }
+      &:last-child {
+        border-radius: 0;
+      }
+    }
+    > .due-danger {
+      border-left-color: $brand-danger;
+    }
+    > .due-warning {
+      border-left-color: $brand-warning;
+    }
+    .text {
+      margin-left: ($grid-gutter-width / 2);
+      padding-right: $grid-gutter-width;
+    }
+    .buttons {
+      bottom: $padding-large-vertical;
+      position: absolute;
+      right: ($grid-gutter-width / 2);
+    }
+  }
+}

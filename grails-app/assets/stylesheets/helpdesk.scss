@@ -1,0 +1,80 @@
+/*
+ * helpdesk.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "application";
+
+
+// list view styles
+.ticket-stage-created, .ticket-stage-resubmitted {
+  background: rgba(#E85752, 0.6);
+}
+.ticket-stage-assigned, .ticket-stage-inProcess {
+  background: rgba(#FFEB55, 0.6);
+}
+.ticket-stage-closed {
+  background: rgba(#77B753, 0.6);
+}
+
+// show view styles
+.ticket-log-entry {
+  border-left: $ticket-log-entry-indicator-border-width solid #096;
+  margin-bottom: ($line-height-computed / 2);
+  padding: ($line-height-computed / 2) ($grid-gutter-width / 2)
+    ($line-height-computed / 2);
+
+  &:hover {
+    background: $gray-lighter;
+  }
+  h4 {
+    margin-top: 0;
+  }
+  .row {
+    margin-bottom: ($line-height-computed / 2);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    margin-left: (-$grid-gutter-width / 2);
+    margin-right: (-$grid-gutter-width / 2);
+    padding-left: (
+        $grid-gutter-width / 2 - $ticket-log-entry-indicator-border-width
+      );
+  }
+}
+.ticket-log-entry-action-assign {
+  border-left-color: #BF0000;
+}
+.ticket-log-entry-action-note {
+  border-left-color: #FD0;
+}
+.ticket-log-entry-action-sendMessage {
+  border-left-color: #0057AE;
+}
+.ticket-log-entry-label {
+  @include make-sm-column(3);
+
+  font-weight: bold;
+}
+.ticket-log-entry-value {
+  @include make-sm-column(9);
+}

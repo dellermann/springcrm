@@ -20,12 +20,15 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.BasicDBList
+import com.mongodb.DBObject
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import grails.converters.JSON
 import grails.core.GrailsApplication
-import groovy.sql.Sql
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import java.sql.Connection
+import org.bson.Document as MDocument
 import org.grails.web.json.JSONArray
 import org.springframework.core.io.Resource
 
@@ -119,19 +122,29 @@ class InstallService {
     }
 
     /**
-     * Installs the base data package with the given key in the database with
-     * the stated connection.
+     * Installs the base data package with the given key in the database.
      *
-     * @param connection    the SQL connection where to install the base data
-     *                      package
-     * @param key           the given package key
-     * @since               1.4
+     * @param key   the given package key
+     * @since       1.4
      */
-    void installBaseDataPackage(Connection connection, String key) {
+    void installBaseDataPackage(String key) {
         InputStream stream = loadBaseDataPackage(key)
         if (stream != null) {
-            executeSqlFile connection, stream
-            stream.close()
+            MongoDatabase db = Organization.DB
+
+            DBObject obj = (DBObject) com.mongodb.util.JSON.parse(
+                stream.getText('utf-8')
+            )
+            for (String collectionName : obj.keySet()) {
+                List<MDocument> list = []
+                for (Object elem : obj.get(collectionName) as BasicDBList) {
+                    list << new MDocument(elem as Map)
+                }
+                MongoCollection<MDocument> collection =
+                    db.getCollection(collectionName)
+                collection.drop()
+                collection.insertMany(list)
+            }
         }
     }
 
@@ -170,31 +183,11 @@ class InstallService {
      *              package with the given key exists
      */
     InputStream loadBaseDataPackage(String key) {
-        getResource "${BASE_PACKAGE_DIR}/base-data-${key}.sql"
+        getResource "${BASE_PACKAGE_DIR}/base-data-${key}.json"
     }
 
 
     //-- Non-public methods ---------------------
-
-    /**
-     * Executes all SQL commands in the given input stream.
-     *
-     * @param connection    the SQL connection where the SQL commands should be
-     *                      executed
-     * @param is            an input stream containing the SQL commands to
-     *                      execute
-     * @since               1.4
-     */
-    private static void executeSqlFile(Connection connection, InputStream is) {
-        Sql sql = new Sql(connection)
-        sql.withTransaction {
-            is.newReader('utf-8').eachLine {
-                if (!(it =~ /^\s*$/) && !(it =~ /^\s*--/)) {
-                    sql.execute it
-                }
-            }
-        }
-    }
 
     /**
      * Gets the object representing the installer enable file.  This file is

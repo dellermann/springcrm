@@ -1,7 +1,7 @@
 /*
  * SelValue.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import org.grails.datastore.gorm.GormEntity
  * which may be defined by the user.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 class SelValue implements GormEntity<SelValue> {
 
@@ -47,6 +47,11 @@ class SelValue implements GormEntity<SelValue> {
 
 
     //-- Fields ---------------------------------
+
+    /**
+     * The ID of the selection value.
+     */
+    Long id
 
     /**
      * The name of this selection value.

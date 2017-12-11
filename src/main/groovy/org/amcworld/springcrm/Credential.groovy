@@ -1,7 +1,7 @@
 /*
  * Credential.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 
 
 /**
@@ -30,7 +31,7 @@ import groovy.transform.CompileStatic
  * stored in the user session.
  *
  * @author	Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @see     User
  * @since   2.0
  */
@@ -42,7 +43,7 @@ final class Credential {
     /**
      * The ID of the user with this credential.
      */
-    final long id
+    final ObjectId id
 
     /**
      * The user name of this credential for authentication.
@@ -110,12 +111,12 @@ final class Credential {
     //-- Constructors ---------------------------
 
     Credential(User user) {
-        Long id = user.id
+        ObjectId id = user.id
         if (!id) {
             throw new IllegalArgumentException('User has no ID set.')
         }
 
-        this.id = (long) id
+        this.id = id
         userName = user.userName
         firstName = user.firstName
         lastName = user.lastName

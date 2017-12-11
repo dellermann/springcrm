@@ -1,0 +1,70 @@
+/*
+ * project.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "application";
+
+
+//===============================================
+//
+// Mixins
+//
+//===============================================
+
+@mixin color-project-status() {
+  @for $index from 1 through length($project-status-colors) {
+    $id: ($index + $project-status-start-id - 1);
+    $color: nth($project-status-colors, $index);
+
+    #{".project-status-#{$id}"} {
+      background: rgba($color, 0.6);
+      @if lightness($color) < 10% {
+        color: #FFF;
+      }
+    }
+    #{".project-status .selectize-input .item[data-value='#{$id}']"},
+      #{".project-status .selectize-dropdown .option[data-value='#{$id}']"}
+    {
+      border-left-color: $color;
+    }
+  }
+}
+
+
+//===============================================
+//
+// Style rules
+//
+//===============================================
+
+.project-status {
+  .selectize-input .item {
+    border-left: $project-status-indicator-width solid;
+    padding-left: $project-status-indicator-padding;
+  }
+  .selectize-dropdown .option {
+    border-left: $project-status-indicator-width solid;
+    margin-left: $project-status-indicator-padding;
+  }
+}
+@include color-project-status();
+
+.project-phase {
+  text-align: center;
+}

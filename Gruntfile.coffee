@@ -24,6 +24,9 @@ module.exports = (grunt) ->
   require('load-grunt-config') grunt,
     configPath: path.join(process.cwd(), 'grunt')
 
+  removeUnderline = (dest, src) ->
+    dest + path.dirname(src) + '/' + path.basename(src).replace(/^_/, '')
+
   grunt.initConfig
     clean:
       documentation: ['<%= dirs.target.documentation %>']
@@ -42,8 +45,8 @@ module.exports = (grunt) ->
         '<%= dirs.src.stylesheets %>/font-awesome/'
         '<%= dirs.src.stylesheets %>/js-calc/'
         '<%= dirs.src.stylesheets %>/selectize/plugins/'
-        '<%= dirs.src.stylesheets %>/selectize/selectize.bootstrap3.less'
-        '<%= dirs.src.stylesheets %>/selectize/selectize.less'
+        '<%= dirs.src.stylesheets %>/selectize/selectize.bootstrap3.scss'
+        '<%= dirs.src.stylesheets %>/selectize/selectize.scss'
         '<%= dirs.src.stylesheets %>/signature-pad.css'
       ]
       test: ['<%= dirs.target.test.base %>']
@@ -87,12 +90,13 @@ module.exports = (grunt) ->
     copy:
       publish:
         files: [
-            cwd: '<%= dirs.bower.bootstrap %>/less/'
+            cwd: '<%= dirs.bower.bootstrap %>/assets/stylesheets/bootstrap/'
             dest: '<%= dirs.src.stylesheets %>/bootstrap/'
             expand: true
-            src: ['**/*.less']
+            rename: removeUnderline
+            src: ['**/*.scss']
           ,
-            cwd: '<%= dirs.bower.bootstrap %>/js/'
+            cwd: '<%= dirs.bower.bootstrap %>/assets/javascripts/bootstrap/'
             dest: '<%= dirs.src.javascripts %>/bootstrap/'
             expand: true
             src: [
@@ -123,21 +127,22 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/bootstrap/fileinput.js'
             src: '<%= dirs.bower.bootstrapFileinput %>/js/fileinput.js'
           ,
-            cwd: '<%= dirs.bower.fontAwesome %>/less/'
+            cwd: '<%= dirs.bower.fontAwesome %>/assets/stylesheets/font-awesome/'
             dest: '<%= dirs.src.stylesheets %>/font-awesome/'
             expand: true
+            rename: removeUnderline
             src: [
-              'animated.less'
-              'core.less'
-              'fixed-width.less'
-              'icons.less'
-              'larger.less'
-              'mixins.less'
-              'path.less'
-              'variables.less'
+              '_animated.scss'
+              '_core.scss'
+              '_fixed-width.scss'
+              '_icons.scss'
+              '_larger.scss'
+              '_mixins.scss'
+              '_path.scss'
+              '_variables.scss'
             ]
           ,
-            cwd: '<%= dirs.bower.fontAwesome %>/fonts/'
+            cwd: '<%= dirs.bower.fontAwesome %>/assets/fonts/font-awesome/'
             dest: '<%= dirs.src.fonts %>/'
             expand: true
             src: ['*']
@@ -185,13 +190,13 @@ module.exports = (grunt) ->
             dest: '<%= dirs.src.javascripts %>/templates/tools/js-calc.hbs'
             src: '<%= dirs.bower.jsCalc %>/templates/js-calc.hbs'
           ,
-            cwd: '<%= dirs.bower.selectize %>/dist/less/'
+            cwd: '<%= dirs.bower.selectizeScss %>/src/'
             dest: '<%= dirs.src.stylesheets %>/selectize/'
             expand: true
             src: [
               'plugins/**'
-              'selectize.bootstrap3.less'
-              'selectize.less'
+              'selectize.bootstrap3.scss'
+              'selectize.scss'
             ]
           ,
             dest: '<%= dirs.src.javascripts %>/selectize/selectize.js'
@@ -301,10 +306,10 @@ module.exports = (grunt) ->
     dirs:
       bower:
         base: '<%= dirs.src.base %>/bower_components'
-        bootstrap: '<%= dirs.bower.base %>/bootstrap'
+        bootstrap: '<%= dirs.bower.base %>/bootstrap-sass'
         bootstrapDatepicker: '<%= dirs.bower.base %>/bootstrap-datepicker'
         bootstrapFileinput: '<%= dirs.bower.base %>/bootstrap-fileinput'
-        fontAwesome: '<%= dirs.bower.base %>/font-awesome'
+        fontAwesome: '<%= dirs.bower.base %>/font-awesome-sass'
         handlebars: '<%= dirs.bower.base %>/handlebars'
         jquery: '<%= dirs.bower.base %>/jquery'
         jqueryAutosize: '<%= dirs.bower.base %>/jquery-autosize'
@@ -316,6 +321,7 @@ module.exports = (grunt) ->
         jsCalc: '<%= dirs.bower.base %>/js-calc'
         qunit: '<%= dirs.bower.base %>/qunit'
         selectize: '<%= dirs.bower.base %>/selectize'
+        selectizeScss: '<%= dirs.bower.base %>/selectize-scss'
         signaturePad: '<%= dirs.bower.base %>/signature_pad'
         typeahead: '<%= dirs.bower.base %>/typeahead.js'
         typeaheadBootstrap:

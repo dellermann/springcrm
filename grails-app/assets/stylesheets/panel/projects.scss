@@ -1,0 +1,115 @@
+/*
+ * projects.scss
+ *
+ * Copyright (c) 2011-2017, Daniel Ellermann
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+@import "../bootstrap/variables";
+@import "../variables";
+
+
+//===============================================
+//
+// Mixins
+//
+//===============================================
+
+@mixin color-project-status-buttons() {
+  @for $index from 1 through length($project-status-colors) {
+    $id: ($index + $project-status-start-id - 1);
+    $color: nth($project-status-colors, $index);
+
+    #{".project-status-buttons > .project-status-#{$id}"} {
+      &:hover, &.active {
+        background: lighten($color, 20%);
+        border-color: darken($color, 20%);
+      }
+    }
+  }
+}
+
+
+//===============================================
+//
+// Style rules
+//
+//===============================================
+
+.panel-type-projects {
+  > .panel-body {
+    padding: 0;
+
+    > ul {
+      display: table;
+      margin-bottom: 0;
+      padding: 0;
+      width: 100%;
+
+      > li {
+        display: table-row;
+
+        > .text, > .project-status-buttons {
+          border-top: 1px solid $list-group-border;
+          display: table-cell;
+          padding: $padding-large-vertical 0;
+          vertical-align: top;
+        }
+        > .text {
+          padding-left: ($grid-gutter-width / 2);
+        }
+        > .project-status-buttons {
+          padding: $padding-large-vertical ($grid-gutter-width / 2)
+            ($padding-large-vertical - $overview-panel-project-button-gap)
+            ($padding-small-horizontal - $overview-panel-project-button-gap);
+          width: (
+              2 * $overview-panel-project-button-size +
+              $overview-panel-project-button-gap + $grid-gutter-width / 2 +
+              $padding-small-horizontal
+            );
+
+          > a {
+            border-radius: 50%;
+            border: 1px solid;
+            display: inline-block;
+            font-size: $overview-panel-project-button-font-size;
+            height: $overview-panel-project-button-size;
+            line-height: ($overview-panel-project-button-size - 3px);
+            margin-bottom: $overview-panel-project-button-gap;
+            margin-left: $overview-panel-project-button-gap;
+            text-align: center;
+            width: $overview-panel-project-button-size;
+          }
+        }
+        &:first-child {
+          > .text, > .project-status-buttons {
+            border-top: none;
+          }
+        }
+      }
+    }
+  }
+}
+.project-status-buttons > a {
+  background: $gray-lighter;
+  border-color: $gray-light;
+  color: $gray-light;
+
+  &:hover, &.active {
+    color: $text-color;
+  }
+}
+@include color-project-status-buttons();

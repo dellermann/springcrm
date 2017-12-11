@@ -1,0 +1,280 @@
+//
+// _forms.scss
+//
+// Copyright (c) 2011-2017, Daniel Ellermann
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
+@import "bootstrap/mixins";
+@import "bootstrap/variables";
+@import "font-awesome/variables";
+@import "_mixins";
+@import "_variables";
+
+
+//===============================================
+//
+// Page components
+//
+//===============================================
+
+.data-form {
+  > section {
+    margin-bottom: $line-height-computed;
+  }
+  header {
+    @include clearfix();
+    background: $spring-gray;
+    font-size: $font-size-base;
+    font-weight: bold;
+    margin-bottom: ($line-height-computed / 2);
+    padding: $padding-base-vertical $padding-base-horizontal;
+
+    h3 {
+      float: left;
+      font-size: $font-size-base;
+      font-weight: bold;
+      line-height: $line-height-small;
+      margin: 0;
+      padding: ($padding-xs-vertical + 1px) 0;
+    }
+    .buttons {
+      float: right;
+
+      .btn {
+        margin-top: 0;
+      }
+    }
+    .btn {
+      @extend .btn-xs;
+      font-size: $font-size-base;
+
+      .fa {
+        padding-right: $padding-xs-horizontal;
+      }
+      .caret {
+        margin-left: $padding-xs-horizontal;
+      }
+    }
+    .btn-default {
+      border-color: #888;
+    }
+    .dropdown-menu {
+      left: auto;
+      right: 0;
+    }
+  }
+  .column {
+    padding: 0 ($grid-gutter-width / 2);
+
+    > header {
+      margin-left: (-$grid-gutter-width / 2);
+      margin-right: (-$grid-gutter-width / 2);
+    }
+  }
+  .column-content {
+    margin-left: (-$grid-gutter-width / 2);
+    margin-right: (-$grid-gutter-width / 2);
+    padding-left: ($grid-gutter-width / 2);
+    padding-right: ($grid-gutter-width / 2);
+  }
+  .control-label {
+    @include make-xs-column(12);
+  }
+  .control-container {
+    @include make-xs-column(12);
+  }
+  @include make-control-sizes(sm, 5);
+  @include make-control-sizes(md, 4);
+  @include make-control-sizes(lg, 3);
+  @include make-control-sizes(sm, 8, -lg);
+  @include make-control-sizes(md, 6, -lg);
+  @include make-control-sizes(lg, 5, -lg);
+  .checkbox-container {
+    padding-top: ($padding-base-vertical - 1); // align with control-label
+  }
+  .buttons-bottom {
+    border-top: 1px solid $spring-gray;
+    margin: $line-height-computed 0;
+    text-align: right;
+  }
+  .last-modified {
+    font-style: italic;
+  }
+
+  @media (min-width: $screen-sm-min) {
+
+    // dividing rule between two columns with common header
+    > section header + .column-group {
+      > .column:first-child {
+        border-right: 1px dotted $spring-gray;
+      }
+      > .column:only-child {
+        border-right: none;
+      }
+    }
+    .column-group {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+
+      // dividing rule between two columns with separate headers
+      > .column:first-child > .column-content {
+        border-right: 1px dotted $spring-gray;
+      }
+      > .column:only-child {
+        width: 100%;
+      }
+    }
+    .column {
+      display: table-cell;
+      vertical-align: top;
+      width: 50%;
+    }
+    .form-inline .control-container {
+      display: inline-block;
+      float: none;
+      padding-left: 0;
+      padding-right: 0;
+      width: auto !important;
+    }
+  }
+}
+.detail-view {
+  .control-container {
+    padding-top: ($padding-base-vertical + 1);
+
+    > ul {
+      padding-left: 1em;
+    }
+  }
+  output {
+    padding-top: 0;
+  }
+}
+
+.hidden-assessments {
+  > header > h3 {
+    cursor: pointer;
+  }
+  > .assessments-content {
+    display: none;
+  }
+}
+
+
+//===============================================
+//
+// Default style rewrites
+//
+//===============================================
+
+.form-horizontal .control-label {
+  text-align: left;
+}
+.form-inline > .form-group {
+  & + .form-group {
+    padding-left: $padding-large-horizontal;
+  }
+  label {
+    padding-right: 1em;
+  }
+  .selectize-input {
+    overflow: inherit;
+    padding-right: 35px;
+  }
+}
+.input-group {
+  + .checkbox {
+    padding-top: floor($padding-small-vertical / 2);
+  }
+  > .twitter-typeahead:first-child .tt-input {
+    border-bottom-left-radius: $input-border-radius;
+    border-top-left-radius: $input-border-radius;
+  }
+}
+.date-time-control {
+  .date-input-date-control {
+    width: 66%;
+  }
+  .date-input-time-control {
+    border-left: none;
+    width: 34%;
+  }
+}
+.datepicker {
+  table tr {
+    td {
+      &.highlighted {
+        background: transparent;
+        border-radius: 4px;
+        color: $brand-danger;
+      }
+      &.focused {
+        &, &.highlighted {
+          background: $spring-green-light;
+        }
+        &:hover {
+          background: $spring-green-dark;
+        }
+      }
+      &.today {
+        @include button-variant(
+          $btn-warning-color, $btn-warning-bg, $btn-warning-border
+        );
+      }
+    }
+  }
+}
+.control-messages {
+  list-style: none;
+  margin: $padding-small-vertical 0 0;
+  padding-left: $padding-xs-horizontal;
+
+  &:empty {
+    margin-top: 0;
+  }
+  li {
+    display: inline;
+    font-size: $font-size-small;
+    padding-left: $padding-small-horizontal;
+
+    &:before {
+      content: $fa-var-caret-up;
+      font-family: FontAwesome, sans-serif;
+      padding-right: $padding-xs-horizontal;
+    }
+    &:first-child {
+      padding-left: 0;
+    }
+  }
+  .control-message-info {
+    color: $brand-success;
+  }
+  .control-message-error {
+    color: $brand-danger;
+  }
+}
+@media (max-width: $screen-xs-max) {
+  output {
+    padding-top: 0;
+  }
+}
+@media (min-width: $screen-sm-min) {
+  .form-group {
+    margin-bottom: 7px;
+  }
+}
