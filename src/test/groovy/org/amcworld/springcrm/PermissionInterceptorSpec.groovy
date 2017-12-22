@@ -167,7 +167,7 @@ class PermissionInterceptorSpec extends Specification {
 
     private Credential makeCredential(boolean admin) {
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',

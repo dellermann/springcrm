@@ -1,7 +1,7 @@
 /*
  * LruService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,14 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpSession
+import com.mongodb.client.FindIterable
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
+import grails.core.GrailsApplication
+import grails.plugin.springsecurity.SpringSecurityService
+import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
-import org.springframework.web.context.request.RequestContextHolder
 
 
 /**
@@ -30,13 +35,15 @@ import org.springframework.web.context.request.RequestContextHolder
  * recently used) entries.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
+@CompileStatic
 class LruService {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
-    def grailsApplication
+    GrailsApplication grailsApplication
+    SpringSecurityService springSecurityService
 
 
     //-- Public methods -------------------------
@@ -48,7 +55,7 @@ class LruService {
      * @param entity        the given entity
      */
     void recordItem(String controller, GormEntity entity) {
-        recordItem controller, entity.ident(), entity.toString()
+        recordItem controller, (ObjectId) entity.ident(), entity.toString()
     }
 
     /**
@@ -60,39 +67,42 @@ class LruService {
      * @param name          the descriptive name which is displayed in the LRU
      *                      list
      */
-    void recordItem(String controller, long id, String name) {
-        User user = session.credential.loadUser()
+    void recordItem(String controller, ObjectId id, String name) {
+        User user = springSecurityService.loadCurrentUser() as User
 
         /* check whether or not this entry already exists */
-        def c = LruEntry.createCriteria()
-        LruEntry lruEntry = c.get {
-            eq 'user', user
-            eq 'controller', controller
-            eq 'itemId', id
-        }
+        LruEntry lruEntry = LruEntry.find(
+                Filters.and(
+                    Filters.eq('user', user),
+                    Filters.eq('controller', controller),
+                    Filters.eq('itemId', id)
+                )
+            )
+            .first()
 
         /* obtain the maximum position value for further operations */
-        c = LruEntry.createCriteria()
-        Long maxPos = c.get {
-            eq 'user', user
-            projections {
-                max 'pos'
-            }
-        } ?: 0L
+        LruEntry temp = LruEntry.find(
+                Filters.eq('user', user)
+            )
+            .sort(Sorts.orderBy(Sorts.descending('pos')))
+            .limit(1)
+            .first()
+        Long maxPos = temp?.pos ?: 0L
 
         if (lruEntry) {
 
             /* save position of the LRU entry to move */
-            def oldPos = lruEntry.pos
+            long oldPos = lruEntry.pos
             lruEntry.pos = -1
             lruEntry.save()
 
             /* decrement the position number of all entries after */
-            c = LruEntry.createCriteria()
-            def entriesToMove = c.list {
-                eq 'user', user
-                gt 'pos', oldPos
-            }
+            FindIterable<LruEntry> entriesToMove = LruEntry.find(
+                Filters.and(
+                    Filters.eq('user', user),
+                    Filters.gt('pos', oldPos)
+                )
+            )
             for (LruEntry entry in entriesToMove) {
                 entry.pos--
                 entry.save()
@@ -112,10 +122,12 @@ class LruService {
             lruEntry.save flush: true
 
             /* delete old entries */
-            def query = LruEntry.where {
-                user == user && pos <= lruEntry.pos - numOfLruEntries
-            }
-            query.deleteAll()
+            LruEntry.collection.deleteMany(
+                Filters.and(
+                    Filters.eq('user', user),
+                    Filters.lte('pos', lruEntry.pos - numOfLruEntries)
+                )
+            )
         }
     }
 
@@ -125,10 +137,12 @@ class LruService {
      * @return  the list of LRU entries
      */
     List<LruEntry> retrieveLruEntries() {
-        LruEntry.findAllByUser(
-            session.credential.loadUser(),
-            [max: numOfLruEntries, sort: 'pos', order: 'desc']
-        )
+        LruEntry.find(
+                Filters.eq('user', springSecurityService.loadCurrentUser())
+            )
+            .limit(numOfLruEntries)
+            .sort(Sorts.orderBy(Sorts.descending('pos')))
+            .toList()
     }
 
     /**
@@ -137,15 +151,16 @@ class LruService {
      *
      * @param controller    the controller name
      * @param id            the ID of the item within this controller
-     * @since               0.9.14
+     * @since 0.9.14
      */
-    void removeItem(String controller, long id) {
-        def query = LruEntry.where {
-            user == session.credential.loadUser() &&
-            controller == controller &&
-            itemId == id
-        }
-        query.deleteAll()
+    void removeItem(String controller, ObjectId id) {
+        LruEntry.collection.deleteMany(
+            Filters.and(
+                Filters.eq('user', springSecurityService.loadCurrentUser()),
+                Filters.eq('controller', controller),
+                Filters.eq('itemId', id)
+            )
+        )
     }
 
 
@@ -157,16 +172,9 @@ class LruService {
      *
      * @return  the number of simultaneous LRU entries
      */
-    protected int getNumOfLruEntries() {
-        grailsApplication.config.springcrm.lruList.numEntries ?: 10
-    }
-
-    /**
-     * Returns access to the user session.
-     *
-     * @return  the session instance
-     */
-    protected HttpSession getSession() {
-        RequestContextHolder.currentRequestAttributes().session
+    private int getNumOfLruEntries() {
+        grailsApplication.config.getProperty(
+            'springcrm.lruList.numEntries', Integer
+        ) ?: 10i
     }
 }

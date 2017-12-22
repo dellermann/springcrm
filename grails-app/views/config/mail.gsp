@@ -130,7 +130,7 @@
             </div>
             <div class="form-group">
               <label for="user-name" class="control-label">
-                <g:message code="config.mail.userName.label"/>
+                <g:message code="config.mail.username.label"/>
               </label>
               <div class="control-container">
                 <g:textField id="user-name" name="config.mailUserName"

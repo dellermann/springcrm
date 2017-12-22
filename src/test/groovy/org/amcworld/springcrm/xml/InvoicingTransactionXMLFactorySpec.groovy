@@ -45,7 +45,7 @@ class InvoicingTransactionXMLFactorySpec extends Specification {
 
         and: 'an invoice and a user'
         def invoice = new Invoice(subject: 'My invoice')
-        def user = new User(userName: 'jsmith')
+        def user = new User(username: 'jsmith')
 
         when: 'I create new converter'
         InvoicingTransactionXML conv = factory.newConverter(invoice, user)

@@ -360,7 +360,7 @@ class InvoicingTransactionXMLSpec extends Specification {
 
     private User makeUserFixture() {
         new User(
-            userName: 'jsmith', password: 'secret', firstName: 'John',
+            username: 'jsmith', password: 'secret', firstName: 'John',
             lastName: 'Smith', email: 'j.smith@example.com',
             phone: '+49 1 8984466', mobile: '+49 1 464163464'
         )

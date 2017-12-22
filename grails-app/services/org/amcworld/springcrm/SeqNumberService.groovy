@@ -23,8 +23,8 @@ package org.amcworld.springcrm
 import grails.core.ArtefactHandler
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
+import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 import org.grails.core.artefact.DomainClassArtefactHandler
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,9 +34,10 @@ import org.springframework.transaction.annotation.Transactional
  * content items.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
 @CompileStatic
+@Transactional(readOnly = true)
 class SeqNumberService {
 
     //-- Constants ------------------------------
@@ -73,8 +74,6 @@ class SeqNumberService {
      *          {@code false} otherwise
      * @since   2.1
      */
-    @CompileStatic
-    @Transactional(readOnly = true)
     boolean checkNumberScheme() {
         String year = new Date().format('YY')
 
@@ -94,7 +93,6 @@ class SeqNumberService {
      * @return  a list of sequence numbers with partially fixed start values
      * @since   2.1
      */
-    @CompileStatic
     List<SeqNumber> getFixedSeqNumbers() {
         String year = new Date().format('YY')
         int num = year.toInteger() * 1000
@@ -124,8 +122,6 @@ class SeqNumberService {
      *                      {@code false} otherwise
      * @since 2.1
      */
-    @CompileStatic
-    @Transactional(readOnly = true)
     boolean getShowHint(Credential credential) {
         if (checkNumberScheme() || !credential.admin) return false
 
@@ -142,7 +138,6 @@ class SeqNumberService {
      * @param number            the given number
      * @return                  the formatted number
      */
-    @Transactional(readOnly = true)
     String format(String controllerName, int number) {
         formatNumber controllerName: controllerName, number: number
     }
@@ -155,7 +150,6 @@ class SeqNumberService {
      * @param number    the given number
      * @return          the formatted number
      */
-    @Transactional(readOnly = true)
     String format(Class cls, int number) {
         format classToDomainName(cls), number
     }
@@ -168,7 +162,6 @@ class SeqNumberService {
      * @param number            the given number
      * @return                  the formatted number
      */
-    @Transactional(readOnly = true)
     String formatWithPrefix(String controllerName, int number) {
         formatNumber(
             controllerName: controllerName, number: number, withSuffix: false
@@ -183,7 +176,6 @@ class SeqNumberService {
      * @param number    the given number
      * @return          the formatted number
      */
-    @Transactional(readOnly = true)
     String formatWithPrefix(Class cls, int number) {
         formatWithPrefix classToDomainName(cls), number
     }
@@ -196,7 +188,6 @@ class SeqNumberService {
      * @param number            the given number
      * @return                  the formatted number
      */
-    @Transactional(readOnly = true)
     String formatWithSuffix(String controllerName, int number) {
         formatNumber(
             controllerName: controllerName, number: number, withPrefix: false
@@ -211,7 +202,6 @@ class SeqNumberService {
      * @param number    the given number
      * @return          the formatted number
      */
-    @Transactional(readOnly = true)
     String formatWithSuffix(Class cls, int number) {
         formatWithSuffix classToDomainName(cls), number
     }
@@ -223,8 +213,7 @@ class SeqNumberService {
      * @return                  the sequence number data; {@code null} if no
      *                          such data are stored for the given controller
      */
-    @Transactional(readOnly = true)
-    @CompileStatic(TypeCheckingMode.SKIP)
+    @CompileDynamic
     SeqNumber loadSeqNumber(String controllerName) {
         SeqNumber.findByControllerName controllerName
     }
@@ -237,7 +226,6 @@ class SeqNumberService {
      * @return                  the sequence number data; {@code null} if no
      *                          such data are stored for the controller
      */
-    @Transactional(readOnly = true)
     SeqNumber loadSeqNumber(Class cls) {
         loadSeqNumber classToDomainName(cls)
     }
@@ -249,7 +237,6 @@ class SeqNumberService {
      * @param controllerName    the given controller name
      * @return                  the formatted next sequence number
      */
-    @Transactional(readOnly = true)
     String nextFullNumber(String controllerName) {
         formatNumber controllerName: controllerName
     }
@@ -261,7 +248,6 @@ class SeqNumberService {
      * @param cls   the given class
      * @return      the formatted next sequence number
      */
-    @Transactional(readOnly = true)
     String nextFullNumber(Class cls) {
         nextFullNumber classToDomainName(cls)
     }
@@ -273,8 +259,7 @@ class SeqNumberService {
      * @param controllerName    the given controller name
      * @return                  the next available sequence number
      */
-    @CompileStatic(TypeCheckingMode.SKIP)
-    @Transactional(readOnly = true)
+    @CompileDynamic
     int nextNumber(String controllerName) {
         SeqNumber seq = loadSeqNumber(controllerName)
         GrailsClass cls = grailsApplication.getArtefactByLogicalPropertyName(
@@ -303,7 +288,6 @@ class SeqNumberService {
      * @param cls   the given class
      * @return      the next available sequence number
      */
-    @Transactional(readOnly = true)
     int nextNumber(Class cls) {
         nextNumber classToDomainName(cls)
     }
@@ -312,24 +296,22 @@ class SeqNumberService {
      * Stores the current year in the user settings to prevent display of the
      * hint about changing the sequence number scheme for this year.
      *
-     * @param credential    the credential representing the currently logged in
-     *                      user
+     * @param user  the currently logged in user
      */
-    @CompileStatic
-    void setDontShowAgain(Credential credential) {
-        credential.settings['seqNumberHintYear'] = new Date().format('YYYY')
+    @Transactional
+    void setDontShowAgain(User user) {
+        user.settings['seqNumberHintYear'] = new Date().format('YYYY')
     }
 
     /**
      * Stores in the user settings that the hint about changing the sequence
      * number scheme should no longer be displayed.
      *
-     * @param credential    the credential representing the currently logged in
-     *                      user
+     * @param user  the currently logged in user
      */
-    @CompileStatic
-    void setNeverShowAgain(Credential credential) {
-        credential.settings['seqNumberHintYear'] = '9999'
+    @Transactional
+    void setNeverShowAgain(User user) {
+        user.settings['seqNumberHintYear'] = '9999'
     }
 
 
@@ -346,7 +328,6 @@ class SeqNumberService {
      *                      {@code false} otherwise
      * @since 2.1
      */
-    @CompileStatic
     private boolean checkControllerNumberScheme(
         Class<? extends InvoicingTransaction> controller, String year
     ) {

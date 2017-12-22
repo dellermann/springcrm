@@ -64,7 +64,7 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h = new Helpdesk(name: 'Test helpdesk')
 
         and: 'a user'
-        User u = new User(userName: 'jsmith')
+        User u = new User(username: 'jsmith')
 
         and: 'three helpdesk users'
         def hu1 = new HelpdeskUser(helpdesk: h, user: u)
@@ -94,7 +94,7 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h3 = new Helpdesk(name: 'A third helpdesk')
 
         and: 'a user'
-        User u = new User(userName: 'jsmith')
+        User u = new User(username: 'jsmith')
 
         and: 'three helpdesk users with properties'
         def hu1 = new HelpdeskUser(helpdesk: h1, user: u)
@@ -122,9 +122,9 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h = new Helpdesk(name: 'Test helpdesk')
 
         and: 'some users'
-        User u1 = new User(userName: 'jsmith')
-        User u2 = new User(userName: 'jdoe')
-        User u3 = new User(userName: 'bwayne')
+        User u1 = new User(username: 'jsmith')
+        User u2 = new User(username: 'jdoe')
+        User u3 = new User(username: 'bwayne')
 
         and: 'two helpdesk users with properties'
         def hu1 = new HelpdeskUser(helpdesk: h, user: u1)
@@ -160,7 +160,7 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h = new Helpdesk(name: 'Test helpdesk')
 
         and: 'a user'
-        User u = new User(userName: 'jsmith')
+        User u = new User(username: 'jsmith')
 
         and: 'an instance'
         def hu = new HelpdeskUser(helpdesk: h, user: u)
@@ -180,7 +180,7 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h = new Helpdesk(name: 'Test helpdesk')
 
         and: 'a user'
-        User u = new User(userName: 'jsmith')
+        User u = new User(username: 'jsmith')
 
         and: 'three helpdesk users'
         def hu1 = new HelpdeskUser(helpdesk: h, user: u)
@@ -199,7 +199,7 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h3 = new Helpdesk(name: 'A third helpdesk')
 
         and: 'a user'
-        User u = new User(userName: 'jsmith')
+        User u = new User(username: 'jsmith')
 
         and: 'three helpdesk users with properties'
         def hu1 = new HelpdeskUser(helpdesk: h1, user: u)
@@ -216,9 +216,9 @@ class HelpdeskUserSpec extends Specification {
         Helpdesk h = new Helpdesk(name: 'Test helpdesk')
 
         and: 'some users'
-        User u1 = new User(userName: 'jsmith')
-        User u2 = new User(userName: 'jdoe')
-        User u3 = new User(userName: 'bwayne')
+        User u1 = new User(username: 'jsmith')
+        User u2 = new User(username: 'jdoe')
+        User u3 = new User(username: 'bwayne')
 
         and: 'two helpdesk users with properties'
         def hu1 = new HelpdeskUser(helpdesk: h, user: u1)
@@ -230,21 +230,21 @@ class HelpdeskUserSpec extends Specification {
         hu2.hashCode() != hu3.hashCode()
     }
 
-    def 'Can convert to string'(String name, String userName) {
+    def 'Can convert to string'(String name, String username) {
         given: 'a helpdesk'
         Helpdesk h = new Helpdesk(name: name)
 
         and: 'a user'
-        User u = new User(userName: userName)
+        User u = new User(username: username)
 
         when: 'I create a helpdesk user'
         def hu = new HelpdeskUser(helpdesk: h, user: u)
 
         then: 'I get a valid string representation'
-        ('Helpdesk ' + (name ?: '').trim() + ' -> user ' + userName?.trim()) == hu.toString()
+        ('Helpdesk ' + (name ?: '').trim() + ' -> user ' + username?.trim()) == hu.toString()
 
         where:
-        name            | userName          || _
+        name            | username          || _
         null            | null              || _
         ''              | null              || _
         '   '           | null              || _
@@ -292,7 +292,7 @@ class HelpdeskUserSpec extends Specification {
     def 'Helpdesk must not be null'() {
         given: 'a quite valid helpdesk user'
         def hu = new HelpdeskUser(
-            user: new User(userName: 'jsmith')
+            user: new User(username: 'jsmith')
         )
 
         when: 'I set the helpdesk'

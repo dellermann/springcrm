@@ -230,7 +230,7 @@ class OverviewServiceSpec extends Specification {
 
     private User makeUser() {
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',

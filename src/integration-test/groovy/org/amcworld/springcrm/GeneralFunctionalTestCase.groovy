@@ -51,7 +51,7 @@ abstract class GeneralFunctionalTestCase { //extends DbUnitTestCase {
     protected static final By BY_LOGIN_BTN = By.name('submit')
     protected static final By BY_PASSWORD = By.name('password')
     protected static final By BY_SUBHEADER = By.xpath('//div[@id="content"]/h2')
-    protected static final By BY_USER_NAME = By.name('userName')
+    protected static final By BY_USER_NAME = By.name('username')
     protected static final String PURCHASE_INVOICE_EXAMPLE_DOCUMENT = 'org/amcworld/springcrm/4049493-4994.pdf'
     protected static final String PURCHASE_INVOICE_EXAMPLE_DOCUMENT_ALT = 'org/amcworld/springcrm/4049493-4994-neu.pdf'
 

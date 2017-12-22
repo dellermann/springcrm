@@ -1,7 +1,7 @@
 /*
  * OverviewService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 package org.amcworld.springcrm
 
+import grails.gorm.transactions.Transactional
+import groovy.transform.CompileStatic
 import java.util.regex.Matcher
 import grails.core.GrailsApplication
 import grails.plugins.VersionComparator
@@ -32,19 +34,16 @@ import org.springframework.core.io.support.LocalizedResourceHelper
  * overview controller.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.0
  */
+@CompileStatic
+@Transactional(readOnly = true)
 class OverviewService {
 
     //-- Constants ------------------------------
 
     private static final String CHANGELOG_PATH = 'classpath:public/changelog'
-
-
-    //-- Static variables -----------------------
-
-    static transactional = false
 
 
     //-- Fields ---------------------------------
@@ -58,13 +57,13 @@ class OverviewService {
      * Sets the current version in the user settings to prevent display of
      * changelog for this version.
      *
-     * @param credential    the credential representing the currently logged in
-     *                      user
+     * @param user  the currently logged in user
      */
-    void dontShowAgain(Credential credential) {
-        String currentVersion =
-            grailsApplication.metadata.getApplicationVersion()
-        credential.settings['changelogVersion'] = currentVersion
+    @Transactional
+    void dontShowAgain(User user) {
+        user.settings['changelogVersion'] =
+            grailsApplication.metadata.applicationVersion
+        user.save flush: true
     }
 
     /**
@@ -84,7 +83,7 @@ class OverviewService {
             helper.findLocalizedResource(CHANGELOG_PATH, '.md', locale)
         String text = res.inputStream?.getText('UTF-8')
         if (text) {
-            Matcher m = text =~ /(?m)^\[comment\]:\s*STOP$/
+            Matcher m = text =~ /(?m)^\[comment]:\s*STOP$/
             if (m) {
                 text = text.substring(0, m.start())
             }
@@ -97,19 +96,17 @@ class OverviewService {
      * Checks whether or not the changelog should be displayed for the given
      * user.
      *
-     * @param credential    the credential representing the currently logged in
-     *                      user
-     * @return              {@code true} if the changelog should be displayed;
-     *                      {@code false} otherwise
+     * @param user  the currently logged in user
+     * @return      {@code true} if the changelog should be displayed;
+     *              {@code false} otherwise
      */
-    boolean showChangelog(Credential credential) {
-        String version = credential.settings['changelogVersion']?.toString()
+    boolean showChangelog(User user) {
+        String version = user.settings['changelogVersion']?.toString()
         if (!version) {
             return true
         }
 
-        String currentVersion =
-            grailsApplication.metadata.getApplicationVersion()
+        String currentVersion = grailsApplication.metadata.applicationVersion
         new VersionComparator().compare(version, currentVersion) < 0
     }
 }

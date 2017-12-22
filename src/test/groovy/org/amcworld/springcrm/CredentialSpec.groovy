@@ -48,7 +48,7 @@ class CredentialSpec extends Specification {
 
         then: 'the properties are set correctly'
         1704L == c.id
-        u.userName == c.userName
+        u.username == c.username
         u.firstName == c.firstName
         u.lastName == c.lastName
         u.phone == c.phone
@@ -73,7 +73,7 @@ class CredentialSpec extends Specification {
         thrown ReadOnlyPropertyException
 
         when: 'I set a property'
-        c.userName = 'bwayne'
+        c.username = 'bwayne'
 
         then: 'an exception is thrown'
         thrown ReadOnlyPropertyException
@@ -559,7 +559,7 @@ class CredentialSpec extends Specification {
 
     private User makeUser() {
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',

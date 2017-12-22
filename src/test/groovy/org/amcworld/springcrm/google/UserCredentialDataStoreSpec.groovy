@@ -48,11 +48,11 @@ class UserCredentialDataStoreSpec extends Specification {
             .defaultInstance
             .createDataStore('StoredCredential')
         userJsmith = new User(
-            userName: 'jsmith', password: 'secret', firstName: 'John',
+            username: 'jsmith', password: 'secret', firstName: 'John',
             lastName: 'Smith', email: 'j.smith@example.com'
         )
         userBwayne = new User(
-            userName: 'bwayne', password: 'very-secret',
+            username: 'bwayne', password: 'very-secret',
             firstName: 'Barbra', lastName: 'Wayne',
             email: 'b.wayne@example.com'
         )
@@ -195,15 +195,15 @@ class UserCredentialDataStoreSpec extends Specification {
         ]
 
         when: 'I obtain the user names'
-        Set<String> userNames = dataStore.keySet()
+        Set<String> usernames = dataStore.keySet()
 
         then: 'I get two user names'
-        2 == userNames.size()
-        'jsmith' in userNames
-        'bwayne' in userNames
+        2 == usernames.size()
+        'jsmith' in usernames
+        'bwayne' in usernames
 
         when: 'I try to change the set'
-        userNames << 'fooBar'
+        usernames << 'fooBar'
 
         then: 'I get an exeption'
         thrown UnsupportedOperationException
@@ -214,11 +214,11 @@ class UserCredentialDataStoreSpec extends Specification {
         prepareCredentialUserSetting()
 
         when: 'I obtain the user names'
-        Set<String> userNames = dataStore.keySet()
+        Set<String> usernames = dataStore.keySet()
 
         then: 'I get one user name'
-        1 == userNames.size()
-        'jsmith' in userNames
+        1 == usernames.size()
+        'jsmith' in usernames
     }
 
     def 'Obtain user names of no stored credentials'() {

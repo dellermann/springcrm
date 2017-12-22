@@ -66,7 +66,7 @@ class GoogleDataSyncStatus {
 
     @Override
     String toString() {
-        return "${user.userName}/${type}/${itemId}"
+        return "${user.username}/${type}/${itemId}"
     }
 
     /**

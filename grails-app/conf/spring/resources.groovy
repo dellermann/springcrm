@@ -1,7 +1,7 @@
 /*
  * resources.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@ import org.amcworld.springcrm.converter.PrimitiveNumberValueConverter
 import org.amcworld.springcrm.google.GoogleCalendarSync
 import org.amcworld.springcrm.google.GoogleContactSync
 import org.amcworld.springcrm.google.GoogleContactSyncTask
-import org.amcworld.springcrm.install.diffset.NoteMarkdownDiffSet
-import org.amcworld.springcrm.install.diffset.ProjectDocumentDiffSet
 import org.amcworld.springcrm.ldap.LdapFactory
 import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
 import org.amcworld.springcrm.xml.LogErrorListener
@@ -51,12 +49,6 @@ beans = {
             targetType = numberType
         }
     }
-
-    /* startup difference sets */
-    startupDiffSet2(NoteMarkdownDiffSet) {
-        markdownService = ref('markdownService')
-    }
-    startupDiffSet4(ProjectDocumentDiffSet)
 
     /* XML and XSLT */
     fopFactory(FopFactory) { DefaultBeanConfiguration b ->

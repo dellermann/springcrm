@@ -60,7 +60,7 @@ class GoogleContactSyncTask extends TimerTask {
         for (User user : users) {
             try {
                 if (log.debugEnabled) {
-                    log.debug "Syncing with Google account of user ${user} (${user.userName})…"
+                    log.debug "Syncing with Google account of user ${user} (${user.username})…"
                 }
                 googleContactSync.sync user
             } catch (GoogleAuthException ignored) {

@@ -50,8 +50,8 @@ class HelpdeskSpec extends Specification {
     def 'Copy a helpdesk using constructor'() {
         given: 'some users'
         Set<User> users = [
-            new User(userName: 'User 1'),
-            new User(userName: 'User 2')
+            new User(username: 'User 1'),
+            new User(username: 'User 2')
         ] as Set<User>
 
         and: 'an organization'
@@ -189,14 +189,14 @@ class HelpdeskSpec extends Specification {
     void 'Create user associations at insert'() {
         given: 'some users'
         User u1 = new User(
-            userName: 'User 1',
+            username: 'User 1',
             password: 'verysecret',
             firstName: 'John',
             lastName: 'Doe',
             email: 'j.doe@example.com'
         ).save failOnError: true
         User u2 = new User(
-            userName: 'User 2',
+            username: 'User 2',
             password: 'alsoverysecret',
             firstName: 'Mark',
             lastName: 'Smith',
@@ -222,9 +222,9 @@ class HelpdeskSpec extends Specification {
     @Ignore('ExecuteUpdate currently not supported in GORM')
     void 'Update user associations at update'() {
         given: 'some users'
-        User u1 = new User(userName: 'User 1')
-        User u2 = new User(userName: 'User 2')
-        User u3 = new User(userName: 'User 3')
+        User u1 = new User(username: 'User 1')
+        User u2 = new User(username: 'User 2')
+        User u3 = new User(username: 'User 3')
 
         and: 'a helpdesk'
         Helpdesk h = new Helpdesk(
@@ -247,8 +247,8 @@ class HelpdeskSpec extends Specification {
     @Ignore('ExecuteUpdate currently not supported in GORM')
     void 'Remove user associations at delete'() {
         given: 'some users'
-        User u1 = new User(userName: 'User 1')
-        User u2 = new User(userName: 'User 2')
+        User u1 = new User(username: 'User 1')
+        User u2 = new User(username: 'User 2')
 
         and: 'a helpdesk'
         Helpdesk h = new Helpdesk(
@@ -267,8 +267,8 @@ class HelpdeskSpec extends Specification {
 
     void 'Get users of helpdesk'() {
         given: 'some users'
-        User u1 = new User(userName: 'User 1')
-        User u2 = new User(userName: 'User 2')
+        User u1 = new User(username: 'User 1')
+        User u2 = new User(username: 'User 2')
 
         and: 'a helpdesk'
         Helpdesk h = new Helpdesk(
@@ -416,7 +416,7 @@ class HelpdeskSpec extends Specification {
 
     def 'Name must not be blank'(String n, boolean v) {
         given: 'a user'
-        User u = new User(userName: 'jsmith')
+        User u = new User(username: 'jsmith')
 
         and: 'an organization'
         Organization o = new Organization(name: 'My company, ltd.')

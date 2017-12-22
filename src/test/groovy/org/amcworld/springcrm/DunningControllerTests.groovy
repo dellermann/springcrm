@@ -43,7 +43,7 @@ class DunningControllerTests {
         grails.converters.XML.metaClass.static.toString = { -> '' }
         ConfigHolder.metaClass.getConfig = { String name -> null }
 
-        session.user = new User(userName: 'dellermann')
+        session.user = new User(username: 'dellermann')
     }
 
     void testIndex() {

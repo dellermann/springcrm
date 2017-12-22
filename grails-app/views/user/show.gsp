@@ -11,7 +11,7 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:display bean="${userInstance}" property="userName" />
+            <f:display bean="${userInstance}" property="username" />
             <f:display bean="${userInstance}" property="firstName" />
             <f:display bean="${userInstance}" property="lastName" />
           </div>

@@ -6,7 +6,7 @@
     /></g:link>
   </div>
   <div class="header-right">
-    <p class="login-info"><g:loginControl/></p>
+    <div class="login-info"><g:loginControl/></div>
     <g:form controller="search" method="get" class="form-inline search-form"
       role="search">
       <div class="form-group">

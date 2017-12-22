@@ -21,7 +21,7 @@
             <g:message code="menu.home"
           /></g:link>
         </li>
-        <g:ifControllerAllowed controllers="organization person">
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CONTACT">
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-contacts">
@@ -36,8 +36,8 @@
             <li role="menuitem"><g:link controller="person"><g:message code="person.plural"/></g:link></li>
           </ul>
         </li>
-        </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="quote salesOrder invoice dunning creditMemo purchaseInvoice">
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_QUOTE,ROLE_SALES_ORDER,ROLE_INVOICE,ROLE_DUNNING,ROLE_CREDIT_MEMO,ROLE_PURCHASE_INVOICE">
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-invoice">
@@ -45,26 +45,26 @@
           </a>
           <ul id="menu-invoice" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <g:ifControllerAllowed controllers="quote"><li role="menuitem"><g:link controller="quote"><g:message code="quote.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="salesOrder"><li role="menuitem"><g:link controller="salesOrder"><g:message code="salesOrder.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="invoice"><li role="menuitem"><g:link controller="invoice"><g:message code="invoice.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="dunning"><li role="menuitem"><g:link controller="dunning"><g:message code="dunning.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="creditMemo"><li role="menuitem"><g:link controller="creditMemo"><g:message code="creditMemo.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="purchaseInvoice">
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_QUOTE"><li role="menuitem"><g:link controller="quote"><g:message code="quote.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_SALES_ORDER"><li role="menuitem"><g:link controller="salesOrder"><g:message code="salesOrder.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_INVOICE"><li role="menuitem"><g:link controller="invoice"><g:message code="invoice.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_DUNNING"><li role="menuitem"><g:link controller="dunning"><g:message code="dunning.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CREDIT_MEMO"><li role="menuitem"><g:link controller="creditMemo"><g:message code="creditMemo.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PURCHASE_INVOICE">
             <li class="divider" role="presentation"></li>
             <li role="menuitem"><g:link controller="purchaseInvoice"><g:message code="purchaseInvoice.plural"/></g:link></li>
-            </g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="report">
+            </sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_REPORT">
             <li class="divider" role="presentation"></li>
             <li role="menuitem"><g:link controller="report" action="salesJournal"><g:message code="report.salesJournal.title"/></g:link></li>
             <li role="menuitem"><g:link controller="report" action="outstandingItems"><g:message code="report.outstandingItems.title"/></g:link></li>
             <li role="menuitem"><g:link controller="report" action="turnoverReport"><g:message code="report.turnover.title"/></g:link></li>
             <li role="menuitem"><g:link controller="report" action="turnoverOverview"><g:message code="report.turnoverOverview.title"/></g:link></li>
-            </g:ifControllerAllowed>
+            </sec:ifAnyGranted>
           </ul>
         </li>
-        </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="product work">
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PRODUCT,ROLE_WORK">
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-stock">
@@ -72,12 +72,12 @@
           </a>
           <ul id="menu-stock" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <g:ifControllerAllowed controllers="product"><li role="menuitem"><g:link controller="product"><g:message code="product.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="work"><li role="menuitem"><g:link controller="work"><g:message code="work.plural"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PRODUCT"><li role="menuitem"><g:link controller="product"><g:message code="product.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_WORK"><li role="menuitem"><g:link controller="work"><g:message code="work.plural"/></g:link></li></sec:ifAnyGranted>
           </ul>
         </li>
-        </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="call document note project calendar">
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CALL,ROLE_DOCUMENT,ROLE_NOTE,ROLE_PROJECT,ROLE_CALENDAR">
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-office">
@@ -85,19 +85,19 @@
           </a>
           <ul id="menu-office" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <g:ifControllerAllowed controllers="call"><li role="menuitem"><g:link controller="call"><g:message code="call.plural"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CALL"><li role="menuitem"><g:link controller="call"><g:message code="call.plural"/></g:link></li></sec:ifAnyGranted>
             <li class="divider" role="presentation"></li>
-            <g:ifControllerAllowed controllers="document"><li role="menuitem"><g:link controller="document"><g:message code="document.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="note"><li role="menuitem"><g:link controller="note"><g:message code="note.plural"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_DOCUMENT"><li role="menuitem"><g:link controller="document"><g:message code="document.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_NOTE"><li role="menuitem"><g:link controller="note"><g:message code="note.plural"/></g:link></li></sec:ifAnyGranted>
             <li class="divider" role="presentation"></li>
-            <g:ifControllerAllowed controllers="project"><li role="menuitem"><g:link controller="project"><g:message code="project.plural"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PROJECT"><li role="menuitem"><g:link controller="project"><g:message code="project.plural"/></g:link></li></sec:ifAnyGranted>
             <%--
-            <g:ifControllerAllowed controllers="calendar"><li role="menuitem"><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_CALENDAR"><li role="menuitem"><g:link controller="calendarEvent"><g:message code="calendarEvent.menu.label"/></g:link></li></g:ifControllerAllowed>
             --%>
           </ul>
         </li>
-        </g:ifControllerAllowed>
-        <g:ifControllerAllowed controllers="helpdesk ticket">
+        </sec:ifAnyGranted>
+        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_HELPDESK,ROLE_TICKET">
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-support">
@@ -105,11 +105,11 @@
           </a>
           <ul id="menu-support" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <g:ifControllerAllowed controllers="helpdesk"><li role="menuitem"><g:link controller="helpdesk"><g:message code="helpdesk.plural"/></g:link></li></g:ifControllerAllowed>
-            <g:ifControllerAllowed controllers="ticket"><li role="menuitem"><g:link controller="ticket"><g:message code="ticket.plural"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_HELPDESK"><li role="menuitem"><g:link controller="helpdesk"><g:message code="helpdesk.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_TICKET"><li role="menuitem"><g:link controller="ticket"><g:message code="ticket.plural"/></g:link></li></sec:ifAnyGranted>
           </ul>
         </li>
-        </g:ifControllerAllowed>
+        </sec:ifAnyGranted>
         <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"
             role="menuitem" aria-haspopup="true" aria-owns="menu-settings">
@@ -117,10 +117,10 @@
           </a>
           <ul id="menu-settings" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <g:ifAdmin><li role="menuitem"><g:link controller="user"><g:message code="user.plural"/></g:link></li></g:ifAdmin>
+            <sec:ifAnyGranted roles="ROLE_ADMIN"><li role="menuitem"><g:link controller="user"><g:message code="user.plural"/></g:link></li></sec:ifAnyGranted>
             <li role="menuitem"><g:link controller="user" action="settingsIndex"><g:message code="user.settings.title"/></g:link></li>
-            <g:ifAdmin><li role="menuitem"><g:link controller="config"><g:message code="config.title"/></g:link></li></g:ifAdmin>
-            <g:ifControllerAllowed controllers="boilerplate"><li role="menuitem"><g:link controller="boilerplate"><g:message code="boilerplate.plural"/></g:link></li></g:ifControllerAllowed>
+            <sec:ifAnyGranted roles="ROLE_ADMIN"><li role="menuitem"><g:link controller="config"><g:message code="config.title"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_BOILERPLATE"><li role="menuitem"><g:link controller="boilerplate"><g:message code="boilerplate.plural"/></g:link></li></sec:ifAnyGranted>
           </ul>
         </li>
         <li class="hidden-xs">

@@ -199,7 +199,6 @@ class InstallService {
         File dir = new File(
             grailsApplication.config.getProperty('springcrm.dir.installer')
         )
-        println dir
         if (!dir.exists()) {
             dir.mkdirs()
         }

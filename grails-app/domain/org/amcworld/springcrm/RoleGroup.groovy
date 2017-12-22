@@ -1,5 +1,5 @@
 /*
- * LruEntry.groovy
+ * RoleGroup.groovy
  *
  * Copyright (c) 2011-2017, Daniel Ellermann
  *
@@ -20,66 +20,55 @@
 
 package org.amcworld.springcrm
 
+import grails.compiler.GrailsCompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import org.bson.types.ObjectId
 
 
 /**
- * The class {@code LruEntry} stores the data of an entry in the last recently
- * used (LRU) list.
+ * The class {@code RoleGroup} represents a user group which has one or more
+ * roles associated.
  *
  * @author  Daniel Ellermann
  * @version 3.0
+ * @since   3.0
  */
-@EqualsAndHashCode(includes = ['user', 'controller', 'itemId'])
-@ToString(includes = ['user', 'controller', 'itemId'])
-class LruEntry {
+@GrailsCompileStatic
+@EqualsAndHashCode(includes = 'name')
+@ToString(includes = 'name')
+class RoleGroup implements Serializable {
+
+    //-- Constants ------------------------------
+
+    private static final long serialVersionUID = 1
+
 
     //-- Class fields ---------------------------
 
     static constraints = {
-        controller blank: false
-        name nullable: true, blank: true
+        name blank: false, unique: true
     }
+    static hasMany = [authorities: Role]
     static mapping = {
-        compoundIndex user: 1, controller: 1
-        controller index: true
-        user index: true
-        version false
+        name index: true, indexAttributes: [unique: true, dropDups: true]
     }
 
 
     //-- Fields ---------------------------------
 
     /**
-     * The controller where the item belongs to.
+     * The authorities associated to the group.
      */
-    String controller
+    Set<Role> authorities
 
     /**
-     * The ID of the LRU entry.
+     * The ID of the group.
      */
     ObjectId id
 
     /**
-     * The ID of the item.
-     */
-    ObjectId itemId
-
-    /**
-     * The textual representation of the LRU item, for example the title of the
-     * item.
+     * The name of the group.
      */
     String name
-
-    /**
-     * The position of the LRU entry among others.
-     */
-    long pos
-
-    /**
-     * The user the LRU entry belongs to.
-     */
-    User user
 }

@@ -197,7 +197,7 @@ class TicketSecurityInterceptorSpec extends Specification {
             ),
             users: [
                 new User(
-                    userName: 'jsmith',
+                    username: 'jsmith',
                     password: 'abcd',
                     firstName: 'John',
                     lastName: 'Smith',
@@ -224,7 +224,7 @@ class TicketSecurityInterceptorSpec extends Specification {
             ),
             users: [
                 new User(
-                    userName: 'jsmith',
+                    username: 'jsmith',
                     password: 'abcd',
                     firstName: 'John',
                     lastName: 'Smith',

@@ -8,21 +8,21 @@
   <body>
     <g:applyLayout name="list" model="[list: userInstanceList, type: 'user']">
       <div class="visible-xs">
-        <g:letterBar clazz="${User}" property="userName" numLetters="5"
+        <g:letterBar clazz="${User}" property="username" numLetters="5"
           separator="-"/>
       </div>
       <div class="visible-sm">
-        <g:letterBar clazz="${User}" property="userName" numLetters="5"/>
+        <g:letterBar clazz="${User}" property="username" numLetters="5"/>
       </div>
       <div class="hidden-xs hidden-sm">
-        <g:letterBar clazz="${User}" property="userName"/>
+        <g:letterBar clazz="${User}" property="username"/>
       </div>
       <div class="table-responsive">
         <table class="table data-table">
           <thead>
             <tr>
-              <g:sortableColumn property="userName"
-                title="${message(code: 'user.userName.label')}"/>
+              <g:sortableColumn property="username"
+                title="${message(code: 'user.username.label')}"/>
               <g:sortableColumn property="lastName"
                 title="${message(code: 'user.lastName.label')}"/>
               <g:sortableColumn property="firstName"
@@ -41,7 +41,7 @@
             <tr>
               <td class="col-type-string user-user-name">
                 <g:link action="show" id="${userInstance.id}">
-                  <g:fieldValue bean="${userInstance}" field="userName"/>
+                  <g:fieldValue bean="${userInstance}" field="username"/>
                 </g:link>
               </td>
               <td class="col-type-string user-last-name">

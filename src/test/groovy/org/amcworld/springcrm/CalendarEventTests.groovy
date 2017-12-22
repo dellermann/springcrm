@@ -49,7 +49,7 @@ class CalendarEventTests {
             subject: 'Test', location: 'Berlin',
             description: 'Test calendar event', start: d, end: d,
             allDay: false, organization: Organization.get(1),
-            owner: new User(userName: 'dellermann')
+            owner: new User(username: 'dellermann')
         )
         def anotherCalendarEvent = new CalendarEvent(calendarEvent)
         assert 'Test' == anotherCalendarEvent.subject
@@ -63,7 +63,7 @@ class CalendarEventTests {
         assert null != anotherCalendarEvent.organization
         assert 'AMC World Technologies GmbH' == anotherCalendarEvent.organization.name
         assert null != anotherCalendarEvent.owner
-        assert 'dellermann' == anotherCalendarEvent.owner.userName
+        assert 'dellermann' == anotherCalendarEvent.owner.username
     }
 
     void testConstraints() {

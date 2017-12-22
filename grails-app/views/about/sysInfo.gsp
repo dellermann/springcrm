@@ -63,7 +63,7 @@
                 System.getProperty('os.version')
               ]"
         /></dd>
-        <dt><g:message code="about.sysInfo.userName" /></dt>
+        <dt><g:message code="about.sysInfo.username" /></dt>
         <dd>${System.getProperty('user.name')}</dd>
       </dl>
     </section>

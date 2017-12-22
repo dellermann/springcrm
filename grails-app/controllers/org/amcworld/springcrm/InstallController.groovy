@@ -20,6 +20,11 @@
 
 package org.amcworld.springcrm
 
+import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.annotation.Secured
+import org.bson.types.ObjectId
+
 
 /**
  * The class {@code InstallController} handles actions in the installation
@@ -31,12 +36,15 @@ package org.amcworld.springcrm
  * @author  Daniel Ellermann
  * @version 3.0
  */
+@Transactional(readOnly = true)
+@Secured('permitAll')
 class InstallController {
 
     //-- Fields ---------------------------------
 
     InstallService installService
     SecurityService securityService
+    SpringSecurityService springSecurityService
 
 
     //-- Public methods -------------------------
@@ -45,6 +53,7 @@ class InstallController {
         respond([client: Client.load(), step: 2])
     }
 
+    @Transactional
     def clientDataSave(Client client) {
         if (client.hasErrors()) {
             render view: 'clientData', model: [client: client, step: 2]
@@ -59,24 +68,35 @@ class InstallController {
         respond([userInstance: new User(), step: 3])
     }
 
+    @Transactional
     def createAdminSave() {
         User user = new User(params)
-        user.admin = true
+        user.authorities = [
+            RoleGroup.get(new ObjectId('5a2eb98e2ce1362b4fc77e53'))
+            // objectId defined in base-data-*.json
+        ] as Set
 
-        String pwdRepeat = securityService.encryptPassword(
-            params.passwordRepeat.toString()
-        )
-        boolean passwordMismatch = params.password != pwdRepeat
-        if (passwordMismatch) {
+        if (!user.password) {
+            user.errors.rejectValue(
+                'password', 'default.blank.message',
+                [message(code: 'user.password.label')] as Object[], ''
+            )
+        } else if (params.password != params.passwordRepeat) {
             user.errors.rejectValue 'password', 'user.password.doesNotMatch'
+        } else {
+            user.password = encodePassword(user.password)
         }
-        if (passwordMismatch || !user.save(flush: true)) {
-            render(
-                view: 'createAdmin',
+
+        if (user.hasErrors()) {
+            transactionStatus.setRollbackOnly()
+            respond(
+                user.errors, view: 'createAdmin',
                 model: [userInstance: user, step: 3]
             )
             return
         }
+
+        user.save flush: true
 
         redirect action: 'finish'
     }
@@ -85,6 +105,7 @@ class InstallController {
         respond([step: 4])
     }
 
+    @Transactional
     def finishSave() {
         installService.disableInstaller()
         Config config = new Config(name: 'installStatus', value: 1)
@@ -105,11 +126,27 @@ class InstallController {
         ])
     }
 
+    @Transactional
     def installBaseDataSave() {
         installService.installBaseDataPackage(
             params['package-select']?.toString()
         )
 
         redirect action: 'clientData'
+    }
+
+
+    //-- Non-public methods -------------------------
+
+    /**
+     * Encodes the given password.
+     *
+     * @param password  the given password
+     * @return          the encoded password
+     */
+    private String encodePassword(String password) {
+        springSecurityService?.passwordEncoder \
+            ? springSecurityService.encodePassword(password)
+            : password
     }
 }

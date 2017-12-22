@@ -1,7 +1,7 @@
 /*
  * UserTagLib.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,21 @@
 
 package org.amcworld.springcrm
 
+import grails.plugin.springsecurity.SpringSecurityService
+
 
 /**
  * The class {@code UserTagLib} represents tags for login.
  *
  * @author  Daniel Ellermann
- * @version 2.0
+ * @version 3.0
  */
 class UserTagLib {
+
+    //-- Fields ---------------------------------
+
+    SpringSecurityService springSecurityService
+
 
     //-- Public methods -------------------------
 
@@ -35,17 +42,17 @@ class UserTagLib {
      * Renders an area to display the currently logged in user.
      */
     def loginControl = {
-        Credential credential = session.credential
-        if (request.getSession(false) && credential) {
-            out << '<small>' << credential.fullName << ' [' <<
-                credential.userName << ']</small>'
-            out << link(
-                controller: 'user', action: 'logout',
-                'class': 'btn btn-warning btn-xs',
-                'role': 'button'
-            ) {
-                '<i class="fa fa-sign-out"></i> ' +
-                    message(code: 'default.logout')
+        User user = springSecurityService.currentUser as User
+        if (user != null) {
+            out << '<small>' << user.fullName << ' [' << user.username <<
+                ']</small>'
+            out << form(controller: 'logout', method: 'post') {
+                """
+                <button type="submit" class="btn btn-warning btn-xs">
+                  <i class="fa fa-sign-out"></i>
+                  ${message(code: 'default.logout')}
+                </button>
+                """
             }
         }
     }
@@ -56,9 +63,10 @@ class UserTagLib {
      * @attr key REQUIRED   the name of the user setting
      */
     def userSetting = { attrs, body ->
-        def settings = session.credential?.settings
+        Map<String, Object> settings =
+            ((User) springSecurityService.currentUser)?.settings
         if (settings) {
-            out << settings[attrs.key]
+            out << settings[attrs.key.toString()]
         }
     }
 }

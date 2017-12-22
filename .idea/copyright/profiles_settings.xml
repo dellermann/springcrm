@@ -1,3 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="" />
+  <settings>
+    <module2copyright>
+      <element module="Source files" copyright="GPL" />
+    </module2copyright>
+  </settings>
 </component>

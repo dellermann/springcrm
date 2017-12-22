@@ -4,7 +4,7 @@
   </header>
   <div class="column-group">
     <div class="column">
-      <f:field bean="${userInstance}" property="userName" />
+      <f:field bean="${userInstance}" property="username" />
       <f:field bean="${userInstance}" property="password"
         required="${actionName == 'create'}" />
       <f:field bean="${userInstance}" property="firstName" />

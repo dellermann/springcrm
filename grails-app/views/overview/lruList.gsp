@@ -1,5 +1,5 @@
 <ul>
-  <g:each in="${lruList}" var="lruEntry">
+  <g:each var="lruEntry" in="${lruEntryList}">
   <li>
     <g:dataTypeIcon controller="${lruEntry.controller}" />
     <div class="text">

@@ -106,7 +106,7 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
      *                              at Google
      */
     void sync(User user) throws GoogleAuthException {
-        Credential credential = loadCredential(user.userName)
+        Credential credential = loadCredential(user.username)
         if (credential == null) {
             return
         }
@@ -500,14 +500,14 @@ abstract class AbstractGoogleSync<E extends GormEntity<E>, G>
     /**
      * Loads the OAuth2 credential of the given user name.
      *
-     * @param userName              the given user name
+     * @param username              the given user name
      * @return                      the credential
      * @throws GoogleAuthException  if the user currently is not authenticated
      *                              at Google
      */
     @CompileStatic
-    private Credential loadCredential(String userName) {
-        Credential credential = googleOAuthService.loadCredential(userName)
+    private Credential loadCredential(String username) {
+        Credential credential = googleOAuthService.loadCredential(username)
         if (!credential) {
             throw new GoogleAuthException(
                 'error.googleAuthException.message.noCredentials'

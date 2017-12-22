@@ -1,7 +1,7 @@
 /*
  * LoginInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,17 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.client.model.Filters
 import grails.artefact.Interceptor
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 
 
 /**
- * The class {@code LoginInterceptor} ensures that the installer is called if the
- * application has not been initialized yet.  Furthermore, it redirects the user
- * to the login page if he has no session.
+ * The class {@code LoginInterceptor} ensures that the installer is called if
+ * the application has not been initialized yet.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
@@ -51,7 +50,7 @@ class LoginInterceptor implements Interceptor {
     LoginInterceptor() {
         matchAll()
             .excludes(controller: ~/(assets|help|install)/)
-            .excludes(action: ~/(login|authenticate|frontend.*)/)
+            .excludes(action: ~/frontend.*/)
     }
 
     //-- Public methods -------------------------
@@ -65,30 +64,14 @@ class LoginInterceptor implements Interceptor {
      *          otherwise
      */
     boolean before() {
-        if (!installStatus?.value) {
+        Config config = Config.find(Filters.eq('name', 'installStatus'))
+            .first()
+        if (!config?.value) {
             installService.enableInstaller()
             redirect controller: 'install', action: 'index'
             return false
         }
 
-        if (!session?.getAttribute('credential')) {
-            redirect controller: 'user', action: 'login'
-            return false
-        }
-
         true
-    }
-
-
-    //-- Non-public methods ---------------------
-
-    @CompileDynamic
-    private static Config getInstallStatus() {
-        Config config = null
-        Config.withNewSession {
-            config = Config.findByName 'installStatus'
-        }
-
-        config
     }
 }

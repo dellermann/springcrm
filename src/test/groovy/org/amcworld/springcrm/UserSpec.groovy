@@ -39,7 +39,7 @@ class UserSpec extends Specification {
 
         then: 'the properties are initialized properly'
         null == u.id
-        null == u.userName
+        null == u.username
         null == u.password
         null == u.firstName
         null == u.lastName
@@ -64,7 +64,7 @@ class UserSpec extends Specification {
 
         then: 'the properties are set properly'
         null == u2.id
-        null == u2.userName
+        null == u2.username
         null == u2.password
         null == u2.firstName
         null == u2.lastName
@@ -83,7 +83,7 @@ class UserSpec extends Specification {
     def 'Copy a user using constructor'() {
         given: 'a user with various properties'
         def u1 = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -100,7 +100,7 @@ class UserSpec extends Specification {
         def u2 = new User(u1)
 
         then: 'some properties are the equal'
-        u1.userName == u2.userName
+        u1.username == u2.username
         u1.firstName == u2.firstName
         u1.lastName == u2.lastName
         u1.phone == u2.phone
@@ -245,7 +245,7 @@ class UserSpec extends Specification {
     def 'Obtain raw user settings'() {
         given: 'a user'
         def u1 = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -261,7 +261,7 @@ class UserSpec extends Specification {
 
         and: 'another user'
         def u2 = new User(
-            userName: 'bwayne',
+            username: 'bwayne',
             password: 'qxyz',
             firstName: 'Barbra',
             lastName: 'Wayne',
@@ -323,7 +323,7 @@ class UserSpec extends Specification {
     def 'Obtain user settings'() {
         given: 'a user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -358,7 +358,7 @@ class UserSpec extends Specification {
     def 'Cannot set settings'() {
         given: 'a user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -412,9 +412,9 @@ class UserSpec extends Specification {
 
     def 'Not persisted instances are equal'() {
         given: 'three instances without ID'
-        def u1 = new User(userName: 'jsmith')
-        def u2 = new User(userName: 'jsmith')
-        def u3 = new User(userName: 'jsmith')
+        def u1 = new User(username: 'jsmith')
+        def u2 = new User(username: 'jsmith')
+        def u3 = new User(username: 'jsmith')
 
         expect: 'equals() is reflexive'
         u1 == u1
@@ -434,11 +434,11 @@ class UserSpec extends Specification {
 
     def 'Persisted instances are equal if they have the same ID'() {
         given: 'three instances with different IDs but same name'
-        def u1 = new User(userName: 'jsmith')
+        def u1 = new User(username: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'jsmith')
+        def u2 = new User(username: 'jsmith')
         u2.id = 7404L
-        def u3 = new User(userName: 'jsmith')
+        def u3 = new User(username: 'jsmith')
         u3.id = 8473L
 
         expect: 'equals() is reflexive'
@@ -459,11 +459,11 @@ class UserSpec extends Specification {
 
     def 'Persisted instances are unequal if they have the different ID'() {
         given: 'three instances with same IDs but different names'
-        def u1 = new User(userName: 'jsmith')
+        def u1 = new User(username: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'bwayne')
+        def u2 = new User(username: 'bwayne')
         u2.id = 7403L
-        def u3 = new User(userName: 'mdoe')
+        def u3 = new User(username: 'mdoe')
         u3.id = 7403L
 
         expect: 'equals() is reflexive'
@@ -492,7 +492,7 @@ class UserSpec extends Specification {
 
     def 'Can compute hash code of a not persisted instance'() {
         given: 'an instance without ID'
-        def u = new User(userName: 'jsmith')
+        def u = new User(username: 'jsmith')
 
         expect:
         'jsmith'.hashCode() == u.hashCode()
@@ -500,7 +500,7 @@ class UserSpec extends Specification {
 
     def 'Hash codes are consistent'() {
         given: 'an instance with ID'
-        def u = new User(userName: 'jsmith')
+        def u = new User(username: 'jsmith')
         u.id = 7403L
 
         when: 'I compute the hash code'
@@ -508,7 +508,7 @@ class UserSpec extends Specification {
 
         then: 'the hash code remains consistent'
         for (int j = 0; j < 500; j++) {
-            u = new User(userName: 'bwayne')
+            u = new User(username: 'bwayne')
             u.id = 7403L
             h == u.hashCode()
         }
@@ -516,11 +516,11 @@ class UserSpec extends Specification {
 
     def 'Equal instances produce the same hash code'() {
         given: 'three instances with different IDs but same names'
-        def u1 = new User(userName: 'jsmith')
+        def u1 = new User(username: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'jsmith')
+        def u2 = new User(username: 'jsmith')
         u2.id = 7404L
-        def u3 = new User(userName: 'jsmith')
+        def u3 = new User(username: 'jsmith')
         u3.id = 8473L
 
         expect:
@@ -530,11 +530,11 @@ class UserSpec extends Specification {
 
     def 'Different instances produce different hash codes'() {
         given: 'three instances with same IDs but different names'
-        def u1 = new User(userName: 'jsmith')
+        def u1 = new User(username: 'jsmith')
         u1.id = 7403L
-        def u2 = new User(userName: 'bwayne')
+        def u2 = new User(username: 'bwayne')
         u2.id = 7403L
-        def u3 = new User(userName: 'mdoe')
+        def u3 = new User(username: 'mdoe')
         u3.id = 7403L
 
         expect:
@@ -605,7 +605,7 @@ class UserSpec extends Specification {
         )
 
         when: 'I set the user name'
-        u.userName = un
+        u.username = un
 
         then: 'the instance is valid or not'
         v == u.validate()
@@ -631,11 +631,11 @@ class UserSpec extends Specification {
             User,
             [
                 new User(
-                    userName: 'jdoe', password: 'test', firstName: 'Peter',
+                    username: 'jdoe', password: 'test', firstName: 'Peter',
                     lastName: 'Smith', email: 'psmith@example.com'
                 ),
                 new User(
-                    userName: 'admin', password: 'test', firstName: 'Peter',
+                    username: 'admin', password: 'test', firstName: 'Peter',
                     lastName: 'Smith', email: 'admin@example.com'
                 )
             ]
@@ -643,20 +643,20 @@ class UserSpec extends Specification {
 
         when: 'I create another user with a already used user name'
         def badUser = new User(
-            userName: 'jdoe', password: 'abcd', firstName: 'John',
+            username: 'jdoe', password: 'abcd', firstName: 'John',
             lastName: 'Doe', email: 'jdoe@example.com'
         )
         mockDomain User, [badUser]
 
         then: 'the unique constraint has not been fulfilled'
-        'unique' == badUser.errors['userName']
+        'unique' == badUser.errors['username']
 
         and: 'the user has not been saved'
         2 == User.count()
 
         when: 'I create another user with a new user name'
         def goodUser = new User(
-            userName: 'good', password: 'test', firstName: 'Peter',
+            username: 'good', password: 'test', firstName: 'Peter',
             lastName: 'Smith', email: 'good@example.com'
         )
         mockDomain User, [goodUser]
@@ -669,7 +669,7 @@ class UserSpec extends Specification {
     def 'Password must not be blank'(String p, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             firstName: 'John',
             lastName: 'Smith',
             phone: '+49 30 1234567',
@@ -702,7 +702,7 @@ class UserSpec extends Specification {
     def 'First name must not be blank'(String fn, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             lastName: 'Smith',
             phone: '+49 30 1234567',
@@ -735,7 +735,7 @@ class UserSpec extends Specification {
     def 'Last name must not be blank'(String ln, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             phone: '+49 30 1234567',
@@ -768,7 +768,7 @@ class UserSpec extends Specification {
     def 'Office phone number must not exceed length'(String p, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -802,7 +802,7 @@ class UserSpec extends Specification {
     def 'Home phone number must not exceed length'(String p, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -836,7 +836,7 @@ class UserSpec extends Specification {
     def 'Mobile phone number must not exceed length'(String m, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -870,7 +870,7 @@ class UserSpec extends Specification {
     def 'Fax number must not exceed length'(String f, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',
@@ -904,7 +904,7 @@ class UserSpec extends Specification {
     def 'E-mail must not be blank and must be valid'(String e, boolean v) {
         given: 'a quite valid user'
         def u = new User(
-            userName: 'jsmith',
+            username: 'jsmith',
             password: 'abcd',
             firstName: 'John',
             lastName: 'Smith',

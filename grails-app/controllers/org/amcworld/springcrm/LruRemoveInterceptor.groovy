@@ -1,7 +1,7 @@
 /*
  * LruRemoveInterceptor.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package org.amcworld.springcrm
 
 import grails.artefact.Interceptor
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 
 
 /**
@@ -29,13 +30,13 @@ import groovy.transform.CompileStatic
  * after their associated records have been deleted.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.1
  */
 @CompileStatic
 class LruRemoveInterceptor implements Interceptor {
 
-    //-- Instance variables ---------------------
+    //-- Fields ---------------------------------
 
     LruService lruService
 
@@ -46,8 +47,7 @@ class LruRemoveInterceptor implements Interceptor {
      * Creates a new instance of the interceptor.
      */
     LruRemoveInterceptor() {
-        match(action: 'delete')
-            .excludes(controller: 'document')
+        match(action: 'delete').excludes(controller: 'document')
     }
 
 
@@ -61,7 +61,9 @@ class LruRemoveInterceptor implements Interceptor {
      */
     boolean before() {
         if (params.confirmed) {
-            lruService.removeItem controllerName, params.id as long
+            lruService.removeItem(
+                controllerName, new ObjectId(params.id.toString())
+            )
         }
 
         true

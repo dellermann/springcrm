@@ -92,7 +92,7 @@ class GeneralFunctionalTest extends DbUnitSpecBase {
     protected void login() {
         Browser.drive {
             LoginPage page = to(LoginPage)
-            page.userName = 'mkampe'
+            page.username = 'mkampe'
             page.password = 'abc1234'
             page.loginBtn.click()
             waitFor { at OverviewPage }
@@ -261,7 +261,7 @@ Der Drucker zeigt nur an: „Bereit für Druck“. Das Problem besteht seit gest
      */
     protected User prepareUser() {
         def user = new User(
-            userName: 'rwendt',
+            username: 'rwendt',
             password: 'secret123',
             firstName: 'Regina',
             lastName: 'Wendt',

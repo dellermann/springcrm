@@ -270,13 +270,9 @@ grails:
 grails:
     plugin:
         springsecurity:
-            userLookup:
-                userDomainClassName: org.amcworld.springcrm.User
             authority:
                 className: org.amcworld.springcrm.Role
-            roleHierarchy: |-
-                ROLE_CONTENT_MANAGER > ROLE_USER
-                ROLE_ADMIN > ROLE_CONTENT_MANAGER
+                groupAuthorityNameField: authorities
             controllerAnnotations:
                 staticRules:
                     - pattern: /
@@ -286,6 +282,12 @@ grails:
                       access:
                           - permitAll
                     - pattern: /assets/**
+                      access:
+                          - permitAll
+                    - pattern: /help/**
+                      access:
+                          - permitAll
+                    - pattern: /install/**
                       access:
                           - permitAll
                     - pattern: /**/favicon.ico
@@ -300,8 +302,11 @@ grails:
                     - pattern: /**
                       filters: JOINED_FILTERS
             logout:
-                afterLogoutUrl: /admin
+                afterLogoutUrl: /
             printStatusMessages: false
+            userLookup:
+                userDomainClassName: org.amcworld.springcrm.User
+            useRoleGroups: true
 
 environments:
     development:

@@ -1,7 +1,5 @@
 /*
- * LruEntry.groovy
- *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Role.groovy
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,66 +18,49 @@
 
 package org.amcworld.springcrm
 
+import grails.compiler.GrailsCompileStatic
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import org.bson.types.ObjectId
 
 
 /**
- * The class {@code LruEntry} stores the data of an entry in the last recently
- * used (LRU) list.
+ * The class {@code Role} represents various roles which control the access to
+ * modules and components of the software.
  *
  * @author  Daniel Ellermann
  * @version 3.0
+ * @since   3.0
  */
-@EqualsAndHashCode(includes = ['user', 'controller', 'itemId'])
-@ToString(includes = ['user', 'controller', 'itemId'])
-class LruEntry {
+@GrailsCompileStatic
+@EqualsAndHashCode(includes = 'authority')
+@ToString(includes = 'authority')
+class Role implements Serializable {
+
+    //-- Constants ------------------------------
+
+    private static final long serialVersionUID = 1L
+
 
     //-- Class fields ---------------------------
 
     static constraints = {
-        controller blank: false
-        name nullable: true, blank: true
+        authority blank: false, unique: true
     }
     static mapping = {
-        compoundIndex user: 1, controller: 1
-        controller index: true
-        user index: true
-        version false
+        authority index: true, indexAttributes: [unique: true, dropDups: true]
     }
 
 
     //-- Fields ---------------------------------
 
     /**
-     * The controller where the item belongs to.
+     * The name of the role.
      */
-    String controller
+    String authority
 
     /**
-     * The ID of the LRU entry.
+     * The ID of the role.
      */
     ObjectId id
-
-    /**
-     * The ID of the item.
-     */
-    ObjectId itemId
-
-    /**
-     * The textual representation of the LRU item, for example the title of the
-     * item.
-     */
-    String name
-
-    /**
-     * The position of the LRU entry among others.
-     */
-    long pos
-
-    /**
-     * The user the LRU entry belongs to.
-     */
-    User user
 }

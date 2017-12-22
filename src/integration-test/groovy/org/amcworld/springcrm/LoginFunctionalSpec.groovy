@@ -45,7 +45,7 @@ class LoginFunctionalSpec extends DbUnitSpecBase {
         to LoginPage
 
         when: 'I enter an invalid user name and login'
-        userName = 'rkampe'
+        username = 'rkampe'
         password = 'abc1234'
         loginBtn.click()
 
@@ -54,7 +54,7 @@ class LoginFunctionalSpec extends DbUnitSpecBase {
         'Ungültiger Benutzername oder Kennwort. Bitte versuchen Sie es erneut.' == message
 
         when: 'I enter an invalid password and login'
-        userName = 'mkampe'
+        username = 'mkampe'
         password = 'abc1235'
         loginBtn.click()
 
@@ -76,7 +76,7 @@ class LoginFunctionalSpec extends DbUnitSpecBase {
         'Ungültiger Benutzername oder Kennwort. Bitte versuchen Sie es erneut.' == message
 
         when: 'I enter a missing password and login'
-        userName = 'mkampe'
+        username = 'mkampe'
         loginBtn.click()
 
         then: 'again, I get an error message and must re-enter data'
@@ -89,7 +89,7 @@ class LoginFunctionalSpec extends DbUnitSpecBase {
         to LoginPage
 
         when: 'I enter a valid user name and password'
-        userName = 'mkampe'
+        username = 'mkampe'
         password = 'abc1234'
         loginBtn.click()
 

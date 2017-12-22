@@ -401,7 +401,7 @@ class HttpUrl
   scheme: 'http'
 
   # @property [String] the user name, if any
-  userName: undefined
+  username: undefined
 
   # @property [String] the password of the user, if any
   password: undefined
@@ -456,8 +456,8 @@ class HttpUrl
     s = ''
     if @host
       s += "#{@scheme}://" if @scheme
-      if @userName
-        s += @userName
+      if @username
+        s += @username
         s += ":#{@password}" if @password
         s += '@'
       s += @host
@@ -495,7 +495,7 @@ class HttpUrl
     parts = url.match REGEXP
     if parts is null
       throw new Error("Invalid URL #{url}.")
-    [dummy, @scheme, @userName, @password, @host, @port, @path, qs,
+    [dummy, @scheme, @username, @password, @host, @port, @path, qs,
       @fragmentIdentifier] = parts
     if @port?
       @port = parseInt(@port, 10)

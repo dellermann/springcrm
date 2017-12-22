@@ -30,7 +30,7 @@ class LoginPage extends geb.Page {
         loginBtn { $('button[type=submit]') }
         message { $('aside > div.message').text() }
         password { $('input#password') }
-        userName { $('input#userName') }
+        username { $('input#username') }
     }
     static url = 'user/login'
 }

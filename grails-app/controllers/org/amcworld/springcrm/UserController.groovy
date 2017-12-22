@@ -52,7 +52,7 @@ class UserController extends GeneralController<User> {
 
     def authenticate() {
         User userInstance = User.findByUserNameAndPassword(
-            params.userName.toString(), params.password.toString()
+            params.username.toString(), params.password.toString()
         )
         if (userInstance == null) {
             flash.message =
@@ -87,7 +87,7 @@ class UserController extends GeneralController<User> {
         if (params.letter) {
             int max = params.int('max')
             int num = User.countByUserNameLessThan(params.letter.toString())
-            params.sort = 'userName'
+            params.sort = 'username'
             params.offset = Math.floor(num / max) * max
         }
 
@@ -120,7 +120,7 @@ class UserController extends GeneralController<User> {
 
     def settingsGoogleAuth() {
         com.google.api.client.auth.oauth2.Credential cred =
-            googleOAuthService.loadCredential(credential.userName)
+            googleOAuthService.loadCredential(credential.username)
 
         [authorized: cred != null]
     }
@@ -153,7 +153,7 @@ class UserController extends GeneralController<User> {
         }
 
         boolean res = googleOAuthService.obtainAndStoreCredential(
-            credential.userName,
+            credential.username,
             params.clientId.toString()
         )
         if (!res) {
@@ -171,7 +171,7 @@ class UserController extends GeneralController<User> {
     }
 
     def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy credential.userName
+        googleOAuthService.revokeAtProxy credential.username
 
         flash.message =
             message(code: 'user.settings.googleAuth.revoked.message') as Object

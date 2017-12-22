@@ -43,7 +43,7 @@ class CalendarEventControllerTests {
         ]
         CalendarEvent.metaClass.static.createCriteria = { crit }
         Reminder.metaClass.static.createCriteria = { crit }
-        session.user = new User(userName: 'dellermann')
+        session.user = new User(username: 'dellermann')
     }
 
     void testIndex() {
@@ -354,7 +354,7 @@ class CalendarEventControllerTests {
 
     protected void makeCalendarEventFixture(Date d = new Date()) {
         def recurrence = new RecurrenceData()
-        def user = new User(userName: 'dellermann')
+        def user = new User(username: 'dellermann')
         makeOrganizationFixture()
         def org = Organization.get(1)
         mockDomain(

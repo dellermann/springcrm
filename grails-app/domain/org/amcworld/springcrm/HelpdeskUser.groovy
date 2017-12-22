@@ -65,13 +65,13 @@ class HelpdeskUser implements Serializable {
 
     @Override
     int hashCode() {
-        "${helpdesk?.urlName}/${user?.userName}".toString().hashCode()
+        "${helpdesk?.urlName}/${user?.username}".toString().hashCode()
     }
 
     @Override
     String toString() {
         StringBuilder buf = new StringBuilder('Helpdesk ')
-        buf << helpdesk << ' -> user ' << user.userName
+        buf << helpdesk << ' -> user ' << user.username
 
         buf.toString()
     }

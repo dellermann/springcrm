@@ -145,7 +145,7 @@ class AbstractUserCredentialDataStore
         Set<String> res = new HashSet<String>()
         UserSetting.withTransaction {
             for (UserSetting entry : getEntries()) {
-                res << entry.user.userName
+                res << entry.user.username
             }
         }
 
@@ -286,11 +286,11 @@ class AbstractUserCredentialDataStore
     /**
      * Gets the user with the given name.
      *
-     * @param userName  the given user name
+     * @param username  the given user name
      * @return          the user object
      */
     @CompileStatic(TypeCheckingMode.SKIP)
-    private User getUser(String userName) {
-        User.findByUserName userName
+    private User getUser(String username) {
+        User.findByUserName username
     }
 }

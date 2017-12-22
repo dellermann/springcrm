@@ -60,8 +60,15 @@ body > .container > header {
   text-align: right;
   vertical-align: middle;
 }
-.login-info small {
-  padding: $padding-base-horizontal;
+.login-info {
+  margin-bottom: 1em;
+
+  small {
+    padding: $padding-base-horizontal;
+  }
+  form {
+    display: inline-block;
+  }
 }
 @media (min-width: $screen-sm-min) {
   body > .container > header .search-form .input-group > .form-control {

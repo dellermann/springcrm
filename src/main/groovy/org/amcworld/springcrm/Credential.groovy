@@ -48,7 +48,7 @@ final class Credential {
     /**
      * The user name of this credential for authentication.
      */
-    final String userName
+    final String username
 
     /**
      * The first name of the user with this credential.
@@ -122,7 +122,7 @@ final class Credential {
         }
 
         this.id = id
-        userName = user.userName
+        username = user.username
         firstName = user.firstName
         lastName = user.lastName
         phone = user.phone

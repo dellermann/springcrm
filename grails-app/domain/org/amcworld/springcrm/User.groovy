@@ -20,7 +20,9 @@
 
 package org.amcworld.springcrm
 
-import groovy.transform.CompileStatic
+import grails.compiler.GrailsCompileStatic
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 import org.bson.types.ObjectId
 
 
@@ -30,12 +32,20 @@ import org.bson.types.ObjectId
  * @author  Daniel Ellermann
  * @version 3.0
  */
-class User {
+@GrailsCompileStatic
+@EqualsAndHashCode(includes = 'username')
+@ToString(includes = 'fullName')
+class User implements Serializable {
+
+    //-- Constants ------------------------------
+
+    private static final long serialVersionUID = 1L
+
 
     //-- Constants ----------------------------------
 
     public static final List<String> SEARCH_FIELDS = [
-        'userName', 'firstName', 'lastName', 'phone', 'phoneHome', 'mobile',
+        'username', 'firstName', 'lastName', 'phone', 'phoneHome', 'mobile',
         'fax', 'email'
     ].asImmutable()
 
@@ -43,7 +53,7 @@ class User {
     //-- Class fields ---------------------------
 
     static constraints = {
-        userName blank: false, unique: true
+        username blank: false, unique: true
         password blank: false, password: true
         firstName blank: false
         lastName blank: false
@@ -55,9 +65,10 @@ class User {
         allowedModules nullable: true
     }
     static embedded = ['settings']
+    static hasMany = [authorities: RoleGroup]
     static mapping = {
-        sort 'userName'
-        userName index: 'user_name'
+        sort 'username'
+        username index: true, indexAttributes: [unique: true, dropDups: true]
     }
     static transients = [
         'allowedModulesAsSet', 'allowedModulesNames', 'fullName'
@@ -67,19 +78,39 @@ class User {
     //-- Fields ---------------------------------
 
     /**
-     * The ID of the user.
+     * Whether or not this user account has expired.
      */
-    ObjectId id
+    boolean accountExpired
 
     /**
-     * The user name of this user used for authentication.
+     * Whether or not this user account has been locked.
      */
-    String userName
+    boolean accountLocked
 
     /**
-     * The encrypted password of this user.
+     * The roles which have been associated to this user.
      */
-    String password
+    Set<RoleGroup> authorities
+
+    /**
+     * The timestamp when this user has been created.
+     */
+    Date dateCreated
+
+    /**
+     * The e-mail address of this user.
+     */
+    String email
+
+    /**
+     * Whether or not this user is enabled.
+     */
+    boolean enabled = true
+
+    /**
+     * The fax number of this user.
+     */
+    String fax
 
     /**
      * The first name of this user.
@@ -87,9 +118,34 @@ class User {
     String firstName
 
     /**
+     * The ID of the user.
+     */
+    ObjectId id
+
+    /**
      * The last name of this user.
      */
     String lastName
+
+    /**
+     * The timestamp when this user has been modified.
+     */
+    Date lastUpdated
+
+    /**
+     * The mobile phone number of this user.
+     */
+    String mobile
+
+    /**
+     * The encrypted password of this user.
+     */
+    String password
+
+    /**
+     * Whether or not the password has expired.
+     */
+    boolean passwordExpired
 
     /**
      * The office phone number of this user.
@@ -102,19 +158,14 @@ class User {
     String phoneHome
 
     /**
-     * The mobile phone number of this user.
+     * The settings of this user.
      */
-    String mobile
+    Map<String, Object> settings = [: ]
 
     /**
-     * The fax number of this user.
+     * The user name of this user used for authentication.
      */
-    String fax
-
-    /**
-     * The e-mail address of this user.
-     */
-    String email
+    String username
 
     /**
      * Whether or not this user is administrator and has access permissions to
@@ -122,26 +173,13 @@ class User {
      */
     boolean admin
 
+
+    //-- TODO ------------------
     /**
      * A comma separated list of module names this user may access.  This value
      * is only used if this user is no administrator.
      */
     String allowedModules
-
-    /**
-     * The timestamp when this user has been created.
-     */
-    Date dateCreated
-
-    /**
-     * The timestamp when this user has been modified.
-     */
-    Date lastUpdated
-
-    /**
-     * The settings of this user.
-     */
-    Map<String, Object> settings
 
 
     //-- Constructors ---------------------------
@@ -158,7 +196,7 @@ class User {
      * @since       2.0
      */
     User(User user) {
-        userName = user.userName
+        username = user.username
         firstName = user.firstName
         lastName = user.lastName
         phone = user.phone
@@ -166,6 +204,7 @@ class User {
         mobile = user.mobile
         fax = user.fax
         email = user.email
+        enabled = user.enabled
         admin = user.admin
         allowedModules = user.allowedModules
         settings = user.settings
@@ -179,7 +218,6 @@ class User {
      *
      * @return  the allowed modules
      */
-    @CompileStatic
     EnumSet<Module> getAllowedModulesAsSet() {
         if (!allowedModules?.trim()) {
             return EnumSet.noneOf(Module)
@@ -194,7 +232,6 @@ class User {
      * @param modules   the allowed modules that should be set; may be
      *                  {@code null}
      */
-    @CompileStatic
     void setAllowedModulesAsSet(EnumSet<Module> modules) {
         allowedModules = modules?.join(',') ?: ''
     }
@@ -205,7 +242,6 @@ class User {
      * @return  the names of the allowed modules
      * @since   2.0
      */
-    @CompileStatic
     Set<String> getAllowedModulesNames() {
         EnumSet<Module> modules = allowedModulesAsSet
         Set<String> res = new HashSet<String>(modules.size())
@@ -217,51 +253,31 @@ class User {
     }
 
     /**
-     * Sets the set of the names of the allowed modules of this user.
+     * Sets the set of the names of the allowed modules of the user.
      *
      * @param moduleNames   the names of the allowed modules that should be
      *                      set
      * @since               2.0
      */
-    @CompileStatic
     void setAllowedModulesNames(Set<String> moduleNames) {
         allowedModulesAsSet = Module.modulesByName(moduleNames)
     }
 
     /**
-     * Gets the full name of this user.  The full name consists of the first
+     * Gets the full name of the user.  The full name consists of the first
      * and the last name of the user separated by a space character.
      *
      * @return  the full name of the user
      */
-    @CompileStatic
     String getFullName() {
         String fn = firstName?.trim()
         String ln = lastName?.trim()
+
         StringBuilder buf = new StringBuilder()
         if (fn) buf << fn
         if (fn && ln) buf << ' '
         if (ln) buf << ln
 
         buf.toString()
-    }
-
-
-    //-- Public methods -------------------------
-
-    @Override
-    boolean equals(Object o) {
-        o instanceof User && o.userName == userName
-    }
-
-    @Override
-    int hashCode() {
-        (userName ?: '').hashCode()
-    }
-
-    @Override
-    @CompileStatic
-    String toString() {
-        fullName
     }
 }

@@ -35,7 +35,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 		given: 'two google data sync statuses with same user, type and itemId'
 		def g1 = new GoogleDataSyncStatus(
 			user: new User(
-				userName: 'userName',
+				username: 'username',
 				password: 'password',
 				firstName: 'firstName',
 				lastName: 'lastName',
@@ -60,7 +60,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 
 		def g2 = new GoogleDataSyncStatus(
 			user: new User(
-				userName: 'userName',
+				username: 'username',
 				password: 'password',
 				firstName: 'firstName',
 				lastName: 'lastName',
@@ -92,7 +92,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 		given:
 		def g = new GoogleDataSyncStatus(
 			user: new User(
-				userName: 'userName',
+				username: 'username',
 				password: 'password',
 				firstName: 'firstName',
 				lastName: 'lastName',
@@ -110,7 +110,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 		)
 
 		expect:
-		g.toString() == 'userName/T/14221'
+		g.toString() == 'username/T/14221'
 
 	}
 
@@ -118,7 +118,7 @@ class GoogleDataSyncStatusSpec extends Specification {
 		when:
 		def g = new GoogleDataSyncStatus(
 			user: new User(
-				userName: 'userName',
+				username: 'username',
 				password: 'password',
 				firstName: 'firstName',
 				lastName: 'lastName',

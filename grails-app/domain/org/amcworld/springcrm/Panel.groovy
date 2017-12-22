@@ -1,7 +1,7 @@
 /*
  * Panel.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,9 @@
 
 package org.amcworld.springcrm
 
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
+import org.bson.types.ObjectId
 import org.grails.datastore.gorm.GormEntity
 
 
@@ -27,18 +30,20 @@ import org.grails.datastore.gorm.GormEntity
  * The class {@code Panel} contains data about a panel on the overview page.
  *
  * @author	Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
+@EqualsAndHashCode(includes = ['user', 'panelId'])
+@ToString(includes = ['user', 'panelId'])
 class Panel implements GormEntity<Panel> {
 
     //-- Class fields ---------------------------
 
     static constraints = {
-		pos min: 0
+		pos min: 0i
 		panelId blank: false
     }
 	static mapping = {
-        panelId index: 'panel_id'
+        panelId index: true
         sort 'pos'
 		version false
 	}
@@ -47,26 +52,28 @@ class Panel implements GormEntity<Panel> {
 
     //-- Fields ---------------------------------
 
-	User user
-	int pos
-	String panelId
-	OverviewPanel panelDef
+    /**
+     * The ID of the panel.
+     */
+    ObjectId id
 
+    /**
+     * The loaded panel definition.
+     */
+    OverviewPanel panelDef
 
-    //-- Public methods -------------------------
+    /**
+     * The name of the panel.
+     */
+    String panelId
 
-    @Override
-    boolean equals(Object obj) {
-        obj instanceof Panel && obj.user == user && obj.panelId == panelId
-    }
+    /**
+     * The position of the panel on the overview page.
+     */
+    int pos
 
-    @Override
-    int hashCode() {
-        toString().hashCode()
-    }
-
-    @Override
-	String toString() {
-		"${user.userName}-${panelId}"
-	}
+    /**
+     * The user the panel is associated to.
+     */
+    User user
 }

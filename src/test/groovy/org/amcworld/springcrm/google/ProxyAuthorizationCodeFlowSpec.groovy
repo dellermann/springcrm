@@ -50,11 +50,11 @@ class ProxyAuthorizationCodeFlowSpec extends Specification {
     def setup() {
         mockDomain User, [
             [
-                userName: 'jsmith', password: 'secret', firstName: 'John',
+                username: 'jsmith', password: 'secret', firstName: 'John',
                 lastName: 'Smith', email: 'j.smith@example.com'
             ],
             [
-                userName: 'bwayne', password: 'very-secret',
+                username: 'bwayne', password: 'very-secret',
                 firstName: 'Barbra', lastName: 'Wayne',
                 email: 'b.wayne@example.com'
             ]

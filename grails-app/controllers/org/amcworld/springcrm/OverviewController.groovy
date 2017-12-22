@@ -23,6 +23,7 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
+import grails.plugin.springsecurity.annotation.Secured
 import java.text.NumberFormat
 import org.springframework.context.i18n.LocaleContextHolder as LCH
 
@@ -32,8 +33,9 @@ import org.springframework.context.i18n.LocaleContextHolder as LCH
  * overview page and handle the panels.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  */
+@Secured('isAuthenticated()')
 class OverviewController {
 
     //-- Fields ---------------------------------
@@ -45,55 +47,90 @@ class OverviewController {
 
     //-- Public methods -------------------------
 
+    /**
+     * Adds a new panel with the given ID and position.
+     *
+     * @param panelId   the given panel ID
+     * @param pos       the zero-based position of the panel on the overview
+     *                  page
+     */
+    def addPanel(String panelId, Integer pos) {
+        new Panel(user: (User) authenticatedUser, pos: pos, panelId: panelId)
+            .save flush: true
+
+        render status: SC_OK
+    }
+
+    /**
+     * Renders the part of the changelog file in
+     * {@code WEB-INF/data/changelog.md} until the marker
+     * {@code [comment]: STOP}.
+     *
+     * @return  the part of the Markdown changelog
+     * @since   2.0
+     */
+    def changelog() {
+        render(
+            text: overviewService.getChangelog(LCH.locale),
+            contentType: 'text/markdown',
+            encoding: 'UTF-8'
+        )
+    }
+
+    /**
+     * Stores the current version in the user settings to prevent display of
+     * changelog for this version.
+     *
+     * @return  always HTTP status code 200 (OK)
+     * @since   2.0
+     */
+    def changelogDontShowAgain() {
+        overviewService.dontShowAgain((User) authenticatedUser)
+
+        render status: SC_OK
+    }
+
     def index() {
         OverviewPanelRepository repository = OverviewPanelRepository.instance
-        Credential credential = (Credential) session.credential
+        User user = (User) authenticatedUser
 
-        List<Panel> panels = Panel.findAllByUser(credential.loadUser())
+        List<Panel> panels = Panel.findAllByUser(user)
         for (Panel panel : panels) {
             panel.panelDef = repository.getPanel(panel.panelId)
         }
 
         boolean showSeqNumberChangeHint =
-            !session.dontShowSeqNumberChangeHint &&
+            !session['dontShowSeqNumberChangeHint'] &&
             !seqNumberService.checkNumberScheme()
         if (showSeqNumberChangeHint) {
-            session.dontShowSeqNumberChangeHint = true
+            session['dontShowSeqNumberChangeHint'] = true
         }
-        boolean showChangelog = !session.dontShowChangelog &&
-            overviewService.showChangelog(credential)
+        boolean showChangelog = !session['dontShowChangelog'] &&
+            overviewService.showChangelog(user)
         if (showChangelog) {
-            session.dontShowChangelog = true
+            session['dontShowChangelog'] = true
         }
 
-        [
+        respond([
             allPanelDefs: repository.panels.values(),
             panels: panels,
             showSeqNumberChangeHint: showSeqNumberChangeHint,
             showChangelog: showChangelog,
-            user: ((Credential) session.credential).loadUser()
-        ]
+            user: user
+        ])
     }
 
     def listAvailablePanels() {
-        [repository: OverviewPanelRepository.instance, l: LCH.locale]
+        respond([repository: OverviewPanelRepository.instance, l: LCH.locale])
     }
 
     def lruList() {
-        [lruList: lruService.retrieveLruEntries()]
-    }
-
-    def addPanel(String panelId, Integer pos) {
-        new Panel(
-            user: session.credential.loadUser(), pos: pos, panelId: panelId
-        ).save flush: true
-
-        render status: SC_OK
+        respond lruService.retrieveLruEntries()
     }
 
     def movePanel(String panelId1, Integer pos1, String panelId2, Integer pos2)
     {
-        User user = session.credential.loadUser()
+        User user = (User) authenticatedUser
         Panel panel1 = Panel.findByUserAndPanelId(user, panelId1)
         Panel panel2 = Panel.findByUserAndPanelId(user, panelId2)
         if (!panel1 || !panel2) {
@@ -111,7 +148,7 @@ class OverviewController {
 
     def removePanel(String panelId) {
         Panel panel = Panel.findByUserAndPanelId(
-            ((Credential) session.credential).loadUser(), panelId
+            (User) authenticatedUser, panelId
         )
         if (!panel) {
             render status: SC_NOT_FOUND
@@ -119,37 +156,6 @@ class OverviewController {
         }
 
         panel.delete flush: true
-
-        render status: SC_OK
-    }
-
-    /**
-     * Renders the part of the changelog file in
-     * {@code WEB-INF/data/changelog.md} until the marker
-     * {@code [comment]: STOP}.
-     *
-     * @return  the part of the Markdown changelog
-     * @since   2.0
-     */
-    def changelog() {
-        Locale locale = LCH.locale
-
-        render(
-            text: overviewService.getChangelog(locale),
-            contentType: 'text/markdown',
-            encoding: 'UTF-8'
-        )
-    }
-
-    /**
-     * Stores the current version in the user settings to prevent display of
-     * changelog for this version.
-     *
-     * @return  always HTTP status code 200 (OK)
-     * @since   2.0
-     */
-    def changelogDontShowAgain() {
-        overviewService.dontShowAgain((Credential) session.credential)
 
         render status: SC_OK
     }
@@ -165,13 +171,13 @@ class OverviewController {
      * @since 2.1
      */
     def seqNumberHintDontShowAgain(int value) {
-        Credential credential = (Credential) session.credential
+        User user = (User) authenticatedUser
         switch (value) {
         case 1:
-            seqNumberService.setDontShowAgain credential
+            seqNumberService.setDontShowAgain user
             break
         case 2:
-            seqNumberService.setNeverShowAgain credential
+            seqNumberService.setNeverShowAgain user
             break
         }
 
@@ -193,13 +199,14 @@ class OverviewController {
         NumberFormat formatter = NumberFormat.getInstance(request.locale)
         BigDecimal min = formatter.parse(minimum) as BigDecimal
 
-        Credential credential = (Credential) session.credential
-        credential.settings.putAll(
+        User user = (User) authenticatedUser
+        user.settings.putAll(
             unpaidBillsMinimum: min <= BigDecimal.ZERO ? '' : min.toString(),
             unpaidBillsSort: sort,
             unpaidBillsMax: max,
             unpaidBillsOrder: order
         )
+        user.save flush: true
 
         redirect action: 'index'
     }
