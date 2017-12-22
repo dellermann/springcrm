@@ -23,7 +23,6 @@ package org.amcworld.springcrm
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
-import org.bson.types.ObjectId
 
 
 /**
@@ -43,7 +42,6 @@ class InstallController {
     //-- Fields ---------------------------------
 
     InstallService installService
-    SecurityService securityService
     SpringSecurityService springSecurityService
 
 
@@ -71,10 +69,10 @@ class InstallController {
     @Transactional
     def createAdminSave() {
         User user = new User(params)
-        user.authorities = [
-            RoleGroup.get(new ObjectId('5a2eb98e2ce1362b4fc77e53'))
-            // objectId defined in base-data-*.json
-        ] as Set
+        RoleGroup group = installService.installAdminGroup(
+            message(code: 'roleGroup.admin') as String
+        )
+        user.authorities = [group] as Set
 
         if (!user.password) {
             user.errors.rejectValue(

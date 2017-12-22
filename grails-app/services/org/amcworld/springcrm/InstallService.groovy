@@ -24,6 +24,7 @@ import com.mongodb.BasicDBList
 import com.mongodb.DBObject
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.Filters
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import groovy.transform.CompileStatic
@@ -65,6 +66,19 @@ class InstallService {
      * @since 2.0
      */
     private static final String ENABLE_FILE_NAME = 'ENABLE_INSTALLER'
+
+    /**
+     * The available roles in this application.
+     *
+     * @since 3.0
+     */
+    private static final List<String> ROLES = [
+        'ROLE_ADMIN', 'ROLE_BOILERPLATE', 'ROLE_CALENDAR', 'ROLE_CALL',
+        'ROLE_CONTACT', 'ROLE_CREDIT_MEMO', 'ROLE_DOCUMENT', 'ROLE_DUNNING',
+        'ROLE_HELPDESK', 'ROLE_INVOICE', 'ROLE_NOTE', 'ROLE_PRODUCT',
+        'ROLE_PROJECT', 'ROLE_PURCHASE_INVOICE', 'ROLE_QUOTE', 'ROLE_REPORT',
+        'ROLE_SALES_ORDER', 'ROLE_TICKET', 'ROLE_USER', 'ROLE_WORK'
+    ].asImmutable()
 
 
     //-- Fields ---------------------------------
@@ -121,6 +135,27 @@ class InstallService {
     }
 
     /**
+     * Installs a user group for administrators with the given localized name
+     * if it does not exist yet.
+     *
+     * @param name  the localized group name
+     * @return      the installed user group
+     * @since 3.0
+     */
+    RoleGroup installAdminGroup(String name) {
+        Role role = Role.find(Filters.eq('authority','ROLE_ADMIN')).first()
+
+        RoleGroup group =
+            RoleGroup.find(Filters.eq('authorities', role.id)).first()
+        if (group == null) {
+            group = new RoleGroup(name: name, authorities: [role] as Set)
+                .save failOnError: true, flush: true
+        }
+
+        group
+    }
+
+    /**
      * Installs the base data package with the given key in the database.
      *
      * @param key   the given package key
@@ -144,6 +179,17 @@ class InstallService {
                 collection.drop()
                 collection.insertMany(list)
             }
+        }
+    }
+
+    /**
+     * Installs all necessary roles for this application.
+     *
+     * @since 3.0
+     */
+    void installRoles() {
+        for (String role : ROLES) {
+            installRole role
         }
     }
 
@@ -219,5 +265,21 @@ class InstallService {
         )
 
         res.exists() ? res.inputStream : null
+    }
+
+    /**
+     * Installs the role with the given name if it does not exist already.
+     *
+     * @param name  the name of the role
+     * @return      the installed role
+     */
+    private static Role installRole(String name) {
+        Role role = Role.find(Filters.eq('authority', name)).first()
+        if (role == null) {
+            role = new Role(authority: name)
+                .save failOnError: true, flush: true
+        }
+
+        role
     }
 }

@@ -51,6 +51,9 @@ class BootStrap {
             'java.lang.Exception': '/error'
         ]
 
+        /* initialize data */
+        installService.installRoles()
+
         /* start tasks */
         Config config = ConfigHolder.instance.getConfig('syncContactsFrequency')
         long interval = (config ? (config.value as Long) : 5L) * 60000L

@@ -41,7 +41,7 @@ class RoleGroup implements Serializable {
 
     //-- Constants ------------------------------
 
-    private static final long serialVersionUID = 1
+    private static final long serialVersionUID = 1L
 
 
     //-- Class fields ---------------------------
