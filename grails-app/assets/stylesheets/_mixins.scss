@@ -32,7 +32,7 @@
 @mixin make-control-sizes($class, $cols, $suffix: "") {
   $d: 2 * $grid-columns;
 
-  @media (min-width: #{"screen-#{$class}-min"}) {
+  @media (min-width: #{"$screen-#{$class}-min"}) {
     .column-group > .column:only-child {
       #{".control-label#{$suffix}"} {
         width: percentage($cols / $d);
@@ -41,7 +41,7 @@
         width: percentage(($d - $cols) / $d);
       }
     }
-    @if $suffix != "" {
+    @if $suffix == "" {
       .control-label {
         width: percentage($cols / $grid-columns);
       }

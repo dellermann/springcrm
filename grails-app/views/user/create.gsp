@@ -1,10 +1,5 @@
 <html>
-  <head>
-    <meta name="layout" content="main" />
-  </head>
-
   <body>
-    <g:applyLayout name="create"
-      model="[type: 'user', instance: userInstance]" />
+    <g:applyLayout name="create" model="[type: 'user', instance: user]"/>
   </body>
 </html>

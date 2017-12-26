@@ -2,11 +2,10 @@
 
 <html>
   <head>
-    <meta name="layout" content="main"/>
   </head>
 
   <body>
-    <g:applyLayout name="list" model="[list: userInstanceList, type: 'user']">
+    <g:applyLayout name="list" model="[list: userList, type: 'user']">
       <div class="visible-xs">
         <g:letterBar clazz="${User}" property="username" numLetters="5"
           separator="-"/>
@@ -37,36 +36,36 @@
             </tr>
           </thead>
           <tbody>
-          <g:each in="${userInstanceList}" status="i" var="userInstance">
+          <g:each var="user" in="${userList}">
             <tr>
               <td class="col-type-string user-user-name">
-                <g:link action="show" id="${userInstance.id}">
-                  <g:fieldValue bean="${userInstance}" field="username"/>
+                <g:link action="show" id="${user.id}">
+                  <g:fieldValue bean="${user}" field="username"/>
                 </g:link>
               </td>
               <td class="col-type-string user-last-name">
-                <g:fieldValue bean="${userInstance}" field="lastName"/>
+                <g:fieldValue bean="${user}" field="lastName"/>
               </td>
               <td class="col-type-string user-first-name">
-                <g:fieldValue bean="${userInstance}" field="firstName"/>
+                <g:fieldValue bean="${user}" field="firstName"/>
               </td>
               <td class="col-type-string user-phone">
-                <a href="tel:${fieldValue(bean: userInstance, field: "phone")}">
-                  <g:fieldValue bean="${userInstance}" field="phone"/>
+                <a href="tel:${fieldValue(bean: user, field: "phone")}">
+                  <g:fieldValue bean="${user}" field="phone"/>
                 </a>
               </td>
               <td class="col-type-string user-mobile">
-                <a href="tel:${fieldValue(bean: userInstance, field: "mobile")}">
-                  <g:fieldValue bean="${userInstance}" field="mobile"/>
+                <a href="tel:${fieldValue(bean: user, field: "mobile")}">
+                  <g:fieldValue bean="${user}" field="mobile"/>
                 </a>
               </td>
               <td class="col-type-string user-email">
-                <a href="mailto:${fieldValue(bean: userInstance, field: "email")}">
-                  <g:fieldValue bean="${userInstance}" field="email"/>
+                <a href="mailto:${fieldValue(bean: user, field: "email")}">
+                  <g:fieldValue bean="${user}" field="email"/>
                 </a>
               </td>
               <td class="col-actions">
-                <g:button action="edit" id="${userInstance.id}"
+                <g:button action="edit" id="${user.id}"
                   color="success" size="xs" icon="pencil-square-o"
                   message="default.button.edit.label"/>
               </td>
@@ -78,11 +77,11 @@
       <div class="row">
         <nav class="col-xs-12 col-md-9 pagination-container">
           <div class="visible-xs">
-            <g:paginate total="${userInstanceTotal}" maxsteps="3"
+            <g:paginate total="${userCount}" maxsteps="3"
               class="pagination-sm"/>
           </div>
           <div class="hidden-xs">
-            <g:paginate total="${userInstanceTotal}"/>
+            <g:paginate total="${userCount}"/>
           </div>
         </nav>
         <g:render template="/layouts/numItemsPerPage"/>

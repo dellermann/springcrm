@@ -1,5 +1,5 @@
 <div class="btn-group">
-  <g:if test="${session.credential.settings['saveType'] == 'save'}">
+  <g:if test="${userSetting(key: 'saveType') == 'save'}">
   <button type="submit" form="${formName}" class="btn btn-success">
     <i class="fa fa-save"></i>
     <g:message code="default.button.save.label"/>

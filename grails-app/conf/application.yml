@@ -115,6 +115,9 @@ grails:
                 staticparts: none
             sitemesh:
                 preprocess: true
+    sitemesh:
+        default:
+            layout: main
 endpoints:
     jmx:
         unique-names: true

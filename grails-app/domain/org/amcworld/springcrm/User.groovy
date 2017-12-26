@@ -34,7 +34,6 @@ import org.bson.types.ObjectId
  */
 @GrailsCompileStatic
 @EqualsAndHashCode(includes = 'username')
-@ToString(includes = 'fullName')
 class User implements Serializable {
 
     //-- Constants ------------------------------
@@ -205,8 +204,7 @@ class User implements Serializable {
         fax = user.fax
         email = user.email
         enabled = user.enabled
-        admin = user.admin
-        allowedModules = user.allowedModules
+        authorities = user.authorities
         settings = user.settings
     }
 
@@ -279,5 +277,13 @@ class User implements Serializable {
         if (ln) buf << ln
 
         buf.toString()
+    }
+
+
+    //-- Public methods -------------------------
+
+    @Override
+    String toString() {
+        fullName
     }
 }

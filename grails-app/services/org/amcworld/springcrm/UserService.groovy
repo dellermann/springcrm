@@ -1,7 +1,7 @@
 /*
  * UserService.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,63 @@
 
 package org.amcworld.springcrm
 
-import grails.transaction.Transactional
+import com.mongodb.client.model.Filters
+import grails.gorm.services.Service
+import grails.gorm.transactions.Transactional
 import java.text.DecimalFormatSymbols
+import org.bson.types.ObjectId
 import org.grails.web.util.WebUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
+
+
+/**
+ * The interface {@code IUserService} contains general methods to handle users
+ * in the underlying data store.
+ *
+ * @author  Daniel Ellermann
+ * @version 3.0
+ * @since   3.0
+ */
+interface IUserService {
+
+    /**
+     * Counts the users.
+     *
+     * @return  the number of users
+     */
+    int countUsers()
+
+    /**
+     * Deletes the user with the given ID.
+     *
+     * @param id    the ID of the user
+     */
+    void deleteUser(ObjectId id)
+
+    /**
+     * Gets the user with the given ID.
+     *
+     * @param id    the ID of the user
+     * @return      the user or {@code null} if no such user exists
+     */
+    User getUser(ObjectId id)
+
+    /**
+     * Retrieves a list of all users.
+     *
+     * @param args  any arguments used for retrieving the user
+     * @return      a list of users
+     */
+    List<User> listUsers(Map args)
+
+    /**
+     * Saves the given user.
+     *
+     * @param user  the user which should be saved
+     * @return      the saved user
+     */
+    User saveUser(User user)
+}
 
 
 /**
@@ -31,11 +84,12 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * user settings.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   1.3
  */
+@Service(User)
 @Transactional
-class UserService {
+abstract class UserService implements IUserService {
 
     //-- Constants ------------------------------
 
@@ -79,13 +133,14 @@ class UserService {
      *          immutable
      */
     List<Locale> getAvailableLocales() {
-        def availLangs = availableLanguages
+        List<String> l = availableLanguages
         List<Locale> res = []
-        for (Locale l in Locale.availableLocales) {
-            if (l.country && availLangs.contains(l.language)) {
-                res << l
+        for (Locale locale in Locale.availableLocales) {
+            if (locale.country && l.contains(locale.language)) {
+                res << locale
             }
         }
+
         Collections.unmodifiableList res
     }
 
@@ -102,7 +157,8 @@ class UserService {
             if (currencyCode) {
                 currency = Currency.getInstance(currencyCode)
             }
-        } catch (IllegalArgumentException e) { /* ignored */ }
+        } catch (IllegalArgumentException ignored) { /* ignored */ }
+
         currency ?: Currency.getInstance('EUR')
     }
 
@@ -125,6 +181,7 @@ class UserService {
      */
     Locale getCurrentLocale() {
         def request = WebUtils.retrieveGrailsWebRequest().currentRequest
+
         RCU.getLocale(request) ?: Locale.default
     }
 
@@ -166,9 +223,10 @@ class UserService {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
             numFractionDigits = 2
         }
+
         numFractionDigits
     }
 
@@ -186,9 +244,30 @@ class UserService {
             if (numFractionDigits == null) {
                 numFractionDigits = currency.defaultFractionDigits
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
             numFractionDigits = 2
         }
+
         numFractionDigits
+    }
+
+    /**
+     * Checks whether or not the given user is the only administrator of the
+     * system.
+     *
+     * @param user  the given user
+     * @return      {@code true} if the given user is the only administrator;
+     *              {@code false} otherwise
+     * @since 3.0
+     */
+    boolean isOnlyAdmin(User user) {
+        Role role = Role.findByAuthority('ROLE_ADMIN')
+        RoleGroup group = RoleGroup.find(Filters.eq('authorities', role.id))
+            .first()
+        if (!user.authorities.contains(group)) {
+            return false
+        }
+
+        User.count(Filters.eq('authorities', group.id)) == 1
     }
 }

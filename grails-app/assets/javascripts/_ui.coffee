@@ -51,7 +51,7 @@ $ = jQuery
 # Class `Page` handles default components of pages in this application.
 #
 # @author   Daniel Ellermann
-# @version  2.2
+# @version  3.0
 #
 class Page
 
@@ -64,6 +64,7 @@ class Page
   $I18N = $I
 
   # @nodoc
+  #noinspection JSUnresolvedVariable
   $LANG = $L
 
 
@@ -95,9 +96,7 @@ class Page
         (event) => @_onClickSaveLink event, true
       )
       .on('click', '.btn-print', -> win.print())
-      .on('click', '.btn-action-delete[href]', (event) =>
-        @_onClickDeleteBtn event
-      )
+      .on('click', '.btn-action-delete', (event) => @_onClickDeleteBtn event)
       .on('click', '.hidden-assessments > header > h3', (event) =>
         @_onClickHiddenAssessmentsHeader event
       )
@@ -462,6 +461,7 @@ class Page
   #
   _onClickDeleteBtn: (event) ->
     $ = jq
+    #noinspection JSUnresolvedVariable
     $LANG = $L
 
     $target = $(event.currentTarget)

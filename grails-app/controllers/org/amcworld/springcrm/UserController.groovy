@@ -20,8 +20,15 @@
 
 package org.amcworld.springcrm
 
-import javax.servlet.http.HttpServletResponse
+import static org.springframework.http.HttpStatus.*
+
+import com.mongodb.client.model.Filters
+import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.LocaleUtils
+import org.bson.types.ObjectId
+import com.google.api.client.auth.oauth2.Credential
 
 
 /**
@@ -29,100 +36,137 @@ import org.apache.commons.lang.LocaleUtils
  * the application.
  *
  * @author  Daniel Ellermann
- * @version 2.2
+ * @version 3.0
  */
-class UserController extends GeneralController<User> {
+@Secured(['ROLE_ADMIN', 'ROLE_USER'])
+@Transactional(readOnly = true)
+class UserController {
+
+    //-- Class fields -------------------------------
+
+    static allowedMethods = [save: 'POST', update: 'PUT', delete: 'DELETE']
+
 
     //-- Fields ---------------------------------
 
     GoogleOAuthService googleOAuthService
-    InstallService installService
-    SecurityService securityService
+    SpringSecurityService springSecurityService
     UserService userService
-
-
-    //-- Constructors ---------------------------
-
-    UserController() {
-        super(User)
-    }
 
 
     //-- Public methods -------------------------
 
-    def authenticate() {
-        User userInstance = User.findByUserNameAndPassword(
-            params.username.toString(), params.password.toString()
-        )
-        if (userInstance == null) {
-            flash.message =
-                message(code: 'user.authenticate.failed.message') as Object
-            redirect action: 'login'
-            return
-        }
-
-        session['credential'] = new Credential(userInstance)
-        setUserLocale()
-
-        redirect controller: 'overview', action: 'index'
-    }
-
-    def copy(Long id) {
-        super.copy id
+    def copy(User user) {
+        respond new User(user), view: 'create'
     }
 
     def create() {
-        super.create()
+        respond new User(params)
     }
 
-    def delete(Long id) {
-        super.delete id
-    }
-
-    def edit(Long id) {
-        super.edit id
-    }
-
-    def index() {
-        if (params.letter) {
-            int max = params.int('max')
-            int num = User.countByUserNameLessThan(params.letter.toString())
-            params.sort = 'username'
-            params.offset = Math.floor(num / max) * max
+    @Transactional
+    def delete(User user) {
+        if (user == null) {
+            transactionStatus.setRollbackOnly()
+            notFound()
+            return
         }
 
-        super.index()
+        if (userService.isOnlyAdmin(user)) {
+            render status: FORBIDDEN
+            return
+        }
+
+        userService.deleteUser user.id
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.deleted.message',
+                    args: [message(code: 'user.label'), user.toString()]
+                ) as Object
+                redirect(
+                    action: 'index', method: 'GET'
+                )
+            }
+            '*' { render status: NO_CONTENT }
+        }
     }
 
-    def login() {}
-
-    def logout() {
-        flash.message = message(code: 'user.logout.message') as Object
-        session['credential'] = null
-        session.invalidate()
-
-        redirect action: 'login'
+    def edit(User user) {
+        respond user
     }
 
-    def save() {
-        super.save()
+    def index(Integer max) {
+        if (params.letter) {
+            Number num = User.count(
+                Filters.lt('username', params.letter.toString())
+            )
+            params.sort = 'username'
+            params.offset = Math.floor(num.toDouble() / max) * max
+        }
+
+        respond(
+            userService.listUsers(params),
+            model: [userCount: userService.countUsers()]
+        )
+    }
+
+    @Transactional
+    def save(User user) {
+        if (user == null) {
+            transactionStatus.setRollbackOnly()
+            notFound()
+            return
+        }
+
+        if (!user.password) {
+            user.errors.rejectValue(
+                'password', 'default.blank.message',
+                [message(code: 'user.password.label')] as Object[], ''
+            )
+        } else if (params.password != params.passwordRepeat) {
+            user.errors.rejectValue 'password', 'user.password.mismatch'
+        } else {
+            user.password = encodePassword(user.password)
+        }
+
+        if (user.hasErrors()) {
+            transactionStatus.setRollbackOnly()
+            respond user.errors, view: 'create'
+            return
+        }
+
+        userService.saveUser user
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.created.message',
+                    args: [message(code: 'user.label'), user.toString()]
+                ) as Object
+                redirect user
+            }
+            '*' { respond user, [status: CREATED] }
+        }
     }
 
     def settingsControl() {
-        [saveType: credential.settings['saveType'] ?: 'saveAndClose']
+        respond saveType: user.settings['saveType'] ?: 'saveAndClose'
     }
 
     def settingsControlSave(String saveType) {
-        credential.settings['saveType'] = saveType
+        User user = getUser()
+        user.settings['saveType'] = saveType
+        userService.saveUser user
 
         redirect action: 'settingsIndex'
     }
 
     def settingsGoogleAuth() {
-        com.google.api.client.auth.oauth2.Credential cred =
-            googleOAuthService.loadCredential(credential.username)
+        Credential cred = googleOAuthService.loadCredential(user.username)
 
-        [authorized: cred != null]
+        respond authorized: cred != null
     }
 
     def settingsGoogleAuthRequest() {
@@ -153,8 +197,7 @@ class UserController extends GeneralController<User> {
         }
 
         boolean res = googleOAuthService.obtainAndStoreCredential(
-            credential.username,
-            params.clientId.toString()
+            user.username, params.clientId.toString()
         )
         if (!res) {
             flash.message = message(
@@ -171,7 +214,7 @@ class UserController extends GeneralController<User> {
     }
 
     def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy credential.username
+        googleOAuthService.revokeAtProxy user.username
 
         flash.message =
             message(code: 'user.settings.googleAuth.revoked.message') as Object
@@ -187,7 +230,10 @@ class UserController extends GeneralController<User> {
             }
         locales = locales.sort { a, b -> a.value <=> b.value }
 
-        [locales: locales, currentLocale: userService.currentLocale.toString()]
+        respond(
+            currentLocale: userService.currentLocale.toString(),
+            locales: locales
+        )
     }
 
     def settingsLanguageSave(String locale) {
@@ -198,90 +244,133 @@ class UserController extends GeneralController<User> {
 
     def settingsSync() {
         List<Long> values =
-            credential.settings.excludeFromSync?.split(/,/)?.collect {
+            user.settings.excludeFromSync?.toString()?.split(/,/)?.collect {
                 it as Long
             }
 
-        [ratings: Rating.list(), excludeFromSync: values]
+        respond ratings: Rating.list(), excludeFromSync: values
     }
 
     def settingsSyncSave() {
-        credential.settings.excludeFromSync = params.excludeFromSync.join ','
+        User user = getUser()
+        user.settings.excludeFromSync = params.excludeFromSync.join ','
+        userService.saveUser user
 
         redirect action: 'settingsIndex'
     }
 
-    def show(Long id) {
-        super.show id
+    def show(User user) {
+        respond user, model: [disableDelete: userService.isOnlyAdmin(user)]
     }
 
     def storeSetting() {
-        credential.settings.put params.key.toString(), params.value.toString()
+        User user = getUser()
+        user.settings.put params.key.toString(), params.value
+        userService.saveUser user
 
-        render status: HttpServletResponse.SC_OK
+        render status: OK
     }
 
-    def update(Long id) {
-        super.update id
+    @Transactional
+    def update(String id) {
+        User user = userService.getUser(new ObjectId(id))
+        if (user == null) {
+            transactionStatus.setRollbackOnly()
+            notFound()
+            return
+        }
+
+        bindData user, params, [exclude: ['password', 'authorities']]
+        Set<RoleGroup> authorities = new HashSet<>(1)
+        if (params.authorities) {
+            RoleGroup authority = RoleGroup.get(params.authorities?.toString())
+            if (authority != null) {
+                authorities.add authority
+            }
+        }
+        user.authorities = authorities
+        user.validate()
+
+        String password = params.password
+        if (password) {
+            if (password == params.passwordRepeat) {
+                user.password = encodePassword(password)
+            } else {
+                user.errors.rejectValue 'password', 'user.password.mismatch'
+            }
+        }
+
+        if (user.hasErrors()) {
+            transactionStatus.setRollbackOnly()
+            respond user.errors, view: 'edit'
+            return
+        }
+
+        userService.saveUser user
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.updated.message',
+                    args: [message(code: 'user.label'), user]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { respond user, [status: OK] }
+        }
     }
 
 
     //-- Non-public methods ---------------------
 
     /**
-     * Checks whether or not the submitted password has been repeated
-     * correctly.
+     * Encodes the given password.
      *
-     * @return  {@code} if the password has been repeated correctly;
-     *          {@code false} otherwise
-     * @since   2.2
+     * @param password  the given password
+     * @return          the encoded password
+     * @since 3.0
      */
-    private boolean isPasswordMatch() {
-        params.password ==
-            securityService.encryptPassword(params.passwordRepeat?.toString())
+    private String encodePassword(String password) {
+        springSecurityService?.passwordEncoder \
+            ? springSecurityService.encodePassword(password)
+            : password
     }
 
-    @Override
-    protected User lowLevelSave() {
-        User userInstance = new User()
-        bindData userInstance, params, [exclude: ['allowedModulesNames']]
-        userInstance.allowedModulesNames =
-            params.list('allowedModulesNames') as Set
-
-        if (!passwordMatch) {
-            userInstance.errors.rejectValue(
-                'password', 'user.password.doesNotMatch'
-            )
-            return null
-        }
-
-        userInstance.save failOnError: true, flush: true
+    /**
+     * Gets the currently logged in user.
+     *
+     * @return  the currently logged in user
+     * @since   3.0
+     */
+    private User getUser() {
+        springSecurityService.currentUser as User
     }
 
-    @Override
-    protected User lowLevelUpdate(User userInstance) {
-        String oldPassword = userInstance.password
-        bindData userInstance, params, [exclude: ['allowedModulesNames']]
-        userInstance.allowedModulesNames =
-            params.list('allowedModulesNames') as Set
-
-        if (params.password && !passwordMatch) {
-            userInstance.errors.rejectValue(
-                'password', 'user.password.doesNotMatch'
-            )
-            return null
+    /**
+     * Creates a response if the domain model instance has not been found.
+     *
+     * @since 3.0
+     */
+    private void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(
+                    code: 'default.not.found.message',
+                    args: [message(code: 'user.label'), params.id]
+                ) as Object
+                redirect action: 'index', method: 'GET'
+            }
+            '*' { render status: NOT_FOUND }
         }
-
-        userInstance.password = params.password ?: oldPassword
-
-        userInstance.save failOnError: true, flush: true
     }
 
     private void setUserLocale(String locale = null) {
+        User user = getUser()
         if (locale) {
-            credential.settings.locale = locale
+            user.settings.locale = locale
+            userService.saveUser user
         } else {
-            locale = credential.settings.locale
+            locale = user.settings.locale
         }
         if (locale) {
             session['org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'] =
