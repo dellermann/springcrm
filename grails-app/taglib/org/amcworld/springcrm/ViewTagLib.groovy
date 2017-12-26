@@ -1,7 +1,7 @@
 /*
  * ViewTagLib.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,16 @@
 
 package org.amcworld.springcrm
 
+import com.mongodb.client.model.Aggregates
+import com.mongodb.client.model.Projections
+import com.mongodb.client.model.Sorts
+import grails.artefact.TagLibrary
 import grails.web.mapping.UrlMapping
 import java.text.DateFormatSymbols
 import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.StringUtils
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
+import org.bson.Document as MDocument
 
 
 /**
@@ -32,10 +37,10 @@ import org.springframework.web.servlet.support.RequestContextUtils as RCU
  * views.
  *
  * @author  Daniel Ellermann
- * @version 2.1
+ * @version 3.0
  * @since   2.0
  */
-class ViewTagLib {
+class ViewTagLib implements TagLibrary {
 
     //-- Constants ------------------------------
 
@@ -242,9 +247,9 @@ class ViewTagLib {
      */
     def createBackLink = { attrs, body ->
         if (params.returnUrl) {
-            out << params.returnUrl
+            out << (params.returnUrl as String)
         } else {
-            out << createLink(attrs, body)
+            out << (createLink(attrs, body) as String)
         }
     }
 
@@ -432,59 +437,37 @@ class ViewTagLib {
     def letterBar = { attrs, body ->
         Class<?> cls = attrs.clazz
         String prop = attrs.property
-        String controller = attrs.controller ?: controllerName
-        String action = attrs.action ?: actionName
-        int numLetters = (attrs.numLetters ?: 1) as int
-        String separator = attrs.separator
 
-        GString sql = "select upper(substring(o.${prop}, 1, 1)) from ${cls.simpleName} as o"
-        if (attrs.where) {
-            sql += " where ${attrs.where}"
-        }
-        sql += " group by upper(substring(o.${prop}, 1, 1))"
-        List<String> letters = cls.'executeQuery'(sql)
-
-        String availableLetters = message(
-            code: 'default.letterBar.letters',
-            default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        )
-        int n = availableLetters.size()
-        List<String> items = []
-        for (int i = 0; i < n; i += numLetters) {
-            boolean inList = false
-            for (int j = 0; j < numLetters && i + j < n; j++) {
-                String letter = availableLetters[i + j]
-                inList |= letter in letters
-            }
-            StringBuilder buf = new StringBuilder('<a href="')
-            if (inList) {
-                buf << createLink(
-                    controller: controller, action: action,
-                    params: (attrs.params ?: [:]) +
-                        [letter: availableLetters[i], max: params.max ?: 10]
+        List<String> letters = cls.collection.aggregate([
+            Aggregates.project(
+                Projections.computed(
+                    'letter',
+                    new MDocument(
+                        '$toUpper',
+                        new MDocument('$substrCP', ['$' + prop, 0, 1])
+                    )
                 )
-            } else {
-                buf << '#'
-            }
-            buf << '" class="btn btn-default'
-            if (!inList) buf << ' disabled'
-            buf << '" role="button"'
-            if (!inList) buf << ' aria-disabled="true"'
-            buf << '>'
-            if (separator && numLetters > 2) {
-                buf << availableLetters[i] << separator
-                buf << availableLetters[Math.min(n, i + numLetters) - 1]
-            } else {
-                for (int j = 0; j < numLetters && i + j < n; j++) {
-                    buf << availableLetters[i + j]
-                }
-            }
-            buf << '</a>'
-            items << buf.toString()
-        }
-        out << '<div class="btn-group btn-group-justified letter-bar" role="group" aria-label="'
-        out << message(code: 'default.letterBar.label')
-        out << '">' << items.join('') << '</div>'
+            ),
+            Aggregates.group('$letter'),
+            Aggregates.sort(Sorts.orderBy(Sorts.ascending('_id')))
+        ])*._id
+
+        out << (render(
+            template: '/tags/view/letterBar',
+            model: [
+                action: attrs.action ?: actionName,
+                availableLetters: message(
+                    code: 'default.letterBar.letters',
+                    default: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                ),
+                controller: attrs.controller ?: controllerName,
+                letters: letters,
+                linkParams: attrs.params ?: [: ],
+                max: params.max ?: 10,
+                numLetters: (attrs.numLetters ?: 1) as int,
+                separator: attrs.separator
+            ]
+        ) as String)
     }
 
     /**
