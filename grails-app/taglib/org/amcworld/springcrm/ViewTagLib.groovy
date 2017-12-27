@@ -83,34 +83,15 @@ class ViewTagLib implements TagLibrary {
      * @attr suffix the suffix to display after the number field
      */
     def autoNumber = { attrs, body ->
-        boolean checked = true
-        if (params._autoNumber != null) checked = params.autoNumber
-
-        out << '<div class="auto-number"><div class="input-group">'
-        if (attrs.prefix) {
-            out << '<span class="input-group-addon">'
-            out << attrs.prefix.encodeAsHTML()
-            out << '-</span>'
-        }
-        out << '<input type="number" name="number" id="number" class="form-control" value="'
-        out << attrs.value
-        out << '" size="10"'
-        if (checked) out << ' disabled="disabled"'
-        out << ' />'
-        if (attrs.suffix) {
-            out << '<span class="input-group-addon">-'
-            out << attrs.suffix.encodeAsHTML()
-            out << '</span>'
-        }
-        out << '</div>'
-        out << '<div class="checkbox">'
-        out << '<label class="checkbox-inline">'
-        out << checkBox(
-            name: 'autoNumber', checked: checked, 'aria-controls': 'number'
-        )
-        out << message(code: 'default.number.auto.label')
-        out << '</label>'
-        out << '</div></div>'
+        out << (render(
+            template: '/tags/view/autoNumber',
+            model: [
+                checked: params._autoNumber == null ? true : params.autoNumber,
+                prefix: attrs.prefix,
+                suffix: attrs.suffix,
+                value: attrs.value
+            ]
+        ) as String)
     }
 
     /**
@@ -131,7 +112,7 @@ class ViewTagLib implements TagLibrary {
         if (params.returnUrl) {
             attrs.url = params.returnUrl
         }
-        out << link(attrs, body)
+        out << (link(attrs, body) as String)
     }
 
     /**
@@ -181,7 +162,7 @@ class ViewTagLib implements TagLibrary {
         if (s) {
             def args = attrs.remove('args')
             def defValue = attrs.remove('default')
-            buf << message(code: s, args: args, default: defValue)
+            buf << (message(code: s, args: args, default: defValue) as String)
         } else {
             buf << body()
         }
@@ -194,7 +175,7 @@ class ViewTagLib implements TagLibrary {
             attrs.params || attrs.uri || attrs.url)
         {
             def data = attrs + [class: cssClass, role: 'button']
-            out << link(data) { content }
+            out << (link(data) { content } as String)
         } else {
             out << '<button type="button" class="' << cssClass << '"'
             def id = attrs.remove('elementId')
@@ -203,7 +184,9 @@ class ViewTagLib implements TagLibrary {
             }
             def remainingKeys = attrs.keySet()
             for (key in remainingKeys) {
-                out << ' ' << key << '="' << attrs[key]?.encodeAsHTML() << '"'
+                out << ' ' << key << '="'
+                out << (attrs[key]?.encodeAsHTML() as String)
+                out << '"'
             }
             out << '>' << content << '</button>'
         }
@@ -218,7 +201,7 @@ class ViewTagLib implements TagLibrary {
         attrs.controller = 'calendarEvent'
         attrs.action = calendarEventService.currentCalendarView
         attrs.back = true
-        out << button(attrs, body)
+        out << (button(attrs, body) as String)
     }
 
     /**
@@ -228,7 +211,7 @@ class ViewTagLib implements TagLibrary {
     def calendarViewLink = { attrs, body ->
         attrs.controller = 'calendarEvent'
         attrs.action = calendarEventService.currentCalendarView
-        out << button(attrs, body)
+        out << (button(attrs, body) as String)
     }
 
     /**
@@ -270,10 +253,14 @@ class ViewTagLib implements TagLibrary {
      */
     def dataTypeIcon = { attrs, body ->
         String controller = attrs.controller
-        String icon = CONTROLLER_ICON_MAPPING[controller]
-        out << '<i class="fa fa-fw fa-' << icon << ' data-type-icon"'
-        out << ' title="' << message(code: "${controller}.label") << '"'
-        out << '></i> '
+
+        out << (render(
+            template: '/tags/view/dataTypeIcon',
+            model: [
+                controller: controller,
+                icon: CONTROLLER_ICON_MAPPING[controller]
+            ]
+        ) as String)
     }
 
     /**
@@ -293,9 +280,14 @@ class ViewTagLib implements TagLibrary {
         ]
         int precision = PRECISION_RANKINGS['minute']
         if (attrs.precision) {
-            precision = PRECISION_RANKINGS[attrs.precision]
-        } else if (grailsApplication.config.grails.tags.dateInput.default.precision) {
-            precision = PRECISION_RANKINGS[grailsApplication.config.grails.tags.dateInput.default.precision]
+            precision = PRECISION_RANKINGS[attrs.precision.toString()]
+        } else {
+            String config = grailsApplication.config.getProperty(
+                'grails.tags.dateInput.default.precision'
+            )
+            if (config) {
+                precision = PRECISION_RANKINGS[config]
+            }
         }
 
         /* obtain attribute values */
@@ -310,46 +302,21 @@ class ViewTagLib implements TagLibrary {
             c = value
         } else if (value != null) {
             c = new GregorianCalendar()
-            c.setTime(value)
+            c.setTime value
         }
 
-        def formatName
-        if (precision >= PRECISION_RANKINGS['hour']) {
-            formatName = 'default.format.datetime'
-        } else {
-            formatName = 'default.format.date'
-        }
-        boolean useTime = precision >= PRECISION_RANKINGS['hour']
-
-        /*
-         * Because the HTML 5 <input /> tag with type "date", "datetime",
-         * "time", and "datetime-local" fields do not support localized
-         * date/time strings we use type "text" here. Maybe in future this will
-         * be corrected in the HTML 5 standard.
-         */
-        out << """\
-<input type="hidden" name="${name}"
-  value="${c ? formatDate(date: c, formatName: formatName) : ''}" />
-"""
-        if (useTime) {
-            out << '<div class="input-group date-time-control">'
-        }
-        out << """\
-<input type="text" id="${id}-date" name="${name}_date"
-  value="${c ? formatDate(date: c, formatName: 'default.format.date') : ''}"
-  class="form-control date-input-control date-input-date-control"
-  maxlength="10" />
-"""
-
-        if (useTime) {
-            out << """\
-<input type="text" id="${id}-time" name="${name}_time"
-  value="${c ? formatDate(date: c, formatName: 'default.format.time') : ''}"
-  class="form-control date-input-control date-input-time-control"
-  maxlength="5" />
-</div>
-"""
-        }
+        out << (render(
+            template: '/tags/view/dateInput',
+            model: [
+                c: c,
+                formatName: precision < PRECISION_RANKINGS['hour'] \
+                    ? 'default.format.date'
+                    : 'default.format.datetime',
+                id: id,
+                name: name,
+                useTime: precision >= PRECISION_RANKINGS['hour']
+            ]
+        ) as String)
     }
 
     /**
@@ -385,7 +352,7 @@ class ViewTagLib implements TagLibrary {
             map.groupingUsed = attrs.groupingUsed ?: true
             map.maxFractionDigits = fractionDigits
             map.minFractionDigits = fractionDigits
-            out << formatNumber(map)
+            out << (formatNumber(map) as String)
         }
     }
 
@@ -412,11 +379,12 @@ class ViewTagLib implements TagLibrary {
                 }
             }
 
-            out << formatNumber(
+            out << (formatNumber(
                 number: value, minFractionDigits: 0, maxFractionDigits: 2,
                 type: 'number', locale: userService.currentLocale,
                 groupingUsed: attrs.groupingUsed ?: true
-            ) << ' ' << unit
+            ) as String)
+            out << ' ' << unit
         }
     }
 
