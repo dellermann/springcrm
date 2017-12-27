@@ -28,7 +28,8 @@
     padding-left: 0;
 
     li {
-      .clearfix();
+      @include clearfix();
+
       list-style: none;
       margin-bottom: $line-height-computed;
     }

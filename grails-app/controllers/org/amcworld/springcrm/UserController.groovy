@@ -151,10 +151,12 @@ class UserController {
         }
     }
 
+    @Secured('isAuthenticated()')
     def settingsControl() {
         respond saveType: user.settings['saveType'] ?: 'saveAndClose'
     }
 
+    @Secured('isAuthenticated()')
     def settingsControlSave(String saveType) {
         User user = getUser()
         user.settings['saveType'] = saveType
@@ -163,12 +165,14 @@ class UserController {
         redirect action: 'settingsIndex'
     }
 
+    @Secured('isAuthenticated()')
     def settingsGoogleAuth() {
         Credential cred = googleOAuthService.loadCredential(user.username)
 
         respond authorized: cred != null
     }
 
+    @Secured('isAuthenticated()')
     def settingsGoogleAuthRequest() {
         String uri = googleOAuthService.registerAtProxy(
             createLink(
@@ -187,6 +191,7 @@ class UserController {
         redirect uri: uri
     }
 
+    @Secured('isAuthenticated()')
     def settingsGoogleAuthResponse() {
         if (params.success.toString() != '200') {
             flash.message = message(
@@ -213,6 +218,7 @@ class UserController {
         redirect action: 'settingsIndex'
     }
 
+    @Secured('isAuthenticated()')
     def settingsGoogleAuthRevoke() {
         googleOAuthService.revokeAtProxy user.username
 
@@ -221,8 +227,10 @@ class UserController {
         redirect action: 'settingsIndex'
     }
 
+    @Secured('isAuthenticated()')
     def settingsIndex() {}
 
+    @Secured('isAuthenticated()')
     def settingsLanguage() {
         Map<String, String> locales =
             userService.availableLocales.collectEntries {
@@ -236,12 +244,14 @@ class UserController {
         )
     }
 
+    @Secured('isAuthenticated()')
     def settingsLanguageSave(String locale) {
         setUserLocale locale
 
         redirect action: 'settingsIndex'
     }
 
+    @Secured('isAuthenticated()')
     def settingsSync() {
         List<Long> values =
             user.settings.excludeFromSync?.toString()?.split(/,/)?.collect {
@@ -251,6 +261,7 @@ class UserController {
         respond ratings: Rating.list(), excludeFromSync: values
     }
 
+    @Secured('isAuthenticated()')
     def settingsSyncSave() {
         User user = getUser()
         user.settings.excludeFromSync = params.excludeFromSync.join ','
@@ -263,6 +274,7 @@ class UserController {
         respond user, model: [disableDelete: userService.isOnlyAdmin(user)]
     }
 
+    @Secured('isAuthenticated()')
     def storeSetting() {
         User user = getUser()
         user.settings.put params.key.toString(), params.value
