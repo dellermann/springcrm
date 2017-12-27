@@ -21,7 +21,6 @@
 package org.amcworld.springcrm
 
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -42,19 +41,19 @@ class InstallController {
     //-- Fields ---------------------------------
 
     InstallService installService
-    SpringSecurityService springSecurityService
+    UserService userService
 
 
     //-- Public methods -------------------------
 
     def clientData() {
-        respond([client: Client.load(), step: 2])
+        respond client: Client.load(), step: 2
     }
 
     @Transactional
     def clientDataSave(Client client) {
         if (client.hasErrors()) {
-            render view: 'clientData', model: [client: client, step: 2]
+            respond([client: client, step: 2], [view: 'clientData'])
             return
         }
         client.save()
@@ -82,7 +81,7 @@ class InstallController {
         } else if (params.password != params.passwordRepeat) {
             user.errors.rejectValue 'password', 'user.password.doesNotMatch'
         } else {
-            user.password = encodePassword(user.password)
+            user.password = userService.encodePassword(user.password)
         }
 
         if (user.hasErrors()) {
@@ -94,13 +93,13 @@ class InstallController {
             return
         }
 
-        user.save flush: true
+        userService.saveUser user
 
         redirect action: 'finish'
     }
 
     def finish() {
-        respond([step: 4])
+        respond step: 4
     }
 
     @Transactional
@@ -115,13 +114,11 @@ class InstallController {
     def index() {}
 
     def installBaseData() {
-        def installStatus = Config.findByName('installStatus')
-
-        respond([
-            existingData: installStatus?.value,
+        respond(
+            existingData: Config.findByName('installStatus')?.value,
             packages: installService.getBaseDataPackages(),
             step: 1
-        ])
+        )
     }
 
     @Transactional
@@ -131,20 +128,5 @@ class InstallController {
         )
 
         redirect action: 'clientData'
-    }
-
-
-    //-- Non-public methods -------------------------
-
-    /**
-     * Encodes the given password.
-     *
-     * @param password  the given password
-     * @return          the encoded password
-     */
-    private String encodePassword(String password) {
-        springSecurityService?.passwordEncoder \
-            ? springSecurityService.encodePassword(password)
-            : password
     }
 }

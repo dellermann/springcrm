@@ -22,13 +22,12 @@ package org.amcworld.springcrm
 
 import static org.springframework.http.HttpStatus.*
 
+import com.google.api.client.auth.oauth2.Credential
 import com.mongodb.client.model.Filters
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.LocaleUtils
 import org.bson.types.ObjectId
-import com.google.api.client.auth.oauth2.Credential
 
 
 /**
@@ -50,7 +49,6 @@ class UserController {
     //-- Fields ---------------------------------
 
     GoogleOAuthService googleOAuthService
-    SpringSecurityService springSecurityService
     UserService userService
 
 
@@ -128,7 +126,7 @@ class UserController {
         } else if (params.password != params.passwordRepeat) {
             user.errors.rejectValue 'password', 'user.password.mismatch'
         } else {
-            user.password = encodePassword(user.password)
+            user.password = userService.encodePassword(user.password)
         }
 
         if (user.hasErrors()) {
@@ -306,7 +304,7 @@ class UserController {
         String password = params.password
         if (password) {
             if (password == params.passwordRepeat) {
-                user.password = encodePassword(password)
+                user.password = userService.encodePassword(password)
             } else {
                 user.errors.rejectValue 'password', 'user.password.mismatch'
             }
@@ -336,26 +334,13 @@ class UserController {
     //-- Non-public methods ---------------------
 
     /**
-     * Encodes the given password.
-     *
-     * @param password  the given password
-     * @return          the encoded password
-     * @since 3.0
-     */
-    private String encodePassword(String password) {
-        springSecurityService?.passwordEncoder \
-            ? springSecurityService.encodePassword(password)
-            : password
-    }
-
-    /**
      * Gets the currently logged in user.
      *
      * @return  the currently logged in user
      * @since   3.0
      */
     private User getUser() {
-        springSecurityService.currentUser as User
+        userService.currentUser
     }
 
     /**

@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm
 
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
-import static javax.servlet.http.HttpServletResponse.SC_OK
+import static org.springframework.http.HttpStatus.NOT_FOUND
+import static org.springframework.http.HttpStatus.OK
 
 import grails.plugin.springsecurity.annotation.Secured
 import java.text.NumberFormat
@@ -42,7 +42,9 @@ class OverviewController {
 
     LruService lruService
     OverviewService overviewService
+    PanelService panelService
     SeqNumberService seqNumberService
+    UserService userService
 
 
     //-- Public methods -------------------------
@@ -55,10 +57,9 @@ class OverviewController {
      *                  page
      */
     def addPanel(String panelId, Integer pos) {
-        new Panel(user: (User) authenticatedUser, pos: pos, panelId: panelId)
-            .save flush: true
+        panelService.savePanel new Panel(user: user, pos: pos, panelId: panelId)
 
-        render status: SC_OK
+        render status: OK
     }
 
     /**
@@ -85,16 +86,16 @@ class OverviewController {
      * @since   2.0
      */
     def changelogDontShowAgain() {
-        overviewService.dontShowAgain((User) authenticatedUser)
+        overviewService.dontShowAgain user
 
-        render status: SC_OK
+        render status: OK
     }
 
     def index() {
         OverviewPanelRepository repository = OverviewPanelRepository.instance
-        User user = (User) authenticatedUser
+        User user = getUser()
 
-        List<Panel> panels = Panel.findAllByUser(user)
+        List<Panel> panels = panelService.findAllByUser(user)
         for (Panel panel : panels) {
             panel.panelDef = repository.getPanel(panel.panelId)
         }
@@ -111,17 +112,17 @@ class OverviewController {
             session['dontShowChangelog'] = true
         }
 
-        respond([
+        respond(
             allPanelDefs: repository.panels.values(),
             panels: panels,
             showSeqNumberChangeHint: showSeqNumberChangeHint,
             showChangelog: showChangelog,
             user: user
-        ])
+        )
     }
 
     def listAvailablePanels() {
-        respond([repository: OverviewPanelRepository.instance, l: LCH.locale])
+        respond repository: OverviewPanelRepository.instance, l: LCH.locale
     }
 
     def lruList() {
@@ -130,34 +131,32 @@ class OverviewController {
 
     def movePanel(String panelId1, Integer pos1, String panelId2, Integer pos2)
     {
-        User user = (User) authenticatedUser
-        Panel panel1 = Panel.findByUserAndPanelId(user, panelId1)
-        Panel panel2 = Panel.findByUserAndPanelId(user, panelId2)
-        if (!panel1 || !panel2) {
-            render status: SC_NOT_FOUND
+        User user = getUser()
+        Panel panel1 = panelService.findByUserAndPanelId(user, panelId1)
+        Panel panel2 = panelService.findByUserAndPanelId(user, panelId2)
+        if (panel1 == null || panel2 == null) {
+            render status: NOT_FOUND
             return
         }
 
         panel1.pos = pos1
-        panel1.save flush: true
+        panelService.savePanel panel1
         panel2.pos = pos2
-        panel2.save flush: true
+        panelService.savePanel panel2
 
-        render status: SC_OK
+        render status: OK
     }
 
     def removePanel(String panelId) {
-        Panel panel = Panel.findByUserAndPanelId(
-            (User) authenticatedUser, panelId
-        )
-        if (!panel) {
-            render status: SC_NOT_FOUND
+        Panel panel = panelService.findByUserAndPanelId(user, panelId)
+        if (panel == null) {
+            render status: NOT_FOUND
             return
         }
 
-        panel.delete flush: true
+        panelService.deletePanel panel.id
 
-        render status: SC_OK
+        render status: OK
     }
 
     /**
@@ -171,7 +170,6 @@ class OverviewController {
      * @since 2.1
      */
     def seqNumberHintDontShowAgain(int value) {
-        User user = (User) authenticatedUser
         switch (value) {
         case 1:
             seqNumberService.setDontShowAgain user
@@ -181,7 +179,7 @@ class OverviewController {
             break
         }
 
-        render status: SC_OK
+        render status: OK
     }
 
     /**
@@ -199,7 +197,7 @@ class OverviewController {
         NumberFormat formatter = NumberFormat.getInstance(request.locale)
         BigDecimal min = formatter.parse(minimum) as BigDecimal
 
-        User user = (User) authenticatedUser
+        User user = getUser()
         user.settings.putAll(
             unpaidBillsMinimum: min <= BigDecimal.ZERO ? '' : min.toString(),
             unpaidBillsSort: sort,
@@ -209,5 +207,18 @@ class OverviewController {
         user.save flush: true
 
         redirect action: 'index'
+    }
+
+
+    //-- Non-public methods ---------------------
+
+    /**
+     * Gets the currently logged in user.
+     *
+     * @return  the currently logged in user
+     * @since   3.0
+     */
+    private User getUser() {
+        userService.currentUser
     }
 }

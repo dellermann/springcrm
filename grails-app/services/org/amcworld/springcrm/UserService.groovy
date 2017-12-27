@@ -23,9 +23,11 @@ package org.amcworld.springcrm
 import com.mongodb.client.model.Filters
 import grails.gorm.services.Service
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
 import java.text.DecimalFormatSymbols
 import org.bson.types.ObjectId
 import org.grails.web.util.WebUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 
@@ -96,7 +98,26 @@ abstract class UserService implements IUserService {
     private static final String [] AVAILABLE_LANGUAGES = ['de', 'en']
 
 
+    //-- Fields ---------------------------------
+
+    @Autowired
+    SpringSecurityService springSecurityService
+
+
     //-- Public methods -------------------------
+
+    /**
+     * Encodes the given password.
+     *
+     * @param password  the given password
+     * @return          the encoded password
+     * @since 3.0
+     */
+    String encodePassword(String password) {
+        springSecurityService?.passwordEncoder \
+            ? springSecurityService.encodePassword(password)
+            : password
+    }
 
     /**
      * Gets all available currencies.
@@ -183,6 +204,16 @@ abstract class UserService implements IUserService {
         def request = WebUtils.retrieveGrailsWebRequest().currentRequest
 
         RCU.getLocale(request) ?: Locale.default
+    }
+
+    /**
+     * Gets the currently logged in user.
+     *
+     * @return  the currently logged in user
+     * @since   3.0
+     */
+    User getCurrentUser() {
+        springSecurityService.currentUser as User
     }
 
     /**
