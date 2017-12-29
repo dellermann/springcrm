@@ -20,7 +20,6 @@ package org.amcworld.springcrm
 
 import grails.compiler.GrailsCompileStatic
 import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
 import org.bson.types.ObjectId
 
 
@@ -34,7 +33,6 @@ import org.bson.types.ObjectId
  */
 @GrailsCompileStatic
 @EqualsAndHashCode(includes = 'authority')
-@ToString(includes = 'authority')
 class Role implements Serializable {
 
     //-- Constants ------------------------------
@@ -63,4 +61,12 @@ class Role implements Serializable {
      * The ID of the role.
      */
     ObjectId id
+
+
+    //-- Public methods -------------------------
+
+    @Override
+    String toString() {
+        authority
+    }
 }

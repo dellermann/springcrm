@@ -3,7 +3,7 @@
     <g:applyLayout name="show" model="[instance: user]">
       <section>
         <header>
-          <h3><g:message code="user.fieldset.general.label"/></h3>
+          <h3><g:message code="default.fieldset.general.label"/></h3>
         </header>
         <div class="column-group">
           <div class="column">
@@ -17,19 +17,6 @@
             <f:display bean="${user}" property="mobile"/>
             <f:display bean="${user}" property="fax"/>
             <f:display bean="${user}" property="email"/>
-          </div>
-        </div>
-      </section>
-      <section>
-        <header>
-          <h3><g:message code="user.fieldset.permissions.label"/></h3>
-        </header>
-        <div class="column-group">
-          <div class="column">
-            <f:display bean="${user}" property="admin"/>
-            <g:if test="${!user?.admin && user?.allowedModulesNames}">
-            <f:display bean="${user}" property="allowedModulesNames"/>
-            </g:if>
           </div>
         </div>
       </section>

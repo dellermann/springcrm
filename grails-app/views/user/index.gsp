@@ -1,9 +1,6 @@
 <%@ page import="org.amcworld.springcrm.User" %>
 
 <html>
-  <head>
-  </head>
-
   <body>
     <g:applyLayout name="list" model="[list: userList, type: 'user']">
       <div class="visible-xs">

@@ -117,7 +117,8 @@
           </a>
           <ul id="menu-settings" class="dropdown-menu" role="menu"
             aria-expanded="false">
-            <sec:ifAnyGranted roles="ROLE_ADMIN"><li role="menuitem"><g:link controller="user"><g:message code="user.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_USER"><li role="menuitem"><g:link controller="user"><g:message code="user.plural"/></g:link></li></sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_USER"><li role="menuitem"><g:link controller="roleGroup"><g:message code="roleGroup.plural"/></g:link></li></sec:ifAnyGranted>
             <li role="menuitem"><g:link controller="user" action="settingsIndex"><g:message code="user.settings.title"/></g:link></li>
             <sec:ifAnyGranted roles="ROLE_ADMIN"><li role="menuitem"><g:link controller="config"><g:message code="config.title"/></g:link></li></sec:ifAnyGranted>
             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_BOILERPLATE"><li role="menuitem"><g:link controller="boilerplate"><g:message code="boilerplate.plural"/></g:link></li></sec:ifAnyGranted>

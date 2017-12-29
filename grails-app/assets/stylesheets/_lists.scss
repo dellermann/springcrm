@@ -74,7 +74,7 @@
     text-align: center;
     width: 1%;    // shrink to fit
   }
-  .col-type-date {
+  .col-type-date, .col-type-bool {
     text-align: center;
     white-space: nowrap;
     width: 1%;    // shrink to fit
@@ -83,6 +83,15 @@
     text-align: right;
     white-space: nowrap;
     width: 1%;    // shrink to fit
+  }
+  .col-type-list {
+    > ol, > ul {
+      padding-left: 15px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
   .col-actions {
     padding: $table-condensed-cell-padding;

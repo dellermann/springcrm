@@ -22,7 +22,6 @@ package org.amcworld.springcrm
 
 import grails.compiler.GrailsCompileStatic
 import groovy.transform.EqualsAndHashCode
-import groovy.transform.ToString
 import org.bson.types.ObjectId
 
 
@@ -36,7 +35,6 @@ import org.bson.types.ObjectId
  */
 @GrailsCompileStatic
 @EqualsAndHashCode(includes = 'name')
-@ToString(includes = 'name')
 class RoleGroup implements Serializable {
 
     //-- Constants ------------------------------
@@ -71,4 +69,22 @@ class RoleGroup implements Serializable {
      * The name of the group.
      */
     String name
+
+
+    //-- Public methods -------------------------
+
+    /**
+     * Checks whether or not the user group represents an administrator group.
+     *
+     * @return  {@code true} if the user group represents administrators;
+     *          {@code false} otherwise
+     */
+    boolean isAdministrators() {
+        authorities?.any { it.authority == 'ROLE_ADMIN' } ?: false
+    }
+
+    @Override
+    String toString() {
+        name ?: ''
+    }
 }
