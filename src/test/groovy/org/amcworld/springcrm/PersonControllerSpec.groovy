@@ -1,7 +1,7 @@
 /*
  * PersonControllerSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,16 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import javax.naming.AuthenticationException
 import javax.naming.CommunicationException
 import javax.naming.NameNotFoundException
 import spock.lang.Specification
 
 
-@TestFor(PersonController)
-@Mock(Person)
-class PersonControllerSpec extends Specification {
+class PersonControllerSpec extends Specification
+    implements ControllerUnitTest<PersonController>
+{
 
     //-- Feature methods ------------------------
 

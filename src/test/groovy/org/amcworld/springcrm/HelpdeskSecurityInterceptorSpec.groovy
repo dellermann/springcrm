@@ -1,7 +1,7 @@
 /*
  * HelpdeskSecurityInterceptorSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,13 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
-@TestFor(HelpdeskSecurityInterceptor)
-@Mock([Helpdesk, HelpdeskUser])
-class HelpdeskSecurityInterceptorSpec extends Specification {
+class HelpdeskSecurityInterceptorSpec extends Specification
+    implements InterceptorUnitTest<HelpdeskSecurityInterceptor>
+{
 
     //-- Feature methods ------------------------
 

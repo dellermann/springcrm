@@ -1,7 +1,7 @@
 /*
  * OverviewServiceSpec.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,15 @@
 package org.amcworld.springcrm
 
 import grails.core.GrailsApplication
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import org.springframework.context.ApplicationContext
 import org.springframework.core.io.Resource
 import spock.lang.Specification
 
 
-@TestFor(OverviewService)
-@Mock([User, UserSetting])
-class OverviewServiceSpec extends Specification {
+class OverviewServiceSpec extends Specification
+    implements ServiceUnitTest<OverviewService>
+{
 
     //-- Feature methods ------------------------
 

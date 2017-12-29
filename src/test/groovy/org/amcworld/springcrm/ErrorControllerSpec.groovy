@@ -1,7 +1,7 @@
 /*
  * ErrorControllerSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import org.apache.http.HttpStatus
 import org.apache.http.HttpVersion
 import org.apache.http.client.methods.CloseableHttpResponse
@@ -30,8 +30,9 @@ import org.apache.http.message.BasicStatusLine
 import spock.lang.Specification
 
 
-@TestFor(ErrorController)
-class ErrorControllerSpec extends Specification {
+class ErrorControllerSpec extends Specification
+    implements ControllerUnitTest<ErrorController>
+{
 
     //-- Feature methods ------------------------
 

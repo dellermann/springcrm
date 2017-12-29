@@ -1,7 +1,7 @@
 /*
  * WorkSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,11 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestMixin
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
 
-@TestMixin([Work])
-class WorkSpec extends Specification {
+class WorkSpec extends Specification implements DomainUnitTest<Work> {
 
 	//-- Feature methods ------------------------
 

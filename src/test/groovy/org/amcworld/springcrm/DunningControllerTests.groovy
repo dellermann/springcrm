@@ -1,7 +1,7 @@
 /*
  * DunningControllerTests.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,7 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 
-
-/**
- * The class {@code DunningControllerTests} contains the unit test cases for
- * {@code DunningController}.
- *
- * @author  Daniel Ellermann
- * @version 2.0
- */
-@TestFor(DunningController)
-@Mock([Dunning, Organization, Person, InvoicingItem, Invoice, DunningStage, SeqNumberService])
 class DunningControllerTests {
 
     //-- Public methods -------------------------

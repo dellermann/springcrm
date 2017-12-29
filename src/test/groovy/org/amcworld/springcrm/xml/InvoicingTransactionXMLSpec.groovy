@@ -1,7 +1,7 @@
 /*
  * InvoicingTransactionXMLSpec.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,6 @@
 package org.amcworld.springcrm.xml
 
 import com.naleid.grails.MarkdownService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestMixin
-import grails.test.mixin.domain.DomainClassUnitTestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
 import groovy.util.slurpersupport.GPathResult
 import org.amcworld.springcrm.*
 import org.grails.web.converters.configuration.ConvertersConfigurationInitializer
@@ -33,11 +29,11 @@ import org.xml.sax.InputSource
 import spock.lang.Specification
 
 
-@TestMixin([GrailsUnitTestMixin, DomainClassUnitTestMixin])
-@Mock([
-    Invoice, InvoiceStage, InvoicingItem, Organization, Person,
-    TermsAndConditions, User
-])
+//@TestMixin([GrailsUnitTestMixin, DomainClassUnitTestMixin])
+//@Mock([
+//    Invoice, InvoiceStage, InvoicingItem, Organization, Person,
+//    TermsAndConditions, User
+//])
 class InvoicingTransactionXMLSpec extends Specification {
 
     //-- Fields ---------------------------------

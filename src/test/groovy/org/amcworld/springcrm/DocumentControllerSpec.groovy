@@ -1,7 +1,7 @@
 /*
  * DocumentControllerSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,7 @@ package org.amcworld.springcrm
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.VFS
@@ -32,9 +31,9 @@ import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
 
-@TestFor(DocumentController)
-@Mock([Organization, Config])
-class DocumentControllerSpec extends Specification {
+class DocumentControllerSpec extends Specification
+    implements ControllerUnitTest<DocumentController>
+{
 
     //-- Fields ---------------------------------
 

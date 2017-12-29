@@ -1,7 +1,7 @@
 /*
  * NoteSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package org.amcworld.springcrm
 
-// import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
 
-@TestFor(Note)
-// @Mock([Note])
-class NoteSpec extends Specification {
+class NoteSpec extends Specification implements DomainUnitTest<Note> {
 
 	//-- Feature methods ---------------------------
 

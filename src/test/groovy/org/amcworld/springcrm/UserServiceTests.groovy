@@ -1,7 +1,7 @@
 /*
  * UserServiceTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,8 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
 
-
-/**
- * The class {@code UserServiceTests} contains the unit test cases for
- * {@code UserService}.
- *
- * @author  Daniel Ellermann
- * @version 1.3
- * @since   1.3
- */
-@TestFor(UserService)
+//@TestFor(UserService)
 class UserServiceTests {
 
     //-- Public methods -------------------------

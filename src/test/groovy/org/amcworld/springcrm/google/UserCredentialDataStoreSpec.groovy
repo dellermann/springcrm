@@ -1,7 +1,7 @@
 /*
  * UserCredentialDataStoreSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,12 @@ import static org.amcworld.springcrm.google.AbstractUserCredentialDataStore.SETT
 
 import com.google.api.client.auth.oauth2.StoredCredential
 import com.google.api.client.util.store.DataStore
-import grails.test.mixin.Mock
 import org.amcworld.springcrm.User
 import org.amcworld.springcrm.UserSetting
-import org.amcworld.springcrm.UserSettings
 import spock.lang.Specification
 
 
-@Mock([User, UserSetting])
+//@Mock([User, UserSetting])
 class UserCredentialDataStoreSpec extends Specification {
 
     //-- Fields ---------------------------------

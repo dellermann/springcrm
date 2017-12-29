@@ -1,7 +1,7 @@
 /*
  * InvoiceControllerSpec.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,13 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.domain.DomainClassUnitTestMixin
+import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
 
-@TestFor(InvoiceController)
-@TestMixin(DomainClassUnitTestMixin)
-@Mock([Invoice, InvoiceStage, Organization, Person])
-class InvoiceControllerSpec extends Specification {
+class InvoiceControllerSpec extends Specification
+    implements ControllerUnitTest<InvoiceController>
+{
 
     //-- Feature methods ------------------------
 

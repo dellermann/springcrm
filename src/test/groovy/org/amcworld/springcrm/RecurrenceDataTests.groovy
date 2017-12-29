@@ -1,7 +1,7 @@
 /*
  * RecurrenceDataTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,9 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 
-
-/**
- * The class {@code RecurrenceDataTests} contains test cases for class
- * {@code RecurrenceData}.
- *
- * @author  Daniel Ellermann
- * @version 0.9
- */
-@TestFor(RecurrenceData)
-@Mock(RecurrenceData)
+//@TestFor(RecurrenceData)
+//@Mock(RecurrenceData)
 class RecurrenceDataTests {
 
     //-- Public methods -------------------------

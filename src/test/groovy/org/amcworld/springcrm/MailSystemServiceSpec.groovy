@@ -1,7 +1,7 @@
 /*
  * MailSystemServiceSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,15 @@ package org.amcworld.springcrm
 import com.naleid.grails.MarkdownService
 import grails.gsp.PageRenderer
 import grails.plugins.mail.MailService
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import org.springframework.context.MessageSource
 import spock.lang.Ignore
 import spock.lang.Specification
 
 
-@TestFor(MailSystemService)
-class MailSystemServiceSpec extends Specification {
+class MailSystemServiceSpec extends Specification
+    implements ServiceUnitTest<MailSystemService>
+{
 
     //-- Feature methods ------------------------
 

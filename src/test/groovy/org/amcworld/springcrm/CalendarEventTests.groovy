@@ -1,7 +1,7 @@
 /*
  * CalendarEventTests.groovy
  *
- * Copyright (c) 2011-2012, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,9 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 
-
-/**
- * The class {@code CalendarEventTests} contains the unit test cases for
- * {@code CalendarEvent}.
- *
- * @author	Daniel Ellermann
- * @version 0.9
- */
-@TestFor(CalendarEvent)
-@Mock([CalendarEvent, RecurrenceData, Reminder, Organization, User])
+//@TestFor(CalendarEvent)
+//@Mock([CalendarEvent, RecurrenceData, Reminder, Organization, User])
 class CalendarEventTests {
 
     //-- Public methods -------------------------

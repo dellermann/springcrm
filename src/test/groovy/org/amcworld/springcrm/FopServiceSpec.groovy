@@ -1,7 +1,7 @@
 /*
  * FopServiceSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 import javax.xml.transform.Transformer
@@ -40,8 +40,9 @@ import org.xml.sax.helpers.DefaultHandler
 import spock.lang.Specification
 
 
-@TestFor(FopService)
-class FopServiceSpec extends Specification {
+class FopServiceSpec extends Specification
+    implements ServiceUnitTest<FopService>
+{
 
     //-- Feature methods ------------------------
 

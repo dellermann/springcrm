@@ -1,7 +1,7 @@
 /*
  * SecurityServiceSpec.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,13 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
 
-@TestFor(SecurityService)
-class SecurityServiceSpec extends Specification {
+class SecurityServiceSpec extends Specification
+    implements ServiceUnitTest<SecurityService>
+{
 
     //-- Feature methods ------------------------
 

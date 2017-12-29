@@ -1,7 +1,7 @@
 /*
  * ProxyAuthorizationCodeFlowSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,14 +27,13 @@ import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.JsonFactory
 import com.google.api.client.testing.http.MockHttpTransport
 import com.google.api.client.testing.http.MockLowLevelHttpResponse
-import grails.test.mixin.Mock
 import org.amcworld.springcrm.User
 import org.amcworld.springcrm.UserSetting
 import org.amcworld.springcrm.google.UserCredentialDataStoreFactory.UserCredentialDataStore
 import spock.lang.Specification
 
 
-@Mock([User, UserSetting])
+//@Mock([User, UserSetting])
 class ProxyAuthorizationCodeFlowSpec extends Specification {
 
     //-- Fields ---------------------------------

@@ -1,7 +1,7 @@
 /*
  * AboutControllerSpec.groovy
  *
- * Copyright (c) 2011-2014, Daniel Ellermann
+ * Copyright (c) 2011-2017, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,13 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
 
-@TestFor(AboutController)
-class AboutControllerSpec extends Specification {
+class AboutControllerSpec extends Specification
+    implements ControllerUnitTest<AboutController>
+{
 
     //-- Feature methods ------------------------
 

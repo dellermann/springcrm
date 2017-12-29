@@ -1,7 +1,7 @@
 /*
  * ProjectRememberInterceptorSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,13 @@
 
 package org.amcworld.springcrm
 
-
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
-@TestFor(ProjectRememberInterceptor)
-@Mock(Project)
-class ProjectRememberInterceptorSpec extends Specification {
+class ProjectRememberInterceptorSpec extends Specification
+    implements InterceptorUnitTest<ProjectRememberInterceptor>
+{
 
     //-- Feature methods ------------------------
 

@@ -1,7 +1,7 @@
 /*
- * InvoicingTransactionXMLSpec.groovy
+ * InvoicingTransactionServiceSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,15 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import org.amcworld.springcrm.xml.InvoicingTransactionXML
 import org.amcworld.springcrm.xml.InvoicingTransactionXMLFactory
 import spock.lang.Specification
 
 
-@TestFor(InvoicingTransactionService)
-class InvoicingTransactionServiceSpec extends Specification {
+class InvoicingTransactionServiceSpec extends Specification
+    implements ServiceUnitTest<InvoicingTransactionService>
+{
 
     //-- Feature methods ------------------------
 

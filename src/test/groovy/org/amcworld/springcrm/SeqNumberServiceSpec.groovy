@@ -1,7 +1,7 @@
 /*
  * SeqNumberServiceSpec.groovy
  *
- * Copyright (c) 2011-2017, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,13 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-@TestFor(SeqNumberService)
-@Mock([
-    CreditMemo, CreditMemoController, Dunning, DunningController, Invoice,
-    InvoiceController, Organization, OrganizationController, Quote,
-    QuoteController, SalesOrder, SalesOrderController, SeqNumber, User,
-    UserSetting
-])
-class SeqNumberServiceSpec extends Specification {
+
+class SeqNumberServiceSpec extends Specification
+    implements ServiceUnitTest<SeqNumberService>
+{
 
     //-- Fixture methods ------------------------
 

@@ -1,7 +1,7 @@
 /*
  * CreditMemoControllerTests.groovy
  *
- * Copyright (c) 2011-2015, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,9 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
 
-
-/**
- * The class {@code CreditMemoControllerTests} contains the unit test cases
- * for {@code CreditMemoController}.
- *
- * @author  Daniel Ellermann
- * @version 2.0
- */
-@TestFor(CreditMemoController)
-@Mock([CreditMemo, Organization, Person, InvoicingItem, Invoice, Dunning, InvoiceStage, SeqNumberService])
+//@TestFor(CreditMemoController)
+//@Mock([CreditMemo, Organization, Person, InvoicingItem, Invoice, Dunning, InvoiceStage, SeqNumberService])
 class CreditMemoControllerTests {
 
     //-- Public methods -------------------------

@@ -1,7 +1,7 @@
 /*
  * PaginationInterceptorSpec.groovy
  *
- * Copyright (c) 2011-2016, Daniel Ellermann
+ * Copyright (c) 2011-2018, Daniel Ellermann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,13 @@
 
 package org.amcworld.springcrm
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
 
-@TestFor(PaginationInterceptor)
-@Mock([Call, User, UserSetting])
-class PaginationInterceptorSpec extends Specification {
+class PaginationInterceptorSpec extends Specification
+    implements InterceptorUnitTest<PaginationInterceptor>
+{
 
     //-- Feature methods ------------------------
 
