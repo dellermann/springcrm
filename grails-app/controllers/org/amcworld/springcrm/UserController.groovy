@@ -23,9 +23,8 @@ package org.amcworld.springcrm
 import static org.springframework.http.HttpStatus.*
 
 import com.google.api.client.auth.oauth2.Credential
-import com.mongodb.client.model.Filters
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
 import org.apache.commons.lang.LocaleUtils
 import org.bson.types.ObjectId
 
@@ -38,7 +37,6 @@ import org.bson.types.ObjectId
  * @version 3.0
  */
 @Secured(['ROLE_ADMIN', 'ROLE_USER'])
-@Transactional(readOnly = true)
 class UserController {
 
     //-- Class fields -------------------------------
@@ -62,58 +60,52 @@ class UserController {
         respond new User(params)
     }
 
-    @Transactional
-    def delete(User user) {
-        if (user == null) {
-            transactionStatus.setRollbackOnly()
+    def delete(String id) {
+        if (id == null) {
             notFound()
             return
         }
 
+        User user = userService.get(new ObjectId(id))
         if (userService.isOnlyAdmin(user)) {
             render status: FORBIDDEN
             return
         }
 
-        userService.deleteUser user.id
+        userService.delete new ObjectId(id)
 
         request.withFormat {
             form multipartForm {
                 flash.message = message(
                     code: 'default.deleted.message',
-                    args: [message(code: 'user.label'), user.toString()]
+                    args: [message(code: 'user.label'), user]
                 ) as Object
-                redirect(
-                    action: 'index', method: 'GET'
-                )
+                redirect action: 'index', method: 'GET'
             }
             '*' { render status: NO_CONTENT }
         }
     }
 
-    def edit(User user) {
-        respond user
+    def edit(String id) {
+        respond id == null ? null : userService.get(new ObjectId(id))
     }
 
     def index(Integer max) {
         if (params.letter) {
-            Number num = User.count(
-                Filters.lt('username', params.letter.toString())
-            )
+            Number num =
+                userService.countByUsernameLessThan(params.letter.toString())
             params.sort = 'username'
             params.offset = Math.floor(num.toDouble() / max) * max
         }
 
         respond(
-            userService.listUsers(params),
-            model: [userCount: userService.countUsers()]
+            userService.list(params),
+            model: [userCount: userService.count()]
         )
     }
 
-    @Transactional
     def save(User user) {
         if (user == null) {
-            transactionStatus.setRollbackOnly()
             notFound()
             return
         }
@@ -129,19 +121,18 @@ class UserController {
             user.password = userService.encodePassword(user.password)
         }
 
-        if (user.hasErrors()) {
-            transactionStatus.setRollbackOnly()
+        try {
+            userService.save user
+        } catch (ValidationException ignored) {
             respond user.errors, view: 'create'
             return
         }
-
-        userService.saveUser user
 
         request.withFormat {
             form multipartForm {
                 flash.message = message(
                     code: 'default.created.message',
-                    args: [message(code: 'user.label'), user.toString()]
+                    args: [message(code: 'user.label'), user]
                 ) as Object
                 redirect user
             }
@@ -151,21 +142,22 @@ class UserController {
 
     @Secured('isAuthenticated()')
     def settingsControl() {
-        respond saveType: user.settings['saveType'] ?: 'saveAndClose'
+        respond saveType: currentUser.settings['saveType'] ?: 'saveAndClose'
     }
 
     @Secured('isAuthenticated()')
     def settingsControlSave(String saveType) {
-        User user = getUser()
+        User user = getCurrentUser()
         user.settings['saveType'] = saveType
-        userService.saveUser user
+        userService.save user
 
         redirect action: 'settingsIndex'
     }
 
     @Secured('isAuthenticated()')
     def settingsGoogleAuth() {
-        Credential cred = googleOAuthService.loadCredential(user.username)
+        Credential cred =
+            googleOAuthService.loadCredential(currentUser.username)
 
         respond authorized: cred != null
     }
@@ -200,7 +192,7 @@ class UserController {
         }
 
         boolean res = googleOAuthService.obtainAndStoreCredential(
-            user.username, params.clientId.toString()
+            currentUser.username, params.clientId.toString()
         )
         if (!res) {
             flash.message = message(
@@ -218,7 +210,7 @@ class UserController {
 
     @Secured('isAuthenticated()')
     def settingsGoogleAuthRevoke() {
-        googleOAuthService.revokeAtProxy user.username
+        googleOAuthService.revokeAtProxy currentUser.username
 
         flash.message =
             message(code: 'user.settings.googleAuth.revoked.message') as Object
@@ -252,54 +244,48 @@ class UserController {
     @Secured('isAuthenticated()')
     def settingsSync() {
         List<Long> values =
-            user.settings.excludeFromSync?.toString()?.split(/,/)?.collect {
-                it as Long
-            }
+            currentUser.settings.excludeFromSync
+                ?.toString()
+                ?.split(/,/)
+                ?.collect { it as Long }
 
         respond ratings: Rating.list(), excludeFromSync: values
     }
 
     @Secured('isAuthenticated()')
     def settingsSyncSave() {
-        User user = getUser()
+        User user = currentUser
         user.settings.excludeFromSync = params.excludeFromSync.join ','
-        userService.saveUser user
+        userService.save user
 
         redirect action: 'settingsIndex'
     }
 
-    def show(User user) {
-        respond user, model: [disableDelete: userService.isOnlyAdmin(user)]
+    def show(String id) {
+        respond(
+            id == null ? null : userService.get(new ObjectId(id)),
+            model: [disableDelete: userService.isOnlyAdmin(currentUser)]
+        )
     }
 
     @Secured('isAuthenticated()')
     def storeSetting() {
-        User user = getUser()
+        User user = currentUser
         user.settings.put params.key.toString(), params.value
-        userService.saveUser user
+        userService.save user
 
         render status: OK
     }
 
-    @Transactional
     def update(String id) {
-        User user = userService.getUser(new ObjectId(id))
+        User user = id == null ? null : userService.get(new ObjectId(id))
         if (user == null) {
-            transactionStatus.setRollbackOnly()
             notFound()
             return
         }
 
-        bindData user, params, [exclude: ['password', 'authorities']]
-        Set<RoleGroup> authorities = new HashSet<>(1)
-        if (params.authorities) {
-            RoleGroup authority = RoleGroup.get(params.authorities?.toString())
-            if (authority != null) {
-                authorities.add authority
-            }
-        }
-        user.authorities = authorities
-        user.validate()
+        bindData user, params, [exclude: ['password']] //, 'authorities']]
+        user.markDirty 'authorities'
 
         String password = params.password
         if (password) {
@@ -310,13 +296,12 @@ class UserController {
             }
         }
 
-        if (user.hasErrors()) {
-            transactionStatus.setRollbackOnly()
+        try {
+            userService.save user
+        } catch (ValidationException ignored) {
             respond user.errors, view: 'edit'
             return
         }
-
-        userService.saveUser user
 
         request.withFormat {
             form multipartForm {
@@ -339,7 +324,7 @@ class UserController {
      * @return  the currently logged in user
      * @since   3.0
      */
-    private User getUser() {
+    private User getCurrentUser() {
         userService.currentUser
     }
 
@@ -362,10 +347,10 @@ class UserController {
     }
 
     private void setUserLocale(String locale = null) {
-        User user = getUser()
+        User user = currentUser
         if (locale) {
             user.settings.locale = locale
-            userService.saveUser user
+            userService.save user
         } else {
             locale = user.settings.locale
         }

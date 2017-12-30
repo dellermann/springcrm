@@ -28,8 +28,8 @@
         </header>
         <div class="column-group">
           <div class="column">
-            <f:field bean="${userInstance}" property="username" />
-            <f:field bean="${userInstance}" property="password" />
+            <f:field bean="${user}" property="username" />
+            <f:field bean="${user}" property="password" />
             <div class="form-group">
               <label for="password-repeat" class="control-label">
                 <g:message code="user.passwordRepeat.label" />
@@ -44,15 +44,15 @@
                 ></ul>
               </div>
             </div>
-            <f:field bean="${userInstance}" property="firstName" />
-            <f:field bean="${userInstance}" property="lastName" />
+            <f:field bean="${user}" property="firstName" />
+            <f:field bean="${user}" property="lastName" />
           </div>
           <div class="column">
-            <f:field bean="${userInstance}" property="phone" />
-            <f:field bean="${userInstance}" property="phoneHome" />
-            <f:field bean="${userInstance}" property="mobile" />
-            <f:field bean="${userInstance}" property="fax" />
-            <f:field bean="${userInstance}" property="email" />
+            <f:field bean="${user}" property="phone" />
+            <f:field bean="${user}" property="phoneHome" />
+            <f:field bean="${user}" property="mobile" />
+            <f:field bean="${user}" property="fax" />
+            <f:field bean="${user}" property="email" />
           </div>
         </div>
       </section>

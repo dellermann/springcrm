@@ -70,7 +70,7 @@ class TicketController extends GeneralController<Ticket> {
         if (recipient &&
             (recipient in ticketInstance.helpdesk.users) &&
             creator != recipient &&
-            (creator.admin || creator == ticketInstance.assignedUser) &&
+            (creator.administrator || creator == ticketInstance.assignedUser) &&
             ticketInstance.stage in REQ_STAGES_ASSIGN)
         {
             ticketService.assignUser ticketInstance, creator, recipient
@@ -85,7 +85,7 @@ class TicketController extends GeneralController<Ticket> {
             return
         }
 
-        if (user.admin || user == ticketInstance.assignedUser) {
+        if (user.administrator || user == ticketInstance.assignedUser) {
             EnumSet<TicketStage> allowedStages
             switch (ticketInstance.stage) {
             case TicketStage.assigned:
@@ -322,7 +322,7 @@ class TicketController extends GeneralController<Ticket> {
             User creator = user
             User recipient =
                 params.recipient ? User.get(params.long('recipient')) : null
-            if (recipient || creator.admin ||
+            if (recipient || creator.administrator ||
                 (creator == ticketInstance.assignedUser &&
                 ticketInstance.stage in REQ_STAGES_SEND_MESSAGE))
             {
@@ -430,7 +430,7 @@ class TicketController extends GeneralController<Ticket> {
      * @return  the list of helpdesks
      */
     private List<Helpdesk> getHelpdesks() {
-        user.admin ? Helpdesk.list() : Helpdesk.findByUser(user)
+        user.administrator ? Helpdesk.list() : Helpdesk.findByUser(user)
     }
 
     @Override

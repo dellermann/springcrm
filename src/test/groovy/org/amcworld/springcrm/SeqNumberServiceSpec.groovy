@@ -145,7 +145,7 @@ class SeqNumberServiceSpec extends Specification
     def 'Don\'t show again hint for non-admins'(int year) {
         given: 'a non-admin user with mocked settings'
         User user = makeUser()
-        user.admin = false
+//        user.admin = false
         user.save failOnError: true
 
         and: 'a credential of that user'
@@ -576,8 +576,7 @@ class SeqNumberServiceSpec extends Specification
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+            admin: true
         )
         u.id = 1704L
 

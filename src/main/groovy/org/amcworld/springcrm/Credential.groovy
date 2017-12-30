@@ -130,9 +130,6 @@ final class Credential {
         mobile = user.mobile
         fax = user.fax
         email = user.email
-        admin = user.admin
-        allowedModules = user.allowedModulesAsSet
-        allowedControllers = Module.resolveModules(allowedModules)
         fullName = computeFullName()
         settings = user.settings
     }

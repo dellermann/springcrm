@@ -61,14 +61,42 @@ class RoleGroup implements Serializable {
     Set<Role> authorities
 
     /**
+     * The timestamp when the user group has been created.
+     */
+    Date dateCreated
+
+    /**
      * The ID of the group.
      */
     ObjectId id
 
     /**
+     * The timestamp when the user group has been modified.
+     */
+    Date lastUpdated
+
+    /**
      * The name of the group.
      */
     String name
+
+
+    //-- Constructors -------------------------------
+
+    /**
+     * Creates an empty user group.
+     */
+    RoleGroup() {}
+
+    /**
+     * Creates a copy of the given user group.
+     *
+     * @param roleGroup the given user group
+     */
+    RoleGroup(RoleGroup roleGroup) {
+        name = roleGroup.name
+        authorities = new HashSet<>(roleGroup.authorities)
+    }
 
 
     //-- Public methods -------------------------

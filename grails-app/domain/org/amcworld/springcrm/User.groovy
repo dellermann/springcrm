@@ -61,7 +61,6 @@ class User implements Serializable {
         mobile nullable: true, maxSize: 40
         fax nullable: true, maxSize: 40
         email blank: false, email: true
-        allowedModules nullable: true
     }
     static embedded = ['settings']
     static hasMany = [authorities: RoleGroup]
@@ -69,9 +68,7 @@ class User implements Serializable {
         sort 'username'
         username index: true, indexAttributes: [unique: true, dropDups: true]
     }
-    static transients = [
-        'allowedModulesAsSet', 'allowedModulesNames', 'fullName'
-    ]
+    static transients = ['administrator', 'fullName']
 
 
     //-- Fields ---------------------------------
@@ -166,20 +163,6 @@ class User implements Serializable {
      */
     String username
 
-    /**
-     * Whether or not this user is administrator and has access permissions to
-     * all components of this software.
-     */
-    boolean admin
-
-
-    //-- TODO ------------------
-    /**
-     * A comma separated list of module names this user may access.  This value
-     * is only used if this user is no administrator.
-     */
-    String allowedModules
-
 
     //-- Constructors ---------------------------
 
@@ -212,56 +195,6 @@ class User implements Serializable {
     //-- Properties -----------------------------
 
     /**
-     * Gets a set of allowed modules of this user.
-     *
-     * @return  the allowed modules
-     */
-    EnumSet<Module> getAllowedModulesAsSet() {
-        if (!allowedModules?.trim()) {
-            return EnumSet.noneOf(Module)
-        }
-
-        Module.modulesByName allowedModules.split(',') as List
-    }
-
-    /**
-     * Sets a set of allowed modules of this user.
-     *
-     * @param modules   the allowed modules that should be set; may be
-     *                  {@code null}
-     */
-    void setAllowedModulesAsSet(EnumSet<Module> modules) {
-        allowedModules = modules?.join(',') ?: ''
-    }
-
-    /**
-     * Gets a set of the names of the allowed modules of this user.
-     *
-     * @return  the names of the allowed modules
-     * @since   2.0
-     */
-    Set<String> getAllowedModulesNames() {
-        EnumSet<Module> modules = allowedModulesAsSet
-        Set<String> res = new HashSet<String>(modules.size())
-        for (Module module : modules) {
-            res << module.toString()
-        }
-
-        res
-    }
-
-    /**
-     * Sets the set of the names of the allowed modules of the user.
-     *
-     * @param moduleNames   the names of the allowed modules that should be
-     *                      set
-     * @since               2.0
-     */
-    void setAllowedModulesNames(Set<String> moduleNames) {
-        allowedModulesAsSet = Module.modulesByName(moduleNames)
-    }
-
-    /**
      * Gets the full name of the user.  The full name consists of the first
      * and the last name of the user separated by a space character.
      *
@@ -277,6 +210,17 @@ class User implements Serializable {
         if (ln) buf << ln
 
         buf.toString()
+    }
+
+    /**
+     * Checks whether or not the user is an administrator.
+     *
+     * @return  {@code true} if the user is an administrator; {@code false}
+     *          otherwise
+     * @since   3.0
+     */
+    boolean isAdministrator() {
+        authorities.any { it.administrators }
     }
 
 

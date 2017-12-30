@@ -52,9 +52,9 @@ class PermissionTagLib {
      * administrator.
      */
     def ifAdmin = { attrs, body ->
-        if (session.credential?.admin) {
-            out << body()
-        }
+//        if (session.credential?.admin) {
+//            out << body()
+//        }
     }
 
     /**

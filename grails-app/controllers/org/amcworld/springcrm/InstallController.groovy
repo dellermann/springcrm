@@ -20,8 +20,8 @@
 
 package org.amcworld.springcrm
 
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import grails.validation.ValidationException
 
 
 /**
@@ -34,7 +34,6 @@ import grails.plugin.springsecurity.annotation.Secured
  * @author  Daniel Ellermann
  * @version 3.0
  */
-@Transactional(readOnly = true)
 @Secured('permitAll')
 class InstallController {
 
@@ -50,7 +49,6 @@ class InstallController {
         respond client: Client.load(), step: 2
     }
 
-    @Transactional
     def clientDataSave(Client client) {
         if (client.hasErrors()) {
             respond([client: client, step: 2], [view: 'clientData'])
@@ -62,10 +60,9 @@ class InstallController {
     }
 
     def createAdmin() {
-        respond([userInstance: new User(), step: 3])
+        respond new User(), model: [step: 3]
     }
 
-    @Transactional
     def createAdminSave() {
         User user = new User(params)
         RoleGroup group = installService.installAdminGroup(
@@ -84,16 +81,12 @@ class InstallController {
             user.password = userService.encodePassword(user.password)
         }
 
-        if (user.hasErrors()) {
-            transactionStatus.setRollbackOnly()
-            respond(
-                user.errors, view: 'createAdmin',
-                model: [userInstance: user, step: 3]
-            )
+        try {
+            userService.save user
+        } catch (ValidationException ignored) {
+            respond user.errors, model: [step: 3], view: 'createAdmin'
             return
         }
-
-        userService.saveUser user
 
         redirect action: 'finish'
     }
@@ -102,7 +95,6 @@ class InstallController {
         respond step: 4
     }
 
-    @Transactional
     def finishSave() {
         installService.disableInstaller()
         Config config = new Config(name: 'installStatus', value: 1)
@@ -121,7 +113,6 @@ class InstallController {
         )
     }
 
-    @Transactional
     def installBaseDataSave() {
         installService.installBaseDataPackage(
             params['package-select']?.toString()

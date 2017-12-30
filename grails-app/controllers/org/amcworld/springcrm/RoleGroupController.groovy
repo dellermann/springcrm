@@ -50,6 +50,10 @@ class RoleGroupController {
 
     //-- Public methods -------------------------
 
+    def copy(RoleGroup roleGroup) {
+        respond new RoleGroup(roleGroup), view: 'create'
+    }
+
     def create() {
         respond new RoleGroup(params)
     }

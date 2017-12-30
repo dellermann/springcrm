@@ -238,8 +238,7 @@ class OverviewServiceSpec extends Specification
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         u.id = 1704L

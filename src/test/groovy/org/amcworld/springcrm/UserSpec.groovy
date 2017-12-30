@@ -20,8 +20,6 @@
 
 package org.amcworld.springcrm
 
-import static org.amcworld.springcrm.Module.*
-
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
@@ -45,8 +43,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         null == u.mobile
         null == u.fax
         null == u.email
-        !u.admin
-        null == u.allowedModules
+        !u.administrator
         null == u.dateCreated
         null == u.lastUpdated
         null == u.settings
@@ -70,8 +67,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         null == u2.mobile
         null == u2.fax
         null == u2.email
-        !u2.admin
-        null == u2.allowedModules
+        !u2.administrator
         null == u2.dateCreated
         null == u2.lastUpdated
         null == u2.settings
@@ -89,8 +85,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I copy the user using the constructor'
@@ -105,8 +100,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         u1.mobile == u2.mobile
         u1.fax == u2.fax
         u1.email == u2.email
-        u1.admin == u2.admin
-        u1.allowedModules == u2.allowedModules
+        u1.administrator == u2.administrator
 
         and: 'some properties are unset'
         null == u2.id
@@ -114,82 +108,6 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
         null == u2.dateCreated
         null == u2.lastUpdated
         null == u2.settings
-    }
-
-    def 'Obtain allowed modules as set of enums'(String m, EnumSet<Module> e) {
-        when: 'I create a user with a discrete list of allowed modules'
-        def u = new User(allowedModules: m)
-
-        then: 'I get the correct set of module enums'
-        e == u.allowedModulesAsSet
-
-        where:
-        m                           || e
-        null                        || EnumSet.noneOf(Module)
-        ''                          || EnumSet.noneOf(Module)
-        '    '                      || EnumSet.noneOf(Module)
-        'CALL'                      || EnumSet.of(CALL)
-        'CALL,TICKET'               || EnumSet.of(CALL, TICKET)
-        'CALL, TICKET'              || EnumSet.of(CALL, TICKET)
-        'CALL, TICKET, NOTE'        || EnumSet.of(CALL, TICKET, NOTE)
-        'CALL, TICKET, NOTE, CALL'  || EnumSet.of(CALL, TICKET, NOTE)
-        'CONTACT, INVOICE'          || EnumSet.of(CONTACT, INVOICE)
-    }
-
-    def 'Set allowed modules as set of enums'(EnumSet<Module> m, String e) {
-        when: 'I create a user with a set of allowed modules'
-        def u = new User()
-        u.allowedModulesAsSet = m
-
-        then: 'I get the correct module list string'
-        e == u.allowedModules
-
-        where:
-        m                               || e
-        null                            || ''
-        EnumSet.noneOf(Module)          || ''
-        EnumSet.of(CALL)                || 'CALL'
-        EnumSet.of(CALL, TICKET)        || 'CALL,TICKET'
-        EnumSet.of(CALL, TICKET, NOTE)  || 'CALL,NOTE,TICKET'
-    }
-
-    @spock.lang.Unroll
-    def 'Obtain the allowed modules names'(String m, List<String> e) {
-        when: 'I create a user with a discrete list of allowed modules'
-        def u = new User()
-        u.allowedModules = m
-
-        then: 'I get the correct set of module names'
-        e as Set == u.allowedModulesNames
-
-        where:
-        m                           || e
-        null                        || []
-        ''                          || []
-        '    '                      || []
-        'CALL'                      || ['CALL']
-        'CALL,TICKET'               || ['CALL', 'TICKET']
-        'CALL, TICKET'              || ['CALL', 'TICKET']
-        'CALL, TICKET, NOTE'        || ['CALL', 'NOTE', 'TICKET']
-        'CALL, TICKET, NOTE, CALL'  || ['CALL', 'NOTE', 'TICKET']
-        'CONTACT, INVOICE'          || ['CONTACT', 'INVOICE']
-    }
-
-    def 'Set the allowed module names'(List<String> m, String e) {
-        when: 'I create a user with a set of allowed modules names'
-        def u = new User()
-        u.allowedModulesNames = m as Set
-
-        then: 'I get the correct module list string'
-        e == u.allowedModules
-
-        where:
-        m                               || e
-        null                            || ''
-        []                              || ''
-        ['CALL']                        || 'CALL'
-        ['CALL', 'TICKET']              || 'CALL,TICKET'
-        ['CALL', 'TICKET', 'NOTE']      || 'CALL,NOTE,TICKET'
     }
 
     def 'Obtain the full name'(String fn, String ln, String e) {
@@ -251,8 +169,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
         u1.save()
 
@@ -267,8 +184,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 7070707',
             fax: '+49 30 4040405',
             email: 'b.wayne@example.com',
-            admin: false,
-            allowedModules: 'CALL, TICKET, NOTE, CONTACT'
+//            admin: false
         )
         u2.save()
 
@@ -329,8 +245,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
         u.save()
 
@@ -364,8 +279,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
         u.save()
 
@@ -597,8 +511,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the user name'
@@ -674,8 +587,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the password'
@@ -707,8 +619,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the first name'
@@ -740,8 +651,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the last name'
@@ -773,8 +683,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the phone number'
@@ -807,8 +716,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the phone number'
@@ -841,8 +749,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the mobile phone number'
@@ -875,8 +782,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the fax number'
@@ -909,8 +815,7 @@ class UserSpec extends Specification implements DomainUnitTest<User> {
             phoneHome: '+49 30 9876543',
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
 
         when: 'I set the e-mail'

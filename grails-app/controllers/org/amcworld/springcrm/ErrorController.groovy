@@ -21,6 +21,7 @@
 package org.amcworld.springcrm
 
 import grails.artefact.Controller
+import grails.plugin.springsecurity.SpringSecurityService
 import groovy.transform.CompileStatic
 import java.security.MessageDigest
 import org.apache.http.HttpStatus
@@ -44,6 +45,7 @@ class ErrorController implements Controller {
     //-- Fields ---------------------------------
 
     CloseableHttpClient httpClient
+    SpringSecurityService springSecurityService
 
 
     //-- Public methods -------------------------
@@ -120,7 +122,7 @@ class ErrorController implements Controller {
                 retryUrl: retryUrl,
                 backUrl: backUrl,
                 listUrl: createLink(controller: 'person', action: 'index'),
-                admin: session.credential.admin
+                admin: (springSecurityService.currentUser as User).administrator
             ]
         )
     }

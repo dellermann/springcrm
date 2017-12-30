@@ -46,14 +46,23 @@ interface IUserService {
      *
      * @return  the number of users
      */
-    int countUsers()
+    int count()
+
+    /**
+     * Counts the users which username is alphabetically before the given
+     * username.
+     *
+     * @param username  the given username
+     * @return          the number of matching users
+     */
+    int countByUsernameLessThan(String username)
 
     /**
      * Deletes the user with the given ID.
      *
      * @param id    the ID of the user
      */
-    void deleteUser(ObjectId id)
+    void delete(ObjectId id)
 
     /**
      * Gets the user with the given ID.
@@ -61,7 +70,7 @@ interface IUserService {
      * @param id    the ID of the user
      * @return      the user or {@code null} if no such user exists
      */
-    User getUser(ObjectId id)
+    User get(ObjectId id)
 
     /**
      * Retrieves a list of all users.
@@ -69,7 +78,7 @@ interface IUserService {
      * @param args  any arguments used for retrieving the user
      * @return      a list of users
      */
-    List<User> listUsers(Map args)
+    List<User> list(Map args)
 
     /**
      * Saves the given user.
@@ -77,7 +86,7 @@ interface IUserService {
      * @param user  the user which should be saved
      * @return      the saved user
      */
-    User saveUser(User user)
+    User save(User user)
 }
 
 

@@ -20,6 +20,17 @@
           </div>
         </div>
       </section>
+      <section>
+        <header>
+          <h3><g:message code="default.fieldset.permissions.label"/></h3>
+        </header>
+        <div class="column-group">
+          <div class="column">
+            <f:display bean="${user}" property="enabled"/>
+            <f:display bean="${user}" property="authorities"/>
+          </div>
+        </div>
+      </section>
     </g:applyLayout>
   </body>
 </html>

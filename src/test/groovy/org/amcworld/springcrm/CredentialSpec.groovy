@@ -54,7 +54,6 @@ class CredentialSpec extends Specification {
         u.mobile == c.mobile
         u.fax == c.fax
         u.email == c.email
-        u.admin == c.admin
         u.settings == c.settings
         EnumSet.of(CALL, TICKET, NOTE) == c.allowedModules
         ['call', 'ticket', 'note'] as Set == c.allowedControllers
@@ -143,91 +142,6 @@ class CredentialSpec extends Specification {
         thrown ReadOnlyPropertyException
     }
 
-    def 'Obtain allowed controllers'(String m, List e) {
-        given: 'a user'
-        def user = new User(allowedModules: m)
-        user.id = 5
-
-        when: 'I create a credential with a discrete list of allowed modules'
-        def c = new Credential(user)
-
-        then: 'I get the correct set of controllers'
-        e as Set == c.allowedControllers
-
-        where:
-        m                           || e
-        null                        || []
-        ''                          || []
-        '    '                      || []
-        'CALL'                      || ['call']
-        'CALL,TICKET'               || ['call', 'ticket']
-        'CALL, TICKET'              || ['call', 'ticket']
-        'CALL, TICKET, NOTE'        || ['call', 'ticket', 'note']
-        'CONTACT, INVOICE'          || ['organization', 'person', 'invoice']
-    }
-
-    def 'Obtaining allowed controllers set does not change internal'() {
-        given: 'a user'
-        def user = new User(allowedModules: 'CALL,TICKET,NOTE')
-        user.id = 5
-
-        and: 'a credential'
-        def c = new Credential(user)
-
-        when: 'I obtain the allowed controllers'
-        def s1 = c.allowedControllers
-        def s2 = c.allowedControllers
-
-        then: 'the objects are not the same'
-        !s1.is(s2)
-
-        and: 'they are equal'
-        s1 == s2
-    }
-
-    def 'Obtain allowed modules as set of enums'(String m, EnumSet<Module> e) {
-        given: 'a user'
-        def user = new User(allowedModules: m)
-        user.id = 5
-
-        when: 'I create a credential with a discrete list of allowed modules'
-        def c = new Credential(user)
-
-        then: 'I get the correct set of module enums'
-        e == c.allowedModules
-
-        where:
-        m                           || e
-        null                        || EnumSet.noneOf(Module)
-        ''                          || EnumSet.noneOf(Module)
-        '    '                      || EnumSet.noneOf(Module)
-        'CALL'                      || EnumSet.of(CALL)
-        'CALL,TICKET'               || EnumSet.of(CALL, TICKET)
-        'CALL, TICKET'              || EnumSet.of(CALL, TICKET)
-        'CALL, TICKET, NOTE'        || EnumSet.of(CALL, TICKET, NOTE)
-        'CALL, TICKET, NOTE, CALL'  || EnumSet.of(CALL, TICKET, NOTE)
-        'CONTACT, INVOICE'          || EnumSet.of(CONTACT, INVOICE)
-    }
-
-    def 'Obtaining allowed modules set does not change internal'() {
-        given: 'a user'
-        def user = new User(allowedModules: 'CALL,TICKET,NOTE')
-        user.id = 5
-
-        and: 'a credential'
-        def c = new Credential(user)
-
-        when: 'I obtain the allowed modules'
-        def s1 = c.allowedModules
-        def s2 = c.allowedModules
-
-        then: 'the objects are not the same'
-        !s1.is(s2)
-
-        and: 'they are equal'
-        s1 == s2
-    }
-
     def 'Obtain the full name'(String fn, String ln, String e) {
         given: 'a user with first name and last name'
         def u = new User(firstName: fn, lastName: ln)
@@ -302,7 +216,7 @@ class CredentialSpec extends Specification {
     {
         given:
         def u = makeUser()
-        u.admin = false
+//        u.admin = false
 
         and: 'a credential'
         def c = new Credential(u)
@@ -347,7 +261,7 @@ class CredentialSpec extends Specification {
     {
         given:
         def u = makeUser()
-        u.admin = false
+//        u.admin = false
 
         and: 'a credential'
         def c = new Credential(u)
@@ -566,8 +480,7 @@ class CredentialSpec extends Specification {
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: true,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: true
         )
         u.id = 1704L
 

@@ -177,8 +177,7 @@ class PermissionInterceptorSpec extends Specification
             mobile: '+49 172 3456789',
             fax: '+49 30 1234568',
             email: 'j.smith@example.com',
-            admin: admin,
-            allowedModules: 'CALL, TICKET, NOTE'
+//            admin: admin
         )
         u.id = 1704L
 
